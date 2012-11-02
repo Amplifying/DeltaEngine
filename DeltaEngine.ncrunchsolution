@@ -1,0 +1,56 @@
+<SolutionConfiguration>
+  <FileVersion>1</FileVersion>
+  <AutoEnableOnStartup>True</AutoEnableOnStartup>
+  <AllowParallelTestExecution>true</AllowParallelTestExecution>
+  <FrameworkUtilisationTypeForNUnit>UseStaticAnalysis</FrameworkUtilisationTypeForNUnit>
+  <FrameworkUtilisationTypeForGallio>UseStaticAnalysis</FrameworkUtilisationTypeForGallio>
+  <FrameworkUtilisationTypeForMSpec>UseStaticAnalysis</FrameworkUtilisationTypeForMSpec>
+  <FrameworkUtilisationTypeForMSTest>UseStaticAnalysis</FrameworkUtilisationTypeForMSTest>
+  <EngineModes>Run all tests automatically:E0RvZXNOb3RIYXZlQ2F0ZWdvcnkEU2xvdw==;Run all tests manually:BUZhbHNl;Run impacted tests automatically, others manually (experimental!):CklzSW1wYWN0ZWQ=;Run pinned tests automatically, others manually:CElzUGlubmVk</EngineModes>
+  <MetricsExclusionList>
+*TestsVisual.cs
+..\DeltaEngineServices\Platforms\WindowsXnaWithoutAutofac\DeltaEngine.Platforms.WindowsXnaWithoutAutofac.csproj
+..\DeltaEngineServices\Platforms\WindowsXnaWithoutAutofac\DeltaEngine.WindowsXnaWithoutAutofac.csproj
+..\DeltaEngineServices\Platforms\WindowsXnaWithoutAutofac\Tests\DeltaEngine.Platforms.WindowsXnaWithoutAutofac.Tests.csproj
+..\DeltaEngineServices\Platforms\WindowsXnaWithoutAutofac\Tests\DeltaEngine.WindowsXnaWithoutAutofac.Tests.csproj
+Configuration\ContinuousApp\ContinuousApp.csproj:Program.cs
+Configuration\ContinuousApp\DeltaEngine.Configuration.ContinuousApp.csproj:Program.cs
+Configuration\Tests\DeltaEngine.Configuration.Tests.csproj:IntegrationAttribute.cs
+Configuration\WindowsXna\DeltaEngine.Configuration.WindowsXna.csproj
+Graphics\OpenTK\DeltaEngine.Graphics.OpenTK.csproj
+Graphics\OpenTK\Tests\DeltaEngine.Graphics.OpenTK.Tests.csproj
+Graphics\OpenTK\Tests\DeltaEngine.Graphics.OpenTK.Tests.csproj:Program.cs
+Graphics\SharpDX\DeltaEngine.Graphics.SharpDX.csproj
+Graphics\SharpDX\Tests\DeltaEngine.Graphics.SharpDX.Tests.csproj
+Graphics\Xna\DeltaEngine.Graphics.Xna.csproj
+Graphics\Xna\Tests\DeltaEngine.Graphics.Xna.Tests.csproj
+Platforms\Tests\DeltaEngine.PlatformsTests.csproj:WindowTestsVisual.cs
+Platforms\Windows\DeltaEngine.Platforms.Windows.csproj
+Platforms\Windows\Tests\DeltaEngine.Platforms.Windows.Tests.csproj
+Platforms\Windows\Tests\DeltaEngine.Platforms.Windows.Tests.csproj:Program.cs
+Platforms\WindowsDirectX\DeltaEngine.Platforms.WindowsDirectX.csproj
+Platforms\WindowsDirectX\DeltaEngine.WindowsDirectX.csproj
+Platforms\WindowsDirectX\Tests\DeltaEngine.Platforms.WindowsDirectX.Tests.csproj
+Platforms\WindowsDirectX\Tests\DeltaEngine.WindowsDirectX.Tests.csproj
+Platforms\WindowsOpenGL\DeltaEngine.Platforms.WindowsOpenGL.csproj
+Platforms\WindowsOpenGL\DeltaEngine.WindowsOpenGL.csproj
+Platforms\WindowsOpenGL\Tests\DeltaEngine.Platforms.WindowsOpenGL.Tests.csproj
+Platforms\WindowsOpenGL\Tests\DeltaEngine.WindowsOpenGL.Tests.csproj
+Platforms\WindowsXna\DeltaEngine.Platforms.WindowsXna.csproj
+Platforms\WindowsXna\DeltaEngine.WindowsXna.csproj
+Platforms\WindowsXna\Tests\DeltaEngine.Platforms.WindowsXna.Tests.csproj
+Platforms\WindowsXna\Tests\DeltaEngine.WindowsXna.Tests.csproj
+Program.cs
+Rendering\Tests\DeltaEngine.Rendering.Tests.csproj:Program.cs
+Samples\LogoApp\LogoApp.csproj:Image.cs
+Samples\LogoApp\LogoApp.csproj:Program.cs
+Samples\LogoApp\Tests\LogoApp.Tests.csproj:LogoGameTestsVisual.cs
+Samples\LogoApp\Tests\LogoApp.Tests.csproj:Program.cs
+Tools\ContinuousUpdater\DeltaEngine.Tools.ContinuousUpdater.csproj
+Tools\ContinuousUpdater\DeltaEngine.Tools.ContinuousUpdater.csproj:Program.cs
+Tools\ContinuousUpdater\DeltaEngine.Tools.ContinuousUpdater.csproj:SelectProgramForm.cs
+Tools\ContinuousUpdater\DeltaEngine.Tools.ContinuousUpdater.csproj:SelectProgramForm.Designer.cs
+Tools\ContinuousUpdater\Tests\DeltaEngine.Tools.ContinuousUpdater.Tests.csproj
+Tools\Launcher\DeltaEngine.Launcher.csproj:Program.cs
+</MetricsExclusionList>
+</SolutionConfiguration>

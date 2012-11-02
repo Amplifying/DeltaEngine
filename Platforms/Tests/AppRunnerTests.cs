@@ -1,0 +1,74 @@
+using System.Collections.Generic;
+using DeltaEngine.Core;
+using NUnit.Framework;
+
+namespace DeltaEngine.Platforms.Tests
+{
+	/// <summary>
+	/// Provides test classes and a configuration for the RunnersAreExecutedInCorrectOrder test.
+	/// </summary>
+	public class AppRunnerTests
+	{
+		private static readonly List<string> Output = new List<string>();
+
+		private sealed class TestResolver : Resolver
+		{
+			public TestResolver()
+			{
+				RegisterInstance(new Window());
+				RegisterInstance(new Device());
+			}
+
+			private void RegisterInstance(object instance)
+			{
+				RegisterInstanceAsRunnerOrPresenterIfPossible(instance);
+			}
+
+			public void Run()
+			{
+				RunAllRunners();
+				Output.Add("AppRunnerTests");
+				RunAllPresenters();
+			}
+		}
+
+		private class Device : Presenter
+		{
+			public void Run()
+			{
+				Output.Add("Device.Run");
+			}
+
+			public void Present()
+			{
+				Output.Add("Device.Present");
+			}
+		}
+
+		private class Window : Runner
+		{
+			public void Run()
+			{
+				Output.Add("Window.Run");
+			}
+		}
+
+		[Test]
+		public void RunnersAreExecutedInCorrectOrder()
+		{
+			Output.Clear();
+			using (var resolver = new TestResolver())
+				resolver.Run();
+
+			const string ExpectedOutput = "Window.Run, Device.Run, AppRunnerTests, Device.Present";
+			Assert.AreEqual(ExpectedOutput, Output.ToText());
+		}
+
+		[Test]
+		public void EmptyConfigurationShouldNotCrash()
+		{
+			var resolver = new TestResolver();
+			resolver.Dispose();
+		}
+	}
+}

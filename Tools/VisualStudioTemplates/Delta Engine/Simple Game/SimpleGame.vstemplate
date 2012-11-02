@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Project" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
+  <TemplateData>
+		<Name>Delta Engine Simple Game</Name>
+		<Description>Delta Engine Simple Game project, which gives you an empty game project (SimpleGame sample) with the basic assemblies already setup (for graphics, multimedia, input).</Description>
+    <Icon>SimpleGame.ico</Icon>
+    <TemplateID>Microsoft.CSharp.DeltaEngineSimpleGame</TemplateID>
+    <ProjectType>CSharp</ProjectType>
+    <RequiredFrameworkVersion>4.0</RequiredFrameworkVersion>
+    <SortOrder>1</SortOrder>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>SimpleGame</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+  </TemplateData>
+  <TemplateContent>
+    <Project File="SimpleGame.csproj" ReplaceParameters="true">
+      <ProjectItem ReplaceParameters="true" TargetFileName="Properties\AssemblyInfo.cs">AssemblyInfo.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true">Program.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" OpenInEditor="true">Game.cs</ProjectItem>
+    </Project>
+  </TemplateContent>
+</VSTemplate>

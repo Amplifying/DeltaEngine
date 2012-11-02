@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Project" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
+  <TemplateData>
+		<Name>Delta Engine Library</Name>
+		<Description>Delta Engine Library project</Description>
+    <Icon>DeltaEngineIcon.ico</Icon>
+    <TemplateID>Microsoft.CSharp.DeltaEngineLibrary</TemplateID>
+    <ProjectType>CSharp</ProjectType>
+    <RequiredFrameworkVersion>4.0</RequiredFrameworkVersion>
+    <SortOrder>3</SortOrder>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>Library</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+  </TemplateData>
+  <TemplateContent>
+    <Project File="Library.csproj" ReplaceParameters="true">
+      <ProjectItem ReplaceParameters="true" TargetFileName="Properties\AssemblyInfo.cs">AssemblyInfo.cs</ProjectItem>
+    </Project>
+  </TemplateContent>
+</VSTemplate>

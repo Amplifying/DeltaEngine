@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B94B117E-1A32-40C6-A93D-FD7012ED8D12}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>LogoApp</RootNamespace>
+    <AssemblyName>LogoApp</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\DeltaEngine\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>LogoApp.Program</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>DeltaEngineIcon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="LogoGame.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
+      <Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
+      <Name>DeltaEngine.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Datatypes\DeltaEngine.Datatypes.csproj">
+      <Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
+      <Name>DeltaEngine.Datatypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Platforms\DeltaEngine.Platforms.csproj">
+      <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
+      <Name>DeltaEngine.Platforms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Platforms\WindowsOpenGL\DeltaEngine.WindowsOpenGL.csproj">
+      <Project>{CC943AE0-A1CC-4788-AC9B-01DB3A0EBCD6}</Project>
+      <Name>DeltaEngine.WindowsOpenGL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
+      <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
+      <Name>DeltaEngine.Rendering</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DeltaEngineIcon.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
