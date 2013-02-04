@@ -9,16 +9,15 @@ namespace DeltaEngine.Core.Tests
 		public void Start1()
 		{
 			int num = 1;
-			Thread t = ThreadExtensions.Start(() => IncrementNumber(ref num));
-
 			Assert.AreEqual(1, num);
+			Thread t = ThreadExtensions.Start(() => IncrementNumber(ref num));
 			t.Join();
 			Assert.AreEqual(2, num);
 		}
 
-		private void IncrementNumber(ref int someNumber)
+		private static void IncrementNumber(ref int someNumber)
 		{
-			Thread.Sleep(1);
+			Thread.Sleep(5);
 			someNumber++;
 		}
 

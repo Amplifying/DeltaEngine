@@ -2,6 +2,7 @@
   <FileVersion>1</FileVersion>
   <AutoEnableOnStartup>True</AutoEnableOnStartup>
   <AllowParallelTestExecution>true</AllowParallelTestExecution>
+  <AllowTestsToRunInParallelWithThemselves>true</AllowTestsToRunInParallelWithThemselves>
   <FrameworkUtilisationTypeForNUnit>UseStaticAnalysis</FrameworkUtilisationTypeForNUnit>
   <FrameworkUtilisationTypeForGallio>UseStaticAnalysis</FrameworkUtilisationTypeForGallio>
   <FrameworkUtilisationTypeForMSpec>UseStaticAnalysis</FrameworkUtilisationTypeForMSpec>
@@ -22,8 +23,21 @@ Graphics\OpenTK\Tests\DeltaEngine.Graphics.OpenTK.Tests.csproj
 Graphics\OpenTK\Tests\DeltaEngine.Graphics.OpenTK.Tests.csproj:Program.cs
 Graphics\SharpDX\DeltaEngine.Graphics.SharpDX.csproj
 Graphics\SharpDX\Tests\DeltaEngine.Graphics.SharpDX.Tests.csproj
+Graphics\Tests\DeltaEngine.Graphics.Tests.csproj:Program.cs
 Graphics\Xna\DeltaEngine.Graphics.Xna.csproj
 Graphics\Xna\Tests\DeltaEngine.Graphics.Xna.Tests.csproj
+Input\SharpDX\DeltaEngine.Input.SharpDX.csproj
+Input\Tests\DeltaEngine.Input.Tests.csproj:Program.cs
+Input\Windows\DeltaEngine.Input.Windows.csproj
+Input\Xna\DeltaEngine.Input.Xna.csproj
+Logging\Log4Net\DeltaEngine.Logging.Log4Net.csproj:Properties\Resources.Designer.cs
+Logging\Log4Net\Tests\DeltaEngine.Logging.Log4Net.Tests.csproj:Properties\Resources.Designer.cs
+Logging\NLog\DeltaEngine.Logging.NLog.csproj:Properties\Resources.Designer.cs
+Multimedia\OpenTK\DeltaEngine.Multimedia.OpenTK.csproj
+Multimedia\SharpDX\DeltaEngine.Multimedia.SharpDX.csproj
+Multimedia\Tests\DeltaEngine.Multimedia.Tests.csproj:Program.cs
+Multimedia\Xna\DeltaEngine.Multimedia.Xna.csproj
+Platforms\Tests\DeltaEngine.Platforms.Tests.csproj:Program.cs
 Platforms\Tests\DeltaEngine.PlatformsTests.csproj:WindowTestsVisual.cs
 Platforms\Windows\DeltaEngine.Platforms.Windows.csproj
 Platforms\Windows\Tests\DeltaEngine.Platforms.Windows.Tests.csproj
@@ -40,8 +54,14 @@ Platforms\WindowsXna\DeltaEngine.Platforms.WindowsXna.csproj
 Platforms\WindowsXna\DeltaEngine.WindowsXna.csproj
 Platforms\WindowsXna\Tests\DeltaEngine.Platforms.WindowsXna.Tests.csproj
 Platforms\WindowsXna\Tests\DeltaEngine.WindowsXna.Tests.csproj
+Platforms\WindowsXnaWithoutAutofac\DeltaEngine.WindowsXnaWithoutAutofac.csproj
+Platforms\WindowsXnaWithoutAutofac\Tests\DeltaEngine.WindowsXnaWithoutAutofac.Tests.csproj
 Program.cs
 Rendering\Tests\DeltaEngine.Rendering.Tests.csproj:Program.cs
+Samples\Blocks\Blocks.csproj:Program.cs
+Samples\Blocks\Tests\Blocks.Tests.csproj:Program.cs
+Samples\Breakout\Breakout.csproj:Program.cs
+Samples\Breakout\Tests\Breakout.Tests.csproj:Program.cs
 Samples\LogoApp\LogoApp.csproj:Image.cs
 Samples\LogoApp\LogoApp.csproj:Program.cs
 Samples\LogoApp\Tests\LogoApp.Tests.csproj:LogoGameTestsVisual.cs
@@ -51,6 +71,7 @@ Tools\ContinuousUpdater\DeltaEngine.Tools.ContinuousUpdater.csproj:Program.cs
 Tools\ContinuousUpdater\DeltaEngine.Tools.ContinuousUpdater.csproj:SelectProgramForm.cs
 Tools\ContinuousUpdater\DeltaEngine.Tools.ContinuousUpdater.csproj:SelectProgramForm.Designer.cs
 Tools\ContinuousUpdater\Tests\DeltaEngine.Tools.ContinuousUpdater.Tests.csproj
+Tools\ContinuousUpdater\Tests\DeltaEngine.Tools.ContinuousUpdater.Tests.csproj:Program.cs
 Tools\Launcher\DeltaEngine.Launcher.csproj:Program.cs
 </MetricsExclusionList>
 </SolutionConfiguration>

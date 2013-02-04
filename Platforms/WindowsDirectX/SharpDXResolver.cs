@@ -1,4 +1,7 @@
 ﻿using DeltaEngine.Graphics.SharpDX;
+using DeltaEngine.Input.SharpDX;
+using DeltaEngine.Input.Windows;
+using DeltaEngine.Multimedia.SharpDX;
 using DeltaEngine.Platforms.Windows;
 
 namespace DeltaEngine.Platforms
@@ -12,6 +15,15 @@ namespace DeltaEngine.Platforms
 		{
 			RegisterSingleton<SharpDXDevice>();
 			RegisterSingleton<SharpDXDrawing>();
+			Register<SharpDXImage>();
+			RegisterSingleton<XAudioDevice>();
+			Register<XAudioSound>();
+			RegisterSingleton<SharpDXMouse>();
+			RegisterSingleton<SharpDXKeyboard>();
+			RegisterSingleton<WindowsTouch>();
+			RegisterSingleton<WindowsGamePad>();
+			RegisterSingleton<CursorPositionTranslater>();
+			RegisterSingleton<Input.Input>();
 		}
 	}
 }

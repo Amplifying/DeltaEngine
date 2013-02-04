@@ -9,14 +9,22 @@ namespace DeltaEngine.Platforms
 	/// </summary>
 	internal sealed class XnaGame : Game
 	{
-		internal XnaGame(Resolver resolver)
+		public XnaGame(Resolver resolver, Action initCode)
 		{
 			this.resolver = resolver;
+			this.initCode = initCode;
 			IsFixedTimeStep = false;
 		}
 
 		private readonly Resolver resolver;
+		private readonly Action initCode;
 
+		protected override void Initialize()
+		{
+			base.Initialize();
+			initCode();
+		}
+		
 		internal void Run(Action runCode)
 		{
 			runCodeForTests = runCode;
@@ -25,16 +33,14 @@ namespace DeltaEngine.Platforms
 
 		private Action runCodeForTests;
 
-		protected override void Update(GameTime gameTime)
-		{
-			if (runCodeForTests != null)
-				runCodeForTests();
-
-			resolver.RunAllRunners();
-		}
+		protected override void Update(GameTime gameTime) {}
 
 		protected override void Draw(GameTime gameTime)
 		{
+			resolver.RunAllRunners();
+			if (runCodeForTests != null)
+				runCodeForTests();
+
 			resolver.RunAllPresenters();
 		}
 	}

@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Diagnostics;
 using DeltaEngine.Core;
 
 namespace DeltaEngine.Datatypes
 {
 	/// <summary>
-	/// This struct represents a 2D vector - useful for position of mouse on screen etc.
+	/// Represents a 2D vector, which is useful for screen positions (sprites, mouse, touch, etc.)
 	/// </summary>
+	[DebuggerDisplay("Point({X}, {Y})")]
 	public struct Point : IEquatable<Point>
 	{
 		public Point(float x, float y)
@@ -18,12 +20,12 @@ namespace DeltaEngine.Datatypes
 		public Point(string pointAsString)
 			: this()
 		{
-			float[] floats = pointAsString.SplitIntoFloats();
-			if (floats.Length != 2)
+			float[] components = pointAsString.SplitIntoFloats();
+			if (components.Length != 2)
 				throw new InvalidNumberOfComponents();
 
-			X = floats[0];
-			Y = floats[1];
+			X = components[0];
+			Y = components[1];
 		}
 
 		public float X { get; set; }
@@ -36,6 +38,7 @@ namespace DeltaEngine.Datatypes
 		public static readonly Point Half = new Point(0.5f, 0.5f);
 		public static readonly Point UnitX = new Point(1, 0);
 		public static readonly Point UnitY = new Point(0, 1);
+		public const int SizeInBytes = 2 * 4;
 
 		public static Point operator +(Point p1, Point p2)
 		{
@@ -107,6 +110,30 @@ namespace DeltaEngine.Datatypes
 			float distanceX = X - other.X;
 			float distanceY = Y - other.Y;
 			return (float)Math.Sqrt(distanceX * distanceX + distanceY * distanceY);
+		}
+
+		public float DistanceToSquared(Point other)
+		{
+			float distanceX = X - other.X;
+			float distanceY = Y - other.Y;
+			return distanceX * distanceX + distanceY * distanceY;
+		}
+
+		public Point DirectionTo(Point other)
+		{
+			return other - this;
+		}
+
+		public void ReflectIfHittingBorder(Rectangle box, Rectangle borders)
+		{
+			if (box.Left <= borders.Left)
+				X = X.Abs();
+			if (box.Right >= borders.Right)
+				X = -X.Abs();
+			if (box.Top <= borders.Top)
+				Y = Y.Abs();
+			if (box.Bottom >= borders.Bottom)
+				Y = -Y.Abs();
 		}
 	}
 }

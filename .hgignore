@@ -41,7 +41,7 @@ _NCrunch*/
 *.vs10x
 NDependOut/
 Resources/
-Help/
+Help/Help
 Report/
 .git/
 .svn/
@@ -109,4 +109,7 @@ packages/opentk*
 *.swf
 *.JPG
 *.xnb
+*.ide
 *.nuspec
+*.ide
+*.PNG

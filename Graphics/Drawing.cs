@@ -10,14 +10,15 @@ namespace DeltaEngine.Graphics
 	{
 		protected Drawing(Device device)
 		{
-			GraphicsDevice = device;
+			this.device = device;
 		}
 
-		protected Device GraphicsDevice { get; private set; }
+		protected readonly Device device;
 
-		public abstract void SetColor(Color color);
-		public abstract void DrawRectangle(Rectangle area);
-
-		public virtual void Dispose() {}
+		public abstract void Dispose();
+		public abstract void DisableTexturing();
+		public abstract void SetIndices(short[] indices, int usedIndicesCount);
+		public abstract void DrawVertices(VerticesMode mode, VertexPositionColorTextured[] vertices);
+		public abstract void DrawVertices(VerticesMode mode, VertexPositionColor[] vertices);
 	}
 }

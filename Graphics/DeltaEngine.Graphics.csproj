@@ -11,7 +11,8 @@
     <AssemblyName>DeltaEngine.Graphics</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,10 +34,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="VertexPositionColorTextured.cs" />
     <Compile Include="Drawing.cs" />
     <Compile Include="Device.cs" />
+    <Compile Include="Image.cs" />
+    <Compile Include="VerticesMode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ScreenSpace.cs" />
+    <Compile Include="VertexPositionColor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\DeltaEngine.Core.csproj">
@@ -46,6 +50,10 @@
     <ProjectReference Include="..\Datatypes\DeltaEngine.Datatypes.csproj">
       <Project>{460983FF-AA91-4E10-B70E-10D0BDA15A58}</Project>
       <Name>DeltaEngine.Datatypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Platforms\DeltaEngine.Platforms.csproj">
+      <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
+      <Name>DeltaEngine.Platforms</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

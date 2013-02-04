@@ -1,4 +1,5 @@
-﻿using DeltaEngine.Datatypes;
+﻿using DeltaEngine.Core;
+using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Rendering
 {
@@ -7,22 +8,21 @@ namespace DeltaEngine.Rendering
 	/// </summary>
 	public class ColoredRectangle : Renderable
 	{
-		public ColoredRectangle(Renderer render, Rectangle rect, Color color)
-			: base(render)
+		public ColoredRectangle(Rectangle drawArea, Color color)
 		{
-			Rect = rect;
+			DrawArea = drawArea;
 			Color = color;
 		}
 
-		public ColoredRectangle(Renderer render, Point center, Size size, Color color)
-			: this(render, Rectangle.FromCenter(center, size), color) { }
-
-		public Rectangle Rect;
+		public Rectangle DrawArea;
 		public Color Color;
 
-		protected internal override void Render()
+		public ColoredRectangle(Point center, Size size, Color color)
+			: this(Rectangle.FromCenter(center, size), color) {}
+
+		protected override void Render(Renderer renderer, Time time)
 		{
-			renderer.DrawRectangle(Rect, Color);
+			renderer.DrawRectangle(DrawArea, Color);
 		}
 	}
 }

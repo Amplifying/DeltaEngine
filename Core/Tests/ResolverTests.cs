@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
@@ -19,7 +20,8 @@ namespace DeltaEngine.Core.Tests
 
 			Assert.AreEqual(window, Resolve<RunnerTests.Window>());
 			Assert.AreEqual(device, Resolve<RunnerTests.Device>());
-			Assert.AreEqual(null, Resolve<RunnerTests>());
+			Assert.IsNull(Resolve<RunnerTests>());
+			Assert.IsNull(Resolve(typeof(RunnerTests)));
 			RunAllRunners();
 			RunAllPresenters();
 		}
@@ -32,12 +34,41 @@ namespace DeltaEngine.Core.Tests
 
 		private readonly List<object> registeredInstances = new List<object>();
 
-		private BaseType Resolve<BaseType>()
+		protected override object Resolve(Type baseType)
 		{
+			return null;
+		}
+
+		public override BaseType Resolve<BaseType>(object customParameter = null)
+		{
+			if (customParameter != null)
+				throw new CustomParameterNotSupportedYet();
+
 			foreach (BaseType instance in registeredInstances.OfType<BaseType>())
 				return instance;
 
 			return default(BaseType);
+		}
+
+		private class CustomParameterNotSupportedYet : Exception {}
+
+		[Test]
+		public void ResolveCustomNotSupported()
+		{
+			Assert.Throws<CustomParameterNotSupportedYet>(() => Resolve<Time>(new StopwatchTime()));
+		}
+
+		[Test]
+		public void DisposableInstance()
+		{
+			RegisterInstance(new SomeDisposableRunner());
+			Dispose();
+		}
+
+		private class SomeDisposableRunner : Runner, IDisposable
+		{
+			public void Dispose() {}
+			public void Run() {}
 		}
 	}
 }

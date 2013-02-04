@@ -53,12 +53,65 @@ namespace DeltaEngine.Core.Tests
 		}
 
 		[Test]
+		public void Clamp()
+		{
+			Assert.AreEqual(241f, MathExtensions.Clamp(266f, 0f, 241f));
+			Assert.AreEqual(0, MathExtensions.Clamp(-14f, 0f, 10f));
+			Assert.AreEqual(14f, MathExtensions.Clamp(14f, 0f, 100f));
+			Assert.AreEqual(0.5f, MathExtensions.Clamp(0.6f, 0f, 0.5f));
+		}
+		
+		[Test]
+		public void Atan2()
+		{
+			Assert.AreEqual(0.0f, MathExtensions.Atan2(0, 0));
+			Assert.AreEqual(90.0f, MathExtensions.Atan2(1, 0));
+			Assert.AreEqual(-135.0f, MathExtensions.Atan2(-1, -1));
+		}
+
+		[Test]
 		public void Lerp()
 		{
 			Assert.AreEqual(1, MathExtensions.Lerp(1, 3, -1));
 			Assert.AreEqual(0.2f, MathExtensions.Lerp(0, 1, 0.2f));
 			Assert.AreEqual(0, MathExtensions.Lerp(-1, 1, 0.5f));
 			Assert.AreEqual(-1, MathExtensions.Lerp(-4, -1, 1.5f));
+		}
+
+		[Test]
+		public void RadiansToDegrees()
+		{
+			Assert.AreEqual(0.0f, MathExtensions.RadiansToDegrees(0));
+			Assert.AreEqual(572.95776f, MathExtensions.RadiansToDegrees(10));
+			Assert.AreEqual(0.0f, 0.0f.RadiansToDegrees());
+			Assert.AreEqual(180.0f, MathExtensions.Pi.RadiansToDegrees());
+			Assert.AreEqual(-360.0f, -2.0f * MathExtensions.Pi.RadiansToDegrees());
+			Assert.AreEqual(1234.0f, 1234.0f.RadiansToDegrees().DegreesToRadians());
+		}
+
+		[Test]
+		public void DegreesToRadians()
+		{
+			Assert.AreEqual(0.0f, MathExtensions.DegreesToRadians(0));
+			Assert.AreEqual(MathExtensions.Pi, 180.0f.DegreesToRadians());
+			Assert.AreEqual(-2.0f * MathExtensions.Pi, -360.0f.DegreesToRadians());
+			Assert.AreEqual(1234.0f, 1234.0f.DegreesToRadians().RadiansToDegrees());
+		}
+
+		[Test]
+		public void Max()
+		{
+			Assert.AreEqual(3.5f, MathExtensions.Max(3.5f, 2.5f));
+			Assert.AreEqual(-1.5f, MathExtensions.Max(-3.5f, -1.5f));
+			Assert.AreEqual(-2.5f, MathExtensions.Max(-2.5f, -2.5f));
+		}
+
+		[Test]
+		public void Min()
+		{
+			Assert.AreEqual(2.5f, MathExtensions.Min(3.5f, 2.5f));
+			Assert.AreEqual(-3.5f, MathExtensions.Min(-3.5f, -1.5f));
+			Assert.AreEqual(4.0f, MathExtensions.Min(4.0f, 4.0f));
 		}
 	}
 }

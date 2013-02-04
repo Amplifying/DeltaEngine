@@ -14,7 +14,7 @@ namespace DeltaEngine.Core.Tests
 		}
 
 		[Test]
-		public void CheckForFatalException()
+		public void ToText()
 		{
 			var texts = new List<string> { "Hi", "there", "whats", "up?" };
 			Assert.AreEqual("Hi, there, whats, up?", texts.ToText());

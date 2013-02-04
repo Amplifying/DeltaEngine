@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{D0AAD622-ED82-40E5-88A9-980EAFC12C16}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DeltaEngine.Platforms.Tests</RootNamespace>
     <AssemblyName>DeltaEngine.Platforms.Tests</AssemblyName>
@@ -35,21 +35,29 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Moq">
       <HintPath>..\..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework">
+    <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TestAppOnce.cs" />
-    <Compile Include="AppRunnerTests.cs" />
+    <Compile Include="TimeTests.cs" />
+    <Compile Include="IntegrationTestAttribute.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="ResolverTests.cs" />
     <Compile Include="AppTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestResolver.cs" />
+    <Compile Include="TestStarter.cs" />
+    <Compile Include="VisualTestAttribute.cs" />
     <Compile Include="WindowTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -68,6 +76,18 @@
       <Project>{8F701B0D-48B6-45CF-85E0-286BD53328BA}</Project>
       <Name>DeltaEngine.Graphics</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Input\DeltaEngine.Input.csproj">
+      <Project>{cc65e69e-fafd-4c2b-85eb-5e57fd3af847}</Project>
+      <Name>DeltaEngine.Input</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Input\Windows\DeltaEngine.Input.Windows.csproj">
+      <Project>{C0D2430E-714D-476C-80E7-5C80A7FA68EE}</Project>
+      <Name>DeltaEngine.Input.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Multimedia\DeltaEngine.Multimedia.csproj">
+      <Project>{6016ABB8-05F5-4A07-8FBA-16576277DDE7}</Project>
+      <Name>DeltaEngine.Multimedia</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
       <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
       <Name>DeltaEngine.Rendering</Name>
@@ -75,6 +95,22 @@
     <ProjectReference Include="..\DeltaEngine.Platforms.csproj">
       <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
       <Name>DeltaEngine.Platforms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WindowsDirectX\DeltaEngine.WindowsDirectX.csproj">
+      <Project>{05569371-855c-4667-8228-20491337c431}</Project>
+      <Name>DeltaEngine.WindowsDirectX</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WindowsOpenGL\DeltaEngine.WindowsOpenGL.csproj">
+      <Project>{CC943AE0-A1CC-4788-AC9B-01DB3A0EBCD6}</Project>
+      <Name>DeltaEngine.WindowsOpenGL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WindowsXna\DeltaEngine.WindowsXna.csproj">
+      <Project>{07E9D341-4B22-48FE-B921-5D18D3AB2C49}</Project>
+      <Name>DeltaEngine.WindowsXna</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Windows\DeltaEngine.Platforms.Windows.csproj">
+      <Project>{BD8A80E2-A313-437E-B0EF-FC0B066280A7}</Project>
+      <Name>DeltaEngine.Platforms.Windows</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

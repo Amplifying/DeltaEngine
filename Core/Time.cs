@@ -11,7 +11,7 @@
 			SetFpsTo60InitiallyAndSetUsefulInitialValues();
 		}
 
-		private readonly ElapsedTime elapsed;
+		protected readonly ElapsedTime elapsed;
 
 		private void SetFpsTo60InitiallyAndSetUsefulInitialValues()
 		{
@@ -68,6 +68,6 @@
 			long ticksInADay = elapsed.TicksPerSecond * 60 * 60 * 24;
 			long ticksToday = elapsed.GetTicks() % ticksInADay;
 			return ((float)ticksToday / elapsed.TicksPerSecond);
- 		}
+		}
 	}
 }

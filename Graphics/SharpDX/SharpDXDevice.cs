@@ -1,15 +1,17 @@
 ﻿using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 using SharpDX;
-using SharpDX.Direct2D1;
-using SharpDX.Direct3D11;
 using SharpDX.DXGI;
-using DriverType = SharpDX.Direct3D.DriverType;
+using SharpDX.Direct2D1;
+using SharpDX.Direct3D;
+using SharpDX.Direct3D11;
 using D2dFactory = SharpDX.Direct2D1.Factory;
 using DxDevice = SharpDX.Direct3D11.Device;
 using DxSwapChain = SharpDX.DXGI.SwapChain;
+using CreationFlags = SharpDX.Direct3D11.DeviceCreationFlags;
+using DeltaRect = DeltaEngine.Datatypes.Rectangle;
+using MapFlags = SharpDX.Direct3D11.MapFlags;
 using Resource = SharpDX.Direct3D11.Resource;
-using AlphaMode = SharpDX.Direct2D1.AlphaMode;
 
 namespace DeltaEngine.Graphics.SharpDX
 {
@@ -17,94 +19,118 @@ namespace DeltaEngine.Graphics.SharpDX
 	/// Provides DirectX 11 support with extended range of features like Geometry shader, Hardware
 	/// tessellation and compute shaders. Currently just used to support SharpDXDrawing.
 	/// </summary>
-	public class SharpDXDevice : Device
+	public class SharpDXDevice : SharpDXStates, Device
 	{
 		public SharpDXDevice(Window window)
 		{
 			this.window = window;
-			width = (int)window.ViewportSize.Width;
-			height = (int)window.ViewportSize.Height;
-			DxDevice.CreateWithSwapChain(DriverType.Hardware,
-#if DEBUG
-				DeviceCreationFlags.Debug |
-#endif
-				DeviceCreationFlags.BgraSupport,
-				CreateSwapChainDescription(), out device, out swapChain);
-			direct2DFactory = new D2dFactory();
-			backBuffer = Resource.FromSwapChain<Texture2D>(swapChain, 0);
-			surface = backBuffer.QueryInterface<Surface>();
-			RenderTarget = new RenderTarget(direct2DFactory, surface, defaultRenderTargetProperties);
+			if (window.Title == "")
+				window.Title = "SharpDX Device";
+
+			DxDevice.CreateWithSwapChain(DriverType.Hardware, CreationFlags,
+				CreateSwapChainDescription(Width, Height, window.Handle), out nativeDevice, out swapChain);
 			window.ViewportSizeChanged += ResetDeviceToNewViewportSize;
-			Screen = new ScreenSpace(window.ViewportSize);
+			ResetDeviceToNewViewportSize(window.ViewportPixelSize);
 		}
 
 		private readonly Window window;
-		private int width;
-		private int height;
-		private readonly DxDevice device;
-		private Texture2D backBuffer;
-		private readonly DxSwapChain swapChain;
-		private readonly D2dFactory direct2DFactory;
-		private Surface surface;
-		internal RenderTarget RenderTarget { get; private set; }
-		private readonly RenderTargetProperties defaultRenderTargetProperties =
-			new RenderTargetProperties(new PixelFormat(Format.Unknown, AlphaMode.Premultiplied));
-
-		private SwapChainDescription CreateSwapChainDescription()
+		private int Width
 		{
-			return new SwapChainDescription
-			{
-				BufferCount = BackBufferCount,
-				ModeDescription = new ModeDescription(width, height, new Rational(60, 1), BackBufferFormat),
-				IsWindowed = true,
-				OutputHandle = window.Handle,
-				SampleDescription = new SampleDescription(1, 0),
-				SwapEffect = SwapEffect.Discard,
-				Usage = Usage.RenderTargetOutput
-			};
+			get { return (int)window.ViewportPixelSize.Width; }
 		}
-
-		private const int BackBufferCount = 1;
-		private const Format BackBufferFormat = Format.R8G8B8A8_UNorm;
+		private int Height
+		{
+			get { return (int)window.ViewportPixelSize.Height; }
+		}
+		private readonly DxDevice nativeDevice;
+		internal DxDevice NativeDevice
+		{
+			get { return nativeDevice; }
+		}
+		private readonly DxSwapChain swapChain;
 
 		private void ResetDeviceToNewViewportSize(Size newSizeInPixel)
 		{
+			ResizeBackBufferIfItExistedBefore();
+			backBuffer = Resource.FromSwapChain<Texture2D>(swapChain, 0);
+			backBufferView = new RenderTargetView(nativeDevice, backBuffer);
+			surface = backBuffer.QueryInterface<Surface>();
+			RenderTarget = new RenderTarget(d2DFactory, surface, defaultRenderTargetProperties);
+		}
+
+		private void ResizeBackBufferIfItExistedBefore()
+		{
+			if (backBuffer == null)
+				return;
+
 			backBuffer.Dispose();
+			backBufferView.Dispose();
 			surface.Dispose();
 			RenderTarget.Dispose();
-
-			width = (int)newSizeInPixel.Width;
-			height = (int)newSizeInPixel.Height;
-			swapChain.ResizeBuffers(BackBufferCount, width, height, BackBufferFormat, SwapChainFlags.None);
-			backBuffer = Resource.FromSwapChain<Texture2D>(swapChain, 0);
-			surface = backBuffer.QueryInterface<Surface>();
-			RenderTarget = new RenderTarget(direct2DFactory, surface, defaultRenderTargetProperties);
-			Screen = new ScreenSpace(newSizeInPixel);
+			swapChain.ResizeBuffers(BackBufferCount, Width, Height, BackBufferFormat, BackBufferFlags);
 		}
-		
-		public ScreenSpace Screen { get; private set; }
+
+		public DeviceContext Context
+		{
+			get { return nativeDevice.ImmediateContext; }
+		}
+		private Texture2D backBuffer;
+		private RenderTargetView backBufferView;
+		private Surface surface;
+		internal RenderTarget RenderTarget { get; private set; }
 
 		public void Run()
 		{
+			if (nativeDevice.IsDisposed)
+				return;
+
 			RenderTarget.BeginDraw();
+			Context.OutputMerger.SetTargets(backBufferView);
+			Context.Rasterizer.SetViewports(new Viewport(0, 0, Width, Height, 0.0f, 1.0f));
 			if (window.BackgroundColor.A > 0)
-				RenderTarget.Clear(new Color4(window.BackgroundColor.PackedArgb));
+				Context.ClearRenderTargetView(backBufferView, new Color4(window.BackgroundColor.PackedRgba));
+			Context.Rasterizer.State = CullClockwise(nativeDevice);
 		}
 
 		public void Present()
 		{
+			if (nativeDevice.IsDisposed)
+				return;
+
 			RenderTarget.EndDraw();
 			swapChain.Present(0, PresentFlags.None);
 		}
 
-		public void Dispose()
+		public override void Dispose()
 		{
+			base.Dispose();
 			backBuffer.Dispose();
 			swapChain.Dispose();
 			surface.Dispose();
 			RenderTarget.Dispose();
-			direct2DFactory.Dispose();
-			device.Dispose();
+			if (nativeDevice.IsDisposed == false)
+				nativeDevice.ImmediateContext.Dispose();
+
+			nativeDevice.Dispose();
+		}
+
+		public BlendState AlphaBlendState
+		{
+			get
+			{
+				return alphaBlend ??
+					(alphaBlend = new BlendState(nativeDevice, GetBlendStateDescription()));
+			}
+		}
+
+		private BlendState alphaBlend;
+
+		public void SetData<T>(Buffer buffer, T[] data, int count = 0) where T : struct
+		{
+			DataStream dataStream;
+			Context.MapSubresource(buffer, MapMode.WriteDiscard, MapFlags.None, out dataStream);
+			dataStream.WriteRange(data, 0, count == 0 ? data.Length : count);
+			Context.UnmapSubresource(buffer, 0);
 		}
 	}
 }

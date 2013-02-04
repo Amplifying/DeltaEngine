@@ -1,5 +1,8 @@
 ﻿using System;
 using DeltaEngine.Graphics.Xna;
+using DeltaEngine.Input.Windows;
+using DeltaEngine.Input.Xna;
+using DeltaEngine.Multimedia.Xna;
 using DeltaEngine.Platforms.Windows;
 
 namespace DeltaEngine.Platforms
@@ -11,15 +14,30 @@ namespace DeltaEngine.Platforms
 	{
 		public XnaResolver()
 		{
-			RegisterSingleton<XnaGame>();
 			RegisterSingleton<XnaWindow>();
+			RegisterSingleton<XnaSoundDevice>();
+			Register<XnaImage>();
 			RegisterSingleton<XnaDevice>();
+			Register<XnaSound>();
 			RegisterSingleton<XnaDrawing>();
+			RegisterSingleton<XnaMouse>();
+			RegisterSingleton<XnaKeyboard>();
+			RegisterSingleton<XnaTouch>();
+			RegisterSingleton<CursorPositionTranslater>();
+			RegisterSingleton<Input.Input>();
+			RegisterSingleton<XnaGamePad>();
 		}
 		
+		/// <summary>
+		/// Instead of starting the game normally and blocking we will delay the initialization in
+		/// XnaGame until the game class has been constructed and the graphics device is available.
+		/// </summary>
 		public override void Run(Action runCode = null)
 		{
-			Resolve<XnaGame>().Run(runCode);
+			var game = new XnaGame(this, RaiseInitializedEventOnlyOnce);
+			RegisterInstance(game);
+			Resolve<XnaDevice>();
+			game.Run(runCode);
 		}
 	}
 }

@@ -12,7 +12,8 @@
     <RootNamespace>DeltaEngine.Platforms</RootNamespace>
     <AssemblyName>DeltaEngine.WindowsOpenGL</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
@@ -61,6 +62,22 @@
     <ProjectReference Include="..\..\Graphics\OpenTK\DeltaEngine.Graphics.OpenTK.csproj">
       <Project>{EB455ABA-14F1-4145-86C1-0CA2BBCF157F}</Project>
       <Name>DeltaEngine.Graphics.OpenTK</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Input\DeltaEngine.Input.csproj">
+      <Project>{CC65E69E-FAFD-4C2B-85EB-5E57FD3AF847}</Project>
+      <Name>DeltaEngine.Input</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Input\Windows\DeltaEngine.Input.Windows.csproj">
+      <Project>{C0D2430E-714D-476C-80E7-5C80A7FA68EE}</Project>
+      <Name>DeltaEngine.Input.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Multimedia\DeltaEngine.Multimedia.csproj">
+      <Project>{6016ABB8-05F5-4A07-8FBA-16576277DDE7}</Project>
+      <Name>DeltaEngine.Multimedia</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Multimedia\OpenTK\DeltaEngine.Multimedia.OpenTK.csproj">
+      <Project>{32665d04-5a07-4f99-9e20-0639cd1c1d6d}</Project>
+      <Name>DeltaEngine.Multimedia.OpenTK</Name>
     </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Platforms.csproj">
       <Project>{bae8830e-5f62-48d6-b772-c4b1e8665fb3}</Project>

@@ -12,7 +12,8 @@
     <RootNamespace>DeltaEngine.Platforms</RootNamespace>
     <AssemblyName>DeltaEngine.WindowsDirectX</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
@@ -47,6 +48,9 @@
     <Compile Include="SharpDXResolver.cs" />
   </ItemGroup>
   <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
       <Project>{A8D386EA-D376-46EA-A721-2BA51426A721}</Project>
       <Name>DeltaEngine.Core</Name>
@@ -56,8 +60,28 @@
       <Name>DeltaEngine.Graphics</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Graphics\SharpDX\DeltaEngine.Graphics.SharpDX.csproj">
-      <Project>{9066595c-9e66-4631-a53a-28c2d22cfe53}</Project>
+      <Project>{9066595C-9E66-4631-A53A-28C2D22CFE53}</Project>
       <Name>DeltaEngine.Graphics.SharpDX</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Input\DeltaEngine.Input.csproj">
+      <Project>{CC65E69E-FAFD-4C2B-85EB-5E57FD3AF847}</Project>
+      <Name>DeltaEngine.Input</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Input\SharpDX\DeltaEngine.Input.SharpDX.csproj">
+      <Project>{9f4e86dd-9fdd-4c6b-8b28-19ed35c1d768}</Project>
+      <Name>DeltaEngine.Input.SharpDX</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Input\Windows\DeltaEngine.Input.Windows.csproj">
+      <Project>{C0D2430E-714D-476C-80E7-5C80A7FA68EE}</Project>
+      <Name>DeltaEngine.Input.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Multimedia\DeltaEngine.Multimedia.csproj">
+      <Project>{6016ABB8-05F5-4A07-8FBA-16576277DDE7}</Project>
+      <Name>DeltaEngine.Multimedia</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Multimedia\SharpDX\DeltaEngine.Multimedia.SharpDX.csproj">
+      <Project>{7D6C8627-CF35-4E3F-A3FE-1600327437C7}</Project>
+      <Name>DeltaEngine.Multimedia.SharpDX</Name>
     </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Platforms.csproj">
       <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>

@@ -1,4 +1,6 @@
 ﻿using DeltaEngine.Graphics.OpenTK;
+using DeltaEngine.Input.Windows;
+using DeltaEngine.Multimedia.OpenTK;
 using DeltaEngine.Platforms.Windows;
 
 namespace DeltaEngine.Platforms
@@ -12,6 +14,15 @@ namespace DeltaEngine.Platforms
 		{
 			RegisterSingleton<OpenTKDevice>();
 			RegisterSingleton<OpenTKDrawing>();
+			Register<OpenTKImage>();
+			RegisterSingleton<OpenTKSoundDevice>();
+			Register<OpenTKSound>();
+			RegisterSingleton<WindowsMouse>();
+			RegisterSingleton<WindowsKeyboard>();
+			RegisterSingleton<WindowsTouch>();
+			RegisterSingleton<WindowsGamePad>();
+			RegisterSingleton<Input.Input>();
+			RegisterSingleton<CursorPositionTranslater>();
 		}
 	}
 }

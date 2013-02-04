@@ -16,78 +16,123 @@ namespace DeltaEngine.Platforms
 	/// </summary>
 	public abstract class AutofacResolver : Resolver
 	{
-		public AutofacResolver Init<AppEntryRunner>()
-			where AppEntryRunner : Runner
+		public void Start<AppEntryRunner>(int instancesToCreate = 1)
 		{
-			if (!typeof(AppEntryRunner).IsInterface)
+			assemblyOfFirstNonDeltaEngineType = typeof(AppEntryRunner).Assembly;
+			if (typeof(AppEntryRunner).IsInterface || instancesToCreate > 1)
+				Register<AppEntryRunner>();
+			else
 				RegisterSingleton<AppEntryRunner>();
-			Resolve<AppEntryRunner>();
-			return this;
+
+			Initialized += () =>
+			{
+				for (int num = 0; num < instancesToCreate; num++)
+					Resolve<AppEntryRunner>();
+			};
+
+			Run();
 		}
 
-		public AutofacResolver Init<FirstClass>(Action<FirstClass> initCode)
+		private Assembly assemblyOfFirstNonDeltaEngineType;
+
+		protected event Action Initialized;
+
+		/// <summary>
+		/// Is called from Run before any instance is resolved. Override Run for different behavior.
+		/// </summary>
+		protected void RaiseInitializedEventOnlyOnce()
 		{
-			Register<FirstClass>();
-			initCode(Resolve<FirstClass>());
-			return this;
+			if (Initialized != null)
+				Initialized();
+			Initialized = null;
 		}
 
-		public AutofacResolver Init<FirstClass, SecondClass>(Action<FirstClass, SecondClass> initCode)
+		public void Start<FirstClass>(Action<FirstClass> initCode, Action runCode = null)
 		{
-			Register<FirstClass>();
-			Register<SecondClass>();
-			initCode(Resolve<FirstClass>(), Resolve<SecondClass>());
-			return this;
+			assemblyOfFirstNonDeltaEngineType = typeof(FirstClass).Assembly;
+			RegisterSingleton<FirstClass>();
+			Initialized += () => initCode(Resolve<FirstClass>());
+			Run(runCode);
 		}
 
-		public AutofacResolver Init<FirstClass, SecondClass, ThirdClass>(
-			Action<FirstClass, SecondClass, ThirdClass> initCode)
+		public void Start<FirstClass, SecondClass>(Action<FirstClass, SecondClass> initCode,
+			Action runCode = null)
 		{
-			Register<FirstClass>();
-			Register<SecondClass>();
-			Register<ThirdClass>();
-			initCode(Resolve<FirstClass>(), Resolve<SecondClass>(), Resolve<ThirdClass>());
-			return this;
+			assemblyOfFirstNonDeltaEngineType = typeof(FirstClass).Assembly;
+			RegisterSingleton<FirstClass>();
+			RegisterSingleton<SecondClass>();
+			Initialized += () => initCode(Resolve<FirstClass>(), Resolve<SecondClass>());
+			Run(runCode);
+		}
+
+		public void Start<FirstClass, SecondClass, ThirdClass>(
+			Action<FirstClass, SecondClass, ThirdClass> initCode, Action runCode = null)
+		{
+			assemblyOfFirstNonDeltaEngineType = typeof(FirstClass).Assembly;
+			RegisterSingleton<FirstClass>();
+			RegisterSingleton<SecondClass>();
+			RegisterSingleton<ThirdClass>();
+			Initialized +=
+				() => initCode(Resolve<FirstClass>(), Resolve<SecondClass>(), Resolve<ThirdClass>());
+			Run(runCode);
 		}
 
 		public virtual void Run(Action runCode = null)
 		{
+			RaiseInitializedEventOnlyOnce();
 			var window = Resolve<Window>();
 			do
-				ExecuteRunnersLoopAndPresenters(runCode);
+				ExecuteRunnersLoopAndPresenters(runCode); 
 			while (!window.IsClosing);
+		}
+
+		public void Close()
+		{
+			Resolve<Window>().Dispose();
 		}
 
 		private void ExecuteRunnersLoopAndPresenters(Action runCode)
 		{
-			foreach (Runner runner in runners)
-				runner.Run();
-
+			RunAllRunners();
 			if (runCode != null)
 				runCode();
 
-			foreach (Presenter presenter in presenters)
-				presenter.Present();
+			RunAllPresenters();
 		}
 
-		private void Register<T>()
+		public void Register<T>()
 		{
 			if (alreadyRegisteredTypes.Contains(typeof(T)))
 				return;
 
+			if (IsAlreadyInitialized)
+				throw new UnableToRegisterMoreTypesApplicationHasAlreadyStarted();
+
 			RegisterBaseTypes<T>(RegisterType(typeof(T)));
 		}
 
+		internal class UnableToRegisterMoreTypesApplicationHasAlreadyStarted : Exception {}
+
 		protected readonly List<Type> alreadyRegisteredTypes = new List<Type>();
 
-		protected void RegisterSingleton<T>()
+		public void RegisterSingleton<T>()
 		{
+			if (alreadyRegisteredTypes.Contains(typeof(T)))
+				return;
+
+			if (IsAlreadyInitialized)
+				throw new UnableToRegisterMoreTypesApplicationHasAlreadyStarted();
+
 			RegisterBaseTypes<T>(RegisterType(typeof(T)).InstancePerLifetimeScope());
 		}
 
 		private IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle>
 			RegisterType(Type t)
 		{
+			if (assemblyOfFirstNonDeltaEngineType == null &&
+				!t.Assembly.FullName.Contains("DeltaEngine."))
+				assemblyOfFirstNonDeltaEngineType = t.Assembly;
+
 			alreadyRegisteredTypes.Add(t);
 			return builder.RegisterType(t).AsSelf().OnActivating(ActivatingInstance());
 		}
@@ -115,21 +160,16 @@ namespace DeltaEngine.Platforms
 
 		private Action<IActivatingEventArgs<object>> ActivatingInstance()
 		{
-			return e => AddRunnerAndPresenter(e.Component.Services, e.Instance);
+			return e => ProcessActivatedInstance(e.Component.Services, e.Instance);
 		}
 
-		private void AddRunnerAndPresenter<T>(IEnumerable<Service> services, T instance)
+		private void ProcessActivatedInstance<T>(IEnumerable<Service> services, T instance)
 		{
-			foreach (Service service in services)
-			{
-				if (service.ToString() == typeof(Runner).ToString())
-					runners.Add(instance as Runner);
-				if (service.ToString() == typeof(Presenter).ToString())
-					presenters.Add(instance as Presenter);
-			}
+			container.InjectUnsetProperties(instance);
+			RegisterInstanceAsRunnerOrPresenterIfPossible(instance);
 			resolvedInstances.Add(instance);
 		}
-
+		
 		private readonly List<object> resolvedInstances = new List<object>();
 
 		private void RegisterBaseTypes<T>(
@@ -147,16 +187,22 @@ namespace DeltaEngine.Platforms
 			}
 		}
 
-		public BaseType Resolve<BaseType>()
+		public override BaseType Resolve<BaseType>(object customParameter = null)
 		{
+			if (IsAlreadyInitialized == false)
+				Register<BaseType>();
 			MakeSureContainerIsInitialized();
-			return (BaseType)container.Resolve(typeof(BaseType));
+			if (customParameter == null)
+				return (BaseType)container.Resolve(typeof(BaseType));
+
+			Parameter autofacParameter = new TypedParameter(customParameter.GetType(), customParameter);
+			return (BaseType)container.Resolve(typeof(BaseType), new[] { autofacParameter });
 		}
 
 		protected virtual void MakeSureContainerIsInitialized()
 		{
 			if (IsAlreadyInitialized)
-				return;
+				return; //ncrunch: no coverage
 
 			RegisterInstance(this);
 			RegisterAllTypesFromExecutable();
@@ -170,6 +216,13 @@ namespace DeltaEngine.Platforms
 
 		private IContainer container;
 
+		protected override object Resolve(Type baseType)
+		{
+			MakeSureContainerIsInitialized();
+			return container.Resolve(baseType);
+		}
+
+
 		public void RegisterAllUnknownTypesAutomatically()
 		{
 			if (IsAlreadyInitialized)
@@ -181,24 +234,32 @@ namespace DeltaEngine.Platforms
 
 		public override void Dispose()
 		{
-			container.Dispose();
+			if (IsAlreadyInitialized)
+				container.Dispose();
+
 			builder = new ContainerBuilder();
 			foreach (var instance in resolvedInstances.OfType<IDisposable>().Reverse())
 				instance.Dispose();
+			
 			base.Dispose();
 		}
 
+		//ncrunch: no coverage start
 		private void RegisterAllTypesFromExecutable()
 		{
 			var exeAssembly = Assembly.GetEntryAssembly();
 			if (exeAssembly != null)
-				//ncrunch: no coverage start
-				foreach (Type t in exeAssembly.GetTypes())
-					if (!alreadyRegisteredTypes.Contains(t) && typeof(Runner).IsAssignableFrom(t))
-						builder.RegisterType(t)
-						       .AsSelf()
-						       .OnActivating(ActivatingInstance())
-						       .InstancePerLifetimeScope();
+				RegisterAllTypesInAssembly(exeAssembly);
+			if (assemblyOfFirstNonDeltaEngineType != null && assemblyOfFirstNonDeltaEngineType != exeAssembly)
+				RegisterAllTypesInAssembly(assemblyOfFirstNonDeltaEngineType);
+		}
+
+		private void RegisterAllTypesInAssembly(Assembly exeAssembly)
+		{
+			foreach (Type t in exeAssembly.GetTypes())
+				if (!alreadyRegisteredTypes.Contains(t))
+					builder.RegisterType(t).AsSelf().OnActivating(ActivatingInstance()).
+					        InstancePerLifetimeScope();
 		}
 	}
 }

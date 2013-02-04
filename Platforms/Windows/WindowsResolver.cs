@@ -11,9 +11,21 @@ namespace DeltaEngine.Platforms.Windows
 		protected WindowsResolver()
 		{
 			RegisterSingleton<FormsWindow>();
+			RegisterSingleton<ScreenSpace>();
 			RegisterSingleton<Renderer>();
 			RegisterSingleton<StopwatchTime>();
 			RegisterSingleton<Time>();
+			RegisterSingleton<PseudoRandom>();
+			RegisterSingleton<Content>();
+		}
+
+		protected override void RegisterInstanceAsRunnerOrPresenterIfPossible(object instance)
+		{
+			var renderable = instance as Renderable;
+			if (renderable != null)
+				Resolve<Renderer>().Add(renderable);
+
+			base.RegisterInstanceAsRunnerOrPresenterIfPossible(instance);
 		}
 	}
 }

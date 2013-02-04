@@ -10,7 +10,7 @@ namespace DeltaEngine.Core
 	{
 		public static bool Contains<T>(this IEnumerable<T> array, T value)
 		{
-			return array.Any(item => item.Equals(value));
+			return array != null && array.Any(item => item.Equals(value));
 		}
 
 		public static string ToText(this IEnumerable<string> texts)

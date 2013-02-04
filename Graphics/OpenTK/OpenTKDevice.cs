@@ -1,21 +1,22 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using DeltaEngine.Platforms;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Platform;
+using Point = DeltaEngine.Datatypes.Point;
 
 namespace DeltaEngine.Graphics.OpenTK
 {
 	/// <summary>
-	/// OpenTK GL device implementation.
+	/// The OpenGL color buffer is cleared in Run and shown in Present.
 	/// </summary>
 	public sealed class OpenTKDevice : Device
 	{
 		public OpenTKDevice(Window window)
 		{
 			this.window = window;
-			window.Title = "OpenTK Device";
+			if (window.Title == "")
+				window.Title = "OpenTK Device";
 			InitGL();
 			InitializeModelViewMatrix();
 			InitializeProjectionMatrix();
@@ -23,10 +24,33 @@ namespace DeltaEngine.Graphics.OpenTK
 		}
 
 		private readonly Window window;
+
+		private void InitGL()
+		{
+			windowInfo = Utilities.CreateWindowsWindowInfo(window.Handle);
+			context = new GraphicsContext(GraphicsMode.Default, windowInfo);
+			context.MakeCurrent(windowInfo);
+			context.LoadAll();
+		}
+
 		private IWindowInfo windowInfo;
 		private GraphicsContext context;
 
-		public ScreenSpace Screen { get; private set; }
+		private static void InitializeModelViewMatrix()
+		{
+			GL.MatrixMode(MatrixMode.Modelview);
+			GL.LoadIdentity();
+		}
+
+		private void InitializeProjectionMatrix()
+		{
+			GL.MatrixMode(MatrixMode.Projection);
+			GL.LoadIdentity();
+			var width = (int)window.ViewportPixelSize.Width;
+			var height = (int)window.ViewportPixelSize.Height;
+			GL.Ortho(0, width, height, 0, -1, 1);
+			GL.Viewport(0, 0, width, height);
+		}
 
 		public void Run()
 		{
@@ -49,31 +73,6 @@ namespace DeltaEngine.Graphics.OpenTK
 			if (context != null)
 				context.Dispose();
 			context = null;
-		}
-
-		private void InitGL()
-		{
-			windowInfo = Utilities.CreateWindowsWindowInfo(window.Handle);
-			context = new GraphicsContext(GraphicsMode.Default, windowInfo);
-			context.MakeCurrent(windowInfo);
-			context.LoadAll();
-		}
-
-		private static void InitializeModelViewMatrix()
-		{
-			GL.MatrixMode(MatrixMode.Modelview);
-			GL.LoadIdentity();
-		}
-
-		private void InitializeProjectionMatrix()
-		{
-			Screen = new ScreenSpace(window.ViewportSize);
-			GL.MatrixMode(MatrixMode.Projection);
-			GL.LoadIdentity();
-			var width = (int)window.ViewportSize.Width;
-			var height = (int)window.ViewportSize.Height;
-			GL.Ortho(0, width, height, 0, -1, 1);
-			GL.Viewport(0, 0, width, height);
 		}
 	}
 }

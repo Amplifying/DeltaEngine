@@ -40,13 +40,14 @@ obj/
 _ReSharper*/
 *.resharper
 [Tt]est[Rr]esult*
+[Bb]uild[Ll]og.*
 *.sass-cache
 [Bb]uild/
 .svn
 .hg/
 NDependOut/
 Resources/
-Help/
+Help/Help
 Report/
 _UpgradeReport_Files/
 _NCrunch*/
@@ -114,3 +115,7 @@ packages/opentk*
 *.JPG
 *.xnb
 *.nuspec
+*.sln.ide
+*.lastcodeanalysissucceeded
+*.ide
+*.PNG

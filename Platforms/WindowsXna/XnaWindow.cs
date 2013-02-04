@@ -3,6 +3,7 @@ using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using Microsoft.Xna.Framework;
 using Color = DeltaEngine.Datatypes.Color;
+using Point = DeltaEngine.Datatypes.Point;
 
 namespace DeltaEngine.Platforms
 {
@@ -18,14 +19,36 @@ namespace DeltaEngine.Platforms
 			game.Window.AllowUserResizing = true;
 			game.IsMouseVisible = true;
 			game.Window.ClientSizeChanged += OnViewportSizeChanged;
+			game.Window.OrientationChanged += (sender, args) => 
+				OnOrientationChanged(GetOrientation(game.Window.CurrentOrientation));
+			game.Exiting += (sender, args) => { IsClosing = true; };
+			BackgroundColor = Color.Black;
+			closeAfterOneFrameIfInIntegrationTest = !StackTraceExtensions.ContainsNoTestOrIsVisualTest();
 		}
 
 		private readonly Game game;
+		private readonly bool closeAfterOneFrameIfInIntegrationTest;
 
 		private void OnViewportSizeChanged(object sender, EventArgs e)
 		{
 			if (ViewportSizeChanged != null)
-				ViewportSizeChanged(ViewportSize);
+				ViewportSizeChanged(ViewportPixelSize);
+		}
+
+		public void OnOrientationChanged(Orientation obj)
+		{
+			Action<Orientation> handler = OrientationChanged;
+			if (handler != null)
+				handler(obj);
+		}
+
+		private Orientation GetOrientation(DisplayOrientation xnaOrientaion)
+		{
+			if (xnaOrientaion == DisplayOrientation.LandscapeLeft ||
+				xnaOrientaion == DisplayOrientation.LandscapeRight)
+				return Orientation.Landscape;
+
+			return Orientation.Portrait;
 		}
 
 		public string Title
@@ -44,21 +67,28 @@ namespace DeltaEngine.Platforms
 			get { return game.Window.Handle; }
 		}
 
-		public Size ViewportSize
+		public Size ViewportPixelSize
 		{
 			get { return new Size(game.Window.ClientBounds.Width, game.Window.ClientBounds.Height); }
 		}
 
-		public Size TotalSize
+		public Size TotalPixelSize
 		{
 			get { return new Size(game.Window.ClientBounds.Width, game.Window.ClientBounds.Height); }
 			set
 			{
 				game.Window.BeginScreenDeviceChange(false);
-				game.Window.EndScreenDeviceChange("", (int)value.Width, (int)value.Height);
+				game.Window.EndScreenDeviceChange(game.Window.ScreenDeviceName, (int)value.Width,
+					(int)value.Height);
+				OnViewportSizeChanged(game.Window, EventArgs.Empty);
 			}
 		}
-		
+
+		public Point PixelPosition
+		{
+			get { return new Point(game.Window.ClientBounds.X, game.Window.ClientBounds.Y); }
+		}
+
 		public Color BackgroundColor { get; set; }
 
 		public bool IsFullscreen
@@ -68,16 +98,19 @@ namespace DeltaEngine.Platforms
 			{
 				game.Window.AllowUserResizing = value;
 				game.Window.BeginScreenDeviceChange(value);
-				game.Window.EndScreenDeviceChange("");
+				game.Window.EndScreenDeviceChange(game.Window.ScreenDeviceName);
 			}
 		}
 		public bool IsClosing { get; private set; }
 
 		public event Action<Size> ViewportSizeChanged;
+		public event Action<Orientation> OrientationChanged;
 
 		public void Run()
 		{
 			FrameworkDispatcher.Update();
+			if (closeAfterOneFrameIfInIntegrationTest)
+				game.Exit();
 		}
 
 		public void Dispose()

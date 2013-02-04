@@ -37,10 +37,10 @@
     <StartupObject>LogoApp.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>DeltaEngineIcon.ico</ApplicationIcon>
+    <ApplicationIcon>Icons\DeltaEngineIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="LogoGame.cs" />
+    <Compile Include="BouncingLogo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -53,13 +53,21 @@
       <Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
       <Name>DeltaEngine.Datatypes</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Graphics\DeltaEngine.Graphics.csproj">
+      <Project>{8F701B0D-48B6-45CF-85E0-286BD53328BA}</Project>
+      <Name>DeltaEngine.Graphics</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Platforms\DeltaEngine.Platforms.csproj">
       <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
       <Name>DeltaEngine.Platforms</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Platforms\WindowsOpenGL\DeltaEngine.WindowsOpenGL.csproj">
-      <Project>{CC943AE0-A1CC-4788-AC9B-01DB3A0EBCD6}</Project>
+      <Project>{cc943ae0-a1cc-4788-ac9b-01db3a0ebcd6}</Project>
       <Name>DeltaEngine.WindowsOpenGL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Platforms\Windows\DeltaEngine.Platforms.Windows.csproj">
+      <Project>{BD8A80E2-A313-437E-B0EF-FC0B066280A7}</Project>
+      <Name>DeltaEngine.Platforms.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
       <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
@@ -67,8 +75,25 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="DeltaEngineIcon.ico" />
+    <Content Include="Icons\DeltaEngineIcon.ico" />
+    <Content Include="Icons\DeltaEngineIcon150x150.png" />
+    <Content Include="Icons\DeltaEngineIcon173x173.png" />
+    <Content Include="Icons\DeltaEngineIcon30x30.png" />
+    <Content Include="Icons\DeltaEngineIcon310x150.png" />
+    <Content Include="Icons\DeltaEngineIcon64x64.png" />
+    <Content Include="Content\DeltaEngineLogo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\DeltaEngineLogo.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

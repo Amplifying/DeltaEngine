@@ -7,8 +7,5 @@ namespace DeltaEngine.Graphics
 	/// The graphics device clears everything (via Run) at the beginning of each frame and shows the
 	/// result of the render buffer on screen at the end of each frame (via Present).
 	/// </summary>
-	public interface Device : Presenter, IDisposable
-	{
-		ScreenSpace Screen { get; }
-	}
+	public interface Device : Presenter, IDisposable {}
 }

@@ -19,7 +19,7 @@ namespace DeltaEngine.Core.Tests
 		{
 			var time = new Time(new StopwatchTime());
 			time.Run();
-			Assert.AreEqual(0, time.Milliseconds);
+			Assert.IsTrue(time.Milliseconds < 2);
 		}
 
 		[Test]

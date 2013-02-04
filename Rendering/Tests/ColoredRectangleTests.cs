@@ -1,34 +1,48 @@
-﻿using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.Tests;
+﻿using System;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Platforms.Tests;
 using NUnit.Framework;
 
 namespace DeltaEngine.Rendering.Tests
 {
-	public class ColoredRectangleTests
+	public class ColoredRectangleTests : TestStarter
 	{
-		private static readonly Rectangle HalfScreenRect = new Rectangle(Point.Zero, Size.Half);
+		[VisualTest]
+		public void CreateFromRectangle(Type resolver)
+		{
+			var halfScreenRect = new Rectangle(Point.Zero, Size.Half);
+			ColoredRectangle box = null;
+			Start(resolver, (Renderer r) => r.Add(box = new ColoredRectangle(halfScreenRect, Color.Red)),
+				() => Assert.AreEqual(Color.Red, box.Color));
+		}
 
-		[Test]
-		public void CreateAndDispose()
+		[VisualTest]
+		public void CreateFromPointAndSize(Type resolver)
 		{
 			ColoredRectangle box = null;
-			TestAppOnce.Start((Renderer r) => box = new ColoredRectangle(r, HalfScreenRect, Color.Red));
-			Assert.AreEqual(Color.Red, box.Color);
-			box.Dispose();
+			Start(resolver,
+				(Renderer r) => r.Add(box = new ColoredRectangle(Point.Half, Size.Half, Color.Red)),
+				() => Assert.AreEqual(Color.Red, box.Color));
 		}
 
-		//ncrunch: no coverage start
-		[Test, Category("Slow")]
-		public void Draw()
+		[VisualTest]
+		public void AdddingBoxTwiceWillOnlyDisplayItOnce(Type resolver)
 		{
-			App.Start((Renderer r) => new ColoredRectangle(r, HalfScreenRect, Color.Red));
+			ColoredRectangle box = null;
+			Start(resolver, (Renderer r) =>
+			{
+				box = new ColoredRectangle(Point.Half, Size.Half, Color.Yellow);
+				r.Add(box);
+				box.DrawArea.Center = new Point(0.6f, 0.6f);
+				box.Color = Color.Teal;
+				r.Add(box);
+			}, () => Assert.AreEqual(Color.Teal, box.Color));
 		}
 
-		[Test, Ignore]
-		public void Show()
+		[VisualTest]
+		public void DrawWithRunnerClass(Type resolver)
 		{
-			Draw();
+			Start<BlinkingBox>(resolver);
 		}
 	}
 }

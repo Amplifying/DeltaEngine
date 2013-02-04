@@ -1,25 +1,43 @@
 ﻿using System;
+using DeltaEngine.Core;
 
 namespace DeltaEngine.Rendering
 {
 	/// <summary>
-	/// Renders anything automatically until disposed. Used in Drawing and many Rendering classes.
+	/// Renders anything automatically when added to renderer until it is removed again via Dispose.
 	/// </summary>
 	public abstract class Renderable : IDisposable
 	{
-		protected Renderable(Renderer renderer)
+		protected Renderable()
 		{
-			this.renderer = renderer;
-			renderer.Add(this);
+			IsVisible = true;
+			id = maxId++;
+			RenderLayer = DefaultRenderLayer;
 		}
 
-		protected readonly Renderer renderer;
-
-		public void Dispose()
+		private readonly int id;
+		private static int maxId;
+		public bool IsVisible { get; set; }
+		public byte RenderLayer { get; set; }
+		public const byte BackgroundRenderLayer = 16;
+		public const byte DefaultRenderLayer = 64;
+		public int SortKey
 		{
-			renderer.Remove(this);
+			get { return (RenderLayer << 20) | id; }
+		}
+		protected abstract void Render(Renderer renderer, Time time);
+
+		internal void InternalRender(Renderer renderer, Time time)
+		{
+			Render(renderer, time);
 		}
 
-		protected internal abstract void Render();
+		public virtual void Dispose()
+		{
+			IsVisible = false;
+			markForDisposal = true;
+		}
+
+		internal bool markForDisposal;
 	}
 }

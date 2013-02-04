@@ -34,5 +34,23 @@ namespace DeltaEngine.Core
 			return ex is ArgumentNullException || ex is NullReferenceException ||
 				ex is ArgumentException || ex is IndexOutOfRangeException;
 		}
+
+		public static bool IsDebugModeAndNoDebuggerAttached
+		{
+#if DEBUG
+			get { return !Debugger.IsAttached; }
+#else
+			get { return false; }
+#endif
+		}
+
+		public static bool IsReleaseMode
+		{
+#if DEBUG
+			get { return false; }
+#else
+			get { return true; }
+#endif
+		}
 	}
 }

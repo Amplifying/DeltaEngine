@@ -12,7 +12,8 @@
     <RootNamespace>DeltaEngine.Platforms</RootNamespace>
     <AssemblyName>DeltaEngine.WindowsXna</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
@@ -41,6 +42,7 @@
   <ItemGroup>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
@@ -66,6 +68,26 @@
     <ProjectReference Include="..\..\Graphics\Xna\DeltaEngine.Graphics.Xna.csproj">
       <Project>{CC533B9B-FC08-411A-B02D-9BB0E2DD90EC}</Project>
       <Name>DeltaEngine.Graphics.Xna</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Input\DeltaEngine.Input.csproj">
+      <Project>{cc65e69e-fafd-4c2b-85eb-5e57fd3af847}</Project>
+      <Name>DeltaEngine.Input</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Input\Windows\DeltaEngine.Input.Windows.csproj">
+      <Project>{C0D2430E-714D-476C-80E7-5C80A7FA68EE}</Project>
+      <Name>DeltaEngine.Input.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Input\Xna\DeltaEngine.Input.Xna.csproj">
+      <Project>{5D28C1B5-43AD-4E69-840D-B068C3844589}</Project>
+      <Name>DeltaEngine.Input.Xna</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Multimedia\DeltaEngine.Multimedia.csproj">
+      <Project>{6016ABB8-05F5-4A07-8FBA-16576277DDE7}</Project>
+      <Name>DeltaEngine.Multimedia</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Multimedia\Xna\DeltaEngine.Multimedia.Xna.csproj">
+      <Project>{70773E53-5D8E-4218-8AFA-0A07E48FD4A2}</Project>
+      <Name>DeltaEngine.Multimedia.Xna</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
       <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>

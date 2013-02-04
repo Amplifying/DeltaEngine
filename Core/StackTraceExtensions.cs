@@ -20,20 +20,42 @@ namespace DeltaEngine.Core
 			return frames.Any(frame => frame.GetMethod().Name == "Main");
 		}
 
-		private static bool HasNoTestOrIsVisualTest(StackFrame[] frames)
+		private static bool HasNoTestOrIsVisualTest(IEnumerable<StackFrame> frames)
 		{
-			return !frames.Any(IsTestMethod) || frames.Any(IsVisualTestMethod);
+			return !frames.Any(IsTestMethod) || InVisualTestCase;
 		}
 
 		private static bool IsTestMethod(StackFrame frame)
 		{
-			return frame.HasAttribute("NUnit.Framework.TestAttribute");
+			return frame.HasAttribute(TestAttribute) && !frame.HasAttribute(IgnoreAttribute) ||
+				frame.HasAttribute(TestCaseAttribute) || frame.HasAttribute(IntegrationTestAttribute) ||
+				StartedFromNCrunch && frame.HasAttribute(VisualTestAttribute);
 		}
 
-		private static bool IsVisualTestMethod(StackFrame frame)
+		public static bool StartedFromNCrunch { get; set; }
+
+		const string TestAttribute = "NUnit.Framework.TestAttribute";
+		const string IgnoreAttribute = "NUnit.Framework.IgnoreAttribute";
+		const string TestCaseAttribute = "NUnit.Framework.TestCaseAttribute";
+		const string IntegrationTestAttribute = "DeltaEngine.Platforms.Tests.IntegrationTestAttribute";
+		const string VisualTestAttribute = "DeltaEngine.Platforms.Tests.VisualTestAttribute";
+
+		/// <summary>
+		/// Since we cannot access NUnit.Framework.TestCaseAttribute here, inject it from TestStarter.
+		/// </summary>
+		public static bool InVisualTestCase
 		{
-			return frame.HasAttribute("NUnit.Framework.IgnoreAttribute");
+			private get
+			{
+				if (inTestCaseWithIgnore == false)
+					return false;
+				inTestCaseWithIgnore = false;
+				return true;
+			}
+			set { inTestCaseWithIgnore = value; }
 		}
+
+		private static bool inTestCaseWithIgnore;
 
 		public static bool HasAttribute(this StackFrame frame, string name)
 		{
@@ -44,16 +66,16 @@ namespace DeltaEngine.Core
 		public static bool ContainsUnitTest()
 		{
 			StackFrame[] frames = new StackTrace().GetFrames();
-			return frames != null && frames.Any(IsTest);
+			return frames != null && frames.Any(IsTestWithoutCategory);
 		}
 
-		private static bool IsTest(this StackFrame frame)
+		private static bool IsTestWithoutCategory(this StackFrame frame)
 		{
-			return frame.HasAttribute("NUnit.Framework.TestAttribute") &&
-				!frame.HasAttribute("NUnit.Framework.CategoryAttribute") &&
-				!frame.HasAttribute("NUnit.Framework.IgnoreAttribute");
+			return frame.HasAttribute(TestAttribute) && !frame.HasAttribute(CategoryAttribute);
 		}
 
+		const string CategoryAttribute = "NUnit.Framework.CategoryAttribute";
+		
 		/// <summary>
 		/// Get entry name from stack frame, which is either the namespace name where the main method
 		/// is located or if we are started from a test, the name of the test method.
@@ -63,17 +85,22 @@ namespace DeltaEngine.Core
 			StackFrame[] frames = new StackTrace().GetFrames();
 			Debug.Assert(frames != null);
 
+			var testName = GetTestMethodName(frames);
+			if (testName != "")
+				return testName;
+
 			foreach (StackFrame frame in frames.Where(frame => frame.GetMethod().Name == "Main"))
 				return GetNamespaceName(frame);
 
-			return GetTestMethodName(frames);
+			return "Delta Engine"; //ncrunch: no coverage
 		}
 
 		public static string GetTestMethodName(this IEnumerable<StackFrame> frames)
 		{
-			const string TestAttribute = "NUnit.Framework.TestAttribute";
-			foreach (StackFrame frame in frames.Where(frame => frame.HasAttribute(TestAttribute)))
-				return frame.GetMethod().Name;
+			foreach (StackFrame frame in frames)
+				if (frame.HasAttribute(TestAttribute) || frame.HasAttribute(TestCaseAttribute) ||
+					frame.HasAttribute(VisualTestAttribute) || frame.HasAttribute(IntegrationTestAttribute))
+					return frame.GetMethod().Name;
 			return "";
 		}
 

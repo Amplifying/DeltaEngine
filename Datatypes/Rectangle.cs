@@ -107,6 +107,11 @@ namespace DeltaEngine.Datatypes
 			}
 		}
 
+		public static Rectangle FromCenter(float x, float y, float width, float height)
+		{
+			return FromCenter(new Point(x, y), new Size(width, height));
+		}
+
 		public static Rectangle FromCenter(Point center, Size size)
 		{
 			return new Rectangle(new Point(center.X - size.Width / 2, center.Y - size.Height / 2), size);
@@ -147,6 +152,29 @@ namespace DeltaEngine.Datatypes
 		{
 			return Left.ToInvariantString() + " " + Top.ToInvariantString() + " " +
 				Width.ToInvariantString() + " " + Height.ToInvariantString();
+		}
+
+		public float Aspect
+		{
+			get { return Width / Height; }
+		}
+
+		public Rectangle Reduce(Size size)
+		{
+			return new Rectangle(Left + size.Width / 2, Top + size.Height / 2, Width - size.Width,
+				Height - size.Height);
+		}
+
+		public Rectangle GetInnerRectangle(Rectangle relativeRectangle)
+		{
+			return new Rectangle(Left + Width * relativeRectangle.Left,
+				Top + Height * relativeRectangle.Top, Width * relativeRectangle.Width,
+				Height * relativeRectangle.Height);
+		}
+
+		public Rectangle Move(Point translation)
+		{
+			return new Rectangle(Left + translation.X, Top + translation.Y, Width, Height);
 		}
 	}
 }

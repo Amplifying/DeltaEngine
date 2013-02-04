@@ -1,13 +1,18 @@
 ﻿using System;
+using System.Diagnostics;
 using DeltaEngine.Core;
 
 namespace DeltaEngine.Datatypes
 {
 	/// <summary>
-	/// Struct used to hold the width and height of an object (eg. a rectangle)
+	/// Holds the width and height of an object (e.g. a rectangle)
 	/// </summary>
-	public struct Size
+	[DebuggerDisplay("Size({Width}, {Height})")]
+	public struct Size : IEquatable<Size>
 	{
+		public Size(float widthAndHeight)
+			: this(widthAndHeight, widthAndHeight) { }
+
 		public Size(float width, float height)
 			: this()
 		{
@@ -18,12 +23,12 @@ namespace DeltaEngine.Datatypes
 		public Size(string sizeAsString)
 			: this()
 		{
-			float[] floats = sizeAsString.SplitIntoFloats();
-			if (floats.Length != 2)
+			float[] components = sizeAsString.SplitIntoFloats();
+			if (components.Length != 2)
 				throw new InvalidNumberOfComponents();
 
-			Width = floats[0];
-			Height = floats[1];
+			Width = components[0];
+			Height = components[1];
 		}
 
 		public float Width { get; set; }
@@ -80,7 +85,7 @@ namespace DeltaEngine.Datatypes
 			return new Size(s1.Width - s2.Width, s1.Height - s2.Height);
 		}
 
-		private bool Equals(Size other)
+		public bool Equals(Size other)
 		{
 			return Width.IsNearlyEqual(other.Width) && Height.IsNearlyEqual(other.Height);
 		}

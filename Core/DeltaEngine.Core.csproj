@@ -12,7 +12,8 @@
     <RootNamespace>DeltaEngine.Core</RootNamespace>
     <AssemblyName>DeltaEngine.Core</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
@@ -43,8 +44,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArrayExtensions.cs" />
-    <Compile Include="AssemblyUpdater.cs" />
+    <Compile Include="ContentData.cs" />
+    <Compile Include="Content.cs" />
+    <Compile Include="EnumExtensions.cs" />
     <Compile Include="PseudoRandom.cs" />
+    <Compile Include="Randomizer.cs" />
     <Compile Include="StopwatchTime.cs" />
     <Compile Include="ElapsedTime.cs" />
     <Compile Include="StackTraceExtensions.cs" />

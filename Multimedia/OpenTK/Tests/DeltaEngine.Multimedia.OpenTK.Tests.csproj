@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2B875402-D1E1-4578-AC75-42552A19DCC9}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DeltaEngine.Multimedia.OpenTK.Tests</RootNamespace>
+    <AssemblyName>DeltaEngine.Multimedia.OpenTK.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nunit.framework, Version=2.6.0.12051, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\NUnit.2.6.1\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\opentk_unoffical.1.1.788.3121\lib\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="IeeeFloatConverterTests.cs" />
+    <Compile Include="MsAdpcmConverterTests.cs" />
+    <Compile Include="OggInputStreamTests.cs" />
+    <Compile Include="OggMusicDataTests.cs" />
+    <Compile Include="OpenTKSoundInstanceTests.cs" />
+    <Compile Include="OpenTKAudioContextTests.cs" />
+    <Compile Include="OpenTKMusicTests.cs" />
+    <Compile Include="OpenTKSoundTests.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WaveSoundDataTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Core\DeltaEngine.Core.csproj">
+      <Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
+      <Name>DeltaEngine.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Platforms\DeltaEngine.Platforms.csproj">
+      <Project>{bae8830e-5f62-48d6-b772-c4b1e8665fb3}</Project>
+      <Name>DeltaEngine.Platforms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Platforms\WindowsOpenGL\DeltaEngine.WindowsOpenGL.csproj">
+      <Project>{cc943ae0-a1cc-4788-ac9b-01db3a0ebcd6}</Project>
+      <Name>DeltaEngine.WindowsOpenGL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DeltaEngine.Multimedia.csproj">
+      <Project>{6016abb8-05f5-4a07-8fba-16576277dde7}</Project>
+      <Name>DeltaEngine.Multimedia</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\OggStreamingUtils\OggStreamingUtils.csproj">
+      <Project>{fb38fc65-478a-4e1d-a067-545131c456ca}</Project>
+      <Name>OggStreamingUtils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DeltaEngine.Multimedia.OpenTK.csproj">
+      <Project>{32665d04-5a07-4f99-9e20-0639cd1c1d6d}</Project>
+      <Name>DeltaEngine.Multimedia.OpenTK</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy /y "$(SolutionDir)packages\OpenTKWithOpenAL.1.1.804.3121\NativeBinaries\x86\OpenAL32.dll" "$(TargetDir)OpenAL32.dll"
+copy /y "$(SolutionDir)packages\OpenTKWithOpenAL.1.1.804.3121\NativeBinaries\x86\wrap_oal.dll" "$(TargetDir)wrap_oal.dll"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

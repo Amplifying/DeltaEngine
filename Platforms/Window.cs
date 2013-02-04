@@ -12,9 +12,11 @@ namespace DeltaEngine.Platforms
 		string Title { get; set; }
 		bool IsVisible { get; }
 		IntPtr Handle { get; }
-		Size ViewportSize { get; }
+		Size ViewportPixelSize { get; }
 		event Action<Size> ViewportSizeChanged;
-		Size TotalSize { get; set; }
+		event Action<Orientation> OrientationChanged;
+		Size TotalPixelSize { get; set; }
+		Point PixelPosition { get; }
 		Color BackgroundColor { get; set; }
 		bool IsFullscreen { get; set; }
 		bool IsClosing { get; }

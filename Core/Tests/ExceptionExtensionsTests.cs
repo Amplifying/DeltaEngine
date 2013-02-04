@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Diagnostics;
+using NUnit.Framework;
 using System;
 using System.Reflection;
 
@@ -51,6 +52,24 @@ namespace DeltaEngine.Core.Tests
 				// This will fail if debugger is attached, but that is expected
 				Assert.IsTrue(ex.IsWeak());
 			}
+		}
+
+		[Test]
+		public void CheckIfDebugModeAndNoDebuggerAttached()
+		{
+#if DEBUG
+			Assert.AreEqual(!Debugger.IsAttached, ExceptionExtensions.IsDebugModeAndNoDebuggerAttached);
+#endif
+		}
+
+		[Test]
+		public void CheckIfReleaseMode()
+		{
+#if RELEASE
+			Assert.IsTrue(ExceptionExtensions.IsReleaseMode);
+#else
+			Assert.IsFalse(ExceptionExtensions.IsReleaseMode);
+#endif
 		}
 	}
 }

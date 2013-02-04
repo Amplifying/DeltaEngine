@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Threading;
 using DeltaEngine.Core;
-using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
 using NUnit.Framework;
 
 namespace DeltaEngine.Platforms.Tests
 {
-	public class AppTests
+	public class AppTests : TestStarter
 	{
-		[Test]
-		public void StartWithRunner()
+		[IntegrationTest]
+		public void StartWithRunner(Type resolver)
 		{
-			TestAppOnce.Start<DummyRunner>();
+			Start<DummyRunner>(resolver);
 		}
 
 		private class DummyRunner : Runner, IDisposable
@@ -26,36 +24,47 @@ namespace DeltaEngine.Platforms.Tests
 			public void Run() {}
 			public void Present() {}
 		}
-
+		
 		[Test]
 		public void StartWithOneClass()
 		{
-			TestAppOnce.Start((DummyRunner dummy) => {}, () => {});
+			Start(typeof(TestResolver), (DummyRunner dummy) => {}, () => {});
 		}
-
+		
 		[Test]
 		public void StartWithTwoClasses()
 		{
-			TestAppOnce.Start((DummyRunner dummy1, DummyPresenter dummy2) => { });
+			Start(typeof(TestResolver), (DummyRunner dummy1, DummyPresenter dummy2) => { });
 		}
 
 		[Test]
 		public void StartWithThreeClasses()
 		{
-			TestAppOnce.Start((DummyRunner dummy1, DummyRunner dummy2, DummyRunner dummy3) => {});
+			Start(typeof(TestResolver),
+				(DummyRunner dummy1, DummyRunner dummy2, DummyRunner dummy3) => { });
 		}
 
 		[Test]
 		public void StartTwice()
 		{
-			TestAppOnce.Start<DummyRunner>();
-			TestAppOnce.Start<DummyRunner>();
+			Start<DummyRunner>(typeof(TestResolver));
+			Start<DummyRunner>(typeof(TestResolver));
+		}
+
+		[Test]
+		public void RegisterTwice()
+		{
+			using (var resolver = new TestResolver())
+			{
+				resolver.Start<DummyRunner>();
+				resolver.Start<DummyRunner>();
+			}
 		}
 
 		[Test]
 		public void RegisterUnknownClassToMakeResolveSucceed()
 		{
-			TestAppOnce.Start((ClassWithInnerClass.UnknownInnerClass dummy) => {});
+			Start(typeof(TestResolver), (ClassWithInnerClass.UnknownInnerClass dummy) => {});
 		}
 
 		private class ClassWithInnerClass
@@ -74,11 +83,30 @@ namespace DeltaEngine.Platforms.Tests
 			using (var resolver = new TestResolver())
 			{
 				resolver.RegisterAllUnknownTypesAutomatically();
-				resolver.Init<DummyRunner>();
+				resolver.Start<DummyRunner>();
 				Assert.Throws<AutofacResolver.RegisterCallsMustBeBeforeInit>(
 					resolver.RegisterAllUnknownTypesAutomatically);
 				resolver.Resolve<ClassWithInnerClass.UnknownInnerClass>();
 			}
+		}
+
+		[Test]
+		public void ResolveWithCustomParameter()
+		{
+			var resolver = new TestResolver();
+			resolver.RegisterAllUnknownTypesAutomatically();
+			var runner = resolver.Resolve<CustomRunner>("test");
+			runner.Run();
+		}
+
+		private class CustomRunner : Runner
+		{
+			public CustomRunner(string name)
+			{
+				Assert.IsNotNullOrEmpty(name);
+			}
+
+			public void Run() { }
 		}
 
 		[Test]
@@ -87,21 +115,16 @@ namespace DeltaEngine.Platforms.Tests
 			Assert.IsNotNull(new DummyRunner());
 			Assert.IsNotNull(new DummyPresenter());
 			Assert.IsNotNull(new ClassWithInnerClass(new ClassWithInnerClass.UnknownInnerClass()));
+			Assert.IsNotNull(new CustomRunner("test"));
+		}
+
+		[TestCase(typeof(OpenTKResolver), Category = "Visual")]
+		public void TestVisualCategoryInTestStarter(Type resolver)
+		{
+			Start(resolver, (Window w) => { });
 		}
 
 		//ncrunch: no coverage start
-		[Test, Category("Slow")]
-		public void CreateWindowAndDevice()
-		{
-			TestAppOnce.Start((Window window, Device device) => Assert.IsTrue(window.IsVisible));
-		}
-		
-		[Test, Category("Slow")]
-		public void ResizeWindow()
-		{
-			TestAppOnce.Start((Window window) => window.TotalSize = new Size(800, 600));
-		}
-
 		/// <summary>
 		/// Only warns in Debug mode if Category("Slow") is NOT used! A single test might take 30-70ms
 		/// (assembly loading), but if you run more tests it will take 11ms as specified.
@@ -109,7 +132,7 @@ namespace DeltaEngine.Platforms.Tests
 		[Test, Category("Slow")]
 		public void WarnIfTestRunsTooLong()
 		{
-			TestAppOnce.Start((DummyRunner dummy) => Thread.Sleep(11));
+			Start(typeof(TestResolver), (DummyRunner dummy) => Thread.Sleep(11));
 		}
 	}
 }

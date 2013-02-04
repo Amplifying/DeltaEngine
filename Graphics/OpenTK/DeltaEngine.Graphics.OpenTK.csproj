@@ -42,6 +42,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OpenTKImage.cs" />
     <Compile Include="OpenTKDevice.cs" />
     <Compile Include="OpenTKDrawing.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

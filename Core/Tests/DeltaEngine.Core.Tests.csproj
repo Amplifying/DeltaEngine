@@ -7,7 +7,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8ED0A7F1-77FB-47E7-AB6C-59C711BA3A9A}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DeltaEngine.Core.Tests</RootNamespace>
     <AssemblyName>DeltaEngine.Core.Tests</AssemblyName>
@@ -52,13 +52,15 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SimulatedAppTests.cs" />
     <Compile Include="ArrayExtensionsTests.cs" />
-    <Compile Include="AssemblyUpdaterTests.cs" />
+    <Compile Include="ContentLoaderTests.cs" />
+    <Compile Include="GenericRunnerTests.cs" />
+    <Compile Include="EnumExtensionTests.cs" />
     <Compile Include="PseudoRandomTests.cs" />
     <Compile Include="ResolverTests.cs" />
     <Compile Include="StackTraceExtensionsTests.cs" />
     <Compile Include="MockElapsedTime.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="ThreadExtensionTests.cs" />
     <Compile Include="TimeTests.cs" />
     <Compile Include="ExceptionExtensionsTests.cs" />

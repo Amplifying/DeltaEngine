@@ -45,7 +45,9 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LogoGameTests.cs" />
+    <Compile Include="BouncingLogoWithFriction.cs" />
+    <Compile Include="BouncingLogoTests.cs" />
+    <Compile Include="BouncingLogoWithGravity.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -57,13 +59,25 @@
       <Project>{A8D386EA-D376-46EA-A721-2BA51426A721}</Project>
       <Name>DeltaEngine.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Datatypes\DeltaEngine.Datatypes.csproj">
+      <Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
+      <Name>DeltaEngine.Datatypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Input\DeltaEngine.Input.csproj">
+      <Project>{CC65E69E-FAFD-4C2B-85EB-5E57FD3AF847}</Project>
+      <Name>DeltaEngine.Input</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Platforms\DeltaEngine.Platforms.csproj">
+      <Project>{bae8830e-5f62-48d6-b772-c4b1e8665fb3}</Project>
+      <Name>DeltaEngine.Platforms</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Platforms\Tests\DeltaEngine.Platforms.Tests.csproj">
       <Project>{D0AAD622-ED82-40E5-88A9-980EAFC12C16}</Project>
       <Name>DeltaEngine.Platforms.Tests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Platforms\WindowsOpenGL\DeltaEngine.WindowsOpenGL.csproj">
-      <Project>{CC943AE0-A1CC-4788-AC9B-01DB3A0EBCD6}</Project>
-      <Name>DeltaEngine.WindowsOpenGL</Name>
+    <ProjectReference Include="..\..\..\Rendering\DeltaEngine.Rendering.csproj">
+      <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
+      <Name>DeltaEngine.Rendering</Name>
     </ProjectReference>
     <ProjectReference Include="..\LogoApp.csproj">
       <Project>{B94B117E-1A32-40C6-A93D-FD7012ED8D12}</Project>

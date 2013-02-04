@@ -56,8 +56,8 @@ namespace DeltaEngine.Core.Tests
 		[Test]
 		public void SplitIntoFloats()
 		{
-			var stringFloats = new[]
-			{ "1.0", "2.0", "0511.580254", Math.PI.ToString(CultureInfo.InvariantCulture) };
+			var stringFloats = new[] { "1.0", "2.0", "0511.580254",
+				Math.PI.ToString(CultureInfo.InvariantCulture) };
 			var expectedFloats = new[] { 1.0f, 2.0f, 511.580261f, 3.14159274f };
 			float[] floats = stringFloats.SplitIntoFloats();
 			CollectionAssert.AreEqual(expectedFloats, floats);

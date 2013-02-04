@@ -1,6 +1,6 @@
 namespace DeltaEngine.Core.Tests
 {
-	public class MockElapsedTime : ElapsedTime
+	internal class MockElapsedTime : ElapsedTime
 	{
 		public long GetTicks()
 		{

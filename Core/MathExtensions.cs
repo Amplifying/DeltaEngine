@@ -14,9 +14,9 @@ namespace DeltaEngine.Core
 			return Math.Abs(value);
 		}
 
-		public static bool IsNearlyEqual(this float value1, float value2)
+		public static bool IsNearlyEqual(this float value1, float value2, float difference = Epsilon)
 		{
-			return (value1 - value2).Abs() < Epsilon;
+			return (value1 - value2).Abs() < difference;
 		}
 
 		private const float Epsilon = 0.0001f;
@@ -31,14 +31,24 @@ namespace DeltaEngine.Core
 			return (float)Math.Round(value, decimals);
 		}
 
-		public static float Sin(float degreeValue)
+		public static float Sin(float degrees)
 		{
-			return (float)Math.Sin(degreeValue * Pi / 180.0f);
+			return (float)Math.Sin(degrees * Pi / 180.0f);
 		}
 
-		public static float Cos(float degreeValue)
+		public static float Cos(float degrees)
 		{
-			return (float)Math.Cos(degreeValue * Pi / 180.0f);
+			return (float)Math.Cos(degrees * Pi / 180.0f);
+		}
+
+		public static float Atan2(float y, float x)
+		{
+			return (float)Math.Atan2(y, x) * 180 / Pi;
+		}
+
+		public static float Clamp(this float value, float min, float max)
+		{
+			return value > max ? max : (value < min ? min : value);
 		}
 
 		public static float Lerp(float value1, float value2, float percentage)
@@ -49,6 +59,26 @@ namespace DeltaEngine.Core
 				percentage = 1;
 
 			return value1 * (1 - percentage) + value2 * percentage;
+		}
+
+		public static float RadiansToDegrees(this float radians)
+		{
+			return (radians * 180.0f) / Pi;
+		}
+
+		public static float DegreesToRadians(this float degrees)
+		{
+			return (degrees * Pi) / 180.0f;
+		}
+
+		public static float Max(float value1, float value2)
+		{
+			return value1 > value2 ? value1 : value2;
+		}
+
+		public static float Min(float value1, float value2)
+		{
+			return value1 < value2 ? value1 : value2;
 		}
 	}
 }

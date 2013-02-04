@@ -3,6 +3,8 @@ using System.Drawing;
 using System.Windows.Forms;
 using DeltaEngine.Core;
 using Color = DeltaEngine.Datatypes.Color;
+using Size = DeltaEngine.Datatypes.Size;
+using Point = DeltaEngine.Datatypes.Point;
 
 namespace DeltaEngine.Platforms.Windows
 {
@@ -13,13 +15,15 @@ namespace DeltaEngine.Platforms.Windows
 	{
 		public FormsWindow()
 		{
-			form = new Form
+			form = new NativeMessageForm
 			{
 				Text = StackTraceExtensions.GetEntryName(),
-				Size = new Size(800, 600),
+				Size = new System.Drawing.Size(800, 600),
+				MinimumSize = new System.Drawing.Size(1, 1),
 				FormBorderStyle = FormBorderStyle.Sizable,
 				StartPosition = FormStartPosition.CenterScreen
 			};
+			BackgroundColor = Color.Black;
 			Icon appIcon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
 			if (appIcon != null)
 				form.Icon = appIcon;
@@ -28,13 +32,47 @@ namespace DeltaEngine.Platforms.Windows
 			closeAfterOneFrameIfInIntegrationTest = !StackTraceExtensions.ContainsNoTestOrIsVisualTest();
 		}
 
+		public class NativeMessageForm : Form
+		{
+			protected override void WndProc(ref Message m)
+			{
+				if (NativeEvent != null)
+					NativeEvent(ref m);
+
+				base.WndProc(ref m);
+			}
+
+			public event NativeMessageDelegate NativeEvent;
+		}
+
 		private readonly Form form;
 		private readonly bool closeAfterOneFrameIfInIntegrationTest;
+
+		public event NativeMessageDelegate NativeEvent
+		{
+			add
+			{
+				var nativeMessageForm = form as NativeMessageForm;
+				if (nativeMessageForm != null)
+					nativeMessageForm.NativeEvent += value;
+			}
+			remove
+			{
+				var nativeMessageForm = form as NativeMessageForm;
+				if (nativeMessageForm != null)
+					nativeMessageForm.NativeEvent -= value;
+			}
+		}
+
+		public delegate void NativeMessageDelegate(ref Message m);
 
 		private void OnSizeChanged(object sender, EventArgs e)
 		{
 			if (ViewportSizeChanged != null)
-				ViewportSizeChanged(ViewportSize);
+				ViewportSizeChanged(ViewportPixelSize);
+			if (OrientationChanged != null)
+				OrientationChanged(ViewportPixelSize.Width > ViewportPixelSize.Height
+					? Orientation.Landscape : Orientation.Portrait);
 		}
 
 		public string Title
@@ -50,18 +88,24 @@ namespace DeltaEngine.Platforms.Windows
 
 		public IntPtr Handle
 		{
-			get { return form.Handle; }
+			get { return form.IsDisposed ? IntPtr.Zero : form.Handle; }
 		}
 
-		public Datatypes.Size ViewportSize
+		public Size ViewportPixelSize
 		{
-			get { return new Datatypes.Size(form.ClientSize.Width, form.ClientSize.Height); }
+			get { return new Size(form.ClientSize.Width, form.ClientSize.Height); }
 		}
 
-		public Datatypes.Size TotalSize
+		public Size TotalPixelSize
 		{
-			get { return new Datatypes.Size(form.Width, form.Height); }
-			set { form.Size = new Size((int)value.Width, (int)value.Height); }
+			get { return new Size(form.Width, form.Height); }
+			set { form.Size = new System.Drawing.Size((int)value.Width, (int)value.Height); }
+		}
+
+
+		public Point PixelPosition
+		{
+			get { return new Point(form.Location.X, form.Location.Y); }
 		}
 
 		public Color BackgroundColor
@@ -84,7 +128,7 @@ namespace DeltaEngine.Platforms.Windows
 				isFullscreen = value;
 				form.TopMost = true;
 				form.StartPosition = FormStartPosition.Manual;
-				form.DesktopLocation = new Point(0, 0);
+				form.DesktopLocation = new System.Drawing.Point(0, 0);
 			}
 		}
 		private bool isFullscreen;
@@ -94,7 +138,8 @@ namespace DeltaEngine.Platforms.Windows
 			get { return form.Disposing || form.IsDisposed; }
 		}
 
-		public event Action<Datatypes.Size> ViewportSizeChanged;
+		public event Action<Size> ViewportSizeChanged;
+		public event Action<Orientation> OrientationChanged;
 
 		public void Run()
 		{
