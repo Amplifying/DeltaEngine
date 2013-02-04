@@ -61,7 +61,7 @@ _NCrunch*/
 packages/opentk*
 
 # Disallow all binary and content files, they come from the Content System (see wiki)
-*.png
+#allow for Milestone 2: *.png
 *.bmp
 *.jpg
 *.jpeg
@@ -81,7 +81,7 @@ packages/opentk*
 *.max
 *.3ds
 *.mp3
-*.wav
+#allow for Milestone 2: *.wav
 *.avi
 *.ttf
 *.font
@@ -113,9 +113,9 @@ packages/opentk*
 *.xslt
 *.swf
 *.JPG
-*.xnb
+#allow for Milestone 2: *.xnb
 *.nuspec
 *.sln.ide
 *.lastcodeanalysissucceeded
 *.ide
-*.PNG
+#allow for Milestone 2: *.PNG
