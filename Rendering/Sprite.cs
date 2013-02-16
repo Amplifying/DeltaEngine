@@ -19,7 +19,7 @@ namespace DeltaEngine.Rendering
 		public Sprite(Image image, Rectangle initalDrawArea)
 			: this(image, initalDrawArea, Color.White) {}
 
-		private readonly Image image;
+		protected Image image;
 		public Rectangle DrawArea;
 		public Color Color;
 		public float Rotation;

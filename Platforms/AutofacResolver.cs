@@ -160,10 +160,10 @@ namespace DeltaEngine.Platforms
 
 		private Action<IActivatingEventArgs<object>> ActivatingInstance()
 		{
-			return e => ProcessActivatedInstance(e.Component.Services, e.Instance);
+			return e => ProcessActivatedInstance(e.Instance);
 		}
 
-		private void ProcessActivatedInstance<T>(IEnumerable<Service> services, T instance)
+		private void ProcessActivatedInstance<T>(T instance)
 		{
 			container.InjectUnsetProperties(instance);
 			RegisterInstanceAsRunnerOrPresenterIfPossible(instance);

@@ -46,9 +46,11 @@
     <Compile Include="ArrayExtensions.cs" />
     <Compile Include="ContentData.cs" />
     <Compile Include="Content.cs" />
+    <Compile Include="FixedRandom.cs" />
     <Compile Include="EnumExtensions.cs" />
     <Compile Include="PseudoRandom.cs" />
     <Compile Include="Randomizer.cs" />
+    <Compile Include="FastTrig.cs" />
     <Compile Include="StopwatchTime.cs" />
     <Compile Include="ElapsedTime.cs" />
     <Compile Include="StackTraceExtensions.cs" />

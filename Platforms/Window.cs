@@ -20,5 +20,6 @@ namespace DeltaEngine.Platforms
 		Color BackgroundColor { get; set; }
 		bool IsFullscreen { get; set; }
 		bool IsClosing { get; }
+		bool ShowCursor { get; set; }
 	}
 }

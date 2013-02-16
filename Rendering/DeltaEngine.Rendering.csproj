@@ -43,7 +43,11 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Circle.cs" />
+    <Compile Include="ColoredCircle.cs" />
+    <Compile Include="ColoredEllipse.cs" />
     <Compile Include="ColoredRectangle.cs" />
+    <Compile Include="Ellipse.cs" />
     <Compile Include="FadeoutEffect.cs" />
     <Compile Include="FlipMode.cs" />
     <Compile Include="Sprite.cs" />
@@ -52,6 +56,7 @@
     <Compile Include="Renderable.cs" />
     <Compile Include="Renderer.cs" />
     <Compile Include="ScreenSpace.cs" />
+    <Compile Include="VectorText.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\DeltaEngine.Core.csproj">

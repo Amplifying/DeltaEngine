@@ -6,16 +6,16 @@ namespace Breakout.Tests
 {
 	public class TestBall : Ball
 	{
-		public TestBall(Paddle paddle, Content content, Input input)
-			: base(paddle, content, input) { }
+		public TestBall(Paddle paddle, Content content, InputCommands inputCommands)
+			: base(paddle, content, inputCommands) { }
 
-		public Point Velocity
+		public Point CurrentVelocity
 		{
 			get { return velocity; }
 			set { velocity = value; }
 		}
 
-		public bool IsOnPaddle
+		public bool IsCurrentlyOnPaddle
 		{
 			get { return isOnPaddle; }
 		}

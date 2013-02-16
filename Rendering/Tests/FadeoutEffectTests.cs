@@ -21,6 +21,17 @@ namespace DeltaEngine.Rendering.Tests
 		}
 
 		[Test]
+		public void CreateFadeoutEffectFromDrawArea()
+		{
+			var resolver = new TestResolver();
+			var content = resolver.Resolve<Content>();
+			var effect = new FadeoutEffect(content.Load<Image>("test"), Rectangle.One);
+			Assert.IsTrue(effect.IsVisible);
+			Assert.AreEqual(Point.Half, effect.DrawArea.Center);
+			Assert.AreEqual(Color.White, effect.Color);
+		}
+
+		[Test]
 		public void EmulateRunFadeoutEffectForOneSecondToFadeoutAndBeRemoved()
 		{
 			var resolver = new TestResolver();

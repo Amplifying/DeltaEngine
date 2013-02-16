@@ -17,7 +17,7 @@
 		public ContentType Load<ContentType>(string contentName)
 			where ContentType : ContentData
 		{
-			// Caching and contentName to filename resolving is coming soon in Milestone 3.
+			//TODO: caching and contentName to filename resolving, remove this from each implementation
 			return resolver.Resolve<ContentType>(contentName);
 		}
 	}

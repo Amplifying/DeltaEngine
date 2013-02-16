@@ -30,8 +30,5 @@
     <NamedTestSelector>
       <TestName>DeltaEngine.Core.Tests.StackTraceExtensionsTests.TestCaseHasSlowCategoryAttribute</TestName>
     </NamedTestSelector>
-    <NamedTestSelector>
-      <TestName>DeltaEngine.Core.Tests.TimeTests.CalculateFpsWithStopwatch</TestName>
-    </NamedTestSelector>
   </IgnoredTests>
 </ProjectConfiguration>

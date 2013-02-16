@@ -64,7 +64,7 @@ namespace DeltaEngine.Input.Tests
 		[VisualTest]
 		public void DisplayCurrentStateWithTwoFps(Type resolver)
 		{
-			Start(resolver, (Window window) => { }, (Window window, Input input) =>
+			Start(resolver, (Window window) => { }, (Window window, InputCommands input) =>
 			{
 				window.Title = "MouseLeft: " + input.mouse.GetButtonState(MouseButton.Left);
 				Thread.Sleep(500);
@@ -74,7 +74,7 @@ namespace DeltaEngine.Input.Tests
 		[VisualTest]
 		public void CountPressingAndReleasing(Type resolver)
 		{
-			Start(resolver, (Window window, Input input) =>
+			Start(resolver, (Window window, InputCommands input) =>
 			{
 				int pressed = 0;
 				int released = 0;

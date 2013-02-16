@@ -18,7 +18,7 @@ namespace DeltaEngine.Platforms.Windows
 			form = new NativeMessageForm
 			{
 				Text = StackTraceExtensions.GetEntryName(),
-				Size = new System.Drawing.Size(800, 600),
+				Size = new System.Drawing.Size(1024, 640),
 				MinimumSize = new System.Drawing.Size(1, 1),
 				FormBorderStyle = FormBorderStyle.Sizable,
 				StartPosition = FormStartPosition.CenterScreen
@@ -137,6 +137,23 @@ namespace DeltaEngine.Platforms.Windows
 		{
 			get { return form.Disposing || form.IsDisposed; }
 		}
+
+		public bool ShowCursor
+		{
+			get { return !remDisabledShowCursor; }
+			set
+			{
+				if (remDisabledShowCursor != value)
+					return;
+
+				remDisabledShowCursor = !value;
+				if (remDisabledShowCursor)
+					Cursor.Hide();
+				else
+					Cursor.Show();
+			}
+		}
+		private bool remDisabledShowCursor;
 
 		public event Action<Size> ViewportSizeChanged;
 		public event Action<Orientation> OrientationChanged;

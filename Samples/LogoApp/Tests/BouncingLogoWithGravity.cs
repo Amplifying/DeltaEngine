@@ -11,12 +11,12 @@ namespace LogoApp.Tests
 	/// </summary>
 	public class BouncingLogoWithGravity : BouncingLogoWithFriction
 	{
-		public BouncingLogoWithGravity(Content content, Randomizer random, Input input)
+		public BouncingLogoWithGravity(Content content, Randomizer random, InputCommands inputCommands)
 			: base(content, random)
 		{
-			input.Add(Key.Space, () => Reset(random));
-			input.Add(MouseButton.Left, mouse => Reset(random));
-			input.Add(touch => Reset(random));
+			inputCommands.Add(Key.Space, () => Reset(random));
+			inputCommands.Add(MouseButton.Left, mouse => Reset(random));
+			inputCommands.Add((Touch touch) => Reset(random));
 		}
 
 		private void Reset(Randomizer random)

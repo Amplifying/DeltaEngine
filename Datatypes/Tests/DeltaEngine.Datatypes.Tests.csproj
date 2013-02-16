@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ColorTests.cs" />
+    <Compile Include="Triangle2DTests.cs" />
     <Compile Include="VectorTests.cs" />
     <Compile Include="PointTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

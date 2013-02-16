@@ -1,5 +1,4 @@
-﻿using DeltaEngine.Input.Devices;
-using DeltaEngine.Input.Triggers;
+﻿using DeltaEngine.Input.Triggers;
 
 namespace DeltaEngine.Input.Tests
 {
@@ -19,6 +18,16 @@ namespace DeltaEngine.Input.Tests
 		{
 			foreach (MouseButtonTrigger trigger in attachedTriggers)
 				if (trigger != null && trigger.Button == mouseButton)
+				{
+					Invoke(trigger);
+					return;
+				}
+		}
+
+		public void SimulateMovement()
+		{
+			foreach (MouseMovementTrigger trigger in attachedTriggers)
+				if (trigger != null)
 				{
 					Invoke(trigger);
 					return;

@@ -15,6 +15,12 @@ namespace DeltaEngine.Rendering
 			this.timeout = timeout;
 		}
 
+		public FadeoutEffect(Image image, Rectangle drawArea, float timeout = 1.0f)
+			: base(image, drawArea)
+		{
+			this.timeout = timeout;
+		}
+
 		private readonly float timeout;
 		private float elapsed;
 

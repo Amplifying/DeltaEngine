@@ -14,7 +14,7 @@ namespace DeltaEngine.Input.Tests
 		[IntegrationTest]
 		public void AddAndRemoveTrigger(Type resolver)
 		{
-			Start(resolver, (Input input) =>
+			Start(resolver, (InputCommands input) =>
 			{
 				var command = new MockCommand();
 				var trigger = new MouseButtonTrigger(MouseButton.Left, State.Releasing);
@@ -28,7 +28,7 @@ namespace DeltaEngine.Input.Tests
 		[IntegrationTest]
 		public void SimulateMouseClick(Type resolver)
 		{
-			Start(resolver, (Input input) =>
+			Start(resolver, (InputCommands input) =>
 			{
 				var command = new MockCommand();
 				command.Add(new MouseButtonTrigger(MouseButton.Left, State.Releasing));
@@ -38,9 +38,21 @@ namespace DeltaEngine.Input.Tests
 		}
 
 		[IntegrationTest]
+		public void SimulateMouseMovement(Type resolver)
+		{
+			Start(resolver, (InputCommands input) =>
+			{
+				var command = new MockCommand();
+				command.Add(new MouseMovementTrigger());
+				command.SimulateMovement();
+				Assert.IsTrue(command.TriggerFired);
+			});
+		}
+
+		[IntegrationTest]
 		public void SimulateKeyPress(Type resolver)
 		{
-			Start(resolver, (Input input) =>
+			Start(resolver, (InputCommands input) =>
 			{
 				var command = new MockCommand();
 				command.Add(new KeyTrigger(Key.A, State.Pressed));
@@ -52,7 +64,7 @@ namespace DeltaEngine.Input.Tests
 		[IntegrationTest]
 		public void Run(Type resolver)
 		{
-			Start(resolver, (Input input) =>
+			Start(resolver, (InputCommands input) =>
 			{
 				var command = new MockCommand();
 				command.Add(new KeyTrigger(Key.Y, State.Releasing));
@@ -63,7 +75,7 @@ namespace DeltaEngine.Input.Tests
 		[IntegrationTest]
 		public void ConditionMatched(Type resolver)
 		{
-			Start(resolver, (Input input) =>
+			Start(resolver, (InputCommands input) =>
 			{
 				var command = new MockCommand();
 				command.Add(new KeyTrigger(Key.Y, State.Released));
@@ -86,7 +98,7 @@ namespace DeltaEngine.Input.Tests
 			pressCommand.Add(pressTrigger);
 			releaseCommand.Add(releaseTrigger);
 
-			Start(resolver, (Renderer renderer, Input input) =>
+			Start(resolver, (Renderer renderer, InputCommands input) =>
 			{
 				rectangle = new ColoredRectangle(Point.Zero, new Size(0.1f, 0.1f), Color.Red);
 				renderer.Add(rectangle);

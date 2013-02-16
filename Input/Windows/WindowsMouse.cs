@@ -23,7 +23,10 @@ namespace DeltaEngine.Input.Windows
 			hook.Dispose();
 		}
 
-		public bool IsAvailable { get { return true; } }
+		public bool IsAvailable
+		{
+			get { return true; }
+		}
 		public Point Position { get; private set; }
 		public int ScrollWheelValue { get; private set; }
 		public State LeftButton { get; private set; }

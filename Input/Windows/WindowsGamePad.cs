@@ -1,5 +1,4 @@
-﻿using System;
-using DeltaEngine.Datatypes;
+﻿using DeltaEngine.Datatypes;
 using DeltaEngine.Input.Devices;
 
 namespace DeltaEngine.Input.Windows
@@ -7,7 +6,7 @@ namespace DeltaEngine.Input.Windows
 	/// <summary>
 	/// Native Windows implementation of the Touch interface.
 	/// </summary>
-	public class WindowsGamePad : GamePad, IDisposable
+	public class WindowsGamePad : GamePad
 	{
 		public void Run() {}
 

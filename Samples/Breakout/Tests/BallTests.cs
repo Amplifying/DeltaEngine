@@ -42,7 +42,7 @@ namespace Breakout.Tests
 			var initialBallPosition = new Point(0.5f, 0.76f);
 			Assert.AreEqual(initialBallPosition, ball.Position);
 			resolver.SetKeyboardState(Key.Space, State.Pressing);
-			resolver.AdvanceTimeAndExecuteRunners(1.0f);
+			resolver.AdvanceTimeAndExecuteRunners(0.1f);
 			Assert.AreNotEqual(initialBallPosition, ball.Position);
 		}
 
@@ -54,7 +54,7 @@ namespace Breakout.Tests
 			resolver.SetKeyboardState(Key.Space, State.Pressing);
 			resolver.SetKeyboardState(Key.CursorRight, State.Pressing);
 			ball.DrawArea.Center = new Point(0.1f, 0.2f);
-			resolver.AdvanceTimeAndExecuteRunners(100.0f);
+			resolver.AdvanceTimeAndExecuteRunners(0.1f);
 			Assert.AreNotEqual(0.5f, ball.Position.X);
 		}
 
@@ -79,11 +79,11 @@ namespace Breakout.Tests
 		public void BounceOnRightSideToMoveLeft()
 		{
 			TestBall ball = CreateTestBall();
-			ball.Velocity = new Point(0.5f, 0f);
-			Assert.AreEqual(new Point(0.5f, 0f), ball.Velocity);
+			ball.CurrentVelocity = new Point(0.5f, 0f);
+			Assert.AreEqual(new Point(0.5f, 0f), ball.CurrentVelocity);
 			ball.SetPosition(new Point(1, 0.5f));
 			RunBallOneFrame();
-			Assert.AreEqual(new Point(-0.5f, 0f), ball.Velocity);
+			Assert.AreEqual(new Point(-0.5f, 0f), ball.CurrentVelocity);
 		}
 
 		private TestBall CreateTestBall()
@@ -104,32 +104,32 @@ namespace Breakout.Tests
 		public void BounceOnLeftSideToMoveRight()
 		{
 			TestBall ball = CreateTestBall();
-			ball.Velocity = new Point(0.5f, 0.1f);
+			ball.CurrentVelocity = new Point(0.5f, 0.1f);
 			ball.SetPosition(new Point(0, 0.5f));
 			RunBallOneFrame();
-			Assert.AreEqual(new Point(0.5f, 0.1f), ball.Velocity);
+			Assert.AreEqual(new Point(0.5f, 0.1f), ball.CurrentVelocity);
 		}
 
 		[Test]
 		public void BounceOnTopSideToMoveDown()
 		{
 			TestBall ball = CreateTestBall();
-			ball.Velocity = new Point(-0.5f, -0.5f);
+			ball.CurrentVelocity = new Point(-0.5f, -0.5f);
 			ball.SetPosition(new Point(0.5f, 0));
 			RunBallOneFrame();
-			Assert.AreEqual(new Point(-0.5f, 0.5f), ball.Velocity);
+			Assert.AreEqual(new Point(-0.5f, 0.5f), ball.CurrentVelocity);
 		}
 
 		[Test]
 		public void BounceOnBottomSideToLoseBall()
 		{
 			TestBall ball = CreateTestBall();
-			ball.Velocity = new Point(-0.5f, -0.5f);
+			ball.CurrentVelocity = new Point(-0.5f, -0.5f);
 			ball.SetPosition(new Point(0.5f, 1.0f));
-			Assert.IsFalse(ball.IsOnPaddle);
+			Assert.IsFalse(ball.IsCurrentlyOnPaddle);
 			RunBallOneFrame();
-			Assert.IsTrue(ball.IsOnPaddle);
-			Assert.AreEqual(Point.Zero, ball.Velocity);
+			Assert.IsTrue(ball.IsCurrentlyOnPaddle);
+			Assert.AreEqual(Point.Zero, ball.CurrentVelocity);
 		}
 
 		[Test]
@@ -137,12 +137,12 @@ namespace Breakout.Tests
 		{
 			TestBall ball = CreateTestBall();
 			RunBallOneFrame();
-			ball.Velocity = new Point(0f, 0.1f);
+			ball.CurrentVelocity = new Point(0f, 0.1f);
 			var paddle = ballResolver.Resolve<Paddle>();
 			ball.SetPosition(paddle.Position);
-			Assert.IsFalse(ball.IsOnPaddle);
+			Assert.IsFalse(ball.IsCurrentlyOnPaddle);
 			RunBallOneFrame();
-			Assert.AreEqual(new Point(0f, -0.1015f), ball.Velocity);
+			Assert.AreEqual(new Point(0f, -0.1015f), ball.CurrentVelocity);
 		}
 
 		[Test]
@@ -151,10 +151,10 @@ namespace Breakout.Tests
 			TestBall ball = CreateTestBall();
 			ballResolver.SetKeyboardState(Key.Space, State.Pressing);
 			RunBallOneFrame();
-			Point velocity = ball.Velocity;
+			Point velocity = ball.CurrentVelocity;
 			ballResolver.SetKeyboardState(Key.Space, State.Pressing);
 			RunBallOneFrame();
-			Assert.AreEqual(velocity, ball.Velocity);
+			Assert.AreEqual(velocity, ball.CurrentVelocity);
 		}
 
 		[Test]

@@ -36,12 +36,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Multimedia", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Multimedia.SharpDX", "..\..\Multimedia\SharpDX\DeltaEngine.Multimedia.SharpDX.csproj", "{7D6C8627-CF35-4E3F-A3FE-1600327437C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.WindowsOpenGL", "..\..\Platforms\WindowsOpenGL\DeltaEngine.WindowsOpenGL.csproj", "{CC943AE0-A1CC-4788-AC9B-01DB3A0EBCD6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Graphics.OpenTK", "..\..\Graphics\OpenTK\DeltaEngine.Graphics.OpenTK.csproj", "{EB455ABA-14F1-4145-86C1-0CA2BBCF157F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Multimedia.OpenTK", "..\..\Multimedia\OpenTK\DeltaEngine.Multimedia.OpenTK.csproj", "{32665D04-5A07-4F99-9E20-0639CD1C1D6D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,18 +98,6 @@ Global
 		{7D6C8627-CF35-4E3F-A3FE-1600327437C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D6C8627-CF35-4E3F-A3FE-1600327437C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D6C8627-CF35-4E3F-A3FE-1600327437C7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CC943AE0-A1CC-4788-AC9B-01DB3A0EBCD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CC943AE0-A1CC-4788-AC9B-01DB3A0EBCD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CC943AE0-A1CC-4788-AC9B-01DB3A0EBCD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CC943AE0-A1CC-4788-AC9B-01DB3A0EBCD6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EB455ABA-14F1-4145-86C1-0CA2BBCF157F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EB455ABA-14F1-4145-86C1-0CA2BBCF157F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EB455ABA-14F1-4145-86C1-0CA2BBCF157F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EB455ABA-14F1-4145-86C1-0CA2BBCF157F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{32665D04-5A07-4F99-9E20-0639CD1C1D6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{32665D04-5A07-4F99-9E20-0639CD1C1D6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{32665D04-5A07-4F99-9E20-0639CD1C1D6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{32665D04-5A07-4F99-9E20-0639CD1C1D6D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

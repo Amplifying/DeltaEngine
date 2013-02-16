@@ -51,10 +51,6 @@
       <Project>{460983FF-AA91-4E10-B70E-10D0BDA15A58}</Project>
       <Name>DeltaEngine.Datatypes</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Platforms\DeltaEngine.Platforms.csproj">
-      <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
-      <Name>DeltaEngine.Platforms</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -1,13 +1,12 @@
 ﻿using System;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Input.Devices;
 using DeltaEngine.Platforms;
 using DeltaEngine.Platforms.Tests;
 using NUnit.Framework;
 
 namespace DeltaEngine.Rendering.Tests
 {
-	public class ScreenSpaceTests : TestStarter
+	public class ScreenSpaceTests
 	{
 		public ScreenSpaceTests()
 		{
@@ -147,35 +146,6 @@ namespace DeltaEngine.Rendering.Tests
 			screen.ViewportSizeChanged += checkSize;
 			window.TotalPixelSize = new Size(800, 800);
 			screen.ViewportSizeChanged -= checkSize;
-		}
-
-		[IntegrationTest]
-		public void TestDrawArea(Type type)
-		{
-			var rect = new ColoredRectangle(new Point(0.7f, 0.7f), new Size(0.1f, 0.1f), Color.Red);
-			Start(type, (Renderer testRenderer) => testRenderer.Add(rect),
-				(Window testWindow, ScreenSpace screen) =>
-				{
-					testWindow.TotalPixelSize = new Size(480, 800);
-					var quadSize = screen.ToQuadraticSpace(new Size(480, 800));
-					Assert.AreEqual(new Size(0.6f, 1), quadSize);
-				});
-		}
-
-		[VisualTest]
-		public void ChangeOrientaion(Type type)
-		{
-			var center = Point.Half;
-			var size = new Size(0.9f, 0.9f);
-			Start(type, (Window windowToOrient, Input.Input input, Renderer renderer) =>
-			{
-				var rect = new ColoredRectangle(center, size, Color.Red);
-				var line = new Line2D(Point.Zero, Point.One, Color.Yellow);
-				renderer.Add(rect);
-				renderer.Add(line);
-				input.Add(Key.A, () => { windowToOrient.TotalPixelSize = new Size(800, 480); });
-				input.Add(Key.B, () => { windowToOrient.TotalPixelSize = new Size(480, 800); });
-			});
 		}
 	}
 }

@@ -27,7 +27,7 @@ namespace DeltaEngine.Rendering
 
 		public void Run(Time time)
 		{
-			List<Renderable> objectsToRender = new List<Renderable>();
+			var objectsToRender = new List<Renderable>();
 			foreach (var renderObject in visibles)
 				if (renderObject.Value.IsVisible)
 					objectsToRender.Add(renderObject.Value);
@@ -40,7 +40,7 @@ namespace DeltaEngine.Rendering
 
 		private void RemoveDisposedObjects()
 		{
-			List<Renderable> objectsToRemove = new List<Renderable>();
+			var objectsToRemove = new List<Renderable>();
 			foreach (var renderObject in visibles)
 				if (renderObject.Value.markForDisposal)
 					objectsToRemove.Add(renderObject.Value);
@@ -90,6 +90,21 @@ namespace DeltaEngine.Rendering
 					new VertexPositionColor(screen.ToPixelSpaceRounded(endPosition), color)
 				});
 		}
+
+		public void DrawTriangle(Triangle2D triangle, Color color)
+		{
+			draw.DisableTexturing();
+			draw.SetIndices(TriangleIndices, TriangleIndices.Length);
+			var vertices = new[]
+			{
+				new VertexPositionColor(screen.ToPixelSpaceRounded(triangle.Corner1), color),
+				new VertexPositionColor(screen.ToPixelSpaceRounded(triangle.Corner2), color),
+				new VertexPositionColor(screen.ToPixelSpaceRounded(triangle.Corner3), color)
+			};
+			draw.DrawVertices(VerticesMode.Triangles, vertices);
+		}
+
+		private static readonly short[] TriangleIndices = new short[] { 0, 1, 2 };
 
 		public void DrawRectangle(Rectangle rect, Color color)
 		{

@@ -4,6 +4,7 @@ using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
 using DeltaEngine.Input.Devices;
 using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Rendering;
 using NUnit.Framework;
 
 namespace Breakout.Tests
@@ -57,10 +58,10 @@ namespace Breakout.Tests
 
 		public class BallWithGravity : BallInLevel
 		{
-			public BallWithGravity(Paddle paddle, Content content, Input input, Level level)
-				: base(paddle, content, input, level) {}
+			public BallWithGravity(Paddle paddle, Content content, InputCommands inputCommands, Level level)
+				: base(paddle, content, inputCommands, level) {}
 
-			protected override void Render(DeltaEngine.Rendering.Renderer renderer, Time time)
+			protected override void Render(Renderer renderer, Time time)
 			{
 				var gravity = new Point(0.0f, 9.81f);
 				velocity += gravity * 0.15f * time.CurrentDelta;

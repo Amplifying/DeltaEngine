@@ -62,6 +62,7 @@ Samples\Blocks\Blocks.csproj:Program.cs
 Samples\Blocks\Tests\Blocks.Tests.csproj:Program.cs
 Samples\Breakout\Breakout.csproj:Program.cs
 Samples\Breakout\Tests\Breakout.Tests.csproj:Program.cs
+Samples\GameOfDeath\GameOfDeath.csproj:Program.cs
 Samples\LogoApp\LogoApp.csproj:Image.cs
 Samples\LogoApp\LogoApp.csproj:Program.cs
 Samples\LogoApp\Tests\LogoApp.Tests.csproj:LogoGameTestsVisual.cs

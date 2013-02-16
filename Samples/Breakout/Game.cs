@@ -1,6 +1,5 @@
 ﻿using DeltaEngine.Core;
 using DeltaEngine.Input;
-using DeltaEngine.Input.Devices;
 using DeltaEngine.Platforms;
 using DeltaEngine.Rendering;
 
@@ -11,13 +10,14 @@ namespace Breakout
 	/// </summary>
 	public class Game : Runner<Time>
 	{
-		public Game(Background bg, BallInLevel ball, Score score, Input input, Window window)
+		public Game(Background bg, BallInLevel ball, Score score, InputCommands inputCommands,
+			Window window)
 		{
 			bg.RenderLayer = Renderable.BackgroundRenderLayer;
 			this.ball = ball;
 			this.score = score;
 			this.window = window;
-			input.Add(Key.Escape, window.Dispose);
+			inputCommands.Add(Key.Escape, window.Dispose);
 		}
 
 		private readonly BallInLevel ball;

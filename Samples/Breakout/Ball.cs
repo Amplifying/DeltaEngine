@@ -14,14 +14,14 @@ namespace Breakout
 	/// </summary>
 	public class Ball : Sprite
 	{
-		public Ball(Paddle paddle, Content content, Input input)
+		public Ball(Paddle paddle, Content content, InputCommands inputCommands)
 			: base(content.Load<Image>("Ball"), Rectangle.Zero)
 		{
 			this.paddle = paddle;
 			UpdateOnPaddle();
 			fireBallSound = content.Load<Sound>("PaddleBallStart");
 			collisionSound = content.Load<Sound>("BallCollision");
-			RegisterFireBallCommand(input);
+			RegisterFireBallCommand(inputCommands);
 		}
 
 		protected readonly Paddle paddle;
@@ -43,12 +43,12 @@ namespace Breakout
 		protected bool isOnPaddle;
 		protected Point velocity;
 
-		private void RegisterFireBallCommand(Input input)
+		private void RegisterFireBallCommand(InputCommands inputCommands)
 		{
-			input.Add(Key.Space, State.Pressing, () => FireBallFromPaddle());
-			input.Add(MouseButton.Left, State.Pressing, mouse => FireBallFromPaddle());
-			input.Add(touch => FireBallFromPaddle());
-			input.Add(GamePadButton.A, State.Pressing, () => FireBallFromPaddle());
+			inputCommands.Add(Key.Space, State.Pressing, () => FireBallFromPaddle());
+			inputCommands.Add(MouseButton.Left, State.Pressing, mouse => FireBallFromPaddle());
+			inputCommands.Add((Touch touch) => FireBallFromPaddle());
+			inputCommands.Add(GamePadButton.A, State.Pressing, () => FireBallFromPaddle());
 		}
 
 		private void FireBallFromPaddle()

@@ -111,6 +111,13 @@ namespace DeltaEngine.Datatypes.Tests
 		}
 
 		[Test]
+		public void DivideSizeBySize()
+		{
+			Size divide = new Size(4, 5) / new Size(2, 2);
+			Assert.AreEqual(new Size(2.0f, 2.5f), divide);
+		}
+
+		[Test]
 		public void ExplicitCastFromPoint()
 		{
 			var p = new Point(1, 2);

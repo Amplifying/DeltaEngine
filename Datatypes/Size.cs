@@ -75,6 +75,11 @@ namespace DeltaEngine.Datatypes
 			return new Size(f / s.Width, f / s.Height);
 		}
 
+		public static Size operator /(Size s1, Size s2)
+		{
+			return new Size(s1.Width / s2.Width, s1.Height / s2.Height);
+		}
+
 		public static Size operator +(Size s1, Size s2)
 		{
 			return new Size(s1.Width + s2.Width, s1.Height + s2.Height);

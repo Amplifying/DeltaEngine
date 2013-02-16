@@ -17,9 +17,4 @@
   <UseBuildPlatform></UseBuildPlatform>
   <ProxyProcessPath></ProxyProcessPath>
   <UseCPUArchitecture>AutoDetect</UseCPUArchitecture>
-  <IgnoredTests>
-    <NamedTestSelector>
-      <TestName>DeltaEngine.Platforms.Tests.AppTests.WarnIfTestRunsTooLong</TestName>
-    </NamedTestSelector>
-  </IgnoredTests>
 </ProjectConfiguration>

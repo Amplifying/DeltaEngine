@@ -27,7 +27,7 @@ namespace DeltaEngine.Input.Windows
 			SetCursorPos(newScreenPosition.X, newScreenPosition.Y);
 		}
 
-		private static SysPoint ToSysPoint(Point position)
+		private SysPoint ToSysPoint(Point position)
 		{
 			return new SysPoint((int)Math.Round(position.X), (int)Math.Round(position.Y));
 		}
@@ -42,7 +42,7 @@ namespace DeltaEngine.Input.Windows
 			return FromSysPoint(newScreenPosition);
 		}
 
-		private static Point FromSysPoint(SysPoint newPosition)
+		private Point FromSysPoint(SysPoint newPosition)
 		{
 			return new Point(newPosition.X, newPosition.Y);
 		}

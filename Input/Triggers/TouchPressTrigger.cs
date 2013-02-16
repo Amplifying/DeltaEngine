@@ -14,9 +14,9 @@ namespace DeltaEngine.Input.Triggers
 
 		private readonly State state;
 
-		public override bool ConditionMatched(Input input)
+		public override bool ConditionMatched(InputCommands inputCommands)
 		{
-			return input.touch.GetState(0) == state;
+			return inputCommands.touch.GetState(0) == state;
 		}
 	}
 }

@@ -49,6 +49,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OrientationTest.cs" />
     <Compile Include="TimeTests.cs" />
     <Compile Include="IntegrationTestAttribute.cs" />
     <Compile Include="Program.cs" />
@@ -79,10 +80,6 @@
     <ProjectReference Include="..\..\Input\DeltaEngine.Input.csproj">
       <Project>{cc65e69e-fafd-4c2b-85eb-5e57fd3af847}</Project>
       <Name>DeltaEngine.Input</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Input\Windows\DeltaEngine.Input.Windows.csproj">
-      <Project>{C0D2430E-714D-476C-80E7-5C80A7FA68EE}</Project>
-      <Name>DeltaEngine.Input.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Multimedia\DeltaEngine.Multimedia.csproj">
       <Project>{6016ABB8-05F5-4A07-8FBA-16576277DDE7}</Project>

@@ -1,4 +1,5 @@
 ﻿using DeltaEngine.Core;
+using DeltaEngine.Input;
 using DeltaEngine.Rendering;
 
 namespace DeltaEngine.Platforms.Windows
@@ -17,6 +18,7 @@ namespace DeltaEngine.Platforms.Windows
 			RegisterSingleton<Time>();
 			RegisterSingleton<PseudoRandom>();
 			RegisterSingleton<Content>();
+			RegisterSingleton<InputCommands>();
 		}
 
 		protected override void RegisterInstanceAsRunnerOrPresenterIfPossible(object instance)

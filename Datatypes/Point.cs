@@ -135,5 +135,42 @@ namespace DeltaEngine.Datatypes
 			if (box.Bottom >= borders.Bottom)
 				Y = -Y.Abs();
 		}
+
+		public static Point Lerp(Point point1, Point point2, float percentage)
+		{
+			float x = MathExtensions.Lerp(point1.X, point2.X, percentage);
+			float y = MathExtensions.Lerp(point1.Y, point2.Y, percentage);
+			return new Point(x, y);
+		}
+
+		public void RotateAround(Point center, float angleInDegrees, FastTrig fastTrig = null)
+		{
+			float rotationSin = fastTrig != null
+				? fastTrig.Sin(angleInDegrees) : MathExtensions.Sin(angleInDegrees);
+
+			float rotationCos = fastTrig != null
+				? fastTrig.Cos(angleInDegrees) : MathExtensions.Cos(angleInDegrees);
+
+			RotateAround(center, rotationSin, rotationCos);
+		}
+
+		public void RotateAround(Point center, float rotationSin, float rotationCos)
+		{
+			var translatedPoint = this - center;
+			X = center.X + translatedPoint.X * rotationCos - translatedPoint.Y * rotationSin;
+			Y = center.Y + translatedPoint.X * rotationSin + translatedPoint.Y * rotationCos;
+		}
+
+		public void Normalize()
+		{
+			var length = (float)Math.Sqrt(X * X + Y * Y);
+			X /= length;
+			Y /= length;
+		}
+
+		public float DotProduct(Point point)
+		{
+			return X * point.X + Y * point.Y;
+		}
 	}
 }

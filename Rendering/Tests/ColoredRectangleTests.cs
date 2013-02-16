@@ -44,5 +44,16 @@ namespace DeltaEngine.Rendering.Tests
 		{
 			Start<BlinkingBox>(resolver);
 		}
+
+		[VisualTest]
+		public void DrawTwoBoxes(Type resolver)
+		{
+			Start(resolver,
+				(Renderer r) =>
+				{ 
+					r.Add(new ColoredRectangle(new Point(0.4f, 0.4f), Size.Half, Color.Yellow));
+					r.Add(new ColoredRectangle(new Point(0.5f, 0.6f), Size.Half, Color.Blue));
+				});
+		}
 	}
 }

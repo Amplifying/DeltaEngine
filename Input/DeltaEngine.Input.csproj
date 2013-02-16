@@ -42,7 +42,8 @@
     <Compile Include="GamePadButton.cs" />
     <Compile Include="Devices\InputDevice.cs" />
     <Compile Include="Devices\GamePad.cs" />
-    <Compile Include="Input.cs" />
+    <Compile Include="InputCommands.cs" />
+    <Compile Include="Triggers\MouseMovementTrigger.cs" />
     <Compile Include="Triggers\TouchPressTrigger.cs" />
     <Compile Include="Triggers\GamePadButtonTrigger.cs" />
     <Compile Include="Triggers\KeyTrigger.cs" />

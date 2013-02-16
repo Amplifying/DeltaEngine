@@ -10,7 +10,7 @@ namespace DeltaEngine.Input.Windows
 	/// <summary>
 	/// Native Windows implementation of the Touch interface.
 	/// </summary>
-	public class WindowsTouch : Touch, IDisposable
+	public class WindowsTouch : Touch
 	{
 		public WindowsTouch(Window window, ScreenSpace screen)
 		{

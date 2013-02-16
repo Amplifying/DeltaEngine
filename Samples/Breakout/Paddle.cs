@@ -12,24 +12,24 @@ namespace Breakout
 	/// </summary>
 	public class Paddle : Sprite
 	{
-		public Paddle(Content content, Input input, Time time)
+		public Paddle(Content content, InputCommands inputCommands, Time time)
 			: base(content.Load<Image>("Paddle"), Rectangle.FromCenter(Point.Half, Size.Zero))
 		{
-			RegisterInputCommands(input, time);
+			RegisterInputCommands(inputCommands, time);
 		}
 
-		private void RegisterInputCommands(Input input, Time time)
+		private void RegisterInputCommands(InputCommands inputCommands, Time time)
 		{
-			input.Add(Key.CursorLeft, State.Pressed,
+			inputCommands.Add(Key.CursorLeft, State.Pressed,
 				() => xPosition -= PaddleMovementSpeed * time.CurrentDelta);
-			input.Add(Key.CursorRight, State.Pressed,
+			inputCommands.Add(Key.CursorRight, State.Pressed,
 				() => xPosition += PaddleMovementSpeed * time.CurrentDelta);
-			input.Add(MouseButton.Left, State.Pressed,
+			inputCommands.Add(MouseButton.Left, State.Pressed,
 				mouse => xPosition += mouse.Position.X - Position.X);
-			input.Add(State.Pressed, touch => xPosition += touch.GetPosition(0).X - Position.X);
-			input.Add(GamePadButton.Left, State.Pressed,
+			inputCommands.Add(State.Pressed, touch => xPosition += touch.GetPosition(0).X - Position.X);
+			inputCommands.Add(GamePadButton.Left, State.Pressed,
 				() => xPosition -= PaddleMovementSpeed * time.CurrentDelta);
-			input.Add(GamePadButton.Right, State.Pressed,
+			inputCommands.Add(GamePadButton.Right, State.Pressed,
 				() => xPosition += PaddleMovementSpeed * time.CurrentDelta);
 		}
 

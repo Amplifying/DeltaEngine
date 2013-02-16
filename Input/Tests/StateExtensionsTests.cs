@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using DeltaEngine.Input.Devices;
+using NUnit.Framework;
 
 namespace DeltaEngine.Input.Tests
 {

@@ -102,6 +102,11 @@ namespace DeltaEngine.Platforms
 			}
 		}
 		public bool IsClosing { get; private set; }
+		public bool ShowCursor
+		{
+			get { return game.IsMouseVisible; }
+			set { game.IsMouseVisible = value; }
+		}
 
 		public event Action<Size> ViewportSizeChanged;
 		public event Action<Orientation> OrientationChanged;

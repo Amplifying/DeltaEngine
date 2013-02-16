@@ -21,7 +21,6 @@ namespace DeltaEngine.Platforms
 			RegisterSingleton<WindowsKeyboard>();
 			RegisterSingleton<WindowsTouch>();
 			RegisterSingleton<WindowsGamePad>();
-			RegisterSingleton<Input.Input>();
 			RegisterSingleton<CursorPositionTranslater>();
 		}
 	}

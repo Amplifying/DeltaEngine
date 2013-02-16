@@ -37,10 +37,10 @@ namespace DeltaEngine.Platforms
 
 		protected override void Draw(GameTime gameTime)
 		{
-			resolver.RunAllRunners();
 			if (runCodeForTests != null)
 				runCodeForTests();
 
+			resolver.RunAllRunners();
 			resolver.RunAllPresenters();
 		}
 	}

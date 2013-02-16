@@ -9,8 +9,8 @@ namespace Breakout
 	/// </summary>
 	public class BallInLevel : Ball
 	{
-		public BallInLevel(Paddle paddle, Content content, Input input, Level level)
-			: base(paddle, content, input)
+		public BallInLevel(Paddle paddle, Content content, InputCommands inputCommands, Level level)
+			: base(paddle, content, inputCommands)
 		{
 			this.level = level;
 		}

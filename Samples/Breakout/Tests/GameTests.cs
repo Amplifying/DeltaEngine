@@ -1,8 +1,6 @@
 ﻿using System;
 using DeltaEngine.Core;
-using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
-using DeltaEngine.Input.Devices;
 using DeltaEngine.Platforms;
 using DeltaEngine.Platforms.Tests;
 using DeltaEngine.Rendering;
@@ -26,7 +24,7 @@ namespace Breakout.Tests
 				app.Resolve<Ball>();
 				app.Resolve<Level>();
 				app.Resolve<Background>();
-				app.Resolve<Input>().Add(Key.Escape, app.Close);
+				app.Resolve<InputCommands>().Add(Key.Escape, app.Close);
 			});
 		}
 
@@ -50,7 +48,7 @@ namespace Breakout.Tests
 			{
 				if (testResolver != null)
 				{
-					testResolver.AdvanceTimeAndExecuteRunners(1);
+					testResolver.AdvanceTimeAndExecuteRunners(0.2f);
 					Assert.IsTrue(window.Title.Contains("Breakout Level:"));
 				}
 			});
@@ -90,7 +88,7 @@ namespace Breakout.Tests
 					level.GetBrickAt(0.25f, 0.25f).Dispose();
 					level.GetBrickAt(0.75f, 0.25f).Dispose();
 					level.GetBrickAt(0.25f, 0.45f).Dispose();
-					testResolver.AdvanceTimeAndExecuteRunners(10);
+					testResolver.AdvanceTimeAndExecuteRunners(2.0f);
 				}
 			});
 		}

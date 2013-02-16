@@ -5,6 +5,6 @@
 	/// </summary>
 	public abstract class Trigger
 	{
-		public abstract bool ConditionMatched(Input input);
+		public abstract bool ConditionMatched(InputCommands inputCommands);
 	}
 }

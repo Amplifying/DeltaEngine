@@ -55,7 +55,8 @@ namespace DeltaEngine.Core.Tests
 		[Test]
 		public void ResolveCustomNotSupported()
 		{
-			Assert.Throws<CustomParameterNotSupportedYet>(() => Resolve<Time>(new StopwatchTime()));
+			Assert.Throws<CustomParameterNotSupportedYet>(
+				() => Resolve<Time>(new object[] { new StopwatchTime() }));
 		}
 
 		[Test]

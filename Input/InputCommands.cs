@@ -9,9 +9,9 @@ namespace DeltaEngine.Input
 	/// <summary>
 	/// Provides a way to check and trigger all input commands in the run loop.
 	/// </summary>
-	public class Input : Runner
+	public class InputCommands : Runner
 	{
-		public Input(Keyboard keyboard, Mouse mouse, Touch touch, GamePad gamePad)
+		public InputCommands(Keyboard keyboard, Mouse mouse, Touch touch, GamePad gamePad)
 		{
 			this.keyboard = keyboard;
 			this.mouse = mouse;
@@ -50,9 +50,17 @@ namespace DeltaEngine.Input
 			Add(command);
 		}
 
-		public void Add(Action<Touch> callback)
+		public void AddMouseMovement(Action<Mouse> mouseMovementCallback)
 		{
-			Add(State.Releasing, callback);
+			var command = new Command();
+			command.Callback += trigger => mouseMovementCallback(mouse);
+			command.Add(new MouseMovementTrigger());
+			Add(command);
+		}
+
+		public void Add(Action<Touch> touchHappenedCallback)
+		{
+			Add(State.Releasing, touchHappenedCallback);
 		}
 
 		public void Add(State touchState, Action<Touch> callback)
@@ -84,7 +92,7 @@ namespace DeltaEngine.Input
 			commands.Remove(command);
 		}
 
-		public int NumberOfCommands
+		public int Count
 		{
 			get { return commands.Count; }
 		}

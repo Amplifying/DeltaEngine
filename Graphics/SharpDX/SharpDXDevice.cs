@@ -109,8 +109,16 @@ namespace DeltaEngine.Graphics.SharpDX
 			surface.Dispose();
 			RenderTarget.Dispose();
 			if (nativeDevice.IsDisposed == false)
+			{
 				nativeDevice.ImmediateContext.Dispose();
-
+#if DEBUG
+				// Helps finding any remaining unreleased references via console output, which is NOT empty,
+				// but contains several Refcount: 0 lines. This cannot be avoided, but is still be useful to
+				// find memory leaks (Refcount>0): http://sharpdx.org/forum/4-general/1241-reportliveobjects
+				var deviceDebug = new DeviceDebug(nativeDevice);
+				deviceDebug.ReportLiveDeviceObjects(ReportingLevel.Detail);
+#endif
+			}
 			nativeDevice.Dispose();
 		}
 

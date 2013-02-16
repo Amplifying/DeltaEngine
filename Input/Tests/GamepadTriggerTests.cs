@@ -10,7 +10,7 @@ namespace DeltaEngine.Input.Tests
 		[IntegrationTest]
 		public void ConditionMatched(Type resolver)
 		{
-			Start(resolver, (Input input) =>
+			Start(resolver, (InputCommands input) =>
 			{
 				var trigger = new GamePadButtonTrigger(GamePadButton.A, State.Released);
 				Assert.IsTrue(trigger.ConditionMatched(input));

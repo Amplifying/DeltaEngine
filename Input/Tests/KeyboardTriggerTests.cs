@@ -11,7 +11,7 @@ namespace DeltaEngine.Input.Tests
 		[IntegrationTest]
 		public void ConditionMatched(Type resolver)
 		{
-			Start(resolver, (Input input) =>
+			Start(resolver, (InputCommands input) =>
 			{
 				var trigger = new KeyTrigger(Key.Y, State.Pressing);
 				Assert.False(trigger.ConditionMatched(input));

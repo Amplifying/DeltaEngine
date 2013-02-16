@@ -1,7 +1,7 @@
 ﻿namespace DeltaEngine.Input
 {
 	/// <summary>
-	/// Represents all possible states a button, key, touch or gesture may have.
+	/// All states a mouse button, keyboard key, touch, gamepad or gesture may have.
 	/// </summary>
 	public enum State
 	{

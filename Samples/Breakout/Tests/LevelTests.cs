@@ -122,11 +122,11 @@ namespace Breakout.Tests
 				if (testResolver != null)
 				{
 					testResolver.SetKeyboardState(Key.Space, State.Pressing);
-					testResolver.AdvanceTimeAndExecuteRunners(1);
+					testResolver.AdvanceTimeAndExecuteRunners(0.1f);
 				}
 			});
 			if (remBall != null)
-				Assert.IsFalse(remBall.IsOnPaddle);
+				Assert.IsFalse(remBall.IsCurrentlyOnPaddle);
 		}
 	}
 }

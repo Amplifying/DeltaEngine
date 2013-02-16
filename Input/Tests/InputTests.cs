@@ -1,5 +1,4 @@
 ﻿using System;
-using DeltaEngine.Datatypes;
 using DeltaEngine.Input.Devices;
 using DeltaEngine.Platforms;
 using DeltaEngine.Platforms.Tests;
@@ -12,38 +11,53 @@ namespace DeltaEngine.Input.Tests
 		[IntegrationTest]
 		public void CountCommandsForSimpleCommand(Type resolver)
 		{
-			Start(resolver, (Input input) =>
+			Start(resolver, (InputCommands input) =>
 			{
-				Assert.AreEqual(0, input.NumberOfCommands);
+				Assert.AreEqual(0, input.Count);
 				input.Add(Key.Space, () => { });
-				Assert.AreEqual(1, input.NumberOfCommands);
+				Assert.AreEqual(1, input.Count);
 			});
 		}
 
 		[IntegrationTest]
 		public void AddRemoveAndCountCommand(Type resolver)
 		{
-			Start(resolver, (Input input) =>
+			Start(resolver, (InputCommands input) =>
 			{
 				var command = new Command();
-				Assert.AreEqual(0, input.NumberOfCommands);
+				Assert.AreEqual(0, input.Count);
 				input.Add(command);
-				Assert.AreEqual(1, input.NumberOfCommands);
-				input.Add(delegate(Touch touch) { });
-				Assert.AreEqual(2, input.NumberOfCommands);
+				Assert.AreEqual(1, input.Count);
+				input.Add(delegate { });
+				Assert.AreEqual(2, input.Count);
 				input.Add(MouseButton.Left, State.Pressed, delegate(Mouse mouse) { });
-				Assert.AreEqual(3, input.NumberOfCommands);
+				Assert.AreEqual(3, input.Count);
 				input.Remove(command);
-				Assert.AreEqual(2, input.NumberOfCommands);
+				Assert.AreEqual(2, input.Count);
 				input.Add(MouseButton.Middle, delegate(Mouse mouse) { });
-				Assert.AreEqual(3, input.NumberOfCommands);
+				Assert.AreEqual(3, input.Count);
+			});
+		}
+
+		[IntegrationTest]
+		public void AddDifferentCommands(Type resolver)
+		{
+			Start(resolver, (InputCommands input) =>
+			{
+				input.Add(Key.Space, State.Pressing, () => { });
+				input.Add(Key.Escape, () => { });
+				input.Add(MouseButton.Left, State.Pressing, mouse => { });
+				input.Add(MouseButton.Middle, delegate(Mouse mouse) { });
+				input.AddMouseMovement(mouse => { });
+				input.Add(touch => { });
+				Assert.AreEqual(6, input.Count);
 			});
 		}
 
 		[VisualTest]
 		public void QuitWithEscape(Type resolver)
 		{
-			Start(resolver, (Input input, Window window) => input.Add(Key.Escape, window.Dispose));
+			Start(resolver, (InputCommands input, Window window) => input.Add(Key.Escape, window.Dispose));
 		}
 	}
 }

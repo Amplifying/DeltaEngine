@@ -10,7 +10,7 @@ namespace DeltaEngine.Datatypes
 	/// Color with a byte or float per component (red, green, blue, alpha)
 	/// </summary>
 	[DebuggerDisplay("Color(R={R}, G={G}, B={B}, A={A})")]
-	public struct Color : IEquatable<Color>
+	public struct Color : IEquatable<Color>, BinaryData
 	{
 		public Color(byte r, byte g, byte b, byte a = 255)
 			: this()

@@ -42,6 +42,9 @@ namespace DeltaEngine.Multimedia.OpenTK
 		private void ParseNextChunk(BinaryReader reader)
 		{
 			string identifier = ReadFourCharIdentifier(reader).ToLower();
+			if (identifier == "\0" || reader.BaseStream.Position == reader.BaseStream.Length)
+				return;
+
 			int chunkLength = reader.ReadInt32();
 			long positionBeforeReading = reader.BaseStream.Position;
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 
@@ -14,7 +13,7 @@ namespace DeltaEngine.Rendering
 		{
 			Update(window.ViewportPixelSize);
 			window.ViewportSizeChanged += Update;
-			window.OrientationChanged += orientation => Update(window.TotalPixelSize);
+			window.OrientationChanged += orientation => Update(window.ViewportPixelSize);
 		}
 		
 		private void Update(Size newViewportSize)

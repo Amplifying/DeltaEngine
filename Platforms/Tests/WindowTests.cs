@@ -1,5 +1,6 @@
 ﻿using System;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Input;
 using DeltaEngine.Rendering;
 using NUnit.Framework;
 
@@ -46,6 +47,16 @@ namespace DeltaEngine.Platforms.Tests
 		{
 			Start(resolver,
 				(Renderer r) => r.Add(new ColoredRectangle(Point.Half, Size.Half, Color.Red)));
+		}
+
+		[VisualTest]
+		public void ShowCursor(Type resolver)
+		{
+			bool showCursor = true;
+			Start(resolver, (Window window, Input.InputCommands input) =>
+			{
+				input.Add(MouseButton.Left, mouse => window.ShowCursor = showCursor = !showCursor);
+			});
 		}
 	}
 }

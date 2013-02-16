@@ -46,6 +46,11 @@ namespace DeltaEngine.Core
 			return (float)Math.Atan2(y, x) * 180 / Pi;
 		}
 
+		public static int Clamp(this int value, int min, int max)
+		{
+			return value > max ? max : (value < min ? min : value);
+		}
+
 		public static float Clamp(this float value, float min, float max)
 		{
 			return value > max ? max : (value < min ? min : value);

@@ -24,13 +24,13 @@ namespace DeltaEngine.Platforms.Tests
 			public void Run() {}
 			public void Present() {}
 		}
-		
+
 		[Test]
 		public void StartWithOneClass()
 		{
-			Start(typeof(TestResolver), (DummyRunner dummy) => {}, () => {});
+			Start(typeof(TestResolver), (DummyRunner dummy) => { }, () => { });
 		}
-		
+
 		[Test]
 		public void StartWithTwoClasses()
 		{
@@ -64,7 +64,7 @@ namespace DeltaEngine.Platforms.Tests
 		[Test]
 		public void RegisterUnknownClassToMakeResolveSucceed()
 		{
-			Start(typeof(TestResolver), (ClassWithInnerClass.UnknownInnerClass dummy) => {});
+			Start(typeof(TestResolver), (ClassWithInnerClass.UnknownInnerClass dummy) => { });
 		}
 
 		private class ClassWithInnerClass
@@ -106,7 +106,7 @@ namespace DeltaEngine.Platforms.Tests
 				Assert.IsNotNullOrEmpty(name);
 			}
 
-			public void Run() { }
+			public void Run() {}
 		}
 
 		[Test]

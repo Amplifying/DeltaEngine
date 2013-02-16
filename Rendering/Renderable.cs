@@ -21,10 +21,12 @@ namespace DeltaEngine.Rendering
 		public byte RenderLayer { get; set; }
 		public const byte BackgroundRenderLayer = 16;
 		public const byte DefaultRenderLayer = 64;
+		public const byte UIRenderLayer = 128;
 		public int SortKey
 		{
 			get { return (RenderLayer << 20) | id; }
 		}
+
 		protected abstract void Render(Renderer renderer, Time time);
 
 		internal void InternalRender(Renderer renderer, Time time)

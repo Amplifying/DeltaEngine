@@ -16,9 +16,9 @@ namespace DeltaEngine.Input.Triggers
 		private readonly GamePadButton button;
 		private readonly State state;
 
-		public override bool ConditionMatched(Input input)
+		public override bool ConditionMatched(InputCommands inputCommands)
 		{
-			return input.gamePad.IsAvailable && input.gamePad.GetButtonState(button) == state;
+			return inputCommands.gamePad.IsAvailable && inputCommands.gamePad.GetButtonState(button) == state;
 		}
 	}
 }

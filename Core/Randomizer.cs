@@ -6,9 +6,9 @@
 	public interface Randomizer
 	{
 		/// <summary>
-		/// Returns a float greater than or equal to min and strictly less than max
+		/// Returns a float between min and max, by default a value between zero and one.
 		/// </summary>
-		float Get(float min, float max);
+		float Get(float min = 0, float max = 1);
 		/// <summary>
 		/// Returns an integer greater than or equal to min and strictly less than max
 		/// </summary>

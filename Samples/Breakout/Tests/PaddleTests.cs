@@ -69,7 +69,7 @@ namespace Breakout.Tests
 			{
 				remBall = ball;
 				Assert.AreEqual(0.5f, paddle.Position.X);
-				Assert.IsTrue(ball.IsOnPaddle);
+				Assert.IsTrue(ball.IsCurrentlyOnPaddle);
 				Assert.AreEqual(0.5f, ball.Position.X);
 				if (testResolver != null)
 				{
@@ -79,7 +79,7 @@ namespace Breakout.Tests
 			});
 			if (remBall != null)
 			{
-				Assert.IsFalse(remBall.IsOnPaddle);
+				Assert.IsFalse(remBall.IsCurrentlyOnPaddle);
 				Assert.AreNotEqual(0.5f, remBall.Position.X);
 			}
 		}

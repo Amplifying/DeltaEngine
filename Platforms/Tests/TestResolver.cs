@@ -131,7 +131,7 @@ namespace DeltaEngine.Platforms.Tests
 			SetupMockMouse();
 			SetupTouch();
 			SetupGamePad();
-			RegisterSingleton<Input.Input>();
+			RegisterSingleton<Input.InputCommands>();
 		}
 
 		private void SetupMockKeyboard()

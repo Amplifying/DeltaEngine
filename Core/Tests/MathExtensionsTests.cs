@@ -53,20 +53,18 @@ namespace DeltaEngine.Core.Tests
 		}
 
 		[Test]
-		public void Clamp()
-		{
-			Assert.AreEqual(241f, MathExtensions.Clamp(266f, 0f, 241f));
-			Assert.AreEqual(0, MathExtensions.Clamp(-14f, 0f, 10f));
-			Assert.AreEqual(14f, MathExtensions.Clamp(14f, 0f, 100f));
-			Assert.AreEqual(0.5f, MathExtensions.Clamp(0.6f, 0f, 0.5f));
-		}
-		
-		[Test]
 		public void Atan2()
 		{
 			Assert.AreEqual(0.0f, MathExtensions.Atan2(0, 0));
 			Assert.AreEqual(90.0f, MathExtensions.Atan2(1, 0));
 			Assert.AreEqual(-135.0f, MathExtensions.Atan2(-1, -1));
+		}
+
+		[Test]
+		public void Clamp()
+		{
+			Assert.AreEqual(0, 0.Clamp(0, 1));
+			Assert.AreEqual(90.0f, 100.0f.Clamp(0.0f, 90.0f));
 		}
 
 		[Test]

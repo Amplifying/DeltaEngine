@@ -25,7 +25,14 @@ namespace DeltaEngine.Graphics.SharpDX
 
 		protected static CreationFlags CreationFlags
 		{
-			get { return CreationFlags.BgraSupport; }
+			get
+			{
+#if DEBUG
+				return CreationFlags.BgraSupport | CreationFlags.Debug;
+#else
+				return CreationFlags.BgraSupport;
+#endif
+			}
 		}
 
 		protected SwapChainDescription CreateSwapChainDescription(int width, int height, IntPtr handle)

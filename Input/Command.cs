@@ -36,10 +36,11 @@ namespace DeltaEngine.Input
 			attachedTriggers.Remove(trigger);
 		}
 
-		internal void Run(Input input)
+		internal void Run(InputCommands inputCommands)
 		{
-			foreach (Trigger trigger in attachedTriggers)
-				if (trigger.ConditionMatched(input))
+			var triggersCopy = new List<Trigger>(attachedTriggers);
+			foreach (Trigger trigger in triggersCopy)
+				if (trigger.ConditionMatched(inputCommands))
 					Invoke(trigger);
 		}
 

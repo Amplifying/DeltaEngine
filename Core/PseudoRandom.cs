@@ -40,7 +40,7 @@ namespace DeltaEngine.Core
 			return (z << 16) + w;
 		}
 
-		public float Get(float min, float max)
+		public float Get(float min = 0.0f, float max = 1.0f)
 		{
 			return (float)(GetNextDouble() * (max - min) + min);
 		}

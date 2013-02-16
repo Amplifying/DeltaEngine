@@ -12,7 +12,7 @@ namespace DeltaEngine.Input.Tests
 		[IntegrationTest]
 		public void ConditionMatchedWithoutMouse(Type resolver)
 		{
-			Start(resolver, (Input input) =>
+			Start(resolver, (InputCommands input) =>
 			{
 				var trigger = new MouseButtonTrigger(MouseButton.Right, State.Pressing);
 				Assert.False(trigger.ConditionMatched(input));
@@ -23,7 +23,7 @@ namespace DeltaEngine.Input.Tests
 		public void ConditionMatched()
 		{
 			var resolver = new TestResolver();
-			var input = resolver.Resolve<Input>();
+			var input = resolver.Resolve<InputCommands>();
 			var trigger = new MouseButtonTrigger(MouseButton.Left, State.Releasing);
 			resolver.SetMouseButtonState(MouseButton.Left, State.Releasing, Point.Half);
 			Assert.True(trigger.ConditionMatched(input));

@@ -52,9 +52,11 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FastTrigTests.cs" />
     <Compile Include="SimulatedAppTests.cs" />
     <Compile Include="ArrayExtensionsTests.cs" />
     <Compile Include="ContentLoaderTests.cs" />
+    <Compile Include="FixedRandomTests.cs" />
     <Compile Include="GenericRunnerTests.cs" />
     <Compile Include="EnumExtensionTests.cs" />
     <Compile Include="PseudoRandomTests.cs" />

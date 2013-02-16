@@ -38,16 +38,23 @@ namespace DeltaEngine.Rendering.Tests
 		}
 
 		[Test]
-		public void DrawLines()
+		public void DrawLine()
 		{
 			renderer.DrawLine(Point.Zero, Point.One, Color.Red);
 			Assert.AreEqual(2, resolver.NumberOfVerticesDrawn);
 		}
 
 		[Test]
+		public void DrawTriangle()
+		{
+			renderer.DrawTriangle(new Triangle2D(), Color.White);
+			Assert.AreEqual(3, resolver.NumberOfVerticesDrawn);
+		}
+
+		[Test]
 		public void DrawRectangle()
 		{
-			renderer.DrawRectangle(Rectangle.Zero, Color.Yellow); 
+			renderer.DrawRectangle(Rectangle.Zero, Color.Yellow);
 			Assert.AreEqual(4, resolver.NumberOfVerticesDrawn);
 		}
 

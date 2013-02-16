@@ -61,9 +61,8 @@ namespace LogoApp.Tests
 		[VisualTest]
 		public void ShowOneLogoWithFriction(Type resolver)
 		{
-			Start(resolver, (BouncingLogoWithFriction logo, Resolver r, Input input) =>
+			Start(resolver, (BouncingLogoWithFriction logo, InputCommands input) =>
 			{
-				var testResolver = r as TestResolver;
 				if (testResolver != null)
 					testResolver.AdvanceTimeAndExecuteRunners(30.0f);
 			});
@@ -78,9 +77,8 @@ namespace LogoApp.Tests
 		[VisualTest]
 		public void ShowOneLogoWithGravity(Type resolver)
 		{
-			Start(resolver, (BouncingLogoWithGravity logo, Resolver currentResolver) =>
+			Start(resolver, (BouncingLogoWithGravity logo) =>
 			{
-				var testResolver = currentResolver as TestResolver;
 				if (testResolver != null)
 				{
 					testResolver.SetKeyboardState(Key.Space, State.Releasing);

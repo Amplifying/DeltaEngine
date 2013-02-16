@@ -31,8 +31,8 @@ namespace DeltaEngine.Platforms.Tests
 		public static readonly TestCaseData[] Resolvers =
 		{
 			new TestCaseData(typeof(TestResolver)),
-			new TestCaseData(typeof(OpenTKResolver)).Ignore(),
-			new TestCaseData(typeof(SharpDXResolver)),
+			new TestCaseData(typeof(OpenTKResolver)),
+			new TestCaseData(typeof(SharpDXResolver)).Ignore(),
 			new TestCaseData(typeof(XnaResolver)).Ignore()
 		};
 		public static readonly Type OpenGL = typeof(OpenTKResolver);

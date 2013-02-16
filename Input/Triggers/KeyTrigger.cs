@@ -21,9 +21,9 @@ namespace DeltaEngine.Input.Triggers
 			get { return key; }
 		}
 
-		public override bool ConditionMatched(Input input)
+		public override bool ConditionMatched(InputCommands inputCommands)
 		{
-			return input.keyboard.IsAvailable && input.keyboard.GetKeyState(key) == state;
+			return inputCommands.keyboard.IsAvailable && inputCommands.keyboard.GetKeyState(key) == state;
 		}
 	}
 }

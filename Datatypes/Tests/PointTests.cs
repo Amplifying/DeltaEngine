@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DeltaEngine.Core;
 using NUnit.Framework;
 
 namespace DeltaEngine.Datatypes.Tests
@@ -161,6 +162,54 @@ namespace DeltaEngine.Datatypes.Tests
 			var topLeftArea = new Rectangle(Point.Zero, Size.Zero);
 			direction.ReflectIfHittingBorder(topLeftArea, borders);
 			Assert.AreEqual(Point.One, direction);
+		}
+
+		[Test]
+		public void Lerp()
+		{
+			Assert.AreEqual(Point.Half, Point.Lerp(Point.Zero, Point.One, 0.5f));
+			Assert.AreEqual(Point.One, Point.Lerp(Point.Zero, Point.One, 1.1f));
+			Assert.AreEqual(new Point(1.5f, 1.0f), Point.Lerp(new Point(1, 2), new Point(5, -6), 0.125f));
+		}
+
+		[Test]
+		public void RotateAround()
+		{
+			var point = Point.UnitX;
+			point.RotateAround(Point.Zero, 90.0f);
+			Assert.AreEqual(Point.UnitY, point);
+			point.RotateAround(new Point(0.0f, 0.5f), 180.0f);
+			Assert.AreEqual(Point.Zero, point);
+		}
+
+		[Test]
+		public void RotateAroundWithFastTrig()
+		{
+			var fastTrig = new FastTrig();
+			var point = Point.UnitY;
+			point.RotateAround(Point.Zero, 90.0f, fastTrig);
+			Assert.AreEqual(-Point.UnitX, point);
+			point.RotateAround(new Point(-2.0f, 0.0f), 270.0f, fastTrig);
+			Assert.AreEqual(new Point(-2.0f, -1.0f), point);
+		}
+
+		[Test]
+		public void Normalize()
+		{
+			var point = new Point(0.3f, -0.4f);
+			point.Normalize();
+			Assert.AreEqual(new Point(0.6f, -0.8f), point);
+		}
+
+		[Test]
+		public void DotProduct()
+		{
+			var point1 = new Point(1, 1);
+			point1.Normalize();
+			var point2 = new Point(-1, 1);
+			point2.Normalize();
+			Assert.AreEqual(0.0f, point1.DotProduct(point2));
+			Assert.AreEqual(0.7071f, point1.DotProduct(Point.UnitY), 0.0001f);
 		}
 	}
 }
