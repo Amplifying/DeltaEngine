@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{C9EFF5F8-501C-4ADE-B7C1-20D6991EB10F}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>$safeprojectname$</RootNamespace>
+    <AssemblyName>$safeprojectname$</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>BreakoutIcon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System">
+    </Reference>
+    <Reference Include="DeltaEngine.Core">
+      <HintPath>$(DeltaEnginePath)\DeltaEngine.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="DeltaEngine.Datatypes">
+      <HintPath>$(DeltaEnginePath)\DeltaEngine.Datatypes.dll</HintPath>
+    </Reference>
+    <Reference Include="DeltaEngine.Graphics">
+      <HintPath>$(DeltaEnginePath)\DeltaEngine.Graphics.dll</HintPath>
+    </Reference>
+    <Reference Include="DeltaEngine.Input">
+      <HintPath>$(DeltaEnginePath)\DeltaEngine.Input.dll</HintPath>
+    </Reference>
+    <Reference Include="DeltaEngine.Multimedia">
+      <HintPath>$(DeltaEnginePath)\DeltaEngine.Multimedia.dll</HintPath>
+    </Reference>
+    <Reference Include="DeltaEngine.Platforms">
+      <HintPath>$(DeltaEnginePath)\DeltaEngine.Platforms.dll</HintPath>
+    </Reference>
+    <Reference Include="DeltaEngine.WindowsOpenGL">
+      <HintPath>$(DeltaEnginePath)\DeltaEngine.WindowsOpenGL.dll</HintPath>
+    </Reference>
+    <Reference Include="DeltaEngine.Platforms.Windows">
+      <HintPath>$(DeltaEnginePath)\DeltaEngine.Platforms.Windows.dll</HintPath>
+    </Reference>
+    <Reference Include="DeltaEngine.Rendering">
+      <HintPath>$(DeltaEnginePath)\DeltaEngine.Rendering.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Ball.cs" />
+    <Compile Include="Background.cs" />
+    <Compile Include="Game.cs" />
+    <Compile Include="BallInLevel.cs" />
+    <Compile Include="Score.cs" />
+    <Compile Include="Level.cs" />
+    <Compile Include="Paddle.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="BreakoutIcon.ico" />
+    <Content Include="Content\Ball.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Brick.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Explosion.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Paddle.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Background.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\BrickExplosion.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\PaddleBallStart.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\BallCollision.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\LostBall.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Victory.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+xcopy /s /y "$(DeltaEnginePath)\Open*.dll" "$(TargetDir)"
+xcopy /s /y "$(DeltaEnginePath)\wrap_oal.dll" "$(TargetDir)"
+</PostBuildEvent>
+  </PropertyGroup>
+</Project>
