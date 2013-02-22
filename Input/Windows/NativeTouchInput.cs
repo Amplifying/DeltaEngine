@@ -3,6 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace DeltaEngine.Input.Windows
 {
+	/// <summary>
+	/// Touch structure of the native windows touch events containing all state information.
+	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
 	public struct NativeTouchInput
 	{

@@ -17,5 +17,4 @@
   <UseBuildPlatform></UseBuildPlatform>
   <ProxyProcessPath></ProxyProcessPath>
   <UseCPUArchitecture>AutoDetect</UseCPUArchitecture>
-  <HiddenWarnings>AssemblyReferenceToBuildOutputDirectory</HiddenWarnings>
 </ProjectConfiguration>

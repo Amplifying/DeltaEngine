@@ -14,7 +14,7 @@
 
 		private readonly Resolver resolver;
 
-		public ContentType Load<ContentType>(string contentName)
+		public virtual ContentType Load<ContentType>(string contentName)
 			where ContentType : ContentData
 		{
 			//TODO: caching and contentName to filename resolving, remove this from each implementation

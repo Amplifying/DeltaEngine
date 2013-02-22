@@ -5,9 +5,12 @@ using Microsoft.Xna.Framework.Input.Touch;
 
 namespace DeltaEngine.Input.Xna
 {
+	/// <summary>
+	/// Helper class to keep track of all touches according to their ids.
+	/// </summary>
 	internal class TouchCollectionUpdater
 	{
-		public TouchCollectionUpdater(ScreenSpace screen)
+		public TouchCollectionUpdater(QuadraticScreenSpace screen)
 		{
 			this.screen = screen;
 			states = new State[MaxNumberOfTouches];
@@ -20,7 +23,7 @@ namespace DeltaEngine.Input.Xna
 		internal readonly State[] states;
 		internal readonly Point[] locations;
 		internal readonly int[] ids;
-		private readonly ScreenSpace screen;
+		private readonly QuadraticScreenSpace screen;
 		private const int MaxNumberOfTouches = 10;
 
 		public void UpdateAllTouches(List<TouchLocation> newTouches)
@@ -60,7 +63,7 @@ namespace DeltaEngine.Input.Xna
 
 		private Point GetQuadraticPosition(TouchLocation location)
 		{
-			return screen.ToQuadraticSpace(new Point(location.Position.X, location.Position.Y));
+			return screen.FromPixelSpace(new Point(location.Position.X, location.Position.Y));
 		}
 
 		internal void UpdateTouchStateWithoutNewData(int index)

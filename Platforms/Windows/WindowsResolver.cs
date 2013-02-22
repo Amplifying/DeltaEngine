@@ -12,7 +12,7 @@ namespace DeltaEngine.Platforms.Windows
 		protected WindowsResolver()
 		{
 			RegisterSingleton<FormsWindow>();
-			RegisterSingleton<ScreenSpace>();
+			RegisterSingleton<QuadraticScreenSpace>();
 			RegisterSingleton<Renderer>();
 			RegisterSingleton<StopwatchTime>();
 			RegisterSingleton<Time>();

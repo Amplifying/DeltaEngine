@@ -41,7 +41,6 @@
   <ItemGroup>
     <Compile Include="WindowsGamePad.cs" />
     <Compile Include="CursorPositionTranslater.cs" />
-    <Compile Include="MouseButtonStateHelper.cs" />
     <Compile Include="MouseHook.cs" />
     <Compile Include="NativeTouchInput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

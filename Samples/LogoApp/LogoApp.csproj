@@ -32,6 +32,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\Release\LogoApp.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>LogoApp.Program</StartupObject>

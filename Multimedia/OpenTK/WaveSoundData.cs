@@ -4,8 +4,13 @@ using OpenTK.Audio.OpenAL;
 
 namespace DeltaEngine.Multimedia.OpenTK
 {
+	/// <summary>
+	/// Helper class to parse the headers and chunks of a wave file and
+	/// calling the needed converter classes.
+	/// </summary>
 	internal class WaveSoundData
 	{
+		//ncrunch: no coverage start
 		public WaveSoundData(string filepath)
 		{
 			using (var reader = new BinaryReader(File.OpenRead(filepath)))
@@ -15,6 +20,7 @@ namespace DeltaEngine.Multimedia.OpenTK
 			if (waveFormat != WaveFormat.Pcm)
 				ConvertToPcm();
 		}
+		//ncrunch: no coverage end
 
 		internal WaveSoundData(BinaryReader reader)
 		{

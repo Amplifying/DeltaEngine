@@ -15,7 +15,7 @@ namespace DeltaEngine.Input.Tests
 		{
 			Start(resolver, (CursorPositionTranslater translator, Window window, ScreenSpace screen) =>
 			{
-				var outsidePosition = screen.ToQuadraticSpace(new Point(-10, -10));
+				var outsidePosition = screen.FromPixelSpace(new Point(-10, -10));
 				var screenPos = translator.ToScreenPositionFromScreenSpace(outsidePosition);
 				Assert.IsTrue(screenPos.X < window.PixelPosition.X || screenPos.Y < window.PixelPosition.Y);
 				Assert.AreEqual(outsidePosition, translator.FromScreenPositionToScreenSpace(screenPos));

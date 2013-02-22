@@ -79,8 +79,7 @@ namespace DeltaEngine.Input.Tests
 		public void ProcessNewTouches()
 		{
 			TouchCollection touchCollection = CreateCollection();
-			var newTouches = new List<NativeTouchInput>
-			{ new NativeTouchInput { Flags = 0x0001, Id = 15, X = 40000, Y = 30000 } };
+			var newTouches = new List<NativeTouchInput> { new NativeTouchInput { Flags = 0x0001, Id = 15, X = 40000, Y = 30000 } };
 			touchCollection.ProcessNewTouches(newTouches);
 
 			Assert.AreEqual(15, touchCollection.ids[0]);
@@ -106,11 +105,27 @@ namespace DeltaEngine.Input.Tests
 		}
 
 		[Test]
-		public void UpdateTouchWithUpdatedActiveTouch()
+		public void UpdateAllTouches()
 		{
 			TouchCollection touchCollection = CreateCollection();
 			var newTouches = new List<NativeTouchInput>
 			{ new NativeTouchInput { Flags = 0x0001, Id = 15, X = 40000, Y = 30000 } };
+
+			touchCollection.ids[0] = 15;
+			touchCollection.states[0] = State.Pressing;
+			touchCollection.UpdateAllTouches(newTouches);
+
+			Assert.AreEqual(0, newTouches.Count);
+			Assert.AreEqual(15, touchCollection.ids[0]);
+			Assert.AreEqual(new Point(0.5f, 0.5f), touchCollection.locations[0]);
+			Assert.AreEqual(State.Pressed, touchCollection.states[0]);
+		}
+
+		[Test]
+		public void UpdateTouchWithUpdatedActiveTouch()
+		{
+			TouchCollection touchCollection = CreateCollection();
+			var newTouches = new List<NativeTouchInput> { new NativeTouchInput { Flags = 0x0001, Id = 15, X = 40000, Y = 30000 } };
 
 			touchCollection.ids[0] = 15;
 			touchCollection.states[0] = State.Pressing;
@@ -143,8 +158,7 @@ namespace DeltaEngine.Input.Tests
 		public void UpdateTouchIfPreviouslyPresentWithMultipleNewTouches()
 		{
 			TouchCollection touchCollection = CreateCollection();
-			var newTouches = new List<NativeTouchInput>
-			{ new NativeTouchInput { Id = 3 }, new NativeTouchInput { Id = 15 } };
+			var newTouches = new List<NativeTouchInput> { new NativeTouchInput { Id = 3 }, new NativeTouchInput { Id = 15 } };
 			touchCollection.ids[0] = 15;
 			touchCollection.states[0] = State.Releasing;
 
@@ -156,7 +170,7 @@ namespace DeltaEngine.Input.Tests
 		private TouchCollection CreateCollection()
 		{
 			var window = resolver.Resolve<Window>();
-			var screen = new ScreenSpace(window);
+			var screen = new QuadraticScreenSpace(window);
 			var positionTranslator = new CursorPositionTranslater(window, screen);
 			return new TouchCollection(positionTranslator);
 		}

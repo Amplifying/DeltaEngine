@@ -22,7 +22,6 @@ namespace DeltaEngine.Rendering
 		}
 
 		private readonly float timeout;
-		private float elapsed;
 
 		protected override void Render(Renderer renderer, Time time)
 		{
@@ -32,5 +31,7 @@ namespace DeltaEngine.Rendering
 			if (elapsed >= timeout)
 				Dispose();
 		}
+
+		private float elapsed;
 	}
 }

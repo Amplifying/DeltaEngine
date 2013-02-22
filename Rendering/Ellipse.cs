@@ -103,9 +103,6 @@ namespace DeltaEngine.Rendering
 			theta = 360.0f / (pointsCount - 1);
 			ellipsePoints = new Point[pointsCount];
 
-			//TODO: Don't actually need to reform the ellipse points every time the radii change;
-			//      Just store circle points and then translate them by the equivalent of a square 
-			//      deforming to a rectangle. But the fast trig lookup table is also good!
 			for (int i = 0; i < pointsCount; i++)
 				FormRotatedEllipsePoint(i);
 		}

@@ -18,6 +18,7 @@ namespace DeltaEngine.Platforms
 			Register<SharpDXImage>();
 			RegisterSingleton<XAudioDevice>();
 			Register<XAudioSound>();
+			Register<XAudioMusic>();
 			RegisterSingleton<SharpDXMouse>();
 			RegisterSingleton<SharpDXKeyboard>();
 			RegisterSingleton<WindowsTouch>();

@@ -1,4 +1,5 @@
 ﻿using System;
+using DeltaEngine.Core;
 
 namespace DeltaEngine.Multimedia
 {
@@ -31,16 +32,30 @@ namespace DeltaEngine.Multimedia
 		public void Play()
 		{
 			sound.PlayInstance(this);
+			sound.RaisePlayEvent(this);
+			startPlayTime = DateTime.Now;
 		}
+
+		private DateTime startPlayTime;
 
 		public bool IsPlaying
 		{
 			get { return sound.IsPlaying(this); }
 		}
 
+		public float PositionInSeconds
+		{
+			get
+			{
+				float elapsedSeconds = (float)DateTime.Now.Subtract(startPlayTime).TotalSeconds;
+				return elapsedSeconds.Clamp(0f, sound.LengthInSeconds);
+			}
+		}
+
 		public void Stop()
 		{
 			sound.StopInstance(this);
+			sound.RaiseStopEvent(this);
 		}
 	}
 }

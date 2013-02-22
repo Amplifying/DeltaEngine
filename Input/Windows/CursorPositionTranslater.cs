@@ -61,7 +61,7 @@ namespace DeltaEngine.Input.Windows
 			if (window.Handle != IntPtr.Zero)
 				ScreenToClient(window.Handle, ref screenPoint);
 
-			return screen.ToQuadraticSpace(FromSysPoint(screenPoint));
+			return screen.FromPixelSpace(FromSysPoint(screenPoint));
 		}
 
 		[DllImport("user32.dll")]

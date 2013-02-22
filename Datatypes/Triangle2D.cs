@@ -59,7 +59,7 @@ namespace DeltaEngine.Datatypes
 		public override int GetHashCode()
 		{
 			// ReSharper disable NonReadonlyFieldInGetHashCode
-			return Corner1.GetHashCode() ^ Corner2.GetHashCode() ^ Corner2.GetHashCode();
+			return Corner1.GetHashCode() ^ Corner2.GetHashCode() ^ Corner3.GetHashCode();
 		}
 
 		public override string ToString()

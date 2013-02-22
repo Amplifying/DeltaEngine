@@ -23,7 +23,7 @@ namespace GameOfDeath.Items
 
 		public virtual void UpdatePosition(Point newPosition)
 		{
-			DrawArea = Rectangle.FromCenter(newPosition, image.PixelSize / Score.QuadraticFullscreenSize);
+			DrawArea = Rectangle.FromCenter(newPosition, Image.PixelSize / Score.QuadraticFullscreenSize);
 		}
 
 		protected abstract float ImpactSize { get; }
@@ -37,8 +37,8 @@ namespace GameOfDeath.Items
 			soundEffect.Play();
 			var size = new Size(ImpactSize * 2);
 			if (imageEffect == null)
-				size.Width *= DrawArea.Size.Aspect;
-			return new ItemEffect(imageEffect ?? image, position, size, ImpactTime)
+				size.Width *= DrawArea.Size.AspectRatio;
+			return new ItemEffect(imageEffect ?? Image, position, size, ImpactTime)
 			{
 				DoDamageEvery = DoDamageEvery,
 				DoDamage = () => game.DoDamage(position, ImpactSize, Damage),

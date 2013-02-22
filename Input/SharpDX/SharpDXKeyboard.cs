@@ -6,6 +6,9 @@ using DInput = SharpDX.DirectInput;
 
 namespace DeltaEngine.Input.SharpDX
 {
+	/// <summary>
+	/// Native implementation of the Keyboard interface using DirectInput.
+	/// </summary>
 	public class SharpDXKeyboard : Keyboard
 	{
 		public SharpDXKeyboard(Window window)
@@ -13,16 +16,23 @@ namespace DeltaEngine.Input.SharpDX
 			if (window != null)
 				windowHandle = window.Handle;
 
+			keyMapper = new KeyboardKeyMapper();
+			IsAvailable = true;
+			CreateNativeKeyboard();
+			CreateAndFillKeyStatesDictionary();
+		}
+
+		private void CreateNativeKeyboard()
+		{
 			nativeState = new DInput.KeyboardState();
 			directInput = new DInput.DirectInput();
 			nativeKeyboard = new DInput.Keyboard(directInput);
 			nativeKeyboard.SetCooperativeLevel(windowHandle,
 				DInput.CooperativeLevel.NonExclusive | DInput.CooperativeLevel.Background);
 			nativeKeyboard.Acquire();
-			IsAvailable = true;
-			CreateAndFillKeyStatesDictionary();
 		}
 		
+		private readonly KeyboardKeyMapper keyMapper;
 		private readonly IntPtr windowHandle;
 		private DInput.KeyboardState nativeState;
 		private DInput.DirectInput directInput;
@@ -64,7 +74,7 @@ namespace DeltaEngine.Input.SharpDX
 
 		private void UpdateKey(DInput.Key key)
 		{
-			Key deltaKey = KeyboardKeyMapper.Translate(key);
+			Key deltaKey = keyMapper.Translate(key);
 			keyStates[deltaKey] = keyStates[deltaKey].UpdateOnNativePressing(nativeState.IsPressed(key));
 		}
 	}

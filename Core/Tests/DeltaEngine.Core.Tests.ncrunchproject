@@ -19,16 +19,7 @@
   <UseCPUArchitecture>AutoDetect</UseCPUArchitecture>
   <IgnoredTests>
     <NamedTestSelector>
-      <TestName>DeltaEngine.System.Tests.Program.Main</TestName>
-    </NamedTestSelector>
-    <NamedTestSelector>
       <TestName>DeltaEngine.Core.Tests.StackTraceExtensionsTests.TestCaseHasIgnoreAttribute</TestName>
-    </NamedTestSelector>
-    <NamedTestSelector>
-      <TestName>DeltaEngine.Core.Tests.StackTraceExtensionsTests.HasSlowCategoryAttribute</TestName>
-    </NamedTestSelector>
-    <NamedTestSelector>
-      <TestName>DeltaEngine.Core.Tests.StackTraceExtensionsTests.TestCaseHasSlowCategoryAttribute</TestName>
     </NamedTestSelector>
   </IgnoredTests>
 </ProjectConfiguration>

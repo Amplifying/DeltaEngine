@@ -11,6 +11,17 @@ namespace DeltaEngine.Input.Tests
 {
 	public class CommandTests : TestStarter
 	{
+		[Test]
+		public void AddAndRemove()
+		{
+			var command = new Command();
+			var trigger = new MouseButtonTrigger(MouseButton.Left, State.Released);
+			command.Add(trigger);
+			Assert.AreEqual(1, command.attachedTriggers.Count);
+			command.Remove(trigger);
+			Assert.AreEqual(0, command.attachedTriggers.Count);
+		}
+
 		[IntegrationTest]
 		public void AddAndRemoveTrigger(Type resolver)
 		{
@@ -32,8 +43,10 @@ namespace DeltaEngine.Input.Tests
 			{
 				var command = new MockCommand();
 				command.Add(new MouseButtonTrigger(MouseButton.Left, State.Releasing));
+				bool triggered = false;
+				command.Attach(trigger => triggered = true);
 				command.Simulate(MouseButton.Left);
-				Assert.IsTrue(command.TriggerFired);
+				Assert.IsTrue(triggered);
 			});
 		}
 
@@ -56,8 +69,10 @@ namespace DeltaEngine.Input.Tests
 			{
 				var command = new MockCommand();
 				command.Add(new KeyTrigger(Key.A, State.Pressed));
+				bool triggered = false;
+				command.Attach(trigger => triggered = true);
 				command.Simulate(Key.A);
-				Assert.IsTrue(command.TriggerFired);
+				Assert.IsTrue(triggered);
 			});
 		}
 
@@ -88,22 +103,13 @@ namespace DeltaEngine.Input.Tests
 		{
 			ColoredRectangle rectangle = null;
 			var currentPosition = new Point(0.1f, 0.1f);
-			//TODO: simplify
-			var pressCommand = new Command();
-			var releaseCommand = new Command();
-			pressCommand.Callback += t => currentPosition = new Point(0.6f, 0.5f);
-			releaseCommand.Callback += t => currentPosition = new Point(0.1f, 0.1f);
-			var pressTrigger = new KeyTrigger(Key.A, State.Pressing);
-			var releaseTrigger = new KeyTrigger(Key.A, State.Releasing);
-			pressCommand.Add(pressTrigger);
-			releaseCommand.Add(releaseTrigger);
 
 			Start(resolver, (Renderer renderer, InputCommands input) =>
 			{
 				rectangle = new ColoredRectangle(Point.Zero, new Size(0.1f, 0.1f), Color.Red);
 				renderer.Add(rectangle);
-				input.Add(pressCommand);
-				input.Add(releaseCommand);
+				input.Add(Key.A, State.Pressing, () => currentPosition = new Point(0.6f, 0.5f));
+				input.Add(Key.A, State.Released, () => currentPosition = new Point(0.1f, 0.1f));
 			}, () => rectangle.DrawArea.TopLeft = currentPosition);
 		}
 	}

@@ -123,7 +123,7 @@ namespace DeltaEngine.Datatypes
 			return new Size(width, height);
 		}
 
-		public float Aspect
+		public float AspectRatio
 		{
 			get { return Width / Height; }
 		}

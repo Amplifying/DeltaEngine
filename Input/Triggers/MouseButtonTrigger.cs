@@ -1,11 +1,12 @@
-﻿using DeltaEngine.Input.Devices;
+﻿using System;
+using DeltaEngine.Input.Devices;
 
 namespace DeltaEngine.Input.Triggers
 {
 	/// <summary>
 	/// Allows to track mouse button presses.
 	/// </summary>
-	public class MouseButtonTrigger : Trigger
+	public class MouseButtonTrigger : Trigger, IEquatable<MouseButtonTrigger>
 	{
 		public MouseButtonTrigger(MouseButton button, State state)
 		{
@@ -24,6 +25,21 @@ namespace DeltaEngine.Input.Triggers
 		public override bool ConditionMatched(InputCommands inputCommands)
 		{
 			return inputCommands.mouse.IsAvailable && inputCommands.mouse.GetButtonState(button) == state;
+		}
+
+		public bool Equals(MouseButtonTrigger other)
+		{
+			return other.Button == Button && other.state == state;
+		}
+
+		public override bool Equals(object other)
+		{
+			return other is MouseButtonTrigger && Equals((MouseButtonTrigger)other);
+		}
+
+		public override int GetHashCode()
+		{
+			return ((int)button).GetHashCode() ^ ((int)state).GetHashCode();
 		}
 	}
 }

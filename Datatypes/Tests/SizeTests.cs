@@ -95,19 +95,15 @@ namespace DeltaEngine.Datatypes.Tests
 		[Test]
 		public void DivideSizeByFloat()
 		{
-			var s = new Size(4, 5);
-			const float F = 2f;
-			Size divide = s / F;
-			Assert.AreEqual(divide, new Size(2.0f, 2.5f));
+			Size divide = new Size(4, 5) / 2.0f;
+			Assert.AreEqual(new Size(2.0f, 2.5f), divide);
 		}
 
 		[Test]
 		public void DivideFloatBySize()
 		{
-			const float F = 2f;
-			var s = new Size(4, 5);
-			Size divide = F / s;
-			Assert.AreEqual(divide, new Size(0.5f, 0.4f));
+			Size divide = 2.0f / new Size(4, 5);
+			Assert.AreEqual(new Size(0.5f, 0.4f), divide);
 		}
 
 		[Test]
@@ -116,7 +112,7 @@ namespace DeltaEngine.Datatypes.Tests
 			Size divide = new Size(4, 5) / new Size(2, 2);
 			Assert.AreEqual(new Size(2.0f, 2.5f), divide);
 		}
-
+		
 		[Test]
 		public void ExplicitCastFromPoint()
 		{
@@ -166,14 +162,14 @@ namespace DeltaEngine.Datatypes.Tests
 		}
 
 		[Test]
-		public void Aspect()
+		public void AspectRatio()
 		{
-			var portrait = new Size(0.5f, 1f);
+			var portrait = new Size(0.5f, 1.0f);
 			Size square = Size.One;
-			var landscape = new Size(1f, 0.5f);
-			Assert.AreEqual(0.5f, portrait.Aspect);
-			Assert.AreEqual(1f, square.Aspect);
-			Assert.AreEqual(2f, landscape.Aspect);
+			var landscape = new Size(1.0f, 0.5f);
+			Assert.AreEqual(0.5f, portrait.AspectRatio);
+			Assert.AreEqual(1.0f, square.AspectRatio);
+			Assert.AreEqual(2.0f, landscape.AspectRatio);
 		}
 	}
 }

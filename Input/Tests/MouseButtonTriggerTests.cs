@@ -37,5 +37,18 @@ namespace DeltaEngine.Input.Tests
 			trigger = new MouseButtonTrigger(MouseButton.X2, State.Released);
 			Assert.True(trigger.ConditionMatched(input));
 		}
+
+		[Test]
+		public void CheckForEquility()
+		{
+			var trigger = new MouseButtonTrigger(MouseButton.Left, State.Pressing);
+			var otherTrigger = new MouseButtonTrigger(MouseButton.Left, State.Released);
+			Assert.AreNotEqual(trigger, otherTrigger);
+			Assert.AreNotEqual(trigger.GetHashCode(), otherTrigger.GetHashCode());
+
+			var copyOfTrigger = new MouseButtonTrigger(MouseButton.Left, State.Pressing);
+			Assert.AreEqual(trigger, copyOfTrigger);
+			Assert.AreEqual(trigger.GetHashCode(), copyOfTrigger.GetHashCode());
+		}
 	}
 }

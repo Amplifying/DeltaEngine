@@ -47,7 +47,10 @@ namespace DeltaEngine.Input.SharpDX
 			return states[(int)button];
 		}
 
-		public bool IsAvailable { get; private set; }
+		public bool IsAvailable
+		{
+			get { return controller.IsConnected; }
+		}
 
 		public void Run()
 		{
@@ -76,9 +79,8 @@ namespace DeltaEngine.Input.SharpDX
 		private void UpdateButton(int bitfield, XInputGamePadButton button)
 		{
 			int buttonIndex = (int)ConvertButtonEnum(button);
-			states[buttonIndex] = IsXInputButtonPressed(bitfield, button)
-				? stateHelper.UpdateAndGetStateNowPressed(states[buttonIndex])
-				: stateHelper.UpdateAndGetStateNowReleased(states[buttonIndex]);
+			states[buttonIndex] =
+				states[buttonIndex].UpdateOnNativePressing(IsXInputButtonPressed(bitfield, button));
 		}
 
 		private GamePadButton ConvertButtonEnum(XInputGamePadButton button)
@@ -121,8 +123,6 @@ namespace DeltaEngine.Input.SharpDX
 		{
 			return (bitfield & (int)button) != 0;
 		}
-
-		private readonly InputStateHelper stateHelper = new InputStateHelper();
 
 		private float NormalizeShortToFloat(short value)
 		{

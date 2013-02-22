@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DeltaEngine.Core;
 
@@ -92,5 +93,20 @@ namespace DeltaEngine.Multimedia
 		{
 			get { return internalInstances.Any(IsPlaying) || externalInstances.Any(IsPlaying); }
 		}
+
+		internal void RaisePlayEvent(SoundInstance instance)
+		{
+			if (OnPlay != null)
+				OnPlay(instance);
+		}
+
+		internal void RaiseStopEvent(SoundInstance instance)
+		{
+			if (OnStop != null)
+				OnStop(instance);
+		}
+
+		public event Action<SoundInstance> OnPlay;
+		public event Action<SoundInstance> OnStop;
 	}
 }

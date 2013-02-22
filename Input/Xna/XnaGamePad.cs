@@ -7,7 +7,7 @@ using XnaInput = Microsoft.Xna.Framework.Input;
 namespace DeltaEngine.Input.Xna
 {
 	/// <summary>
-	/// XNA implementation of the GamePad interface.
+	/// Native implementation of the GamePad interface using Xna and PlayerIndex.One
 	/// </summary>
 	public class XnaGamePad : GamePad
 	{
@@ -19,7 +19,7 @@ namespace DeltaEngine.Input.Xna
 		}
 
 		private readonly State[] states;
-		
+
 		public void Run()
 		{
 			XnaInput.GamePadState state = XnaInput.GamePad.GetState(PlayerIndex.One);
@@ -48,17 +48,32 @@ namespace DeltaEngine.Input.Xna
 
 		private void UpdateAllButtons(XnaInput.GamePadState state)
 		{
+			UpdateNormalButtons(state);
+			UpdateStickAndShoulderButtons(state);
+			UpdateDPadButtons(state);
+		}
+
+		private void UpdateNormalButtons(XnaInput.GamePadState state)
+		{
 			UpdateButton(state.Buttons.A, GamePadButton.A);
 			UpdateButton(state.Buttons.B, GamePadButton.B);
+			UpdateButton(state.Buttons.X, GamePadButton.X);
+			UpdateButton(state.Buttons.Y, GamePadButton.Y);
 			UpdateButton(state.Buttons.Back, GamePadButton.Back);
+			UpdateButton(state.Buttons.Start, GamePadButton.Start);
 			UpdateButton(state.Buttons.BigButton, GamePadButton.BigButton);
+		}
+
+		private void UpdateStickAndShoulderButtons(XnaInput.GamePadState state)
+		{
 			UpdateButton(state.Buttons.LeftShoulder, GamePadButton.LeftShoulder);
 			UpdateButton(state.Buttons.LeftStick, GamePadButton.LeftStick);
 			UpdateButton(state.Buttons.RightShoulder, GamePadButton.RightShoulder);
 			UpdateButton(state.Buttons.RightStick, GamePadButton.RightStick);
-			UpdateButton(state.Buttons.Start, GamePadButton.Start);
-			UpdateButton(state.Buttons.X, GamePadButton.X);
-			UpdateButton(state.Buttons.Y, GamePadButton.Y);
+		}
+
+		private void UpdateDPadButtons(XnaInput.GamePadState state)
+		{
 			UpdateButton(state.DPad.Down, GamePadButton.Down);
 			UpdateButton(state.DPad.Up, GamePadButton.Up);
 			UpdateButton(state.DPad.Left, GamePadButton.Left);

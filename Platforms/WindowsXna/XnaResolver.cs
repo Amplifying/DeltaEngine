@@ -19,6 +19,7 @@ namespace DeltaEngine.Platforms
 			Register<XnaImage>();
 			RegisterSingleton<XnaDevice>();
 			Register<XnaSound>();
+			Register<XnaMusic>();
 			RegisterSingleton<XnaDrawing>();
 			RegisterSingleton<XnaMouse>();
 			RegisterSingleton<XnaKeyboard>();

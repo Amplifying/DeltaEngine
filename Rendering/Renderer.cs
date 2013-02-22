@@ -27,8 +27,10 @@ namespace DeltaEngine.Rendering
 
 		public void Run(Time time)
 		{
+			ResortRenderablesIfAnyHaveChangedRenderLayer();
+
 			var objectsToRender = new List<Renderable>();
-			foreach (var renderObject in visibles)
+			foreach (var renderObject in sortedRenderables)
 				if (renderObject.Value.IsVisible)
 					objectsToRender.Add(renderObject.Value);
 
@@ -38,10 +40,42 @@ namespace DeltaEngine.Rendering
 			RemoveDisposedObjects();
 		}
 
+		private void ResortRenderablesIfAnyHaveChangedRenderLayer()
+		{
+			if (NoRenderableHasChangedRenderLayer())
+				return;
+
+			ResortRenderables();
+			SetAllRenderablesToRenderLayerHasNotChanged();
+		}
+
+		private bool NoRenderableHasChangedRenderLayer()
+		{
+			foreach (var renderObject in sortedRenderables)
+				if (renderObject.Value.HasRenderLayerChanged)
+					return false;
+
+			return true;
+		}
+
+		private void ResortRenderables()
+		{
+			var unsortedRenderables = new SortedList<int, Renderable>(sortedRenderables);
+			sortedRenderables.Clear();
+			foreach (var renderObject in unsortedRenderables)
+				sortedRenderables.Add(renderObject.Value.SortKey, renderObject.Value);
+		}
+
+		private void SetAllRenderablesToRenderLayerHasNotChanged()
+		{
+			foreach (var renderObject in sortedRenderables)
+				renderObject.Value.HasRenderLayerChanged = false;
+		}
+
 		private void RemoveDisposedObjects()
 		{
 			var objectsToRemove = new List<Renderable>();
-			foreach (var renderObject in visibles)
+			foreach (var renderObject in sortedRenderables)
 				if (renderObject.Value.markForDisposal)
 					objectsToRemove.Add(renderObject.Value);
 
@@ -49,35 +83,36 @@ namespace DeltaEngine.Rendering
 				Remove(renderObject);
 		}
 
-		private readonly SortedList<int, Renderable> visibles = new SortedList<int, Renderable>();
+		private readonly SortedList<int, Renderable> sortedRenderables =
+			new SortedList<int, Renderable>();
 
 		public int NumberOfActiveRenderableObjects
 		{
-			get { return visibles.Count; }
+			get { return sortedRenderables.Count; }
 		}
 
 		public void Add(Renderable renderable)
 		{
-			if (visibles.ContainsValue(renderable))
+			if (sortedRenderables.ContainsValue(renderable))
 				return;
 
 			renderable.markForDisposal = false;
-			visibles.Add(renderable.SortKey, renderable);
+			sortedRenderables.Add(renderable.SortKey, renderable);
 		}
 
 		public void Remove(Renderable renderable)
 		{
-			foreach (var pair in visibles)
-				if (pair.Value == renderable)
+			foreach (var renderObject in sortedRenderables)
+				if (renderObject.Value == renderable)
 				{
-					visibles.Remove(pair.Key);
+					sortedRenderables.Remove(renderObject.Key);
 					break;
 				}
 		}
 
 		public void RemoveAll()
 		{
-			visibles.Clear();
+			sortedRenderables.Clear();
 		}
 
 		public void DrawLine(Point startPosition, Point endPosition, Color color)

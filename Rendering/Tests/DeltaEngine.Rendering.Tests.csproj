@@ -50,8 +50,14 @@
     <Compile Include="ColoredCirclesTests.cs" />
     <Compile Include="ColoredEllipseTests.cs" />
     <Compile Include="ColoredRectangleTests.cs" />
+    <Compile Include="FallingEffectTests.cs" />
+    <Compile Include="ZoomingEffectTests.cs" />
     <Compile Include="EllipseTests.cs" />
     <Compile Include="FadeoutEffectTests.cs" />
+    <Compile Include="InvertedScreenSpaceTests.cs" />
+    <Compile Include="PixelScreenSpaceTests.cs" />
+    <Compile Include="QuadraticScreenSpaceTests.cs" />
+    <Compile Include="RelativeScreenSpaceTests.cs" />
     <Compile Include="SpriteTests.cs" />
     <Compile Include="Line2DTests.cs" />
     <Compile Include="BlinkingBox.cs" />
@@ -59,7 +65,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RendererTests.cs" />
-    <Compile Include="ScreenSpaceTests.cs" />
     <Compile Include="VectorTextTests.cs" />
   </ItemGroup>
   <ItemGroup>

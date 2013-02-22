@@ -33,6 +33,7 @@ namespace DeltaEngine.Core
 		}
 
 		public static bool StartedFromNCrunch { get; set; }
+		public static bool StartedFromNunitConsole { get; set; }
 
 		const string TestAttribute = "NUnit.Framework.TestAttribute";
 		const string IgnoreAttribute = "NUnit.Framework.IgnoreAttribute";

@@ -18,10 +18,23 @@ namespace DeltaEngine.Rendering
 		private readonly int id;
 		private static int maxId;
 		public bool IsVisible { get; set; }
-		public byte RenderLayer { get; set; }
+
+		public byte RenderLayer
+		{
+			get { return renderLayer; }
+			set
+			{
+				renderLayer = value;
+				HasRenderLayerChanged = true;
+			}
+		}
+
+		private byte renderLayer;
+		internal bool HasRenderLayerChanged { get; set; }
 		public const byte BackgroundRenderLayer = 16;
 		public const byte DefaultRenderLayer = 64;
 		public const byte UIRenderLayer = 128;
+
 		public int SortKey
 		{
 			get { return (RenderLayer << 20) | id; }

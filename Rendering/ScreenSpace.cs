@@ -5,94 +5,27 @@ using DeltaEngine.Platforms;
 namespace DeltaEngine.Rendering
 {
 	/// <summary>
-	/// Converts to and from quadratic space. Must be created whenever the viewport size changes.
+	/// Converts to and from some kind of screen space like Quadratic, Pixel, etc.
 	/// </summary>
-	public class ScreenSpace
+	public abstract class ScreenSpace
 	{
-		public ScreenSpace(Window window)
+		protected ScreenSpace(Window window)
 		{
-			Update(window.ViewportPixelSize);
+			viewportPixelSize = window.ViewportPixelSize;
 			window.ViewportSizeChanged += Update;
 			window.OrientationChanged += orientation => Update(window.ViewportPixelSize);
 		}
-		
-		private void Update(Size newViewportSize)
+
+		protected Size viewportPixelSize;
+
+		protected virtual void Update(Size newViewportSize)
 		{
 			viewportPixelSize = newViewportSize;
-			aspectRatio = newViewportSize.Width / newViewportSize.Height;
-			quadraticToPixelScale = CalculateToPixelScale();
-			quadraticToPixelOffset = CalculateToPixelOffset();
-			pixelToQuadraticScale = CalculateToQuadraticScale();
-			pixelToQuadraticOffset = CalculateToQuadraticOffset();
 			if (ViewportSizeChanged != null)
 				ViewportSizeChanged();
 		}
 
 		public event Action ViewportSizeChanged;
-
-		private Size viewportPixelSize;
-		private float aspectRatio;
-		private Size quadraticToPixelScale;
-		private Point quadraticToPixelOffset;
-		private Size pixelToQuadraticScale;
-		private Point pixelToQuadraticOffset;
-
-		private Size CalculateToPixelScale()
-		{
-			Size scale = viewportPixelSize;
-			if (aspectRatio < 1f)
-				scale.Width *= 1f / aspectRatio;
-			else if (aspectRatio > 1f)
-				scale.Height *= aspectRatio;
-			return scale;
-		}
-
-		private Point CalculateToPixelOffset()
-		{
-			Point offset = Point.Zero;
-			if (aspectRatio < 1.0f)
-				offset.X = (viewportPixelSize.Width - quadraticToPixelScale.Width) * 0.5f;
-			else
-				offset.Y = (viewportPixelSize.Height - quadraticToPixelScale.Height) * 0.5f;
-			return offset;
-		}
-		
-		private Size CalculateToQuadraticScale()
-		{
-			return 1f / quadraticToPixelScale;
-		}
-
-		private Point CalculateToQuadraticOffset()
-		{
-			return new Point(-quadraticToPixelOffset.X / quadraticToPixelScale.Width,
-				-quadraticToPixelOffset.Y / quadraticToPixelScale.Height);
-		}
-
-		public Point ToQuadraticSpace(Point pixelPosition)
-		{
-			var scaledPixelPosition = new Point(pixelToQuadraticScale.Width * pixelPosition.X,
-				pixelToQuadraticScale.Height * pixelPosition.Y);
-			return scaledPixelPosition + pixelToQuadraticOffset;
-		}
-
-		public Size ToQuadraticSpace(Size pixelSize)
-		{
-			return pixelToQuadraticScale * pixelSize;
-		}
-
-		public Rectangle ToQuadraticSpace(Rectangle quadraticRect)
-		{
-			return new Rectangle(ToQuadraticSpace(quadraticRect.TopLeft),
-				ToQuadraticSpace(quadraticRect.Size));
-		}
-
-		public Point ToPixelSpace(Point quadraticPos)
-		{
-			var pixelPos =
-				new Point(quadraticToPixelScale.Width * quadraticPos.X + quadraticToPixelOffset.X,
-					quadraticToPixelScale.Height * quadraticPos.Y + quadraticToPixelOffset.Y);
-			return new Point((float)Math.Round(pixelPos.X, 2), (float)Math.Round(pixelPos.Y, 2));
-		}
 
 		/// <summary>
 		/// The rounded version of ToPixelSpace is used for lines, boxes and fonts where it matters to
@@ -100,9 +33,7 @@ namespace DeltaEngine.Rendering
 		/// </summary>
 		public Point ToPixelSpaceRounded(Point quadraticPos)
 		{
-			var pixelPos =
-				new Point(quadraticToPixelScale.Width * quadraticPos.X + quadraticToPixelOffset.X,
-					quadraticToPixelScale.Height * quadraticPos.Y + quadraticToPixelOffset.Y);
+			Point pixelPos = ToPixelSpace(quadraticPos);
 			return new Point((float)Math.Round(pixelPos.X + Epsilon),
 				(float)Math.Round(pixelPos.Y + Epsilon));
 		}
@@ -112,69 +43,44 @@ namespace DeltaEngine.Rendering
 		/// </summary>
 		private const float Epsilon = 0.001f;
 
-		public Size ToPixelSpace(Size quadraticSize)
-		{
-			return quadraticToPixelScale * quadraticSize;
-		}
+		public abstract Point ToPixelSpace(Point currentScreenSpacePos);
+
+		public abstract Size ToPixelSpace(Size currentScreenSpaceSize);
 
 		public Rectangle ToPixelSpace(Rectangle quadraticRect)
 		{
 			return new Rectangle(ToPixelSpace(quadraticRect.TopLeft), ToPixelSpace(quadraticRect.Size));
 		}
 
-		public Point TopLeft
+		public abstract Point FromPixelSpace(Point pixelPosition);
+
+		public abstract Size FromPixelSpace(Size pixelSize);
+
+		public Rectangle FromPixelSpace(Rectangle quadraticRect)
 		{
-			get { return pixelToQuadraticOffset; }
+			return new Rectangle(FromPixelSpace(quadraticRect.TopLeft),
+				FromPixelSpace(quadraticRect.Size));
 		}
 
-		public Point BottomRight
-		{
-			get { return new Point(1 - pixelToQuadraticOffset.X, 1 - pixelToQuadraticOffset.Y); }
-		}
+		public abstract Point TopLeft { get; }
 
-		public float Left
-		{
-			get { return pixelToQuadraticOffset.X; }
-		}
+		public abstract Point BottomRight { get; }
 
-		public float Top
-		{
-			get { return pixelToQuadraticOffset.Y; }
-		}
+		public abstract float Left { get; }
 
-		public float Right
-		{
-			get { return 1 - pixelToQuadraticOffset.X; }
-		}
+		public abstract float Top { get; }
 
-		public float Bottom
-		{
-			get { return 1 - pixelToQuadraticOffset.Y; }
-		}
+		public abstract float Right { get; }
 
-		public Size Area
-		{
-			get { return new Size(BottomRight.X - TopLeft.X, BottomRight.Y - TopLeft.Y); }
-		}
+		public abstract float Bottom { get; }
+
+		protected abstract Size GetSize { get; }
 
 		public Rectangle Viewport
 		{
-			get { return new Rectangle(TopLeft, Area); }
+			get { return new Rectangle(TopLeft, GetSize); }
 		}
 
-		public Point GetInnerPoint(float x, float y)
-		{
-			return GetInnerPoint(new Point(x, y));
-		}
-
-		public Point GetInnerPoint(Point relativePoint)
-		{
-			return new Point(Left + Area.Width * relativePoint.X, Top + Area.Height * relativePoint.Y);
-		}
-
-		public Size ViewportPixelSize
-		{
-			get { return viewportPixelSize; }
-		}
+		public abstract Point GetInnerPoint(Point relativePoint);
 	}
 }

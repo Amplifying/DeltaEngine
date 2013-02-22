@@ -40,7 +40,7 @@ namespace Breakout
 		{
 			xPosition = xPosition.Clamp(renderer.Screen.Left + HalfWidth,
 				renderer.Screen.Right - HalfWidth);
-			var yPosition = renderer.Screen.GetInnerPoint(0.5f, 0.9f).Y;
+			var yPosition = renderer.Screen.GetInnerPoint(new Point(0.5f, 0.9f)).Y;
 			DrawArea = Rectangle.FromCenter(xPosition, yPosition, Width, Height);
 			base.Render(renderer, time);
 		}

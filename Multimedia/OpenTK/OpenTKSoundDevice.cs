@@ -5,7 +5,7 @@ using OpenTK.Audio.OpenAL;
 namespace DeltaEngine.Multimedia.OpenTK
 {
 	/// <summary>
-	/// Native implementation of an audio context.
+	/// Native implementation of a SoundDevice using OpenAL and the default sound device.
 	/// </summary>
 	public class OpenTKSoundDevice : SoundDevice
 	{

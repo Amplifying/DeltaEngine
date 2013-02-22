@@ -10,7 +10,10 @@ namespace DeltaEngine.Input.Windows
 	{
 		public void Run() {}
 
-		public bool IsAvailable { get; private set; }
+		public bool IsAvailable
+		{
+			get { return false; }
+		}
 
 		public Point GetPosition(int touchIndex)
 		{

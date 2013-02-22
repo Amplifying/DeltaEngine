@@ -77,10 +77,10 @@ namespace DeltaEngine.Platforms.Tests
 				windowMock.Raise(w => w.ViewportSizeChanged += null, s);
 			});
 			windowMock.SetupGet(w => w.ViewportPixelSize).Returns(() => currentSize);
-			window = windowMock.Object;
+			Window = windowMock.Object;
 		}
 
-		private Window window;
+		public Window Window { get; private set; }
 
 		private void SetupGraphics()
 		{
@@ -119,11 +119,11 @@ namespace DeltaEngine.Platforms.Tests
 
 		private void SetupRenderer()
 		{
-			screen = RegisterMock(new Mock<ScreenSpace>(window).Object);
+			screen = RegisterMock(new QuadraticScreenSpace(Window));
 			RegisterMock(new Mock<Renderer>(drawing, screen).Object);
 		}
 
-		private ScreenSpace screen;
+		private QuadraticScreenSpace screen;
 
 		private void SetupInput()
 		{
@@ -212,18 +212,40 @@ namespace DeltaEngine.Platforms.Tests
 		private void SetupMultimedia()
 		{
 			var soundDevice = RegisterMock<Multimedia.SoundDevice>();
-			var mockSound = new Mock<Sound>("dummy", soundDevice.Object);
+			SetupSoundMock(soundDevice.Object);
+			SetupMusicMock(soundDevice.Object);
+		}
+
+		private void SetupSoundMock(SoundDevice soundDevice)
+		{
+			var mockSound = new Mock<Sound>("dummy", soundDevice);
 			mockSound.CallBase = true;
 			mockSound.SetupGet(s => s.LengthInSeconds).Returns(0.48f);
-			List<SoundInstance> playingSoundInstances = new List<SoundInstance>();
+			var playingSoundInstances = new List<SoundInstance>();
 			mockSound.Setup(s => s.PlayInstance(It.IsAny<SoundInstance>())).Callback(
-				(SoundInstance instance) => playingSoundInstances.Add(instance));
+				(SoundInstance instance) =>
+				{
+					mockSound.Object.RaisePlayEvent(instance);
+					playingSoundInstances.Add(instance);
+				});
 			mockSound.Setup(s => s.StopInstance(It.IsAny<SoundInstance>())).Callback(
-				(SoundInstance instance) => playingSoundInstances.Remove(instance));
+				(SoundInstance instance) =>
+				{
+					mockSound.Object.RaiseStopEvent(instance);
+					playingSoundInstances.Remove(instance);
+				});
 			mockSound.Setup(s => s.IsPlaying(It.IsAny<SoundInstance>())).Returns(
 				(SoundInstance instance) => playingSoundInstances.Contains(instance));
-				
+
 			RegisterMock(mockSound.Object);
+		}
+
+		private void SetupMusicMock(SoundDevice soundDevice)
+		{
+			var mockMusic = new Mock<Music>("dummy", soundDevice);
+			mockMusic.SetupGet(s => s.DurationInSeconds).Returns(35.85f);
+			mockMusic.SetupGet(s => s.PositionInSeconds).Returns(1.0f);
+			RegisterMock(mockMusic.Object);
 		}
 
 		private void SetupPlatforms()
@@ -269,7 +291,7 @@ namespace DeltaEngine.Platforms.Tests
 
 		public void AdvanceTimeAndExecuteRunners(float timeToAddInSeconds)
 		{
-			int simulateRunTicks = (int)Math.Round(timeToAddInSeconds * 60);
+			var simulateRunTicks = (int)Math.Round(timeToAddInSeconds * 60);
 			for (int tick = 0; tick < simulateRunTicks; tick++)
 			{
 				RunAllRunners();

@@ -28,8 +28,8 @@ namespace DeltaEngine.Rendering.Tests
 				remScreen = screen;
 			}, () =>
 			{
-				line.StartPosition = remScreen.ToQuadraticSpace(Point.Zero);
-				line.EndPosition = remScreen.ToQuadraticSpace(new Point(800, 600));
+				line.StartPosition = remScreen.FromPixelSpace(Point.Zero);
+				line.EndPosition = remScreen.FromPixelSpace(new Point(800, 600));
 			});
 		}
 	}

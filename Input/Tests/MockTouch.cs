@@ -10,7 +10,7 @@ namespace DeltaEngine.Input.Tests
 {
 	public class MockTouch : Touch
 	{
-		public MockTouch(Window window, ScreenSpace screen)
+		public MockTouch(Window window, QuadraticScreenSpace screen)
 		{
 			TouchPanel.WindowHandle = window.Handle;
 			IsAvailable = TouchPanel.GetCapabilities().IsConnected;

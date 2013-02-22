@@ -37,18 +37,23 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <DocumentationFile>bin\Release\DeltaEngine.Datatypes.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BinaryData.cs" />
+    <Compile Include="BinaryDataFactory.cs" />
     <Compile Include="Color.cs" />
     <Compile Include="Point.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rectangle.cs" />
     <Compile Include="Size.cs" />
+    <Compile Include="UnknownBinaryData.cs" />
+    <Compile Include="UnknownBinaryDataTypeException.cs" />
     <Compile Include="Triangle2D.cs" />
+    <Compile Include="UnknownMessageTypeReceived.cs" />
     <Compile Include="Vector.cs" />
   </ItemGroup>
   <ItemGroup>

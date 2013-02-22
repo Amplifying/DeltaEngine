@@ -1,11 +1,11 @@
-﻿using DeltaEngine.Input.Devices;
+﻿using System;
 
 namespace DeltaEngine.Input.Triggers
 {
 	/// <summary>
 	/// Trigger implementation for Mouse events.
 	/// </summary>
-	public class GamePadButtonTrigger : Trigger
+	public class GamePadButtonTrigger : Trigger, IEquatable<GamePadButtonTrigger>
 	{
 		public GamePadButtonTrigger(GamePadButton button, State state)
 		{
@@ -16,9 +16,29 @@ namespace DeltaEngine.Input.Triggers
 		private readonly GamePadButton button;
 		private readonly State state;
 
-		public override bool ConditionMatched(InputCommands inputCommands)
+		public GamePadButton Button
 		{
-			return inputCommands.gamePad.IsAvailable && inputCommands.gamePad.GetButtonState(button) == state;
+			get { return button; }
+		}
+
+		public override bool ConditionMatched(InputCommands input)
+		{
+			return input.gamePad.IsAvailable && input.gamePad.GetButtonState(button) == state;
+		}
+
+		public bool Equals(GamePadButtonTrigger other)
+		{
+			return other.Button == button && other.state == state;
+		}
+
+		public override bool Equals(object other)
+		{
+			return other is GamePadButtonTrigger && Equals((GamePadButtonTrigger)other);
+		}
+
+		public override int GetHashCode()
+		{
+			return ((int)button).GetHashCode() ^ ((int)state).GetHashCode();
 		}
 	}
 }

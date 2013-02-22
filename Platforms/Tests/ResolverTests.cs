@@ -16,7 +16,7 @@ namespace DeltaEngine.Platforms.Tests
 
 		private void MakeSureTypeCanBeResolved<T>(Type resolverType)
 		{
-			if (IgnoreSlowTestIfStartedViaNCrunch(resolverType))
+			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
 				return;
 
 			using (var resolver = (AutofacResolver)Activator.CreateInstance(resolverType))

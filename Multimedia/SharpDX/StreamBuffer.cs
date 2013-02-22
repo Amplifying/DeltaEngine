@@ -4,6 +4,9 @@ using SharpDX.XAudio2;
 
 namespace DeltaEngine.Multimedia.SharpDX
 {
+	/// <summary>
+	/// Helper class wrapping an XAudio buffer object and streaming the next data into the buffer.
+	/// </summary>
 	internal class StreamBuffer : IDisposable
 	{
 		public StreamBuffer()

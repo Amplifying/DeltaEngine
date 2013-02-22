@@ -42,14 +42,14 @@ namespace DeltaEngine.Platforms.Tests
 
 		public void Start<AppEntryRunner>(Type resolverType, int instancesToCreate = 1)
 		{
-			if (IgnoreSlowTestIfStartedViaNCrunch(resolverType))
+			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
 				return;
 
 			using (var resolver = CreateResolver(resolverType))
 				resolver.Start<AppEntryRunner>(instancesToCreate);
 		}
 
-		protected bool IgnoreSlowTestIfStartedViaNCrunch(Type resolver)
+		protected bool IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(Type resolver)
 		{
 			StackTraceExtensions.InVisualTestCase = false;
 			var stackFrames = new StackTrace().GetFrames();
@@ -58,10 +58,12 @@ namespace DeltaEngine.Platforms.Tests
 					IsFrameInVisualTestCase(frame);
 
 			StackTraceExtensions.StartedFromNCrunch = IsStartedFromNCrunch();
+			StackTraceExtensions.StartedFromNunitConsole = IsStartedFromNunitConsole();
 			if (resolver == typeof(TestResolver) || NCrunchAllowIntegrationTests)
 				return false;
 
-			return StackTraceExtensions.StartedFromNCrunch;
+			return StackTraceExtensions.StartedFromNCrunch ||
+				StackTraceExtensions.StartedFromNunitConsole;
 		}
 
 		private static bool IsStartedFromNCrunch()
@@ -73,6 +75,11 @@ namespace DeltaEngine.Platforms.Tests
 						return true;
 
 			return false; //ncrunch: no coverage
+		}
+
+		private static bool IsStartedFromNunitConsole()
+		{
+			return AppDomain.CurrentDomain.FriendlyName.StartsWith("test-domain-");
 		}
 
 		private static void IsFrameInVisualTestCase(StackFrame frame)
@@ -100,7 +107,7 @@ namespace DeltaEngine.Platforms.Tests
 		protected void Start<FirstClass>(Type resolverType, Action<FirstClass> initCode,
 			Action runCode = null)
 		{
-			if (IgnoreSlowTestIfStartedViaNCrunch(resolverType))
+			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
 				return;
 
 			using (var resolver = CreateResolver(resolverType))
@@ -110,7 +117,7 @@ namespace DeltaEngine.Platforms.Tests
 		protected void Start<First, Second>(Type resolverType, Action<First, Second> initCode,
 			Action runCode = null)
 		{
-			if (IgnoreSlowTestIfStartedViaNCrunch(resolverType))
+			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
 				return;
 
 			using (var resolver = CreateResolver(resolverType))
@@ -120,7 +127,7 @@ namespace DeltaEngine.Platforms.Tests
 		protected void Start<First, Second, Third>(Type resolverType,
 			Action<First, Second, Third> initCode, Action runCode = null)
 		{
-			if (IgnoreSlowTestIfStartedViaNCrunch(resolverType))
+			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
 				return;
 
 			using (var resolver = CreateResolver(resolverType))
@@ -131,7 +138,7 @@ namespace DeltaEngine.Platforms.Tests
 		protected void Start<First, Second>(Type resolverType, Action<First> initCode,
 			Action<Second> runCode)
 		{
-			if (IgnoreSlowTestIfStartedViaNCrunch(resolverType))
+			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
 				return;
 
 			// ReSharper disable AccessToDisposedClosure
@@ -142,7 +149,7 @@ namespace DeltaEngine.Platforms.Tests
 		protected void Start<First, Second, Third>(Type resolverType,
 			Action<First> initCode, Action<Second, Third> runCode)
 		{
-			if (IgnoreSlowTestIfStartedViaNCrunch(resolverType))
+			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
 				return;
 
 			using (var resolver = CreateResolver(resolverType))
@@ -153,7 +160,7 @@ namespace DeltaEngine.Platforms.Tests
 		protected void Start<First, Second, Third, Forth>(Type resolverType,
 			Action<First> initCode, Action<Second, Third, Forth> runCode)
 		{
-			if (IgnoreSlowTestIfStartedViaNCrunch(resolverType))
+			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
 				return;
 
 			using (var r = CreateResolver(resolverType))
@@ -164,7 +171,7 @@ namespace DeltaEngine.Platforms.Tests
 		protected void Start<First, Second, Third>(Type resolverType,
 			Action<First, Second> initCode, Action<Third> runCode)
 		{
-			if (IgnoreSlowTestIfStartedViaNCrunch(resolverType))
+			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
 				return;
 
 			using (var resolver = CreateResolver(resolverType))
@@ -174,7 +181,7 @@ namespace DeltaEngine.Platforms.Tests
 		protected void Start<First, Second, Third, Forth>(Type resolverType,
 			Action<First, Second> initCode, Action<Third, Forth> runCode)
 		{
-			if (IgnoreSlowTestIfStartedViaNCrunch(resolverType))
+			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
 				return;
 
 			using (var resolver = CreateResolver(resolverType))
@@ -185,7 +192,7 @@ namespace DeltaEngine.Platforms.Tests
 		protected void Start<First, Second, Third, Forth>(Type resolverType,
 			Action<First, Second, Third> initCode, Action<Forth> runCode)
 		{
-			if (IgnoreSlowTestIfStartedViaNCrunch(resolverType))
+			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
 				return;
 
 			using (var resolver = CreateResolver(resolverType))
@@ -195,7 +202,7 @@ namespace DeltaEngine.Platforms.Tests
 		protected void Start<First, Second, Third, Forth, Fifth>(Type resolverType,
 			Action<First, Second, Third> initCode, Action<Forth, Fifth> runCode)
 		{
-			if (IgnoreSlowTestIfStartedViaNCrunch(resolverType))
+			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
 				return;
 
 			using (var resolver = CreateResolver(resolverType))
@@ -206,7 +213,7 @@ namespace DeltaEngine.Platforms.Tests
 		protected void Start<First, Second, Third, Forth, Fifth>(Type resolverType,
 			Action<First, Second> initCode, Action<Third, Forth, Fifth> runCode)
 		{
-			if (IgnoreSlowTestIfStartedViaNCrunch(resolverType))
+			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
 				return;
 
 			using (var r = CreateResolver(resolverType))

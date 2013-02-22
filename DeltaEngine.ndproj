@@ -1,70 +1,86 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <NDepend AppName="DeltaEngine" Platform="DotNet">
-  <OutputDir KeepHistoric="False" KeepXmlFiles="True">C:\code\DeltaEngine\NDependOut</OutputDir>
+  <OutputDir KeepHistoric="False" KeepXmlFiles="True">C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\NDependOut</OutputDir>
   <Assemblies>
-    <Name>DeltaEngine.Core</Name>
-    <Name>DeltaEngine.Core.Tests</Name>
+    <Name>DeltaEngine.Graphics</Name>
+    <Name>DeltaEngine.Platforms</Name>
     <Name>DeltaEngine.Datatypes</Name>
     <Name>DeltaEngine.Datatypes.Tests</Name>
-    <Name>DeltaEngine.Graphics</Name>
     <Name>DeltaEngine.Graphics.Tests</Name>
     <Name>DeltaEngine.Graphics.OpenTK</Name>
-    <Name>DeltaEngine.Graphics.OpenTK.Tests</Name>
-    <Name>DeltaEngine.Graphics.Xna</Name>
-    <Name>DeltaEngine.Graphics.Xna.Tests</Name>
-    <Name>DeltaEngine.Graphics.SharpDX</Name>
-    <Name>DeltaEngine.Graphics.SharpDX.Tests</Name>
+    <Name>DeltaEngine.Platforms.Tests</Name>
+    <Name>DeltaEngine.WindowsOpenGL</Name>
+    <Name>LogoApp</Name>
+    <Name>LogoApp.Tests</Name>
+    <Name>DeltaEngine.Core.Tests</Name>
     <Name>DeltaEngine.Rendering</Name>
     <Name>DeltaEngine.Rendering.Tests</Name>
-    <Name>DeltaEngine.Platforms</Name>
-    <Name>DeltaEngine.Platforms.Tests</Name>
-    <Name>DeltaEngine.Platforms.Windows</Name>
-    <Name>DeltaEngine.Platforms.Windows.Tests</Name>
-    <Name>DeltaEngine.WindowsOpenGL</Name>
-    <Name>DeltaEngine.WindowsOpenGL.Tests</Name>
+    <Name>DeltaEngine.Graphics.Xna</Name>
+    <Name>DeltaEngine.Graphics.SharpDX</Name>
+    <Name>DeltaEngine.Core</Name>
     <Name>DeltaEngine.WindowsXna</Name>
-    <Name>DeltaEngine.WindowsXna.Tests</Name>
     <Name>DeltaEngine.WindowsDirectX</Name>
-    <Name>DeltaEngine.WindowsDirectX.Tests</Name>
+    <Name>DeltaEngine.Platforms.Windows</Name>
+    <Name>Breakout</Name>
+    <Name>DeltaEngine.Input</Name>
+    <Name>DeltaEngine.Input.Tests</Name>
+    <Name>DeltaEngine.Input.Windows</Name>
+    <Name>DeltaEngine.Input.SharpDX</Name>
+    <Name>DeltaEngine.Input.Xna</Name>
+    <Name>Breakout.Tests</Name>
+    <Name>DeltaEngine.Multimedia</Name>
+    <Name>DeltaEngine.Multimedia.Tests</Name>
+    <Name>DeltaEngine.Multimedia.Xna</Name>
+    <Name>DeltaEngine.Multimedia.SharpDX</Name>
+    <Name>DeltaEngine.Multimedia.OpenTK</Name>
+    <Name>GameOfDeath</Name>
+    <Name>GameOfDeath.Tests</Name>
   </Assemblies>
-  <FrameworkAssemblies>
-    <Name>mscorlib</Name>
-    <Name>Autofac</Name>
-    <Name>System.Core</Name>
-    <Name>nunit.framework</Name>
-    <Name>Moq</Name>
-    <Name>OpenTK</Name>
-    <Name>System.Drawing</Name>
-    <Name>System</Name>
-    <Name>SharpDX.DXGI</Name>
-    <Name>SharpDX.Direct3D11</Name>
-    <Name>SharpDX.Direct2D1</Name>
-    <Name>SharpDX</Name>
-    <Name>System.Windows.Forms</Name>
-    <Name>Microsoft.Xna.Framework.Game</Name>
-    <Name>Microsoft.Xna.Framework.Graphics</Name>
-    <Name>Microsoft.Xna.Framework</Name>
-  </FrameworkAssemblies>
+  <FrameworkAssemblies />
   <Dirs>
-    <Dir>C:\code\DeltaEngine\Graphics\bin\Debug</Dir>
-    <Dir>C:\code\DeltaEngine\Platforms\bin\Debug</Dir>
-    <Dir>C:\code\DeltaEngine\Datatypes\Tests\bin\Debug</Dir>
-    <Dir>C:\code\DeltaEngine\Graphics\Tests\bin\Debug</Dir>
-    <Dir>C:\code\DeltaEngine\Graphics\OpenTK\bin\Debug</Dir>
-    <Dir>C:\code\DeltaEngine\Graphics\OpenTK\Tests\bin\Debug</Dir>
-    <Dir>C:\code\DeltaEngine\Platforms\Tests\bin\Debug</Dir>
-    <Dir>C:\code\DeltaEngine\Platforms\WindowsOpenGL\Tests\bin\Debug</Dir>
-    <Dir>C:\code\DeltaEngine\Core\Tests\bin\Debug</Dir>
-    <Dir>C:\code\DeltaEngine\Rendering\Tests\bin\Debug</Dir>
-    <Dir>C:\code\DeltaEngine\Graphics\Xna\Tests\bin\Debug</Dir>
-    <Dir>C:\code\DeltaEngine\Graphics\SharpDX\bin\Debug</Dir>
-    <Dir>C:\code\DeltaEngine\Platforms\WindowsXna\Tests\bin\Debug</Dir>
-    <Dir>C:\code\DeltaEngine\Platforms\WindowsDirectX\bin\Debug</Dir>
-    <Dir>C:\code\DeltaEngine\Platforms\WindowsDirectX\Tests\bin\Debug</Dir>
-    <Dir>C:\code\DeltaEngine\Graphics\SharpDX\Tests\bin\Debug</Dir>
-    <Dir>C:\code\DeltaEngine\Platforms\Windows\Tests\bin\Debug</Dir>
-    <Dir>C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319</Dir>
+    <Dir>C:\Windows\Microsoft.NET\Framework\v4.0.30319</Dir>
+    <Dir>C:\Windows\Microsoft.NET\Framework\v4.0.30319\WPF</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Datatypes\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\OpenTK\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\OpenTK\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsOpenGL\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Core\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Rendering\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\Xna\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\SharpDX\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsXna\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsDirectX\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsDirectX\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\SharpDX\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\Windows\Tests\bin\Release</Dir>
     <Dir>C:\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Datatypes\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsOpenGL\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Samples\LogoApp\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Samples\LogoApp\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Rendering\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\Xna\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Core\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsXna\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\Windows\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Breakout\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Input\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Input\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Input\Windows\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Input\SharpDX\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Input\Xna\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Breakout\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\Xna\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\SharpDX\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\OpenTK\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Samples\GameOfDeath\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Samples\GameOfDeath\Tests\bin\Release</Dir>
   </Dirs>
   <Report Kind="0" SectionsEnabled="32767" XslPath="" Flags="64512">
     <Section Enabled="True">Application Metrics</Section>

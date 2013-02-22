@@ -19,10 +19,10 @@ namespace DeltaEngine.Platforms.Tests
 				{
 					testWindow.TotalPixelSize = new Size(480, 800);
 
-					var quadSize = screen.ToQuadraticSpace(new Point(0, 0));
+					var quadSize = screen.FromPixelSpace(new Point(0, 0));
 					Assert.IsTrue(quadSize.X.IsNearlyEqual(0.2f));
 					Assert.AreEqual(0, quadSize.Y);
-					quadSize = screen.ToQuadraticSpace(new Point(480, 800));
+					quadSize = screen.FromPixelSpace(new Point(480, 800));
 					Assert.AreEqual(new Point(0.8f, 1), quadSize);
 
 					var pixelSize = screen.ToPixelSpace(new Point(0.2f, 0));
@@ -32,9 +32,9 @@ namespace DeltaEngine.Platforms.Tests
 
 					testWindow.TotalPixelSize = new Size(800, 480);
 
-					quadSize = screen.ToQuadraticSpace(new Point(0, 0));
+					quadSize = screen.FromPixelSpace(new Point(0, 0));
 					Assert.AreEqual(new Point(0f, 0.2f), quadSize);
-					quadSize = screen.ToQuadraticSpace(new Point(800, 480));
+					quadSize = screen.FromPixelSpace(new Point(800, 480));
 					Assert.AreEqual(new Point(1, 0.8f), quadSize);
 
 					pixelSize = screen.ToPixelSpace(new Point(0f, 0.2f));

@@ -8,11 +8,11 @@ using Microsoft.Xna.Framework.Input.Touch;
 namespace DeltaEngine.Input.Xna
 {
 	/// <summary>
-	/// Native Xna implementation of the Touch interface.
+	/// Native implementation of the Touch interface using Xna.
 	/// </summary>
 	public class XnaTouch : Touch
 	{
-		public XnaTouch(Window window, ScreenSpace screen)
+		public XnaTouch(Window window, QuadraticScreenSpace screen)
 		{
 			TouchPanel.WindowHandle = window.Handle;
 			IsAvailable = TouchPanel.GetCapabilities().IsConnected;
@@ -44,6 +44,6 @@ namespace DeltaEngine.Input.Xna
 
 		public bool IsAvailable { get; private set; }
 
-		public void Dispose() {}
+		public void Dispose() { }
 	}
 }

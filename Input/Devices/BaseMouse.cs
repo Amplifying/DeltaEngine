@@ -18,14 +18,14 @@ namespace DeltaEngine.Input.Devices
 
 		public State GetButtonState(MouseButton button)
 		{
-			if (button == MouseButton.Left)
-				return LeftButton;
 			if (button == MouseButton.Right)
 				return RightButton;
 			if (button == MouseButton.Middle)
 				return MiddleButton;
 			if (button == MouseButton.X1)
 				return X1Button;
+			if (button == MouseButton.X2)
+				return X2Button;
 			return LeftButton;
 		}
 

@@ -40,6 +40,7 @@
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\DeltaEngine.Core.Tests.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
@@ -55,6 +56,7 @@
     <Compile Include="FastTrigTests.cs" />
     <Compile Include="SimulatedAppTests.cs" />
     <Compile Include="ArrayExtensionsTests.cs" />
+    <Compile Include="AssemblyUpdaterTests.cs" />
     <Compile Include="ContentLoaderTests.cs" />
     <Compile Include="FixedRandomTests.cs" />
     <Compile Include="GenericRunnerTests.cs" />

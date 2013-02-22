@@ -9,7 +9,7 @@ using XnaKeys = Microsoft.Xna.Framework.Input.Keys;
 namespace DeltaEngine.Input.Xna
 {
 	/// <summary>
-	/// Native Xna implementation of the Keyboard interface.
+	/// Native implementation of the Keyboard interface using Xna
 	/// </summary>
 	public class XnaKeyboard : Keyboard
 	{

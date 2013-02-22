@@ -82,7 +82,7 @@ namespace DeltaEngine.Platforms
 			RaiseInitializedEventOnlyOnce();
 			var window = Resolve<Window>();
 			do
-				ExecuteRunnersLoopAndPresenters(runCode); 
+				ExecuteRunnersLoopAndPresenters(runCode);
 			while (!window.IsClosing);
 		}
 
@@ -111,7 +111,7 @@ namespace DeltaEngine.Platforms
 			RegisterBaseTypes<T>(RegisterType(typeof(T)));
 		}
 
-		internal class UnableToRegisterMoreTypesApplicationHasAlreadyStarted : Exception {}
+		internal class UnableToRegisterMoreTypesApplicationHasAlreadyStarted : Exception { }
 
 		protected readonly List<Type> alreadyRegisteredTypes = new List<Type>();
 
@@ -169,7 +169,7 @@ namespace DeltaEngine.Platforms
 			RegisterInstanceAsRunnerOrPresenterIfPossible(instance);
 			resolvedInstances.Add(instance);
 		}
-		
+
 		private readonly List<object> resolvedInstances = new List<object>();
 
 		private void RegisterBaseTypes<T>(
@@ -240,7 +240,7 @@ namespace DeltaEngine.Platforms
 			builder = new ContainerBuilder();
 			foreach (var instance in resolvedInstances.OfType<IDisposable>().Reverse())
 				instance.Dispose();
-			
+
 			base.Dispose();
 		}
 
@@ -259,7 +259,7 @@ namespace DeltaEngine.Platforms
 			foreach (Type t in exeAssembly.GetTypes())
 				if (!alreadyRegisteredTypes.Contains(t))
 					builder.RegisterType(t).AsSelf().OnActivating(ActivatingInstance()).
-					        InstancePerLifetimeScope();
+									InstancePerLifetimeScope();
 		}
 	}
 }

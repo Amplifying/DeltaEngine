@@ -17,7 +17,10 @@ namespace DeltaEngine.Rendering.Tests
 			//new ColoredCircleTests().DrawLotsOfColoredBorderedCircles(TestStarter.OpenGL);
 			//new ColoredEllipseTests().DrawLotsOfColoredBorderlessEllipses(TestStarter.OpenGL);
 			//new ColoredEllipseTests().DrawLotsOfColoredBorderedEllipses(TestStarter.OpenGL);
-			new VectorTextTests().DrawSampleText(TestStarter.OpenGL);
+			//new VectorTextTests().DrawSampleText(TestStarter.OpenGL);
+			//new ColoredRectangleTests().RedBoxOverLaysBlueBox(TestStarter.OpenGL);
+			//new ZoomingEffectTests().RenderZoomingLogo(TestStarter.OpenGL);
+			new FallingEffectTests().RenderFallingLogo(TestStarter.OpenGL);
 		}
 	}
 }

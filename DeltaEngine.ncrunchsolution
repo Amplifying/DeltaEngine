@@ -18,6 +18,7 @@ Configuration\ContinuousApp\ContinuousApp.csproj:Program.cs
 Configuration\ContinuousApp\DeltaEngine.Configuration.ContinuousApp.csproj:Program.cs
 Configuration\Tests\DeltaEngine.Configuration.Tests.csproj:IntegrationAttribute.cs
 Configuration\WindowsXna\DeltaEngine.Configuration.WindowsXna.csproj
+Core\DeltaEngine.Core.csproj:AssemblyChecker.cs
 Graphics\OpenTK\DeltaEngine.Graphics.OpenTK.csproj
 Graphics\OpenTK\Tests\DeltaEngine.Graphics.OpenTK.Tests.csproj
 Graphics\OpenTK\Tests\DeltaEngine.Graphics.OpenTK.Tests.csproj:Program.cs

@@ -7,6 +7,9 @@ using SysPoint = System.Drawing.Point;
 
 namespace DeltaEngine.Input.SharpDX
 {
+	/// <summary>
+	/// Native implementation of the BaseMouse class using DirectInput.
+	/// </summary>
 	public class SharpDXMouse : BaseMouse
 	{
 		public SharpDXMouse(CursorPositionTranslater positionTranslater)
@@ -23,7 +26,10 @@ namespace DeltaEngine.Input.SharpDX
 		private DInput.DirectInput directInput;
 		private DInput.Mouse mouse;
 		private DInput.MouseState currentState;
-		public override bool IsAvailable { get { return true; } }
+		public override bool IsAvailable
+		{
+			get { return true; }
+		}
 
 		public override void SetPosition(Point newPosition)
 		{

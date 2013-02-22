@@ -3,6 +3,12 @@ using System.IO;
 
 namespace DeltaEngine.Multimedia.OpenTK
 {
+	/// <summary>
+	/// Audio data converter capable of converting MS Adpcm audio to pcm 16 bit.
+	/// http://wiki.multimedia.cx/index.php?title=Microsoft_ADPCM
+	/// http://dslinux.gits.kiev.ua/trunk/lib/audiofile/src/libaudiofile/modules/msadpcm.c
+	/// http://netghost.narod.ru/gff/vendspec/micriff/ms_riff.txt
+	/// </summary>
 	internal class MsAdpcmConverter
 	{
 		public MsAdpcmConverter(int setChannels, short samplesPerBlock, short setBlockAlign)

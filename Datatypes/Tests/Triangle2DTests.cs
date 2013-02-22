@@ -62,12 +62,14 @@ namespace DeltaEngine.Datatypes.Tests
 		public void GetHashCodeViaDictionary()
 		{
 			var triangle1 = new Triangle2D(new Point(1, 2), new Point(3, 4), new Point(5, 6));
+			var triangle1Similar = new Triangle2D(new Point(1, 2), new Point(3, 4), new Point(15, 16));
 			var triangle2 = new Triangle2D(new Point(11, 12), new Point(13, 14), new Point(15, 16));
 			var triangles = new Dictionary<Triangle2D, int> { { triangle1, 1 }, { triangle2, 2 } };
 			Assert.IsTrue(triangles.ContainsKey(triangle1));
 			Assert.IsTrue(triangles.ContainsKey(triangle2));
 			Assert.IsFalse(
 				triangles.ContainsKey(new Triangle2D(new Point(1, 2), new Point(3, 4), new Point(5, 7))));
+			Assert.AreNotEqual(triangle1.GetHashCode(), triangle1Similar.GetHashCode());
 		}
 
 		[Test]

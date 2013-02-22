@@ -17,6 +17,7 @@ namespace DeltaEngine.Platforms
 			Register<OpenTKImage>();
 			RegisterSingleton<OpenTKSoundDevice>();
 			Register<OpenTKSound>();
+			Register<OpenTKMusic>();
 			RegisterSingleton<WindowsMouse>();
 			RegisterSingleton<WindowsKeyboard>();
 			RegisterSingleton<WindowsTouch>();

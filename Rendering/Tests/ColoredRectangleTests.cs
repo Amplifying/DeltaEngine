@@ -48,12 +48,32 @@ namespace DeltaEngine.Rendering.Tests
 		[VisualTest]
 		public void DrawTwoBoxes(Type resolver)
 		{
-			Start(resolver,
-				(Renderer r) =>
-				{ 
-					r.Add(new ColoredRectangle(new Point(0.4f, 0.4f), Size.Half, Color.Yellow));
-					r.Add(new ColoredRectangle(new Point(0.5f, 0.6f), Size.Half, Color.Blue));
-				});
+			Start(resolver, (Renderer r) =>
+			{
+				r.Add(new ColoredRectangle(new Point(0.4f, 0.4f), Size.Half, Color.Yellow));
+				r.Add(new ColoredRectangle(new Point(0.5f, 0.6f), Size.Half, Color.Blue));
+			});
+		}
+
+		[VisualTest]
+		public void RedBoxOverLaysBlueBox(Type resolver)
+		{
+			Start(resolver, (Renderer r) =>
+			{
+				var redBox = new ColoredRectangle(new Point(0.4f, 0.4f), Size.Half, Color.Red)
+				{
+					RenderLayer = 1
+				};
+
+				var blueBox = new ColoredRectangle(new Point(0.5f, 0.6f), Size.Half, Color.Blue)
+				{
+					RenderLayer = 2
+				};
+
+				r.Add(redBox);
+				r.Add(blueBox);
+				redBox.RenderLayer = 3;
+			});
 		}
 	}
 }

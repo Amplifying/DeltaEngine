@@ -4,6 +4,9 @@ using SysDraw = System.Drawing;
 
 namespace DeltaEngine.Input.Windows
 {
+	/// <summary>
+	/// Helper class to keep track of all touches according to their id's.
+	/// </summary>
 	public class TouchCollection
 	{
 		public TouchCollection(CursorPositionTranslater positionTranslater)
@@ -87,7 +90,7 @@ namespace DeltaEngine.Input.Windows
 			return positionTranslater.FromScreenPositionToScreenSpace(newPosition);
 		}
 
-		private const int Precision = 100;
+		private const float Precision = 100;
 
 		internal int FindIndexByIdOrGetFreeIndex(int id)
 		{

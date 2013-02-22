@@ -54,6 +54,14 @@ namespace DeltaEngine.Input.Tests
 			});
 		}
 
+		[Test]
+		public void AddTouchCallback()
+		{
+			var input = new InputCommands(null, null, null, null);
+			input.Add((Touch touch) => {});
+			Assert.AreEqual(1, input.Count);
+		}
+
 		[VisualTest]
 		public void QuitWithEscape(Type resolver)
 		{

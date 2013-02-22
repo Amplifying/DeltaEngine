@@ -125,5 +125,20 @@ namespace DeltaEngine.Multimedia.Tests
 				Assert.AreEqual(0, sound.NumberOfPlayingInstances);
 			});
 		}
+		
+		[VisualTest]
+		public void DisposeSoundInstancesFromSoundClass(Type resolver)
+		{
+			Start(resolver, (Content content) =>
+			{
+				var sound = content.Load<Sound>("DefaultSound");
+				new SoundInstance(sound);
+				sound.Play();
+				Assert.AreEqual(2, sound.NumberOfPlayingInstances);
+				sound.Dispose();
+				Assert.AreEqual(0, sound.NumberOfPlayingInstances);
+			});
+		}
+
 	}
 }

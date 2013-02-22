@@ -1,11 +1,11 @@
-﻿using DeltaEngine.Input.Devices;
+﻿using System;
 
 namespace DeltaEngine.Input.Triggers
 {
 	/// <summary>
 	/// Trigger implementation for Keyboard events.
 	/// </summary>
-	public class KeyTrigger : Trigger
+	public class KeyTrigger : Trigger, IEquatable<KeyTrigger>
 	{
 		public KeyTrigger(Key key, State state)
 		{
@@ -21,9 +21,29 @@ namespace DeltaEngine.Input.Triggers
 			get { return key; }
 		}
 
-		public override bool ConditionMatched(InputCommands inputCommands)
+		public State State
 		{
-			return inputCommands.keyboard.IsAvailable && inputCommands.keyboard.GetKeyState(key) == state;
+			get { return state; }
+		}
+
+		public override bool ConditionMatched(InputCommands input)
+		{
+			return input.keyboard.IsAvailable && input.keyboard.GetKeyState(key) == state;
+		}
+
+		public bool Equals(KeyTrigger other)
+		{
+			return other.Key == key && other.state == state;
+		}
+
+		public override bool Equals(object other)
+		{
+			return other is KeyTrigger && Equals((KeyTrigger)other);
+		}
+
+		public override int GetHashCode()
+		{
+			return ((int)key).GetHashCode() ^ ((int)state).GetHashCode();
 		}
 	}
 }

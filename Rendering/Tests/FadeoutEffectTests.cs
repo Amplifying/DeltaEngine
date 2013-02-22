@@ -34,19 +34,18 @@ namespace DeltaEngine.Rendering.Tests
 		[Test]
 		public void EmulateRunFadeoutEffectForOneSecondToFadeoutAndBeRemoved()
 		{
-			var resolver = new TestResolver();
-			var content = resolver.Resolve<Content>();
-			var effect = new FadeoutEffect(content.Load<Image>("test"), Point.Half, Size.One);
-			var renderer = resolver.Resolve<Renderer>();
-			renderer.Add(effect);
-			Assert.AreEqual(1, renderer.NumberOfActiveRenderableObjects);
-			Assert.AreEqual(Color.White, effect.Color);
-			resolver.AdvanceTimeAndExecuteRunners(0.5f);
-			Assert.IsTrue(effect.Color.AlphaValue.IsNearlyEqual(0.5f, 0.1f),
-				"effect alpha should be 0.5, but is " + effect.Color.AlphaValue);
-			resolver.AdvanceTimeAndExecuteRunners(1.0f);
-			Assert.IsTrue(effect.Color.A < 10);
-			Assert.AreEqual(0, renderer.NumberOfActiveRenderableObjects);
+			Start(typeof(TestResolver), (Content content, Renderer renderer) =>
+			{
+				var effect = new FadeoutEffect(content.Load<Image>("test"), Point.Half, Size.One);
+				renderer.Add(effect);
+				Assert.AreEqual(1, renderer.NumberOfActiveRenderableObjects);
+				Assert.AreEqual(Color.White, effect.Color);
+				testResolver.AdvanceTimeAndExecuteRunners(0.5f);
+				Assert.AreEqual(0.5f, effect.Color.AlphaValue, 0.1f);
+				testResolver.AdvanceTimeAndExecuteRunners(1.0f);
+				Assert.IsTrue(effect.Color.A < 10);
+				Assert.AreEqual(0, renderer.NumberOfActiveRenderableObjects);
+			});
 		}
 
 		[VisualTest]

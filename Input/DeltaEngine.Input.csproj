@@ -45,12 +45,12 @@
     <Compile Include="InputCommands.cs" />
     <Compile Include="Triggers\MouseMovementTrigger.cs" />
     <Compile Include="Triggers\TouchPressTrigger.cs" />
+    <Compile Include="StateExtensions.cs" />
     <Compile Include="Triggers\GamePadButtonTrigger.cs" />
     <Compile Include="Triggers\KeyTrigger.cs" />
     <Compile Include="MouseButton.cs" />
     <Compile Include="Triggers\MouseButtonTrigger.cs" />
     <Compile Include="State.cs" />
-    <Compile Include="StateExtensions.cs" />
     <Compile Include="Devices\Keyboard.cs" />
     <Compile Include="Key.cs" />
     <Compile Include="Devices\Mouse.cs" />
@@ -60,7 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\DeltaEngine.Core.csproj">
-      <Project>{a59e35bc-be24-466e-9e61-1827fa24de33}</Project>
+      <Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
       <Name>DeltaEngine.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Datatypes\DeltaEngine.Datatypes.csproj">

@@ -11,7 +11,7 @@ namespace DeltaEngine.Rendering
 	{
 		public Sprite(Image image, Rectangle initalDrawArea, Color color)
 		{
-			this.image = image;
+			Image = image;
 			DrawArea = initalDrawArea;
 			Color = color;
 		}
@@ -19,7 +19,7 @@ namespace DeltaEngine.Rendering
 		public Sprite(Image image, Rectangle initalDrawArea)
 			: this(image, initalDrawArea, Color.White) {}
 
-		protected Image image;
+		public Image Image { get; protected set; }
 		public Rectangle DrawArea;
 		public Color Color;
 		public float Rotation;
@@ -47,7 +47,7 @@ namespace DeltaEngine.Rendering
 				GetVertex(DrawArea.BottomRight, Point.One),
 				GetVertex(DrawArea.BottomLeft, Point.UnitY)
 			};
-			image.Draw(vertices);
+			Image.Draw(vertices);
 		}
 
 		private VertexPositionColorTextured GetVertex(Point position, Point uv)
@@ -68,17 +68,16 @@ namespace DeltaEngine.Rendering
 				GetVertex(Rotate(DrawArea.BottomRight), Point.One),
 				GetVertex(Rotate(DrawArea.BottomLeft), Point.UnitY)
 			};
-			image.Draw(vertices);
+			Image.Draw(vertices);
 		}
 		
 		private Point Rotate(Point point)
 		{
 			var rotationCenter = RotationCenter == RotateAroundCenter ? DrawArea.Center : RotationCenter;
-			point -= rotationCenter;
-			float sin = MathExtensions.Sin(Rotation);
-			float cos = MathExtensions.Cos(Rotation);
-			point = new Point(point.X * cos - point.Y * sin, point.X * sin + point.Y * cos);
-			return rotationCenter + point;
+			point.RotateAround(rotationCenter, Rotation, FastTrig);
+			return point;
 		}
+
+		private static readonly FastTrig FastTrig = new FastTrig();
 	}
 }

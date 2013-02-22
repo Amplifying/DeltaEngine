@@ -16,6 +16,12 @@ namespace DeltaEngine.Input
 		}
 
 		protected internal readonly List<Trigger> attachedTriggers = new List<Trigger>();
+
+		public List<Trigger> GetTriggers()
+		{
+			return attachedTriggers;
+		}
+
 		public event Action<Trigger> Callback;
 		public bool TriggerFired { get; private set; }
 

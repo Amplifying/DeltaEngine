@@ -8,7 +8,22 @@ namespace DeltaEngine.Multimedia
 	/// </summary>
 	public abstract class SoundDevice : Runner, IDisposable
 	{
-		public abstract void Run();
+		public virtual void Run()
+		{
+			if (currentPlayingMusic != null)
+				currentPlayingMusic.Run();
+		}
+
 		public abstract void Dispose();
+
+		internal void RegisterCurrentMusic(Music music)
+		{
+			if (currentPlayingMusic != null)
+				currentPlayingMusic.Stop();
+
+			currentPlayingMusic = music;
+		}
+
+		protected Music currentPlayingMusic;
 	}
 }

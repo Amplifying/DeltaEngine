@@ -1,11 +1,12 @@
 ﻿using System;
 using DeltaEngine.Platforms;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 
 namespace DeltaEngine.Multimedia.Xna
 {
 	/// <summary>
-	/// Native implementation of an audio context, nothing to do on xna here.
+	/// Native implementation of a SoundDevice using xna that calls the FrameworkDispatcher.
 	/// </summary>
 	public class XnaSoundDevice : SoundDevice
 	{
@@ -27,7 +28,11 @@ namespace DeltaEngine.Multimedia.Xna
 
 		public ContentManager Content { get; private set; }
 
-		public override void Run() {}
+		public override void Run()
+		{
+			FrameworkDispatcher.Update();
+			base.Run();
+		}
 
 		public override void Dispose()
 		{

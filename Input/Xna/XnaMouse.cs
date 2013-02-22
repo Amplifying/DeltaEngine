@@ -10,20 +10,23 @@ using NativeMouse = Microsoft.Xna.Framework.Input.Mouse;
 namespace DeltaEngine.Input.Xna
 {
 	/// <summary>
-	/// Native Xna implementation of the Mouse interface.
+	/// Native implementation of the Mouse interface using Xna
 	/// </summary>
 	public class XnaMouse : BaseMouse
 	{
-		public XnaMouse(Window window, ScreenSpace screen)
+		public XnaMouse(Window window, QuadraticScreenSpace screen)
 		{
 			this.screen = screen;
 			if (window != null)
 				NativeMouse.WindowHandle = window.Handle;
 		}
 
-		private readonly ScreenSpace screen;
+		private readonly QuadraticScreenSpace screen;
 
-		public override bool IsAvailable { get { return true; } }
+		public override bool IsAvailable
+		{
+			get { return true; }
+		}
 
 		public override void Run()
 		{
@@ -45,7 +48,7 @@ namespace DeltaEngine.Input.Xna
 		private void UpdateValuesFromState(ref MouseState newState)
 		{
 			Position = new Point(newState.X, newState.Y);
-			Position = screen.ToQuadraticSpace(Position);
+			Position = screen.FromPixelSpace(Position);
 			ScrollWheelValue = newState.ScrollWheelValue;
 			UpdateButtonStates(ref newState);
 		}
