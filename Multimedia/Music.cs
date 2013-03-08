@@ -22,12 +22,13 @@ namespace DeltaEngine.Multimedia
 		}
 
 		protected abstract void PlayNativeMusic(float volume);
-
 		public abstract void Stop();
-		public abstract bool IsPlaying();
-
-		protected internal virtual void Run() {} //ncrunch: no coverage
-
+		public abstract bool IsPlaying { get; }
+		protected abstract void Run();
+		internal void InternalRun()
+		{
+			Run();
+		}
 		public abstract float DurationInSeconds { get; }
 		public abstract float PositionInSeconds { get; }
 	}

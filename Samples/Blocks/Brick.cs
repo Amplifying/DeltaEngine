@@ -36,8 +36,8 @@ namespace Blocks
 		}
 
 		public Point TopLeft;
-		public static readonly Point RenderOffset = new Point(0.2f, 0.3f);
+		public static readonly Point RenderOffset = new Point(0.38f, 0.385f);
 		public static readonly float RenderZoom = 0.02f;
-		public static readonly Size Size = new Size(RenderZoom);
+		private static readonly Size Size = new Size(RenderZoom);
 	}
 }

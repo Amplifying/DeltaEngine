@@ -15,12 +15,12 @@ namespace DeltaEngine.Platforms
 		public XnaWindow(Game game)
 		{
 			this.game = game;
-			game.Window.Title = StackTraceExtensions.GetEntryName();
+			Title = StackTraceExtensions.GetEntryName();
 			game.Window.AllowUserResizing = true;
 			game.IsMouseVisible = true;
 			game.Window.ClientSizeChanged += OnViewportSizeChanged;
-			game.Window.OrientationChanged += (sender, args) => 
-				OnOrientationChanged(GetOrientation(game.Window.CurrentOrientation));
+			game.Window.OrientationChanged +=
+				(sender, args) => OnOrientationChanged(GetOrientation(game.Window.CurrentOrientation));
 			game.Exiting += (sender, args) => { IsClosing = true; };
 			BackgroundColor = Color.Black;
 			closeAfterOneFrameIfInIntegrationTest = !StackTraceExtensions.ContainsNoTestOrIsVisualTest();
@@ -35,6 +35,8 @@ namespace DeltaEngine.Platforms
 				ViewportSizeChanged(ViewportPixelSize);
 		}
 
+		public event Action<Size> ViewportSizeChanged;
+
 		public void OnOrientationChanged(Orientation obj)
 		{
 			Action<Orientation> handler = OrientationChanged;
@@ -42,7 +44,9 @@ namespace DeltaEngine.Platforms
 				handler(obj);
 		}
 
-		private Orientation GetOrientation(DisplayOrientation xnaOrientaion)
+		public event Action<Orientation> OrientationChanged;
+
+		private static Orientation GetOrientation(DisplayOrientation xnaOrientaion)
 		{
 			if (xnaOrientaion == DisplayOrientation.LandscapeLeft ||
 				xnaOrientaion == DisplayOrientation.LandscapeRight)
@@ -91,25 +95,40 @@ namespace DeltaEngine.Platforms
 
 		public Color BackgroundColor { get; set; }
 
-		public bool IsFullscreen
+		public void SetFullscreen(Size displaySize)
 		{
-			get { return !game.Window.AllowUserResizing; }
-			set
-			{
-				game.Window.AllowUserResizing = value;
-				game.Window.BeginScreenDeviceChange(value);
-				game.Window.EndScreenDeviceChange(game.Window.ScreenDeviceName);
-			}
+			IsFullscreen = true;
+			rememberedWindowedSize = new Size(game.Window.ClientBounds.Width,
+				game.Window.ClientBounds.Height);
+			game.Window.AllowUserResizing = true;
+			game.Window.BeginScreenDeviceChange(IsFullscreen);
+			if (FullscreenChanged != null)
+				FullscreenChanged(displaySize, IsFullscreen);
+			game.Window.EndScreenDeviceChange(game.Window.ScreenDeviceName);
 		}
+
+		public void SetWindowed()
+		{
+			IsFullscreen = false;
+			game.Window.AllowUserResizing = false;
+			game.Window.BeginScreenDeviceChange(IsFullscreen);
+			if (FullscreenChanged != null)
+				FullscreenChanged(rememberedWindowedSize, IsFullscreen);
+			game.Window.EndScreenDeviceChange(game.Window.ScreenDeviceName);
+		}
+
+		private Size rememberedWindowedSize;
+
+		public bool IsFullscreen { get; private set; }
+
+		public event Action<Size, bool> FullscreenChanged;
+
 		public bool IsClosing { get; private set; }
 		public bool ShowCursor
 		{
 			get { return game.IsMouseVisible; }
 			set { game.IsMouseVisible = value; }
 		}
-
-		public event Action<Size> ViewportSizeChanged;
-		public event Action<Orientation> OrientationChanged;
 
 		public void Run()
 		{

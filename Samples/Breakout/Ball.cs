@@ -3,7 +3,6 @@ using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
 using DeltaEngine.Input;
-using DeltaEngine.Input.Devices;
 using DeltaEngine.Multimedia;
 using DeltaEngine.Rendering;
 
@@ -18,9 +17,9 @@ namespace Breakout
 			: base(content.Load<Image>("Ball"), Rectangle.Zero)
 		{
 			this.paddle = paddle;
-			UpdateOnPaddle();
 			fireBallSound = content.Load<Sound>("PaddleBallStart");
 			collisionSound = content.Load<Sound>("BallCollision");
+			UpdateOnPaddle();
 			RegisterFireBallCommand(inputCommands);
 		}
 
@@ -28,27 +27,20 @@ namespace Breakout
 		private readonly Sound fireBallSound;
 		private readonly Sound collisionSound;
 
-		public virtual void ResetBall()
+		private void UpdateOnPaddle()
 		{
-			UpdateOnPaddle();
-			velocity = Point.Zero;
-		}
-
-		public override void Dispose()
-		{
-			base.Dispose();
-			paddle.Dispose();
+			isOnPaddle = true;
+			Position = new Point(paddle.Position.X, paddle.Position.Y - Radius);
 		}
 
 		protected bool isOnPaddle;
-		protected Point velocity;
 
 		private void RegisterFireBallCommand(InputCommands inputCommands)
 		{
-			inputCommands.Add(Key.Space, State.Pressing, () => FireBallFromPaddle());
+			inputCommands.Add(Key.Space, State.Pressing, FireBallFromPaddle);
 			inputCommands.Add(MouseButton.Left, State.Pressing, mouse => FireBallFromPaddle());
-			inputCommands.Add((Touch touch) => FireBallFromPaddle());
-			inputCommands.Add(GamePadButton.A, State.Pressing, () => FireBallFromPaddle());
+			inputCommands.Add(touch => FireBallFromPaddle());
+			inputCommands.Add(GamePadButton.A, State.Pressing, FireBallFromPaddle);
 		}
 
 		private void FireBallFromPaddle()
@@ -58,35 +50,36 @@ namespace Breakout
 
 			isOnPaddle = false;
 			float randomXSpeed = randomizer.Get(-0.15f, 0.15f);
-			velocity = new Point(randomXSpeed == 0f ? 0.01f : randomXSpeed, StartBallSpeedY);
+			velocity = new Point(randomXSpeed.Abs() < 0.01f ? 0.01f : randomXSpeed, StartBallSpeedY);
 			fireBallSound.Play();
 		}
 
 		private readonly PseudoRandom randomizer = new PseudoRandom();
+		protected Point velocity;
 		private const float StartBallSpeedY = -1f;
+
+		public virtual void ResetBall()
+		{
+			UpdateOnPaddle();
+			velocity = Point.Zero;
+		}
 
 		protected override void Render(Renderer renderer, Time time)
 		{
-			borders = renderer.Screen.Viewport;
 			if (isOnPaddle)
 				UpdateOnPaddle();
 			else
 				UpdateInFlight(time.CurrentDelta);
 
-			DrawArea = Rectangle.FromCenter(Position, new Size(Height));
+			float aspect = renderer.Screen.ToPixelSpace(Size).AspectRatio;
+			DrawArea = Rectangle.FromCenter(Position, new Size(Height / aspect, Height));
 			base.Render(renderer, time);
 		}
 
-		private Rectangle borders;
 		public Point Position { get; protected set; }
+		private static readonly Size Size = new Size(Height);
 		private const float Height = Radius * 2.0f;
-		protected const float Radius = 0.02f;
-
-		private void UpdateOnPaddle()
-		{
-			isOnPaddle = true;
-			Position = new Point(paddle.Position.X, paddle.Position.Y - Radius);
-		}
+		internal const float Radius = 0.02f;
 
 		protected virtual void UpdateInFlight(float timeDelta)
 		{
@@ -97,14 +90,14 @@ namespace Breakout
 
 		private void HandleBorderCollisions()
 		{
-			if (Position.X < borders.Left + Radius)
+			if (Position.X < Radius)
 				HandleBorderCollision(Direction.Left);
-			else if (Position.X > borders.Right - Radius)
+			else if (Position.X > 1.0f - Radius)
 				HandleBorderCollision(Direction.Right);
 
-			if (Position.Y < borders.Top + Radius)
+			if (Position.Y < Radius)
 				HandleBorderCollision(Direction.Top);
-			else if (Position.Y > borders.Bottom - Radius)
+			else if (Position.Y > 1.0f - Radius)
 				HandleBorderCollision(Direction.Bottom);
 		}
 
@@ -170,5 +163,11 @@ namespace Breakout
 
 		private const float SpeedYIncrease = 1.015f;
 		private const float SpeedXIncrease = 2.5f;
+
+		public override void Dispose()
+		{
+			base.Dispose();
+			paddle.Dispose();
+		}
 	}
 }

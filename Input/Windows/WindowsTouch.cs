@@ -20,7 +20,7 @@ namespace DeltaEngine.Input.Windows
 			IsAvailable = CheckIfWindows7OrHigher();
 		}
 
-		internal readonly TouchHook hook;
+		private readonly TouchHook hook;
 		private readonly TouchCollection touches;
 
 		public bool IsAvailable { get; protected set; }

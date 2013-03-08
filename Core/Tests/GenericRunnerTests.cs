@@ -14,11 +14,13 @@ namespace DeltaEngine.Core.Tests
 		[Test]
 		public void AddGenericClass()
 		{
-			AddRunner(new Example());
+			var exampleRunner = new Example();
+			AddRunner(exampleRunner);
 			foreach (var runner in runners)
 				foreach (var interfaceType in runner.GetType().GetInterfaces())
 					InvokeGenericRun(interfaceType, runner);
-			Assert.IsTrue(wasExampleInvoked);
+			Assert.IsTrue(exampleRunner.WasInvoked);
+			Assert.NotNull(new Injection());
 		}
 
 		private void AddRunner(object classToAdd)
@@ -37,8 +39,6 @@ namespace DeltaEngine.Core.Tests
 			MethodInfo genericMethod = runner.GetType().GetMethod("Run");
 			genericMethod.Invoke(runner, new[] { newInstance });
 		}
-		
-		private static bool wasExampleInvoked;
 
 		internal class Injection { }
 
@@ -46,8 +46,10 @@ namespace DeltaEngine.Core.Tests
 		{
 			public void Run(Injection some)
 			{
-				wasExampleInvoked = true;
+				WasInvoked = true;
 			}
+
+			public bool WasInvoked { get; private set; }
 		}
 	}
 }

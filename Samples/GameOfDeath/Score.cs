@@ -17,7 +17,7 @@ namespace GameOfDeath
 			: base(null, Rectangle.Zero)
 		{
 			this.screen = screen;
-			RenderLayer = UIRenderLayer;
+			RenderLayer = MaxRenderLayer;
 			for (int digit = 0; digit < 10; digit++)
 				images[digit] = content.Load<Image>(digit.ToString(CultureInfo.InvariantCulture));
 			images[DollarSign] = content.Load<Image>("Dollar");

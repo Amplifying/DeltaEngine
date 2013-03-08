@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
@@ -12,7 +13,7 @@ namespace Blocks
 	/// </summary>
 	public class Block : Renderable
 	{
-		public Block(Content content, Randomizer random, Point topLeft)
+		public Block(BlocksContent content, Randomizer random, Point topLeft)
 		{
 			this.random = random;
 			CreateBricks(content);
@@ -23,9 +24,10 @@ namespace Blocks
 
 		private readonly Randomizer random;
 
-		private void CreateBricks(Content content)
+		private void CreateBricks(BlocksContent content)
 		{
-			int numberOfBricks = GetNumberOfBricks();
+			int numberOfBricks = content.AreFiveBrickBlocksAllowed
+				? GetNumberOfBricks() : NormalNumberOfBricks;
 			var image = content.Load<Image>("Block" + random.Get(1, 8));
 			Bricks = new List<Brick> { new Brick(image, Point.Zero) };
 			for (int i = 1; i < numberOfBricks; i++)
@@ -65,12 +67,22 @@ namespace Blocks
 
 			foreach (Brick brick in Bricks)
 				brick.Offset = new Point(brick.Offset.X - left, brick.Offset.Y - top);
+
+			center = new Point(Bricks.Average(brick => brick.Offset.X),
+				Bricks.Average(brick => brick.Offset.Y));
+		}
+
+		private Point center;
+
+		public Point Center
+		{
+			get { return center; }
 		}
 
 		public void RotateClockwise()
 		{
 			foreach (Brick brick in Bricks)
-				brick.Offset = new Point(- brick.Offset.Y, brick.Offset.X);
+				brick.Offset = new Point(-brick.Offset.Y, brick.Offset.X);
 
 			ShiftToTopLeft();
 		}
@@ -78,7 +90,7 @@ namespace Blocks
 		public void RotateAntiClockwise()
 		{
 			foreach (Brick brick in Bricks)
-				brick.Offset = new Point(brick.Offset.Y, - brick.Offset.X);
+				brick.Offset = new Point(brick.Offset.Y, -brick.Offset.X);
 
 			ShiftToTopLeft();
 		}
@@ -107,6 +119,16 @@ namespace Blocks
 		{
 			Top += MathExtensions.Min(fallSpeed * time.CurrentDelta, 1.0f);
 		}
+
+		public void Settle(Time time, float fallSpeed)
+		{
+			settling += MathExtensions.Min(fallSpeed * time.CurrentDelta, 1.0f);
+			if (settling >= 1.0f && Affix != null)
+				Affix();
+		}
+
+		private float settling;
+		public event Action Affix;
 
 		protected override void Render(Renderer renderer, Time time)
 		{

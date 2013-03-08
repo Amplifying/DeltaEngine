@@ -57,6 +57,10 @@
       <Project>{A8D386EA-D376-46EA-A721-2BA51426A721}</Project>
       <Name>DeltaEngine.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Core\Xml\DeltaEngine.Core.Xml.csproj">
+      <Project>{138a40b5-3d80-4ba3-bd84-d82c151ee7fe}</Project>
+      <Name>DeltaEngine.Core.Xml</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Datatypes\DeltaEngine.Datatypes.csproj">
       <Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
       <Name>DeltaEngine.Datatypes</Name>
@@ -66,7 +70,7 @@
       <Name>DeltaEngine.Input</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
-      <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
+      <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
       <Name>DeltaEngine.Rendering</Name>
     </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Platforms.csproj">

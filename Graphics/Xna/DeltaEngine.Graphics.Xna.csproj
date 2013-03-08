@@ -11,8 +11,7 @@
     <AssemblyName>DeltaEngine.Graphics.Xna</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -55,11 +54,11 @@
       <Name>DeltaEngine.Datatypes</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Platforms\DeltaEngine.Platforms.csproj">
-      <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
+      <Project>{bae8830e-5f62-48d6-b772-c4b1e8665fb3}</Project>
       <Name>DeltaEngine.Platforms</Name>
     </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Graphics.csproj">
-      <Project>{8F701B0D-48B6-45CF-85E0-286BD53328BA}</Project>
+      <Project>{8f701b0d-48b6-45cf-85e0-286bd53328ba}</Project>
       <Name>DeltaEngine.Graphics</Name>
     </ProjectReference>
   </ItemGroup>

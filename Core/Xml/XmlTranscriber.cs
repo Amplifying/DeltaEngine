@@ -96,7 +96,7 @@ namespace DeltaEngine.Core.Xml
 			return RemoveUnwantedChars(word);
 		}
 
-		private string RemoveUnwantedChars(string word)
+		private static string RemoveUnwantedChars(string word)
 		{
 			word = word.Replace(">", "");
 			word = word.Replace("<", "");

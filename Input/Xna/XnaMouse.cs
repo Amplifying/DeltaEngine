@@ -28,15 +28,15 @@ namespace DeltaEngine.Input.Xna
 			get { return true; }
 		}
 
+		public override void Dispose()
+		{
+			NativeMouse.WindowHandle = IntPtr.Zero;
+		}
+
 		public override void Run()
 		{
 			MouseState newState = NativeMouse.GetState();
 			UpdateValuesFromState(ref newState);
-		}
-
-		public override void Dispose()
-		{
-			NativeMouse.WindowHandle = IntPtr.Zero;
 		}
 
 		public override void SetPosition(Point newPosition)

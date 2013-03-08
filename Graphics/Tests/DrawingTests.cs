@@ -60,7 +60,24 @@ namespace DeltaEngine.Graphics.Tests
 				remDrawing = drawing;
 				vertices[0] = new VertexPositionColor(Point.Zero, Color.Red);
 				vertices[1] = new VertexPositionColor(window.ViewportPixelSize, Color.Red);
-				window.ViewportSizeChanged += size => vertices[1].Position = new Vector(size);
+				window.ViewportSizeChanged +=
+					size => vertices[1] = new VertexPositionColor(size, Color.Red);
+			}, () => remDrawing.DrawVertices(VerticesMode.Lines, vertices));
+		}
+
+		[VisualTest]
+		public void ShowYellowLineFullscreen(Type resolver)
+		{
+			var vertices = new VertexPositionColor[2];
+			Drawing remDrawing = null;
+			Start(resolver, (Drawing drawing, Window window) =>
+			{
+				window.SetFullscreen(new Size(640, 480));
+				remDrawing = drawing;
+				vertices[0] = new VertexPositionColor(Point.Zero, Color.Yellow);
+				vertices[1] = new VertexPositionColor(window.ViewportPixelSize, Color.Yellow);
+				window.ViewportSizeChanged +=
+					size => vertices[1] = new VertexPositionColor(size, Color.Yellow);
 			}, () => remDrawing.DrawVertices(VerticesMode.Lines, vertices));
 		}
 	}

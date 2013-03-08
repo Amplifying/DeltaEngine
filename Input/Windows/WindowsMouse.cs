@@ -9,14 +9,16 @@ namespace DeltaEngine.Input.Windows
 	/// </summary>
 	public class WindowsMouse : BaseMouse
 	{
-		public WindowsMouse(CursorPositionTranslater positionTranslater)
+		public WindowsMouse(CursorPositionTranslater  positionTranslater)
 		{
 			hook = new MouseHook();
 			this.positionTranslater = positionTranslater;
+			mouseCounter = new MouseDeviceCounter();
 		}
 
 		internal readonly MouseHook hook;
 		private readonly CursorPositionTranslater positionTranslater;
+		private readonly MouseDeviceCounter mouseCounter;
 
 		public override void Dispose()
 		{
@@ -25,7 +27,7 @@ namespace DeltaEngine.Input.Windows
 
 		public override bool IsAvailable
 		{
-			get { return true; }
+			get { return mouseCounter.GetNumberOfAvailableMice() > 0; }
 		}
 
 		public override void SetPosition(Point newPosition)

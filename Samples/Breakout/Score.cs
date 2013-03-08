@@ -1,4 +1,6 @@
-﻿namespace Breakout
+﻿using System;
+
+namespace Breakout
 {
 	/// <summary>
 	/// Each brick can either be dead or alive, has a color and the bounding
@@ -32,20 +34,20 @@
 		private int destroyedBlocksInARow;
 		private int points;
 
-		public void LostLive()
+		public void LifeLost()
 		{
 			lives--;
 			destroyedBlocksInARow /= 2;
-			if (lives == 0)
-				IsGameOver = true;
+			if (lives == 0 && GameOver!=null)
+				GameOver();
 		}
 
-		public bool IsGameOver { get; private set; }
+		public event Action GameOver;
 
 		public override string ToString()
 		{
 			return "Level: " + Level + ", Score: " + points +
-				(IsGameOver ? " - GAME OVER" : ", Lives: " + lives);
+				(lives == 0 ? " - GAME OVER" : ", Lives: " + lives);
 		}
 	}
 }

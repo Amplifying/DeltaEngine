@@ -1,25 +1,25 @@
-﻿using System.IO;
-using DeltaEngine.Core;
+﻿using DeltaEngine.Core;
 
 namespace Blocks
 {
 	/// <summary>
-	/// Allows the specification of a sub-directory under Content from which content can be read. 
-	/// Games can therefore switch mods/skins simply by varying the sub-directory.
+	/// Allows a prefix to be applied to the name of each content item prior to loading.
+	/// Games can therefore swap mods/skins simply by switching this prefix.
 	/// </summary>
 	public class ModdableContent : Content
 	{
-		public ModdableContent(Resolver resolver, string subdirectory = "")
+		public ModdableContent(Resolver resolver, string prefix = "")
 			: base(resolver)
 		{
-			Subdirectory = subdirectory;
+			Prefix = prefix;
 		}
 
-		public string Subdirectory { get; set; }
+		public string Prefix { get; set; }
 
 		public override ContentType Load<ContentType>(string contentName)
 		{
-			return base.Load<ContentType>(Path.Combine(Subdirectory, contentName));
+			return base.Load<ContentType>(Prefix + contentName);
+			;
 		}
 	}
 }

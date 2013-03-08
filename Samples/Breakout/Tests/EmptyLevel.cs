@@ -12,10 +12,5 @@ namespace Breakout.Tests
 				for (int y = 0; y < columns; y++)
 					bricks[x, y].Dispose();
 		}
-
-		public override Sprite GetBrickAt(float x, float y)
-		{
-			return null;
-		}
 	}
 }

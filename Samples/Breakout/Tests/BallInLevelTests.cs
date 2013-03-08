@@ -2,7 +2,6 @@
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
-using DeltaEngine.Input.Devices;
 using DeltaEngine.Platforms.Tests;
 using DeltaEngine.Rendering;
 using NUnit.Framework;
@@ -20,15 +19,15 @@ namespace Breakout.Tests
 		[VisualTest]
 		public void AdvanceInLevelAfterDestroyingAllBricks(Type type)
 		{
-			Start(type, (BallInLevel ball, Level level, TestResolver testResolver) =>
+			Start(type, (BallInLevel ball, Level level) =>
 			{
-				if (type == typeof(TestResolver))
-				{
-					level.GetBrickAt(0.25f, 0.25f).Dispose();
-					level.GetBrickAt(0.75f, 0.25f).Dispose();
-					level.GetBrickAt(0.25f, 0.45f).Dispose();
-					level.GetBrickAt(0.75f, 0.45f).Dispose();
-				}
+				if (type != typeof(TestResolver))
+					return;
+
+				level.GetBrickAt(0.25f, 0.125f).Dispose();
+				level.GetBrickAt(0.75f, 0.125f).Dispose();
+				level.GetBrickAt(0.25f, 0.375f).Dispose();
+				level.GetBrickAt(0.75f, 0.375f).Dispose();
 			}, (Level level) =>
 			{
 				if (level.BricksLeft == 0)
@@ -43,7 +42,7 @@ namespace Breakout.Tests
 			var ball = resolver.Resolve<BallInLevel>();
 			Assert.IsTrue(ball.IsVisible);
 			resolver.Run();
-			var initialBallPosition = new Point(0.5f, 0.76f);
+			var initialBallPosition = new Point(0.5f, 0.86f);
 			Assert.AreEqual(initialBallPosition, ball.Position);
 			resolver.SetKeyboardState(Key.Space, State.Pressing);
 			resolver.AdvanceTimeAndExecuteRunners(1.0f);

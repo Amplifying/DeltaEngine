@@ -1,62 +1,68 @@
 ﻿using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
-using DeltaEngine.Rendering;
 
 namespace Blocks
 {
 	/// <summary>
-	/// Overarching class controlling Blocks
+	/// Knits the main control classes together by feeding events raised by one to another
 	/// </summary>
 	public class Game
 	{
-		public Game(InputCommands input, Renderer renderer, Controller controller)
+		public Game(Controller controller, UserInterface userInterface, InputCommands input)
 		{
 			this.controller = controller;
-			SetControllerEvents();
-			SetInputEvents(input);
-			AddScore(renderer);
+			this.input = input;
+			SetControllerEvents(userInterface);
+			SetInputEvents();
 		}
 
 		private readonly Controller controller;
+		private readonly InputCommands input;
 
-		private void SetControllerEvents()
+		private void SetControllerEvents(UserInterface userInterface)
 		{
-			controller.ScorePoints += AddToScore;
-			controller.Lost += Lose;
+			controller.AddToScore += userInterface.AddToScore;
+			controller.Lose += userInterface.Lose;
 		}
 
-		private void Lose()
+		private void SetInputEvents()
 		{
-			scoreboard.Text = "Final Score " + Score;
-			Score = 0;
+			SetKeyboardEvents();
+			SetMouseEvents();
+			SetTouchEvents();
 		}
 
-		private void AddToScore(int points)
+		private void SetKeyboardEvents()
 		{
-			Score += points;
-			scoreboard.Text = "Score " + Score;
+			input.Add(Key.CursorLeft, State.Pressing, controller.MoveBlockLeftIfPossible);
+			input.Add(Key.CursorRight, State.Pressing, controller.MoveBlockRightIfPossible);
+			input.Add(Key.CursorUp, State.Pressing, controller.RotateBlockAntiClockwiseIfPossible);
+			input.Add(Key.CursorDown, State.Pressing, () => { controller.IsFallingFast = true; });
+			input.Add(Key.CursorDown, State.Releasing, () => { controller.IsFallingFast = false; });
 		}
 
-		public int Score { get; set; }
-		protected VectorText scoreboard;
-
-		private void SetInputEvents(InputCommands input)
+		private void SetMouseEvents()
 		{
-			input.Add(Key.CursorLeft, State.Pressing, controller.TryToMoveBlockLeft);
-			input.Add(Key.CursorRight, State.Pressing, controller.TryToMoveBlockRight);
-			input.Add(Key.CursorUp, State.Pressing, controller.TryToRotateBlockClockwise);
-			input.Add(Key.CursorDown, State.Pressing, controller.DropBlockFast);
-			input.Add(Key.CursorDown, State.Releasing, controller.DropBlockSlow);
+			input.Add(MouseButton.Left, State.Pressing, mouse => Pressing(mouse.Position));
+			input.Add(MouseButton.Left, State.Releasing, mouse => { controller.IsFallingFast = false; });
 		}
 
-		private void AddScore(Renderer renderer)
+		private void Pressing(Point position)
 		{
-			renderer.Add(
-				scoreboard =
-					new VectorText("Welcome to Blocks", new Point(0.45f, 0.3f), 0.025f)
-					{
-						RenderLayer = (byte)RenderLayer.Foreground
-					});
+			if (position.X < 0.4f)
+				controller.MoveBlockLeftIfPossible();
+			else if (position.X > 0.6f)
+				controller.MoveBlockRightIfPossible();
+			else if (position.Y < 0.5f)
+				controller.RotateBlockAntiClockwiseIfPossible();
+			else
+				controller.IsFallingFast = true;
+		}
+
+		private void SetTouchEvents()
+		{
+			input.Add(State.Pressing, touch => Pressing(touch.GetPosition(0)));
+			input.Add(State.Releasing, touch => { controller.IsFallingFast = false; });
 		}
 	}
 }

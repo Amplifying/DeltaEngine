@@ -19,17 +19,15 @@ namespace DeltaEngine.Rendering.Tests
 		[VisualTest]
 		public void DrawInPixelSpace(Type resolver)
 		{
-			ScreenSpace remScreen = null;
 			var line = new Line2D(Point.Zero, Point.Zero, Color.Red);
-			Start(resolver, (Renderer r, ScreenSpace screen, Window window) =>
+			Start(resolver, (Renderer r, Window window) =>
 			{
 				window.BackgroundColor = Color.Black;
 				r.Add(line);
-				remScreen = screen;
-			}, () =>
+			}, (ScreenSpace screen) =>
 			{
-				line.StartPosition = remScreen.FromPixelSpace(Point.Zero);
-				line.EndPosition = remScreen.FromPixelSpace(new Point(800, 600));
+				line.StartPosition = screen.FromPixelSpace(Point.Zero);
+				line.EndPosition = screen.FromPixelSpace(new Point(800, 600));
 			});
 		}
 	}

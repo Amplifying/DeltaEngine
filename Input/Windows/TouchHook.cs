@@ -17,7 +17,7 @@ namespace DeltaEngine.Input.Windows
 		{
 			nativeTouches = new List<NativeTouchInput>();
 			windowHandle = window.Handle;
-			RegisterTouchWindow(windowHandle, 0);
+			NativeMethods.RegisterTouchWindow(windowHandle, 0);
 			RegisterNativeTouchEvent(window);
 		}
 
@@ -42,7 +42,7 @@ namespace DeltaEngine.Input.Windows
 				return;
 			int inputCount = wParam.ToInt32();
 			NativeTouchInput[] newTouches = GetTouchDataFromHandle(inputCount, lParam);
-			CloseTouchInputHandle(lParam);
+			NativeMethods.CloseTouchInputHandle(lParam);
 			if (newTouches != null)
 				nativeTouches.AddRange(newTouches);
 		}
@@ -50,7 +50,8 @@ namespace DeltaEngine.Input.Windows
 		internal NativeTouchInput[] GetTouchDataFromHandle(int inputCount, IntPtr handle)
 		{
 			var inputs = new NativeTouchInput[inputCount];
-			bool isTouchProcessed = GetTouchInputInfo(handle, inputCount, inputs, NativeTouchByteSize);
+			bool isTouchProcessed = NativeMethods.GetTouchInputInfo(handle, inputCount, inputs, 
+				NativeTouchByteSize);
 			return isTouchProcessed == false ? null : inputs;
 		}
 
@@ -59,21 +60,8 @@ namespace DeltaEngine.Input.Windows
 		public override void Dispose()
 		{
 			if (windowHandle != IntPtr.Zero)
-				UnregisterTouchWindow(windowHandle);
+				NativeMethods.UnregisterTouchWindow(windowHandle);
 			base.Dispose();
 		}
-
-		[DllImport("User32")]
-		private static extern bool RegisterTouchWindow(IntPtr handle, UInt32 flags);
-
-		[DllImport("User32")]
-		private static extern bool UnregisterTouchWindow(IntPtr handle);
-
-		[DllImport("user32")]
-		private static extern void CloseTouchInputHandle(IntPtr lParam);
-
-		[DllImport("user32")]
-		private static extern bool GetTouchInputInfo(IntPtr hTouchInput, int cInputs,
-			[In, Out] NativeTouchInput[] pInputs, int cbSize);
 	}
 }

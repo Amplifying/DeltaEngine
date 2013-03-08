@@ -31,13 +31,13 @@ namespace DeltaEngine.Platforms.Tests
 		public static readonly TestCaseData[] Resolvers =
 		{
 			new TestCaseData(typeof(TestResolver)),
-			new TestCaseData(typeof(OpenTKResolver)),
-			new TestCaseData(typeof(SharpDXResolver)).Ignore(),
-			new TestCaseData(typeof(XnaResolver)).Ignore()
+			new TestCaseData(typeof(OpenTKAppForTestStarter)),
+			new TestCaseData(typeof(SharpDxAppForTestStarter)).Ignore(),
+			new TestCaseData(typeof(XnaAppForTestStarter)).Ignore()
 		};
-		public static readonly Type OpenGL = typeof(OpenTKResolver);
-		public static readonly Type DirectX = typeof(SharpDXResolver);
-		public static readonly Type Xna = typeof(XnaResolver);
+		public static readonly Type OpenGL = typeof(OpenTKAppForTestStarter);
+		public static readonly Type DirectX = typeof(SharpDxAppForTestStarter);
+		public static readonly Type Xna = typeof(XnaAppForTestStarter);
 		//ncrunch: no coverage end
 
 		public void Start<AppEntryRunner>(Type resolverType, int instancesToCreate = 1)
@@ -51,19 +51,17 @@ namespace DeltaEngine.Platforms.Tests
 
 		protected bool IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(Type resolver)
 		{
-			StackTraceExtensions.InVisualTestCase = false;
+			StackTraceExtensions.IsVisualTestCase = false;
 			var stackFrames = new StackTrace().GetFrames();
 			if (stackFrames != null)
 				foreach (var frame in stackFrames)
 					IsFrameInVisualTestCase(frame);
 
 			StackTraceExtensions.StartedFromNCrunch = IsStartedFromNCrunch();
-			StackTraceExtensions.StartedFromNunitConsole = IsStartedFromNunitConsole();
 			if (resolver == typeof(TestResolver) || NCrunchAllowIntegrationTests)
 				return false;
 
-			return StackTraceExtensions.StartedFromNCrunch ||
-				StackTraceExtensions.StartedFromNunitConsole;
+			return StackTraceExtensions.StartedFromNCrunch || IsStartedFromNunitConsole();
 		}
 
 		private static bool IsStartedFromNCrunch()
@@ -90,14 +88,14 @@ namespace DeltaEngine.Platforms.Tests
 				var testCase = attribute as TestCaseAttribute;
 				if (testCase != null)
 					if (testCase.Category == "Visual" || testCase.Ignore)
-						StackTraceExtensions.InVisualTestCase = true;
+						StackTraceExtensions.IsVisualTestCase = true;
 			}
 		}
 
-		private AutofacResolver CreateResolver(Type resolverType)
+		private AutofacStarter CreateResolver(Type resolverType)
 		{
 			Assert.IsTrue(resolverType.IsSubclassOf(typeof(AutofacResolver)));
-			var resolver = (AutofacResolver)Activator.CreateInstance(resolverType);
+			var resolver = (AutofacStarter)Activator.CreateInstance(resolverType);
 			testResolver = resolver as TestResolver;
 			return resolver;
 		}
@@ -146,8 +144,8 @@ namespace DeltaEngine.Platforms.Tests
 				resolver.Start(initCode, () => runCode(resolver.Resolve<Second>()));
 		}
 
-		protected void Start<First, Second, Third>(Type resolverType,
-			Action<First> initCode, Action<Second, Third> runCode)
+		protected void Start<First, Second, Third>(Type resolverType, Action<First> initCode,
+			Action<Second, Third> runCode)
 		{
 			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
 				return;
@@ -157,8 +155,8 @@ namespace DeltaEngine.Platforms.Tests
 					() => runCode(resolver.Resolve<Second>(), resolver.Resolve<Third>()));
 		}
 
-		protected void Start<First, Second, Third, Forth>(Type resolverType,
-			Action<First> initCode, Action<Second, Third, Forth> runCode)
+		protected void Start<First, Second, Third, Forth>(Type resolverType, Action<First> initCode,
+			Action<Second, Third, Forth> runCode)
 		{
 			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
 				return;
@@ -168,8 +166,8 @@ namespace DeltaEngine.Platforms.Tests
 					() => runCode(r.Resolve<Second>(), r.Resolve<Third>(), r.Resolve<Forth>()));
 		}
 
-		protected void Start<First, Second, Third>(Type resolverType,
-			Action<First, Second> initCode, Action<Third> runCode)
+		protected void Start<First, Second, Third>(Type resolverType, Action<First, Second> initCode,
+			Action<Third> runCode)
 		{
 			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
 				return;
@@ -217,8 +215,7 @@ namespace DeltaEngine.Platforms.Tests
 				return;
 
 			using (var r = CreateResolver(resolverType))
-				r.Start(initCode,
-					() => runCode(r.Resolve<Third>(), r.Resolve<Forth>(), r.Resolve<Fifth>()));
+				r.Start(initCode, () => runCode(r.Resolve<Third>(), r.Resolve<Forth>(), r.Resolve<Fifth>()));
 		}
 	}
 }

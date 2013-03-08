@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿
+using System.Linq;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
@@ -28,11 +29,7 @@ namespace DeltaEngine.Rendering
 		public void Run(Time time)
 		{
 			ResortRenderablesIfAnyHaveChangedRenderLayer();
-
-			var objectsToRender = new List<Renderable>();
-			foreach (var renderObject in sortedRenderables)
-				if (renderObject.Value.IsVisible)
-					objectsToRender.Add(renderObject.Value);
+			var objectsToRender = sortedRenderables.Where(t => t.IsVisible).ToList();
 
 			foreach (var renderObject in objectsToRender)
 				renderObject.InternalRender(this, time);
@@ -46,45 +43,30 @@ namespace DeltaEngine.Rendering
 				return;
 
 			ResortRenderables();
-			SetAllRenderablesToRenderLayerHasNotChanged();
 		}
 
-		private bool NoRenderableHasChangedRenderLayer()
+		private static bool NoRenderableHasChangedRenderLayer()
 		{
-			foreach (var renderObject in sortedRenderables)
-				if (renderObject.Value.HasRenderLayerChanged)
-					return false;
-
 			return true;
 		}
 
 		private void ResortRenderables()
 		{
-			var unsortedRenderables = new SortedList<int, Renderable>(sortedRenderables);
+			var unsortedRenderables = new BubbleSortedList(sortedRenderables);
 			sortedRenderables.Clear();
-			foreach (var renderObject in unsortedRenderables)
-				sortedRenderables.Add(renderObject.Value.SortKey, renderObject.Value);
-		}
-
-		private void SetAllRenderablesToRenderLayerHasNotChanged()
-		{
-			foreach (var renderObject in sortedRenderables)
-				renderObject.Value.HasRenderLayerChanged = false;
+			foreach (Renderable t in unsortedRenderables)
+				sortedRenderables.Add(t);
 		}
 
 		private void RemoveDisposedObjects()
 		{
-			var objectsToRemove = new List<Renderable>();
-			foreach (var renderObject in sortedRenderables)
-				if (renderObject.Value.markForDisposal)
-					objectsToRemove.Add(renderObject.Value);
+			var objectsToRemove = sortedRenderables.Where(t => t.markForDisposal).ToList();
 
 			foreach (var renderObject in objectsToRemove)
 				Remove(renderObject);
 		}
 
-		private readonly SortedList<int, Renderable> sortedRenderables =
-			new SortedList<int, Renderable>();
+		private readonly BubbleSortedList sortedRenderables = new BubbleSortedList();
 
 		public int NumberOfActiveRenderableObjects
 		{
@@ -93,19 +75,20 @@ namespace DeltaEngine.Rendering
 
 		public void Add(Renderable renderable)
 		{
-			if (sortedRenderables.ContainsValue(renderable))
+			if (sortedRenderables.Contains(renderable))
 				return;
 
 			renderable.markForDisposal = false;
-			sortedRenderables.Add(renderable.SortKey, renderable);
+			for (int i = renderable.RenderLayer; i > -100; i-- )
+					sortedRenderables.Add(renderable);
 		}
 
 		public void Remove(Renderable renderable)
 		{
-			foreach (var renderObject in sortedRenderables)
-				if (renderObject.Value == renderable)
+			for (int i = 0; i < sortedRenderables.Count; i++)
+				if (sortedRenderables.Contains(renderable))
 				{
-					sortedRenderables.Remove(renderObject.Key);
+					sortedRenderables.Remove(renderable);
 					break;
 				}
 		}

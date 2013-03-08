@@ -18,16 +18,25 @@ namespace DeltaEngine.Multimedia
 
 		protected readonly SoundDevice device;
 		public abstract float LengthInSeconds { get; }
-		public int NumberOfPlayingInstances
+		public int NumberOfInstances
 		{
 			get { return internalInstances.Count + externalInstances.Count; }
 		}
 
+		public int NumberOfPlayingInstances
+		{
+			get
+			{
+				return internalInstances.Count(instance => instance.IsPlaying) + 
+					externalInstances.Count(instance => instance.IsPlaying);
+			}
+		}
+
 		public override void Dispose()
 		{
-			foreach (var instance in new List<SoundInstance>(internalInstances))
+			foreach (var instance in internalInstances.ToList())
 				instance.Dispose();
-			foreach (var instance in new List<SoundInstance>(externalInstances))
+			foreach (var instance in externalInstances.ToList())
 				instance.Dispose();
 		}
 
@@ -45,10 +54,18 @@ namespace DeltaEngine.Multimedia
 			if (freeInstance != null)
 				return freeInstance;
 			createInternalInstance = true;
-			return new SoundInstance(this);
+			return CreateSoundInstance();
 		}
 
 		private bool createInternalInstance;
+
+		public SoundInstance CreateSoundInstance()
+		{
+			var instance = new SoundInstance(this);
+			Add(instance);
+
+			return instance;
+		}
 
 		public abstract void PlayInstance(SoundInstance instanceToPlay);
 

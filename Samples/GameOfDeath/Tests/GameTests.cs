@@ -17,16 +17,16 @@ namespace GameOfDeath.Tests
 		[VisualTest]
 		public void InitializeField(Type resolver)
 		{
-			Start(resolver, (UI bg, Game game) => game[1, 1] = true);
+			Start(resolver, (UI bg, RabbitsGrid rabbits) => rabbits[1, 1] = true);
 		}
 
 		[VisualTest]
 		public void IterateBoard(Type resolver)
 		{
-			Start(resolver, (UI bg, Game game) =>
+			Start(resolver, (UI bg, RabbitsGrid rabbits) =>
 			{
-				game[1, 1] = true;
-				Assert.IsTrue(game.ShouldSurvive(1, 1));
+				rabbits[1, 1] = true;
+				Assert.IsTrue(rabbits.ShouldSurvive(1, 1));
 				if (testResolver != null)
 					testResolver.AdvanceTimeAndExecuteRunners(5.0f);
 			});
@@ -35,19 +35,20 @@ namespace GameOfDeath.Tests
 		[VisualTest]
 		public void SimulateGameOver(Type resolver)
 		{
-			Start(resolver, (UI bg, Game game) =>
+			Start(resolver, (UI bg, RabbitsGrid rabbits) =>
 			{
-				Assert.IsFalse(game.IsGameOver());
-				for (int x = 0; x < game.width; x++)
-					for (int y = 0; y < game.height; y++)
-						game[x, y] = true;
+				Assert.IsFalse(rabbits.IsOverPopulated());
+				for (int x = 0; x < rabbits.width; x++)
+					for (int y = 0; y < rabbits.height; y++)
+						rabbits[x, y] = true;
 				if (testResolver != null)
 				{
 					testResolver.AdvanceTimeAndExecuteRunners(0.05f);
-					game.DoDamage(Point.Half, 0.05f, Mallet.DefaultDamage);
+					rabbits.DoDamage(Point.Half, 0.05f, Mallet.DefaultDamage);
 					testResolver.AdvanceTimeAndExecuteRunners(0.05f);
-					game.DoDamage(Point.Half, 0.25f, 50);
-					Assert.IsTrue(game.IsGameOver());
+					rabbits.DoDamage(Point.Half, 0.25f, 50);
+					testResolver.AdvanceTimeAndExecuteRunners(0.05f);
+					Assert.IsTrue(rabbits.IsOverPopulated());
 				}
 			});
 		}

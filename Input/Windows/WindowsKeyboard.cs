@@ -57,7 +57,7 @@ namespace DeltaEngine.Input.Windows
 			return UpdateInputState(keyStates[key], isReleased, isPressed);
 		}
 
-		private State UpdateInputState(State previousState, bool isReleased, bool isPressed)
+		private static State UpdateInputState(State previousState, bool isReleased, bool isPressed)
 		{
 			if (previousState == State.Pressing && isReleased == false)
 				return State.Pressed;

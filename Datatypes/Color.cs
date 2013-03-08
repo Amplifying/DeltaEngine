@@ -69,7 +69,7 @@ namespace DeltaEngine.Datatypes
 
 		public class InvalidNumberOfComponents : Exception {}
 
-		private byte[] ParseComponents(string[] components)
+		private static byte[] ParseComponents(string[] components)
 		{
 			var values = new byte[4];
 			values[0] = FindComponentValue(components, "R");
@@ -79,7 +79,7 @@ namespace DeltaEngine.Datatypes
 			return values;
 		}
 
-		private byte FindComponentValue(IEnumerable<string> components, string color)
+		private static byte FindComponentValue(IEnumerable<string> components, string color)
 		{
 			foreach (string component in components)
 				if (IsThisTheRightComponent(component, color))
@@ -88,7 +88,7 @@ namespace DeltaEngine.Datatypes
 			throw new InvalidNumberOfComponents();
 		}
 
-		private bool IsThisTheRightComponent(string component, string color)
+		private static bool IsThisTheRightComponent(string component, string color)
 		{
 			if (component.Length < 3 || component.IndexOf('=') < 0)
 				throw new InvalidNumberOfComponents();
@@ -96,7 +96,7 @@ namespace DeltaEngine.Datatypes
 			return component.StartsWith(color + "=");
 		}
 
-		private byte ComponentValue(string component)
+		private static byte ComponentValue(string component)
 		{
 			string valueString = component.Substring(component.IndexOf('=') + 1);
 			byte value;

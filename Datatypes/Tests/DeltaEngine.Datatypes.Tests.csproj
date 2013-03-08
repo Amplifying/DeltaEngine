@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="BinaryDataTests.cs" />
     <Compile Include="ColorTests.cs" />
+    <Compile Include="MatrixTests.cs" />
     <Compile Include="MockBinaryData.cs" />
     <Compile Include="Triangle2DTests.cs" />
     <Compile Include="VectorTests.cs" />

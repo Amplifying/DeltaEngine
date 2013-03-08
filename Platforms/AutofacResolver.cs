@@ -16,104 +16,19 @@ namespace DeltaEngine.Platforms
 	/// </summary>
 	public abstract class AutofacResolver : Resolver
 	{
-		public void Start<AppEntryRunner>(int instancesToCreate = 1)
-		{
-			assemblyOfFirstNonDeltaEngineType = typeof(AppEntryRunner).Assembly;
-			if (typeof(AppEntryRunner).IsInterface || instancesToCreate > 1)
-				Register<AppEntryRunner>();
-			else
-				RegisterSingleton<AppEntryRunner>();
-
-			Initialized += () =>
-			{
-				for (int num = 0; num < instancesToCreate; num++)
-					Resolve<AppEntryRunner>();
-			};
-
-			Run();
-		}
-
-		private Assembly assemblyOfFirstNonDeltaEngineType;
-
-		protected event Action Initialized;
-
-		/// <summary>
-		/// Is called from Run before any instance is resolved. Override Run for different behavior.
-		/// </summary>
-		protected void RaiseInitializedEventOnlyOnce()
-		{
-			if (Initialized != null)
-				Initialized();
-			Initialized = null;
-		}
-
-		public void Start<FirstClass>(Action<FirstClass> initCode, Action runCode = null)
-		{
-			assemblyOfFirstNonDeltaEngineType = typeof(FirstClass).Assembly;
-			RegisterSingleton<FirstClass>();
-			Initialized += () => initCode(Resolve<FirstClass>());
-			Run(runCode);
-		}
-
-		public void Start<FirstClass, SecondClass>(Action<FirstClass, SecondClass> initCode,
-			Action runCode = null)
-		{
-			assemblyOfFirstNonDeltaEngineType = typeof(FirstClass).Assembly;
-			RegisterSingleton<FirstClass>();
-			RegisterSingleton<SecondClass>();
-			Initialized += () => initCode(Resolve<FirstClass>(), Resolve<SecondClass>());
-			Run(runCode);
-		}
-
-		public void Start<FirstClass, SecondClass, ThirdClass>(
-			Action<FirstClass, SecondClass, ThirdClass> initCode, Action runCode = null)
-		{
-			assemblyOfFirstNonDeltaEngineType = typeof(FirstClass).Assembly;
-			RegisterSingleton<FirstClass>();
-			RegisterSingleton<SecondClass>();
-			RegisterSingleton<ThirdClass>();
-			Initialized +=
-				() => initCode(Resolve<FirstClass>(), Resolve<SecondClass>(), Resolve<ThirdClass>());
-			Run(runCode);
-		}
-
-		public virtual void Run(Action runCode = null)
-		{
-			RaiseInitializedEventOnlyOnce();
-			var window = Resolve<Window>();
-			do
-				ExecuteRunnersLoopAndPresenters(runCode);
-			while (!window.IsClosing);
-		}
-
-		public void Close()
-		{
-			Resolve<Window>().Dispose();
-		}
-
-		private void ExecuteRunnersLoopAndPresenters(Action runCode)
-		{
-			RunAllRunners();
-			if (runCode != null)
-				runCode();
-
-			RunAllPresenters();
-		}
-
 		public void Register<T>()
 		{
 			if (alreadyRegisteredTypes.Contains(typeof(T)))
 				return;
 
 			if (IsAlreadyInitialized)
-				throw new UnableToRegisterMoreTypesApplicationHasAlreadyStarted();
+				throw new UnableToRegisterMoreTypesAppAlreadyStarted();
 
 			RegisterBaseTypes<T>(RegisterType(typeof(T)));
 		}
 
-		internal class UnableToRegisterMoreTypesApplicationHasAlreadyStarted : Exception { }
-
 		protected readonly List<Type> alreadyRegisteredTypes = new List<Type>();
+		internal class UnableToRegisterMoreTypesAppAlreadyStarted : Exception { }
 
 		public void RegisterSingleton<T>()
 		{
@@ -121,7 +36,7 @@ namespace DeltaEngine.Platforms
 				return;
 
 			if (IsAlreadyInitialized)
-				throw new UnableToRegisterMoreTypesApplicationHasAlreadyStarted();
+				throw new UnableToRegisterMoreTypesAppAlreadyStarted();
 
 			RegisterBaseTypes<T>(RegisterType(typeof(T)).InstancePerLifetimeScope());
 		}
@@ -137,6 +52,7 @@ namespace DeltaEngine.Platforms
 			return builder.RegisterType(t).AsSelf().OnActivating(ActivatingInstance());
 		}
 
+		private Assembly assemblyOfFirstNonDeltaEngineType;
 		private ContainerBuilder builder = new ContainerBuilder();
 
 		protected void RegisterInstance(object instance)
@@ -191,6 +107,7 @@ namespace DeltaEngine.Platforms
 		{
 			if (IsAlreadyInitialized == false)
 				Register<BaseType>();
+
 			MakeSureContainerIsInitialized();
 			if (customParameter == null)
 				return (BaseType)container.Resolve(typeof(BaseType));
@@ -221,7 +138,6 @@ namespace DeltaEngine.Platforms
 			MakeSureContainerIsInitialized();
 			return container.Resolve(baseType);
 		}
-
 
 		public void RegisterAllUnknownTypesAutomatically()
 		{

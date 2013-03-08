@@ -38,6 +38,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Command.cs" />
+    <Compile Include="Devices\BaseGamePad.cs" />
+    <Compile Include="Devices\BaseKeyboard.cs" />
     <Compile Include="Devices\BaseMouse.cs" />
     <Compile Include="GamePadButton.cs" />
     <Compile Include="Devices\InputDevice.cs" />

@@ -29,6 +29,8 @@ namespace DeltaEngine.Graphics.Xna
 				DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;
 			deviceManager.SynchronizeWithVerticalRetrace = false;
 			deviceManager.PreferredBackBufferFormat = SurfaceFormat.Color;
+			deviceManager.PreferredBackBufferWidth = 1024;
+			deviceManager.PreferredBackBufferHeight = 640;
 			NativeContent = game.Content;
 			// We only need the 'Directory.GetCurrentDirectory()' for testing because otherwise Resharper
 			// would fail (NCrunch and normal execution would work without too)
@@ -58,8 +60,8 @@ namespace DeltaEngine.Graphics.Xna
 				NativeDevice.Clear(new Color(color.R, color.G, color.B));
 		}
 
-		public void Present() {}
+		public void Present() { }
 
-		public void Dispose() {}
+		public void Dispose() { }
 	}
 }

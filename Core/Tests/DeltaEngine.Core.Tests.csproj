@@ -53,10 +53,9 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FastTrigTests.cs" />
+    <Compile Include="FakeResolver.cs" />
     <Compile Include="SimulatedAppTests.cs" />
     <Compile Include="ArrayExtensionsTests.cs" />
-    <Compile Include="AssemblyUpdaterTests.cs" />
     <Compile Include="ContentLoaderTests.cs" />
     <Compile Include="FixedRandomTests.cs" />
     <Compile Include="GenericRunnerTests.cs" />
@@ -74,7 +73,6 @@
     <Compile Include="StringExtensionsTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

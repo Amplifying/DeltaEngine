@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -7,6 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("Tests")]
 [assembly: AssemblyCopyright("Copyright © Benjamin Nitschke 2013")]
 [assembly: ComVisible(false)]
+[assembly: CLSCompliant(true)]
 [assembly: Guid("cf5ae250-f6ea-4005-b9ef-daae197d74d5")]
-[assembly: AssemblyVersion("0.9.7.2")]
-[assembly: AssemblyFileVersion("0.9.7.2")]
+[assembly: AssemblyVersion("0.9.7.3")]
+[assembly: AssemblyFileVersion("0.9.7.3")]

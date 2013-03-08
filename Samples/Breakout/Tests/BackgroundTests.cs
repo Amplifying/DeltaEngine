@@ -2,6 +2,7 @@
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms.Tests;
 using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.Shapes;
 using NUnit.Framework;
 
 namespace Breakout.Tests
@@ -19,7 +20,7 @@ namespace Breakout.Tests
 		{
 			Start(type,
 				(Background bg, Renderer renderer) =>
-					renderer.Add(new ColoredRectangle(Rectangle.FromCenter(Point.Half, Size.Half),
+					renderer.Add(new Rect(Rectangle.FromCenter(Point.Half, Size.Half),
 						Color.Yellow)));
 		}
 	}

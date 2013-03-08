@@ -28,19 +28,5 @@ namespace DeltaEngine.Core.Xml.Tests
 			Assert.AreEqual("name", attribute.Name);
 			Assert.AreEqual("3.14", attribute.Value);
 		}
-
-		[Test]
-		public void Name()
-		{
-			var attribute = new XmlAttribute("name", "value") { Name = "new name" };
-			Assert.AreEqual("new name", attribute.Name);
-		}
-
-		[Test]
-		public void Value()
-		{
-			var attribute = new XmlAttribute("name", 3) { Value = "new value" };
-			Assert.AreEqual("new value", attribute.Value);
-		}
 	}
 }

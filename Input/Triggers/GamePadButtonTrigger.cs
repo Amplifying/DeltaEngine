@@ -21,6 +21,11 @@ namespace DeltaEngine.Input.Triggers
 			get { return button; }
 		}
 
+		public State State
+		{
+			get { return state; }
+		}
+
 		public override bool ConditionMatched(InputCommands input)
 		{
 			return input.gamePad.IsAvailable && input.gamePad.GetButtonState(button) == state;

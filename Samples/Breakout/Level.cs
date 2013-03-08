@@ -21,7 +21,6 @@ namespace Breakout
 			this.renderer = renderer;
 			this.score = score;
 			Initialize();
-			renderer.Screen.ViewportSizeChanged += UpdateDrawAreas;
 		}
 
 		private readonly Image brickImage;
@@ -31,54 +30,21 @@ namespace Breakout
 		protected readonly Renderer renderer;
 		private readonly Score score;
 
-		public void InitializeNextLevel()
-		{
-			Dispose();
-			score.NextLevel();
-			Initialize();
-		}
-
 		private void Initialize()
 		{
 			rows = score.Level + 1;
 			columns = score.Level + 1;
 			bricks = new Sprite[rows, columns];
-			brickWidth = Bounds.Width / rows;
-			brickHeight = Bounds.Height * 0.5f / columns;
+			brickWidth = 1.0f / rows;
+			brickHeight = 0.5f / columns;
 			CreateBricks();
 		}
 
-		public void Dispose()
-		{
-			for (int x = 0; x < rows; x++)
-				for (int y = 0; y < columns; y++)
-					bricks[x, y].Dispose();
-		}
-
+		private float brickWidth;
+		private float brickHeight;
 		protected int rows;
 		protected int columns;
 		protected Sprite[,] bricks;
-		private float brickWidth;
-		private float brickHeight;
-
-		private Rectangle Bounds
-		{
-			get { return renderer.Screen.Viewport; }
-		}
-
-		public int BricksLeft
-		{
-			get
-			{
-				var bricksAlive = 0;
-				for (int x = 0; x < rows; x++)
-					for (int y = 0; y < columns; y++)
-						if (bricks[x, y].IsVisible)
-							bricksAlive++;
-
-				return bricksAlive;
-			}
-		}
 
 		private void CreateBricks()
 		{
@@ -96,20 +62,23 @@ namespace Breakout
 
 		private Rectangle GetBounds(int x, int y)
 		{
-			return new Rectangle(x * brickWidth + Bounds.Left, y * brickHeight + Bounds.Top, brickWidth,
-				brickHeight);
+			return new Rectangle(x * brickWidth, y * brickHeight, brickWidth, brickHeight);
 		}
 
 		private Color GetBrickColor(int x, int y)
 		{
 			if (score.Level <= 1)
 				return GetLevelOneBrickColor(x, y);
+
 			if (score.Level == 2)
 				return GetLevelTwoBrickColor(y);
+
 			if (score.Level == 3)
 				return GetLevelThreeBrickColor(x, y);
+
 			if (score.Level == 4)
 				return GetLevelFourBrickColor(x, y);
+
 			return GetLevelFiveOrAboveBrickColor(x, y);
 		}
 
@@ -122,6 +91,7 @@ namespace Breakout
 		{
 			if (y == 0)
 				return new Color(0.25f, 0.25f, 0.25f);
+
 			return y == 1 ? Color.Red : Color.Gold;
 		}
 
@@ -130,8 +100,7 @@ namespace Breakout
 			return LevelThreeColors[(x * 4 + y) % LevelThreeColors.Length];
 		}
 
-		private static readonly Color[] LevelThreeColors = new[]
-		{ Color.Yellow, Color.Teal, Color.Green, Color.LightBlue, Color.Teal };
+		private static readonly Color[] LevelThreeColors = new[] { Color.Yellow, Color.Teal, Color.Green, Color.LightBlue, Color.Teal };
 
 		private static Color GetLevelFourBrickColor(int x, int y)
 		{
@@ -143,19 +112,38 @@ namespace Breakout
 			return new Color(0.9f - x * 0.15f, 0.5f, (x + y / 2) * 0.1f + 0.2f);
 		}
 
-		private void UpdateDrawAreas()
+		public void InitializeNextLevel()
 		{
-			brickWidth = renderer.Screen.Viewport.Width / rows;
-			brickHeight = renderer.Screen.Viewport.Height * 0.5f / columns;
+			Dispose();
+			score.NextLevel();
+			Initialize();
+		}
+
+		public void Dispose()
+		{
 			for (int x = 0; x < rows; x++)
 				for (int y = 0; y < columns; y++)
-					bricks[x, y].DrawArea = GetBounds(x, y);
+					bricks[x, y].Dispose();
+		}
+
+		public int BricksLeft
+		{
+			get
+			{
+				var bricksAlive = 0;
+				for (int x = 0; x < rows; x++)
+					for (int y = 0; y < columns; y++)
+						if (bricks[x, y].IsVisible)
+							bricksAlive++;
+
+				return bricksAlive;
+			}
 		}
 
 		public virtual Sprite GetBrickAt(float x, float y)
 		{
-			var brickIndexX = (int)((x - Bounds.Left) / brickWidth);
-			var brickIndexY = (int)((y - Bounds.Top) / brickHeight);
+			var brickIndexX = (int)(x / brickWidth);
+			var brickIndexY = (int)(y / brickHeight);
 			if (brickIndexX < 0 || brickIndexX >= rows || brickIndexY < 0 || brickIndexY >= columns ||
 				!bricks[brickIndexX, brickIndexY].IsVisible)
 				return null;
@@ -171,9 +159,9 @@ namespace Breakout
 			explosionSound.Play();
 		}
 
-		public void LostLive(Point ballLostPosition)
+		public void LifeLost(Point ballLostPosition)
 		{
-			score.LostLive();
+			score.LifeLost();
 			renderer.Add(new FadeoutEffect(explosionImage, ballLostPosition, new Size(0.2f)));
 			lostBallSound.Play();
 		}

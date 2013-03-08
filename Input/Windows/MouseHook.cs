@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using DeltaEngine.Core;
-using DeltaEngine.Input.Devices;
 
 namespace DeltaEngine.Input.Windows
 {
@@ -32,7 +31,7 @@ namespace DeltaEngine.Input.Windows
 
 		protected internal override void HandleProcMessage(IntPtr wParam, IntPtr lParam, int msg)
 		{
-			int[] data = new int[6];
+			var data = new int[6];
 			Marshal.Copy(lParam, data, 0, 6);
 			UpdateMouseButtonsAndWheel(wParam.ToInt32(), data[5]);
 		}
@@ -40,7 +39,7 @@ namespace DeltaEngine.Input.Windows
 		private void UpdateMouseButtonsAndWheel(int intParam, int mouseData)
 		{
 			if (intParam == WMMousewheel)
-				ScrollWheelValue += mouseData / 120;
+				ScrollWheelValue += mouseData;
 			else
 				UpdateMouseButton(intParam, mouseData);
 		}
@@ -78,34 +77,37 @@ namespace DeltaEngine.Input.Windows
 			return mouseData == 65536 ? MouseButton.X1 : MouseButton.X2;
 		}
 
-		private bool IsAnyId(int value, IEnumerable<int> ids)
+		private static bool IsAnyId(int value, IEnumerable<int> ids)
 		{
 			return ids.Any(id => id == value);
 		}
 
 		private static readonly int[] LeftButtonIds =
-			{
-				0x0201, 0x0202, 0x0203, 0x00A1, 0x00A2, 0x00A3
-			};
+		{
+			0x0201, 0x0202, 0x0203, 0x00A1, 0x00A2, 0x00A3
+		};
 
 		private static readonly int[] RightButtonIds =
-			{
-				0x0204, 0x0205, 0x0206, 0x00A4, 0x00A5, 0x00A6
-			};
+		{
+			0x0204, 0x0205, 0x0206, 0x00A4, 0x00A5, 0x00A6
+		};
 
 		private static readonly int[] MiddleButtonIds =
-			{
-				0x0207, 0x0208, 0x0209, 0x00A7, 0x00A8, 0x00A9
-			};
+		{
+			0x0207, 0x0208, 0x0209, 0x00A7, 0x00A8, 0x00A9
+		};
 
 		private static readonly int[] DownButtonIds =
-			{
-				0x0201, 0x0204, 0x0207, 0x020B, 0x00A1, 0x00A4, 0x00A7, 0x00AB
-			};
+		{
+			0x0201, 0x0203, 0x0204, 0x0206, 0x0207, 0x0209, 
+			0x020B, 0x00A1, 0x00A3, 0x00A4, 0x00A6, 0x00A7, 
+			0x00A9, 0x00AB
+		};
 
 		private static readonly int[] UpButtonIds =
-			{
-				0x0202, 0x00A2, 0x0205, 0x00A5, 0x0208, 0x00A8, 0x020C, 0x00AC
-			};
+		{
+			0x0202, 0x00A2, 0x0205, 0x00A5, 0x0208, 0x00A8, 
+			0x020C, 0x00AC
+		};
 	}
 }

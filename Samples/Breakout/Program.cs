@@ -1,4 +1,5 @@
 ﻿using DeltaEngine.Platforms;
+using DeltaEngine.Rendering;
 
 namespace Breakout
 {
@@ -9,7 +10,11 @@ namespace Breakout
 	{
 		public static void Main()
 		{
-			new App().Start<Game>();
+			var app = new App();
+			app.Register<RelativeScreenSpace>();
+			app.RegisterSingleton<Game>();
+			app.Resolve<Background>();
+			app.Start<Game>();
 		}
 	}
 }

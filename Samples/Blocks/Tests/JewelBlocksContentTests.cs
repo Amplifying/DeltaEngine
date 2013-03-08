@@ -12,7 +12,9 @@ namespace Blocks.Tests
 		public void Constructor()
 		{
 			var content = new JewelBlocksContent(new TestResolver());
-			Assert.AreEqual("JewelBlocks", content.Subdirectory);
+			Assert.AreEqual("JewelBlocks_", content.Prefix);
+			Assert.IsTrue(content.AreFiveBrickBlocksAllowed);
+			Assert.IsFalse(content.DoBricksSplitInHalfWhenRowFull);
 		}
 	}
 }

@@ -9,9 +9,9 @@ namespace DeltaEngine.Graphics
 	[StructLayout(LayoutKind.Sequential)]
 	public struct VertexPositionColorTextured
 	{
-		public Vector Position;
-		public Color Color;
-		public Point TextureCoordinate;
+		public readonly Vector Position;
+		public readonly Color Color;
+		public readonly Point TextureCoordinate;
 
 		public VertexPositionColorTextured(Vector position, Color color, Point uv)
 		{

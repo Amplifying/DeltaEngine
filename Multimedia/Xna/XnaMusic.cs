@@ -29,9 +29,9 @@ namespace DeltaEngine.Multimedia.Xna
 			MediaPlayer.Stop();
 		}
 
-		public override bool IsPlaying()
+		public override bool IsPlaying
 		{
-			return MediaPlayer.State != MediaState.Stopped && IsActiveMusic();
+			get { return MediaPlayer.State != MediaState.Stopped && IsActiveMusic(); }
 		}
 
 		private bool IsActiveMusic()

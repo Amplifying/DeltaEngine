@@ -1,5 +1,4 @@
-﻿using System;
-using DeltaEngine.Datatypes;
+﻿using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 using DeltaEngine.Platforms.Tests;
 using NUnit.Framework;

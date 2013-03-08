@@ -22,10 +22,12 @@ namespace Breakout.Tests
 		{
 			Start(type, (Score score) =>
 			{
+				bool isGameOver = false;
+				score.GameOver += () => isGameOver = true;
 				Assert.AreEqual(1, score.Level);
 				score.NextLevel();
 				Assert.AreEqual(2, score.Level);
-				Assert.IsFalse(score.IsGameOver);
+				Assert.IsFalse(isGameOver);
 			});
 		}
 
@@ -34,10 +36,12 @@ namespace Breakout.Tests
 		{
 			Start(type, (Level level, Score score) =>
 			{
+				bool isGameOver = false;
+				score.GameOver += () => isGameOver = true;
 				Assert.AreEqual(1, score.Level);
 				score.NextLevel();
 				Assert.AreEqual(2, score.Level);
-				Assert.IsFalse(score.IsGameOver);
+				Assert.IsFalse(isGameOver);
 			});
 		}
 
@@ -46,10 +50,12 @@ namespace Breakout.Tests
 		{
 			Start(type, (Score score) =>
 			{
-				score.LostLive();
-				score.LostLive();
-				score.LostLive();
-				Assert.IsTrue(score.IsGameOver);
+				bool isGameOver = false;
+				score.GameOver += () => isGameOver = true;
+				score.LifeLost();
+				score.LifeLost();
+				score.LifeLost();
+				Assert.IsTrue(isGameOver);
 			});
 		}
 	}

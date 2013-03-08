@@ -15,7 +15,7 @@ namespace GameOfDeath.Items
 		{
 			this.imageEffect = imageEffect;
 			this.soundEffect = soundEffect;
-			RenderLayer = UIRenderLayer;
+			RenderLayer = MaxRenderLayer;
 		}
 
 		private readonly Image imageEffect;

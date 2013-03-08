@@ -13,15 +13,15 @@ namespace Breakout.Tests
 		[VisualTest]
 		public void Draw(Type type)
 		{
-			Start(type, (Game game) => { });
+			Start(type, (Paddle paddle, RelativeScreenSpace screen, Game game) => { });
 		}
 
 		[VisualTest]
 		public void CreateBreakoutGameManually(Type type)
 		{
-			Start(type, (Paddle paddle, AutofacResolver app) =>
+			Start(type, (Paddle paddle, AutofacStarter app, RelativeScreenSpace screen) =>
 			{
-				app.Resolve<Ball>();
+				app.Resolve<BallInLevel>();
 				app.Resolve<Level>();
 				app.Resolve<Background>();
 				app.Resolve<InputCommands>().Add(Key.Escape, app.Close);
@@ -33,11 +33,12 @@ namespace Breakout.Tests
 		{
 			Start(type, (Game game, Score score) =>
 			{
-				Assert.IsFalse(score.IsGameOver);
-				score.LostLive();
-				score.LostLive();
-				score.LostLive();
-				Assert.IsTrue(score.IsGameOver);
+				bool isGameOver = false;
+				score.GameOver += () => isGameOver = true;
+				score.LifeLost();
+				score.LifeLost();
+				score.LifeLost();
+				Assert.IsTrue(isGameOver);
 			});
 		}
 
@@ -46,34 +47,38 @@ namespace Breakout.Tests
 		{
 			Start(type, (Game game, Window window) =>
 			{
-				if (testResolver != null)
-				{
-					testResolver.AdvanceTimeAndExecuteRunners(0.2f);
-					Assert.IsTrue(window.Title.Contains("Breakout Level:"));
-				}
+				if (testResolver == null)
+					return;
+
+				testResolver.AdvanceTimeAndExecuteRunners(0.2f);
+				Assert.IsTrue(window.Title.Contains("Breakout Level:"));
 			});
 		}
 
-		[IntegrationTest]
-		public void KillingAllBricksShouldAdvanceToNextLevel(Type type)
+		[Test]
+		public void KillingAllBricksShouldAdvanceToNextLevel()
 		{
 			Score remScore = null;
-			Start(type, (Game game, Level level, Score score) =>
+			bool isGameOver = false;
+			Start(typeof(TestResolver), (Game game, Level level, Score score) =>
 			{
 				remScore = score;
+				remScore.GameOver += () => isGameOver = true;
 				Assert.AreEqual(1, score.Level);
-				for (float x = 0; x < 1.0f; x += 0.1f)
-					for (float y = 0; y < 1.0f; y += 0.1f)
-						if (level.GetBrickAt(x, y) != null)
-							level.GetBrickAt(x, y).Dispose();
-
+				DisposeAllBricks(level);
 				Assert.AreEqual(0, level.BricksLeft);
 			});
-			if (remScore != null)
-			{
-				Assert.AreEqual(2, remScore.Level);
-				Assert.IsFalse(remScore.IsGameOver);
-			}
+
+			Assert.AreEqual(2, remScore.Level);
+			Assert.IsFalse(isGameOver);
+		}
+
+		private static void DisposeAllBricks(Level level)
+		{
+			for (float x = 0; x < 1.0f; x += 0.1f)
+				for (float y = 0; y < 1.0f; y += 0.1f)
+					if (level.GetBrickAt(x, y) != null)
+						level.GetBrickAt(x, y).Dispose();
 		}
 
 		[VisualTest]
@@ -81,43 +86,43 @@ namespace Breakout.Tests
 		{
 			Start(type, (Game game, LevelWithRessurrection level) => { }, () =>
 			{
-				if (testResolver != null)
-				{
-					testResolver.SetKeyboardState(Key.Space, State.Pressing);
-					var level = testResolver.Resolve<LevelWithRessurrection>();
-					level.GetBrickAt(0.25f, 0.25f).Dispose();
-					level.GetBrickAt(0.75f, 0.25f).Dispose();
-					level.GetBrickAt(0.25f, 0.45f).Dispose();
-					testResolver.AdvanceTimeAndExecuteRunners(2.0f);
-				}
+				if (testResolver == null)
+					return;
+
+				testResolver.SetKeyboardState(Key.Space, State.Pressing);
+				var level = testResolver.Resolve<LevelWithRessurrection>();
+				level.GetBrickAt(0.25f, 0.125f).Dispose();
+				level.GetBrickAt(0.75f, 0.125f).Dispose();
+				level.GetBrickAt(0.25f, 0.375f).Dispose();
+				testResolver.AdvanceTimeAndExecuteRunners(2.0f);
 			});
 		}
-	}
 
-	public class LevelWithRessurrection : Level
-	{
-		public LevelWithRessurrection(Content content, Renderer renderer, Score score, Time time)
-			: base(content, renderer, score)
+		public class LevelWithRessurrection : Level
 		{
-			this.time = time;
-		}
-
-		private readonly Time time;
-
-		public override Sprite GetBrickAt(float x, float y)
-		{
-			if (time.CheckEvery(2))
+			public LevelWithRessurrection(Content content, Renderer renderer, Score score, Time time)
+				: base(content, renderer, score)
 			{
-				var random = new PseudoRandom();
-				var brick = bricks[random.Get(0, rows), random.Get(0, columns)];
-				if (brick != null && !brick.IsVisible)
-				{
-					brick.IsVisible = true;
-					renderer.Add(brick);
-				}
+				this.time = time;
 			}
 
-			return base.GetBrickAt(x, y);
+			private readonly Time time;
+
+			public override Sprite GetBrickAt(float x, float y)
+			{
+				if (time.CheckEvery(2))
+				{
+					var random = new PseudoRandom();
+					var brick = bricks[random.Get(0, rows), random.Get(0, columns)];
+					if (brick != null && !brick.IsVisible)
+					{
+						brick.IsVisible = true;
+						renderer.Add(brick);
+					}
+				}
+
+				return base.GetBrickAt(x, y);
+			}
 		}
 	}
 }

@@ -9,13 +9,12 @@ namespace DeltaEngine.Multimedia
 	/// </summary>
 	public sealed class SoundInstance : IDisposable
 	{
-		public SoundInstance(Sound sound)
+		internal SoundInstance(Sound sound)
 		{
 			this.sound = sound;
 			Volume = 1.0f;
 			Panning = 0.0f;
 			Pitch = 1.0f;
-			sound.Add(this);
 		}
 
 		public float Panning { get; set; }

@@ -16,7 +16,7 @@ namespace DeltaEngine.Platforms.Tests
 		private class DummyRunner : Runner, IDisposable
 		{
 			public void Run() {}
-			public void Dispose() {}
+			public void Dispose() { }
 		}
 
 		private class DummyPresenter : Presenter
@@ -118,7 +118,7 @@ namespace DeltaEngine.Platforms.Tests
 			Assert.IsNotNull(new CustomRunner("test"));
 		}
 
-		[TestCase(typeof(OpenTKResolver), Category = "Visual")]
+		[TestCase(typeof(OpenTKAppForTestStarter), Category = "Visual")]
 		public void TestVisualCategoryInTestStarter(Type resolver)
 		{
 			Start(resolver, (Window w) => { });

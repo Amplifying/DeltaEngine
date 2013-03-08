@@ -1,4 +1,5 @@
 ﻿using DeltaEngine.Core;
+using DeltaEngine.Core.Xml;
 using DeltaEngine.Input;
 using DeltaEngine.Rendering;
 
@@ -7,7 +8,7 @@ namespace DeltaEngine.Platforms.Windows
 	/// <summary>
 	/// Base resolver class for all windows framework implementations (OpenGL, DirectX or XNA).
 	/// </summary>
-	public abstract class WindowsResolver : AutofacResolver
+	public abstract class WindowsResolver : AutofacStarter
 	{
 		protected WindowsResolver()
 		{
@@ -19,6 +20,7 @@ namespace DeltaEngine.Platforms.Windows
 			RegisterSingleton<PseudoRandom>();
 			RegisterSingleton<Content>();
 			RegisterSingleton<InputCommands>();
+			Register<XmlContentFile>();
 		}
 
 		protected override void RegisterInstanceAsRunnerOrPresenterIfPossible(object instance)

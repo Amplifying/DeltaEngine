@@ -1,9 +1,11 @@
-﻿using System.Drawing;
+﻿using System;
+using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
+using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Platform;
-using Point = DeltaEngine.Datatypes.Point;
+using Color = System.Drawing.Color;
 
 namespace DeltaEngine.Graphics.OpenTK
 {
@@ -21,6 +23,7 @@ namespace DeltaEngine.Graphics.OpenTK
 			InitializeModelViewMatrix();
 			InitializeProjectionMatrix();
 			window.ViewportSizeChanged += size => InitializeProjectionMatrix();
+			window.FullscreenChanged += OnFullscreenChanged;
 		}
 
 		private readonly Window window;
@@ -35,6 +38,7 @@ namespace DeltaEngine.Graphics.OpenTK
 
 		private IWindowInfo windowInfo;
 		private GraphicsContext context;
+
 
 		private static void InitializeModelViewMatrix()
 		{
@@ -52,6 +56,22 @@ namespace DeltaEngine.Graphics.OpenTK
 			GL.Viewport(0, 0, width, height);
 		}
 
+
+		private static void OnFullscreenChanged(Size displaySize, bool b)
+		{
+			// Should be 32 bit and we do not care about the refresh rate!
+			DisplayResolution res = DisplayDevice.Default.SelectResolution((int)displaySize.Width,
+				(int)displaySize.Height, 32, 0);
+			DisplayDevice.Default.ChangeResolution(res);
+			if (res.Width != (int)displaySize.Width || res.Height != (int)displaySize.Height)
+				throw new ResolutionRequestFailed("Could not find resolution: " + displaySize);
+		}
+
+		internal class ResolutionRequestFailed : Exception
+		{
+			public ResolutionRequestFailed(string message)
+				: base(message) {}
+		}
 		public void Run()
 		{
 			var color = window.BackgroundColor;

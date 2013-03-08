@@ -1,56 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using DeltaEngine.Core;
+using DeltaEngine.Core.Xml;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
 using DeltaEngine.Input;
-using DeltaEngine.Input.Devices;
-using DeltaEngine.Multimedia;
 using DeltaEngine.Rendering;
 using Moq;
 using NUnit.Framework;
-using Device = DeltaEngine.Graphics.Device;
 
 namespace DeltaEngine.Platforms.Tests
 {
 	/// <summary>
 	/// Special resolver for unit tests that mocks all the integration classes (Window, Device, etc.)
 	/// </summary>
-	public class TestResolver : AutofacResolver
+	public class TestResolver : AutofacStarter
 	{
 		public TestResolver()
 		{
-			SetupCore();
-			SetupWindow();
-			SetupGraphics();
-			SetupRenderer();
-			SetupInput();
-			SetupMultimedia();
-			SetupPlatforms();
+			testCoreResolver = new TestCoreResolver(this);
+			testRenderingResolver = new TestRenderingResolver(this);
+			testInputResolver = new TestInputResolver(this);
+			testMultimediaResolver = new TestMultimediaResolver(this);
+			testPlatformsResolver = new TestPlatformsResolver(this);
+			SetupVectorText();
+			SetupXmlContent();
 		}
 
-		private void SetupCore()
-		{
-			var elapsedTimeMock = new Mock<ElapsedTime>();
-			int ticks = 0;
-			elapsedTimeMock.Setup(e => e.GetTicks()).Returns(() => ++ticks);
-			elapsedTimeMock.SetupGet(e => e.TicksPerSecond).Returns(60);
-			RegisterMock(elapsedTimeMock.Object);
-			RegisterMock(new Mock<Time>(elapsedTimeMock.Object).Object);
-			RegisterSingleton<Content>();
-			RegisterSingleton<PseudoRandom>();
-		}
+		public int NumberOfVerticesDrawn { get; set; }
 
-		private Mock<T> RegisterMock<T>() where T : class
+		private readonly List<object> registeredMocks = new List<object>();
+		private readonly TestCoreResolver testCoreResolver;
+		private readonly TestRenderingResolver testRenderingResolver;
+		private readonly TestInputResolver testInputResolver;
+		private readonly TestMultimediaResolver testMultimediaResolver;
+		private readonly TestPlatformsResolver testPlatformsResolver;
+
+		public Mock<T> RegisterMock<T>() where T : class
 		{
 			var mock = new Mock<T>();
 			RegisterMock(mock.Object);
 			return mock;
 		}
 
-		private T RegisterMock<T>(T instance) where T : class
+		public T RegisterMock<T>(T instance) where T : class
 		{
 			Type instanceType = instance.GetType();
 			Assert.IsFalse(registeredMocks.Any(mock => mock.GetType() == instanceType));
@@ -60,198 +55,60 @@ namespace DeltaEngine.Platforms.Tests
 			return instance;
 		}
 
-		private readonly List<object> registeredMocks = new List<object>();
-
-		private void SetupWindow()
+		private void SetupVectorText()
 		{
-			var windowMock = RegisterMock<Window>();
-			windowMock.Setup(w => w.IsVisible).Returns(true);
-			windowMock.Setup(w => w.IsClosing).Returns(true);
-			windowMock.SetupProperty(w => w.Title, "WindowMock");
-			var currentSize = new Size(800, 600);
-			windowMock.SetupGet(w => w.TotalPixelSize).Returns(() => currentSize);
-#pragma warning disable 0618
-			windowMock.SetupSet(w => w.TotalPixelSize).Callback(s =>
-			{
-				currentSize = s;
-				windowMock.Raise(w => w.ViewportSizeChanged += null, s);
-			});
-			windowMock.SetupGet(w => w.ViewportPixelSize).Returns(() => currentSize);
-			Window = windowMock.Object;
+			vectorTextData = new XmlData("VectorText");
+			for (int i = 'A'; i <= 'Z'; i++)
+				AddCharacter(i);
+
+			for (int i = '0'; i <= '9'; i++)
+				AddCharacter(i);
+
+			AddCharacter('.');
+			RegisterMock(vectorTextData);
 		}
 
-		public Window Window { get; private set; }
+		private XmlData vectorTextData;
 
-		private void SetupGraphics()
+		private void AddCharacter(int i)
 		{
-			SetupGraphicsDevice();
-			SetupDrawing();
-			SetupImage();
+			var character = new XmlData("Char" + i, vectorTextData);
+			character.AddAttribute("Character", Convert.ToChar(i).ToString(CultureInfo.InvariantCulture));
+			character.AddAttribute("Lines", "(0,0)-(1,1)");
 		}
 
-		private void SetupGraphicsDevice()
+		private void SetupXmlContent()
 		{
-			device = new Mock<Device>().Object;
-			RegisterMock(device);
+			var mockXmlContent = new Mock<XmlContent>("dummy");
+			mockXmlContent.SetupGet(c => c.XmlData).Returns(vectorTextData);
+			RegisterMock(mockXmlContent.Object);
 		}
-
-		private void SetupDrawing()
-		{
-			var mockDrawing = new Mock<Drawing>(device);
-			mockDrawing.Setup(
-				d => d.DrawVertices(It.IsAny<VerticesMode>(), It.IsAny<VertexPositionColor[]>())).Callback(
-					(VerticesMode mode, VertexPositionColor[] vertices) =>
-						NumberOfVerticesDrawn += vertices.Length);
-			drawing = RegisterMock(mockDrawing.Object);
-		}
-
-		private void SetupImage()
-		{
-			var mockImage = new Mock<Image>("dummy", drawing);
-			mockImage.SetupGet(i => i.PixelSize).Returns(new Size(128, 128));
-			mockImage.CallBase = true;
-			RegisterMock(mockImage.Object);
-		}
-
-		private Device device;
-		public int NumberOfVerticesDrawn { get; set; }
-		private Drawing drawing;
-
-		private void SetupRenderer()
-		{
-			screen = RegisterMock(new QuadraticScreenSpace(Window));
-			RegisterMock(new Mock<Renderer>(drawing, screen).Object);
-		}
-
-		private QuadraticScreenSpace screen;
-
-		private void SetupInput()
-		{
-			SetupMockKeyboard();
-			SetupMockMouse();
-			SetupTouch();
-			SetupGamePad();
-			RegisterSingleton<Input.InputCommands>();
-		}
-
-		private void SetupMockKeyboard()
-		{
-			var keyboard = RegisterMock<Keyboard>();
-			keyboard.SetupGet(k => k.IsAvailable).Returns(true);
-			keyboard.Setup(k => k.GetKeyState(It.IsAny<Key>())).Returns(
-				(Key key) => keyboardStates[(int)key]);
-		}
-
-		private readonly State[] keyboardStates = new State[(int)Key.NumberOfKeys];
 
 		public void SetKeyboardState(Key key, State state)
 		{
-			keyboardStates[(int)key] = state;
+			testInputResolver.KeyboardStates[(int)key] = state;
 		}
-
-		private void SetupMockMouse()
-		{
-			var mouse = RegisterMock<Mouse>();
-			mouse.SetupGet(k => k.IsAvailable).Returns(true);
-			mouse.Setup(k => k.SetPosition(It.IsAny<Point>())).Callback(
-				(Point p) => currentMousePosition = p);
-			mouse.SetupGet(k => k.Position).Returns(() => currentMousePosition);
-			mouse.SetupGet(k => k.ScrollWheelValue).Returns(0);
-			mouse.SetupGet(k => k.LeftButton).Returns(() => mouseButtonStates[(int)MouseButton.Left]);
-			mouse.SetupGet(k => k.MiddleButton).Returns(() => mouseButtonStates[(int)MouseButton.Middle]);
-			mouse.SetupGet(k => k.RightButton).Returns(() => mouseButtonStates[(int)MouseButton.Right]);
-			mouse.SetupGet(k => k.X1Button).Returns(() => mouseButtonStates[(int)MouseButton.X1]);
-			mouse.SetupGet(k => k.X2Button).Returns(() => mouseButtonStates[(int)MouseButton.X2]);
-			mouse.Setup(k => k.GetButtonState(It.IsAny<MouseButton>())).Returns(
-				(MouseButton button) => mouseButtonStates[(int)button]);
-		}
-
-		private Point currentMousePosition = Point.Half;
-		private readonly State[] mouseButtonStates = new State[MouseButton.Left.GetCount()];
 
 		public void SetMouseButtonState(MouseButton button, State state, Point newMousePosition)
 		{
-			currentMousePosition = newMousePosition;
-			mouseButtonStates[(int)button] = state;
+			testInputResolver.MouseButtonStates[(int)button] = state;
+			SetMousePosition(newMousePosition);
 		}
 
-		private void SetupTouch()
+		public void SetMousePosition(Point newMousePosition)
 		{
-			var touch = RegisterMock<Touch>();
-			touch.Setup(t => t.GetState(It.IsAny<int>())).Returns(
-				(int touchIndex) => touchStates[touchIndex]);
-			touch.Setup(t => t.GetPosition(It.IsAny<int>())).Returns(() => currentTouchPosition);
-			touch.SetupGet(t => t.IsAvailable).Returns(true);
+			testInputResolver.CurrentMousePosition = newMousePosition;
 		}
-
-		private Point currentTouchPosition = Point.Half;
-		private readonly State[] touchStates = new State[MaxNumberOfTouchIndices];
-		private const int MaxNumberOfTouchIndices = 10;
 
 		public void SetTouchState(int touchIndex, State state, Point newTouchPosition)
 		{
-			currentTouchPosition = newTouchPosition;
-			touchStates[touchIndex] = state;
+			testInputResolver.CurrentTouchPosition = newTouchPosition;
+			testInputResolver.TouchStates[touchIndex] = state;
 		}
-
-		private void SetupGamePad()
-		{
-			var touch = RegisterMock<GamePad>();
-			touch.Setup(t => t.GetButtonState(It.IsAny<GamePadButton>())).Returns(
-				(GamePadButton button) => gamePadButtonStates[(int)button]);
-			touch.SetupGet(t => t.IsAvailable).Returns(true);
-		}
-
-		private readonly State[] gamePadButtonStates = new State[GamePadButton.A.GetCount()];
 
 		public void SetGamePadState(GamePadButton button, State state)
 		{
-			gamePadButtonStates[(int)button] = state;
-		}
-		
-		private void SetupMultimedia()
-		{
-			var soundDevice = RegisterMock<Multimedia.SoundDevice>();
-			SetupSoundMock(soundDevice.Object);
-			SetupMusicMock(soundDevice.Object);
-		}
-
-		private void SetupSoundMock(SoundDevice soundDevice)
-		{
-			var mockSound = new Mock<Sound>("dummy", soundDevice);
-			mockSound.CallBase = true;
-			mockSound.SetupGet(s => s.LengthInSeconds).Returns(0.48f);
-			var playingSoundInstances = new List<SoundInstance>();
-			mockSound.Setup(s => s.PlayInstance(It.IsAny<SoundInstance>())).Callback(
-				(SoundInstance instance) =>
-				{
-					mockSound.Object.RaisePlayEvent(instance);
-					playingSoundInstances.Add(instance);
-				});
-			mockSound.Setup(s => s.StopInstance(It.IsAny<SoundInstance>())).Callback(
-				(SoundInstance instance) =>
-				{
-					mockSound.Object.RaiseStopEvent(instance);
-					playingSoundInstances.Remove(instance);
-				});
-			mockSound.Setup(s => s.IsPlaying(It.IsAny<SoundInstance>())).Returns(
-				(SoundInstance instance) => playingSoundInstances.Contains(instance));
-
-			RegisterMock(mockSound.Object);
-		}
-
-		private void SetupMusicMock(SoundDevice soundDevice)
-		{
-			var mockMusic = new Mock<Music>("dummy", soundDevice);
-			mockMusic.SetupGet(s => s.DurationInSeconds).Returns(35.85f);
-			mockMusic.SetupGet(s => s.PositionInSeconds).Returns(1.0f);
-			RegisterMock(mockMusic.Object);
-		}
-
-		private void SetupPlatforms()
-		{
-			var autofac = RegisterMock<AutofacResolver>();
-			autofac.CallBase = true;
+			testInputResolver.GamePadButtonStates[(int)button] = state;
 		}
 
 		protected override void MakeSureContainerIsInitialized()

@@ -11,7 +11,8 @@
     <AssemblyName>DeltaEngine.Input.Xna</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -59,7 +60,7 @@
       <Name>DeltaEngine.Platforms</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
-      <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
+      <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
       <Name>DeltaEngine.Rendering</Name>
     </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Input.csproj">

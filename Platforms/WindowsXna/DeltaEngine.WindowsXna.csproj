@@ -48,8 +48,8 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XnaAppForTestStarter.cs" />
     <Compile Include="XnaGame.cs" />
-    <Compile Include="XnaResolver.cs" />
     <Compile Include="XnaWindow.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -66,7 +66,7 @@
       <Name>DeltaEngine.Graphics</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Graphics\Xna\DeltaEngine.Graphics.Xna.csproj">
-      <Project>{CC533B9B-FC08-411A-B02D-9BB0E2DD90EC}</Project>
+      <Project>{cc533b9b-fc08-411a-b02d-9bb0e2dd90ec}</Project>
       <Name>DeltaEngine.Graphics.Xna</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Input\DeltaEngine.Input.csproj">
@@ -74,11 +74,11 @@
       <Name>DeltaEngine.Input</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Input\Windows\DeltaEngine.Input.Windows.csproj">
-      <Project>{C0D2430E-714D-476C-80E7-5C80A7FA68EE}</Project>
+      <Project>{c0d2430e-714d-476c-80e7-5c80a7fa68ee}</Project>
       <Name>DeltaEngine.Input.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Input\Xna\DeltaEngine.Input.Xna.csproj">
-      <Project>{5D28C1B5-43AD-4E69-840D-B068C3844589}</Project>
+      <Project>{5d28c1b5-43ad-4e69-840d-b068c3844589}</Project>
       <Name>DeltaEngine.Input.Xna</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Multimedia\DeltaEngine.Multimedia.csproj">
@@ -86,7 +86,7 @@
       <Name>DeltaEngine.Multimedia</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Multimedia\Xna\DeltaEngine.Multimedia.Xna.csproj">
-      <Project>{70773E53-5D8E-4218-8AFA-0A07E48FD4A2}</Project>
+      <Project>{70773e53-5d8e-4218-8afa-0a07e48fd4a2}</Project>
       <Name>DeltaEngine.Multimedia.Xna</Name>
     </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Platforms.csproj">
@@ -94,7 +94,7 @@
       <Name>DeltaEngine.Platforms</Name>
     </ProjectReference>
     <ProjectReference Include="..\Windows\DeltaEngine.Platforms.Windows.csproj">
-      <Project>{BD8A80E2-A313-437E-B0EF-FC0B066280A7}</Project>
+      <Project>{bd8a80e2-a313-437e-b0ef-fc0b066280a7}</Project>
       <Name>DeltaEngine.Platforms.Windows</Name>
     </ProjectReference>
   </ItemGroup>

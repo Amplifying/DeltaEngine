@@ -25,7 +25,7 @@ namespace DeltaEngine.Input.Windows
 		private const int MaxNumberOfTouches = 10;
 		private readonly CursorPositionTranslater positionTranslater;
 
-		public void UpdateAllTouches(List<NativeTouchInput> newTouches)
+		internal void UpdateAllTouches(List<NativeTouchInput> newTouches)
 		{
 			UpdatePreviouslyActiveTouches(newTouches);
 			ProcessNewTouches(newTouches);
@@ -86,7 +86,7 @@ namespace DeltaEngine.Input.Windows
 
 		internal Point CalculateQuadraticPosition(int x, int y)
 		{
-			var newPosition = new Point((float)x / Precision, (float)y / Precision);
+			var newPosition = new Point(x / Precision, y / Precision);
 			return positionTranslater.FromScreenPositionToScreenSpace(newPosition);
 		}
 
@@ -107,8 +107,7 @@ namespace DeltaEngine.Input.Windows
 
 		internal static bool IsTouchDown(int flag)
 		{
-			const int TouchInputDownOrMove = 0x0001 | 0x0002;
-			return (flag & TouchInputDownOrMove) != 0;
+			return (flag & NativeTouchInput.FlagTouchDownOrMoved) != 0;
 		}
 	}
 }

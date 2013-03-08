@@ -22,9 +22,14 @@ namespace DeltaEngine.Input.Triggers
 			get { return button; }
 		}
 
-		public override bool ConditionMatched(InputCommands inputCommands)
+		public State State
 		{
-			return inputCommands.mouse.IsAvailable && inputCommands.mouse.GetButtonState(button) == state;
+			get { return state; }
+		}
+
+		public override bool ConditionMatched(InputCommands input)
+		{
+			return input.mouse.IsAvailable && input.mouse.GetButtonState(button) == state;
 		}
 
 		public bool Equals(MouseButtonTrigger other)

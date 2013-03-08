@@ -73,7 +73,7 @@
       <Name>DeltaEngine.Platforms</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Platforms\Tests\DeltaEngine.Platforms.Tests.csproj">
-      <Project>{D0AAD622-ED82-40E5-88A9-980EAFC12C16}</Project>
+      <Project>{d0aad622-ed82-40e5-88a9-980eafc12c16}</Project>
       <Name>DeltaEngine.Platforms.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Rendering\DeltaEngine.Rendering.csproj">
@@ -81,7 +81,7 @@
       <Name>DeltaEngine.Rendering</Name>
     </ProjectReference>
     <ProjectReference Include="..\LogoApp.csproj">
-      <Project>{B94B117E-1A32-40C6-A93D-FD7012ED8D12}</Project>
+      <Project>{b94b117e-1a32-40c6-a93d-fd7012ed8d12}</Project>
       <Name>LogoApp</Name>
     </ProjectReference>
   </ItemGroup>

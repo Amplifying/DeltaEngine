@@ -12,7 +12,8 @@
     <RootNamespace>DeltaEngine.Multimedia.SharpDX</RootNamespace>
     <AssemblyName>DeltaEngine.Multimedia.SharpDX</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
@@ -53,6 +54,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="ToyMp3">
+      <HintPath>..\..\packages\ToyMp3.1.0.0.0\lib\NET40\ToyMp3.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -69,10 +73,6 @@
     <ProjectReference Include="..\DeltaEngine.Multimedia.csproj">
       <Project>{6016abb8-05f5-4a07-8fba-16576277dde7}</Project>
       <Name>DeltaEngine.Multimedia</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Mp3Reader\Mp3Reader.csproj">
-      <Project>{c0aa7900-5f5e-45b6-8135-2a32961f9588}</Project>
-      <Name>Mp3Reader</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,6 @@
 ﻿using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Rendering.Shapes;
 
 namespace DeltaEngine.Rendering.Tests
 {
@@ -7,7 +8,7 @@ namespace DeltaEngine.Rendering.Tests
 	/// Just draws just a colored box, called via ColoredRectangleTests and by the tool
 	/// ContinuousUpdater to test dynamic updating while the app is running (allowing code changes).
 	/// </summary>
-	public class BlinkingBox : ColoredRectangle
+	public class BlinkingBox : Rect
 	{
 		public BlinkingBox()
 			: base(new Rectangle(Point.Zero, Size.Half), Color.Red) {}

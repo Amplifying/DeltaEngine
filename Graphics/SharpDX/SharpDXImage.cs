@@ -14,7 +14,7 @@ namespace DeltaEngine.Graphics.SharpDX
 			: base(filename, drawing)
 		{
 			this.device = device;
-			TryLoadBitmapFile("Content/" + filename + ".png");
+			TryLoadTexture("Content/" + filename + ".png");
 		}
 
 		private readonly SharpDXDevice device;
@@ -28,7 +28,7 @@ namespace DeltaEngine.Graphics.SharpDX
 				NativeResourceView.Dispose();
 		}
 
-		private void TryLoadBitmapFile(string filename)
+		private void TryLoadTexture(string filename)
 		{
 			try
 			{
@@ -46,7 +46,10 @@ namespace DeltaEngine.Graphics.SharpDX
 
 		public Texture2D NativeTexture { get; private set; }
 		private Size pixelSize;
-		public override Size PixelSize { get { return pixelSize; } }
+		public override Size PixelSize
+		{
+			get { return pixelSize; }
+		}
 		public ShaderResourceView NativeResourceView { get; private set; }
 
 		public Texture2D LoadTexture(string filename)
@@ -59,7 +62,8 @@ namespace DeltaEngine.Graphics.SharpDX
 
 		private static BitmapSource Decode(ImagingFactory factory, string filename)
 		{
-			using (var bitmapDecoder = new BitmapDecoder(factory, filename, DecodeOptions.CacheOnDemand))
+			using (var bitmapDecoder = new BitmapDecoder(factory, filename, DecodeOptions.CacheOnDemand)
+				)
 				return bitmapDecoder.GetFrame(0);
 		}
 
@@ -102,54 +106,49 @@ namespace DeltaEngine.Graphics.SharpDX
 				SampleDescription = new SampleDescription(1, 0),
 			};
 		}
-		
+
 		public override void Draw(VertexPositionColorTextured[] vertices)
 		{
-			var usedSamplerState = DisableLinearFiltering ? PointSampler : LinearSampler;
+			var usedSampler = DisableLinearFiltering ? GetPointSamplerLazy() : GetLinearSamplerLazy();
 			device.Context.PixelShader.SetShaderResource(0, NativeResourceView);
-			device.Context.PixelShader.SetSampler(0, usedSamplerState);
+			device.Context.PixelShader.SetSampler(0, usedSampler);
 			base.Draw(vertices);
 		}
 
-		public SamplerState LinearSampler
+		public SamplerState GetLinearSamplerLazy()
 		{
-			get
-			{
-				return samplerStateLinear ??
-					(samplerStateLinear = new SharpDXSampler(device.NativeDevice, Filter.MinMagMipLinear));
-			}
+			return linearSampler ??
+				(linearSampler = new SharpDXSampler(device.NativeDevice, Filter.MinMagMipLinear));
 		}
 
-		private SamplerState samplerStateLinear;
+		private SamplerState linearSampler;
 
-		public SamplerState PointSampler
+		public SamplerState GetPointSamplerLazy()
 		{
-			get
-			{
-				return samplerStatePoint ??
-					(samplerStatePoint = new SharpDXSampler(device.NativeDevice, Filter.MinMagMipPoint));
-			}
+			return pointSampler ??
+				(pointSampler = new SharpDXSampler(device.NativeDevice, Filter.MinMagMipPoint));
 		}
 
-		private static SamplerState samplerStatePoint;
+		private SamplerState pointSampler;
 
 		private void CreateDefaultTexture()
 		{
-			Utilities.Pin(checkerMapColors, ptr =>
-			{
-				NativeTexture = new Texture2D(device.NativeDevice,
-					new Texture2DDescription
-					{
-						Width = (int)DefaultTextureSize.Width,
-						Height = (int)DefaultTextureSize.Height,
-						ArraySize = 1,
-						MipLevels = 1,
-						Format = Format.R8G8B8A8_UNorm,
-						Usage = ResourceUsage.Immutable,
-						BindFlags = BindFlags.ShaderResource,
-						SampleDescription = new SampleDescription(1, 0),
-					}, new DataRectangle(ptr, 64));
-			});
+			Utilities.Pin(checkerMapColors,
+				ptr =>
+				{
+					NativeTexture = new Texture2D(device.NativeDevice,
+						new Texture2DDescription
+						{
+							Width = (int)DefaultTextureSize.Width,
+							Height = (int)DefaultTextureSize.Height,
+							ArraySize = 1,
+							MipLevels = 1,
+							Format = Format.R8G8B8A8_UNorm,
+							Usage = ResourceUsage.Immutable,
+							BindFlags = BindFlags.ShaderResource,
+							SampleDescription = new SampleDescription(1, 0),
+						}, new DataRectangle(ptr, 64));
+				});
 			pixelSize = DefaultTextureSize;
 			DisableLinearFiltering = true;
 		}

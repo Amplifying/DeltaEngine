@@ -23,7 +23,7 @@ namespace Blocks.Tests
 		[Test]
 		public void Constants()
 		{
-			Assert.AreEqual(new Point(0.2f, 0.3f), Brick.RenderOffset);
+			Assert.AreEqual(new Point(0.38f, 0.385f), Brick.RenderOffset);
 			Assert.AreEqual(0.02f, Brick.RenderZoom);
 		}
 

@@ -3,7 +3,6 @@ using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
 using DeltaEngine.Input;
-using DeltaEngine.Input.Devices;
 using DeltaEngine.Platforms.Tests;
 using DeltaEngine.Rendering;
 
@@ -47,10 +46,10 @@ namespace GameOfDeath.Tests
 			{
 				var rabbitImage = content.Load<Image>("Rabbit");
 				var viewport = renderer.Screen.Viewport;
-				for (float x = viewport.Left + Game.CellSize.Width / 2; x <= viewport.Right;
-					x += Game.CellSize.Width)
-					for (float y = viewport.Top + Game.CellSize.Height / 2; y <= viewport.Bottom;
-						y += Game.CellSize.Height)
+				for (float x = viewport.Left + RabbitsGrid.CellSize.Width / 2; x <= viewport.Right;
+					x += RabbitsGrid.CellSize.Width)
+					for (float y = viewport.Top + RabbitsGrid.CellSize.Height / 2; y <= viewport.Bottom;
+						y += RabbitsGrid.CellSize.Height)
 						renderer.Add(CreateRabbitWith50Health(rabbitImage, new Point(x, y)));
 			});
 		}

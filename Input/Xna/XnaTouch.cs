@@ -44,6 +44,9 @@ namespace DeltaEngine.Input.Xna
 
 		public bool IsAvailable { get; private set; }
 
-		public void Dispose() { }
+		public void Dispose()
+		{
+			IsAvailable = false;
+		}
 	}
 }

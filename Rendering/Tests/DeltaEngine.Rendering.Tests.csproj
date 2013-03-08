@@ -46,13 +46,16 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CircleTests.cs" />
-    <Compile Include="ColoredCirclesTests.cs" />
-    <Compile Include="ColoredEllipseTests.cs" />
-    <Compile Include="ColoredRectangleTests.cs" />
+    <Compile Include="BubbleSortedListTests.cs" />
+    <Compile Include="Camera2DControlledQuadraticScreenSpaceTests.cs" />
+    <Compile Include="OutlinedCircleTests.cs" />
+    <Compile Include="CirclesTests.cs" />
+    <Compile Include="EllipseTests.cs" />
+    <Compile Include="OutlinedRectTests.cs" />
+    <Compile Include="RectTests.cs" />
     <Compile Include="FallingEffectTests.cs" />
     <Compile Include="ZoomingEffectTests.cs" />
-    <Compile Include="EllipseTests.cs" />
+    <Compile Include="OutlinedEllipseTests.cs" />
     <Compile Include="FadeoutEffectTests.cs" />
     <Compile Include="InvertedScreenSpaceTests.cs" />
     <Compile Include="PixelScreenSpaceTests.cs" />
@@ -71,12 +74,19 @@
     <Content Include="Content\DeltaEngineLogo.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\VectorText.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
       <Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
       <Name>DeltaEngine.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\Xml\DeltaEngine.Core.Xml.csproj">
+      <Project>{138a40b5-3d80-4ba3-bd84-d82c151ee7fe}</Project>
+      <Name>DeltaEngine.Core.Xml</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Datatypes\DeltaEngine.Datatypes.csproj">
       <Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>

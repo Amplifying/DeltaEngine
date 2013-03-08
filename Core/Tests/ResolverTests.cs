@@ -66,9 +66,9 @@ namespace DeltaEngine.Core.Tests
 			Dispose();
 		}
 
-		private class SomeDisposableRunner : Runner, IDisposable
+		public class SomeDisposableRunner : Runner, IDisposable
 		{
-			public void Dispose() {}
+			public void Dispose() { }
 			public void Run() {}
 		}
 	}

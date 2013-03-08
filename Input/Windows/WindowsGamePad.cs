@@ -25,7 +25,7 @@ namespace DeltaEngine.Input.Windows
 			return State.Released;
 		}
 
-		public void Dispose() {}
+		public void Dispose() { }
 
 		public Point GetLeftThumbStick()
 		{

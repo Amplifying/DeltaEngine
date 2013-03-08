@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<NDepend AppName="DeltaEngine" Platform="DotNet">
-  <OutputDir KeepHistoric="False" KeepXmlFiles="True">C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\NDependOut</OutputDir>
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<NDepend AppName="Delta Engine" Platform="DotNet">
+  <OutputDir KeepHistoric="True" KeepXmlFiles="True">C:\Users\Hendrik\Desktop\NDependOut</OutputDir>
   <Assemblies>
     <Name>DeltaEngine.Graphics</Name>
     <Name>DeltaEngine.Platforms</Name>
@@ -21,68 +21,152 @@
     <Name>DeltaEngine.WindowsXna</Name>
     <Name>DeltaEngine.WindowsDirectX</Name>
     <Name>DeltaEngine.Platforms.Windows</Name>
-    <Name>Breakout</Name>
     <Name>DeltaEngine.Input</Name>
     <Name>DeltaEngine.Input.Tests</Name>
     <Name>DeltaEngine.Input.Windows</Name>
     <Name>DeltaEngine.Input.SharpDX</Name>
     <Name>DeltaEngine.Input.Xna</Name>
-    <Name>Breakout.Tests</Name>
+    <Name>DeltaEngine.WindowsXnaWithoutAutofac</Name>
+    <Name>DeltaEngine.WindowsXnaWithoutAutofac.Tests</Name>
     <Name>DeltaEngine.Multimedia</Name>
     <Name>DeltaEngine.Multimedia.Tests</Name>
     <Name>DeltaEngine.Multimedia.Xna</Name>
     <Name>DeltaEngine.Multimedia.SharpDX</Name>
     <Name>DeltaEngine.Multimedia.OpenTK</Name>
+    <Name>DeltaEngine.Core.Xml</Name>
     <Name>GameOfDeath</Name>
+    <Name>DeltaEngine.Core.Xml.Tests</Name>
     <Name>GameOfDeath.Tests</Name>
+    <Name>Blocks</Name>
+    <Name>Blocks.Tests</Name>
+    <Name>Breakout</Name>
+    <Name>Breakout.Tests</Name>
+    <Name>DeltaEngine.Editor</Name>
+    <Name>DeltaEngine.Editor.ContentManager</Name>
+    <Name>DeltaEngine.Networking</Name>
+    <Name>DeltaEngine.Networking.Tests</Name>
+    <Name>DeltaEngine.Networking.Sockets</Name>
+    <Name>DeltaEngine.Networking.Sockets.Tests</Name>
+    <Name>DeltaEngine.Logging</Name>
+    <Name>DeltaEngine.Logging.Tests</Name>
+    <Name>DeltaEngine.Logging.Basic</Name>
+    <Name>DeltaEngine.Logging.Basic.Tests</Name>
+    <Name>DeltaEngine.Logging.Log4Net</Name>
+    <Name>DeltaEngine.Logging.Log4Net.Tests</Name>
+    <Name>DeltaEngine.Logging.NLog</Name>
+    <Name>DeltaEngine.Logging.NLog.Tests</Name>
+    <Name>DeltaEngine.Logging.QueryableLog</Name>
+    <Name>DeltaEngine.Logging.QueryableLog.Tests</Name>
+    <Name>DeltaEngine.Editor.ContentManager.Tests</Name>
+    <Name>DeltaEngine.Graphics.BaseOpenGL</Name>
+    <Name>DeltaEngine.Graphics.OpenTKWithBaseOpenGL</Name>
+    <Name>DeltaEngine.Input.Xna.Tests</Name>
+    <Name>DeltaEngine.Input.SharpDX.Tests</Name>
+    <Name>DeltaEngine.Multimedia.OpenTK.Tests</Name>
+    <Name>DeltaEngine.Input.Windows.Tests</Name>
   </Assemblies>
-  <FrameworkAssemblies />
+  <FrameworkAssemblies>
+    <Name>mscorlib</Name>
+    <Name>Autofac</Name>
+    <Name>System.Core</Name>
+    <Name>nunit.framework</Name>
+    <Name>System.Drawing</Name>
+    <Name>OpenTK</Name>
+    <Name>Moq</Name>
+    <Name>System</Name>
+    <Name>Microsoft.Xna.Framework.Graphics</Name>
+    <Name>Microsoft.Xna.Framework</Name>
+    <Name>Microsoft.Xna.Framework.Game</Name>
+    <Name>SharpDX.Direct3D11</Name>
+    <Name>SharpDX.DXGI</Name>
+    <Name>SharpDX.Direct2D1</Name>
+    <Name>SharpDX</Name>
+    <Name>System.Windows.Forms</Name>
+    <Name>SharpDX.DirectInput</Name>
+    <Name>SharpDX.XInput</Name>
+    <Name>Microsoft.Xna.Framework.Input.Touch</Name>
+    <Name>SharpDX.XAudio2</Name>
+    <Name>ToyMp3</Name>
+    <Name>PresentationFramework</Name>
+    <Name>System.Xaml</Name>
+    <Name>PresentationCore</Name>
+    <Name>WindowsBase</Name>
+    <Name>log4net</Name>
+    <Name>System.Xml</Name>
+    <Name>NLog</Name>
+  </FrameworkAssemblies>
   <Dirs>
     <Dir>C:\Windows\Microsoft.NET\Framework\v4.0.30319</Dir>
     <Dir>C:\Windows\Microsoft.NET\Framework\v4.0.30319\WPF</Dir>
+    <Dir>C:\Windows\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework\v4.0_4.0.0.0__842cf8be1de50553</Dir>
+    <Dir>C:\Windows\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework.Game\v4.0_4.0.0.0__842cf8be1de50553</Dir>
+    <Dir>C:\Windows\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework.Graphics\v4.0_4.0.0.0__842cf8be1de50553</Dir>
+    <Dir>C:\Windows\Microsoft.Net\assembly\GAC_MSIL\Microsoft.Xna.Framework.Input.Touch\v4.0_4.0.0.0__842cf8be1de50553</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Datatypes\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Datatypes\Tests\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\Tests\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\OpenTK\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\OpenTK\Tests\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsOpenGL\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Core\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Rendering\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\Xna\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\SharpDX\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsXna\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsDirectX\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsDirectX\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\SharpDX\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\Windows\Tests\bin\Release</Dir>
-    <Dir>C:\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Datatypes\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsOpenGL\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Samples\LogoApp\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Samples\LogoApp\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Core\Tests\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Rendering\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Rendering\Tests\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\Xna\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\SharpDX\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Core\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsXna\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsDirectX\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\Windows\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Breakout\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Input\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Input\Tests\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Input\Windows\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Input\SharpDX\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Input\Xna\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Breakout\Tests\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\Tests\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\Xna\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\SharpDX\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\OpenTK\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Core\Xml\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Samples\GameOfDeath\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Core\Xml\Tests\bin\Release</Dir>
     <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Samples\GameOfDeath\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Blocks\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Blocks\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Breakout\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Breakout\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\Mp3Reader\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsXnaWithoutAutofac\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsXnaWithoutAutofac\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Editor\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Editor\ContentManager\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Networking\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Networking\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Networking\Sockets\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Networking\Sockets\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Logging\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Basic\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Basic\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Log4Net\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Log4Net\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Logging\NLog\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Logging\NLog\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Logging\QueryableLog\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Logging\QueryableLog\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Editor\ContentManager\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\BaseOpenGL\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\OpenTKWithBaseOpenGL\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Input\Xna\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Input\SharpDX\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\OpenTK\Tests\bin\Release</Dir>
+    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Input\Windows\Tests\bin\Release</Dir>
   </Dirs>
-  <Report Kind="0" SectionsEnabled="32767" XslPath="" Flags="64512">
+  <Report Kind="0" SectionsEnabled="12287" XslPath="" Flags="64512">
     <Section Enabled="True">Application Metrics</Section>
     <Section Enabled="True">.NET Assemblies Metrics</Section>
     <Section Enabled="True">Treemap Metric View</Section>
@@ -98,7 +182,8 @@
   <BuildComparisonSetting ProjectMode="DontCompare" BuildMode="MostRecentAnalysisResultAvailable" ProjectFileToCompareWith="" BuildFileToCompareWith="" NDaysAgo="1" />
   <BaselineInUISetting ProjectMode="DontCompare" BuildMode="MostRecentAnalysisResultAvailable" ProjectFileToCompareWith="" BuildFileToCompareWith="" NDaysAgo="1" />
   <CoverageFiles UncoverableAttribute="" />
-  <SourceFileRebasing FromPath="" ToPath="" /><Queries>
+  <SourceFileRebasing FromPath="" ToPath="" />
+  <Queries>
     <Group Name="Code Quality" Active="True" ShownInReport="False">
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="True"><![CDATA[// <Name>Types too big - critical</Name>
 warnif count > 0 from t in JustMyCode.Types where 
@@ -137,9 +222,11 @@ select new { m, m.ILCyclomaticComplexity, m.ILNestingDepth }
 // http://www.ndepend.com/Metrics.aspx#ILCC
 // See the definition of the ILNestingDepth metric here 
 // http://www.NDepend.com/Metrics.aspx#ILNestingDepth]]></Query>
-      <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="True"><![CDATA[// <Name>Methods with too many parameters - critical</Name>
+      <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Methods with too many parameters - critical</Name>
 warnif count > 0 from m in JustMyCode.Methods where 
-  m.NbParameters > 8
+  m.NbParameters > 3 &&
+  !m.HasAttribute("System.Runtime.InteropServices.DllImportAttribute") &&
+  !m.ParentType.IsStructure
   orderby m.NbParameters descending
 select new { m, m.NbParameters }
 
@@ -156,14 +243,20 @@ select new { m, m.NbParameters }
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Quick summary of methods to refactor</Name>
 warnif count > 0 from m in JustMyCode.Methods where 
                                     // Code Metrics' definitions
-  m.NbLinesOfCode > 30 ||           // http://www.ndepend.com/Metrics.aspx#NbLinesOfCode
+  m.NbLinesOfCode > 20 ||           // http://www.ndepend.com/Metrics.aspx#NbLinesOfCode
   m.NbILInstructions > 200 ||       // http://www.ndepend.com/Metrics.aspx#NbILInstructions
   m.CyclomaticComplexity > 20 ||    // http://www.ndepend.com/Metrics.aspx#CC
   m.ILCyclomaticComplexity > 50 ||  // http://www.ndepend.com/Metrics.aspx#ILCC
   m.ILNestingDepth > 5 ||           // http://www.ndepend.com/Metrics.aspx#ILNestingDepth
-  m.NbParameters > 5 ||             // http://www.ndepend.com/Metrics.aspx#NbParameters
+  (m.NbParameters > 3  &&
+ !m.HasAttribute("System.Runtime.InteropServices.DllImportAttribute") &&
+ !m.ParentType.IsStructure && !m.ParentType.DeriveFrom("DeltaEngine.Rendering.Sprite") &&
+ m.ParentType.FullName != "DeltaEngine.Input.InputCommands"|| 
+  m.NbParameters > 4) ||             // http://www.ndepend.com/Metrics.aspx#NbParameters
   m.NbVariables > 8 ||              // http://www.ndepend.com/Metrics.aspx#NbVariables
-  m.NbOverloads > 6                 // http://www.ndepend.com/Metrics.aspx#NbOverloads
+  (m.NbOverloads > 6 &&
+ !m.FullName.Contains("TestStarter.Start") &&
+ !m.FullName.Contains("InputCommands.Add"))                 // http://www.ndepend.com/Metrics.aspx#NbOverloads
 
 select new { m, m.NbLinesOfCode, m.NbILInstructions, m.CyclomaticComplexity, 
              m.ILCyclomaticComplexity, m.ILNestingDepth, 
@@ -215,7 +308,11 @@ select new { m, m.PercentageComment, m.NbLinesOfCode, m.NbLinesOfComment }
 // http://www.ndepend.com/Metrics.aspx#NbLinesOfComment ]]></Query>
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Methods with too many parameters</Name>
 warnif count > 0 from m in JustMyCode.Methods where 
-  m.NbParameters > 5 
+   (m.NbParameters > 3  &&
+ !m.HasAttribute("System.Runtime.InteropServices.DllImportAttribute") &&
+ !m.ParentType.IsStructure && !m.ParentType.DeriveFrom("DeltaEngine.Rendering.Sprite") &&
+ m.ParentType.FullName != "DeltaEngine.Input.InputCommands"|| 
+  m.NbParameters > 4)
   orderby m.NbParameters descending
 select new { m, m.NbParameters }
 
@@ -241,7 +338,9 @@ select new { m, m.NbVariables }
 // http://www.ndepend.com/Metrics.aspx#Nbvariables]]></Query>
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Methods with too many overloads</Name>
 warnif count > 0 from m in JustMyCode.Methods where 
-  m.NbOverloads > 6 && 
+   (m.NbOverloads > 6 &&
+ !m.FullName.Contains("TestStarter.Start") &&
+ !m.FullName.Contains("InputCommands.Add"))                 && 
   !m.IsOperator // Don't report operator overload
   orderby m.NbOverloads descending
 select new { m, m.NbOverloads }
@@ -257,7 +356,10 @@ select new { m, m.NbOverloads }
 // http://www.ndepend.com/Metrics.aspx#NbOverloads]]></Query>
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Types with too many methods</Name>
 warnif count > 0 from t in JustMyCode.Types where 
-  t.Methods.Count() > 22 
+!t.IsStructure && !t.FullName.EndsWith("Tests") && 
+(t.Methods.Count() > 22  &&
+ t.InterfacesImplemented.Count() == 0 ||
+ t.Methods.Count() > 33)
   orderby t.Methods.Count() descending
 select new { t, t.InstanceMethods, t.StaticMethods }
 
@@ -271,6 +373,7 @@ select new { t, t.InstanceMethods, t.StaticMethods }
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Types with too many fields</Name>
 warnif count > 0 from t in JustMyCode.Types where 
   t.Fields.Count() > 20 && 
+  !t.IsStructure &&
   !t.IsEnumeration 
   orderby t.Fields.Count() descending
 select new { t, t.InstanceFields, t.StaticFields, t.SizeOfInst }
@@ -544,9 +647,11 @@ let baseClasses = t.BaseClasses.ExceptThirdParty()
 // Notice that we don't count third-party classes 
 // because this rule concerns your code design,
 // not third-party libraries consumed design.
-where baseClasses.Count() >= 4
+where baseClasses.Count() >= 4 &&
+// Only check the depth inside the own namespace
+t.ParentNamespace.Name.Split('.')[0] != t.FullName.Split('.')[0]
 
-select new { t, baseClasses, 
+select new { t, baseClasses,
                 // The metric value DepthOfInheritance takes account
                 // of third-party base classes
                 t.DepthOfInheritance } 
@@ -591,7 +696,8 @@ where  mBase.IsVirtual &&
       !mBase.IsAbstract && 
       !mBase.IsExplicitInterfaceImpl
 from mOverride in mBase.OverridesDirectDerived
-where !mOverride.IsUsing(mBase)
+where !mOverride.IsUsing(mBase) &&
+      !mOverride.ParentType.IsSealed
 select new { mOverride, shouldCall = mBase, definedInBaseClass = mBase.ParentType }
 ]]></Query>
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Do not hide base class methods</Name>
@@ -727,19 +833,23 @@ warnif count > 0
 from t in Application.Types where 
    t.IsClass &&
   !t.IsGeneratedByCompiler &&
-  !t.IsSealed
+  !t.IsSealed &&
+  t.Name != "ScreenSpace" &&
+  t.Name != "FormsWindow" &&
+  t.Name != "XnaWindow"
+
 
 from ctor in t.Constructors 
 let virtualMethodsCalled = from mCalled in ctor.MethodsCalled
                            where mCalled.IsVirtual &&
-                                (mCalled.ParentType == t ||
+                         (mCalled.ParentType == t ||
                                  t.DeriveFrom(mCalled.ParentType))
                            select mCalled
 where virtualMethodsCalled.Count() > 0
 
 select new { ctor , 
-             virtualMethodsCalled, 
-             // If there is no derived type, it might be 
+             virtualMethodsCalled,   
+virtualMethodsCalled.Last().Name,          // If there is no derived type, it might be 
              // an opportunity to mark t as sealed.
              t.DerivedTypes }]]></Query>
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[//<Name>Avoid the Singleton pattern</Name>
@@ -929,7 +1039,9 @@ let invokeMethod = (from m in t.Methods where m.SimpleName == "Invoke" select m)
 let signature1 = invokeMethod.Name.Substring(invokeMethod.SimpleName.Length, invokeMethod.Name.Length - invokeMethod.SimpleName.Length)
 
 // 'ref' and 'out' parameters canot be supported
-where !signature1.Contains("&")
+where !signature1.Contains("&") &&
+// Allow multiple parameter for pInvoke delegates
+ !signature1.Contains(",")
 
 let signature2 = signature1.Replace("(","<").Replace(")",">")
 let signature3 = signature2 == "<>" ? "" : signature2
@@ -943,9 +1055,10 @@ let replaceWith = resultTypeName == "Boolean" ?
              
 
 select new { t, replaceWith }]]></Query>
-      <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Types with disposable instance fields must be disposable</Name>
+      <Query Active="False" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Types with disposable instance fields must be disposable</Name>
 warnif count > 0
 
+// We need to allow this becouse Autofac manage IDisposables
 let iDisposable = ThirdParty.Types.WithFullName("System.IDisposable").FirstOrDefault() 
 where iDisposable != null // iDisposable can be null if the code base doesn't use at all System.IDisposable
 
@@ -1018,6 +1131,7 @@ where
   !n.Name.Contains(".Platforms") &&
   !n.Name.Contains(".Graphics") &&
   !n.Name.Contains(".Windows") &&
+  !n.Name.Contains("LogoApp") &&
   n.Name != "DeltaEngine.Rendering" &&
   !n.Name.EndsWith("Tests") &&
   types.Count() < 5
@@ -1036,6 +1150,7 @@ warnif count > 0 from t in JustMyCode.Types where
   t.IsNested && 
  !t.IsGeneratedByCompiler &&
  !t.IsPrivate &&
+ !t.IsProtected &&
  !t.DeriveFrom("System.Exception") &&
  !t.Name.Contains("Tests+") 
 select new { t, t.NbLinesOfCode, t.Visibility } 
@@ -1064,15 +1179,18 @@ select new { n, n.ChildTypes, n.NbLinesOfCode }
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Empty static constructor can be discarded</Name>
 warnif count > 0 from m in Application.Methods where 
   m.IsClassConstructor && 
-  m.NbLinesOfCode == 0
-select m
-    ]]></Query>
+  m.NbLinesOfCode == 0 &&
+ // Needen for TestResolver (there is no static ctor)
+  m.ParentType.StaticFields.Count() < 3
+select new { m, m.FullName }]]></Query>
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Instances size shouldn't be too big</Name>
 warnif count > 0 from t in JustMyCode.Types where 
-  t.SizeOfInst > 64 &&
-  t.BaseClass.Name != "Game"
+// SizeOfInst is bugged, it counts our datatypes twice becouse of FieldOffsets
+  t.SizeOfInst > 150 &&
+  t.BaseClass.Name != "Game" &&
+  t.BaseClass.Name != "Form"
   orderby t.SizeOfInst descending
-select new { t, t.SizeOfInst, t.InstanceFields }
+select new { t, t.SizeOfInst, t.InstanceFields, BaseSizeOfInsts = t.BaseClass.SizeOfInst, BaseInstanceFields = t.BaseClass.InstanceFields, BaseOfBase = t.BaseClass.BaseClass.InstanceFields }
 
 // Types where SizeOfInst > 64 might degrade performance 
 // (depending on the number of instances created at runtime) 
@@ -1100,10 +1218,11 @@ select new { m, m.NbLinesOfCode, m.IsUsingBoxing, m.IsUsingUnboxing }
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Attribute classes should be sealed</Name>
 warnif count > 0 from t in Application.Types where 
   t.IsAttributeClass && 
+ t.TypesThatImplementMe.Count() > 0 &&
  !t.IsSealed && 
  !t.IsAbstract && 
   t.IsPublic
-select new { t, t.NbLinesOfCode } 
+select new { t, t.NbLinesOfCode }
 
 // The .NET Framework class library provides methods 
 // for retrieving custom attributes. By default, 
@@ -1117,7 +1236,7 @@ select new { t, t.NbLinesOfCode }
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Don't use obsolete types, methods or fields</Name>   
 warnif count > 0
 let obsoleteTypes = Types.Where(t => t.IsObsolete)
-let obsoleteMethods = Methods.Where(m => m.IsObsolete).ToHashSet()
+let obsoleteMethods = Methods.Where(m => m.IsObsolete && !m.Name.Contains("SetupSet")).ToHashSet()
 let obsoleteFields = Fields.Where(f => f.IsObsolete)
 
 from m in JustMyCode.Methods.UsingAny(obsoleteTypes).Union(
@@ -1169,7 +1288,8 @@ warnif count > 0
 // If some namespaces are mutually dependent
 //  - They must be declared in the same assembly
 //  - The parent assembly must ContainsNamespaceDependencyCycle
-from assembly in Application.Assemblies.Where(a => a.ContainsNamespaceDependencyCycle != null && a.ContainsNamespaceDependencyCycle.Value)
+from assembly in Application.Assemblies.Where(a => a.ContainsNamespaceDependencyCycle != null &&
+   a.ContainsNamespaceDependencyCycle.Value)
 
 // hashset is used to avoid reporting both A <-> B and B <-> A
 let hashset = new HashSet<INamespace>()
@@ -1185,7 +1305,7 @@ from nA in namespacesSuspect
 let unused = hashset.Add(nA) // Populate hashset
 let namespacesMutuallyDependentWith_nA = nA.NamespacesUsed.Using(nA)
           .Except(hashset) // <-- avoid reporting both A <-> B and B <-> A 
-where namespacesMutuallyDependentWith_nA.Count() > 0
+where namespacesMutuallyDependentWith_nA.Count() > 0 
 
 from nB in namespacesMutuallyDependentWith_nA
 
@@ -1198,9 +1318,10 @@ let first = (typesOfBUsedByA.Count() > typesOfAUsedByB.Count()) ? nB : nA
 let second = (first == nA) ? nB : nA
 let typesOfFirstUsedBySecond = (first == nA) ? typesOfAUsedByB : typesOfBUsedByA
 let typesOfSecondUsedByFirst = (first == nA) ? typesOfBUsedByA : typesOfAUsedByB
-select new { first, shouldntUse = second, typesOfFirstUsedBySecond, typesOfSecondUsedByFirst }
+where nB.Name != "DeltaEngine.Input.Devices"
+select new { first, shouldntUse = second, typesOfFirstUsedBySecond, typesOfSecondUsedByFirst, nB.Name }
 ]]></Query>
-      <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Avoid namespaces dependency cycles</Name>
+      <Query Active="False" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Avoid namespaces dependency cycles</Name>
 warnif count > 0
 // This query lists all application namespace dependency cycles.
 // Each row shows a different cycle, prefixed with a namespace entangled in the cycle.
@@ -1265,9 +1386,11 @@ select new { suspect, cycle }
 ]]></Query>
       <Query Active="False" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Avoid partitioning the code base through many small library Assemblies</Name>
 warnif count > 10
+
+// Currently disabled becouse we are at the beginning of the DeltaEngine
 from a in Application.Assemblies where
-  ( a.NbLinesOfCode < 1000 ||
-    a.NbILInstructions < 7000 ) &&
+  ( a.NbLinesOfCode < 100 ||
+    a.NbILInstructions < 1000 ) &&
   !a.Name.Contains(".Windows") &&
   !a.Name.Contains(".Graphics") &&
   !a.Name.Contains(".Tests") &&
@@ -1985,6 +2108,7 @@ let canTypeBeConsideredAsDeadProc = new Func<IType, bool>(
 // Select types unused
 let typesUnused = 
    from t in JustMyCode.Types where
+   !t.Name.EndsWith("Tests") &&
    t.NbTypesUsingMe == 0 && canTypeBeConsideredAsDeadProc(t)
    select t
 
@@ -2025,6 +2149,7 @@ let canMethodBeConsideredAsDeadProc = new Func<IMethod, bool>(
 // Get methods unused
 let methodsUnused = 
    from m in JustMyCode.Methods where 
+   !m.ParentType.Name.EndsWith("Tests") &&
    m.NbMethodsCallingMe == 0 && 
    canMethodBeConsideredAsDeadProc(m)
    select m
@@ -2042,7 +2167,7 @@ let deadMethodsMetric = methodsUnused.FillIterative(
               select m)
 
 from m in JustMyCode.Methods.Intersect(deadMethodsMetric.DefinitionDomain)
-select new { m, m.MethodsCallingMe, depth = deadMethodsMetric[m] }]]></Query>
+select new { m, m.MethodsCallingMe, m.FullName, depth = deadMethodsMetric[m] }]]></Query>
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Potentially dead Fields</Name>
 warnif count > 0
 from f in JustMyCode.Fields where
@@ -2052,9 +2177,11 @@ from f in JustMyCode.Fields where
    !f.IsEnumValue &&  // The IL code never explicitely uses enumeration value.
    f.Name !=  "value__"  && // Field named 'value__' are relative to enumerations and the IL code never explicitely uses them.
    !f.Name.EndsWith("__CachedAnonymousMethodDelegated") &&
-   !f.HasAttribute("NDepend.Attributes.IsNotDeadCodeAttribute".AllowNoMatch())
+   !f.HasAttribute("NDepend.Attributes.IsNotDeadCodeAttribute".AllowNoMatch()) &&
+   // Needed for PInvoke, some fields are never used
+   f.ParentType.Name != "NativeTouchInput"
    // If you don't want to link NDepend.API.dll, you can use your own IsNotDeadCodeAttribute and adapt this rule.
-select f]]></Query>
+select new { f, f.ParentType.Name}]]></Query>
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Wrong usage of IsNotDeadCodeAttribute</Name>
 
 // This IsNotDeadCodeAttribute can be used to signify that 
@@ -2097,171 +2224,6 @@ let fields = from f in Application.Fields where
 where types.Count() > 0 || methods.Count() > 0 || fields.Count() > 0
 select new { tAttr, types , methods, fields }]]></Query>
     </Group>
-    <Group Name="Visibility" Active="True" ShownInReport="False">
-      <Query Active="False" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Methods that could have a lower visibility</Name>
-warnif count > 0 from m in JustMyCode.Methods where 
-  m.Visibility != m.OptimalVisibility &&
-  !m.HasAttribute("NDepend.Attributes.CannotDecreaseVisibilityAttribute".AllowNoMatch()) &&
-  !m.HasAttribute("NDepend.Attributes.IsNotDeadCodeAttribute".AllowNoMatch()) &&
-  // If you don't want to link NDepend.API.dll, you can use your own attributes and adapt this rule.
-  
-  // Eliminate default constructor from the result.
-  // Whatever the visibility of the declaring class,
-  // default constructors are public and introduce noise
-  // in the current rule.
-  !( m.IsConstructor && m.IsPublic ) && // For autofac we need public ctor with params: && m.NbParameters == 0
-  // Don't decrease the visibility of Main() methods.
-  !m.IsEntryPoint &&
-  !m.ParentType.Name.EndsWith("Tests")
-select new { m, 
-             m.Visibility , 
-             CouldBeDeclared = m.OptimalVisibility,
-             m.MethodsCallingMe }]]></Query>
-      <Query Active="False" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Types that could have a lower visibility</Name>
-warnif count > 0 from t in JustMyCode.Types where 
-
-  t.Visibility != t.OptimalVisibility &&
-
-  // If you don't want to link NDepend.API.dll, you can use your own attributes and adapt this rule.
- !t.HasAttribute("NDepend.Attributes.CannotDecreaseVisibilityAttribute".AllowNoMatch()) &&
- !t.HasAttribute("NDepend.Attributes.IsNotDeadCodeAttribute".AllowNoMatch()) &&
-  !t.Name.Contains("Tests")  &&
-
-  // Static types that define only const fields cannot be seen as used in IL code.
-  // They don't have  to be tagged with CannotDecreaseVisibilityAttribute.
- !(t.IsStatic && t.NbMethods == 0 && !t.Fields.Where(f => !f.IsLiteral).Any())
-
-select new { t, t.Visibility , 
-                CouldBeDeclared = t.OptimalVisibility, 
-                t.TypesUsingMe }
-]]></Query>
-      <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Fields that could have a lower visibility</Name>
-warnif count > 0 from f in JustMyCode.Fields where 
-  f.Visibility != f.OptimalVisibility &&
- !f.HasAttribute("NDepend.Attributes.CannotDecreaseVisibilityAttribute".AllowNoMatch()) &&
- !f.HasAttribute("NDepend.Attributes.IsNotDeadCodeAttribute".AllowNoMatch())
-  // If you don't want to link NDepend.API.dll, you can use your own attributes and adapt this rule.
-  
-select new { f, 
-             f.Visibility , 
-             CouldBeDeclared = f.OptimalVisibility,
-             f.MethodsUsingMe }]]></Query>
-      <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Avoid publicly visible constant fields</Name>
-
-// Match constant fields which are visible outside their parent assembly. 
-// Such field, if used outside the parent assembly,
-// will have its constant value hard-coded into the other assembly.
-// Changing the field's value requires that all assemblies 
-// that use the field to be recompiled. 
-// Declaring the field as static readonly instead, allows the value 
-// to be changed without the need to recompile client assemblies.
-
-warnif count > 0 
-from f in Application.Fields
-where f.IsLiteral && f.IsPubliclyVisible && f.Name != "Pi"
-select f]]></Query>
-      <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Fields should be declared as private</Name>
-warnif count > 0 from f in Application.Fields where 
- !f.IsPrivate && 
-
- // These conditions filter cases where fields 
- // doesn't represent state that should be encapsulated. 
- !f.IsGeneratedByCompiler && 
- !f.IsSpecialName && 
- !f.IsInitOnly && 
- !f.IsLiteral && 
- !f.IsEnumValue &&
- !f.ParentNamespace.Name.Contains("Datatypes") &&
- !f.ParentNamespace.Name.Contains("Rendering")
-select new { f, f.SizeOfInst }]]></Query>
-      <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Constructors of abstract classes should be declared as protected or private</Name>
-// Constructors of an abstract class can only be accessed from this class and derived class.
-// Declaring such a constructor with another visibility level is useless and potentially misleading.
-
-warnif count > 0
-from t in Application.Types where 
-  t.IsClass && 
-  t.IsAbstract
-let ctors = t.Constructors.Where(c => !c.IsProtected && !c.IsPrivate)
-where ctors.Count() > 0
-select new { t, ctors }
-
-// Notice that if a constructor of an abstract class is declared as private,
-// it can only be accessed from derived classes nested in the abstract class.]]></Query>
-      <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[//<Name>Avoid public methods not publicly visible</Name>
-// Matched methods are declared public but are not publicly visible by assemblies consumers.
-// Their visibility level must be decreased.
-
-warnif count > 0
-from m in JustMyCode.Methods where 
-   !m.IsPubliclyVisible && m.IsPublic &&
-   m.Name != "Main()" &&
-   !m.ParentType.Name.Contains("Tests") &&
-
-   // Eliminate virtual methods
-   !m.IsVirtual &&
-   // Eliminate interface and delegate types
-   !m.ParentType.IsInterface &&
-   !m.ParentType.IsDelegate &&
-   // Eliminate default constructors
-   !(m.IsConstructor && m.NbParameters == 0) &&
-   // Eliminate operators that must be declared public
-   !m.IsOperator &&
-   // Eliminate methods generated by compiler
-   !m.IsGeneratedByCompiler 
-select m]]></Query>
-      <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Methods that should be declared as 'public' in C#, 'Public' in VB.NET</Name>
-// The condition 'ShouldBePublic' shows code elements 
-// declared as 'internal\Friend' that are used outside 
-// of their assembly thanks to the Attribute 
-// System.Runtime.CompilerServices.InternalsVisibleToAttribute
-
-from m in Application.Methods where 
-  m.ShouldBePublic
-let usedInAssemblies = m.MethodsCallingMe.ParentAssemblies().Except(m.ParentAssembly)
-select new { m, m.ParentAssembly,  usedInAssemblies, m.MethodsCallingMe }
-]]></Query>
-      <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Wrong usage of CannotDecreaseVisibilityAttribute</Name>
-
-// The CannotDecreaseVisibilityAttribute can be used to signify that despite 
-// a member could have a lower visibility without provoking any syntax error,
-// your intention is to not change this member visibility.
-// Default Visibility code rules take account of this attribute.
-// CannotDecreaseVisibilityAttribute is defined in NDepend.API.dll
-// If you don't want to link NDepend.API.dll, you can use 
-// your own CannotDecreaseVisibilityAttribute and adapt this rule.
-
-warnif count == 1
-
-let tAttr = Types.WithFullName("NDepend.Attributes.CannotDecreaseVisibilityAttribute").FirstOrDefault()
-where tAttr != null
-
-// Get types that do a wrong usage of CannotDecreaseVisibilityAttribute
-let types = from t in Application.Types where 
-   t.HasAttribute("NDepend.Attributes.CannotDecreaseVisibilityAttribute".AllowNoMatch()) &&
-   ( t.Visibility == t.OptimalVisibility ||
-
-     // Static types that define only const fields cannot be seen as used in IL code.
-     // They don't need to be tagged with CannotDecreaseVisibilityAttribute.
-     (t.IsStatic && t.NbMethods == 0 && !t.Fields.Where(f => !f.IsLiteral).Any())
-   )
-   select t
-
-// Get methods that do a wrong usage of CannotDecreaseVisibilityAttribute
-let methods = from m in Application.Methods where 
-   m.HasAttribute("NDepend.Attributes.CannotDecreaseVisibilityAttribute".AllowNoMatch()) &&
-   m.Visibility == m.OptimalVisibility
-   select m
-
-// Get fields that do a wrong usage of CannotDecreaseVisibilityAttribute
-let fields = from f in Application.Fields where 
-   f.HasAttribute("NDepend.Attributes.CannotDecreaseVisibilityAttribute".AllowNoMatch()) &&
-   f.Visibility == f.OptimalVisibility
-   select f
-
-where types.Count() > 0 || methods.Count() > 0 || fields.Count() > 0
-select new { tAttr, types , methods, fields }]]></Query>
-    </Group>
     <Group Name="Purity - Immutability - Side-Effects" Active="True" ShownInReport="False">
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Fields should be marked as ReadOnly when possible</Name>
 warnif count > 0 
@@ -2269,8 +2231,10 @@ from f in JustMyCode.Fields where
    f.IsImmutable && 
   !f.IsInitOnly &&
   !f.IsGeneratedByCompiler &&
-  !f.IsEventDelegateObject
-select new { f, f.SizeOfInst } 
+  !f.IsEventDelegateObject &&
+  // Only for ref e.g. SharpDXMouse
+   f.MethodsUsingMe.Count() < 3
+select new { f, f.SizeOfInst, f.MethodsUsingMe, f.MethodsAssigningMe } 
 
 // A field that matches the condition IsImmutable 
 // is a field that is assigned only by constructors 
@@ -2352,10 +2316,15 @@ warnif count > 0
 from f in JustMyCode.Fields.Where(f => 
       !f.IsPrivate && !f.IsGeneratedByCompiler && 
       !f.IsImmutable && !f.IsEnumValue &&
-      !f.ParentNamespace.Name.Contains("Datatypes"))
+      !f.ParentType.IsPrivate &&
+      // All our Datatypes and Rendering classes use fields for performance reasons and usability
+      !f.ParentNamespace.Name.Contains("Datatypes") &&
+      !f.ParentNamespace.Name.Contains("Rendering") &&
+      f.ParentNamespace.Name.Contains("DeltaEngine"))
 
 let methodsAssignerOutsideOfMyType = f.MethodsAssigningMe.Where(
         m =>!m.IsGeneratedByCompiler &&
+          !m.ParentNamespace.Name.Contains("Tests") &&
              m.ParentType != f.ParentType && 
             !m.ParentType.DeriveFrom(f.ParentType) )
 
@@ -2450,6 +2419,181 @@ select new { m, m.NbLinesOfCode }
 // You can define your own attribute to tag 'pure' methods
 // or you can use as well System.Diagnostics.Contract.PureAttribute
 // introduced with .NET v4.0.]]></Query>
+    </Group>
+    <Group Name="Visibility" Active="True" ShownInReport="False">
+      <Query Active="False" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Methods that could have a lower visibility</Name>
+warnif count > 0 from m in JustMyCode.Methods where 
+  // Makes no sense for framework
+  m.Visibility != m.OptimalVisibility &&
+  !m.HasAttribute("NDepend.Attributes.CannotDecreaseVisibilityAttribute".AllowNoMatch()) &&
+  !m.HasAttribute("NDepend.Attributes.IsNotDeadCodeAttribute".AllowNoMatch()) &&
+  // If you don't want to link NDepend.API.dll, you can use your own attributes and adapt this rule.
+  
+  // Eliminate default constructor from the result.
+  // Whatever the visibility of the declaring class,
+  // default constructors are public and introduce noise
+  // in the current rule.
+  !( m.IsConstructor && m.IsPublic ) && // For autofac we need public ctor with params: && m.NbParameters == 0
+  // Don't decrease the visibility of Main() methods.
+  !m.IsEntryPoint &&
+  !m.ParentType.Name.EndsWith("Tests")
+select new { m, 
+             m.Visibility , 
+             CouldBeDeclared = m.OptimalVisibility,
+             m.MethodsCallingMe }]]></Query>
+      <Query Active="False" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Types that could have a lower visibility</Name>
+warnif count > 0 from t in JustMyCode.Types where 
+  // Makes no sense for framework
+  t.Visibility != t.OptimalVisibility &&
+
+  // If you don't want to link NDepend.API.dll, you can use your own attributes and adapt this rule.
+ !t.HasAttribute("NDepend.Attributes.CannotDecreaseVisibilityAttribute".AllowNoMatch()) &&
+ !t.HasAttribute("NDepend.Attributes.IsNotDeadCodeAttribute".AllowNoMatch()) &&
+  !t.Name.Contains("Tests")  &&
+
+  // Static types that define only const fields cannot be seen as used in IL code.
+  // They don't have  to be tagged with CannotDecreaseVisibilityAttribute.
+ !(t.IsStatic && t.NbMethods == 0 && !t.Fields.Where(f => !f.IsLiteral).Any())
+
+select new { t, t.Visibility , 
+                CouldBeDeclared = t.OptimalVisibility, 
+                t.TypesUsingMe }
+]]></Query>
+      <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Fields that could have a lower visibility</Name>
+warnif count > 0 from f in JustMyCode.Fields where 
+  f.Visibility != f.OptimalVisibility &&
+  !f.ParentType.IsPrivate &&
+ !f.HasAttribute("NDepend.Attributes.CannotDecreaseVisibilityAttribute".AllowNoMatch()) &&
+ !f.HasAttribute("NDepend.Attributes.IsNotDeadCodeAttribute".AllowNoMatch())
+  // If you don't want to link NDepend.API.dll, you can use your own attributes and adapt this rule.
+  
+select new { f, 
+             f.Visibility , 
+             CouldBeDeclared = f.OptimalVisibility,
+             f.MethodsUsingMe }]]></Query>
+      <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Avoid publicly visible constant fields</Name>
+
+// Match constant fields which are visible outside their parent assembly. 
+// Such field, if used outside the parent assembly,
+// will have its constant value hard-coded into the other assembly.
+// Changing the field's value requires that all assemblies 
+// that use the field to be recompiled. 
+// Declaring the field as static readonly instead, allows the value 
+// to be changed without the need to recompile client assemblies.
+
+warnif count > 0 
+from f in Application.Fields
+where f.IsLiteral && f.IsPubliclyVisible && f.Name != "Pi" &&
+!f.IsEnumValue
+select f]]></Query>
+      <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Fields should be declared as private</Name>
+warnif count > 0 from f in Application.Fields where 
+ !f.IsPrivate && 
+
+ // These conditions filter cases where fields 
+ // doesn't represent state that should be encapsulated. 
+ !f.IsGeneratedByCompiler && 
+ !f.IsSpecialName && 
+ !f.IsInitOnly && 
+ !f.IsLiteral && 
+ !f.IsEnumValue &&
+  !f.ParentType.IsPrivate &&
+ f.ParentType.Name != "NativeTouchInput" &&
+ f.Name != "testResolver" &&
+  f.ParentNamespace.Name.StartsWith("DeltaEngine") &&
+ !f.ParentNamespace.Name.Contains("Datatypes") &&
+ !f.ParentNamespace.Name.Contains("Rendering") &&
+ !f.ParentType.Name.StartsWith("Vertex")
+select new { f, f.SizeOfInst }]]></Query>
+      <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Constructors of abstract classes should be declared as protected or private</Name>
+// Constructors of an abstract class can only be accessed from this class and derived class.
+// Declaring such a constructor with another visibility level is useless and potentially misleading.
+
+warnif count > 0
+from t in Application.Types where 
+  t.IsClass && 
+  t.IsAbstract
+let ctors = t.Constructors.Where(c => !c.IsProtected && !c.IsPrivate)
+where ctors.Count() > 0
+select new { t, ctors }
+
+// Notice that if a constructor of an abstract class is declared as private,
+// it can only be accessed from derived classes nested in the abstract class.]]></Query>
+      <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[//<Name>Avoid public methods not publicly visible</Name>
+// Matched methods are declared public but are not publicly visible by assemblies consumers.
+// Their visibility level must be decreased.
+
+warnif count > 0
+from m in JustMyCode.Methods where 
+   !m.IsPubliclyVisible && m.IsPublic &&
+   m.Name != "Main()" &&
+   !m.ParentType.Name.Contains("Tests") &&
+
+   // Eliminate virtual methods
+   !m.IsVirtual &&
+   // Eliminate interface and delegate types
+   !m.ParentType.IsInterface &&
+   !m.ParentType.IsDelegate &&
+   !m.ParentType.IsPrivate &&
+   !m.ParentType.IsInternal &&
+   // Eliminate default constructors
+   !(m.IsConstructor && m.NbParameters == 0) &&
+   // Eliminate operators that must be declared public
+   !m.IsOperator &&
+   // Eliminate methods generated by compiler
+   !m.IsGeneratedByCompiler 
+select m]]></Query>
+      <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Methods that should be declared as 'public' in C#, 'Public' in VB.NET</Name>
+// The condition 'ShouldBePublic' shows code elements 
+// declared as 'internal\Friend' that are used outside 
+// of their assembly thanks to the Attribute 
+// System.Runtime.CompilerServices.InternalsVisibleToAttribute
+
+from m in Application.Methods where 
+  m.ShouldBePublic
+let usedInAssemblies = m.MethodsCallingMe.ParentAssemblies().Except(m.ParentAssembly)
+select new { m, m.ParentAssembly,  usedInAssemblies, m.MethodsCallingMe }
+]]></Query>
+      <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Wrong usage of CannotDecreaseVisibilityAttribute</Name>
+
+// The CannotDecreaseVisibilityAttribute can be used to signify that despite 
+// a member could have a lower visibility without provoking any syntax error,
+// your intention is to not change this member visibility.
+// Default Visibility code rules take account of this attribute.
+// CannotDecreaseVisibilityAttribute is defined in NDepend.API.dll
+// If you don't want to link NDepend.API.dll, you can use 
+// your own CannotDecreaseVisibilityAttribute and adapt this rule.
+
+warnif count == 1
+
+let tAttr = Types.WithFullName("NDepend.Attributes.CannotDecreaseVisibilityAttribute").FirstOrDefault()
+where tAttr != null
+
+// Get types that do a wrong usage of CannotDecreaseVisibilityAttribute
+let types = from t in Application.Types where 
+   t.HasAttribute("NDepend.Attributes.CannotDecreaseVisibilityAttribute".AllowNoMatch()) &&
+   ( t.Visibility == t.OptimalVisibility ||
+
+     // Static types that define only const fields cannot be seen as used in IL code.
+     // They don't need to be tagged with CannotDecreaseVisibilityAttribute.
+     (t.IsStatic && t.NbMethods == 0 && !t.Fields.Where(f => !f.IsLiteral).Any())
+   )
+   select t
+
+// Get methods that do a wrong usage of CannotDecreaseVisibilityAttribute
+let methods = from m in Application.Methods where 
+   m.HasAttribute("NDepend.Attributes.CannotDecreaseVisibilityAttribute".AllowNoMatch()) &&
+   m.Visibility == m.OptimalVisibility
+   select m
+
+// Get fields that do a wrong usage of CannotDecreaseVisibilityAttribute
+let fields = from f in Application.Fields where 
+   f.HasAttribute("NDepend.Attributes.CannotDecreaseVisibilityAttribute".AllowNoMatch()) &&
+   f.Visibility == f.OptimalVisibility
+   select f
+
+where types.Count() > 0 || methods.Count() > 0 || fields.Count() > 0
+select new { tAttr, types , methods, fields }]]></Query>
     </Group>
     <Group Name="Naming Conventions" Active="True" ShownInReport="False">
       <Query Active="False" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Instance fields should be prefixed with a 'm_'</Name>
@@ -2565,7 +2709,7 @@ warnif count > 0 from t in Application.Types
 where !t.IsGeneratedByCompiler
 
 where t.SimpleName.Length > 50 
-select new { t, t.SimpleName }
+select new { t, t.SimpleName, t.SimpleName.Length }
 
       ]]></Query>
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Avoid methods with name too long</Name>
@@ -2681,8 +2825,8 @@ warnif count > 0
 from m in Application.Methods where
   m.SimpleNameLike("^Try") &&
   m.ReturnType != null &&
-  m.ReturnType.FullName != "System.Boolean"
-select new { m, m.ReturnType }]]></Query>
+  "Try" + m.MethodsCalled.First().Name != m.Name // We expect to call all Try methods to call another method without Try
+select new { m, m.ReturnType, m.NbLinesOfCode, m.MethodsCalled }]]></Query>
     </Group>
     <Group Name="Source Files Organization" Active="True" ShownInReport="False">
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Avoid referencing source file out of Visual Studio project directory</Name>
@@ -2732,7 +2876,8 @@ warnif count > 0
 let lookup = Application.Types.Where(t => 
                                 t.SourceFileDeclAvailable && 
                                // except nested types and types generated by compilers!
-                               !t.IsGeneratedByCompiler &&                               
+                               !t.IsGeneratedByCompiler &&  
+                               !t.Name.StartsWith("Runner") &&                             
                                !t.IsNested)                                
                          // It could make sense to not apply this rule for enumerations.
                          // && !t.IsEnumeration)
@@ -2906,7 +3051,8 @@ select a
 // which they were built.]]></Query>
         <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Mark assemblies with CLSCompliant</Name>
 warnif count > 0 from a in Application.Assemblies where 
-  !a.HasAttribute ("System.CLSCompliantAttribute".AllowNoMatch())
+  !a.HasAttribute ("System.CLSCompliantAttribute".AllowNoMatch()) &&
+  a.Name != "Blocks.Tests"
 select a
 
 // The Common Language Specification (CLS) defines 
@@ -3024,7 +3170,7 @@ warnif count > 0
 
 let reservedExceptions = ThirdParty.Types.WithFullNameIn(   
    "System.ExecutionEngineException",
-   "System.IndexOutOfRangeException",
+   //"System.IndexOutOfRangeException", Makes no sense becouse commonly used
    "System.NullReferenceException",
    "System.OutOfMemoryException",
    "System.StackOverflowException",
@@ -3706,4 +3852,5 @@ from f in Application.Fields where
   f.Name == "components" && f.ParentType.DeriveFrom("System.Windows.Forms.Control".AllowNoMatch())
 select f]]></Query>
     </Group>
-  </Queries></NDepend>
+  </Queries>
+</NDepend>

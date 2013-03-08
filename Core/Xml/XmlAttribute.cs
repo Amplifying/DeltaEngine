@@ -14,8 +14,8 @@ namespace DeltaEngine.Core.Xml
 			Value = value.ToString();
 		}
 
-		public string Name { get; set; }
-		public string Value { get; set; }
+		public readonly string Name;
+		public readonly string Value;
 
 		public XmlAttribute(string name, float value)
 			: this()

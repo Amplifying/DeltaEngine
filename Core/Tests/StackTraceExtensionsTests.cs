@@ -12,10 +12,10 @@ namespace DeltaEngine.Core.Tests
 		public void ContainsNoTestOrIsVisualTest()
 		{
 			Assert.IsFalse(StackTraceExtensions.ContainsNoTestOrIsVisualTest());
-			StackTraceExtensions.InVisualTestCase = true;
+			StackTraceExtensions.IsVisualTestCase = true;
 			Assert.IsTrue(StackTraceExtensions.ContainsNoTestOrIsVisualTest());
 		}
-		
+
 		[Test]
 		public void HasAttribute()
 		{
@@ -35,8 +35,10 @@ namespace DeltaEngine.Core.Tests
 		{
 			// Because this method is named "Main" we will get the namespace name instead!
 			Assert.AreEqual("DeltaEngine.Core.Tests", StackTraceExtensions.GetEntryName());
+			Assert.NotNull(new DerivedTestToFakeMainAttribute());
 		}
-
+			
+		[AttributeUsage(AttributeTargets.Method)]
 		private class DerivedTestToFakeMainAttribute : TestAttribute {}
 
 		[Test]
@@ -62,9 +64,8 @@ namespace DeltaEngine.Core.Tests
 		private static bool IsTestCaseWithIgnore(StackFrame frame)
 		{
 			object[] attributes = frame.GetMethod().GetCustomAttributes(false);
-			return
-				attributes.Any(
-					attribute => attribute is TestCaseAttribute && (attribute as TestCaseAttribute).Ignore);
+			return attributes.Any(
+				attribute => attribute is TestCaseAttribute && (attribute as TestCaseAttribute).Ignore);
 		}
 
 		//ncrunch: no coverage start
@@ -75,7 +76,7 @@ namespace DeltaEngine.Core.Tests
 			Assert.IsTrue(stackFrame.HasAttribute("NUnit.Framework.CategoryAttribute"));
 		}
 
-		[TestCase(Ignore = true)]
+		[TestCase(Ignore = true), Ignore]
 		public void TestCaseHasIgnoreAttribute()
 		{
 			Assert.IsTrue(IsTestCaseWithIgnore(new StackFrame()));
@@ -103,6 +104,12 @@ namespace DeltaEngine.Core.Tests
 		{
 			var stackFrame = new StackFrame();
 			Assert.IsTrue(stackFrame.HasAttribute("NUnit.Framework.IgnoreAttribute"));
+		}
+
+		[Test, Ignore]
+		public void UnharmfulSideEffectSetStartedFromNCrunch()
+		{
+			StackTraceExtensions.StartedFromNCrunch = true;
 		}
 	}
 }

@@ -42,6 +42,10 @@
     <ApplicationIcon>Icons\BreakoutIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\OpenTKWithOpenAL.1.1.1160.61462\lib\NET40\OpenTK.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
@@ -171,7 +175,8 @@
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <PropertyGroup>
     <PostBuildEvent>
-xcopy /s /y "$(SolutionDir)packages\OpenTKWithOpenAL.1.1.804.3121\NativeBinaries\x86\*.*" "$(TargetDir)"</PostBuildEvent>
+xcopy /s /y "$(SolutionDir)packages\OpenTKWithOpenAL.1.1.804.3121\NativeBinaries\x86\*.*" "$(TargetDir)"
+xcopy /s /y "$(SolutionDir)packages\OpenTKWithOpenAL.1.1.1160.61462\NativeBinaries\x86\*.*" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

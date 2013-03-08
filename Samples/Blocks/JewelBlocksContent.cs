@@ -3,11 +3,11 @@
 namespace Blocks
 {
 	/// <summary>
-	/// Assigns all content to load from the FruitBlocks subdirectory
+	/// Loads JewelBlocks related content and settings
 	/// </summary>
-	public class JewelBlocksContent : ModdableContent
+	public class JewelBlocksContent : BlocksContent
 	{
 		public JewelBlocksContent(Resolver resolver)
-			: base(resolver, "JewelBlocks") {}
+			: base(resolver, "JewelBlocks_") {}
 	}
 }

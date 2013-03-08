@@ -39,6 +39,8 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MouseDeviceCounter.cs" />
+    <Compile Include="NativeMethods.cs" />
     <Compile Include="WindowsGamePad.cs" />
     <Compile Include="CursorPositionTranslater.cs" />
     <Compile Include="MouseHook.cs" />
@@ -65,11 +67,11 @@
       <Name>DeltaEngine.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Platforms\Windows\DeltaEngine.Platforms.Windows.csproj">
-      <Project>{BD8A80E2-A313-437E-B0EF-FC0B066280A7}</Project>
+      <Project>{bd8a80e2-a313-437e-b0ef-fc0b066280a7}</Project>
       <Name>DeltaEngine.Platforms.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
-      <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
+      <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
       <Name>DeltaEngine.Rendering</Name>
     </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Input.csproj">

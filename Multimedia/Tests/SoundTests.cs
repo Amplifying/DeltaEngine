@@ -32,7 +32,9 @@ namespace DeltaEngine.Multimedia.Tests
 			Start(resolver, (Content content) =>
 			{
 				var sound = content.Load<Sound>("DefaultSound");
-				var instance = new SoundInstance(sound) { Panning = 1.0f, Pitch = 2.0f };
+				var instance = sound.CreateSoundInstance();
+				instance.Panning = 1.0f;
+				instance.Pitch = 2.0f;
 				instance.Play();
 			});
 		}
@@ -43,7 +45,7 @@ namespace DeltaEngine.Multimedia.Tests
 			Start(resolver, (Content content) =>
 			{
 				var sound = content.Load<Sound>("DefaultSound");
-				var instance = new SoundInstance(sound);
+				var instance = sound.CreateSoundInstance();
 				Assert.AreEqual(false, instance.IsPlaying);
 				instance.Play();
 				Assert.AreEqual(true, instance.IsPlaying);
@@ -56,8 +58,8 @@ namespace DeltaEngine.Multimedia.Tests
 			Start(resolver, (Content content) =>
 			{
 				var sound = content.Load<Sound>("DefaultSound");
-				var instance1 = new SoundInstance(sound);
-				var instance2 = new SoundInstance(sound);
+				var instance1 = sound.CreateSoundInstance();
+				var instance2 = sound.CreateSoundInstance();
 				Assert.AreEqual(false, instance1.IsPlaying);
 				instance1.Play();
 				Assert.AreEqual(true, instance1.IsPlaying);
@@ -104,7 +106,7 @@ namespace DeltaEngine.Multimedia.Tests
 			Start(resolver, (Content content) =>
 			{
 				var sound = content.Load<Sound>("DefaultSound");
-				var instance = new SoundInstance(sound);
+				var instance = sound.CreateSoundInstance();
 				Assert.IsFalse(sound.IsAnyInstancePlaying);
 				instance.Play();
 				Assert.IsTrue(sound.IsAnyInstancePlaying);
@@ -119,9 +121,11 @@ namespace DeltaEngine.Multimedia.Tests
 			Start(resolver, (Content content) =>
 			{
 				var sound = content.Load<Sound>("DefaultSound");
-				var instance = new SoundInstance(sound);
-				Assert.AreEqual(1, sound.NumberOfPlayingInstances);
+				var instance = sound.CreateSoundInstance();
+				Assert.AreEqual(1, sound.NumberOfInstances);
+				Assert.AreEqual(0, sound.NumberOfPlayingInstances);
 				instance.Dispose();
+				Assert.AreEqual(0, sound.NumberOfInstances);
 				Assert.AreEqual(0, sound.NumberOfPlayingInstances);
 			});
 		}
@@ -132,10 +136,12 @@ namespace DeltaEngine.Multimedia.Tests
 			Start(resolver, (Content content) =>
 			{
 				var sound = content.Load<Sound>("DefaultSound");
-				new SoundInstance(sound);
+				var instance = sound.CreateSoundInstance();
 				sound.Play();
-				Assert.AreEqual(2, sound.NumberOfPlayingInstances);
+				Assert.AreEqual(2, sound.NumberOfInstances);
+				Assert.AreEqual(1, sound.NumberOfPlayingInstances);
 				sound.Dispose();
+				Assert.AreEqual(0, sound.NumberOfInstances);
 				Assert.AreEqual(0, sound.NumberOfPlayingInstances);
 			});
 		}

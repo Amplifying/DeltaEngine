@@ -1,4 +1,5 @@
 ﻿using DeltaEngine.Core;
+using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
 using DeltaEngine.Rendering;
 
@@ -9,10 +10,10 @@ namespace Breakout
 	/// </summary>
 	public class Background : Sprite
 	{
-		public Background(Content content, Renderer renderer)
-			: base(content.Load<Image>("Background"), renderer.Screen.Viewport)
+		public Background(Content content)
+			: base(content.Load<Image>("Background"), Rectangle.One)
 		{
-			renderer.Screen.ViewportSizeChanged += () => DrawArea = renderer.Screen.Viewport;
+			RenderLayer = MinRenderLayer;
 		}
 	}
 }

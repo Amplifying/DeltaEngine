@@ -2,15 +2,18 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using OpenTK.Graphics.OpenGL;
-using Size = DeltaEngine.Datatypes.Size;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
+using Size = DeltaEngine.Datatypes.Size;
 using SystemPixelFormat = System.Drawing.Imaging.PixelFormat;
 
 namespace DeltaEngine.Graphics.OpenTK
 {
+	/// <summary>
+	/// Facilitates draw images on screen. Needs a drawing to show it.
+	/// </summary>
 	public class OpenTKImage : Image
 	{
-		public OpenTKImage(string filename, OpenTKDrawing drawing)
+		public OpenTKImage(string filename, Drawing drawing)
 			: base(filename, drawing)
 		{
 			InitializeTextureHandle();

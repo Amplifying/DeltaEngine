@@ -22,8 +22,8 @@ namespace GameOfDeath
 
 		private readonly Size originalSize;
 		private static readonly Randomizer Random = new PseudoRandom();
-		protected Point velocity;
-		protected Rectangle boundingBox;
+		private Point velocity;
+		private Rectangle boundingBox;
 
 		public void SetHealth(float initialHealth)
 		{

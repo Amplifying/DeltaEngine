@@ -143,15 +143,9 @@ namespace DeltaEngine.Datatypes
 			return new Point(x, y);
 		}
 
-		public void RotateAround(Point center, float angleInDegrees, FastTrig fastTrig = null)
+		public void RotateAround(Point center, float angleInDegrees)
 		{
-			float rotationSin = fastTrig != null
-				? fastTrig.Sin(angleInDegrees) : MathExtensions.Sin(angleInDegrees);
-
-			float rotationCos = fastTrig != null
-				? fastTrig.Cos(angleInDegrees) : MathExtensions.Cos(angleInDegrees);
-
-			RotateAround(center, rotationSin, rotationCos);
+			RotateAround(center, MathExtensions.Sin(angleInDegrees), MathExtensions.Cos(angleInDegrees));
 		}
 
 		public void RotateAround(Point center, float rotationSin, float rotationCos)

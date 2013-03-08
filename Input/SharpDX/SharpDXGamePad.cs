@@ -1,6 +1,5 @@
 ﻿using System;
 using DeltaEngine.Core;
-using DeltaEngine.Datatypes;
 using DeltaEngine.Input.Devices;
 using XInput = SharpDX.XInput;
 
@@ -9,50 +8,21 @@ namespace DeltaEngine.Input.SharpDX
 	/// <summary>
 	/// Native implementation of the GamePad interface using XInput.
 	/// </summary>
-	public class SharpDXGamePad : GamePad
+	public class SharpDXGamePad : BaseGamePad
 	{
 		public SharpDXGamePad()
 		{
 			controller = new XInput.Controller(XInput.UserIndex.One);
-			states = new State[GamePadButton.A.GetCount()];
-			for (int i = 0; i < states.Length; i++)
-				states[i] = State.NotPressed;
 		}
 
 		private XInput.Controller controller;
-		private readonly State[] states;
 
-		public Point GetLeftThumbStick()
-		{
-			return leftThumbStick;
-		}
-
-		public Point GetRightThumbStick()
-		{
-			return rightThumbStick;
-		}
-
-		public float GetLeftTrigger()
-		{
-			return leftTrigger;
-		}
-
-		public float GetRightTrigger()
-		{
-			return rightTrigger;
-		}
-
-		public State GetButtonState(GamePadButton button)
-		{
-			return states[(int)button];
-		}
-
-		public bool IsAvailable
+		public override bool IsAvailable
 		{
 			get { return controller.IsConnected; }
 		}
 
-		public void Run()
+		public override void Run()
 		{
 			XInput.State state = controller.GetState();
 			leftThumbStick.X = NormalizeShortToFloat(state.Gamepad.LeftThumbX);
@@ -64,26 +34,14 @@ namespace DeltaEngine.Input.SharpDX
 			UpdateAllButtons((int)state.Gamepad.Buttons);
 		}
 
-		private Point leftThumbStick;
-		private Point rightThumbStick;
-		private float leftTrigger;
-		private float rightTrigger;
-
 		private void UpdateAllButtons(int bitfield)
 		{
 			Array buttons = XInputGamePadButton.A.GetEnumValues();
 			foreach (XInputGamePadButton button in buttons)
-				UpdateButton(bitfield, button);
+				UpdateButton(ConvertButtonEnum(button), IsXInputButtonPressed(bitfield, button));
 		}
 
-		private void UpdateButton(int bitfield, XInputGamePadButton button)
-		{
-			int buttonIndex = (int)ConvertButtonEnum(button);
-			states[buttonIndex] =
-				states[buttonIndex].UpdateOnNativePressing(IsXInputButtonPressed(bitfield, button));
-		}
-
-		private GamePadButton ConvertButtonEnum(XInputGamePadButton button)
+		private static GamePadButton ConvertButtonEnum(XInputGamePadButton button)
 		{
 			switch (button)
 			{
@@ -119,22 +77,22 @@ namespace DeltaEngine.Input.SharpDX
 			return (GamePadButton)(-1);
 		}
 
-		private bool IsXInputButtonPressed(int bitfield, XInputGamePadButton button)
+		private static bool IsXInputButtonPressed(int bitfield, XInputGamePadButton button)
 		{
 			return (bitfield & (int)button) != 0;
 		}
 
-		private float NormalizeShortToFloat(short value)
+		private static float NormalizeShortToFloat(short value)
 		{
 			return value * (1f / short.MaxValue);
 		}
 
-		private float NormalizeByteToFloat(byte value)
+		private static float NormalizeByteToFloat(byte value)
 		{
 			return value * (1f / byte.MaxValue);
 		}
 
-		public void Dispose()
+		public override void Dispose()
 		{
 			controller = null;
 		}

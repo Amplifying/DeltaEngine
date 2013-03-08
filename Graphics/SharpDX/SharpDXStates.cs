@@ -49,7 +49,7 @@ namespace DeltaEngine.Graphics.SharpDX
 			};
 		}
 
-		protected const int BackBufferCount = 1;
+		internal const int BackBufferCount = 1;
 		internal const Format BackBufferFormat = Format.R8G8B8A8_UNorm;
 		internal const SwapChainFlags BackBufferFlags = SwapChainFlags.None;
 		protected readonly RenderTargetProperties defaultRenderTargetProperties =

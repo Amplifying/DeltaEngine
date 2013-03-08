@@ -1,7 +1,6 @@
 ﻿using DeltaEngine.Core;
 using DeltaEngine.Input;
 using DeltaEngine.Platforms;
-using DeltaEngine.Rendering;
 
 namespace Breakout
 {
@@ -10,12 +9,11 @@ namespace Breakout
 	/// </summary>
 	public class Game : Runner<Time>
 	{
-		public Game(Background bg, BallInLevel ball, Score score, InputCommands inputCommands,
-			Window window)
+		public Game(BallInLevel ball, Score score, InputCommands inputCommands, Window window)
 		{
-			bg.RenderLayer = Renderable.BackgroundRenderLayer;
 			this.ball = ball;
 			this.score = score;
+			score.GameOver += ball.Dispose;
 			this.window = window;
 			inputCommands.Add(Key.Escape, window.Dispose);
 		}
@@ -27,33 +25,22 @@ namespace Breakout
 		public void Run(Time time)
 		{
 			StartNewLevelIfAllBricksAreDestroyed();
-			RemoveBallIfGameIsOver();
 			ShowScoreInWindowTitleEvery200Ms(time);
 		}
 
 		private void StartNewLevelIfAllBricksAreDestroyed()
 		{
-			if (ball.CurrentLevel.BricksLeft > 0)
+			if (ball.Level.BricksLeft > 0)
 				return;
 
-			ball.CurrentLevel.InitializeNextLevel();
+			ball.Level.InitializeNextLevel();
 			ball.ResetBall();
-		}
-
-		private void RemoveBallIfGameIsOver()
-		{
-			if (!score.IsGameOver)
-				return;
-
-			ball.Dispose();
 		}
 
 		private void ShowScoreInWindowTitleEvery200Ms(Time time)
 		{
-			if (!time.CheckEvery(0.2f))
-				return;
-
-			window.Title = "Breakout " + score;
+			if (time.CheckEvery(0.2f))
+				window.Title = "Breakout " + score;
 		}
 	}
 }

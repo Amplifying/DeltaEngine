@@ -1,22 +1,66 @@
 ﻿using System;
+using DeltaEngine.Core;
+using DeltaEngine.Core.Xml;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms.Tests;
+using NUnit.Framework;
 
 namespace DeltaEngine.Rendering.Tests
 {
 	/// <summary>
-	/// Visual tests for VectorText works
+	/// Unit tests for VectorText 
 	/// </summary>
 	public class VectorTextTests : TestStarter
 	{
+		[Test]
+		public void KnownCharacterRendersWithoutException()
+		{
+			var resolver = new TestResolver();
+			var renderer = resolver.Resolve<Renderer>();
+			renderer.Add(new VectorText(CreateVectorTextData(), Point.Zero, 1.0f) { Text = "A" });
+			resolver.AdvanceTimeAndExecuteRunners(1.0f);
+		}
+
+		private XmlData CreateVectorTextData()
+		{
+			var vectorTextData = new XmlData("VectorText");
+			var character = new XmlData("Char1", vectorTextData);
+			character.AddAttribute("Character", "A");
+			character.AddAttribute("Lines", "(0,0)-(1,1)");
+			return vectorTextData;
+		}
+
+		[Test]
+		public void UnknownCharacterThrowsException()
+		{
+			var resolver = new TestResolver();
+			var renderer = resolver.Resolve<Renderer>();
+			renderer.Add(new VectorText(CreateVectorTextData(), Point.Zero, 1.0f) { Text = "B" });
+			Assert.Throws<VectorText.VectorCharacterNotFoundException>(
+				() => renderer.Run(resolver.Resolve<Time>()));
+		}
+
 		[VisualTest]
 		public void DrawSampleText(Type resolver)
 		{
-			Start(resolver, (Renderer renderer) =>
+			Start(resolver, (Renderer renderer, Content content) =>
 			{
-				renderer.Add(new VectorText("Blue0123456789", new Point(0.1f, 0.45f), 0.05f) { Color = Color.Blue });
-				renderer.Add(new VectorText("The Quick Brown Fox...", new Point(0.1f, 0.5f), 0.05f));
-				renderer.Add(new VectorText("Jumps Over The Lazy Dog", new Point(0.1f, 0.55f), 0.05f));
+				var vectorTextContent = content.Load<XmlContent>("VectorText");
+				renderer.Add(new VectorText(vectorTextContent, new Point(0.1f, 0.45f), 0.05f)
+				{
+					Text = "Blue0123456789",
+					Color = Color.Blue
+				});
+
+				renderer.Add(new VectorText(vectorTextContent, new Point(0.1f, 0.5f), 0.05f)
+				{
+					Text = "The Quick Brown Fox..."
+				});
+
+				renderer.Add(new VectorText(vectorTextContent, new Point(0.1f, 0.55f), 0.05f)
+				{
+					Text = "Jumps Over The Lazy Dog"
+				});
 			});
 		}
 	}

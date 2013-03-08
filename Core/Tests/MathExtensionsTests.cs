@@ -102,6 +102,7 @@ namespace DeltaEngine.Core.Tests
 			Assert.AreEqual(3.5f, MathExtensions.Max(3.5f, 2.5f));
 			Assert.AreEqual(-1.5f, MathExtensions.Max(-3.5f, -1.5f));
 			Assert.AreEqual(-2.5f, MathExtensions.Max(-2.5f, -2.5f));
+			Assert.AreEqual(-2, MathExtensions.Max(-2, -3));
 		}
 
 		[Test]
@@ -109,7 +110,7 @@ namespace DeltaEngine.Core.Tests
 		{
 			Assert.AreEqual(2.5f, MathExtensions.Min(3.5f, 2.5f));
 			Assert.AreEqual(-3.5f, MathExtensions.Min(-3.5f, -1.5f));
-			Assert.AreEqual(4.0f, MathExtensions.Min(4.0f, 4.0f));
+			Assert.AreEqual(4, MathExtensions.Min(4, 5));
 		}
 	}
 }

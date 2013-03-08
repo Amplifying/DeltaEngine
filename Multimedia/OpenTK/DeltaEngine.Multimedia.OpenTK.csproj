@@ -40,9 +40,12 @@
   <ItemGroup>
     <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\OpenTKWithOpenAL.1.1.804.3121\lib\OpenTK.dll</HintPath>
+      <HintPath>..\..\packages\OpenTKWithOpenAL.1.1.1160.61462\lib\NET40\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="ToyMp3">
+      <HintPath>..\..\packages\ToyMp3.1.0.0.0\lib\NET40\ToyMp3.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IeeeFloatConverter.cs" />
@@ -63,10 +66,6 @@
       <Project>{6016abb8-05f5-4a07-8fba-16576277dde7}</Project>
       <Name>DeltaEngine.Multimedia</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Mp3Reader\Mp3Reader.csproj">
-      <Project>{c0aa7900-5f5e-45b6-8135-2a32961f9588}</Project>
-      <Name>Mp3Reader</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -75,7 +74,8 @@
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy /y "$(SolutionDir)packages\OpenTKWithOpenAL.1.1.804.3121\NativeBinaries\x86\OpenAL32.dll" "$(TargetDir)OpenAL32.dll"
-copy /y "$(SolutionDir)packages\OpenTKWithOpenAL.1.1.804.3121\NativeBinaries\x86\wrap_oal.dll" "$(TargetDir)wrap_oal.dll"</PostBuildEvent>
+copy /y "$(SolutionDir)packages\OpenTKWithOpenAL.1.1.804.3121\NativeBinaries\x86\wrap_oal.dll" "$(TargetDir)wrap_oal.dll"
+xcopy /s /y "$(SolutionDir)packages\OpenTKWithOpenAL.1.1.1160.61462\NativeBinaries\x86\*.*" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

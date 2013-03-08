@@ -33,7 +33,7 @@ namespace GameOfDeath.Items
 		{
 			get { return DefaultDamage; }
 		}
-		public const float DefaultDamage = 3.3f;
+		internal const float DefaultDamage = 3.3f;
 		protected override float DoDamageEvery
 		{
 			get { return 0.0f; }

@@ -30,5 +30,15 @@ namespace DeltaEngine.Graphics.Tests
 		{
 			Start(resolver, (Device device, Window window) => window.TotalPixelSize = new Size(100, 100));
 		}
+
+		[VisualTest]
+		public void SetFullscreenResolutionRedBackground(Type resolver)
+		{
+			Start(resolver, (Device device, Window window) =>
+			{
+				window.SetFullscreen(new Size(800, 600));
+				window.BackgroundColor = Color.Red;
+			});
+		}
 	}
 }

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using DeltaEngine.Core;
-using Mp3Reader;
 using SharpDX.Multimedia;
 using SharpDX.XAudio2;
+using ToyMp3;
 
 namespace DeltaEngine.Multimedia.SharpDX
 {
@@ -56,11 +56,13 @@ namespace DeltaEngine.Multimedia.SharpDX
 		private void RunIfPlaying()
 		{
 			while (source.State.BuffersQueued < NumberOfBuffers)
-				if (!TryStream())
-				{
-					Stop();
-					break;
-				}
+			{
+				PutInStreamIfDataAvailable();
+				if (isAbleToStream)
+					continue;
+				Stop();
+				break;
+			}
 		}
 
 		public override void Stop()
@@ -73,23 +75,22 @@ namespace DeltaEngine.Multimedia.SharpDX
 			source.FlushSourceBuffers();
 		}
 
-		public override bool IsPlaying()
+		public override bool IsPlaying
 		{
-			return isPlaying;
+			get { return isPlaying; }
 		}
 
-		private bool TryStream()
+		private void PutInStreamIfDataAvailable()
 		{
 			StreamBuffer currentBuffer = buffers[nextBufferIndex];
-			bool wasAbleToStream = currentBuffer.FillFromStream(musicStream);
-			if (wasAbleToStream)
-			{
-				source.SubmitSourceBuffer(currentBuffer.XAudioBuffer, null);
-				nextBufferIndex = (nextBufferIndex + 1) % NumberOfBuffers;
-			}
-
-			return wasAbleToStream;
+			isAbleToStream = currentBuffer.FillFromStream(musicStream);
+			if (!isAbleToStream)
+				return;
+			source.SubmitSourceBuffer(currentBuffer.XAudioBuffer, null);
+			nextBufferIndex = (nextBufferIndex + 1) % NumberOfBuffers;
 		}
+
+		bool isAbleToStream;
 
 		public override void Dispose()
 		{

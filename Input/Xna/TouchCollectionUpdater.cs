@@ -8,9 +8,9 @@ namespace DeltaEngine.Input.Xna
 	/// <summary>
 	/// Helper class to keep track of all touches according to their ids.
 	/// </summary>
-	internal class TouchCollectionUpdater
+	internal struct TouchCollectionUpdater
 	{
-		public TouchCollectionUpdater(QuadraticScreenSpace screen)
+		public TouchCollectionUpdater(ScreenSpace screen)
 		{
 			this.screen = screen;
 			states = new State[MaxNumberOfTouches];
@@ -22,8 +22,8 @@ namespace DeltaEngine.Input.Xna
 
 		internal readonly State[] states;
 		internal readonly Point[] locations;
-		internal readonly int[] ids;
-		private readonly QuadraticScreenSpace screen;
+		private readonly int[] ids;
+		private readonly ScreenSpace screen;
 		private const int MaxNumberOfTouches = 10;
 
 		public void UpdateAllTouches(List<TouchLocation> newTouches)

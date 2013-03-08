@@ -14,7 +14,7 @@ namespace GameOfDeath.Items
 		public ItemEffect(Image image, Point position, Size size, float duration)
 			: base(image, position, size, duration)
 		{
-			RenderLayer = DefaultRenderLayer + 1;
+			RenderLayer = 1;
 		}
 
 		public Action DoDamage;

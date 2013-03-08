@@ -19,11 +19,6 @@ namespace DeltaEngine.Multimedia.OpenTK
 		private readonly ContextHandle context;
 		private IntPtr deviceHandle;
 
-		public override void Run()
-		{
-			//TODO: update anything?
-		}
-
 		public override void Dispose()
 		{
 			if (deviceHandle == IntPtr.Zero)

@@ -2,18 +2,17 @@
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
 using DeltaEngine.Input;
-using DeltaEngine.Input.Devices;
 using DeltaEngine.Rendering;
 
 namespace Breakout
 {
 	/// <summary>
-	/// Holds the paddle position in relative screen space, for rendering converted to quadratic space
+	/// Holds the paddle position
 	/// </summary>
 	public class Paddle : Sprite
 	{
 		public Paddle(Content content, InputCommands inputCommands, Time time)
-			: base(content.Load<Image>("Paddle"), Rectangle.FromCenter(Point.Half, Size.Zero))
+			: base(content.Load<Image>("Paddle"), Rectangle.One)
 		{
 			RegisterInputCommands(inputCommands, time);
 		}
@@ -38,20 +37,19 @@ namespace Breakout
 
 		protected override void Render(Renderer renderer, Time time)
 		{
-			xPosition = xPosition.Clamp(renderer.Screen.Left + HalfWidth,
-				renderer.Screen.Right - HalfWidth);
-			var yPosition = renderer.Screen.GetInnerPoint(new Point(0.5f, 0.9f)).Y;
-			DrawArea = Rectangle.FromCenter(xPosition, yPosition, Width, Height);
+			xPosition = xPosition.Clamp(HalfWidth, 1.0f - HalfWidth);
+			DrawArea = Rectangle.FromCenter(xPosition, YPosition, Width, Height);
 			base.Render(renderer, time);
 		}
+
+		private const float YPosition = 0.9f;
+		internal const float HalfWidth = Width / 2.0f;
+		private const float Width = 0.2f;
+		private const float Height = 0.04f;
 
 		public Point Position
 		{
 			get { return new Point(DrawArea.Center.X, DrawArea.Top); }
 		}
-
-		public const float HalfWidth = Width / 2.0f;
-		private const float Width = 0.2f;
-		private const float Height = 0.04f;
 	}
 }

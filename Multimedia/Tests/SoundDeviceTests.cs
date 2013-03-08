@@ -41,7 +41,7 @@ namespace DeltaEngine.Multimedia.Tests
 
 			protected override void PlayNativeMusic(float volume) { }
 
-			protected internal override void Run()
+			protected override void Run()
 			{
 				RunHasBeenCalled = true;
 			}
@@ -58,9 +58,9 @@ namespace DeltaEngine.Multimedia.Tests
 			//ncrunch: no coverage start
 			public override void Dispose() {}
 
-			public override bool IsPlaying()
+			public override bool IsPlaying
 			{
-				return true;
+				get { return true; }
 			}
 
 			public override float DurationInSeconds

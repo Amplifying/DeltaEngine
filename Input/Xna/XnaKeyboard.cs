@@ -20,6 +20,11 @@ namespace DeltaEngine.Input.Xna
 		}
 
 		public bool IsAvailable { get; private set; }
+		
+		public void Dispose()
+		{
+			IsAvailable = false;
+		}
 
 		private void CreateAndFillKeyStatesDictionary()
 		{
@@ -53,7 +58,5 @@ namespace DeltaEngine.Input.Xna
 			bool isXnaKeyPressed = newState.IsKeyDown((XnaKeys)key);
 			keyStates[key] = keyStates[key].UpdateOnNativePressing(isXnaKeyPressed);
 		}
-
-		public void Dispose() {}
 	}
 }

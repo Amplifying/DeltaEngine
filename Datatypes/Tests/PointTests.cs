@@ -183,17 +183,6 @@ namespace DeltaEngine.Datatypes.Tests
 		}
 
 		[Test]
-		public void RotateAroundWithFastTrig()
-		{
-			var fastTrig = new FastTrig();
-			var point = Point.UnitY;
-			point.RotateAround(Point.Zero, 90.0f, fastTrig);
-			Assert.AreEqual(-Point.UnitX, point);
-			point.RotateAround(new Point(-2.0f, 0.0f), 270.0f, fastTrig);
-			Assert.AreEqual(new Point(-2.0f, -1.0f), point);
-		}
-
-		[Test]
 		public void Normalize()
 		{
 			var point = new Point(0.3f, -0.4f);

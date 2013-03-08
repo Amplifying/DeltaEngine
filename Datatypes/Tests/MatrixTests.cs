@@ -1,5 +1,4 @@
 ﻿using System;
-using DeltaEngine.Core;
 using NUnit.Framework;
 
 namespace DeltaEngine.Datatypes.Tests
@@ -9,10 +8,10 @@ namespace DeltaEngine.Datatypes.Tests
 		[Test]
 		public void MatrixZero()
 		{
-			var matrix = Matrix.Zero;
+			var matrix = new Matrix();
 			Console.WriteLine(matrix);
 			for (int i = 0; i < 16; i++)
-				Assert.AreEqual(0, matrix.Values[i]);
+				Assert.AreEqual(0, matrix[i]);
 		}
 
 		[Test]
@@ -34,52 +33,44 @@ namespace DeltaEngine.Datatypes.Tests
 		public void CreateFromAnotherMatrix()
 		{
 			var matrix = new Matrix(Matrix.Identity);
-			matrix.M11 = 3;
-			Assert.AreEqual(3, matrix.Values[0]);
+			matrix[0] = 3;
+			Assert.AreEqual(3, matrix[0]);
 		}
 
 		private static void AssertValues0To15(Matrix matrix)
 		{
 			for (int i = 0; i < 16; i++)
-				Assert.AreEqual(i, matrix.Values[i]);
-		}
-
-		[Test]
-		public void MatrixIdentityShouldNotBeModified()
-		{
-			Matrix matrix = Matrix.Identity;
-			matrix.M11 = 10;
-			Assert.AreEqual(1, Matrix.Identity.M11);
+				Assert.AreEqual(i, matrix[i]);
 		}
 
 		[Test]
 		public void CreateScaleFromOneScalar()
 		{
 			var matrix = Matrix.CreateScale(5);
-			Assert.AreEqual(5, matrix.M11);
-			Assert.AreEqual(5, matrix.M22);
-			Assert.AreEqual(5, matrix.M33);
-			Assert.AreEqual(1, matrix.M44);
+			Assert.AreEqual(5, matrix[0]);
+			Assert.AreEqual(5, matrix[5]);
+			Assert.AreEqual(5, matrix[10]);
+			Assert.AreEqual(1, matrix[15]);
 		}
 
 		[Test]
 		public void CreateScaleFromVector()
 		{
 			var matrix = Matrix.CreateScale(Vector.One);
-			Assert.AreEqual(1, matrix.M11);
-			Assert.AreEqual(1, matrix.M22);
-			Assert.AreEqual(1, matrix.M33);
-			Assert.AreEqual(1, matrix.M44);
+			Assert.AreEqual(1, matrix[0]);
+			Assert.AreEqual(1, matrix[5]);
+			Assert.AreEqual(1, matrix[10]);
+			Assert.AreEqual(1, matrix[15]);
 		}
 
 		[Test]
 		public void CreateScaleFromThreeScalar()
 		{
 			var matrix = Matrix.CreateScale(3, 4, 7);
-			Assert.AreEqual(3, matrix.M11);
-			Assert.AreEqual(4, matrix.M22);
-			Assert.AreEqual(7, matrix.M33);
-			Assert.AreEqual(1, matrix.M44);
+			Assert.AreEqual(3, matrix[0]);
+			Assert.AreEqual(4, matrix[5]);
+			Assert.AreEqual(7, matrix[10]);
+			Assert.AreEqual(1, matrix[15]);
 		}
 
 		[Test]
@@ -100,8 +91,8 @@ namespace DeltaEngine.Datatypes.Tests
 		{
 			var matrix1 = Matrix.CreateTranslation(1, 2, 3);
 			var matrix2 = Matrix.CreateTranslation(Vector.UnitX);
-			Assert.AreEqual(matrix1.Translation, new Vector(1, 2, 3));
-			Assert.AreEqual(matrix2.Translation, Vector.UnitX);
+			Assert.AreEqual(matrix1.GetRow(3), new Vector(1, 2, 3));
+			Assert.AreEqual(matrix2.GetRow(3), Vector.UnitX);
 		}
 
 		[Test]
@@ -114,16 +105,26 @@ namespace DeltaEngine.Datatypes.Tests
 		}
 
 		[Test]
+		public void CreateOrtographicProjectionMatrix()
+		{
+			Size size = new Size(10, 5);
+			var matrix = Matrix.GenerateOrthographicProjection(size);
+			var values = new[] {0.2f, 0.0f, 0.0f, 0.0f, 0.0f, -0.4f, 0.0f, 0.0f,
+				0.0f, 0.0f, -1.0f, 0.0f, -1.0f, 1.0f, 0.0f, 1.0f};
+			Assert.AreEqual(matrix, new Matrix(values));
+		}
+
+		[Test]
 		public void GetDeterminant()
 		{
 			var matrix = Matrix.Identity;
 			Assert.AreEqual(1, matrix.Determinant);
-			matrix.M23 = 2;
-			matrix.M24 = 1;
-			matrix.M32 = 2;
-			matrix.M34 = 3;
-			matrix.M42 = 2;
-			matrix.M43 = 1;
+			matrix[6] = 2;
+			matrix[7] = 1;
+			matrix[9] = 2;
+			matrix[11] = 3;
+			matrix[13] = 2;
+			matrix[14] = 1;
 			Assert.AreEqual(6, matrix.Determinant);
 			matrix = new Matrix(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
 			Assert.AreEqual(0, matrix.Determinant);
@@ -137,10 +138,13 @@ namespace DeltaEngine.Datatypes.Tests
 			var matrix2 = new Matrix(values);
 			Assert.IsTrue(matrix1 == matrix2);
 			Assert.IsTrue(matrix1.Equals(matrix2));
-			matrix2.M22 = 20;
+			matrix2[5] = 20;
 			Assert.IsTrue(matrix1 != matrix2);
 			Assert.IsTrue(matrix1.Equals(values));
+			values[0] = 17;
+			Assert.IsFalse(matrix1.Equals(values));
 			Assert.IsFalse(matrix1.Equals(Point.One));
+			Assert.Throws<IndexOutOfRangeException>(() => matrix1.Equals(new float[17]));
 		}
 
 		[Test]
@@ -151,54 +155,7 @@ namespace DeltaEngine.Datatypes.Tests
 			Assert.AreEqual(new Vector(4, 5, 6), matrix1.GetRow(1));
 			Assert.AreEqual(new Vector(8, 9, 10), matrix1.GetRow(2));
 			Assert.AreEqual(new Vector(12, 13, 14), matrix1.GetRow(3));
-		}
-
-		[Test]
-		public void AddMatrix()
-		{
-			var matrix1 = new Matrix(1, 0, 3, 0, 0, 2, 0, 4, 0, 3, 2, 0, 1, 0, 0, 2);
-			var matrix2 = new Matrix(2, 0, 1, 0, 0, 2, 0, 0, 0, 0, 2, 0, 2, 0, 0, 2);
-			matrix2 = matrix1 + matrix2;
-			Assert.AreEqual(3, matrix2.M11);
-			Assert.AreEqual(0, matrix2.M12);
-			Assert.AreEqual(4, matrix2.M13);
-			Assert.AreEqual(0, matrix2.M14);
-			Assert.AreEqual(0, matrix2.M21);
-			Assert.AreEqual(4, matrix2.M22);
-			Assert.AreEqual(0, matrix2.M23);
-			Assert.AreEqual(4, matrix2.M24);
-			Assert.AreEqual(0, matrix2.M31);
-			Assert.AreEqual(3, matrix2.M32);
-			Assert.AreEqual(4, matrix2.M33);
-			Assert.AreEqual(0, matrix2.M34);
-			Assert.AreEqual(3, matrix2.M41);
-			Assert.AreEqual(0, matrix2.M42);
-			Assert.AreEqual(0, matrix2.M43);
-			Assert.AreEqual(4, matrix2.M44);
-		}
-
-		[Test]
-		public void SubMatrix()
-		{
-			var matrix1 = new Matrix(1, 0, 3, 0, 0, 2, 0, 4, 0, 3, 2, 0, 1, 0, 0, 2);
-			var matrix2 = new Matrix(2, 0, 1, 0, 0, 2, 0, 0, 0, 0, 2, 0, 2, 0, 0, 2);
-			matrix2 = matrix1 - matrix2;
-			Assert.AreEqual(-1, matrix2.M11);
-			Assert.AreEqual(0, matrix2.M12);
-			Assert.AreEqual(2, matrix2.M13);
-			Assert.AreEqual(0, matrix2.M14);
-			Assert.AreEqual(0, matrix2.M21);
-			Assert.AreEqual(0, matrix2.M22);
-			Assert.AreEqual(0, matrix2.M23);
-			Assert.AreEqual(4, matrix2.M24);
-			Assert.AreEqual(0, matrix2.M31);
-			Assert.AreEqual(3, matrix2.M32);
-			Assert.AreEqual(0, matrix2.M33);
-			Assert.AreEqual(0, matrix2.M34);
-			Assert.AreEqual(-1, matrix2.M41);
-			Assert.AreEqual(0, matrix2.M42);
-			Assert.AreEqual(0, matrix2.M43);
-			Assert.AreEqual(0, matrix2.M44);
+			Assert.Throws<IndexOutOfRangeException>(() => matrix1.GetRow(-1));
 		}
 
 		[Test]
@@ -210,45 +167,14 @@ namespace DeltaEngine.Datatypes.Tests
 			Assert.AreEqual(new Vector(15, 10, 10), vector);
 		}
 
-		[TestCase]
-		public void MultiplyScalar()
-		{
-			Matrix matrix1 = Matrix.Identity;
-			var matrix2 = Matrix.CreateScale(5);
-			matrix2.M44 = 5;
-			Assert.AreEqual(matrix2, matrix1 * 5);
-			Assert.AreEqual(matrix2, 5 * matrix1);
-		}
-
-		[Test]
-		public void DivideByMatrix()
-		{
-			var matrix1 = Matrix.CreateScale(4);
-			var matrix2 = new Matrix(2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2);
-			matrix2 = matrix1 / matrix2;
-			Assert.AreEqual(2, matrix2.M11);
-			Assert.AreEqual(2, matrix2.M22);
-			Assert.AreEqual(2, matrix2.M33);
-			Assert.AreEqual(0.5f, matrix2.M44);
-		}
-
-		[Test]
-		public void DivideByScalar()
-		{
-			var matrix1 = Matrix.CreateScale(6);
-			const float Scalar = 4;
-			Matrix matrix2 = matrix1 / Scalar;
-			Assert.AreEqual(1.5f, matrix2.M11);
-			Assert.AreEqual(1.5f, matrix2.M22);
-			Assert.AreEqual(1.5f, matrix2.M33);
-			Assert.AreEqual(0.25f, matrix2.M44);
-		}
-
 		[Test]
 		public void NegateMatrix()
 		{
-			var matrix1 = new Matrix(1, 0, 3, 0, 0, 2, 0, 4, 0, 3, 2, 0, 1, 0, 0, 2);
-			Assert.AreEqual(-1 * matrix1, -matrix1);
+			var values = new float[] { 1, 0, 3, 0, 0, 2, 0, 4, 0, 3, 2, 0, 1, 0, 0, 2 };
+			var matrix1 = new Matrix(values);
+			for (int i = 0; i < 16; i++)
+				values[i] *= -1;
+				Assert.AreEqual(-matrix1, new Matrix(values));
 		}
 
 		[Test]
@@ -258,60 +184,29 @@ namespace DeltaEngine.Datatypes.Tests
 			var matrix2 = new Matrix(2, 0, 1, 0, 0, 2, 0, 0, 0, 0, 2, 0, 2, 0, 0, 2);
 			Assert.AreEqual(matrix1, matrix1 * Matrix.Identity);
 			matrix2 = matrix1 * matrix2;
-			Assert.AreEqual(2, matrix2.M11);
-			Assert.AreEqual(0, matrix2.M12);
-			Assert.AreEqual(7, matrix2.M13);
-			Assert.AreEqual(0, matrix2.M14);
-			Assert.AreEqual(8, matrix2.M21);
-			Assert.AreEqual(4, matrix2.M22);
-			Assert.AreEqual(0, matrix2.M23);
-			Assert.AreEqual(8, matrix2.M24);
-			Assert.AreEqual(0, matrix2.M31);
-			Assert.AreEqual(6, matrix2.M32);
-			Assert.AreEqual(4, matrix2.M33);
-			Assert.AreEqual(0, matrix2.M34);
-			Assert.AreEqual(6, matrix2.M41);
-			Assert.AreEqual(0, matrix2.M42);
-			Assert.AreEqual(1, matrix2.M43);
-			Assert.AreEqual(4, matrix2.M44);
+			Assert.AreEqual(2, matrix2[0]);
+			Assert.AreEqual(0, matrix2[1]);
+			Assert.AreEqual(7, matrix2[2]);
+			Assert.AreEqual(0, matrix2[3]);
+			Assert.AreEqual(8, matrix2[4]);
+			Assert.AreEqual(4, matrix2[5]);
+			Assert.AreEqual(0, matrix2[6]);
+			Assert.AreEqual(8, matrix2[7]);
+			Assert.AreEqual(0, matrix2[8]);
+			Assert.AreEqual(6, matrix2[9]);
+			Assert.AreEqual(4, matrix2[10]);
+			Assert.AreEqual(0, matrix2[11]);
+			Assert.AreEqual(6, matrix2[12]);
+			Assert.AreEqual(0, matrix2[13]);
+			Assert.AreEqual(1, matrix2[14]);
+			Assert.AreEqual(4, matrix2[15]);
 		}
 
 		[Test]
-		public void GetInverse()
-		{
-			Matrix matrix1 = Matrix.Identity;
-			matrix1.M23 = 2.0f;
-			matrix1.M24 = 1.0f;
-			matrix1.M32 = 2.0f;
-			matrix1.M34 = 3.0f;
-			matrix1.M42 = 2.0f;
-			matrix1.M43 = 1.0f;
-			Matrix matrix2 = matrix1.Inverse;
-			Assert.IsTrue(matrix1.IsNearlyEqual(matrix2.Inverse));
-			CheckPrecalculatedValues(matrix2);
-		}
-
-		private static void CheckPrecalculatedValues(Matrix matrix2)
-		{
-			Assert.AreEqual(1, matrix2.M11);
-			Assert.IsTrue(matrix2.M22.IsNearlyEqual(-0.3333333f));
-			Assert.IsTrue(matrix2.M23.IsNearlyEqual(-0.1666666f));
-			Assert.IsTrue(matrix2.M24.IsNearlyEqual(0.8333333f));
-			Assert.IsTrue(matrix2.M32.IsNearlyEqual(0.6666666f));
-			Assert.IsTrue(matrix2.M33.IsNearlyEqual(-0.1666666f));
-			Assert.IsTrue(matrix2.M34.IsNearlyEqual(-0.1666666f));
-			Assert.IsTrue(matrix2.M42.IsNearlyEqual(0.0f));
-			Assert.IsTrue(matrix2.M43.IsNearlyEqual(0.5f));
-			Assert.IsTrue(matrix2.M44.IsNearlyEqual(-0.5f));
-		}
-
-		[Test]
-		public void InverseExamples()
+		public void IsNotNearlyEqual()
 		{
 			var matrix1 = new Matrix(1, 0, 3, 0, 0, 2, 0, 4, 0, 3, 2, 0, 1, 0, 0, 2);
-			var matrix2 = matrix1.Inverse;
-			Assert.IsTrue(Matrix.Identity.IsNearlyEqual(matrix1 * matrix2));
-			Assert.IsTrue(Matrix.Identity.IsNearlyEqual(matrix2 * matrix1));
+			Assert.IsFalse(matrix1.IsNearlyEqual(Matrix.Identity));
 		}
 
 		[Test]

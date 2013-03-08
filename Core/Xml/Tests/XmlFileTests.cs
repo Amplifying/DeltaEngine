@@ -22,7 +22,7 @@ namespace DeltaEngine.Core.Xml.Tests
 			Assert.AreEqual(data.ToXmlString(), new XmlFile("file.xml").Root.ToXmlString());
 		}
 
-		private XmlData CreateTestXmlData()
+		private static XmlData CreateTestXmlData()
 		{
 			var root = new XmlData("Root");
 			var child1 = new XmlData("Child1", root);

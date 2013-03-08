@@ -1,7 +1,7 @@
 ﻿using System;
-using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Rendering.Shapes;
 using NUnit.Framework;
 using Randomizer = DeltaEngine.Core.Randomizer;
 
@@ -19,62 +19,48 @@ namespace DeltaEngine.Rendering.Tests
 		}
 
 		[Test]
-		public void Center()
+		public void BorderColor()
 		{
-			var ellipse = new Ellipse(Point.Half, 0.1f, 0.2f) { Center = Point.One };
-			Assert.AreEqual(Point.One, ellipse.Center);
-		}
-
-		[Test]
-		public void RadiusX()
-		{
-			var ellipse = new Ellipse(Point.Half, 0.1f, 0.2f) { RadiusX = 0.3f };
-			ellipse.RadiusX = 0.3f;
-			Assert.AreEqual(0.3f, ellipse.RadiusX);
-			ellipse.RadiusY = 0.2f;
-			Assert.AreEqual(0.2f, ellipse.RadiusY);
-			Assert.AreEqual(0.3f, ellipse.MaxRadius);
-		}
-
-		[Test]
-		public void RadiusY()
-		{
-			var ellipse = new Ellipse(Point.Half, 0.1f, 0.2f) { RadiusY = 0.3f, };
-			Assert.AreEqual(0.3f, ellipse.RadiusY);
-		}
-
-		[Test]
-		public void ColorProperty()
-		{
-			var ellipse = new Ellipse(Point.Half, 0.1f, 0.2f) { Color = Color.Green };
-			Assert.AreEqual(Color.Green, ellipse.Color);
-		}
-
-		[Test]
-		public void Rotation()
-		{
-			var ellipse = new Ellipse(Point.Half, 0.1f, 0.2f) { Rotation = 100 };
-			ellipse.Rotation = 100;
-			Assert.AreEqual(100.0f, ellipse.Rotation);
+			var ellipse = new Ellipse(Point.Half, 0.1f, 0.2f) { BorderColor = Color.Cyan };
+			Assert.AreEqual(Color.Cyan, ellipse.BorderColor);
 		}
 
 		[VisualTest]
-		public void DrawRotatingEllipse(Type resolver)
+		public void DrawColoredBorderedEllipse(Type resolver)
 		{
-			Ellipse ellipse = null;
 			Start(resolver,
-				(Renderer r) => r.Add(ellipse = new Ellipse(Point.Half, 0.4f, 0.2f) { Rotation = 45 }),
-				(Time time) => { ellipse.Rotation += 45 * time.CurrentDelta; });
+				(Renderer r) =>
+					r.Add(new Ellipse(Point.Half, 0.4f, 0.2f)
+					{
+						Rotation = 45,
+						Color = Color.Blue,
+						BorderColor = Color.Red
+					}));
 		}
 
 		[VisualTest]
-		public void DrawLotsOfEllipses(Type resolver)
+		public void DrawLotsOfColoredBorderlessEllipses(Type resolver)
 		{
 			Start(resolver, (Renderer renderer, Randomizer r) =>
 			{
 				for (int i = 0; i < 10; i++)
 					renderer.Add(new Ellipse(new Point(r.Get(), r.Get()), r.Get(0.02f, 0.4f),
-						r.Get(0.02f, 0.4f)) { Color = Color.GetRandomColor(), Rotation = r.Get(0, 360) });
+						r.Get(0.02f, 0.4f)) { Color = Color.GetRandomColor() });
+			});
+		}
+
+		[VisualTest]
+		public void DrawLotsOfColoredBorderedEllipses(Type resolver)
+		{
+			Start(resolver, (Renderer renderer, Randomizer r) =>
+			{
+				for (int i = 0; i < 10; i++)
+					renderer.Add(new Ellipse(new Point(r.Get(), r.Get()), r.Get(0.02f, 0.4f),
+						r.Get(0.02f, 0.4f))
+					{
+						Color = Color.GetRandomColor(),
+						BorderColor = Color.GetRandomColor()
+					});
 			});
 		}
 	}

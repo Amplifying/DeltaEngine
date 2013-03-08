@@ -11,7 +11,7 @@ namespace DeltaEngine.Multimedia
 		public virtual void Run()
 		{
 			if (currentPlayingMusic != null)
-				currentPlayingMusic.Run();
+				currentPlayingMusic.InternalRun();
 		}
 
 		public abstract void Dispose();
@@ -24,6 +24,6 @@ namespace DeltaEngine.Multimedia
 			currentPlayingMusic = music;
 		}
 
-		protected Music currentPlayingMusic;
+		private Music currentPlayingMusic;
 	}
 }

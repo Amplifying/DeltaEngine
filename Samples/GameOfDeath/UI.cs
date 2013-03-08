@@ -19,7 +19,7 @@ namespace GameOfDeath
 			window.ShowCursor = false;
 			window.Title = "Game Of Death - Kill rabbits before they occupy more than 75% of the world!";
 			inputCommands.Add(Key.Escape, window.Dispose);
-			RenderLayer = BackgroundRenderLayer;
+			RenderLayer = MinRenderLayer;
 			AddUITop(content, renderer);
 			AddUIBottom(content, renderer);
 			AddUILeft(content, renderer);
@@ -60,7 +60,7 @@ namespace GameOfDeath
 			renderer.Add(topBorder);
 		}
 
-		private const byte ForegroundLayer = UIRenderLayer - 2;
+		private const byte ForegroundLayer = MaxRenderLayer - 2;
 
 		private void AddUIBottom(Content content, Renderer renderer)
 		{

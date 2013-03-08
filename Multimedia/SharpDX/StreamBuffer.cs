@@ -1,6 +1,6 @@
 ﻿using System;
-using Mp3Reader;
 using SharpDX.XAudio2;
+using ToyMp3;
 
 namespace DeltaEngine.Multimedia.SharpDX
 {

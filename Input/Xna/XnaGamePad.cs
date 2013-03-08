@@ -17,7 +17,6 @@ namespace DeltaEngine.Input.Xna
 			for (int i = 0; i < states.Length; i++)
 				states[i] = State.Released;
 		}
-
 		private readonly State[] states;
 
 		public void Run()
@@ -87,7 +86,10 @@ namespace DeltaEngine.Input.Xna
 				states[buttonIndex].UpdateOnNativePressing(newState == XnaInput.ButtonState.Pressed);
 		}
 
-		public void Dispose() {}
+		public void Dispose()
+		{
+			IsAvailable = false;
+		}
 
 		public Point GetLeftThumbStick()
 		{

@@ -18,6 +18,7 @@ namespace DeltaEngine.Multimedia.SharpDX
 
 		public override void Run()
 		{
+            base.Run();
 			XAudio2.CommitChanges(XAudio2.CommitAll);
 		}
 

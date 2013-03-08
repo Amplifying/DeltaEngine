@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using DeltaEngine.Datatypes;
+﻿using DeltaEngine.Datatypes;
 using DeltaEngine.Input.Devices;
 using DeltaEngine.Input.Windows;
 using DInput = SharpDX.DirectInput;
@@ -15,6 +14,7 @@ namespace DeltaEngine.Input.SharpDX
 		public SharpDXMouse(CursorPositionTranslater positionTranslater)
 		{
 			this.positionTranslater = positionTranslater;
+			mouseCounter = new MouseDeviceCounter();
 			directInput = new DInput.DirectInput();
 			mouse = new DInput.Mouse(directInput);
 			mouse.Properties.AxisMode = DInput.DeviceAxisMode.Absolute;
@@ -23,12 +23,13 @@ namespace DeltaEngine.Input.SharpDX
 		}
 
 		private readonly CursorPositionTranslater positionTranslater;
+		private readonly MouseDeviceCounter mouseCounter;
 		private DInput.DirectInput directInput;
 		private DInput.Mouse mouse;
 		private DInput.MouseState currentState;
 		public override bool IsAvailable
 		{
-			get { return true; }
+			get { return mouseCounter.GetNumberOfAvailableMice() > 0; }
 		}
 
 		public override void SetPosition(Point newPosition)

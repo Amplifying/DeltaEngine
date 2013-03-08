@@ -2,8 +2,8 @@
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
-using DeltaEngine.Input.Devices;
 using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.Shapes;
 using NUnit.Framework;
 
 namespace DeltaEngine.Platforms.Tests
@@ -13,7 +13,7 @@ namespace DeltaEngine.Platforms.Tests
 		[IntegrationTest]
 		public void TestDrawAreaWhenChangingOrientation(Type type)
 		{
-			var rect = new ColoredRectangle(new Point(0.7f, 0.7f), new Size(0.1f, 0.1f), Color.Red);
+			var rect = new Rect(new Point(0.7f, 0.7f), new Size(0.1f, 0.1f), Color.Red);
 			Start(type, (Renderer testRenderer) => testRenderer.Add(rect),
 				(Window testWindow, ScreenSpace screen) =>
 				{
@@ -48,23 +48,13 @@ namespace DeltaEngine.Platforms.Tests
 		public void ChangeOrientaion(Type type)
 		{
 			var line = new Line2D(Point.Zero, Point.One, Color.Green);
-			Window window = null;
-			Input.InputCommands inputCommands = null;
-			Renderer renderer = null;
-			ScreenSpace screen = null;
-			Mouse mouse = null;
-			Start(type, (Resolver resolver) =>
+			Start(type, (Window window, InputCommands inputCommands, Renderer renderer) =>
 			{
-				window = resolver.Resolve<Window>();
 				window.BackgroundColor = Color.Blue;
-				inputCommands = resolver.Resolve<Input.InputCommands>();
-				renderer = resolver.Resolve<Renderer>();
-				screen = resolver.Resolve<ScreenSpace>();
-				mouse = resolver.Resolve<Mouse>();
 				renderer.Add(line);
 				inputCommands.Add(Key.A, () => { window.TotalPixelSize = new Size(800, 480); });
 				inputCommands.Add(Key.B, () => { window.TotalPixelSize = new Size(480, 800); });
-			}, delegate
+			}, (ScreenSpace screen, Window window) =>
 			{
 				var startPosition = screen.Viewport.TopLeft;
 				var endPosition = screen.Viewport.BottomRight;

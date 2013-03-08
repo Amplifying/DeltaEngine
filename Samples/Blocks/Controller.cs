@@ -9,58 +9,80 @@ namespace Blocks
 	/// <summary>
 	/// Handles the falling and upcoming blocks.
 	/// </summary>
-	public class Controller : Runner<ModdableContent, Renderer, Time>
+	public class Controller : Runner<Time, Renderer>
 	{
-		public Controller(Grid grid, SoundManager soundManager)
+		public Controller(Grid grid, Soundbank soundbank, BlocksContent content)
 		{
 			this.grid = grid;
-			this.soundManager = soundManager;
+			this.soundbank = soundbank;
+			this.content = content;
 		}
 
 		private readonly Grid grid;
-		protected readonly SoundManager soundManager;
+		protected readonly Soundbank soundbank;
+		private readonly BlocksContent content;
 
-		public void Run(ModdableContent content, Renderer renderer, Time time)
+		public void Run(Time time, Renderer renderer)
 		{
-			if (FallingBlock == null)
-				GetNewFallingBlock(content, renderer);
-			else
-				FallingBlock.Run(time, fallSpeed + LevelSpeed);
+			if (FallingBlock == null || !FallingBlock.IsVisible)
+				GetNewFallingBlock(renderer);
 
-			if (!grid.IsValidPosition(FallingBlock))
-				AffixBlock(content, renderer);
+			MoveFallingBlock(time);
 		}
 
 		public Block FallingBlock { get; protected set; }
-		private float fallSpeed = SlowFallSpeed;
-		private const float SlowFallSpeed = 2.0f;
-		private const float FastFallSpeed = 8.0f;
 
-		public float LevelSpeed
+		private void MoveFallingBlock(Time time)
 		{
-			get { return totalRowsRemoved * SpeedUpPerRowRemoved; }
+			float top = FallingBlock.Top;
+			FallingBlock.Run(time, FallSpeed);
+			if (grid.IsValidPosition(FallingBlock))
+				return;
+
+			FallingBlock.Top = top;
+			FallingBlock.Settle(time, FallSpeed);
 		}
 
-		private int totalRowsRemoved;
-		private const float SpeedUpPerRowRemoved = 0.1f;
+		public float FallSpeed
+		{
+			get { return IsFallingFast ? FastFallSpeed : SlowFallSpeed; }
+		}
 
-		private void GetNewFallingBlock(Content content, Renderer renderer)
+		public bool IsFallingFast { get; set; }
+
+		public float SlowFallSpeed
+		{
+			get { return BaseSpeed + totalRowsRemoved * SpeedUpPerRowRemoved; }
+		}
+
+		internal const float BaseSpeed = 2.0f;
+		private int totalRowsRemoved;
+		private const float SpeedUpPerRowRemoved = 0.2f;
+		private const float FastFallSpeed = 16.0f;
+
+		private void GetNewFallingBlock(Renderer renderer)
 		{
 			if (UpcomingBlock == null)
-				renderer.Add(UpcomingBlock = new Block(content, grid.Random, UpcomingBlockPosition));
-
-			if (FallingBlock != null)
-				renderer.Remove(FallingBlock);
+				CreateUpcomingBlock(renderer);
 
 			FallingBlock = UpcomingBlock;
-			renderer.Add(UpcomingBlock = new Block(content, grid.Random, UpcomingBlockPosition));
+			FallingBlock.Affix += AffixBlock;
+			CreateUpcomingBlock(renderer);
 
 			while (IsABrickOnTopRowOrIsNoRoomForNextBlock())
-				Lose();
+				GameLost();
+		}
+
+		private void CreateUpcomingBlock(Renderer renderer)
+		{
+			UpcomingBlock = new Block(content, grid.Random, Point.Zero);
+			renderer.Add(UpcomingBlock);
+			UpcomingBlock.Left = UpcomingBlockCenter.X - UpcomingBlock.Center.X;
+			UpcomingBlock.Top = UpcomingBlockCenter.Y - UpcomingBlock.Center.Y;
 		}
 
 		public Block UpcomingBlock { get; protected set; }
-		public static readonly Point UpcomingBlockPosition = new Point(14, 4);
+		private static readonly Point UpcomingBlockCenter = new Point(9, -4);
 
 		private bool IsABrickOnTopRowOrIsNoRoomForNextBlock()
 		{
@@ -78,89 +100,78 @@ namespace Blocks
 			return true;
 		}
 
-		private void Lose()
+		private void GameLost()
 		{
-			soundManager.GameLost.Play();
+			soundbank.GameLost.Play();
 			grid.Clear();
 			totalRowsRemoved = 0;
-			if (Lost != null)
-				Lost();
+			if (Lose != null)
+				Lose();
 		}
 
-		public event Action Lost;
+		public event Action Lose;
 
-		private void AffixBlock(Content content, Renderer renderer)
+		protected void AffixBlock()
 		{
 			int rowsRemoved = grid.AffixBlock(FallingBlock);
+			FallingBlock.Dispose();
 			totalRowsRemoved += rowsRemoved;
 			PlayBlockAffixedSound(rowsRemoved);
-			if (ScorePoints != null)
-				ScorePoints(RowRemovedBonus * rowsRemoved * rowsRemoved + BlockPlacedBonus);
-
-			GetNewFallingBlock(content, renderer);
+			if (AddToScore != null)
+				AddToScore(RowRemovedBonus * rowsRemoved * rowsRemoved + BlockPlacedBonus);
 		}
 
 		private void PlayBlockAffixedSound(int rowsRemoved)
 		{
 			if (rowsRemoved == 0)
-				soundManager.BlockAffixed.Play();
-			else if (rowsRemoved==1)
-				soundManager.RowRemoved.Play();
+				soundbank.BlockAffixed.Play();
+			else if (rowsRemoved == 1)
+				soundbank.RowRemoved.Play();
 			else
-				soundManager.RowsRemoved.Play();
+				soundbank.MultipleRowsRemoved.Play();
 		}
 
-		public event Action<int> ScorePoints;
-		public const int RowRemovedBonus = 10;
-		public const int BlockPlacedBonus = 1;
+		public event Action<int> AddToScore;
+		private const int RowRemovedBonus = 10;
+		private const int BlockPlacedBonus = 1;
 
-		public void TryToMoveBlockLeft()
+		public void MoveBlockLeftIfPossible()
 		{
 			FallingBlock.Left--;
 			if (grid.IsValidPosition(FallingBlock))
 			{
-				soundManager.BlockMoved.Play();
+				soundbank.BlockMoved.Play();
 				return;
 			}
 
 			FallingBlock.Left++;
-			soundManager.BlockCouldntMove.Play();
+			soundbank.BlockCouldntMove.Play();
 		}
 
-		public void TryToMoveBlockRight()
+		public void MoveBlockRightIfPossible()
 		{
 			FallingBlock.Left++;
 			if (grid.IsValidPosition(FallingBlock))
 			{
-				soundManager.BlockMoved.Play();
+				soundbank.BlockMoved.Play();
 				return;
 			}
 
 			FallingBlock.Left--;
-			soundManager.BlockCouldntMove.Play();
+			soundbank.BlockCouldntMove.Play();
 		}
 
-		public void TryToRotateBlockClockwise()
+		public void RotateBlockAntiClockwiseIfPossible()
 		{
-			FallingBlock.RotateClockwise();
+			FallingBlock.RotateAntiClockwise();
 			if (grid.IsValidPosition(FallingBlock))
 			{
-				soundManager.BlockMoved.Play();
+				soundbank.BlockMoved.Play();
 				return;
 			}
 
 			FallingBlock.RotateAntiClockwise();
-			soundManager.BlockCouldntMove.Play();
-		}
-
-		public void DropBlockFast()
-		{
-			fallSpeed = FastFallSpeed;
-		}
-
-		public void DropBlockSlow()
-		{
-			fallSpeed = SlowFallSpeed;
+			soundbank.BlockCouldntMove.Play();
 		}
 	}
 }

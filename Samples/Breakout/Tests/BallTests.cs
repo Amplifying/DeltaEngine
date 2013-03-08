@@ -26,6 +26,7 @@ namespace Breakout.Tests
 				ball.Dispose();
 				remRenderer = renderer;
 			});
+
 			if (remRenderer != null)
 				Assert.AreEqual(0, remRenderer.NumberOfActiveRenderableObjects);
 		}
@@ -37,7 +38,7 @@ namespace Breakout.Tests
 			var ball = resolver.Resolve<Ball>();
 			Assert.IsTrue(ball.IsVisible);
 			resolver.Run();
-			var initialBallPosition = new Point(0.5f, 0.76f);
+			var initialBallPosition = new Point(0.5f, 0.86f);
 			Assert.AreEqual(initialBallPosition, ball.Position);
 			resolver.SetKeyboardState(Key.Space, State.Pressing);
 			resolver.AdvanceTimeAndExecuteRunners(0.1f);
@@ -63,13 +64,13 @@ namespace Breakout.Tests
 			{
 				Assert.AreEqual(0.5f, ball.Position.X);
 				Assert.AreEqual(ball.Position.X, paddle.Position.X);
-				if (testResolver != null)
-				{
-					testResolver.SetKeyboardState(Key.CursorLeft, State.Pressed);
-					testResolver.AdvanceTimeAndExecuteRunners(0.1f);
-					Assert.AreNotEqual(0.5f, ball.Position.X);
-					Assert.AreEqual(ball.Position.X, paddle.Position.X);
-				}
+				if (testResolver == null)
+					return;
+
+				testResolver.SetKeyboardState(Key.CursorLeft, State.Pressed);
+				testResolver.AdvanceTimeAndExecuteRunners(0.1f);
+				Assert.AreNotEqual(0.5f, ball.Position.X);
+				Assert.AreEqual(ball.Position.X, paddle.Position.X);
 			});
 		}
 
@@ -160,7 +161,7 @@ namespace Breakout.Tests
 		{
 			TestBall ball = CreateTestBall();
 			RunBallOneFrame();
-			Assert.AreEqual(Rectangle.FromCenter(0.5f, 0.76f, 0.04f, 0.04f), ball.DrawArea);
+			Assert.AreEqual(new Rectangle(0.48f, 0.84f, 0.04f, 0.04f), ball.DrawArea);
 		}
 	}
 }

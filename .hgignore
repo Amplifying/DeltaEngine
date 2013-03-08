@@ -54,6 +54,7 @@ Report/
 *.psd
 *.psm1
 packages/opentk*
+packages/NLog*
 
 # Disallow all binary and content files, they come from the Content System (see wiki)
 *.png

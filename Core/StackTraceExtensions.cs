@@ -22,7 +22,7 @@ namespace DeltaEngine.Core
 
 		private static bool HasNoTestOrIsVisualTest(IEnumerable<StackFrame> frames)
 		{
-			return !frames.Any(IsTestMethod) || InVisualTestCase;
+			return !frames.Any(IsTestMethod) || GetIsVisualTestCaseAndReset();
 		}
 
 		private static bool IsTestMethod(StackFrame frame)
@@ -33,30 +33,26 @@ namespace DeltaEngine.Core
 		}
 
 		public static bool StartedFromNCrunch { get; set; }
-		public static bool StartedFromNunitConsole { get; set; }
 
-		const string TestAttribute = "NUnit.Framework.TestAttribute";
-		const string IgnoreAttribute = "NUnit.Framework.IgnoreAttribute";
-		const string TestCaseAttribute = "NUnit.Framework.TestCaseAttribute";
-		const string IntegrationTestAttribute = "DeltaEngine.Platforms.Tests.IntegrationTestAttribute";
-		const string VisualTestAttribute = "DeltaEngine.Platforms.Tests.VisualTestAttribute";
+		private const string TestAttribute = "NUnit.Framework.TestAttribute";
+		private const string IgnoreAttribute = "NUnit.Framework.IgnoreAttribute";
+		private const string TestCaseAttribute = "NUnit.Framework.TestCaseAttribute";
+		private const string IntegrationTestAttribute =
+			"DeltaEngine.Platforms.Tests.IntegrationTestAttribute";
+		private const string VisualTestAttribute = "DeltaEngine.Platforms.Tests.VisualTestAttribute";
+
+		public static bool GetIsVisualTestCaseAndReset()
+		{
+			if (IsVisualTestCase == false)
+				return false;
+			IsVisualTestCase = false;
+			return true;
+		}
 
 		/// <summary>
 		/// Since we cannot access NUnit.Framework.TestCaseAttribute here, inject it from TestStarter.
 		/// </summary>
-		public static bool InVisualTestCase
-		{
-			private get
-			{
-				if (inTestCaseWithIgnore == false)
-					return false;
-				inTestCaseWithIgnore = false;
-				return true;
-			}
-			set { inTestCaseWithIgnore = value; }
-		}
-
-		private static bool inTestCaseWithIgnore;
+		public static bool IsVisualTestCase { private get; set; }
 
 		public static bool HasAttribute(this StackFrame frame, string name)
 		{
@@ -75,8 +71,8 @@ namespace DeltaEngine.Core
 			return frame.HasAttribute(TestAttribute) && !frame.HasAttribute(CategoryAttribute);
 		}
 
-		const string CategoryAttribute = "NUnit.Framework.CategoryAttribute";
-		
+		private const string CategoryAttribute = "NUnit.Framework.CategoryAttribute";
+
 		/// <summary>
 		/// Get entry name from stack frame, which is either the namespace name where the main method
 		/// is located or if we are started from a test, the name of the test method.

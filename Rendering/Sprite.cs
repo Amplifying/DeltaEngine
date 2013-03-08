@@ -9,23 +9,19 @@ namespace DeltaEngine.Rendering
 	/// </summary>
 	public class Sprite : Renderable
 	{
-		public Sprite(Image image, Rectangle initalDrawArea, Color color)
+		public Sprite(Image image, Rectangle initialDrawArea, Color color)
 		{
 			Image = image;
-			DrawArea = initalDrawArea;
+			DrawArea = initialDrawArea;
 			Color = color;
 		}
 
-		public Sprite(Image image, Rectangle initalDrawArea)
-			: this(image, initalDrawArea, Color.White) {}
-
-		public Image Image { get; protected set; }
+		public Image Image { get; private set; }
 		public Rectangle DrawArea;
 		public Color Color;
-		public float Rotation;
-		public FlipMode Flip = FlipMode.None;
-		public Point RotationCenter = RotateAroundCenter;
-		private static readonly Point RotateAroundCenter = new Point(-1, -1);
+
+		public Sprite(Image image, Rectangle initialDrawArea)
+			: this(image, initialDrawArea, Color.White) {}
 
 		protected override void Render(Renderer renderer, Time time)
 		{
@@ -36,16 +32,15 @@ namespace DeltaEngine.Rendering
 				DrawImageWithRotation();
 		}
 
+		public float Rotation;
 		private ScreenSpace screen;
 
 		private void DrawImage()
 		{
 			var vertices = new[]
 			{
-				GetVertex(DrawArea.TopLeft, Point.Zero),
-				GetVertex(DrawArea.TopRight, Point.UnitX),
-				GetVertex(DrawArea.BottomRight, Point.One),
-				GetVertex(DrawArea.BottomLeft, Point.UnitY)
+				GetVertex(DrawArea.TopLeft, Point.Zero), GetVertex(DrawArea.TopRight, Point.UnitX),
+				GetVertex(DrawArea.BottomRight, Point.One), GetVertex(DrawArea.BottomLeft, Point.UnitY)
 			};
 			Image.Draw(vertices);
 		}
@@ -59,6 +54,8 @@ namespace DeltaEngine.Rendering
 			return new VertexPositionColorTextured(screen.ToPixelSpaceRounded(position), Color, uv);
 		}
 
+		public FlipMode Flip = FlipMode.None;
+
 		private void DrawImageWithRotation()
 		{
 			var vertices = new[]
@@ -70,14 +67,18 @@ namespace DeltaEngine.Rendering
 			};
 			Image.Draw(vertices);
 		}
-		
+
 		private Point Rotate(Point point)
 		{
 			var rotationCenter = RotationCenter == RotateAroundCenter ? DrawArea.Center : RotationCenter;
-			point.RotateAround(rotationCenter, Rotation, FastTrig);
-			return point;
+			point -= rotationCenter;
+			float sin = MathExtensions.Sin(Rotation);
+			float cos = MathExtensions.Cos(Rotation);
+			point = new Point(point.X * cos - point.Y * sin, point.X * sin + point.Y * cos);
+			return rotationCenter + point;
 		}
 
-		private static readonly FastTrig FastTrig = new FastTrig();
+		public Point RotationCenter = RotateAroundCenter;
+		private static readonly Point RotateAroundCenter = new Point(-1, -1);
 	}
 }

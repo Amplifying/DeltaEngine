@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using DeltaEngine.Core;
-using Mp3Reader;
 using OpenTK.Audio.OpenAL;
+using ToyMp3;
 
 namespace DeltaEngine.Multimedia.OpenTK
 {
@@ -56,9 +56,9 @@ namespace DeltaEngine.Multimedia.OpenTK
 				AL.SourceUnqueueBuffer(source);
 		}
 
-		public override bool IsPlaying()
+		public override bool IsPlaying
 		{
-			return GetState() != ALSourceState.Stopped;
+			get { return GetState() != ALSourceState.Stopped; }
 		}
 
 		protected override void Run()

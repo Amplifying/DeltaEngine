@@ -122,13 +122,9 @@ namespace DeltaEngine.Graphics.SharpDX
 			nativeDevice.Dispose();
 		}
 
-		public BlendState AlphaBlendState
+		public BlendState GetAlphaBlendStateLazy()
 		{
-			get
-			{
-				return alphaBlend ??
-					(alphaBlend = new BlendState(nativeDevice, GetBlendStateDescription()));
-			}
+			return alphaBlend ?? (alphaBlend = new BlendState(nativeDevice, GetBlendStateDescription()));
 		}
 
 		private BlendState alphaBlend;

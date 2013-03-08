@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Graphics;
 using DeltaEngine.Rendering;
 
 namespace Blocks
@@ -10,30 +11,16 @@ namespace Blocks
 	/// </summary>
 	public class Grid
 	{
-		public Grid(Renderer renderer, Randomizer random)
+		public Grid(Renderer renderer, BlocksContent content, Randomizer random)
 		{
 			this.renderer = renderer;
+			this.content = content;
 			Random = random;
-			AddBorder();
 		}
 
 		private readonly Renderer renderer;
+		private readonly BlocksContent content;
 		public Randomizer Random { get; private set; }
-
-		private void AddBorder()
-		{
-			var topLeft = Brick.RenderOffset - Point.UnitY * Brick.RenderZoom;
-			var topRight = Brick.RenderOffset + new Point(GridWidth, -1) * Brick.RenderZoom;
-			var bottomLeft = Brick.RenderOffset + new Point(0, GridHeight) * Brick.RenderZoom;
-			var bottomRight = Brick.RenderOffset + new Point(GridWidth, GridHeight) * Brick.RenderZoom;
-
-			renderer.Add(new Line2D(topLeft, topRight, Color.Red) { RenderLayer = BackgroundLayer });
-			renderer.Add(new Line2D(topRight, bottomRight, Color.Red) { RenderLayer = BackgroundLayer });
-			renderer.Add(new Line2D(bottomRight, bottomLeft, Color.Red) { RenderLayer = BackgroundLayer });
-			renderer.Add(new Line2D(bottomLeft, topLeft, Color.Red) { RenderLayer = BackgroundLayer });
-		}
-
-		private const byte BackgroundLayer = (byte)RenderLayer.Background;
 
 		public int AffixBlock(Block block)
 		{
@@ -44,13 +31,13 @@ namespace Blocks
 			return removedRows;
 		}
 
-		protected Brick[,] bricks = new Brick[GridWidth,GridHeight];
-		private const int GridWidth = 11;
-		private const int GridHeight = 20;
+		protected Brick[,] bricks = new Brick[Width,Height];
+		internal const int Width = 12;
+		internal const int Height = 19;
 
 		private void AffixBrick(Brick brick)
 		{
-			brick.TopLeft = new Point((int)brick.TopLeft.X, (int)brick.TopLeft.Y);
+			brick.TopLeft = new Point((int)brick.TopLeft.X, (int)brick.TopLeft.Y + 1);
 			bricks[(int)brick.Position.X, (int)brick.Position.Y - 1] = brick;
 			renderer.Add(brick);
 			renderer.Add(new ZoomingEffect(brick.Image, brick.DrawArea,
@@ -65,7 +52,7 @@ namespace Blocks
 		{
 			removedRows = 0;
 
-			for (int y = 0; y < GridHeight; y++)
+			for (int y = 0; y < Height; y++)
 				if (IsRowFilled(y))
 					RemoveRow(y);
 		}
@@ -74,7 +61,7 @@ namespace Blocks
 
 		private bool IsRowFilled(int y)
 		{
-			for (int x = 0; x < GridWidth; x++)
+			for (int x = 0; x < Width; x++)
 				if (bricks[x, y] == null)
 					return false;
 
@@ -83,7 +70,7 @@ namespace Blocks
 
 		private void RemoveRow(int row)
 		{
-			for (int x = 0; x < GridWidth; x++)
+			for (int x = 0; x < Width; x++)
 				RemoveBrick(x, row);
 
 			MoveRowsDown(row);
@@ -95,6 +82,46 @@ namespace Blocks
 			var brick = bricks[x, y];
 			renderer.Remove(brick);
 			bricks[x, y] = null;
+			if (content.DoBricksSplitInHalfWhenRowFull)
+				AddTwoFallingBricks(brick);
+			else
+				AddFallingBrick(brick);
+		}
+
+		private void AddTwoFallingBricks(Brick brick)
+		{
+			AddBottomFallingBrick(brick);
+			AddTopFallingBrick(brick);
+		}
+
+		private void AddTopFallingBrick(Sprite brick)
+		{
+			var filename = content.GetFilenameWithoutPrefix(brick.Image.Filename);
+			var image = content.Load<Image>(filename + "_Top");
+			renderer.Add(new FallingEffect(image, brick.DrawArea, 5.0f)
+			{
+				Color = brick.Color,
+				Velocity = new Point(Random.Get(-0.5f, 0.5f), Random.Get(-1.0f, 0.0f)),
+				RotationSpeed = Random.Get(-360, 360),
+				RenderLayer = (byte)RenderLayer.FallingBrick
+			});
+		}
+
+		private void AddBottomFallingBrick(Sprite brick)
+		{
+			var filename = content.GetFilenameWithoutPrefix(brick.Image.Filename);
+			var image = content.Load<Image>(filename + "_Bottom");
+			renderer.Add(new FallingEffect(image, brick.DrawArea, 5.0f)
+			{
+				Color = brick.Color,
+				Velocity = new Point(Random.Get(-0.5f, 0.5f), Random.Get(-1.0f, 0.0f)),
+				RotationSpeed = Random.Get(-360, 360),
+				RenderLayer = (byte)RenderLayer.FallingBrick
+			});
+		}
+
+		private void AddFallingBrick(Sprite brick)
+		{
 			renderer.Add(new FallingEffect(brick.Image, brick.DrawArea, 5.0f)
 			{
 				Color = brick.Color,
@@ -106,7 +133,7 @@ namespace Blocks
 
 		private void MoveRowsDown(int row)
 		{
-			for (int x = 0; x < GridWidth; x++)
+			for (int x = 0; x < Width; x++)
 				for (int y = row; y > 0; y--)
 					MoveBrickDown(x, y);
 		}
@@ -127,10 +154,10 @@ namespace Blocks
 			return true;
 		}
 
-		private bool IsOutsideTheGrid(Brick brick)
+		private static bool IsOutsideTheGrid(Brick brick)
 		{
-			return brick.Position.X < 0 || brick.Position.X >= GridWidth || brick.Position.Y < 1 ||
-				brick.Position.Y >= GridHeight;
+			return brick.Position.X < 0 || brick.Position.X >= Width || brick.Position.Y < 1 ||
+				brick.Position.Y >= Height;
 		}
 
 		private bool IsOccupied(Brick brick)
@@ -143,7 +170,7 @@ namespace Blocks
 			block.Top = 1;
 			var validStartingColumns = new List<int>();
 
-			for (int x = 0; x < GridWidth; x++)
+			for (int x = 0; x < Width; x++)
 				if (IsAValidStartingColumn(block, x))
 					validStartingColumns.Add(x);
 
@@ -158,7 +185,7 @@ namespace Blocks
 
 		public bool IsABrickOnFirstRow()
 		{
-			for (int x = 0; x < GridWidth; x++)
+			for (int x = 0; x < Width; x++)
 				if (bricks[x, 0] != null)
 					return true;
 
@@ -167,8 +194,8 @@ namespace Blocks
 
 		public void Clear()
 		{
-			for (int x = 0; x < GridWidth; x++)
-				for (int y = 0; y < GridHeight; y++)
+			for (int x = 0; x < Width; x++)
+				for (int y = 0; y < Height; y++)
 					if (bricks[x, y] != null)
 						RemoveBrick(x, y);
 		}

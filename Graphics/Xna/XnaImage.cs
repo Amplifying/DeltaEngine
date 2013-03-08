@@ -27,8 +27,7 @@ namespace DeltaEngine.Graphics.Xna
 		{
 			try
 			{
-				NativeTexture = nativeContent.Load<Texture2D>(contentName);
-				pixelSize = new Size(NativeTexture.Width, NativeTexture.Height);
+				LoadImageData(contentName, nativeContent);
 			}
 			catch (Exception ex)
 			{
@@ -36,7 +35,13 @@ namespace DeltaEngine.Graphics.Xna
 				CreateDefaultTexture();
 			}
 		}
-		
+
+		private void LoadImageData(string contentName, ContentManager nativeContent)
+		{
+			NativeTexture = nativeContent.Load<Texture2D>(contentName);
+			pixelSize = new Size(NativeTexture.Width, NativeTexture.Height);
+		}
+
 		public Texture2D NativeTexture { get; private set; }
 		private Size pixelSize;
 		public override Size PixelSize { get { return pixelSize; } }

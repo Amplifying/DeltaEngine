@@ -81,7 +81,17 @@ namespace DeltaEngine.Core
 			return value1 > value2 ? value1 : value2;
 		}
 
+		public static int Max(int value1, int value2)
+		{
+			return value1 > value2 ? value1 : value2;
+		}
+
 		public static float Min(float value1, float value2)
+		{
+			return value1 < value2 ? value1 : value2;
+		}
+
+		public static float Min(int value1, int value2)
 		{
 			return value1 < value2 ? value1 : value2;
 		}

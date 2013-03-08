@@ -38,10 +38,10 @@ namespace DeltaEngine.Core
 		}
 
 		protected readonly List<Runner> runners = new List<Runner>();
-		protected readonly List<RunnerArguments> genericRunners = new List<RunnerArguments>();
+		private readonly List<RunnerArguments> genericRunners = new List<RunnerArguments>();
 		protected readonly List<Presenter> presenters = new List<Presenter>();
 
-		protected class RunnerArguments
+		private struct RunnerArguments
 		{
 			public RunnerArguments(object instance, Type[] arguments, Resolver resolver)
 			{
@@ -49,6 +49,7 @@ namespace DeltaEngine.Core
 				resolvedInstances = new object[arguments.Length];
 				for (int num = 0; num < arguments.Length; num++)
 					resolvedInstances[num] = resolver.Resolve(arguments[num]);
+
 				genericMethod = instance.GetType().GetMethod("Run");
 			}
 

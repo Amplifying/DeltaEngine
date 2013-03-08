@@ -64,7 +64,7 @@ namespace DeltaEngine.Rendering.Tests
 		}
 
 		[Test]
-		public void EmulateRunFallingEffectForOneSecondToBeRemoved()
+		public void FallingEffectIsRemovedAfterOneSecond()
 		{
 			Start(typeof(TestResolver), (Content content, Renderer renderer) =>
 			{
@@ -75,17 +75,27 @@ namespace DeltaEngine.Rendering.Tests
 					RotationSpeed = 100.0f
 				};
 				renderer.Add(effect);
-				Assert.AreEqual(1, renderer.NumberOfActiveRenderableObjects);
-				testResolver.AdvanceTimeAndExecuteRunners(0.5f);
-				Assert.AreEqual(0.879f, effect.DrawArea.Center.X, 0.01f);
-				Assert.AreEqual(1.008f, effect.DrawArea.Center.Y, 0.01f);
-				Assert.AreEqual(50.0f, effect.Rotation, 2.0f);
-				testResolver.AdvanceTimeAndExecuteRunners(1.0f);
-				Assert.AreEqual(1.534f, effect.DrawArea.Center.X, 0.01f);
-				Assert.AreEqual(2.059f, effect.DrawArea.Center.Y, 0.01f);
-				Assert.AreEqual(100.0f, effect.Rotation, 5.0f);
-				Assert.AreEqual(0, renderer.NumberOfActiveRenderableObjects);
+				CheckFallingEffectStateAfterHalfASecond(effect, renderer);
+				CheckFallingEffectStateAfterOneSecond(effect, renderer);
 			});
+		}
+
+		private void CheckFallingEffectStateAfterHalfASecond(Sprite effect, Renderer renderer)
+		{
+			testResolver.AdvanceTimeAndExecuteRunners(0.5f);
+			Assert.AreEqual(0.879f, effect.DrawArea.Center.X, 0.01f);
+			Assert.AreEqual(1.008f, effect.DrawArea.Center.Y, 0.01f);
+			Assert.AreEqual(50.0f, effect.Rotation, 2.0f);
+			Assert.AreEqual(1, renderer.NumberOfActiveRenderableObjects);
+		}
+
+		private void CheckFallingEffectStateAfterOneSecond(Sprite effect, Renderer renderer)
+		{
+			testResolver.AdvanceTimeAndExecuteRunners(1.0f);
+			Assert.AreEqual(1.534f, effect.DrawArea.Center.X, 0.01f);
+			Assert.AreEqual(2.059f, effect.DrawArea.Center.Y, 0.01f);
+			Assert.AreEqual(100.0f, effect.Rotation, 5.0f);
+			Assert.AreEqual(0, renderer.NumberOfActiveRenderableObjects);
 		}
 
 		[VisualTest]

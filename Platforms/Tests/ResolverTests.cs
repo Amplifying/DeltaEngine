@@ -19,7 +19,7 @@ namespace DeltaEngine.Platforms.Tests
 			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
 				return;
 
-			using (var resolver = (AutofacResolver)Activator.CreateInstance(resolverType))
+			using (var resolver = (AutofacStarter)Activator.CreateInstance(resolverType))
 			{
 				resolver.Start<T>();
 				Assert.IsNotNull(resolver.Resolve<T>());
@@ -47,7 +47,7 @@ namespace DeltaEngine.Platforms.Tests
 		[IntegrationTest]
 		public void CloseApp(Type resolverType)
 		{
-			Start(resolverType, (AutofacResolver resolver) => resolver.Close());
+			Start(resolverType, (AutofacStarter resolver) => resolver.Close());
 		}
 
 		[IntegrationTest]
@@ -56,9 +56,9 @@ namespace DeltaEngine.Platforms.Tests
 			Start(resolverType, (AutofacResolver resolver) =>
 			{
 				resolver.Resolve<Device>();
-				Assert.Throws<AutofacResolver.UnableToRegisterMoreTypesApplicationHasAlreadyStarted>(
+				Assert.Throws<AutofacResolver.UnableToRegisterMoreTypesAppAlreadyStarted>(
 					resolver.Register<object>);
-				Assert.Throws<AutofacResolver.UnableToRegisterMoreTypesApplicationHasAlreadyStarted>(
+				Assert.Throws<AutofacResolver.UnableToRegisterMoreTypesAppAlreadyStarted>(
 					resolver.RegisterSingleton<object>);
 			});
 		}

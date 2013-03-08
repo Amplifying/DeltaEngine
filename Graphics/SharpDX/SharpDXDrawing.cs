@@ -7,6 +7,7 @@ using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using Buffer = SharpDX.Direct3D11.Buffer;
 using Color = DeltaEngine.Datatypes.Color;
+using Matrix = SharpDX.Matrix;
 
 namespace DeltaEngine.Graphics.SharpDX
 {
@@ -25,7 +26,7 @@ namespace DeltaEngine.Graphics.SharpDX
 			drawShader = new SharpDXDrawShader(device);
 			Reset(window.ViewportPixelSize);
 			window.ViewportSizeChanged += Reset;
-			device.Context.OutputMerger.BlendState = device.AlphaBlendState;
+			device.Context.OutputMerger.BlendState = device.GetAlphaBlendStateLazy();
 		}
 
 		private new readonly SharpDXDevice device;

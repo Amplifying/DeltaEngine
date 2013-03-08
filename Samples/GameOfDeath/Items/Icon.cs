@@ -13,7 +13,7 @@ namespace GameOfDeath.Items
 		public Icon(Content content, int iconIndex, ScreenSpace screen)
 			: base(content.Load<Image>(IconNames[iconIndex]), GetIconDrawArea(iconIndex, screen.Viewport))
 		{
-			RenderLayer = UIRenderLayer - 1;
+			RenderLayer = MaxRenderLayer - 1;
 			Color = Color.Gray;
 			screen.ViewportSizeChanged += () => DrawArea = GetIconDrawArea(iconIndex, screen.Viewport);
 		}

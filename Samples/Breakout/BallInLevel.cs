@@ -12,14 +12,10 @@ namespace Breakout
 		public BallInLevel(Paddle paddle, Content content, InputCommands inputCommands, Level level)
 			: base(paddle, content, inputCommands)
 		{
-			this.level = level;
+			Level = level;
 		}
 
-		private readonly Level level;
-		public Level CurrentLevel
-		{
-			get { return level; }
-		}
+		public Level Level { get; private set; }
 
 		protected override void UpdateInFlight(float timeDelta)
 		{
@@ -29,10 +25,10 @@ namespace Breakout
 
 		private void HandleBrickCollisions()
 		{
-			HandleBrickCollision(level.GetBrickAt(Position.X - Radius, Position.Y), Direction.Left);
-			HandleBrickCollision(level.GetBrickAt(Position.X, Position.Y - Radius), Direction.Top);
-			HandleBrickCollision(level.GetBrickAt(Position.X + Radius, Position.Y), Direction.Right);
-			HandleBrickCollision(level.GetBrickAt(Position.X, Position.Y + Radius), Direction.Bottom);
+			HandleBrickCollision(Level.GetBrickAt(Position.X - Radius, Position.Y), Direction.Left);
+			HandleBrickCollision(Level.GetBrickAt(Position.X, Position.Y - Radius), Direction.Top);
+			HandleBrickCollision(Level.GetBrickAt(Position.X + Radius, Position.Y), Direction.Right);
+			HandleBrickCollision(Level.GetBrickAt(Position.X, Position.Y + Radius), Direction.Bottom);
 		}
 
 		private void HandleBrickCollision(Sprite brick, Direction collisionSide)
@@ -40,13 +36,13 @@ namespace Breakout
 			if (brick == null)
 				return;
 
-			level.Explode(brick);
+			Level.Explode(brick);
 			ReflectVelocity(collisionSide);
 		}
 
 		public override void ResetBall()
 		{
-			level.LostLive(Position);
+			Level.LifeLost(Position);
 			base.ResetBall();
 		}
 	}

@@ -5,7 +5,7 @@ namespace DeltaEngine.Multimedia.OpenTK
 	/// <summary>
 	/// Audio data converter capable of converting IEEE floating point audio to pcm 16 bit.
 	/// </summary>
-	internal class IeeeFloatConverter
+	internal struct IeeeFloatConverter
 	{
 		public IeeeFloatConverter(int bitsPerSample)
 		{
