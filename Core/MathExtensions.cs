@@ -95,5 +95,13 @@ namespace DeltaEngine.Core
 		{
 			return value1 < value2 ? value1 : value2;
 		}
+
+		public static int GetNearestMultiple(this int value, int multipleValue)
+		{
+			int min = ((int)(value / (float)multipleValue)) * multipleValue;
+			int max = ((int)(value / (float)multipleValue) + 1) * multipleValue;
+
+			return max - value < value - min ? max : min;
+		}
 	}
 }

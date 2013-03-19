@@ -16,7 +16,7 @@ namespace DeltaEngine.Rendering
 			return base.ToPixelSpace(Transform(currentScreenSpacePos));
 		}
 
-		private Point Transform(Point position)
+		public Point Transform(Point position)
 		{
 			return (position - LookAt) * Zoom + Point.Half;
 		}
@@ -46,7 +46,7 @@ namespace DeltaEngine.Rendering
 			return InverseTransform(base.FromPixelSpace(pixelPosition));
 		}
 
-		private Point InverseTransform(Point position)
+		public Point InverseTransform(Point position)
 		{
 			return (position - Point.Half) * inverseZoom + LookAt;
 		}

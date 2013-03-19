@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using DeltaEngine.Core;
 
 namespace DeltaEngine.Datatypes
@@ -38,7 +39,7 @@ namespace DeltaEngine.Datatypes
 		public static readonly Point Half = new Point(0.5f, 0.5f);
 		public static readonly Point UnitX = new Point(1, 0);
 		public static readonly Point UnitY = new Point(0, 1);
-		public const int SizeInBytes = 2 * 4;
+		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Point));
 
 		public static Point operator +(Point p1, Point p2)
 		{

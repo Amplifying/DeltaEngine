@@ -2,7 +2,7 @@
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 
-namespace $safeprojectname$
+namespace EmptyGame
 {
 	/// <summary>
 	/// Just creates a window and slowly changes the background color.
@@ -11,22 +11,22 @@ namespace $safeprojectname$
 	{
 		public void Run(Time time, Window window)
 		{
-			fadePercentage += time.CurrentDelta;
-			if (fadePercentage >= 1.0f)
+			FadePercentage += time.CurrentDelta;
+			if (FadePercentage >= 1.0f)
 				SwitchToNextRandomColor();
 
-			window.BackgroundColor = Color.Lerp(currentColor, nextColor, fadePercentage);
+			window.BackgroundColor = Color.Lerp(CurrentColor, NextColor, FadePercentage);
 		}
 
-		private float fadePercentage;
-		private Color currentColor;
-		private Color nextColor;
+		public float FadePercentage { get; private set; }
+		public Color CurrentColor { get; private set; }
+		public Color NextColor { get; private set; }
 
 		private void SwitchToNextRandomColor()
 		{
-			currentColor = nextColor;
-			nextColor = Color.GetRandomColor();
-			fadePercentage = 0;
+			CurrentColor = NextColor;
+			NextColor = Color.GetRandomColor();
+			FadePercentage = 0;
 		}
 	}
 }

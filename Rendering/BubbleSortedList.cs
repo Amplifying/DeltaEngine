@@ -1,17 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DeltaEngine.Core;
 
 namespace DeltaEngine.Rendering
 {
+	/// <summary>
+	/// Facilitates the sorting of the objects using a rendering layer logic
+	/// </summary>
 	public class BubbleSortedList : IList<Renderable>
 	{
 		public BubbleSortedList(IEnumerable<Renderable> bubbleList, bool isReadOnly = false)
 		{
 			IsReadOnly = isReadOnly;
-			foreach (Renderable t in bubbleList) 
+			foreach (Renderable t in bubbleList)
 				data.Add(t);
 		}
+
+		public bool IsReadOnly { get; private set; }
 
 		private readonly List<Renderable> data = new List<Renderable>();
 
@@ -19,8 +25,6 @@ namespace DeltaEngine.Rendering
 		{
 			IsReadOnly = isReadOnly;
 		}
-
-		private int nearestIndexToLayerZero;
 
 		public List<Renderable> GetData()
 		{
@@ -31,17 +35,24 @@ namespace DeltaEngine.Rendering
 		{
 			if (data.IndexOf(item) >= 0)
 				return;
+
 			if (data.Count == 0)
-			{
 				data.Add(item);
-				return;
-			}
+			else
+				AddAndResortTheList(item);
+		}
+
+		private void AddAndResortTheList(Renderable item)
+		{
+			item.HasRenderLayerChanged = false;
 			var changeNearestIndex = IsNearestIndexToZeroChanging(item);
-			int index = item.RenderLayer < 0 ? 
-				ItemIsInBackground(item, changeNearestIndex) : ItemIsInForeground(item);
-			if(changeNearestIndex)
+			int index = item.RenderLayer < 0
+				? ItemIsInBackground(item, changeNearestIndex) : ItemIsInForeground(item);
+			if (changeNearestIndex)
 				nearestIndexToLayerZero = index;
 		}
+
+		private int nearestIndexToLayerZero;
 
 		private bool IsNearestIndexToZeroChanging(Renderable item)
 		{
@@ -49,15 +60,8 @@ namespace DeltaEngine.Rendering
 			if (data.Count > 0)
 				changeNearestIndex = MathExtensions.Abs(item.RenderLayer) <
 					MathExtensions.Abs(data[nearestIndexToLayerZero].RenderLayer);
-			return changeNearestIndex;
-		}
 
-		private int ItemIsInForeground(Renderable item)
-		{
-			int index = CalculateIndexForNewItem(item.RenderLayer, data.Count);
-			data.Add(item);
-			InsertItemInRightIndex(item, index);
-			return index;
+			return changeNearestIndex;
 		}
 
 		private int ItemIsInBackground(Renderable item, bool changeNearestIndex)
@@ -66,6 +70,15 @@ namespace DeltaEngine.Rendering
 			data.Add(item);
 			if (!changeNearestIndex)
 				nearestIndexToLayerZero++;
+
+			InsertItemInRightIndex(item, index);
+			return index;
+		}
+
+		private int ItemIsInForeground(Renderable item)
+		{
+			int index = CalculateIndexForNewItem(item.RenderLayer, data.Count);
+			data.Add(item);
 			InsertItemInRightIndex(item, index);
 			return index;
 		}
@@ -77,6 +90,7 @@ namespace DeltaEngine.Rendering
 			{
 				if (data[i].RenderLayer <= layer)
 					continue;
+
 				index = i;
 				i = data.Count;
 			}
@@ -87,12 +101,22 @@ namespace DeltaEngine.Rendering
 		{
 			for (int i = data.Count - 1; i > index; i--)
 				data[i] = data[i - 1];
+
 			data[index] = item;
+		}
+
+		public void Resort()
+		{
+			var values = data.ToList();
+			Clear();
+			foreach (Renderable renderable in values)
+				Add(renderable);
 		}
 
 		public void Clear()
 		{
 			data.Clear();
+			nearestIndexToLayerZero = 0;
 		}
 
 		public bool Contains(Renderable item)
@@ -105,21 +129,15 @@ namespace DeltaEngine.Rendering
 			data.CopyTo(array, arrayIndex);
 		}
 
-		bool ICollection<Renderable>.Remove(Renderable item)
+		public bool Remove(Renderable item)
 		{
 			return data.Remove(item);
 		}
 
-		public void Remove(Renderable item)
+		public int Count
 		{
-			int index = data.IndexOf(item);
-			if (index == -1)
-				return;
-			data.Remove(item);
+			get { return data.Count; }
 		}
-
-		public int Count { get { return data.Count; } }
-		public bool IsReadOnly { get; private set; }
 
 		public IEnumerator<Renderable> GetEnumerator()
 		{
@@ -128,7 +146,7 @@ namespace DeltaEngine.Rendering
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return GetEnumerator();
+			return data.GetEnumerator();
 		}
 
 		public int IndexOf(Renderable item)
@@ -140,6 +158,7 @@ namespace DeltaEngine.Rendering
 		{
 			if (data.IndexOf(item) >= 0)
 				return;
+
 			data.Insert(index, item);
 		}
 
@@ -150,10 +169,7 @@ namespace DeltaEngine.Rendering
 
 		public Renderable this[int index]
 		{
-			get
-			{
-				return data[index];
-			}
+			get { return data[index]; }
 			set { Add(value); }
 		}
 	}

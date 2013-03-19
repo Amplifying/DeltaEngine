@@ -85,10 +85,10 @@ namespace Blocks.Tests
 			});
 		}
 
-		[Test, Ignore]
-		public void CheckIBlockAppearsATenthOfTheTime()
+		[IntegrationTest]
+		public void CheckIBlockAppearsATenthOfTheTime(Type resolver)
 		{
-			Start(typeof(TestResolver), (BlocksContent content) =>
+			Start(resolver, (BlocksContent content) =>
 			{
 				int count = 0;
 				var random = new PseudoRandom();
@@ -99,7 +99,7 @@ namespace Blocks.Tests
 						count++;
 				}
 
-				Assert.AreEqual(1000, count, 50);
+				Assert.AreEqual(1000, count, 70);
 			});
 		}
 

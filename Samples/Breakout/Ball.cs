@@ -77,7 +77,7 @@ namespace Breakout
 		}
 
 		public Point Position { get; protected set; }
-		private static readonly Size Size = new Size(Height);
+		public static readonly Size Size = new Size(Height);
 		private const float Height = Radius * 2.0f;
 		internal const float Radius = 0.02f;
 

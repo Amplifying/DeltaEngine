@@ -44,7 +44,7 @@ namespace Blocks
 				Rectangle.FromCenter(brick.DrawArea.Center, brick.DrawArea.Size * 2), 0.2f)
 			{
 				Color = brick.Color,
-				RenderLayer = (byte)RenderLayer.ZoomingBrick
+				RenderLayer = (int)RenderLayer.ZoomingBrick
 			});
 		}
 
@@ -103,7 +103,7 @@ namespace Blocks
 				Color = brick.Color,
 				Velocity = new Point(Random.Get(-0.5f, 0.5f), Random.Get(-1.0f, 0.0f)),
 				RotationSpeed = Random.Get(-360, 360),
-				RenderLayer = (byte)RenderLayer.FallingBrick
+				RenderLayer = (int)RenderLayer.FallingBrick
 			});
 		}
 
@@ -116,7 +116,7 @@ namespace Blocks
 				Color = brick.Color,
 				Velocity = new Point(Random.Get(-0.5f, 0.5f), Random.Get(-1.0f, 0.0f)),
 				RotationSpeed = Random.Get(-360, 360),
-				RenderLayer = (byte)RenderLayer.FallingBrick
+				RenderLayer = (int)RenderLayer.FallingBrick
 			});
 		}
 
@@ -127,7 +127,7 @@ namespace Blocks
 				Color = brick.Color,
 				Velocity = new Point(Random.Get(-0.5f, 0.5f), Random.Get(-1.0f, 0.0f)),
 				RotationSpeed = Random.Get(-360, 360),
-				RenderLayer = (byte)RenderLayer.FallingBrick
+				RenderLayer = (int)RenderLayer.FallingBrick
 			});
 		}
 
@@ -168,8 +168,15 @@ namespace Blocks
 		public List<int> GetValidStartingColumns(Block block)
 		{
 			block.Top = 1;
-			var validStartingColumns = new List<int>();
+			List<int> validStartingColumns = content.DoBlocksStartInARandomColumn
+				? GetAllValidStartingColumns(block) : GetMiddleColumnIfValid(block);
 
+			return validStartingColumns;
+		}
+
+		private List<int> GetAllValidStartingColumns(Block block)
+		{
+			var validStartingColumns = new List<int>();
 			for (int x = 0; x < Width; x++)
 				if (IsAValidStartingColumn(block, x))
 					validStartingColumns.Add(x);
@@ -182,6 +189,17 @@ namespace Blocks
 			block.Left = column;
 			return IsValidPosition(block);
 		}
+
+		private List<int> GetMiddleColumnIfValid(Block block)
+		{
+			var validStartingColumns = new List<int>();
+			if (IsAValidStartingColumn(block, Middle))
+				validStartingColumns.Add(Middle - (int)block.Center.X);
+
+			return validStartingColumns;
+		}
+
+		private const int Middle = Width / 2;
 
 		public bool IsABrickOnFirstRow()
 		{

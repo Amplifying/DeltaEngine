@@ -46,7 +46,7 @@ namespace DeltaEngine.Datatypes.Tests
 			Assert.AreEqual(new Vector(1, 0, 0), Vector.UnitX);
 			Assert.AreEqual(new Vector(0, 1, 0), Vector.UnitY);
 			Assert.AreEqual(new Vector(0, 0, 1), Vector.UnitZ);
-			Assert.AreEqual(Vector.SizeInBytes, 12);
+			Assert.AreEqual(12, Vector.SizeInBytes);
 		}
 
 		[Test]
@@ -57,7 +57,7 @@ namespace DeltaEngine.Datatypes.Tests
 			Assert.AreEqual(2.1f, v.Y);
 			Assert.AreEqual(0.1f, v.Z);
 		}
-
+		
 		[Test]
 		public void Addition()
 		{

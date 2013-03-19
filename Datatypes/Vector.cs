@@ -46,8 +46,8 @@ namespace DeltaEngine.Datatypes
 		public static readonly Vector UnitX = new Vector(1, 0, 0);
 		public static readonly Vector UnitY = new Vector(0, 1, 0);
 		public static readonly Vector UnitZ = new Vector(0, 0, 1);
-		public const int SizeInBytes = 3 * 4;
-
+		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector));
+		
 		public static Vector operator +(Vector v1, Vector v2)
 		{
 			return new Vector(v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z);

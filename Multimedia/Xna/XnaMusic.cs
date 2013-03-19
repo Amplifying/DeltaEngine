@@ -41,10 +41,8 @@ namespace DeltaEngine.Multimedia.Xna
 
 		protected override void Run()
 		{
-			if (!IsActiveMusic())
-				return;
-
-			positionInSeconds = (float)MediaPlayer.PlayPosition.TotalSeconds;
+			if (IsActiveMusic())
+				positionInSeconds = (float)MediaPlayer.PlayPosition.TotalSeconds;
 		}
 
 		public override void Dispose()

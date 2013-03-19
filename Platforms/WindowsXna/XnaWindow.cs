@@ -100,27 +100,27 @@ namespace DeltaEngine.Platforms
 			IsFullscreen = true;
 			rememberedWindowedSize = new Size(game.Window.ClientBounds.Width,
 				game.Window.ClientBounds.Height);
-			game.Window.AllowUserResizing = true;
+			SetResolutionAndScreenMode(displaySize);
+		}
+
+		public void SetWindowed()
+		{
+			IsFullscreen = false;
+			SetResolutionAndScreenMode(rememberedWindowedSize);
+		}
+
+		private Size rememberedWindowedSize;
+
+		private void SetResolutionAndScreenMode(Size displaySize)
+		{
+			game.Window.AllowUserResizing = IsFullscreen;
 			game.Window.BeginScreenDeviceChange(IsFullscreen);
 			if (FullscreenChanged != null)
 				FullscreenChanged(displaySize, IsFullscreen);
 			game.Window.EndScreenDeviceChange(game.Window.ScreenDeviceName);
 		}
 
-		public void SetWindowed()
-		{
-			IsFullscreen = false;
-			game.Window.AllowUserResizing = false;
-			game.Window.BeginScreenDeviceChange(IsFullscreen);
-			if (FullscreenChanged != null)
-				FullscreenChanged(rememberedWindowedSize, IsFullscreen);
-			game.Window.EndScreenDeviceChange(game.Window.ScreenDeviceName);
-		}
-
-		private Size rememberedWindowedSize;
-
 		public bool IsFullscreen { get; private set; }
-
 		public event Action<Size, bool> FullscreenChanged;
 
 		public bool IsClosing { get; private set; }

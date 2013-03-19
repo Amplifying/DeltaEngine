@@ -3,6 +3,9 @@ using Moq;
 
 namespace DeltaEngine.Platforms.Tests
 {
+	/// <summary>
+	/// Mocks Core objects for testing
+	/// </summary>
 	public class TestCoreResolver : TestModuleResolver
 	{
 		public TestCoreResolver(TestResolver testResolver) 

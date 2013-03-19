@@ -19,7 +19,7 @@ namespace Blocks
 			CreateBricks(content);
 			Left = topLeft.X;
 			Top = topLeft.Y;
-			RenderLayer = (byte)Blocks.RenderLayer.Grid;
+			RenderLayer = (int)Blocks.RenderLayer.Grid;
 		}
 
 		private readonly Randomizer random;
@@ -64,12 +64,19 @@ namespace Blocks
 		{
 			var left = (int)Bricks.Min(brick => brick.Offset.X);
 			var top = (int)Bricks.Min(brick => brick.Offset.Y);
-
 			foreach (Brick brick in Bricks)
 				brick.Offset = new Point(brick.Offset.X - left, brick.Offset.Y - top);
 
-			center = new Point(Bricks.Average(brick => brick.Offset.X),
-				Bricks.Average(brick => brick.Offset.Y));
+			UpdateCenter();
+		}
+
+		private void UpdateCenter()
+		{
+			float minX = Bricks.Min(brick => brick.Offset.X);
+			float maxX = Bricks.Max(brick => brick.Offset.X);
+			float minY = Bricks.Min(brick => brick.Offset.Y);
+			float maxY = Bricks.Max(brick => brick.Offset.Y);
+			center = new Point((minX + maxX + 1) / 2, (minY + maxY + 1) / 2);
 		}
 
 		private Point center;
@@ -81,18 +88,22 @@ namespace Blocks
 
 		public void RotateClockwise()
 		{
+			Point oldCenter = center;
 			foreach (Brick brick in Bricks)
 				brick.Offset = new Point(-brick.Offset.Y, brick.Offset.X);
 
 			ShiftToTopLeft();
+			Left += (int)oldCenter.X - (int)center.X;
 		}
 
 		public void RotateAntiClockwise()
 		{
+			Point oldCenter = center;
 			foreach (Brick brick in Bricks)
 				brick.Offset = new Point(brick.Offset.Y, -brick.Offset.X);
 
 			ShiftToTopLeft();
+			Left += (int)oldCenter.X - (int)center.X;
 		}
 
 		public float Left
@@ -123,11 +134,12 @@ namespace Blocks
 		public void Settle(Time time, float fallSpeed)
 		{
 			settling += MathExtensions.Min(fallSpeed * time.CurrentDelta, 1.0f);
-			if (settling >= 1.0f && Affix != null)
+			if (settling >= SettleTime && Affix != null)
 				Affix();
 		}
 
 		private float settling;
+		private const float SettleTime = 1.0f;
 		public event Action Affix;
 
 		protected override void Render(Renderer renderer, Time time)

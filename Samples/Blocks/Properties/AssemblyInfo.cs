@@ -9,5 +9,6 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
 [assembly: Guid("8d02900e-a9a6-4510-acd1-f8df74602ed0")]
-[assembly: AssemblyVersion("0.9.7.3")]
-[assembly: AssemblyFileVersion("0.9.7.3")]
+[assembly: AssemblyVersion("0.9.7.4")]
+[assembly: AssemblyFileVersion("0.9.7.4")]
+[assembly: AssemblyProductAttribute("Blocks")]

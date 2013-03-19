@@ -54,7 +54,8 @@ namespace DeltaEngine.Datatypes
 
 		public static readonly Rectangle Zero;
 		public static readonly Rectangle One = new Rectangle(Point.Zero, Size.One);
-
+		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Rectangle));
+		
 		public float Right
 		{
 			get { return Left + Width; }

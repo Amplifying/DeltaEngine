@@ -24,6 +24,7 @@ namespace DeltaEngine.Datatypes.Tests
 			Assert.AreEqual(new Point(0.5f, 0.5f), Point.Half);
 			Assert.AreEqual(new Point(1, 0), Point.UnitX);
 			Assert.AreEqual(new Point(0, 1), Point.UnitY);
+			Assert.AreEqual(8, Point.SizeInBytes);
 		}
 
 		[Test]

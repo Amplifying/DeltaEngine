@@ -46,10 +46,9 @@ namespace GameOfDeath.Tests
 			{
 				var rabbitImage = content.Load<Image>("Rabbit");
 				var viewport = renderer.Screen.Viewport;
-				for (float x = viewport.Left + RabbitsGrid.CellSize.Width / 2; x <= viewport.Right;
-					x += RabbitsGrid.CellSize.Width)
-					for (float y = viewport.Top + RabbitsGrid.CellSize.Height / 2; y <= viewport.Bottom;
-						y += RabbitsGrid.CellSize.Height)
+				var size = RabbitsGrid.CellSize;
+				for (float x = viewport.Left + size.Width / 2; x <= viewport.Right; x += size.Width)
+					for (float y = viewport.Top + size.Height / 2; y <= viewport.Bottom; y += size.Height)
 						renderer.Add(CreateRabbitWith50Health(rabbitImage, new Point(x, y)));
 			});
 		}

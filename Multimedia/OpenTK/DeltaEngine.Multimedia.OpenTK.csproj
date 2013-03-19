@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{32665D04-5A07-4F99-9E20-0639CD1C1D6D}</ProjectGuid>
+    <ProjectGuid>{6F82824D-1F58-4584-848E-8172B0449C2D}   </ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DeltaEngine.Multimedia.OpenTK</RootNamespace>
@@ -48,14 +48,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IeeeFloatConverter.cs" />
-    <Compile Include="MsAdpcmConverter.cs" />
+    <Compile Include="Helpers\IeeeFloatConverter.cs" />
+    <Compile Include="Helpers\MsAdpcmConverter.cs" />
     <Compile Include="OpenTKMusic.cs" />
     <Compile Include="OpenTKSoundDevice.cs" />
     <Compile Include="OpenTKSound.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WaveFormat.cs" />
-    <Compile Include="WaveSoundData.cs" />
+    <Compile Include="Helpers\WaveFormat.cs" />
+    <Compile Include="Helpers\WaveSoundData.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">

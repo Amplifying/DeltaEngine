@@ -2,6 +2,9 @@
 {
 	public class TestPlatformsResolver : TestModuleResolver
 	{
+		/// <summary>
+		/// Mocks Platform objects for testing
+		/// </summary>
 		public TestPlatformsResolver(TestResolver testResolver)
 			: base(testResolver)
 		{

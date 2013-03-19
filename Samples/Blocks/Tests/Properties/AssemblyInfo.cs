@@ -9,5 +9,6 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(false)]
 [assembly: Guid("f0cc00bc-b7bd-49ee-8ca8-f55d7f62f720")]
-[assembly: AssemblyVersion("0.9.7.3")]
-[assembly: AssemblyFileVersion("0.9.7.3")]
+[assembly: AssemblyVersion("0.9.7.4")]
+[assembly: AssemblyFileVersion("0.9.7.4")]
+[assembly: AssemblyProductAttribute("Blocks.Tests")]

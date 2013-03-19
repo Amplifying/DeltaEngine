@@ -25,6 +25,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRuleSet>..\..\..\DeltaEngineModifiedRuleSet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -48,6 +49,7 @@
     <Compile Include="BlockTests.cs" />
     <Compile Include="BrickTests.cs" />
     <Compile Include="ControllerTests.cs" />
+    <Compile Include="FruitBlocksContentTests.cs" />
     <Compile Include="GameTests.cs" />
     <Compile Include="GridTests.cs" />
     <Compile Include="JewelBlocksContentTests.cs" />
@@ -86,14 +88,6 @@
     <ProjectReference Include="..\..\..\Platforms\Tests\DeltaEngine.Platforms.Tests.csproj">
       <Project>{d0aad622-ed82-40e5-88a9-980eafc12c16}</Project>
       <Name>DeltaEngine.Platforms.Tests</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Platforms\WindowsOpenGL\DeltaEngine.WindowsOpenGL.csproj">
-      <Project>{cc943ae0-a1cc-4788-ac9b-01db3a0ebcd6}</Project>
-      <Name>DeltaEngine.WindowsOpenGL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Platforms\Windows\DeltaEngine.Platforms.Windows.csproj">
-      <Project>{bd8a80e2-a313-437e-b0ef-fc0b066280a7}</Project>
-      <Name>DeltaEngine.Platforms.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Rendering\DeltaEngine.Rendering.csproj">
       <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>

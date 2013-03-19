@@ -83,14 +83,14 @@ namespace DeltaEngine.Rendering.Tests
 		public override Point ToPixelSpace(Point currentScreenSpacePos)
 		{
 			Point point = Point.Zero;
-			point.X = currentScreenSpacePos.X / pixelToRelativeScale.Width;
-			point.Y = (1 - currentScreenSpacePos.Y) / pixelToRelativeScale.Height;
+			point.X = currentScreenSpacePos.X * viewportPixelSize.Width;
+			point.Y = (1 - currentScreenSpacePos.Y) * viewportPixelSize.Height;
 			return point;
 		}
 
 		public override Size ToPixelSpace(Size currentScreenSpaceSize)
 		{
-			return currentScreenSpaceSize / pixelToRelativeScale;
+			return currentScreenSpaceSize * viewportPixelSize;
 		}
 
 		public override Point FromPixelSpace(Point pixelPosition)

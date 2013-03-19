@@ -35,9 +35,10 @@ namespace DeltaEngine.Multimedia
 		public override void Dispose()
 		{
 			foreach (var instance in internalInstances.ToList())
-				instance.Dispose();
+				Remove(instance);
+
 			foreach (var instance in externalInstances.ToList())
-				instance.Dispose();
+				Remove(instance);
 		}
 
 		public void Play(float volume = 1.0f, float panning = 0.0f)
@@ -73,11 +74,18 @@ namespace DeltaEngine.Multimedia
 		{
 			foreach (var instance in internalInstances)
 				instance.Stop();
+
 			foreach (var instance in externalInstances)
 				instance.Stop();
 		}
 
 		public abstract void StopInstance(SoundInstance instanceToStop);
+
+		protected abstract void CreateChannel(SoundInstance instanceToFill);
+		protected abstract void RemoveChannel(SoundInstance instanceToRemove);
+
+		private readonly List<SoundInstance> internalInstances = new List<SoundInstance>();
+		private readonly List<SoundInstance> externalInstances = new List<SoundInstance>();
 
 		internal void Add(SoundInstance instanceToAdd)
 		{
@@ -85,15 +93,10 @@ namespace DeltaEngine.Multimedia
 				internalInstances.Add(instanceToAdd);
 			else
 				externalInstances.Add(instanceToAdd);
+
 			createInternalInstance = false;
 			CreateChannel(instanceToAdd);
 		}
-
-		protected abstract void CreateChannel(SoundInstance instanceToFill);
-
-		private readonly List<SoundInstance> internalInstances = new List<SoundInstance>();
-
-		private readonly List<SoundInstance> externalInstances = new List<SoundInstance>();
 
 		internal void Remove(SoundInstance instanceToRemove)
 		{
@@ -101,8 +104,6 @@ namespace DeltaEngine.Multimedia
 			externalInstances.Remove(instanceToRemove);
 			RemoveChannel(instanceToRemove);
 		}
-
-		protected abstract void RemoveChannel(SoundInstance instanceToRemove);
 
 		public abstract bool IsPlaying(SoundInstance instance);
 

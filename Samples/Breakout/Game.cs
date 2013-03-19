@@ -1,4 +1,5 @@
 ﻿using DeltaEngine.Core;
+using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
 using DeltaEngine.Platforms;
 
@@ -9,13 +10,15 @@ namespace Breakout
 	/// </summary>
 	public class Game : Runner<Time>
 	{
-		public Game(BallInLevel ball, Score score, InputCommands inputCommands, Window window)
+		public Game(Background background, BallInLevel ball, Score score, InputCommands inputCommands,
+			Window window)
 		{
 			this.ball = ball;
 			this.score = score;
 			score.GameOver += ball.Dispose;
 			this.window = window;
 			inputCommands.Add(Key.Escape, window.Dispose);
+			inputCommands.Add(Key.F, () => window.SetFullscreen(new Size(1920, 1080)));
 		}
 
 		private readonly BallInLevel ball;

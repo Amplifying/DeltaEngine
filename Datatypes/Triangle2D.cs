@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using DeltaEngine.Core;
 
 namespace DeltaEngine.Datatypes
@@ -35,7 +36,8 @@ namespace DeltaEngine.Datatypes
 		public class InvalidNumberOfComponents : Exception {}
 
 		public static readonly Triangle2D Zero = new Triangle2D();
-
+		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Triangle2D));
+		
 		public static bool operator ==(Triangle2D triangle1, Triangle2D triangle2)
 		{
 			return triangle1.Equals(triangle2);

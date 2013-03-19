@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using DeltaEngine.Multimedia.OpenTK.Helpers;
 using NUnit.Framework;
 
 namespace DeltaEngine.Multimedia.OpenTK.Tests

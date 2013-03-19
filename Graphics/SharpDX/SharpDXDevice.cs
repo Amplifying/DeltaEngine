@@ -31,6 +31,7 @@ namespace DeltaEngine.Graphics.SharpDX
 				CreateSwapChainDescription(Width, Height, window.Handle), out nativeDevice, out swapChain);
 			window.ViewportSizeChanged += ResetDeviceToNewViewportSize;
 			ResetDeviceToNewViewportSize(window.ViewportPixelSize);
+			window.FullscreenChanged += OnFullscreenChanged;
 		}
 
 		private readonly Window window;
@@ -68,6 +69,11 @@ namespace DeltaEngine.Graphics.SharpDX
 			surface.Dispose();
 			RenderTarget.Dispose();
 			swapChain.ResizeBuffers(BackBufferCount, Width, Height, BackBufferFormat, BackBufferFlags);
+		}
+
+		private void OnFullscreenChanged(Size displaySize, bool b)
+		{
+			swapChain.SetFullscreenState(b, null);
 		}
 
 		public DeviceContext Context

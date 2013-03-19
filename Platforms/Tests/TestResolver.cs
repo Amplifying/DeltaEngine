@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using DeltaEngine.Core;
-using DeltaEngine.Core.Xml;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
 using DeltaEngine.Rendering;
@@ -16,27 +14,24 @@ namespace DeltaEngine.Platforms.Tests
 	/// <summary>
 	/// Special resolver for unit tests that mocks all the integration classes (Window, Device, etc.)
 	/// </summary>
-	public class TestResolver : AutofacStarter
+	public class TestResolver : AutofacStarter 
 	{
 		public TestResolver()
 		{
-			testCoreResolver = new TestCoreResolver(this);
-			testRenderingResolver = new TestRenderingResolver(this);
+			new TestCoreResolver(this);
+			var testRenderingResolver = new TestRenderingResolver(this);
 			testInputResolver = new TestInputResolver(this);
 			testMultimediaResolver = new TestMultimediaResolver(this);
-			testPlatformsResolver = new TestPlatformsResolver(this);
-			SetupVectorText();
-			SetupXmlContent();
+			testLoggingResolver = new TestLoggingResolver(this);
+			new TestPlatformsResolver(this);
+			new TestContentResolver(this, testRenderingResolver.MockImage.Object);
 		}
 
-		public int NumberOfVerticesDrawn { get; set; }
-
-		private readonly List<object> registeredMocks = new List<object>();
-		private readonly TestCoreResolver testCoreResolver;
-		private readonly TestRenderingResolver testRenderingResolver;
 		private readonly TestInputResolver testInputResolver;
 		private readonly TestMultimediaResolver testMultimediaResolver;
-		private readonly TestPlatformsResolver testPlatformsResolver;
+		private readonly TestLoggingResolver testLoggingResolver;
+		public int NumberOfVerticesDrawn { get; set; }
+		
 
 		public Mock<T> RegisterMock<T>() where T : class
 		{
@@ -48,40 +43,20 @@ namespace DeltaEngine.Platforms.Tests
 		public T RegisterMock<T>(T instance) where T : class
 		{
 			Type instanceType = instance.GetType();
-			Assert.IsFalse(registeredMocks.Any(mock => mock.GetType() == instanceType));
+			foreach (object mock in registeredMocks.Where(mock => mock.GetType() == instanceType))
+				throw new AssertionException("Unable to register mock " + instance +
+					" because this type already has been registered: " + mock);
+
 			registeredMocks.Add(instance);
 			alreadyRegisteredTypes.AddRange(instanceType.GetInterfaces());
 			RegisterInstance(instance);
 			return instance;
 		}
 
-		private void SetupVectorText()
+		private readonly List<object> registeredMocks = new List<object>();
+		public bool IsMusicStopCalled()
 		{
-			vectorTextData = new XmlData("VectorText");
-			for (int i = 'A'; i <= 'Z'; i++)
-				AddCharacter(i);
-
-			for (int i = '0'; i <= '9'; i++)
-				AddCharacter(i);
-
-			AddCharacter('.');
-			RegisterMock(vectorTextData);
-		}
-
-		private XmlData vectorTextData;
-
-		private void AddCharacter(int i)
-		{
-			var character = new XmlData("Char" + i, vectorTextData);
-			character.AddAttribute("Character", Convert.ToChar(i).ToString(CultureInfo.InvariantCulture));
-			character.AddAttribute("Lines", "(0,0)-(1,1)");
-		}
-
-		private void SetupXmlContent()
-		{
-			var mockXmlContent = new Mock<XmlContent>("dummy");
-			mockXmlContent.SetupGet(c => c.XmlData).Returns(vectorTextData);
-			RegisterMock(mockXmlContent.Object);
+			return testMultimediaResolver.MusicStopCalled;
 		}
 
 		public void SetKeyboardState(Key key, State state)

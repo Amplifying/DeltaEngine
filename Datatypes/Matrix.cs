@@ -51,6 +51,8 @@ namespace DeltaEngine.Datatypes
 		public static readonly Matrix Identity = 
 			new Matrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 
+		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Matrix));
+		
 		[FieldOffset(0)]
 		private float M11;
 		[FieldOffset(4)]
@@ -316,15 +318,24 @@ namespace DeltaEngine.Datatypes
 			return new Matrix(result);
 		}
 
-		public static Matrix operator *(Matrix matrix1, Matrix matrix2)
+		public static Matrix operator*(Matrix matrix1, Matrix matrix2)
 		{
 			var result = new float[16];
-			for (int row = 0; row < 4; row++)
-				for (int column = 0; column < 4; column++)
-					result[row * 4 + column] = matrix1[row * 4] * matrix2[column] +
-						matrix1[row * 4 + 1] * matrix2[column + 4] +
-						matrix1[row * 4 + 2] * matrix2[column + 8] +
-						matrix1[row * 4 + 3] * matrix2[column + 12];
+			var values1 = matrix1.Values;
+			var values2 = matrix2.Values;
+			for (int i = 0; i < 4; i++)
+			{
+				float[] arowi = new float[] 
+					{values1[i * 4], values1[i * 4 + 1], values1[i * 4 + 2], values1[i * 4 + 3] };
+				for (int k = 0; k < 4; k++)
+				{
+					float[] browk = new float[] 
+						{ values2[k * 4], values2[k * 4 + 1], values2[k * 4 + 2], values2[k * 4 + 3] };
+					float aik = arowi[k];
+					for (int j = 0; j < 4; j++)
+						result[i * 4 + j] += aik * browk[j];
+				}
+			}
 
 			return new Matrix(result);
 		}

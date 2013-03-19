@@ -19,6 +19,7 @@ namespace DeltaEngine.Graphics.OpenTK
 			this.window = window;
 			if (window.Title == "")
 				window.Title = "OpenTK Device";
+
 			InitGL();
 			InitializeModelViewMatrix();
 			InitializeProjectionMatrix();

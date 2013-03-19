@@ -71,9 +71,7 @@ namespace DeltaEngine.Rendering.Shapes
 		protected override void Render(Renderer renderer, Time time)
 		{
 			AreEllipsePointsOutOfDate();
-
 			DrawInnerEllipse(renderer);
-
 			DrawBorderEllipse(renderer);
 		}
 
@@ -87,14 +85,14 @@ namespace DeltaEngine.Rendering.Shapes
 		{
 			for (int i = 1; i < ellipsePoints.Length; i++)
 				renderer.DrawTriangle(
-					new Triangle2D(Center, Center + ellipsePoints[i - 1], Center + ellipsePoints[i]), Color);
+					new Triangle2D(Center, Center + ellipsePoints[i], Center + ellipsePoints[i - 1]), Color);
 		}
 
 		private void DrawBorderEllipse(Renderer renderer)
 		{
 			if (BorderColor != Color)
 				for (int i = 1; i < ellipsePoints.Length; i++)
-					renderer.DrawLine(Center + ellipsePoints[i - 1], Center + ellipsePoints[i], BorderColor);
+					renderer.DrawLine(Center + ellipsePoints[i], Center + ellipsePoints[i - 1], BorderColor);
 		}
 
 		public Color BorderColor;

@@ -29,6 +29,7 @@
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <WarningLevel>4</WarningLevel>
     <Optimize>false</Optimize>
+    <CodeAnalysisRuleSet>..\..\..\..\Users\Stephan\Desktop\DeltaEngineModifiedRuleSet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
@@ -51,6 +52,7 @@
     <Compile Include="FormsWindow.cs" />
     <Compile Include="WindowsResolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XmlContentFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
@@ -68,6 +70,14 @@
     <ProjectReference Include="..\..\Input\DeltaEngine.Input.csproj">
       <Project>{cc65e69e-fafd-4c2b-85eb-5e57fd3af847}</Project>
       <Name>DeltaEngine.Input</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Logging\Basic\DeltaEngine.Logging.Basic.csproj">
+      <Project>{03C2EB6A-826D-4D24-BE10-244B20CCD1D8}</Project>
+      <Name>DeltaEngine.Logging.Basic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Logging\DeltaEngine.Logging.csproj">
+      <Project>{E4440567-3D5D-4670-AB49-8163B18E302E}</Project>
+      <Name>DeltaEngine.Logging</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
       <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>

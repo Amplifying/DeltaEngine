@@ -23,6 +23,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRuleSet>..\..\..\DeltaEngineModifiedRuleSet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -75,10 +76,6 @@
     <ProjectReference Include="..\..\..\Platforms\Tests\DeltaEngine.Platforms.Tests.csproj">
       <Project>{d0aad622-ed82-40e5-88a9-980eafc12c16}</Project>
       <Name>DeltaEngine.Platforms.Tests</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Platforms\WindowsOpenGL\DeltaEngine.WindowsOpenGL.csproj">
-      <Project>{cc943ae0-a1cc-4788-ac9b-01db3a0ebcd6}</Project>
-      <Name>DeltaEngine.WindowsOpenGL</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Rendering\DeltaEngine.Rendering.csproj">
       <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>

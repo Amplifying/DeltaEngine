@@ -48,6 +48,23 @@ namespace Blocks.Tests
 		}
 
 		[Test]
+		public void HoldingCursorLeftEventuallyMovesBlockLeftTwice()
+		{
+			Start(typeof(TestResolver), (Game game, TestController controller, BlocksContent content) =>
+			{
+				controller.SetUpcomingBlock(new Block(content, new FixedRandom(), Point.Zero));
+				controller.SetFallingBlock(new Block(content, new FixedRandom(), new Point(6, 1)));
+				testResolver.SetKeyboardState(Key.CursorLeft, State.Pressing);
+				testResolver.AdvanceTimeAndExecuteRunners(0.01f);
+				testResolver.SetKeyboardState(Key.CursorLeft, State.Pressed);
+				testResolver.AdvanceTimeAndExecuteRunners(0.1f);
+				Assert.AreEqual(5, controller.FallingBlock.Left); 
+				testResolver.AdvanceTimeAndExecuteRunners(0.1f);
+				Assert.AreEqual(4, controller.FallingBlock.Left);
+			});
+		}
+
+		[Test]
 		public void CursorRightMovesBlockRight()
 		{
 			Start(typeof(TestResolver), (Game game, TestController controller, BlocksContent content) =>
@@ -57,6 +74,23 @@ namespace Blocks.Tests
 				testResolver.SetKeyboardState(Key.CursorRight, State.Pressing);
 				testResolver.AdvanceTimeAndExecuteRunners(0.01f);
 				Assert.AreEqual(7, controller.FallingBlock.Left);
+			});
+		}
+
+		[Test]
+		public void HoldingCursorRightEventuallyMovesBlockRightTwice()
+		{
+			Start(typeof(TestResolver), (Game game, TestController controller, BlocksContent content) =>
+			{
+				controller.SetUpcomingBlock(new Block(content, new FixedRandom(), Point.Zero));
+				controller.SetFallingBlock(new Block(content, new FixedRandom(), new Point(6, 1)));
+				testResolver.SetKeyboardState(Key.CursorRight, State.Pressing);
+				testResolver.AdvanceTimeAndExecuteRunners(0.01f);
+				testResolver.SetKeyboardState(Key.CursorRight, State.Pressed);
+				testResolver.AdvanceTimeAndExecuteRunners(0.1f);
+				Assert.AreEqual(7, controller.FallingBlock.Left);
+				testResolver.AdvanceTimeAndExecuteRunners(0.1f);
+				Assert.AreEqual(8, controller.FallingBlock.Left);
 			});
 		}
 
@@ -208,12 +242,12 @@ namespace Blocks.Tests
 			var resolver = SetupResolver();
 			PlaceLosingBlocks(resolver);
 			var userInterface = resolver.Resolve<UserInterface>();
-			Assert.AreEqual("You lost", userInterface.Message.Text);
+			Assert.AreEqual("Game Over", userInterface.Message.Text);
 			Assert.AreEqual("Score 2", userInterface.Scoreboard.Text);
 			Assert.AreEqual(0, userInterface.Score);
 		}
 
-		private TestResolver SetupResolver()
+		private static TestResolver SetupResolver()
 		{
 			var resolver = new TestResolver();
 			resolver.RegisterSingleton<Grid>();
@@ -222,7 +256,7 @@ namespace Blocks.Tests
 			return resolver;
 		}
 
-		private void PlaceLosingBlocks(TestResolver resolver)
+		private static void PlaceLosingBlocks(TestResolver resolver)
 		{
 			var controller = resolver.Resolve<TestController>();
 			var content = resolver.Resolve<BlocksContent>();

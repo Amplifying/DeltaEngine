@@ -60,6 +60,19 @@ namespace DeltaEngine.Input.Tests
 			Assert.AreEqual(1, input.Count);
 		}
 
+		[IntegrationTest]
+		public void Clear(Type resolver)
+		{
+			Start(resolver, (InputCommands input) =>
+			{
+				input.Add(Key.Space, State.Pressing, () => { });
+				input.Add(Key.Escape, () => { });
+				input.Add(MouseButton.Left, State.Pressing, mouse => { });
+				input.Clear();
+				Assert.AreEqual(0, input.Count);
+			});
+		}
+
 		[VisualTest]
 		public void QuitWithEscape(Type resolver)
 		{

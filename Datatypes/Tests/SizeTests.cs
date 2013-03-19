@@ -12,6 +12,7 @@ namespace DeltaEngine.Datatypes.Tests
 			Assert.AreEqual(new Size(0.0f, 0.0f), Size.Zero);
 			Assert.AreEqual(new Size(0.5f, 0.5f), Size.Half);
 			Assert.AreEqual(new Size(1.0f, 1.0f), Size.One);
+			Assert.AreEqual(8, Size.SizeInBytes);
 		}
 
 		[Test]

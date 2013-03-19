@@ -74,6 +74,7 @@ namespace DeltaEngine.Graphics.OpenTK
 				GL.DrawArrays(Convert(mode), 0, verticesCount);
 			else
 				GL.DrawElements(Convert(mode), lastIndicesCount, DrawElementsType.UnsignedShort, IntPtr.Zero);
+
 			lastIndicesCount = -1;
 		}
 

@@ -66,7 +66,7 @@ namespace GameOfDeath
 			return rabbits[x, y] = new Rabbit(rabbitImage, CalclatePosition(x, y));
 		}
 
-		private Point CalclatePosition(int x, int y)
+		private static Point CalclatePosition(int x, int y)
 		{
 			return new Point(initialSize.Width + (x + 1) * CellSize.Width,
 				initialSize.Height + (y + 2) * CellSize.Height);
@@ -115,6 +115,7 @@ namespace GameOfDeath
 					for (int y = 0; y < height; y++)
 						if (rabbits[x, y].IsVisible)
 							activeRabbits++;
+
 				return activeRabbits;
 			}
 		}

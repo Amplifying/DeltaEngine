@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using DeltaEngine.Multimedia.OpenTK.Helpers;
 using NUnit.Framework;
 using OpenTK.Audio.OpenAL;
 
@@ -112,7 +113,7 @@ namespace DeltaEngine.Multimedia.OpenTK.Tests
 		{
 			writer.Write(new[] { 'f', 'm', 't', ' ' });
 			writer.Write(16);
-			writer.Write((short)OpenTK.WaveFormat.Pcm);
+			writer.Write((short)WaveFormat.Pcm);
 			writer.Write((short)2);
 			writer.Write(44100);
 			writer.Write(0);
@@ -157,7 +158,7 @@ namespace DeltaEngine.Multimedia.OpenTK.Tests
 		{
 			writer.Write(new[] { 'f', 'm', 't', ' ' });
 			writer.Write(24);
-			writer.Write((short)OpenTK.WaveFormat.MsAdpcm);
+			writer.Write((short)WaveFormat.MsAdpcm);
 			writer.Write((short)1);
 			writer.Write(44100);
 			writer.Write(0);
@@ -165,7 +166,7 @@ namespace DeltaEngine.Multimedia.OpenTK.Tests
 			writer.Write((short)8);
 			writer.Write((short)4);
 			writer.Write(0);
-			writer.Write((short)OpenTK.WaveFormat.MsAdpcm);
+			writer.Write((short)WaveFormat.MsAdpcm);
 		}
 
 		[Test]
@@ -204,7 +205,7 @@ namespace DeltaEngine.Multimedia.OpenTK.Tests
 		{
 			writer.Write(new[] { 'f', 'm', 't', ' ' });
 			writer.Write(16);
-			writer.Write((short)OpenTK.WaveFormat.IeeeFloat);
+			writer.Write((short)WaveFormat.IeeeFloat);
 			writer.Write((short)2);
 			writer.Write(44100);
 			writer.Write(0);

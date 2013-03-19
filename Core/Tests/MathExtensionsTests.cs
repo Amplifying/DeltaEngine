@@ -112,5 +112,13 @@ namespace DeltaEngine.Core.Tests
 			Assert.AreEqual(-3.5f, MathExtensions.Min(-3.5f, -1.5f));
 			Assert.AreEqual(4, MathExtensions.Min(4, 5));
 		}
+
+		[Test]
+		public void NearestMultiple()
+		{
+			Assert.AreEqual(640, 640.GetNearestMultiple(8));
+			Assert.AreEqual(648, 650.GetNearestMultiple(8));
+			Assert.AreEqual(1235, 1267.GetNearestMultiple(65));
+		}
 	}
 }

@@ -4,22 +4,30 @@ using Moq;
 
 namespace DeltaEngine.Platforms.Tests
 {
+	/// <summary>
+	/// Mocks common Multimedia objects for testing
+	/// </summary>
 	class TestMultimediaResolver : TestModuleResolver
 	{
 		public TestMultimediaResolver(TestResolver testResolver) 
 			: base(testResolver)
 		{
-			SetupMultimedia();
+			SetupSoundDeviceMock();
+			SetupSoundMock();
+			SetupMusicMock();
 		}
 
-		private void SetupMultimedia()
+		public bool MusicStopCalled { get; private set; }
+
+		private SoundDevice soundDevice;
+
+		private void SetupSoundDeviceMock()
 		{
-			var soundDevice = testResolver.RegisterMock<SoundDevice>();
-			SetupSoundMock(soundDevice.Object);
-			SetupMusicMock(soundDevice.Object);
+			var mockSoundDevice = testResolver.RegisterMock<SoundDevice>();
+			soundDevice = mockSoundDevice.Object;			
 		}
 
-		private void SetupSoundMock(SoundDevice soundDevice)
+		private void SetupSoundMock()
 		{
 			var mockSound = new Mock<Sound>("dummy", soundDevice) { CallBase = true };
 			mockSound.SetupGet(s => s.LengthInSeconds).Returns(0.48f);
@@ -59,11 +67,13 @@ namespace DeltaEngine.Platforms.Tests
 				(SoundInstance instance) => playingSoundInstances.Contains(instance));
 		}
 
-		private void SetupMusicMock(SoundDevice soundDevice)
+		private void SetupMusicMock()
 		{
 			var mockMusic = new Mock<Music>("dummy", soundDevice);
-			mockMusic.SetupGet(s => s.DurationInSeconds).Returns(35.85f);
-			mockMusic.SetupGet(s => s.PositionInSeconds).Returns(1.0f);
+			mockMusic.SetupGet(m => m.DurationInSeconds).Returns(4.13f);
+			mockMusic.SetupGet(m => m.PositionInSeconds).Returns(1.0f);
+			mockMusic.SetupGet(m => m.IsPlaying).Returns(true);
+			mockMusic.Setup(m => m.Stop()).Callback(() => MusicStopCalled = true);
 			testResolver.RegisterMock(mockMusic.Object);
 		}
 	}

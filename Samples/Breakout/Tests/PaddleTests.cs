@@ -1,7 +1,6 @@
 ﻿using System;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
-using DeltaEngine.Input.Devices;
 using DeltaEngine.Platforms.Tests;
 using NUnit.Framework;
 

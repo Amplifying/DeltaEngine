@@ -61,45 +61,37 @@ namespace Blocks.Tests
 		[Test]
 		public void RowsDontSplit()
 		{
-			Start(typeof(TestResolver),
-				(TestGrid grid, BlocksContent content, Renderer renderer) =>
-				{
-					content.DoBricksSplitInHalfWhenRowFull = false;
-					Assert.AreEqual(0,
-						grid.AffixBlock(new Block(content, new FixedRandom(), new Point(0, 18))));
-					Assert.AreEqual(0,
-						grid.AffixBlock(new Block(content, new FixedRandom(), new Point(4, 18))));
-					Assert.AreEqual(0,
-						grid.AffixBlock(new Block(content, new FixedRandom(), new Point(7, 18))));
-					Assert.AreEqual(1,
-						grid.AffixBlock(new Block(content,
-							new FixedRandom(new[] { 0.0f, 0.0f, 0.9f, 0.9f, 0.9f, 0.9f, 0.9f, 0.9f }),
-							new Point(11, 15))));
+			Start(typeof(TestResolver), (TestGrid grid, BlocksContent content, Renderer renderer) =>
+			{
+				content.DoBricksSplitInHalfWhenRowFull = false;
+				Assert.AreEqual(0, grid.AffixBlock(new Block(content, new FixedRandom(), new Point(0, 18))));
+				Assert.AreEqual(0, grid.AffixBlock(new Block(content, new FixedRandom(), new Point(4, 18))));
+				Assert.AreEqual(0, grid.AffixBlock(new Block(content, new FixedRandom(), new Point(7, 18))));
+				Assert.AreEqual(1,
+					grid.AffixBlock(new Block(content,
+						new FixedRandom(new[] { 0.0f, 0.0f, 0.9f, 0.9f, 0.9f, 0.9f, 0.9f, 0.9f }),
+						new Point(11, 15))));
 
-					Assert.AreEqual(32, renderer.NumberOfActiveRenderableObjects);
-				});
+				Assert.AreEqual(32, renderer.NumberOfActiveRenderableObjects);
+			});
 		}
 
 		[Test]
 		public void RowsSplit()
 		{
-			Start(typeof(TestResolver),
-				(TestGrid grid, BlocksContent content, Renderer renderer) =>
-				{
-					content.DoBricksSplitInHalfWhenRowFull = true;
-					Assert.AreEqual(0,
-						grid.AffixBlock(new Block(content, new FixedRandom(), new Point(0, 18))));
-					Assert.AreEqual(0,
-						grid.AffixBlock(new Block(content, new FixedRandom(), new Point(4, 18))));
-					Assert.AreEqual(0,
-						grid.AffixBlock(new Block(content, new FixedRandom(), new Point(7, 18))));
-					Assert.AreEqual(1,
-						grid.AffixBlock(new Block(content,
-							new FixedRandom(new[] { 0.0f, 0.0f, 0.9f, 0.9f, 0.9f, 0.9f, 0.9f, 0.9f }),
-							new Point(11, 15))));
+			Start(typeof(TestResolver), (TestGrid grid, BlocksContent content, Renderer renderer) =>
+			{
+				content.DoBricksSplitInHalfWhenRowFull = true;
+				Assert.AreEqual(0, grid.AffixBlock(new Block(content, new FixedRandom(), new Point(0, 18))));
+				Assert.AreEqual(0, grid.AffixBlock(new Block(content, new FixedRandom(), new Point(4, 18))));
+				Assert.AreEqual(0, grid.AffixBlock(new Block(content, new FixedRandom(), new Point(7, 18))));
+				Assert.AreEqual(1,
+					grid.AffixBlock(new Block(content,
+						new FixedRandom(new[] { 0.0f, 0.0f, 0.9f, 0.9f, 0.9f, 0.9f, 0.9f, 0.9f }),
+						new Point(11, 15))));
 
-					Assert.AreEqual(44, renderer.NumberOfActiveRenderableObjects);
-				});
+				Assert.AreEqual(44, renderer.NumberOfActiveRenderableObjects);
+			});
 		}
 
 		[Test]
@@ -162,11 +154,22 @@ namespace Blocks.Tests
 		{
 			Start(typeof(TestResolver), (Grid grid, BlocksContent content) =>
 			{
-				Assert.AreEqual(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 },
-					grid.GetValidStartingColumns(new Block(content, new FixedRandom(), Point.Zero)));
+				content.DoBlocksStartInARandomColumn = true;
+				var block = new Block(content, new FixedRandom(), Point.Zero);
+				Assert.AreEqual(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 }, grid.GetValidStartingColumns(block));
 				grid.AffixBlock(new Block(content, new FixedRandom(), new Point(1, 1)));
-				Assert.AreEqual(new[] { 5, 6, 7, 8 },
-					grid.GetValidStartingColumns(new Block(content, new FixedRandom(), Point.Zero)));
+				Assert.AreEqual(new[] { 5, 6, 7, 8 }, grid.GetValidStartingColumns(block));
+			});
+		}
+
+		[Test]
+		public void GetSingleValidStartingColumn()
+		{
+			Start(typeof(TestResolver), (Grid grid, BlocksContent content) =>
+			{
+				content.DoBlocksStartInARandomColumn = false;
+				var block = new Block(content, new FixedRandom(), Point.Zero);
+				Assert.AreEqual(new[] { 4 }, grid.GetValidStartingColumns(block));
 			});
 		}
 	}

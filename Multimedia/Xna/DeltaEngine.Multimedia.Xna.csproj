@@ -22,6 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRuleSet>..\..\..\..\Users\Stephan\Desktop\DeltaEngineModifiedRuleSet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -46,10 +47,6 @@
     <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
       <Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
       <Name>DeltaEngine.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Platforms\DeltaEngine.Platforms.csproj">
-      <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
-      <Name>DeltaEngine.Platforms</Name>
     </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Multimedia.csproj">
       <Project>{6016abb8-05f5-4a07-8fba-16576277dde7}</Project>

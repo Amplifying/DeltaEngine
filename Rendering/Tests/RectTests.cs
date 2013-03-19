@@ -21,8 +21,7 @@ namespace DeltaEngine.Rendering.Tests
 		public void CreateFromPointAndSize(Type resolver)
 		{
 			Rect box = null;
-			Start(resolver,
-				(Renderer r) => r.Add(box = new Rect(Point.Half, Size.Half, Color.Red)),
+			Start(resolver, (Renderer r) => r.Add(box = new Rect(Point.Half, Size.Half, Color.Red)),
 				() => Assert.AreEqual(Color.Red, box.Color));
 		}
 
@@ -61,16 +60,8 @@ namespace DeltaEngine.Rendering.Tests
 		{
 			Start(resolver, (Renderer r) =>
 			{
-				var redBox = new Rect(new Point(0.4f, 0.4f), Size.Half, Color.Red)
-				{
-					RenderLayer = 2
-				};
-
-				var blueBox = new Rect(new Point(0.5f, 0.6f), Size.Half, Color.Blue)
-				{
-					RenderLayer = 1
-				};
-
+				var redBox = new Rect(new Point(0.4f, 0.4f), Size.Half, Color.Red) { RenderLayer = 1 };
+				var blueBox = new Rect(new Point(0.5f, 0.6f), Size.Half, Color.Blue) { RenderLayer = 2 };
 				r.Add(redBox);
 				r.Add(blueBox);
 				redBox.RenderLayer = 3;

@@ -1,4 +1,5 @@
-﻿using OpenTK.Audio.OpenAL;
+﻿using DeltaEngine.Multimedia.OpenTK.Helpers;
+using OpenTK.Audio.OpenAL;
 
 namespace DeltaEngine.Multimedia.OpenTK
 {

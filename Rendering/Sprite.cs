@@ -16,7 +16,7 @@ namespace DeltaEngine.Rendering
 			Color = color;
 		}
 
-		public Image Image { get; private set; }
+		public Image Image { get; protected set; }
 		public Rectangle DrawArea;
 		public Color Color;
 
@@ -33,19 +33,21 @@ namespace DeltaEngine.Rendering
 		}
 
 		public float Rotation;
-		private ScreenSpace screen;
+		protected ScreenSpace screen;
 
 		private void DrawImage()
 		{
 			var vertices = new[]
 			{
-				GetVertex(DrawArea.TopLeft, Point.Zero), GetVertex(DrawArea.TopRight, Point.UnitX),
-				GetVertex(DrawArea.BottomRight, Point.One), GetVertex(DrawArea.BottomLeft, Point.UnitY)
+				GetVertex(DrawArea.TopLeft, Point.Zero), 
+				GetVertex(DrawArea.TopRight, Point.UnitX),
+				GetVertex(DrawArea.BottomRight, Point.One),
+				GetVertex(DrawArea.BottomLeft, Point.UnitY)
 			};
 			Image.Draw(vertices);
 		}
 
-		private VertexPositionColorTextured GetVertex(Point position, Point uv)
+		protected VertexPositionColorTextured GetVertex(Point position, Point uv)
 		{
 			if (Flip == FlipMode.Horizontal)
 				uv.X = 1.0f - uv.X;
@@ -68,7 +70,7 @@ namespace DeltaEngine.Rendering
 			Image.Draw(vertices);
 		}
 
-		private Point Rotate(Point point)
+		protected Point Rotate(Point point)
 		{
 			var rotationCenter = RotationCenter == RotateAroundCenter ? DrawArea.Center : RotationCenter;
 			point -= rotationCenter;

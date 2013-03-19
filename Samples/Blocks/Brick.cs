@@ -14,7 +14,7 @@ namespace Blocks
 			: base(image, Rectangle.Zero)
 		{
 			Offset = offset;
-			RenderLayer = (byte)Blocks.RenderLayer.Grid;
+			RenderLayer = (int)Blocks.RenderLayer.Grid;
 		}
 
 		public Point Offset;

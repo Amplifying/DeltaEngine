@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("DeltaEngine.Datatypes")]
@@ -10,5 +11,6 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
 [assembly: Guid("ebfe16d2-5c58-403e-83d1-f581c6c2c223")]
-[assembly: AssemblyVersion("0.9.7.3")]
-[assembly: AssemblyFileVersion("0.9.7.3")]
+[assembly: AssemblyVersion("0.9.7.4")]
+[assembly: AssemblyFileVersion("0.9.7.4")]
+[assembly: InternalsVisibleTo("DeltaEngine.Networking.Tests")]

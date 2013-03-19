@@ -74,6 +74,12 @@ namespace DeltaEngine.Datatypes.Tests
 		}
 
 		[Test]
+		public void SizeOfMatrix()
+		{
+			Assert.AreEqual(64, Matrix.SizeInBytes);
+		}
+
+		[Test]
 		public void RotateMatrix()
 		{
 			var matrix1 = new Matrix(1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1);
@@ -181,9 +187,16 @@ namespace DeltaEngine.Datatypes.Tests
 		public void MultiplyMatrix()
 		{
 			var matrix1 = new Matrix(1, 0, 3, 0, 0, 2, 0, 4, 0, 3, 2, 0, 1, 0, 0, 2);
-			var matrix2 = new Matrix(2, 0, 1, 0, 0, 2, 0, 0, 0, 0, 2, 0, 2, 0, 0, 2);
+			var matrix3 = new Matrix(2, 0, 1, 0, 0, 2, 0, 0, 0, 0, 2, 0, 2, 0, 0, 2);
+
 			Assert.AreEqual(matrix1, matrix1 * Matrix.Identity);
-			matrix2 = matrix1 * matrix2;
+			Matrix matrix2 = new Matrix();
+			long start = DateTime.Now.Ticks;
+			for(int i = 0; i < 1000; i++)
+				matrix2 = matrix1 * matrix3;
+			long stop = DateTime.Now.Ticks;
+			double elapsed = (stop - start) / 1000.0 / 10000.0;
+			Console.WriteLine("Multiplication time:  " + elapsed + " seconds");
 			Assert.AreEqual(2, matrix2[0]);
 			Assert.AreEqual(0, matrix2[1]);
 			Assert.AreEqual(7, matrix2[2]);

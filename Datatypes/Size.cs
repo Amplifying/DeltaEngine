@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using DeltaEngine.Core;
 
 namespace DeltaEngine.Datatypes
@@ -39,7 +40,8 @@ namespace DeltaEngine.Datatypes
 		public static readonly Size Zero = new Size();
 		public static readonly Size One = new Size(1, 1);
 		public static readonly Size Half = new Size(0.5f, 0.5f);
-
+		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Size));
+		
 		public static bool operator ==(Size s1, Size s2)
 		{
 			return s1.Equals(s2);

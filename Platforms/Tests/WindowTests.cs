@@ -77,18 +77,16 @@ namespace DeltaEngine.Platforms.Tests
 		[VisualTest]
 		public void ShowColoredRectangle(Type resolver)
 		{
-			Start(resolver,
-				(Renderer r) => r.Add(new Rect(Point.Half, Size.Half, Color.Red)));
+			Start(resolver, (Renderer r) => r.Add(new Rect(Point.Half, Size.Half, Color.Red)));
 		}
-		
+
 		[VisualTest]
 		public void ShowCursor(Type resolver)
 		{
 			bool showCursor = true;
-			Start(resolver, (Window window, Input.InputCommands input) =>
-			{
-				input.Add(MouseButton.Left, mouse => window.ShowCursor = showCursor = !showCursor);
-			});
+			Start(resolver,
+				(Window window, InputCommands input) =>
+				{ input.Add(MouseButton.Left, mouse => window.ShowCursor = showCursor = !showCursor); });
 		}
 	}
 }

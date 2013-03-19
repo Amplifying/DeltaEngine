@@ -18,8 +18,12 @@ namespace DeltaEngine.Rendering
 
 		public float Radius
 		{
-			get { return RadiusX; }
-			set { RadiusX = value; }
+			get { return (RadiusX + RadiusY) / 2; }
+			set
+			{
+				RadiusX = value;
+				RadiusY = value;
+			}
 		}
 	}
 }

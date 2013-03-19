@@ -9,7 +9,7 @@ namespace DeltaEngine.Graphics.SharpDX
 	public class SharpDXSampler : SamplerState
 	{
 		public SharpDXSampler(DxDevice nativeDevice, Filter filter)
-			: base(nativeDevice, BuildFilterDescription(filter)) {}
+			: base(nativeDevice, BuildFilterDescription(filter)) { }
 
 		protected static SamplerStateDescription BuildFilterDescription(Filter filter)
 		{

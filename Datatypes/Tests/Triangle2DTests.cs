@@ -16,6 +16,12 @@ namespace DeltaEngine.Datatypes.Tests
 		}
 
 		[Test]
+		public void SizeOfTriangle2D()
+		{
+			Assert.AreEqual(24, Triangle2D.SizeInBytes);
+		}
+
+		[Test]
 		public void Constructor()
 		{
 			var triangle = new Triangle2D(new Point(1, 2), new Point(3, 4), new Point(5, 6));

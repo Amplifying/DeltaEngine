@@ -64,11 +64,12 @@ namespace Breakout.Tests
 			{
 				Assert.AreEqual(0.5f, ball.Position.X);
 				Assert.AreEqual(ball.Position.X, paddle.Position.X);
-				if (testResolver == null)
-					return;
+				if (testResolver != null)
+				{
+					testResolver.SetKeyboardState(Key.CursorLeft, State.Pressed);
+					testResolver.AdvanceTimeAndExecuteRunners(0.1f);
+				}
 
-				testResolver.SetKeyboardState(Key.CursorLeft, State.Pressed);
-				testResolver.AdvanceTimeAndExecuteRunners(0.1f);
 				Assert.AreNotEqual(0.5f, ball.Position.X);
 				Assert.AreEqual(ball.Position.X, paddle.Position.X);
 			});
@@ -97,6 +98,12 @@ namespace Breakout.Tests
 		private void RunBallOneFrame()
 		{
 			ballResolver.Resolve<Renderer>().Run(ballResolver.Resolve<Time>());
+		}
+		
+		[Test]
+		public void BallSize()
+		{
+			Assert.AreEqual(new Size(0.04f), Ball.Size);
 		}
 
 		[Test]

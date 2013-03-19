@@ -29,7 +29,7 @@
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\..\..\Users\Stephan\Desktop\DeltaEngineModifiedRuleSet.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
@@ -58,6 +58,7 @@
     <Compile Include="MatrixTests.cs" />
     <Compile Include="MockBinaryData.cs" />
     <Compile Include="Triangle2DTests.cs" />
+    <Compile Include="UnknownBinaryTests.cs" />
     <Compile Include="VectorTests.cs" />
     <Compile Include="PointTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

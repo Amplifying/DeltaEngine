@@ -1,5 +1,6 @@
 ﻿using System;
 using DeltaEngine.Core;
+using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
 using DeltaEngine.Platforms;
 using DeltaEngine.Platforms.Tests;
@@ -47,10 +48,9 @@ namespace Breakout.Tests
 		{
 			Start(type, (Game game, Window window) =>
 			{
-				if (testResolver == null)
-					return;
+				if (testResolver != null)
+					testResolver.AdvanceTimeAndExecuteRunners(0.2f);
 
-				testResolver.AdvanceTimeAndExecuteRunners(0.2f);
 				Assert.IsTrue(window.Title.Contains("Breakout Level:"));
 			});
 		}
@@ -86,15 +86,15 @@ namespace Breakout.Tests
 		{
 			Start(type, (Game game, LevelWithRessurrection level) => { }, () =>
 			{
-				if (testResolver == null)
-					return;
-
-				testResolver.SetKeyboardState(Key.Space, State.Pressing);
-				var level = testResolver.Resolve<LevelWithRessurrection>();
-				level.GetBrickAt(0.25f, 0.125f).Dispose();
-				level.GetBrickAt(0.75f, 0.125f).Dispose();
-				level.GetBrickAt(0.25f, 0.375f).Dispose();
-				testResolver.AdvanceTimeAndExecuteRunners(2.0f);
+				if (testResolver != null)
+				{
+					testResolver.SetKeyboardState(Key.Space, State.Pressing);
+					var level = testResolver.Resolve<LevelWithRessurrection>();
+					level.GetBrickAt(0.25f, 0.125f).Dispose();
+					level.GetBrickAt(0.75f, 0.125f).Dispose();
+					level.GetBrickAt(0.25f, 0.375f).Dispose();
+					testResolver.AdvanceTimeAndExecuteRunners(4.0f);
+				}
 			});
 		}
 
@@ -123,6 +123,18 @@ namespace Breakout.Tests
 
 				return base.GetBrickAt(x, y);
 			}
+		}
+
+		[IntegrationTest]
+		public void GoFullscreen(Type resolver)
+		{
+			Start(resolver, (RelativeScreenSpace screen, Game game, Window window) =>
+			{
+				var fullscreenResolution = new Size(1920, 1080);
+				window.SetFullscreen(fullscreenResolution);
+				Assert.IsTrue(window.IsFullscreen);
+				Assert.AreEqual(fullscreenResolution, window.TotalPixelSize);
+			});
 		}
 	}
 }

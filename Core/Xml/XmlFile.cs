@@ -1,27 +1,44 @@
 ﻿using System.IO;
+using System.Text;
+using System.Xml.Linq;
 
 namespace DeltaEngine.Core.Xml
 {
 	/// <summary>
-	/// This handles the saving and loading of XmlData objects
+	/// Loads and saves XmlData to file
 	/// </summary>
 	public class XmlFile
 	{
-		public XmlFile(XmlData xmlData = null)
+		public XmlFile(XmlData xmlData)
 		{
 			Root = xmlData;
 		}
 
 		public XmlData Root { get; private set; }
 
-		public XmlFile(string filename)
+		public XmlFile(string filePath)
 		{
-			Root = new XmlTranscriber(File.ReadAllText(filename)).Result;
+			XDocument xDoc;
+			using (
+				var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+				xDoc = XDocument.Load(stream);
+
+			Root = new XmlData(xDoc.Root);
 		}
 
-		public void Save(string filename)
+		public void Save(string filePath)
 		{
-			File.WriteAllText(filename, Root.ToXmlString());
+			using (
+				var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
+			using (var writer = new StreamWriter(stream, new UTF8Encoding(false)))
+				SaveDocument(writer);
+		}
+
+		private void SaveDocument(TextWriter writer)
+		{
+			Root.XRootElement.Document.Save(writer);
+			writer.Write(writer.NewLine);
+			writer.Flush();
 		}
 	}
 }

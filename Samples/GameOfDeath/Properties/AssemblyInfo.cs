@@ -10,6 +10,6 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
 [assembly: Guid("1ac8b047-e6c6-43af-9cd7-83e0efde011d")]
-[assembly: AssemblyVersion("0.9.7.3")]
-[assembly: AssemblyFileVersion("0.9.7.3")]
+[assembly: AssemblyVersion("0.9.7.4")]
+[assembly: AssemblyFileVersion("0.9.7.4")]
 [assembly: InternalsVisibleTo("GameOfDeath.Tests")]

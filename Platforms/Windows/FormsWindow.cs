@@ -121,36 +121,34 @@ namespace DeltaEngine.Platforms.Windows
 			}
 		}
 		private Color color;
-		
+
 		public void SetFullscreen(Size displaySize)
 		{
 			IsFullscreen = true;
 			rememberedWindowedSize = new Size(form.Size.Width, form.Size.Height);
-			form.TopMost = true;
-			form.StartPosition = FormStartPosition.Manual;
-			form.DesktopLocation = new System.Drawing.Point(0, 0);
-			form.FormBorderStyle = FormBorderStyle.None;
-			TotalPixelSize = displaySize;
-			if (FullscreenChanged != null)
-				FullscreenChanged(displaySize, IsFullscreen);
+			SetResolutionAndScreenMode(displaySize);
 		}
 
 		public void SetWindowed()
 		{
 			IsFullscreen = false;
-			form.TopMost = true;
-			form.StartPosition = FormStartPosition.Manual;
-			form.DesktopLocation = new System.Drawing.Point(0, 0);
-			form.FormBorderStyle = FormBorderStyle.Sizable;
-			TotalPixelSize = rememberedWindowedSize;
-			if (FullscreenChanged != null)
-				FullscreenChanged(rememberedWindowedSize, IsFullscreen);
+			SetResolutionAndScreenMode(rememberedWindowedSize);
 		}
 
 		private Size rememberedWindowedSize;
 
-		public bool IsFullscreen { get; private set; }
+		private void SetResolutionAndScreenMode(Size displaySize)
+		{
+			form.TopMost = true;
+			form.StartPosition = FormStartPosition.Manual;
+			form.DesktopLocation = new System.Drawing.Point(0, 0);
+			form.FormBorderStyle = IsFullscreen ? FormBorderStyle.None : FormBorderStyle.Sizable;
+			TotalPixelSize = displaySize;
+			if (FullscreenChanged != null)
+				FullscreenChanged(displaySize, IsFullscreen);
+		}
 
+		public bool IsFullscreen { get; private set; }
 		public event Action<Size, bool> FullscreenChanged;
 
 		public bool IsClosing

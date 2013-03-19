@@ -44,7 +44,7 @@ namespace DeltaEngine.Core.Tests
 		}
 
 		[Test]
-		public static void SplitAndTrim()
+		public static void SplitAndTrimByChar()
 		{
 			string[] components = "abc, 123, def".SplitAndTrim(',');
 			Assert.AreEqual(components.Length, 3);
@@ -54,13 +54,41 @@ namespace DeltaEngine.Core.Tests
 		}
 
 		[Test]
+		public static void SplitAndTrimByString()
+		{
+			string[] components = "3 plus 5 is 8".SplitAndTrim("plus", "is");
+			Assert.AreEqual(components.Length, 3);
+			Assert.AreEqual(components[0], "3");
+			Assert.AreEqual(components[1], "5");
+			Assert.AreEqual(components[2], "8");
+		}
+
+		[Test]
 		public void SplitIntoFloats()
 		{
-			var stringFloats = new[] { "1.0", "2.0", "0511.580254",
-				Math.PI.ToString(CultureInfo.InvariantCulture) };
+			var stringFloats = new[]
+			{ "1.0", "2.0", "0511.580254", Math.PI.ToString(CultureInfo.InvariantCulture) };
 			var expectedFloats = new[] { 1.0f, 2.0f, 511.580261f, 3.14159274f };
 			float[] floats = stringFloats.SplitIntoFloats();
 			CollectionAssert.AreEqual(expectedFloats, floats);
+		}
+
+		[Test]
+		public void Compare()
+		{
+			Assert.IsTrue("AbC1".Compare("aBc1"));
+			Assert.IsTrue("1.23".Compare("1.23"));
+			Assert.IsFalse("Hello".Compare("World"));
+		}
+
+		[Test]
+		public void ContainsCaseInsensitive()
+		{
+			Assert.IsTrue("hallo".ContainsCaseInsensitive("ha"));
+			Assert.IsTrue("1.23".ContainsCaseInsensitive("1.2"));
+			Assert.IsTrue("Hello".ContainsCaseInsensitive("hel"));
+			Assert.IsFalse("Banana".ContainsCaseInsensitive("Apple"));
+			Assert.IsFalse(((String)null).ContainsCaseInsensitive("abc"));
 		}
 	}
 }

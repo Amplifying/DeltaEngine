@@ -1,6 +1,6 @@
 using DeltaEngine.Platforms;
 
-namespace $safeprojectname$
+namespace EmptyGame
 {
 	/// <summary>
 	/// Just starts the Game class. For more complex examples see the other sample games.

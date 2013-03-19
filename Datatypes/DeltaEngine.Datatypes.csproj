@@ -23,7 +23,7 @@
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\DeltaEngineModifiedRuleSet.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
@@ -54,7 +54,6 @@
     <Compile Include="Rectangle.cs" />
     <Compile Include="Size.cs" />
     <Compile Include="UnknownBinaryData.cs" />
-    <Compile Include="UnknownBinaryDataTypeException.cs" />
     <Compile Include="Triangle2D.cs" />
     <Compile Include="UnknownMessageTypeReceived.cs" />
     <Compile Include="Vector.cs" />

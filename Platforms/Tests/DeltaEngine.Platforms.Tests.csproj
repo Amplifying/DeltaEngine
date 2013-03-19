@@ -25,6 +25,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRuleSet>..\..\..\..\Users\Stephan\Desktop\DeltaEngineModifiedRuleSet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -39,6 +40,7 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Moq">
       <HintPath>..\..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
     </Reference>
@@ -50,8 +52,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="OrientationTest.cs" />
+    <Compile Include="TestContentResolver.cs" />
     <Compile Include="TestCoreResolver.cs" />
     <Compile Include="TestInputResolver.cs" />
+    <Compile Include="TestLoggingResolver.cs" />
     <Compile Include="TestModuleResolver.cs" />
     <Compile Include="TestMultimediaResolver.cs" />
     <Compile Include="TestPlatformsResolver.cs" />
@@ -66,6 +70,7 @@
     <Compile Include="TestStarter.cs" />
     <Compile Include="VisualTestAttribute.cs" />
     <Compile Include="WindowTests.cs" />
+    <Compile Include="XmlContentTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -91,6 +96,10 @@
       <Project>{cc65e69e-fafd-4c2b-85eb-5e57fd3af847}</Project>
       <Name>DeltaEngine.Input</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Logging\DeltaEngine.Logging.csproj">
+      <Project>{E4440567-3D5D-4670-AB49-8163B18E302E}</Project>
+      <Name>DeltaEngine.Logging</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Multimedia\DeltaEngine.Multimedia.csproj">
       <Project>{6016ABB8-05F5-4A07-8FBA-16576277DDE7}</Project>
       <Name>DeltaEngine.Multimedia</Name>
@@ -112,13 +121,18 @@
       <Name>DeltaEngine.WindowsOpenGL</Name>
     </ProjectReference>
     <ProjectReference Include="..\WindowsXna\DeltaEngine.WindowsXna.csproj">
-      <Project>{07e9d341-4b22-48fe-b921-5d18d3ab2c49}</Project>
+      <Project>{07E9D341-4B22-48FE-B921-5D18D3AB2C49}</Project>
       <Name>DeltaEngine.WindowsXna</Name>
     </ProjectReference>
     <ProjectReference Include="..\Windows\DeltaEngine.Platforms.Windows.csproj">
       <Project>{BD8A80E2-A313-437E-B0EF-FC0B066280A7}</Project>
       <Name>DeltaEngine.Platforms.Windows</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\TestXml.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

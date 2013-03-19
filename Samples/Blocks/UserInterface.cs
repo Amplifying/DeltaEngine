@@ -25,7 +25,7 @@ namespace Blocks
 		}
 
 		private readonly Renderer renderer;
-		private readonly Content content;
+		private readonly BlocksContent content;
 
 		private void AddBackground()
 		{
@@ -35,7 +35,7 @@ namespace Blocks
 			renderer.Screen.ViewportSizeChanged += () => background.DrawArea = renderer.Screen.Viewport;
 		}
 
-		private const byte Background = (byte)RenderLayer.Background;
+		private const int Background = (int)RenderLayer.Background;
 
 		private void AddGrid()
 		{
@@ -45,7 +45,7 @@ namespace Blocks
 			var width = Grid.Width * Brick.RenderZoom + GridRenderWidthOffset;
 			var height = (Grid.Height + 1) * Brick.RenderZoom + GridRenderHeightOffset;
 			var drawArea = new Rectangle(left, top, width, height);
-			renderer.Add(new Sprite(image, drawArea) { RenderLayer = (byte)RenderLayer.Background });
+			renderer.Add(new Sprite(image, drawArea) { RenderLayer = (int)RenderLayer.Background });
 		}
 
 		private const float GridRenderLeftOffset = -0.009f;
@@ -65,7 +65,7 @@ namespace Blocks
 			renderer.Add(new Line2D(bottomLeft, topLeft, Color.Yellow) { RenderLayer = Foreground });
 		}
 
-		private const byte Foreground = (byte)RenderLayer.Foreground;
+		private const int Foreground = (int)RenderLayer.Foreground;
 
 		private void AddScoreWindow()
 		{
@@ -75,7 +75,7 @@ namespace Blocks
 			var width = Grid.Width * Brick.RenderZoom + GridRenderWidthOffset;
 			var height = width / image.PixelSize.AspectRatio;
 			var drawArea = new Rectangle(left, top, width, height);
-			renderer.Add(new Sprite(image, drawArea) { RenderLayer = (byte)RenderLayer.Background });
+			renderer.Add(new Sprite(image, drawArea) { RenderLayer = (int)RenderLayer.Background });
 		}
 
 		private const float ScoreRenderTopOffset = -0.135f;
@@ -116,7 +116,7 @@ namespace Blocks
 
 		public void Lose()
 		{
-			Message.Text = "You lost";
+			Message.Text = "Game Over";
 			Scoreboard.TopLeft = TextLine2;
 			Score = 0;
 		}

@@ -16,13 +16,15 @@ namespace Blocks
 			Prefix = prefix;
 			DoBricksSplitInHalfWhenRowFull = doBricksSplitInHalfWhenRowFull;
 			AreFiveBrickBlocksAllowed = true;
+			DoBlocksStartInARandomColumn = false;
 		}
 
 		public string Prefix { get; set; }
 		public bool DoBricksSplitInHalfWhenRowFull { get; set; }
 		public bool AreFiveBrickBlocksAllowed { get; set; }
+		public bool DoBlocksStartInARandomColumn { get; set; }
 
-		public override ContentType Load<ContentType>(string contentName)
+		public new ContentType Load<ContentType>(string contentName) where ContentType : ContentData
 		{
 			return base.Load<ContentType>(Prefix + contentName);
 		}

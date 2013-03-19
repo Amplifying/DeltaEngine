@@ -87,6 +87,9 @@ namespace DeltaEngine.Multimedia.SharpDX
 			var soundInstance = instanceToStop.Handle as SourceVoice;
 			if (soundInstance != null)
 				soundInstance.Stop();
+
+			if (instancesPlaying.Contains(instanceToStop))
+				instancesPlaying.Remove(instanceToStop);
 		}
 
 		protected override void CreateChannel(SoundInstance instanceToFill)
@@ -103,7 +106,11 @@ namespace DeltaEngine.Multimedia.SharpDX
 		{
 			var soundInstance = instanceToRemove.Handle as SourceVoice;
 			if (soundInstance != null)
+			{
+				soundInstance.Stop();
 				soundInstance.Dispose();
+			}
+
 			instanceToRemove.Handle = null;
 		}
 

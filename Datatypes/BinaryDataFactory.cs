@@ -32,20 +32,23 @@ namespace DeltaEngine.Datatypes
 					AddType(type);
 		}
 
-		private void AddType(Type type)
+		internal void AddType(Type type)
 		{
 			var shortName = type.Name;
 			if (typeMap.ContainsKey(shortName))
 				shortName = type.FullName;
 
+			if (shortNames.ContainsKey(type))
+				return;
+
 			shortNames.Add(type, shortName);
 			typeMap.Add(shortName, type);
 		}
 
-		private readonly Dictionary<string, Type> typeMap = new Dictionary<string, Type>();
-		private readonly Dictionary<Type, string> shortNames = new Dictionary<Type, string>();
+		internal readonly Dictionary<string, Type> typeMap = new Dictionary<string, Type>();
+		internal readonly Dictionary<Type, string> shortNames = new Dictionary<Type, string>();
 
-		private void OnAssemblyLoadInCurrentDomain(object sender, AssemblyLoadEventArgs e)
+		internal void OnAssemblyLoadInCurrentDomain(object sender, AssemblyLoadEventArgs e)
 		{
 			AddAssemblyTypes(e.LoadedAssembly);
 		}
@@ -80,7 +83,7 @@ namespace DeltaEngine.Datatypes
 			if (typeMap.ContainsKey(shortName))
 				return CreateAndLoad(shortName, reader);
 
-			throw new UnknownMessageTypeReceived(shortName);
+			throw new UnknownMessageTypeReceived(shortName); //ncrunch: no coverage
 		}
 
 		public void Dispose()

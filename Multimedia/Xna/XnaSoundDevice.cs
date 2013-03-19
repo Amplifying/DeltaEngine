@@ -1,5 +1,5 @@
 ﻿using System;
-using DeltaEngine.Platforms;
+using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 
@@ -10,10 +10,11 @@ namespace DeltaEngine.Multimedia.Xna
 	/// </summary>
 	public class XnaSoundDevice : SoundDevice
 	{
-		public XnaSoundDevice(Window window)
+		public XnaSoundDevice()
 		{
 			serviceProvider = new XnaServiceProvider();
-			Content = new ContentManager(serviceProvider, "Content");
+			string contentPath = Path.Combine(Directory.GetCurrentDirectory(), "Content");
+			Content = new ContentManager(serviceProvider, contentPath);
 		}
 
 		private class XnaServiceProvider : IServiceProvider

@@ -12,14 +12,14 @@ namespace DeltaEngine.Core.Xml.Tests
 			Assert.AreEqual(data, file.Root);
 		}
 
-		//ncrunch: no coverage start
 		[Test, Category("Slow")]
 		public void SavingAndLoadingLeavesItUnchanged()
 		{
-			var data = CreateTestXmlData();
+			XmlData data = CreateTestXmlData();
 			var file = new XmlFile(data);
 			file.Save("file.xml");
-			Assert.AreEqual(data.ToXmlString(), new XmlFile("file.xml").Root.ToXmlString());
+			XmlData loaded = new XmlFile("file.xml").Root;
+			Assert.AreEqual(data.ToXmlString(), loaded.ToXmlString());
 		}
 
 		private static XmlData CreateTestXmlData()
@@ -31,7 +31,7 @@ namespace DeltaEngine.Core.Xml.Tests
 			var child2 = new XmlData("Child2", root);
 			child2.AddAttribute("Attr3", "Value3");
 			child2.AddAttribute("Attr4", "Value4");
-
+			new XmlData("Grandchild", child2);
 			return root;
 		}
 	}

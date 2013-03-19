@@ -1,4 +1,5 @@
 ﻿using System;
+using DeltaEngine.Logging;
 
 namespace DeltaEngine.Platforms
 {
@@ -11,7 +12,6 @@ namespace DeltaEngine.Platforms
 		{
 			RegisterEntryRunner<AppEntryRunner>(instancesToCreate);
 			Initialize<AppEntryRunner>(instancesToCreate);
-			RaiseInitializedEvent();
 			Run();
 		}
 
@@ -44,26 +44,35 @@ namespace DeltaEngine.Platforms
 
 		public virtual void Run(Action runCode = null)
 		{
+			RaiseInitializedEvent();
 			var window = Resolve<Window>();
 			do
-				ExecuteRunnersLoopAndPresenters(runCode); 
+				TryRunAllRunnersAndPresenters(runCode); 
 			while (!window.IsClosing);
 		}
 
-		private void ExecuteRunnersLoopAndPresenters(Action runCode)
+		private void TryRunAllRunnersAndPresenters(Action runCode)
 		{
-			RunAllRunners();
-			if (runCode != null)
-				runCode();
+			try
+			{
+				RunAllRunners();
+				if (runCode != null)
+					runCode();
 
-			RunAllPresenters();
+				RunAllPresenters();
+			}
+			catch (Exception ex)
+			{
+				var logger = Resolve<Logger>();
+				if(logger != null)
+					logger.Error(ex);
+			}
 		}
 
 		public void Start<FirstClass>(Action<FirstClass> initCode, Action runCode = null)
 		{
 			RegisterSingleton<FirstClass>();
 			Initialized += () => initCode(Resolve<FirstClass>());
-			RaiseInitializedEvent();
 			Run(runCode);
 		}
 
@@ -73,7 +82,6 @@ namespace DeltaEngine.Platforms
 			RegisterSingleton<FirstClass>();
 			RegisterSingleton<SecondClass>();
 			Initialized += () => initCode(Resolve<FirstClass>(), Resolve<SecondClass>());
-			RaiseInitializedEvent();
 			Run(runCode);
 		}
 
@@ -85,7 +93,6 @@ namespace DeltaEngine.Platforms
 			RegisterSingleton<ThirdClass>();
 			Initialized +=
 				() => initCode(Resolve<FirstClass>(), Resolve<SecondClass>(), Resolve<ThirdClass>());
-			RaiseInitializedEvent();
 			Run(runCode);
 		}
 

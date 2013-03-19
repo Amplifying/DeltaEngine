@@ -3,7 +3,7 @@
 	/// <summary>
 	/// The various rendering layers. Higher layers overdraw lower ones 
 	/// </summary>
-	public enum RenderLayer : byte
+	public enum RenderLayer  
 	{
 		Background = 0,
 		Foreground = 1,

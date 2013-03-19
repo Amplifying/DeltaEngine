@@ -28,6 +28,15 @@ namespace Blocks.Tests
 		}
 
 		[Test]
+		public void DoBlocksStartInARandomColumn()
+		{
+			var content = new TestResolver().Resolve<BlocksContent>();
+			Assert.IsFalse(content.DoBlocksStartInARandomColumn);
+			content.DoBlocksStartInARandomColumn = true;
+			Assert.IsTrue(content.DoBlocksStartInARandomColumn);
+		}
+
+		[Test]
 		public void GetFilenameWithoutPrefix()
 		{
 			var content = new TestResolver().Resolve<BlocksContent>();
@@ -50,6 +59,7 @@ namespace Blocks.Tests
 			});
 		}
 
+		//ncrunch: no coverage start
 		[VisualTest]
 		public void LoadContentWithPrefixSet(Type resolver)
 		{

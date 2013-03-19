@@ -23,7 +23,7 @@
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\..\..\Users\Stephan\Desktop\DeltaEngineModifiedRuleSet.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
@@ -57,7 +57,7 @@
       <Name>DeltaEngine.Graphics</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Graphics\OpenTK\DeltaEngine.Graphics.OpenTK.csproj">
-      <Project>{EB455ABA-14F1-4145-86C1-0CA2BBCF157F}</Project>
+      <Project>{eb455aba-14f1-4145-86c1-0ca2bbcf157f}</Project>
       <Name>DeltaEngine.Graphics.OpenTK</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Input\DeltaEngine.Input.csproj">
@@ -73,7 +73,7 @@
       <Name>DeltaEngine.Multimedia</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Multimedia\OpenTK\DeltaEngine.Multimedia.OpenTK.csproj">
-      <Project>{32665d04-5a07-4f99-9e20-0639cd1c1d6d}</Project>
+      <Project>{6f82824d-1f58-4584-848e-8172b0449c2d}</Project>
       <Name>DeltaEngine.Multimedia.OpenTK</Name>
     </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Platforms.csproj">

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using DeltaEngine.Core;
 
 namespace DeltaEngine.Datatypes
@@ -111,21 +112,22 @@ namespace DeltaEngine.Datatypes
 		public static readonly Color Blue = new Color(0, 0, 255);
 		public static readonly Color CornflowerBlue = new Color(100, 149, 237);
 		public static readonly Color Cyan = new Color(0, 255, 255);
+		public static readonly Color DarkGray = new Color(89, 89, 89);
+		public static readonly Color DarkGreen = new Color(0, 100, 0);
+		public static readonly Color Gold = new Color(255, 215, 0);
 		public static readonly Color Gray = new Color(128, 128, 128);
 		public static readonly Color Green = new Color(0, 255, 0);
+		public static readonly Color LightBlue = new Color(0.65f, 0.795f, 1f);
+		public static readonly Color LightGray = new Color(165, 165, 165);
 		public static readonly Color Orange = new Color(255, 165, 0);
 		public static readonly Color PaleGreen = new Color(152, 251, 152);
 		public static readonly Color Pink = new Color(255, 192, 203);
 		public static readonly Color Purple = new Color(255, 0, 255);
 		public static readonly Color Red = new Color(255, 0, 0);
+		public static readonly Color Teal = new Color(0, 128, 128);
 		public static readonly Color White = new Color(255, 255, 255);
 		public static readonly Color Yellow = new Color(255, 255, 0);
-		public static readonly Color Teal = new Color(0, 128, 128);
-		public static readonly Color Gold = new Color(255, 215, 0);
-		public static readonly Color LightBlue = new Color(0.65f, 0.795f, 1f);
-		public static readonly Color LightGray = new Color(165, 165, 165);
-		public static readonly Color DarkGray = new Color(89, 89, 89);
-		public const int SizeInBytes = 4;
+		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Color));
 
 		/// <summary>
 		/// Colors are stored as RGBA byte values and this gives back the usual RGBA format as a 32 bit

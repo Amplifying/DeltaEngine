@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Autofac;
 using Autofac.Builder;
@@ -28,7 +27,8 @@ namespace DeltaEngine.Platforms
 		}
 
 		protected readonly List<Type> alreadyRegisteredTypes = new List<Type>();
-		internal class UnableToRegisterMoreTypesAppAlreadyStarted : Exception { }
+
+		internal class UnableToRegisterMoreTypesAppAlreadyStarted : Exception {}
 
 		public void RegisterSingleton<T>()
 		{
@@ -41,7 +41,8 @@ namespace DeltaEngine.Platforms
 			RegisterBaseTypes<T>(RegisterType(typeof(T)).InstancePerLifetimeScope());
 		}
 
-		private IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle>
+		private
+			IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle>
 			RegisterType(Type t)
 		{
 			if (assemblyOfFirstNonDeltaEngineType == null &&
@@ -146,18 +147,20 @@ namespace DeltaEngine.Platforms
 			builder.RegisterSource(new AnyConcreteTypeNotAlreadyRegisteredSource());
 		}
 
-		public class RegisterCallsMustBeBeforeInit : Exception { }
+		public class RegisterCallsMustBeBeforeInit : Exception {}
 
 		public override void Dispose()
 		{
 			if (IsAlreadyInitialized)
-				container.Dispose();
+				DisposeContainerOnlyOnce();
+		}
 
+		private void DisposeContainerOnlyOnce()
+		{
+			var remContainerToDispose = container;
+			container = null;
+			remContainerToDispose.Dispose();
 			builder = new ContainerBuilder();
-			foreach (var instance in resolvedInstances.OfType<IDisposable>().Reverse())
-				instance.Dispose();
-
-			base.Dispose();
 		}
 
 		//ncrunch: no coverage start
@@ -166,7 +169,8 @@ namespace DeltaEngine.Platforms
 			var exeAssembly = Assembly.GetEntryAssembly();
 			if (exeAssembly != null)
 				RegisterAllTypesInAssembly(exeAssembly);
-			if (assemblyOfFirstNonDeltaEngineType != null && assemblyOfFirstNonDeltaEngineType != exeAssembly)
+			if (assemblyOfFirstNonDeltaEngineType != null &&
+				assemblyOfFirstNonDeltaEngineType != exeAssembly)
 				RegisterAllTypesInAssembly(assemblyOfFirstNonDeltaEngineType);
 		}
 
@@ -175,7 +179,7 @@ namespace DeltaEngine.Platforms
 			foreach (Type t in exeAssembly.GetTypes())
 				if (!alreadyRegisteredTypes.Contains(t))
 					builder.RegisterType(t).AsSelf().OnActivating(ActivatingInstance()).
-									InstancePerLifetimeScope();
+					        InstancePerLifetimeScope();
 		}
 	}
 }

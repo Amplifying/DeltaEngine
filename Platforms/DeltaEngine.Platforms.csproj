@@ -25,7 +25,7 @@
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\..\Users\Stephan\Desktop\DeltaEngineModifiedRuleSet.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
@@ -63,6 +63,10 @@
     <ProjectReference Include="..\Datatypes\DeltaEngine.Datatypes.csproj">
       <Project>{460983FF-AA91-4E10-B70E-10D0BDA15A58}</Project>
       <Name>DeltaEngine.Datatypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Logging\DeltaEngine.Logging.csproj">
+      <Project>{E4440567-3D5D-4670-AB49-8163B18E302E}</Project>
+      <Name>DeltaEngine.Logging</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -29,7 +29,7 @@ namespace DeltaEngine.Rendering
 
 		public override Size ToPixelSpace(Size currentScreenSpaceSize)
 		{
-			return currentScreenSpaceSize / pixelToRelativeScale;
+			return currentScreenSpaceSize * viewportPixelSize;
 		}
 
 		public override Point FromPixelSpace(Point pixelPosition)

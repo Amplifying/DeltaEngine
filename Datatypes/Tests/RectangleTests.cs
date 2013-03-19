@@ -22,6 +22,12 @@ namespace DeltaEngine.Datatypes.Tests
 		}
 
 		[Test]
+		public void SizeOfRectangle()
+		{
+			Assert.AreEqual(16, Rectangle.SizeInBytes);
+		}
+
+		[Test]
 		public void ChangeValues()
 		{
 			var rect = Rectangle.One;

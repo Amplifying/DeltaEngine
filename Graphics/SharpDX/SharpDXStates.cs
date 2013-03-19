@@ -35,7 +35,8 @@ namespace DeltaEngine.Graphics.SharpDX
 			}
 		}
 
-		protected SwapChainDescription CreateSwapChainDescription(int width, int height, IntPtr handle)
+		protected SwapChainDescription CreateSwapChainDescription(int width, int height,
+			IntPtr handle)
 		{
 			return new SwapChainDescription
 			{
@@ -51,11 +52,11 @@ namespace DeltaEngine.Graphics.SharpDX
 
 		internal const int BackBufferCount = 1;
 		internal const Format BackBufferFormat = Format.R8G8B8A8_UNorm;
-		internal const SwapChainFlags BackBufferFlags = SwapChainFlags.None;
+		internal const SwapChainFlags BackBufferFlags = SwapChainFlags.AllowModeSwitch;
 		protected readonly RenderTargetProperties defaultRenderTargetProperties =
 			new RenderTargetProperties(new PixelFormat(Format.Unknown, AlphaMode.Premultiplied));
-		
-		public RasterizerState CullClockwise(DxDevice device)
+
+		protected RasterizerState CullClockwise(DxDevice device)
 		{
 			return cullClockwise ??
 				(cullClockwise = new RasterizerState(device, GetRasterizer(CullMode.Back)));
@@ -85,7 +86,7 @@ namespace DeltaEngine.Graphics.SharpDX
 		{
 			d2DFactory.Dispose();
 		}
-		
+
 		protected static BlendStateDescription GetBlendStateDescription(
 			BlendOption source = BlendOption.SourceAlpha,
 			BlendOption destination = BlendOption.InverseSourceAlpha)

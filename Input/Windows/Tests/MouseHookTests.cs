@@ -8,7 +8,7 @@ namespace DeltaEngine.Input.Windows.Tests
 {
 	public class MouseHookTests
 	{
-		[Test, Ignore]
+		[Test]
 		public void WindowsMouseHandleProcMessage()
 		{
 			IntPtr lParamHandle = GenerateMouseHookData(new[] { 0, 0, 0, 0, 0, 240 });

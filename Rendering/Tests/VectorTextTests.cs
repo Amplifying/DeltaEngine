@@ -21,7 +21,7 @@ namespace DeltaEngine.Rendering.Tests
 			resolver.AdvanceTimeAndExecuteRunners(1.0f);
 		}
 
-		private XmlData CreateVectorTextData()
+		private static XmlData CreateVectorTextData()
 		{
 			var vectorTextData = new XmlData("VectorText");
 			var character = new XmlData("Char1", vectorTextData);

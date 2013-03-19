@@ -17,9 +17,4 @@
   <UseBuildPlatform></UseBuildPlatform>
   <ProxyProcessPath></ProxyProcessPath>
   <UseCPUArchitecture>AutoDetect</UseCPUArchitecture>
-  <IgnoredTests>
-    <NamedTestSelector>
-      <TestName>DeltaEngine.Core.Xml.Tests.XmlFileTests.SavingAndLoadingLeavesItUnchanged</TestName>
-    </NamedTestSelector>
-  </IgnoredTests>
 </ProjectConfiguration>

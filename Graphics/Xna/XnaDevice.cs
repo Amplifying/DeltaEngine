@@ -14,6 +14,7 @@ namespace DeltaEngine.Graphics.Xna
 		{
 			this.window = window;
 			window.ViewportSizeChanged += ResetDeviceToNewViewportSize;
+			window.FullscreenChanged += OnFullscreenChanged;
 			if (window.Title == "")
 				window.Title = "XNA Device";
 			CreateAndSetupNativeDeviceManager(game);
@@ -51,17 +52,24 @@ namespace DeltaEngine.Graphics.Xna
 			NativeDevice.Clear(new Color(0, 0, 0));
 		}
 
+		private void OnFullscreenChanged(Size displaySize, bool isFullScreenEnabled)
+		{
+			deviceManager.PreferredBackBufferWidth = (int)displaySize.Width;
+			deviceManager.PreferredBackBufferHeight = (int)displaySize.Height;
+			deviceManager.IsFullScreen = isFullScreenEnabled;
+		}
+
 		public ContentManager NativeContent { get; private set; }
 
 		public void Run()
 		{
 			var color = window.BackgroundColor;
 			if (color.A > 0)
-				NativeDevice.Clear(new Color(color.R, color.G, color.B));
+				NativeDevice.Clear(new Color(color.R, color.G, color.B, color.A));
 		}
 
-		public void Present() { }
+		public void Present() {}
 
-		public void Dispose() { }
+		public void Dispose() {}
 	}
 }

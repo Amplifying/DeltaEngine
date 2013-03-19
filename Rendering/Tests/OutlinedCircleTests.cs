@@ -51,11 +51,11 @@ namespace DeltaEngine.Rendering.Tests
 		[VisualTest]
 		public void DrawLotsOfCircles(Type resolver)
 		{
-			Start(resolver, (Renderer renderer, Randomizer r) =>
+			Start(resolver, (Renderer renderer, Randomizer random) =>
 			{
 				for (int i = 0; i < 10; i++)
-					renderer.Add(new OutlinedCircle(new Point(r.Get(), r.Get()), r.Get(0.02f, 0.4f),
-						Color.GetRandomColor()));
+					renderer.Add(new OutlinedCircle(new Point(random.Get(), random.Get()), 0.0f,
+						Color.GetRandomColor()) { Radius = random.Get(0.02f, 0.4f) });
 			});
 		}
 	}

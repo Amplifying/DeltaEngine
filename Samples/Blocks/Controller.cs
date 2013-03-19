@@ -139,11 +139,13 @@ namespace Blocks
 		{
 			FallingBlock.Left--;
 			if (grid.IsValidPosition(FallingBlock))
-			{
 				soundbank.BlockMoved.Play();
-				return;
-			}
+			else
+				CancelBlockLeftMove();
+		}
 
+		private void CancelBlockLeftMove()
+		{
 			FallingBlock.Left++;
 			soundbank.BlockCouldntMove.Play();
 		}
@@ -152,11 +154,13 @@ namespace Blocks
 		{
 			FallingBlock.Left++;
 			if (grid.IsValidPosition(FallingBlock))
-			{
 				soundbank.BlockMoved.Play();
-				return;
-			}
+			else
+				CancelBlockRightMove();
+		}
 
+		private void CancelBlockRightMove()
+		{
 			FallingBlock.Left--;
 			soundbank.BlockCouldntMove.Play();
 		}
@@ -165,12 +169,14 @@ namespace Blocks
 		{
 			FallingBlock.RotateAntiClockwise();
 			if (grid.IsValidPosition(FallingBlock))
-			{
 				soundbank.BlockMoved.Play();
-				return;
-			}
+			else
+				CancelBlockRotation();
+		}
 
-			FallingBlock.RotateAntiClockwise();
+		private void CancelBlockRotation()
+		{
+			FallingBlock.RotateClockwise();
 			soundbank.BlockCouldntMove.Play();
 		}
 	}

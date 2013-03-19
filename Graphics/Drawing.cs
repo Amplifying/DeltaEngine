@@ -1,5 +1,4 @@
 ﻿using System;
-using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Graphics
 {

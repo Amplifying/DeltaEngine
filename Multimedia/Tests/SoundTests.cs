@@ -10,7 +10,7 @@ namespace DeltaEngine.Multimedia.Tests
 	/// </summary>
 	public class SoundTests : TestStarter
 	{
-		[VisualTest]
+		[IntegrationTest]
 		public void PlaySoundAndDispose(Type resolver)
 		{
 			Start(resolver, (Content content) =>
@@ -20,13 +20,13 @@ namespace DeltaEngine.Multimedia.Tests
 			});
 		}
 
-		[VisualTest]
+		[IntegrationTest]
 		public void PlaySoundLeft(Type resolver)
 		{
 			Start(resolver, (Content content) => content.Load<Sound>("DefaultSound").Play(1, -1));
 		}
 
-		[VisualTest]
+		[IntegrationTest]
 		public void PlaySoundRightAndPitched(Type resolver)
 		{
 			Start(resolver, (Content content) =>
@@ -39,7 +39,7 @@ namespace DeltaEngine.Multimedia.Tests
 			});
 		}
 
-		[VisualTest]
+		[IntegrationTest]
 		public void PlaySoundInstance(Type resolver)
 		{
 			Start(resolver, (Content content) =>
@@ -52,7 +52,7 @@ namespace DeltaEngine.Multimedia.Tests
 			});
 		}
 
-		[VisualTest]
+		[IntegrationTest]
 		public void PlayMultipleSoundInstances(Type resolver)
 		{
 			Start(resolver, (Content content) =>
@@ -71,7 +71,7 @@ namespace DeltaEngine.Multimedia.Tests
 			});
 		}
 
-		[VisualTest]
+		[IntegrationTest]
 		public void NumberOfPlayingInstances(Type resolver)
 		{
 			Start(resolver, (Content content) =>
@@ -85,7 +85,7 @@ namespace DeltaEngine.Multimedia.Tests
 			});
 		}
 
-		[VisualTest]
+		[IntegrationTest]
 		public void PlayAndStop(Type resolver)
 		{
 			Start(resolver, (Content content) =>
@@ -95,12 +95,13 @@ namespace DeltaEngine.Multimedia.Tests
 				sound.Play();
 				Assert.IsTrue(sound.IsAnyInstancePlaying);
 				sound.StopAll();
+				WaitUntilSoundStateIsUpdated();
 				Assert.IsFalse(sound.IsAnyInstancePlaying);
 				sound.Play();
 			});
 		}
 
-		[VisualTest]
+		[IntegrationTest]
 		public void PlayAndStopInstance(Type resolver)
 		{
 			Start(resolver, (Content content) =>
@@ -111,11 +112,17 @@ namespace DeltaEngine.Multimedia.Tests
 				instance.Play();
 				Assert.IsTrue(sound.IsAnyInstancePlaying);
 				sound.StopAll();
+				WaitUntilSoundStateIsUpdated();
 				Assert.IsFalse(sound.IsAnyInstancePlaying);
 			});
 		}
 
-		[VisualTest]
+		private static void WaitUntilSoundStateIsUpdated()
+		{
+			System.Threading.Thread.Sleep(20);
+		}
+
+		[IntegrationTest]
 		public void DisposeSoundInstance(Type resolver)
 		{
 			Start(resolver, (Content content) =>
@@ -129,14 +136,14 @@ namespace DeltaEngine.Multimedia.Tests
 				Assert.AreEqual(0, sound.NumberOfPlayingInstances);
 			});
 		}
-		
-		[VisualTest]
+
+		[IntegrationTest]
 		public void DisposeSoundInstancesFromSoundClass(Type resolver)
 		{
 			Start(resolver, (Content content) =>
 			{
 				var sound = content.Load<Sound>("DefaultSound");
-				var instance = sound.CreateSoundInstance();
+				sound.CreateSoundInstance();
 				sound.Play();
 				Assert.AreEqual(2, sound.NumberOfInstances);
 				Assert.AreEqual(1, sound.NumberOfPlayingInstances);
@@ -145,6 +152,5 @@ namespace DeltaEngine.Multimedia.Tests
 				Assert.AreEqual(0, sound.NumberOfPlayingInstances);
 			});
 		}
-
 	}
 }

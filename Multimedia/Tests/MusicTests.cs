@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using DeltaEngine.Core;
 using DeltaEngine.Platforms.Tests;
 using NUnit.Framework;
@@ -11,24 +10,30 @@ namespace DeltaEngine.Multimedia.Tests
 	/// </summary>
 	public class MusicTests : TestStarter
 	{
-		[VisualTest]
+		[IntegrationTest]
 		public void PlayMusic(Type resolver)
 		{
 			Start(resolver, (Content content) => content.Load<Music>("DefaultMusic").Play());
 		}
 
-		[VisualTest]
+		[IntegrationTest]
 		public void StartAndStopMusic(Type resolver)
 		{
+			Music music = null;
 			Start(resolver, (Content content) =>
 			{
-				var music = content.Load<Music>("DefaultMusic");
-				Assert.AreEqual(35.85f, music.DurationInSeconds);
+				music = content.Load<Music>("DefaultMusic");
+				Assert.Less(4.12f, music.DurationInSeconds);
+				Assert.Greater(4.14f, music.DurationInSeconds);
 				music.Play();
-				if (resolver != typeof(TestResolver))
-					Thread.Sleep(1000);
-				music.Stop();
-				Assert.AreEqual(1.0f, music.PositionInSeconds);
+			}, (Time time) =>
+			{
+				if (time.Milliseconds >= 1000 || testResolver != null)
+				{
+					music.Stop();
+					Assert.Less(0.99f, music.PositionInSeconds);
+					Assert.Greater(1.01f, music.PositionInSeconds);
+				}
 			});
 		}
 	}

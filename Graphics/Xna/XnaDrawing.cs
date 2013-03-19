@@ -1,6 +1,5 @@
 ﻿using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using XnaGraphics = Microsoft.Xna.Framework.Graphics;
 using Matrix = Microsoft.Xna.Framework.Matrix;

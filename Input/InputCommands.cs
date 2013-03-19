@@ -24,59 +24,64 @@ namespace DeltaEngine.Input
 		internal readonly Touch touch;
 		internal readonly GamePad gamePad;
 
-		public void Add(Key key, Action callback)
+		public Command Add(Key key, Action callback)
 		{
-			Add(key, State.Releasing, callback);
+			return Add(key, State.Releasing, callback);
 		}
 
-		public void Add(Key key, State keyState, Action callback)
+		public Command Add(Key key, State keyState, Action callback)
 		{
 			var command = new Command();
 			command.Callback += trigger => callback();
 			command.Add(new KeyTrigger(key, keyState));
 			Add(command);
+			return command;
 		}
 
-		public void Add(MouseButton mouseButton, Action<Mouse> callback)
+		public Command Add(MouseButton mouseButton, Action<Mouse> callback)
 		{
-			Add(mouseButton, State.Releasing, callback);
+			return Add(mouseButton, State.Releasing, callback);
 		}
 
-		public void Add(MouseButton mouseButton, State buttonState, Action<Mouse> callback)
+		public Command Add(MouseButton mouseButton, State buttonState, Action<Mouse> callback)
 		{
 			var command = new Command();
 			command.Callback += trigger => callback(mouse);
 			command.Add(new MouseButtonTrigger(mouseButton, buttonState));
 			Add(command);
+			return command;
 		}
 
-		public void AddMouseMovement(Action<Mouse> mouseMovementCallback)
+		public Command AddMouseMovement(Action<Mouse> mouseMovementCallback)
 		{
 			var command = new Command();
 			command.Callback += trigger => mouseMovementCallback(mouse);
 			command.Add(new MouseMovementTrigger());
 			Add(command);
+			return command;
 		}
 
-		public void Add(Action<Touch> touchHappenedCallback)
+		public Command Add(Action<Touch> touchHappenedCallback)
 		{
-			Add(State.Releasing, touchHappenedCallback);
+			return Add(State.Releasing, touchHappenedCallback);
 		}
 
-		public void Add(State touchState, Action<Touch> callback)
+		public Command Add(State touchState, Action<Touch> callback)
 		{
 			var command = new Command();
 			command.Callback += trigger => callback(touch);
 			command.Add(new TouchPressTrigger(touchState));
 			Add(command);
+			return command;
 		}
 
-		public void Add(GamePadButton gamePadButton, State keyState, Action callback)
+		public Command Add(GamePadButton gamePadButton, State keyState, Action callback)
 		{
 			var command = new Command();
 			command.Callback += trigger => callback();
 			command.Add(new GamePadButtonTrigger(gamePadButton, keyState));
 			Add(command);
+			return command;
 		}
 
 		public void Add(Command command)
@@ -92,6 +97,11 @@ namespace DeltaEngine.Input
 			commands.Remove(command);
 		}
 
+		public void Clear()
+		{
+			commands.Clear();
+		}
+
 		public int Count
 		{
 			get { return commands.Count; }
@@ -99,7 +109,8 @@ namespace DeltaEngine.Input
 
 		public void Run()
 		{
-			foreach (Command command in commands)
+			var activeCommands = new List<Command>(commands);
+			foreach (Command command in activeCommands)
 				command.Run(this);
 		}
 	}

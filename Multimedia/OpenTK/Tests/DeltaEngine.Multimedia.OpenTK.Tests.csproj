@@ -52,12 +52,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WaveSoundDataTests.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DeltaEngine.Multimedia.OpenTK.csproj">
-      <Project>{32665d04-5a07-4f99-9e20-0639cd1c1d6d}</Project>
-      <Name>DeltaEngine.Multimedia.OpenTK</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

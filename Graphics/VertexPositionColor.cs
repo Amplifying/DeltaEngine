@@ -21,6 +21,6 @@ namespace DeltaEngine.Graphics
 		public VertexPositionColor(Point position, Color color)
 			: this(new Vector(position.X, position.Y, 0.0f), color) {}
 
-		public const int SizeInBytes = Vector.SizeInBytes + Color.SizeInBytes;
+		public static readonly int SizeInBytes = Vector.SizeInBytes + Color.SizeInBytes;
 	}
 }

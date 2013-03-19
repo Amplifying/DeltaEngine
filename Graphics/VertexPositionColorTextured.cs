@@ -27,6 +27,7 @@ namespace DeltaEngine.Graphics
 			TextureCoordinate = uv;
 		}
 
-		public const int SizeInBytes = Vector.SizeInBytes + Color.SizeInBytes + Point.SizeInBytes;
+		public static readonly int SizeInBytes = Vector.SizeInBytes + Color.SizeInBytes + 
+			Point.SizeInBytes;
 	}
 }

@@ -37,7 +37,7 @@ namespace Blocks.Tests
 				});
 		}
 
-		[Test]
+		[Test, Category("Slow")]
 		public void DropFastAffixesBlocksQuickly()
 		{
 			Start(typeof(TestResolver),
@@ -48,7 +48,7 @@ namespace Blocks.Tests
 					Assert.AreEqual(0, grid.BrickCount);
 					testResolver.AdvanceTimeAndExecuteRunners(1.5f);
 					Assert.AreEqual(4, grid.BrickCount, 1);
-					testResolver.AdvanceTimeAndExecuteRunners(9.0f);
+					testResolver.AdvanceTimeAndExecuteRunners(15.0f);
 					Assert.IsTrue(grid.BrickCount > 4);
 				});
 		}
@@ -65,7 +65,7 @@ namespace Blocks.Tests
 				});
 		}
 
-		[Test]
+		[Test, Category("Slow")]
 		public void RunScoresPointsOverTime()
 		{
 			Start(typeof(TestResolver),

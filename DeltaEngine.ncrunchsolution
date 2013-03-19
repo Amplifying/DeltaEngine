@@ -59,10 +59,14 @@ Platforms\WindowsXnaWithoutAutofac\DeltaEngine.WindowsXnaWithoutAutofac.csproj
 Platforms\WindowsXnaWithoutAutofac\Tests\DeltaEngine.WindowsXnaWithoutAutofac.Tests.csproj
 Program.cs
 Rendering\Tests\DeltaEngine.Rendering.Tests.csproj:Program.cs
+Samples\Blobs\Blobs.csproj:Program.cs
+Samples\Blobs\Tests\Blobs.Tests.csproj:Program.cs
 Samples\Blocks\Blocks.csproj:Program.cs
 Samples\Blocks\Tests\Blocks.Tests.csproj:Program.cs
 Samples\Breakout\Breakout.csproj:Program.cs
 Samples\Breakout\Tests\Breakout.Tests.csproj:Program.cs
+Samples\EmptyGame\EmptyGame.csproj:Program.cs
+Samples\EmptyGame\Tests\EmptyGame.Tests.csproj:Program.cs
 Samples\GameOfDeath\GameOfDeath.csproj:Program.cs
 Samples\LogoApp\LogoApp.csproj:Image.cs
 Samples\LogoApp\LogoApp.csproj:Program.cs

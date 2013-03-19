@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace DeltaEngine.Core
@@ -73,24 +74,51 @@ namespace DeltaEngine.Core
 			return floats;
 		}
 
-		public static string MaxStringLength(this string originalString, int maxLength)
+		public static string MaxStringLength(this string value, int maxLength)
 		{
-			if (String.IsNullOrEmpty(originalString) || originalString.Length <= maxLength)
-				return originalString;
+			if (String.IsNullOrEmpty(value) || value.Length <= maxLength)
+				return value;
 
 			if (maxLength < 2)
 				maxLength = 2;
 
-			return originalString.Substring(0, maxLength - 2).TrimEnd() + "..";
+			return value.Substring(0, maxLength - 2).TrimEnd() + "..";
 		}
 
 		public static string[] SplitAndTrim(this string value, params char[] separators)
 		{
-			string[] components = value.Split(separators, StringSplitOptions.RemoveEmptyEntries);
-			for (int i = 0; i < components.Length; i++)
-				components[i] = components[i].Trim();
+			string[] components = value.Split(separators, StringSplitOptions.None);
+			return TrimAndRemoveEmptyElements(components);
+		}
 
-			return components;
+		private static string[] TrimAndRemoveEmptyElements(string[] values)
+		{
+			var nonEmptyElements = new List<string>();
+			for (int i = 0; i < values.Length; i++)
+			{
+				string trimmedElement = values[i].Trim();
+				if (trimmedElement.Length > 0)
+					nonEmptyElements.Add(trimmedElement);
+			}
+
+			return nonEmptyElements.ToArray();
+		}
+
+		public static string[] SplitAndTrim(this string value, params string[] separators)
+		{
+			string[] components = value.Split(separators, StringSplitOptions.None);
+			return TrimAndRemoveEmptyElements(components);
+		}
+
+		public static bool Compare(this string value, string other)
+		{
+			return String.Compare(value, other, StringComparison.InvariantCultureIgnoreCase) == 0;
+		}
+
+		public static bool ContainsCaseInsensitive(this string value, string searchText)
+		{
+			return value != null &&
+				value.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0;
 		}
 	}
 }

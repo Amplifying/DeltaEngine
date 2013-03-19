@@ -89,6 +89,12 @@ namespace DeltaEngine.Datatypes.Tests
 		}
 
 		[Test]
+		public void SizeOfColor()
+		{
+			Assert.AreEqual(4, Color.SizeInBytes);
+		}
+
+		[Test]
 		public void GetColorComponentsAsFloats()
 		{
 			var color = new Color(1.0f, 0.0f, 0.5f);
@@ -96,6 +102,8 @@ namespace DeltaEngine.Datatypes.Tests
 			Assert.AreEqual(0.0f, color.GreenValue);
 			Assert.AreEqual(0.498039216f, color.BlueValue);
 			Assert.AreEqual(1.0f, color.AlphaValue);
+			color.AlphaValue = 0.0f;
+			Assert.AreEqual(0.0f, color.AlphaValue);
 		}
 
 		[Test]

@@ -1,5 +1,4 @@
-﻿
-using System.Linq;
+﻿using System.Linq;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
@@ -30,7 +29,6 @@ namespace DeltaEngine.Rendering
 		{
 			ResortRenderablesIfAnyHaveChangedRenderLayer();
 			var objectsToRender = sortedRenderables.Where(t => t.IsVisible).ToList();
-
 			foreach (var renderObject in objectsToRender)
 				renderObject.InternalRender(this, time);
 
@@ -42,35 +40,36 @@ namespace DeltaEngine.Rendering
 			if (NoRenderableHasChangedRenderLayer())
 				return;
 
-			ResortRenderables();
+			sortedRenderables.Resort();
 		}
 
-		private static bool NoRenderableHasChangedRenderLayer()
+		private bool NoRenderableHasChangedRenderLayer()
 		{
+			for (int i = 0; i < sortedRenderables.Count; i++)
+				if (sortedRenderables[i].HasRenderLayerChanged)
+					return false;
+
 			return true;
-		}
-
-		private void ResortRenderables()
-		{
-			var unsortedRenderables = new BubbleSortedList(sortedRenderables);
-			sortedRenderables.Clear();
-			foreach (Renderable t in unsortedRenderables)
-				sortedRenderables.Add(t);
 		}
 
 		private void RemoveDisposedObjects()
 		{
 			var objectsToRemove = sortedRenderables.Where(t => t.markForDisposal).ToList();
-
 			foreach (var renderObject in objectsToRemove)
 				Remove(renderObject);
+		}
+
+		public void Remove(Renderable renderable)
+		{
+			if (sortedRenderables.Contains(renderable))
+				sortedRenderables.Remove(renderable);
 		}
 
 		private readonly BubbleSortedList sortedRenderables = new BubbleSortedList();
 
 		public int NumberOfActiveRenderableObjects
 		{
-			get { return sortedRenderables.Count; }
+			get { return sortedRenderables.Count(renderable => !renderable.markForDisposal); }
 		}
 
 		public void Add(Renderable renderable)
@@ -79,18 +78,7 @@ namespace DeltaEngine.Rendering
 				return;
 
 			renderable.markForDisposal = false;
-			for (int i = renderable.RenderLayer; i > -100; i-- )
-					sortedRenderables.Add(renderable);
-		}
-
-		public void Remove(Renderable renderable)
-		{
-			for (int i = 0; i < sortedRenderables.Count; i++)
-				if (sortedRenderables.Contains(renderable))
-				{
-					sortedRenderables.Remove(renderable);
-					break;
-				}
+			sortedRenderables.Add(renderable);
 		}
 
 		public void RemoveAll()

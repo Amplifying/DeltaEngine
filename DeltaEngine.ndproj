@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <NDepend AppName="Delta Engine" Platform="DotNet">
   <OutputDir KeepHistoric="True" KeepXmlFiles="True">C:\Users\Hendrik\Desktop\NDependOut</OutputDir>
   <Assemblies>
@@ -7,7 +7,6 @@
     <Name>DeltaEngine.Datatypes</Name>
     <Name>DeltaEngine.Datatypes.Tests</Name>
     <Name>DeltaEngine.Graphics.Tests</Name>
-    <Name>DeltaEngine.Graphics.OpenTK</Name>
     <Name>DeltaEngine.Platforms.Tests</Name>
     <Name>DeltaEngine.WindowsOpenGL</Name>
     <Name>LogoApp</Name>
@@ -26,13 +25,10 @@
     <Name>DeltaEngine.Input.Windows</Name>
     <Name>DeltaEngine.Input.SharpDX</Name>
     <Name>DeltaEngine.Input.Xna</Name>
-    <Name>DeltaEngine.WindowsXnaWithoutAutofac</Name>
-    <Name>DeltaEngine.WindowsXnaWithoutAutofac.Tests</Name>
     <Name>DeltaEngine.Multimedia</Name>
     <Name>DeltaEngine.Multimedia.Tests</Name>
     <Name>DeltaEngine.Multimedia.Xna</Name>
     <Name>DeltaEngine.Multimedia.SharpDX</Name>
-    <Name>DeltaEngine.Multimedia.OpenTK</Name>
     <Name>DeltaEngine.Core.Xml</Name>
     <Name>GameOfDeath</Name>
     <Name>DeltaEngine.Core.Xml.Tests</Name>
@@ -41,29 +37,17 @@
     <Name>Blocks.Tests</Name>
     <Name>Breakout</Name>
     <Name>Breakout.Tests</Name>
-    <Name>DeltaEngine.Editor</Name>
-    <Name>DeltaEngine.Editor.ContentManager</Name>
-    <Name>DeltaEngine.Networking</Name>
-    <Name>DeltaEngine.Networking.Tests</Name>
-    <Name>DeltaEngine.Networking.Sockets</Name>
-    <Name>DeltaEngine.Networking.Sockets.Tests</Name>
     <Name>DeltaEngine.Logging</Name>
     <Name>DeltaEngine.Logging.Tests</Name>
     <Name>DeltaEngine.Logging.Basic</Name>
     <Name>DeltaEngine.Logging.Basic.Tests</Name>
-    <Name>DeltaEngine.Logging.Log4Net</Name>
-    <Name>DeltaEngine.Logging.Log4Net.Tests</Name>
-    <Name>DeltaEngine.Logging.NLog</Name>
-    <Name>DeltaEngine.Logging.NLog.Tests</Name>
-    <Name>DeltaEngine.Logging.QueryableLog</Name>
-    <Name>DeltaEngine.Logging.QueryableLog.Tests</Name>
-    <Name>DeltaEngine.Editor.ContentManager.Tests</Name>
     <Name>DeltaEngine.Graphics.BaseOpenGL</Name>
-    <Name>DeltaEngine.Graphics.OpenTKWithBaseOpenGL</Name>
+    <Name>DeltaEngine.Graphics.OpenTK</Name>
     <Name>DeltaEngine.Input.Xna.Tests</Name>
     <Name>DeltaEngine.Input.SharpDX.Tests</Name>
-    <Name>DeltaEngine.Multimedia.OpenTK.Tests</Name>
     <Name>DeltaEngine.Input.Windows.Tests</Name>
+    <Name>DeltaEngine.Multimedia.OpenTK</Name>
+    <Name>DeltaEngine.Multimedia.BaseOpenAL</Name>
   </Assemblies>
   <FrameworkAssemblies>
     <Name>mscorlib</Name>
@@ -71,7 +55,6 @@
     <Name>System.Core</Name>
     <Name>nunit.framework</Name>
     <Name>System.Drawing</Name>
-    <Name>OpenTK</Name>
     <Name>Moq</Name>
     <Name>System</Name>
     <Name>Microsoft.Xna.Framework.Graphics</Name>
@@ -87,13 +70,8 @@
     <Name>Microsoft.Xna.Framework.Input.Touch</Name>
     <Name>SharpDX.XAudio2</Name>
     <Name>ToyMp3</Name>
-    <Name>PresentationFramework</Name>
-    <Name>System.Xaml</Name>
-    <Name>PresentationCore</Name>
-    <Name>WindowsBase</Name>
-    <Name>log4net</Name>
-    <Name>System.Xml</Name>
-    <Name>NLog</Name>
+    <Name>System.Xml.Linq</Name>
+    <Name>OpenTK</Name>
   </FrameworkAssemblies>
   <Dirs>
     <Dir>C:\Windows\Microsoft.NET\Framework\v4.0.30319</Dir>
@@ -102,69 +80,115 @@
     <Dir>C:\Windows\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework.Game\v4.0_4.0.0.0__842cf8be1de50553</Dir>
     <Dir>C:\Windows\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework.Graphics\v4.0_4.0.0.0__842cf8be1de50553</Dir>
     <Dir>C:\Windows\Microsoft.Net\assembly\GAC_MSIL\Microsoft.Xna.Framework.Input.Touch\v4.0_4.0.0.0__842cf8be1de50553</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Datatypes\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Datatypes\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\OpenTK\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsOpenGL\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Samples\LogoApp\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Samples\LogoApp\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Core\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Rendering\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Rendering\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\Xna\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\SharpDX\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Core\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsXna\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsDirectX\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\Windows\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Input\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Input\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Input\Windows\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Input\SharpDX\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Input\Xna\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\Xna\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\SharpDX\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\OpenTK\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Core\Xml\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Samples\GameOfDeath\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Core\Xml\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Samples\GameOfDeath\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Blocks\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Blocks\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Breakout\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Breakout\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\Mp3Reader\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsXnaWithoutAutofac\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsXnaWithoutAutofac\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Editor\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Editor\ContentManager\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Networking\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Networking\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Networking\Sockets\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Networking\Sockets\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Logging\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Basic\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Basic\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Log4Net\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Log4Net\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Logging\NLog\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Logging\NLog\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Logging\QueryableLog\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Logging\QueryableLog\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Editor\ContentManager\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\BaseOpenGL\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\OpenTKWithBaseOpenGL\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Input\Xna\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Input\SharpDX\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\OpenTK\Tests\bin\Release</Dir>
-    <Dir>C:\Delta\Services\CruiseControl\Tools\Scripts\WorkingSolution\Input\Windows\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Datatypes\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Datatypes\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\OpenTK\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsOpenGL\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\LogoApp\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\LogoApp\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Core\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Rendering\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Rendering\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\Xna\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\SharpDX\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Core\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsXna\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsDirectX\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\Windows\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\Windows\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\SharpDX\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\Xna\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\Xna\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\SharpDX\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\OpenTK\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Core\Xml\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\GameOfDeath\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Core\Xml\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\GameOfDeath\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Blocks\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Blocks\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Breakout\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Breakout\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\Mp3Reader\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsXnaWithoutAutofac\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsXnaWithoutAutofac\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Editor\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Editor\ContentManager\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Networking\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Networking\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Networking\Sockets\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Networking\Sockets\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Basic\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Basic\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Log4Net\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Log4Net\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\NLog\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\NLog\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\QueryableLog\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\QueryableLog\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Editor\ContentManager\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\BaseOpenGL\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\OpenTKWithBaseOpenGL\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\Xna\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\SharpDX\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\OpenTK\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\Windows\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Datatypes\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Datatypes\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsOpenGL\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\LogoApp\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\LogoApp\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Core\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Rendering\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Rendering\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\Xna\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\SharpDX\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Core\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsXna\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsDirectX\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\Windows\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\Windows\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\SharpDX\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\Xna\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\Xna\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\SharpDX\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Core\Xml\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\GameOfDeath\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Core\Xml\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\GameOfDeath\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Blocks\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Blocks\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Breakout\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Breakout\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Basic\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Basic\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\BaseOpenGL\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\OpenTK\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\Xna\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\SharpDX\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\Windows\Tests\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\OpenTK\bin\Release</Dir>
+    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\BaseOpenAL\bin\Release</Dir>
   </Dirs>
   <Report Kind="0" SectionsEnabled="12287" XslPath="" Flags="64512">
     <Section Enabled="True">Application Metrics</Section>
@@ -182,8 +206,7 @@
   <BuildComparisonSetting ProjectMode="DontCompare" BuildMode="MostRecentAnalysisResultAvailable" ProjectFileToCompareWith="" BuildFileToCompareWith="" NDaysAgo="1" />
   <BaselineInUISetting ProjectMode="DontCompare" BuildMode="MostRecentAnalysisResultAvailable" ProjectFileToCompareWith="" BuildFileToCompareWith="" NDaysAgo="1" />
   <CoverageFiles UncoverableAttribute="" />
-  <SourceFileRebasing FromPath="" ToPath="" />
-  <Queries>
+  <SourceFileRebasing FromPath="" ToPath="" /><Queries>
     <Group Name="Code Quality" Active="True" ShownInReport="False">
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="True"><![CDATA[// <Name>Types too big - critical</Name>
 warnif count > 0 from t in JustMyCode.Types where 
@@ -3852,5 +3875,4 @@ from f in Application.Fields where
   f.Name == "components" && f.ParentType.DeriveFrom("System.Windows.Forms.Control".AllowNoMatch())
 select f]]></Query>
     </Group>
-  </Queries>
-</NDepend>
+  </Queries></NDepend>

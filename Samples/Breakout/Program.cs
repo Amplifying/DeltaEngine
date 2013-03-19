@@ -12,8 +12,6 @@ namespace Breakout
 		{
 			var app = new App();
 			app.Register<RelativeScreenSpace>();
-			app.RegisterSingleton<Game>();
-			app.Resolve<Background>();
 			app.Start<Game>();
 		}
 	}

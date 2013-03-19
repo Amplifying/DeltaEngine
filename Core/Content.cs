@@ -1,4 +1,6 @@
-﻿namespace DeltaEngine.Core
+﻿using System.Collections.Generic;
+
+namespace DeltaEngine.Core
 {
 	/// <summary>
 	/// Allows to load type derived from ContentData (images, sounds, xml files, levels, etc.) and
@@ -14,11 +16,31 @@
 
 		private readonly Resolver resolver;
 
-		public virtual ContentType Load<ContentType>(string contentName)
+		public ContentType Load<ContentType>(string contentName)
 			where ContentType : ContentData
 		{
-			//TODO: caching and contentName to filename resolving, remove this from each implementation
-			return resolver.Resolve<ContentType>(contentName);
+			var contentData = TryLoadFromCache(contentName);
+			if (contentData != null)
+				return (ContentType)contentData;
+
+			return LoadAndCacheContent<ContentType>(contentName);
 		}
+
+		private ContentData TryLoadFromCache(string contentName)
+		{
+			ContentData contentData = null;
+			resources.TryGetValue(contentName.GetHashCode(), out contentData);
+			return contentData;
+		}
+
+		private ContentType LoadAndCacheContent<ContentType>(string contentName)
+			where ContentType : ContentData
+		{
+			var contentData = resolver.Resolve<ContentType>(contentName);
+			resources.Add(contentName.GetHashCode(), contentData);
+			return contentData;
+		}
+
+		private Dictionary<int, ContentData> resources = new Dictionary<int, ContentData>();
 	}
 }

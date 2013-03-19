@@ -1,6 +1,6 @@
 ﻿using DeltaEngine.Core;
-using DeltaEngine.Core.Xml;
 using DeltaEngine.Input;
+using DeltaEngine.Logging.Basic;
 using DeltaEngine.Rendering;
 
 namespace DeltaEngine.Platforms.Windows
@@ -19,6 +19,7 @@ namespace DeltaEngine.Platforms.Windows
 			RegisterSingleton<Time>();
 			RegisterSingleton<PseudoRandom>();
 			RegisterSingleton<Content>();
+			RegisterSingleton<BasicLogger>();
 			RegisterSingleton<InputCommands>();
 			Register<XmlContentFile>();
 		}

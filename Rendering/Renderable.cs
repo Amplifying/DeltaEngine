@@ -11,29 +11,23 @@ namespace DeltaEngine.Rendering
 		protected Renderable()
 		{
 			IsVisible = true;
-			//id = maxId++;
-			//RenderLayer = DefaultRenderLayer;
 			RenderLayer = 0;
 		}
-
-		//private readonly int id;
-		//private static int maxId;
 		public bool IsVisible { get; set; }
 
-		public int RenderLayer { get; set; }
-
+		private int renderLayer;
+		public int RenderLayer
+		{
+			get {return renderLayer;}
+			set
+			{
+				renderLayer = value;
+				HasRenderLayerChanged = true;
+			}
+		}
+		internal bool HasRenderLayerChanged { get; set; }
 		public const int MinRenderLayer = -99;
 		public const int MaxRenderLayer = 100;
-
-		//internal bool HasRenderLayerChanged { get; set; }
-		//public const byte BackgroundRenderLayer = 16;
-		//public const byte DefaultRenderLayer = 64;
-		//public const byte UIRenderLayer = 128;
-
-		//public int SortKey
-		//{
-		//	get { return (RenderLayer << 20) | id; }
-		//}
 
 		protected abstract void Render(Renderer renderer, Time time);
 

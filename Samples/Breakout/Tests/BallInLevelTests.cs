@@ -21,9 +21,6 @@ namespace Breakout.Tests
 		{
 			Start(type, (BallInLevel ball, Level level) =>
 			{
-				if (type != typeof(TestResolver))
-					return;
-
 				level.GetBrickAt(0.25f, 0.125f).Dispose();
 				level.GetBrickAt(0.75f, 0.125f).Dispose();
 				level.GetBrickAt(0.25f, 0.375f).Dispose();

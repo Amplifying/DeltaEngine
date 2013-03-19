@@ -4,7 +4,6 @@ using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 using DeltaEngine.Platforms.Tests;
 using DeltaEngine.Rendering;
-using NUnit.Framework;
 
 namespace GameOfDeath.Tests
 {
