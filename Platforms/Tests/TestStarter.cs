@@ -32,8 +32,8 @@ namespace DeltaEngine.Platforms.Tests
 		{
 			new TestCaseData(typeof(TestResolver)),
 			new TestCaseData(typeof(OpenTKAppForTestStarter)),
-			new TestCaseData(typeof(SharpDxAppForTestStarter)),
-			new TestCaseData(typeof(XnaAppForTestStarter))
+			new TestCaseData(typeof(SharpDxAppForTestStarter)).Ignore(),
+			new TestCaseData(typeof(XnaAppForTestStarter)).Ignore()
 		};
 		public static readonly Type OpenGL = typeof(OpenTKAppForTestStarter);
 		public static readonly Type DirectX = typeof(SharpDxAppForTestStarter);
