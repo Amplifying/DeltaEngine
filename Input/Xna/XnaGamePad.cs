@@ -1,5 +1,4 @@
 ﻿using DeltaEngine.Core;
-using DeltaEngine.Input.Devices;
 using Microsoft.Xna.Framework;
 using Point = DeltaEngine.Datatypes.Point;
 using XnaInput = Microsoft.Xna.Framework.Input;
@@ -81,7 +80,7 @@ namespace DeltaEngine.Input.Xna
 
 		private void UpdateButton(XnaInput.ButtonState newState, GamePadButton button)
 		{
-			int buttonIndex = (int)button;
+			var buttonIndex = (int)button;
 			states[buttonIndex] =
 				states[buttonIndex].UpdateOnNativePressing(newState == XnaInput.ButtonState.Pressed);
 		}

@@ -1,8 +1,9 @@
-﻿using DeltaEngine.Datatypes;
+﻿using System.IO;
+using System.Runtime.InteropServices;
+using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 using SharpDX;
 using SharpDX.DXGI;
-using SharpDX.Direct2D1;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using D2dFactory = SharpDX.Direct2D1.Factory;
@@ -56,7 +57,6 @@ namespace DeltaEngine.Graphics.SharpDX
 			backBuffer = Resource.FromSwapChain<Texture2D>(swapChain, 0);
 			backBufferView = new RenderTargetView(nativeDevice, backBuffer);
 			surface = backBuffer.QueryInterface<Surface>();
-			RenderTarget = new RenderTarget(d2DFactory, surface, defaultRenderTargetProperties);
 		}
 
 		private void ResizeBackBufferIfItExistedBefore()
@@ -67,7 +67,6 @@ namespace DeltaEngine.Graphics.SharpDX
 			backBuffer.Dispose();
 			backBufferView.Dispose();
 			surface.Dispose();
-			RenderTarget.Dispose();
 			swapChain.ResizeBuffers(BackBufferCount, Width, Height, BackBufferFormat, BackBufferFlags);
 		}
 
@@ -83,14 +82,12 @@ namespace DeltaEngine.Graphics.SharpDX
 		private Texture2D backBuffer;
 		private RenderTargetView backBufferView;
 		private Surface surface;
-		internal RenderTarget RenderTarget { get; private set; }
 
 		public void Run()
 		{
 			if (nativeDevice.IsDisposed)
 				return;
 
-			RenderTarget.BeginDraw();
 			Context.OutputMerger.SetTargets(backBufferView);
 			Context.Rasterizer.SetViewports(new Viewport(0, 0, Width, Height, 0.0f, 1.0f));
 			if (window.BackgroundColor.A > 0)
@@ -103,7 +100,6 @@ namespace DeltaEngine.Graphics.SharpDX
 			if (nativeDevice.IsDisposed)
 				return;
 
-			RenderTarget.EndDraw();
 			swapChain.Present(0, PresentFlags.None);
 		}
 
@@ -113,7 +109,6 @@ namespace DeltaEngine.Graphics.SharpDX
 			backBuffer.Dispose();
 			swapChain.Dispose();
 			surface.Dispose();
-			RenderTarget.Dispose();
 			if (nativeDevice.IsDisposed == false)
 			{
 				nativeDevice.ImmediateContext.Dispose();
@@ -137,10 +132,23 @@ namespace DeltaEngine.Graphics.SharpDX
 
 		public void SetData<T>(Buffer buffer, T[] data, int count = 0) where T : struct
 		{
+			count = count == 0 ? data.Length : count;
 			DataStream dataStream;
 			Context.MapSubresource(buffer, MapMode.WriteDiscard, MapFlags.None, out dataStream);
-			dataStream.WriteRange(data, 0, count == 0 ? data.Length : count);
+			dataStream.WriteRange(data, 0, count);
 			Context.UnmapSubresource(buffer, 0);
+		}
+
+		public void SetData<T>(CircularBuffer buffer, T[] data, int count = 0) where T : struct
+		{
+			count = count == 0 ? data.Length : count;
+			int sizeOfTypeT = Marshal.SizeOf(data[0]);
+			int offset = sizeOfTypeT * count * buffer.CurrentChunk;
+			DataStream dataStream;
+			Context.MapSubresource(buffer.Handle, MapMode.WriteDiscard, MapFlags.None, out dataStream);
+			dataStream.Seek(offset, SeekOrigin.Begin);
+			dataStream.WriteRange(data, 0, count);
+			Context.UnmapSubresource(buffer.Handle, 0);
 		}
 	}
 }

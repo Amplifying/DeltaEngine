@@ -1,5 +1,4 @@
-﻿using DeltaEngine.Core;
-using DeltaEngine.Datatypes;
+﻿using DeltaEngine.Datatypes;
 using NUnit.Framework;
 
 namespace DeltaEngine.Rendering.Tests

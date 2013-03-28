@@ -42,6 +42,7 @@
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\DeltaEngine.Core.Tests.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\DeltaEngine.Core.Tests.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
@@ -57,7 +58,7 @@
     <Compile Include="FakeResolver.cs" />
     <Compile Include="SimulatedAppTests.cs" />
     <Compile Include="ArrayExtensionsTests.cs" />
-    <Compile Include="ContentLoaderTests.cs" />
+    <Compile Include="ContentTests.cs" />
     <Compile Include="FixedRandomTests.cs" />
     <Compile Include="GenericRunnerTests.cs" />
     <Compile Include="EnumExtensionTests.cs" />

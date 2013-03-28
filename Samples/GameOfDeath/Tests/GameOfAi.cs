@@ -6,7 +6,7 @@ namespace GameOfDeath.Tests
 	/// Testing different Ai learning strategies for the Game Of Life to learn the best surviving
 	/// strategy by itself.
 	/// </summary>
-	internal class GameOfAi : GameOfLife
+	internal sealed class GameOfAi : GameOfLife
 	{
 		public GameOfAi(int width, int height)
 			: base(width, height)
@@ -27,17 +27,20 @@ namespace GameOfDeath.Tests
 		{
 			for (int x = 0; x < width; x++)
 				for (int y = 0; y < height; y++)
-				{
-					aliveStrategy[x, y] = random.Get(MinNeighbours, MaxNeighbours);
-					notAliveStrategy[x, y] = random.Get(MinNeighbours, MaxNeighbours);
-				}
+					SetStrategy(x, y);
+		}
+
+		private void SetStrategy(int x, int y)
+		{
+			aliveStrategy[x, y] = random.Get(MinNeighbours, MaxNeighbours);
+			notAliveStrategy[x, y] = random.Get(MinNeighbours, MaxNeighbours);
 		}
 
 		readonly PseudoRandom random = new PseudoRandom();
 		private const int MinNeighbours = 0;
 		private const int MaxNeighbours = 8;
 
-		public override bool ShouldSurvive(int x, int y)
+		public override bool ShouldSurvive(Time time, int x, int y)
 		{
 			if (x == 0 && y == 0)
 				foodEatenThisRound = 0;

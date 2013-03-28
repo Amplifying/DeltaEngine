@@ -77,7 +77,7 @@
       <Name>DeltaEngine.Input</Name>
     </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Input.Windows.csproj">
-      <Project>{C0D2430E-714D-476C-80E7-5C80A7FA68EE}</Project>
+      <Project>{c0d2430e-714d-476c-80e7-5c80a7fa68ee}</Project>
       <Name>DeltaEngine.Input.Windows</Name>
     </ProjectReference>
   </ItemGroup>

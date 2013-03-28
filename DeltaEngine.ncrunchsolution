@@ -40,7 +40,6 @@ Multimedia\Tests\DeltaEngine.Multimedia.Tests.csproj:Program.cs
 Multimedia\Xna\DeltaEngine.Multimedia.Xna.csproj
 Platforms\Tests\DeltaEngine.Platforms.Tests.csproj:Program.cs
 Platforms\Tests\DeltaEngine.PlatformsTests.csproj:WindowTestsVisual.cs
-Platforms\Windows\DeltaEngine.Platforms.Windows.csproj
 Platforms\Windows\Tests\DeltaEngine.Platforms.Windows.Tests.csproj
 Platforms\Windows\Tests\DeltaEngine.Platforms.Windows.Tests.csproj:Program.cs
 Platforms\WindowsDirectX\DeltaEngine.Platforms.WindowsDirectX.csproj

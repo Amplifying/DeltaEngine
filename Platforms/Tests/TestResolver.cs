@@ -1,62 +1,54 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
-using DeltaEngine.Rendering;
 using Moq;
-using NUnit.Framework;
 
 namespace DeltaEngine.Platforms.Tests
 {
 	/// <summary>
 	/// Special resolver for unit tests that mocks all the integration classes (Window, Device, etc.)
 	/// </summary>
-	public class TestResolver : AutofacStarter 
+	public class TestResolver : IDisposable
 	{
 		public TestResolver()
 		{
-			new TestCoreResolver(this);
-			var testRenderingResolver = new TestRenderingResolver(this);
+			new TestCoreResolver(this).Register();
+			testRenderingResolver = new TestRenderingResolver(this);
+			testRenderingResolver.Register();
 			testInputResolver = new TestInputResolver(this);
-			testMultimediaResolver = new TestMultimediaResolver(this);
-			testLoggingResolver = new TestLoggingResolver(this);
-			new TestPlatformsResolver(this);
-			new TestContentResolver(this, testRenderingResolver.MockImage.Object);
+			testInputResolver.Register();
+			testMultimediaResolver = new TestMultimediaResolver(this, testRenderingResolver);
+			testMultimediaResolver.Register();
+			new TestLoggingResolver(this).Register();
+			new TestPlatformsResolver(this).Register();
+			new TestContentResolver(this, testRenderingResolver.MockImage.Object).Register();
 		}
 
+		private readonly TestRenderingResolver testRenderingResolver;
 		private readonly TestInputResolver testInputResolver;
 		private readonly TestMultimediaResolver testMultimediaResolver;
-		private readonly TestLoggingResolver testLoggingResolver;
 		public int NumberOfVerticesDrawn { get; set; }
-		
 
-		public Mock<T> RegisterMock<T>() where T : class
+		public void AdvanceTimeAndExecuteRunners(float timeToAddInSeconds)
 		{
-			var mock = new Mock<T>();
-			RegisterMock(mock.Object);
-			return mock;
+			testStart.AdvanceTimeAndExecuteRunners(timeToAddInSeconds);
 		}
 
-		public T RegisterMock<T>(T instance) where T : class
-		{
-			Type instanceType = instance.GetType();
-			foreach (object mock in registeredMocks.Where(mock => mock.GetType() == instanceType))
-				throw new AssertionException("Unable to register mock " + instance +
-					" because this type already has been registered: " + mock);
+		private TestAutofacStarter testStart = new TestAutofacStarter();
 
-			registeredMocks.Add(instance);
-			alreadyRegisteredTypes.AddRange(instanceType.GetInterfaces());
-			RegisterInstance(instance);
-			return instance;
+		public void SetTestStarter(AutofacStarter starter)
+		{
+			testStart = starter as TestAutofacStarter;
 		}
 
-		private readonly List<object> registeredMocks = new List<object>();
 		public bool IsMusicStopCalled()
 		{
 			return testMultimediaResolver.MusicStopCalled;
+		}
+
+		public Mock<T> RegisterMock<T>() where T : class
+		{
+			return testStart.RegisterMock<T>();
 		}
 
 		public void SetKeyboardState(Key key, State state)
@@ -64,15 +56,19 @@ namespace DeltaEngine.Platforms.Tests
 			testInputResolver.KeyboardStates[(int)key] = state;
 		}
 
-		public void SetMouseButtonState(MouseButton button, State state, Point newMousePosition)
+		public T RegisterMock<T>(T instance) where T : class
 		{
-			testInputResolver.MouseButtonStates[(int)button] = state;
-			SetMousePosition(newMousePosition);
+			return testStart.RegisterMock(instance);
+		}
+
+		public void SetMouseButtonState(MouseButton button, State state)
+		{
+			testInputResolver.SetMouseButtonState(button, state);
 		}
 
 		public void SetMousePosition(Point newMousePosition)
 		{
-			testInputResolver.CurrentMousePosition = newMousePosition;
+			testInputResolver.SetMousePosition(newMousePosition);
 		}
 
 		public void SetTouchState(int touchIndex, State state, Point newTouchPosition)
@@ -86,69 +82,44 @@ namespace DeltaEngine.Platforms.Tests
 			testInputResolver.GamePadButtonStates[(int)button] = state;
 		}
 
-		protected override void MakeSureContainerIsInitialized()
+		public static implicit operator AutofacStarter(TestResolver resolver)
 		{
-			if (IsAlreadyInitialized)
-				return;
-
-			base.MakeSureContainerIsInitialized();
-			foreach (var instance in registeredMocks)
-				RegisterInstanceAsRunnerOrPresenterIfPossible(instance);
-
-			testElapsedMs = GetTimeInMsForSlowTests();
+			return resolver.testStart;
 		}
 
-		protected override void RegisterInstanceAsRunnerOrPresenterIfPossible(object instance)
+		public void Dispose()
 		{
-			var renderable = instance as Renderable;
-			if (renderable != null)
-				Resolve<Renderer>().Add(renderable);
-
-			base.RegisterInstanceAsRunnerOrPresenterIfPossible(instance);
+			testStart.Dispose();
 		}
 
-		private long testElapsedMs;
-
-		private long GetTimeInMsForSlowTests()
+		public void Start<AppEntryRunner>(int instancesToCreate = 1)
 		{
-			if (testStarted != null)
-				return testStarted.ElapsedMilliseconds;
-
-			testStarted = new Stopwatch();
-			testStarted.Start();
-			return 0;
+			testStart.Start<AppEntryRunner>(instancesToCreate);
 		}
 
-		private Stopwatch testStarted;
-
-		public void AdvanceTimeAndExecuteRunners(float timeToAddInSeconds)
+		public BaseType Resolve<BaseType>(object customParameter = null)
 		{
-			var simulateRunTicks = (int)Math.Round(timeToAddInSeconds * 60);
-			for (int tick = 0; tick < simulateRunTicks; tick++)
-			{
-				RunAllRunners();
-				RunAllPresenters();
-			}
+			return testStart.Resolve<BaseType>(customParameter);
+		}
+		
+		public void Register<T>()
+		{
+			testStart.Register<T>();
 		}
 
-		public override void Dispose()
+		public void RegisterSingleton<T>()
 		{
-			WarnIfUnitTestTakesTooLong();
-			base.Dispose();
+			testStart.RegisterSingleton<T>();
 		}
 
-		//ncrunch: no coverage start
-		private void WarnIfUnitTestTakesTooLong()
+		public void RegisterAllUnknownTypesAutomatically()
 		{
-			if (StackTraceExtensions.ContainsUnitTest() && TookLongerThan10Ms())
-				Debug.WriteLine("This unit test takes too long (" + testElapsedMs + "ms, max. 10ms is " +
-					"allowed), please add Category(\"Slow\") to run it nightly instead!");
+			testStart.RegisterAllUnknownTypesAutomatically();
 		}
 
-		private bool TookLongerThan10Ms()
+		public virtual void Run(Action runCode = null)
 		{
-			testElapsedMs = GetTimeInMsForSlowTests() - testElapsedMs;
-			return testElapsedMs > 10;
+			testStart.Run(runCode);
 		}
 	}
 }

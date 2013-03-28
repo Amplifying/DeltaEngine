@@ -58,7 +58,7 @@ namespace DeltaEngine.Networking.Sockets
 
 		public event Action<MessageData> ObjectFinished;
 
-		public byte[] GetTestBytesWithLengthHeader(int numberOfWishedTestBytes)
+		public static byte[] GetTestBytesWithLengthHeader(int numberOfWishedTestBytes)
 		{
 			var generatedBytes = new List<byte>();
 			generatedBytes.AddRange(BitConverter.GetBytes(numberOfWishedTestBytes));

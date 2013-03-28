@@ -1,12 +1,9 @@
 ﻿using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
-using SharpDX;
 using SharpDX.DXGI;
-using SharpDX.Direct2D1;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using Buffer = SharpDX.Direct3D11.Buffer;
-using Color = DeltaEngine.Datatypes.Color;
 using Matrix = SharpDX.Matrix;
 
 namespace DeltaEngine.Graphics.SharpDX
@@ -21,21 +18,27 @@ namespace DeltaEngine.Graphics.SharpDX
 			: base(device)
 		{
 			this.device = device;
-			brush = new SolidColorBrush(device.RenderTarget, new Color4(lastColor.PackedRgba));
-			device.RenderTarget.Transform = Matrix3x2.Identity;
 			drawShader = new SharpDXDrawShader(device);
 			Reset(window.ViewportPixelSize);
 			window.ViewportSizeChanged += Reset;
 			device.Context.OutputMerger.BlendState = device.GetAlphaBlendStateLazy();
+			InitializeBuffers();
 		}
 
 		private new readonly SharpDXDevice device;
 		private readonly SharpDXDrawShader drawShader;
-		private readonly SolidColorBrush brush;
+
+		private void InitializeBuffers()
+		{
+			positionColorUvVertexBuffer = new CircularBuffer(NumberOfVertexBufferChunks);
+		}
+
+		private const int NumberOfVertexBufferChunks = 4;
+		private CircularBuffer positionColorUvVertexBuffer;
+		private Buffer positionColorVertexBuffer;
 
 		private void Reset(Size size)
 		{
-			lastColor = Color.Black;
 			var xScale = (size.Width > 0) ? 2.0f / size.Width : 0.0f;
 			var yScale = (size.Height > 0) ? 2.0f / size.Height : 0.0f;
 			var viewportTransform = new Matrix
@@ -50,18 +53,6 @@ namespace DeltaEngine.Graphics.SharpDX
 			drawShader.WorldViewProjection = viewportTransform;
 		}
 
-		private void SetColor(Color color)
-		{
-			if (color == lastColor)
-				return;
-
-			lastColor = color;
-			brush.Color = new Color4(color.PackedRgba);
-			device.RenderTarget.AntialiasMode = AntialiasMode.Aliased;
-		}
-
-		private Color lastColor;
-
 		public override void Dispose() { }
 
 		public override void DisableTexturing()
@@ -71,27 +62,25 @@ namespace DeltaEngine.Graphics.SharpDX
 
 		public override void DrawVertices(VerticesMode mode, VertexPositionColor[] vertices)
 		{
-			SetColor(vertices[0].Color);
-			if (mode == VerticesMode.Lines)
-				for (int num = 0; num + 1 < vertices.Length; num += 2)
-					DrawLines(vertices[num], vertices[num + 1]);
+			CheckCreatePositionColorBuffer();
+			device.SetData(positionColorVertexBuffer, vertices, vertices.Length);
+			drawShader.Apply();
+			BindVertexBuffer(positionColorVertexBuffer,
+				VertexPositionColor.SizeInBytes);
+			if (lastIndicesCount == -1)
+				DoDraw(mode, vertices.Length);
 			else
-				for (int num = 0; num + 3 < vertices.Length; num += 4)
-					DrawRectangles(vertices[num], vertices[num + 2]);
+				DoDrawIndexed(mode, lastIndicesCount);
+			AfterDraw();
 		}
 
-		private void DrawRectangles(VertexPositionColor topLeft, VertexPositionColor bottomRight)
+		private void CheckCreatePositionColorBuffer(int vertexCount = 400)
 		{
-			var sharpRect = new RectangleF(topLeft.Position.X, topLeft.Position.Y,
-				bottomRight.Position.X, bottomRight.Position.Y);
-			device.RenderTarget.FillRectangle(sharpRect, brush);
-		}
+			if (positionColorVertexBuffer != null)
+				return;
 
-		private void DrawLines(VertexPositionColor start, VertexPositionColor end)
-		{
-			var sharpStart = new DrawingPointF(start.Position.X, start.Position.Y);
-			var sharpEnd = new DrawingPointF(end.Position.X, end.Position.Y);
-			device.RenderTarget.DrawLine(sharpStart, sharpEnd, brush);
+			positionColorVertexBuffer = new SharpDXBuffer(device.NativeDevice,
+				vertexCount * VertexPositionColor.SizeInBytes, BindFlags.VertexBuffer);
 		}
 
 		public override void DrawVertices(VerticesMode mode, VertexPositionColorTextured[] vertices)
@@ -99,12 +88,14 @@ namespace DeltaEngine.Graphics.SharpDX
 			CheckCreatePositionColorTextureBuffer();
 			device.SetData(positionColorUvVertexBuffer, vertices, vertices.Length);
 			drawShader.Apply();
-			BindVertexBuffer(positionColorUvVertexBuffer, VertexPositionColorTextured.SizeInBytes);
+			BindVertexBuffer(positionColorUvVertexBuffer.Handle, VertexPositionColorTextured.SizeInBytes);
 			if (lastIndicesCount == -1)
-				DoDraw(mode, vertices.Length);
+				DoDraw(mode, vertices.Length, positionColorUvVertexBuffer.CurrentChunk);
 			else
-				DoDrawIndexed(mode, lastIndicesCount);
+				DoDrawIndexed(mode, lastIndicesCount, positionColorUvVertexBuffer.CurrentChunk);
+
 			AfterDraw();
+			positionColorUvVertexBuffer.SelectNextChunk();
 		}
 
 		public override void SetIndices(short[] indices, int usedIndicesCount)
@@ -118,14 +109,14 @@ namespace DeltaEngine.Graphics.SharpDX
 
 		private void CheckCreatePositionColorTextureBuffer(int vertexCount = 400)
 		{
-			if (positionColorUvVertexBuffer != null)
+			if (positionColorUvVertexBuffer.Handle != null)
 				return;
 
-			positionColorUvVertexBuffer = new SharpDXBuffer(device.NativeDevice,
-				vertexCount * VertexPositionColorTextured.SizeInBytes, BindFlags.VertexBuffer);
+			int bufferSize = vertexCount * VertexPositionColorTextured.SizeInBytes *
+				positionColorUvVertexBuffer.NumberOfChunks;
+			positionColorUvVertexBuffer.Handle = new SharpDXBuffer(device.NativeDevice, bufferSize,
+				BindFlags.VertexBuffer);
 		}
-
-		private Buffer positionColorUvVertexBuffer;
 
 		private void CheckCreateIndexBuffer(int indexCount = 600)
 		{
@@ -144,22 +135,24 @@ namespace DeltaEngine.Graphics.SharpDX
 				new VertexBufferBinding(vertexBuffer, stride, 0));
 		}
 
-		private void DoDraw(VerticesMode mode, int vertexCount)
+		private void DoDraw(VerticesMode mode, int vertexCount, int currentChunk = 0)
 		{
 			var primitiveMode = Convert(mode);
 			var context = device.Context;
 			context.InputAssembler.PrimitiveTopology = primitiveMode;
-			context.Draw(vertexCount, 0);
+			context.Draw(vertexCount, vertexCount * currentChunk);
 		}
 
-		private void DoDrawIndexed(VerticesMode mode, int indexCount)
+		private void DoDrawIndexed(VerticesMode mode, int indexCount, int currentChunk = 0)
 		{
 			var primitiveMode = Convert(mode);
 			var context = device.Context;
 			context.InputAssembler.PrimitiveTopology = primitiveMode;
 			device.Context.InputAssembler.SetIndexBuffer(indexBuffer, Format.R16_UInt, 0);
-			context.DrawIndexed(indexCount, 0, 0);
+			context.DrawIndexed(indexCount, 0, VerticesPerRectangle * currentChunk);
 		}
+
+		private const int VerticesPerRectangle = 4;
 
 		private void AfterDraw()
 		{

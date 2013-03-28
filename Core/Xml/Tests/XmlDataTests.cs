@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace DeltaEngine.Core.Xml.Tests
@@ -15,24 +16,19 @@ namespace DeltaEngine.Core.Xml.Tests
 		}
 
 		[Test]
-		public void EmptyName()
+		public void InvalidName()
 		{
-			Assert.AreEqual("_Empty", new XmlData("").Name);
-			Assert.AreEqual("_Empty", new XmlData(null).Name);
-		}
-
-		[Test]
-		public void SpacesRemovedFromName()
-		{
-			Assert.AreEqual("HelloWorld", new XmlData("Hello World").Name);
+			Assert.Throws<XmlData.InvalidXmlNameException>(() => new XmlData(null));
+			Assert.Throws<XmlData.InvalidXmlNameException>(() => new XmlData("Hello World"));
 		}
 
 		[Test]
 		public void GetChild()
 		{
 			var root = new XmlData("root");
-			new XmlData("child1", root);
-			var child2 = new XmlData("child2", root);
+			root.AddChild(new XmlData("child1"));
+			var child2 = new XmlData("child2");
+			root.AddChild(child2);
 			Assert.AreEqual(child2, root.GetChild("child2"));
 		}
 
@@ -40,9 +36,11 @@ namespace DeltaEngine.Core.Xml.Tests
 		public void GetChildren()
 		{
 			var root = new XmlData("root");
-			var child1 = new XmlData("child", root);
-			new XmlData("stepchild", root);
-			var child2 = new XmlData("child", root);
+			var child1 = new XmlData("child");
+			root.AddChild(child1);
+			root.AddChild(new XmlData("stepchild"));
+			var child2 = new XmlData("child");
+			root.AddChild(child2);
 			var children = root.GetChildren("child");
 			Assert.AreEqual(2, children.Count);
 			Assert.IsTrue(children.Contains(child1));
@@ -61,21 +59,23 @@ namespace DeltaEngine.Core.Xml.Tests
 		private static XmlData CreateDeepTestXmlData()
 		{
 			XmlData root = CreateShallowTestXmlData();
-			var grandchild = new XmlData("Grandchild", root.Children[1]);
+			var grandchild = new XmlData("Grandchild");
 			grandchild.AddAttribute("Attr5", "Value5");
+			root.Children[1].AddChild(grandchild);
 			return root;
 		}
 
 		private static XmlData CreateShallowTestXmlData()
 		{
 			var root = new XmlData("Root");
-			var child1 = new XmlData("Child1", root);
+			var child1 = new XmlData("Child1") { Value = "Tom" };
 			child1.AddAttribute("Attr1", "Value1");
 			child1.AddAttribute("Attr2", "Value2");
-			child1.Value = "Tom";
-			var child2 = new XmlData("Child2", root);
+			root.AddChild(child1);
+			var child2 = new XmlData("Child2");
 			child2.AddAttribute("Attr3", "Value3");
 			child2.AddAttribute("Attr4", "Value4");
+			root.AddChild(child2);
 			return root;
 		}
 
@@ -158,12 +158,39 @@ namespace DeltaEngine.Core.Xml.Tests
 		}
 
 		[Test]
-		public void AddAttribute()
+		public void AddAttributeObject()
 		{
 			var root = new XmlData("root");
-			root.AddAttribute("attribute", "value");
+			root.AddAttribute("attribute", DayOfWeek.Friday);
 			Assert.AreEqual(1, root.Attributes.Count);
-			Assert.AreEqual(new XmlAttribute("attribute", "value"), root.Attributes[0]);
+			Assert.AreEqual(new XmlAttribute("attribute", "Friday"), root.Attributes[0]);
+		}
+
+		[Test]
+		public void AddAttributeChar()
+		{
+			var root = new XmlData("root");
+			root.AddAttribute("attribute", 'a');
+			Assert.AreEqual(1, root.Attributes.Count);
+			Assert.AreEqual(new XmlAttribute("attribute", 'a'), root.Attributes[0]);
+		}
+
+		[Test]
+		public void AddAttributeFloat()
+		{
+			var root = new XmlData("root");
+			root.AddAttribute("attribute", 1.2f);
+			Assert.AreEqual(1, root.Attributes.Count);
+			Assert.AreEqual(new XmlAttribute("attribute", 1.2f), root.Attributes[0]);
+		}
+
+		[Test]
+		public void AddAttributeDouble()
+		{
+			var root = new XmlData("root");
+			root.AddAttribute("attribute", 1.2);
+			Assert.AreEqual(1, root.Attributes.Count);
+			Assert.AreEqual(new XmlAttribute("attribute", 1.2), root.Attributes[0]);
 		}
 
 		[Test]

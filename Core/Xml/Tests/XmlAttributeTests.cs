@@ -28,5 +28,13 @@ namespace DeltaEngine.Core.Xml.Tests
 			Assert.AreEqual("name", attribute.Name);
 			Assert.AreEqual("3.14", attribute.Value);
 		}
+
+		[Test]
+		public void ConstructorWithChar()
+		{
+			var attribute = new XmlAttribute("name", 'a');
+			Assert.AreEqual("name", attribute.Name);
+			Assert.AreEqual("a", attribute.Value);
+		}
 	}
 }

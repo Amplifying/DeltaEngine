@@ -1,6 +1,5 @@
 ﻿using System;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Input.Devices;
 using DeltaEngine.Platforms;
 using DeltaEngine.Rendering;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
@@ -12,7 +11,7 @@ namespace DeltaEngine.Input.Xna
 	/// <summary>
 	/// Native implementation of the Mouse interface using Xna
 	/// </summary>
-	public class XnaMouse : BaseMouse
+	public class XnaMouse : Mouse
 	{
 		public XnaMouse(Window window, QuadraticScreenSpace screen)
 		{

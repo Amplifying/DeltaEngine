@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using DeltaEngine.Logging;
 
 namespace DeltaEngine.Platforms
@@ -34,14 +35,6 @@ namespace DeltaEngine.Platforms
 
 		protected event Action Initialized;
 
-		protected virtual void RaiseInitializedEvent()
-		{
-			if (Initialized != null)
-				Initialized();
-
-			Initialized = null;
-		}
-
 		public virtual void Run(Action runCode = null)
 		{
 			RaiseInitializedEvent();
@@ -49,6 +42,14 @@ namespace DeltaEngine.Platforms
 			do
 				TryRunAllRunnersAndPresenters(runCode); 
 			while (!window.IsClosing);
+		}
+
+		protected void RaiseInitializedEvent()
+		{
+			if (Initialized != null)
+				Initialized();
+
+			Initialized = null;
 		}
 
 		private void TryRunAllRunnersAndPresenters(Action runCode)
@@ -61,12 +62,18 @@ namespace DeltaEngine.Platforms
 
 				RunAllPresenters();
 			}
-			catch (Exception ex)
+			catch (Exception exception)
 			{
 				var logger = Resolve<Logger>();
-				if(logger != null)
-					logger.Error(ex);
+				if (logger != null)
+					logger.Error(exception);
+				throw;
 			}
+		}
+
+		public void Close()
+		{
+			Resolve<Window>().Dispose();
 		}
 
 		public void Start<FirstClass>(Action<FirstClass> initCode, Action runCode = null)
@@ -96,9 +103,49 @@ namespace DeltaEngine.Platforms
 			Run(runCode);
 		}
 
-		public void Close()
+		public void Start<AppEntryRunner, FirstClassToRegisterAndResolve>(int instancesToCreate = 1)
 		{
-			Resolve<Window>().Dispose();
+			RegisterEntryRunner<AppEntryRunner>(instancesToCreate);
+			Register<FirstClassToRegisterAndResolve>();
+			Resolve<FirstClassToRegisterAndResolve>();
+			Initialize<AppEntryRunner>(instancesToCreate);
+			Run();
+		}
+
+		public void Start
+			<AppEntryRunner, FirstClassToRegisterAndResolve, SecondClassToRegisterAndResolve>(
+			int instancesToCreate = 1)
+		{
+			RegisterEntryRunner<AppEntryRunner>(instancesToCreate);
+			Register<FirstClassToRegisterAndResolve>();
+			Register<SecondClassToRegisterAndResolve>();
+			Resolve<FirstClassToRegisterAndResolve>();
+			Resolve<SecondClassToRegisterAndResolve>();
+			Initialize<AppEntryRunner>(instancesToCreate);
+			Run();
+		}
+
+		public void Start<AppEntryRunner>(IEnumerable<Type> typesToRegisterAndResolve,
+			int instancesToCreate = 1)
+		{
+			RegisterAllTypesToRegister<AppEntryRunner>(typesToRegisterAndResolve, instancesToCreate);
+			ResolveAllTypesToResolve(typesToRegisterAndResolve);
+			Initialize<AppEntryRunner>(instancesToCreate);
+			Run();
+		}
+
+		private void RegisterAllTypesToRegister<AppEntryRunner>(
+			IEnumerable<Type> typesToRegisterAndResolve, int instancesToCreate)
+		{
+			RegisterEntryRunner<AppEntryRunner>(instancesToCreate);
+			foreach (Type type in typesToRegisterAndResolve)
+				Register(type);
+		}
+
+		private void ResolveAllTypesToResolve(IEnumerable<Type> typesToRegisterAndResolve)
+		{
+			foreach (Type type in typesToRegisterAndResolve)
+				Resolve(type);
 		}
 	}
 }

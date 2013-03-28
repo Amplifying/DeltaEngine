@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using DeltaEngine.Core;
+using DeltaEngine.Logging;
 using NUnit.Framework;
 
 namespace DeltaEngine.Platforms.Tests
@@ -13,35 +14,119 @@ namespace DeltaEngine.Platforms.Tests
 			Start<DummyRunner>(resolver);
 		}
 
+		[IntegrationTest]
+		public void StartWithTwoRunners(Type resolver)
+		{
+			Start<DummyRunner>(resolver, 2);
+		}
+
 		private class DummyRunner : Runner, IDisposable
 		{
 			public void Run() {}
-			public void Dispose() { }
+			public void Dispose() {}
 		}
 
 		private class DummyPresenter : Presenter
 		{
+			public DummyPresenter()
+			{
+				Run();
+				Present();
+			}
+
 			public void Run() {}
 			public void Present() {}
 		}
 
-		[Test]
-		public void StartWithOneClass()
+		[IntegrationTest]
+		public void StartWithOneClass(Type resolver)
 		{
-			Start(typeof(TestResolver), (DummyRunner dummy) => { }, () => { });
+			Start(resolver, (First first) => { }, () => { });
 		}
 
-		[Test]
-		public void StartWithTwoClasses()
+		[IntegrationTest]
+		public void StartWithTwoClasses(Type resolver)
 		{
-			Start(typeof(TestResolver), (DummyRunner dummy1, DummyPresenter dummy2) => { });
+			Start(resolver, (First first, Second second) => { });
 		}
 
-		[Test]
-		public void StartWithThreeClasses()
+		[IntegrationTest]
+		public void StartWithOneAndOneClasses(Type resolver)
 		{
-			Start(typeof(TestResolver),
-				(DummyRunner dummy1, DummyRunner dummy2, DummyRunner dummy3) => { });
+			Start(resolver, (First first) => { }, (Second second) => { });
+		}
+
+		[IntegrationTest]
+		public void StartWithThreeClasses(Type resolver)
+		{
+			Start(resolver, (First first, Second second, Third third) => { });
+		}
+
+		[IntegrationTest]
+		public void StartWithTwoAndOneClasses(Type resolver)
+		{
+			Start(resolver, (First first, Second second) => { }, (Third third) => { });
+		}
+
+		[IntegrationTest]
+		public void StartWithOneAndTwoClasses(Type resolver)
+		{
+			Start(resolver, (First first) => { }, (Second second, Third third) => { });
+		}
+
+		[IntegrationTest]
+		public void StartWithThreeAndOneClasses(Type resolver)
+		{
+			Start(resolver, (First first, Second second, Third third) => { },
+				(Forth forth) => { });
+		}
+
+		[IntegrationTest]
+		public void StartWithTwoAndTwoClasses(Type resolver)
+		{
+			Start(resolver, (First first, Second second) => { },
+				(Third third, Forth forth) => { });
+		}
+
+		[IntegrationTest]
+		public void StartWithOneAndThreeClasses(Type resolver)
+		{
+			Start(resolver, (First first) => { },
+				(Second second, Third third, Forth forth) => { });
+		}
+
+		[IntegrationTest]
+		public void StartWithThreeAndTwoClasses(Type resolver)
+		{
+			Start(resolver, (First first, Second second, Third third) => { },
+				(Forth forth, Fifth fifth) => { });
+		}
+
+		[IntegrationTest]
+		public void StartWithTwoAndThreeClasses(Type resolver)
+		{
+			Start(resolver, (First first, Second second) => { },
+				(Third third, Forth forth, Fifth fifth) => { });
+		}
+
+		private class First {}
+
+		private class Second {}
+
+		private class Third {}
+
+		private class Forth {}
+
+		private class Fifth {}
+
+		[Test]
+		public void CreateUnusedClasses()
+		{
+			Assert.IsNotNull(new First());
+			Assert.IsNotNull(new Second());
+			Assert.IsNotNull(new Third());
+			Assert.IsNotNull(new Forth());
+			Assert.IsNotNull(new Fifth());
 		}
 
 		[Test]
@@ -118,7 +203,26 @@ namespace DeltaEngine.Platforms.Tests
 			Assert.IsNotNull(new CustomRunner("test"));
 		}
 
-		[TestCase(typeof(OpenTKAppForTestStarter), Category = "Visual")]
+		[Test]
+		public void RegisteringTwoEqualMockInstancesShouldFail()
+		{
+			var resolver = new TestResolver();
+			var myClass = new ClassWithInnerClass.UnknownInnerClass();
+			resolver.RegisterMock(myClass);
+			Assert.Throws<AssertionException>(() => resolver.RegisterMock(myClass));
+		}
+
+		[IntegrationTest]
+		public void ExceptionInRunCodeShouldNotCrashApp(Type resolver)
+		{
+			if (resolver == typeof(TestResolver))
+			{
+				Assert.Throws<Exception>(() =>
+					Start(resolver, (Logger logger) => {}, () => { throw new Exception("Should not crash"); }));
+			}
+		}
+
+		[TestCase(typeof(OpenTKResolver), Category = "Visual")]
 		public void TestVisualCategoryInTestStarter(Type resolver)
 		{
 			Start(resolver, (Window w) => { });

@@ -17,9 +17,7 @@ namespace DeltaEngine.Input.Windows.Tests
 		[Test]
 		public void GetTouchDataFromHandleWithInvalidHandle()
 		{
-			var window = resolver.Resolve<Window>();
-			var hook = new TouchHook(window);
-			var nativeTouches = hook.GetTouchDataFromHandle(1, IntPtr.Zero);
+			var nativeTouches = TouchHook.GetTouchDataFromHandle(1, IntPtr.Zero);
 			Assert.Null(nativeTouches);
 		}
 

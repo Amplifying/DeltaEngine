@@ -6,7 +6,7 @@ namespace GameOfDeath
 	/// <summary>
 	/// Good old Game of Life, which will be the basis of multiplying rabbits in this game
 	/// </summary>
-	public class GameOfLife : Runner
+	public class GameOfLife : Runner<Time>
 	{
 		public GameOfLife(int width, int height)
 		{
@@ -21,10 +21,10 @@ namespace GameOfDeath
 
 		public class SizeMustBeGreaterThanZero : Exception {}
 
-		private readonly bool[,] currentWorld;
-		private readonly bool[,] nextGeneration;
 		public readonly int width;
 		public readonly int height;
+		private readonly bool[,] currentWorld;
+		private readonly bool[,] nextGeneration;
 
 		public bool this[int x, int y]
 		{
@@ -32,30 +32,23 @@ namespace GameOfDeath
 			set { currentWorld[x, y] = value; }
 		}
 
-		public virtual void Run()
+		public virtual void Run(Time time)
 		{
-			EvolveCurrentWorldIntoNextGeneration();
+			EvolveCurrentWorldIntoNextGeneration(time);
 			CopyNextGenerationIntoCurrentWorld();
 			GenerationCount++;
 		}
 
 		public int GenerationCount { get; private set; }
 
-		private void EvolveCurrentWorldIntoNextGeneration()
+		private void EvolveCurrentWorldIntoNextGeneration(Time time)
 		{
 			for (int x = 0; x < width; x++)
 				for (int y = 0; y < height; y++)
-					nextGeneration[x, y] = ShouldSurvive(x, y);
+					nextGeneration[x, y] = ShouldSurvive(time, x, y);
 		}
 
-		private void CopyNextGenerationIntoCurrentWorld()
-		{
-			for (int x = 0; x < width; x++)
-				for (int y = 0; y < height; y++)
-					currentWorld[x, y] = nextGeneration[x, y];
-		}
-
-		public virtual bool ShouldSurvive(int x, int y)
+		public virtual bool ShouldSurvive(Time time, int x, int y)
 		{
 			bool isAlive = this[x, y];
 			int neighbours = GetNumberOfNeighbours(x, y);
@@ -92,6 +85,13 @@ namespace GameOfDeath
 		private bool ValidPosition(int xIndex, int yIndex)
 		{
 			return xIndex >= 0 && yIndex >= 0 && xIndex < width && yIndex < height;
+		}
+
+		private void CopyNextGenerationIntoCurrentWorld()
+		{
+			for (int x = 0; x < width; x++)
+				for (int y = 0; y < height; y++)
+					currentWorld[x, y] = nextGeneration[x, y];
 		}
 
 		public void Randomize()

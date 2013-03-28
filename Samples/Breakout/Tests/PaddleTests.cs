@@ -21,13 +21,13 @@ namespace Breakout.Tests
 			var paddle = resolver.Resolve<Paddle>();
 			Assert.AreEqual(0.5f, paddle.Position.X);
 			resolver.SetKeyboardState(Key.CursorLeft, State.Pressed);
-			resolver.Run();
+			resolver.AdvanceTimeAndExecuteRunners(0.1f);
 			resolver.SetKeyboardState(Key.CursorLeft, State.Released);
 			Assert.IsTrue(paddle.Position.X < 0.5f);
 			Assert.IsTrue(paddle.Position.Y > 0.75f);
 			resolver.SetKeyboardState(Key.CursorRight, State.Pressed);
-			resolver.Run();
-			Assert.AreEqual(0.5f, paddle.Position.X);
+			resolver.AdvanceTimeAndExecuteRunners(0.2f);
+			Assert.IsTrue(paddle.Position.X > 0.5f);
 		}
 
 		[Test]
@@ -36,12 +36,13 @@ namespace Breakout.Tests
 			var resolver = new TestResolver();
 			var paddle = resolver.Resolve<Paddle>();
 			Assert.AreEqual(0.5f, paddle.Position.X);
-			resolver.SetMouseButtonState(MouseButton.Left, State.Pressed, Point.One);
-			resolver.Run();
-			resolver.SetMouseButtonState(MouseButton.Left, State.Released, Point.One);
+			resolver.SetMousePosition(Point.One);
+			resolver.SetMouseButtonState(MouseButton.Left, State.Pressed);
+			resolver.AdvanceTimeAndExecuteRunners(0.1f);
+			resolver.SetMouseButtonState(MouseButton.Left, State.Released);
 			Assert.IsTrue(paddle.Position.X > 0.5f);
 			resolver.SetTouchState(0, State.Pressed, Point.Zero);
-			resolver.Run();
+			resolver.AdvanceTimeAndExecuteRunners(0.1f);
 			Assert.IsTrue(paddle.Position.X < 1.0f);
 		}
 
@@ -52,12 +53,12 @@ namespace Breakout.Tests
 			var paddle = resolver.Resolve<Paddle>();
 			Assert.AreEqual(0.5f, paddle.Position.X);
 			resolver.SetGamePadState(GamePadButton.Left, State.Pressed);
-			resolver.Run();
+			resolver.AdvanceTimeAndExecuteRunners(0.1f);
 			resolver.SetGamePadState(GamePadButton.Left, State.Released);
 			Assert.IsTrue(paddle.Position.X < 0.5f);
 			resolver.SetGamePadState(GamePadButton.Right, State.Pressed);
-			resolver.Run();
-			Assert.AreEqual(0.5f, paddle.Position.X);
+			resolver.AdvanceTimeAndExecuteRunners(0.2f);
+			Assert.IsTrue(paddle.Position.X > 0.5f);
 		}
 
 		[VisualTest]

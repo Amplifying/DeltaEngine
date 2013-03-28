@@ -38,24 +38,25 @@
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <DocumentationFile>bin\Release\DeltaEngine.Datatypes.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\DeltaEngine.Datatypes.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\DeltaEngine.Datatypes.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyChecker.cs" />
     <Compile Include="BinaryData.cs" />
     <Compile Include="BinaryDataExtension.cs" />
-    <Compile Include="BinaryDataFactory.cs" />
     <Compile Include="Color.cs" />
+    <Compile Include="Component.cs" />
+    <Compile Include="Entity.cs" />
     <Compile Include="Matrix.cs" />
     <Compile Include="Point.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rectangle.cs" />
     <Compile Include="Size.cs" />
-    <Compile Include="UnknownBinaryData.cs" />
     <Compile Include="Triangle2D.cs" />
-    <Compile Include="UnknownMessageTypeReceived.cs" />
     <Compile Include="Vector.cs" />
   </ItemGroup>
   <ItemGroup>

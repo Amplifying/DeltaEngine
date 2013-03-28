@@ -13,13 +13,9 @@ namespace DeltaEngine.Graphics.SharpDX
 
 		protected static SamplerStateDescription BuildFilterDescription(Filter filter)
 		{
-			return new SamplerStateDescription
-			{
-				AddressU = TextureAddressMode.Clamp,
-				AddressV = TextureAddressMode.Clamp,
-				AddressW = TextureAddressMode.Clamp,
-				Filter = filter
-			};
+			var samplerDescriptor = SamplerStateDescription.Default();
+			samplerDescriptor.Filter = filter;
+			return samplerDescriptor;
 		}
 	}
 }

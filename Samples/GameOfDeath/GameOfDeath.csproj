@@ -43,16 +43,14 @@
     <ApplicationIcon>GameOfDeathIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\OpenTKWithOpenAL.1.1.1160.61462\lib\NET40\OpenTK.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameCoordinator.cs" />
+    <Compile Include="InputCoordinator.cs" />
     <Compile Include="Intro.cs" />
-    <Compile Include="RabbitsGrid.cs" />
-    <Compile Include="Score.cs" />
+    <Compile Include="RabbitGrid.cs" />
+    <Compile Include="Scoreboard.cs" />
     <Compile Include="Items\ItemEffect.cs" />
     <Compile Include="Items\Icon.cs" />
     <Compile Include="UI.cs" />
@@ -63,7 +61,6 @@
     <Compile Include="Items\Mallet.cs" />
     <Compile Include="Items\Item.cs" />
     <Compile Include="DeadRabbit.cs" />
-    <Compile Include="Game.cs" />
     <Compile Include="GameOfLife.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -97,10 +94,6 @@
     <ProjectReference Include="..\..\Platforms\WindowsOpenGL\DeltaEngine.WindowsOpenGL.csproj">
       <Project>{cc943ae0-a1cc-4788-ac9b-01db3a0ebcd6}</Project>
       <Name>DeltaEngine.WindowsOpenGL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Platforms\Windows\DeltaEngine.Platforms.Windows.csproj">
-      <Project>{BD8A80E2-A313-437E-B0EF-FC0B066280A7}</Project>
-      <Name>DeltaEngine.Platforms.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
       <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
@@ -228,7 +221,7 @@
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <PropertyGroup>
     <PostBuildEvent>
-xcopy /s /y "$(SolutionDir)packages\OpenTKWithOpenAL.1.1.1160.61462\NativeBinaries\x86\*.*" "$(TargetDir)"</PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

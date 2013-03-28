@@ -11,11 +11,9 @@ namespace DeltaEngine.Graphics
 		protected Image(string filename, Drawing drawing)
 			: base(filename)
 		{
-			Filename = filename;
 			this.drawing = drawing;
 		}
 
-		public string Filename { get; private set; }
 		protected readonly Drawing drawing;
 		public abstract Size PixelSize { get; }
 		protected bool DisableLinearFiltering { get; set; }
@@ -26,7 +24,7 @@ namespace DeltaEngine.Graphics
 			drawing.DrawVertices(VerticesMode.Triangles, vertices);
 		}
 
-		private static readonly short[] QuadIndices = new short[] { 0, 1, 2, 0, 2, 3 };
+		private static readonly short[] QuadIndices = { 0, 1, 2, 0, 2, 3 };
 
 		protected readonly Color[] checkerMapColors =
 		{

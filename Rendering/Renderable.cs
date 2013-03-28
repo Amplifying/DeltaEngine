@@ -13,18 +13,20 @@ namespace DeltaEngine.Rendering
 			IsVisible = true;
 			RenderLayer = 0;
 		}
+
 		public bool IsVisible { get; set; }
 
-		private int renderLayer;
 		public int RenderLayer
 		{
-			get {return renderLayer;}
+			get { return renderLayer; }
 			set
 			{
 				renderLayer = value;
 				HasRenderLayerChanged = true;
 			}
 		}
+
+		private int renderLayer;
 		internal bool HasRenderLayerChanged { get; set; }
 		public const int MinRenderLayer = -99;
 		public const int MaxRenderLayer = 100;

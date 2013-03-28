@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{EB455ABA-14F1-4145-86C1-0CA2BBCF157F}   </ProjectGuid>
+    <ProjectGuid>{EB455ABA-14F1-4145-86C1-0CA2BBCF157F}      </ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DeltaEngine.Graphics.OpenTK</RootNamespace>

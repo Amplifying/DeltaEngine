@@ -8,14 +8,14 @@ using NUnit.Framework;
 
 namespace GameOfDeath.Tests
 {
-	class GameOfLifeTests : TestStarter
+	internal class GameOfLifeTests : TestStarter
 	{
 		[Test]
 		public void CreateSimplestGameOfLifeEverWith1X1()
 		{
 			game = new GameOfLife(1, 1);
 			Assert.AreEqual(0, game.GenerationCount);
-			game.Run();
+			game.Run(new TestResolver().Resolve<Time>());
 			Assert.AreEqual(1, game.GenerationCount);
 		}
 
@@ -32,7 +32,7 @@ namespace GameOfDeath.Tests
 		{
 			game = new GameOfLife(3, 3);
 			game[1, 1] = true;
-			game.Run();
+			game.Run(new TestResolver().Resolve<Time>());
 			Assert.IsFalse(game[1, 1]);
 		}
 
@@ -41,7 +41,7 @@ namespace GameOfDeath.Tests
 		{
 			game = new GameOfLife(3, 3);
 			game[1, 1] = true;
-			Assert.IsFalse(game.ShouldSurvive(1, 1));
+			Assert.IsFalse(game.ShouldSurvive(new TestResolver().Resolve<Time>(), 1, 1));
 		}
 
 		[Test]
@@ -49,7 +49,7 @@ namespace GameOfDeath.Tests
 		{
 			game = new GameOfLife(2, 2);
 			CreateBlock(0, 0);
-			Assert.IsTrue(game.ShouldSurvive(0, 0));
+			Assert.IsTrue(game.ShouldSurvive(new TestResolver().Resolve<Time>(), 0, 0));
 		}
 
 		[Test]
@@ -59,7 +59,7 @@ namespace GameOfDeath.Tests
 			game[0, 0] = true;
 			game[0, 1] = true;
 			game[1, 0] = true;
-			Assert.IsTrue(game.ShouldSurvive(0, 0));
+			Assert.IsTrue(game.ShouldSurvive(new TestResolver().Resolve<Time>(), 0, 0));
 		}
 
 		[Test]
@@ -67,7 +67,7 @@ namespace GameOfDeath.Tests
 		{
 			game = new GameOfLife(2, 2);
 			CreateBlock(0, 0);
-			Assert.IsTrue(game.ShouldSurvive(0, 0));
+			Assert.IsTrue(game.ShouldSurvive(new TestResolver().Resolve<Time>(), 0, 0));
 		}
 
 		[Test]
@@ -77,7 +77,7 @@ namespace GameOfDeath.Tests
 			game[0, 1] = true;
 			game[1, 0] = true;
 			game[1, 1] = true;
-			Assert.IsTrue(game.ShouldSurvive(0, 0));
+			Assert.IsTrue(game.ShouldSurvive(new TestResolver().Resolve<Time>(), 0, 0));
 		}
 
 		[Test]
@@ -86,7 +86,7 @@ namespace GameOfDeath.Tests
 			game = new GameOfLife(2, 2);
 			game[0, 1] = true;
 			game[1, 0] = true;
-			Assert.IsFalse(game.ShouldSurvive(0, 0));
+			Assert.IsFalse(game.ShouldSurvive(new TestResolver().Resolve<Time>(), 0, 0));
 		}
 
 		[Test]
@@ -95,18 +95,18 @@ namespace GameOfDeath.Tests
 			game = new GameOfLife(3, 3);
 			CreateBlock(0, 0);
 			CreateBlock(1, 1);
-			Assert.IsFalse(game.ShouldSurvive(1, 1));
+			Assert.IsFalse(game.ShouldSurvive(new TestResolver().Resolve<Time>(), 1, 1));
 		}
 
 		/// <summary>
-		/// Shapes that survife: http://en.wikipedia.org/wiki/Conway's_Game_of_Life
+		/// Shapes that survive: http://en.wikipedia.org/wiki/Conway's_Game_of_Life
 		/// </summary>
 		[Test]
 		public void BlockShouldStayAlive()
 		{
 			game = new GameOfLife(4, 4);
 			CreateBlock(1, 1);
-			game.Run();
+			game.Run(new TestResolver().Resolve<Time>());
 			Assert.IsTrue(game[1, 1]);
 			Assert.IsTrue(game[2, 2]);
 		}
@@ -126,7 +126,7 @@ namespace GameOfDeath.Tests
 			CreateVerticalLine(1, 0);
 			Assert.IsTrue(game[1, 0]);
 			Assert.IsFalse(game[0, 1]);
-			game.Run();
+			game.Run(new TestResolver().Resolve<Time>());
 			Assert.IsFalse(game[1, 0]);
 			Assert.IsTrue(game[0, 1]);
 			Assert.IsTrue(game[1, 1]);
@@ -149,7 +149,7 @@ namespace GameOfDeath.Tests
 				(Renderer renderer, Time time) =>
 				{
 					if (resolver == typeof(TestResolver) || time.CheckEvery(0.1f))
-						game.Run();
+						game.Run(time);
 
 					for (int x = 0; x < game.width; x++)
 						for (int y = 0; y < game.height; y++)

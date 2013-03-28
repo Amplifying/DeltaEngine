@@ -1,6 +1,6 @@
 ﻿using System;
+using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Input.Triggers;
 using DeltaEngine.Platforms.Tests;
 using DeltaEngine.Rendering;
 using DeltaEngine.Rendering.Shapes;
@@ -18,9 +18,9 @@ namespace DeltaEngine.Input.Tests
 				var command = new Command();
 				var trigger = new MouseButtonTrigger(MouseButton.Left, State.Releasing);
 				command.Add(trigger);
-				Assert.AreEqual(1, command.attachedTriggers.Count);
+				Assert.AreEqual(1, command.NumberOfAttachedTriggers);
 				command.Remove(trigger);
-				Assert.AreEqual(0, command.attachedTriggers.Count);
+				Assert.AreEqual(0, command.NumberOfAttachedTriggers);
 			});
 		}
 
@@ -29,17 +29,7 @@ namespace DeltaEngine.Input.Tests
 		{
 			Start(resolver, (InputCommands input) =>
 			{
-				var command = new Command();
-				input.Add(command);
-				command.Add(new MouseButtonTrigger(MouseButton.Left, State.Releasing));
-				bool triggered = false;
-				command.Attach(trigger => triggered = true);
-				if (testResolver != null)
-				{
-					testResolver.SetMouseButtonState(MouseButton.Left, State.Releasing, Point.Zero);
-					testResolver.AdvanceTimeAndExecuteRunners(0.1f);
-					Assert.IsTrue(triggered);
-				}
+				SimulateKeyOrMousePress(input, false);
 			});
 		}
 
@@ -67,28 +57,45 @@ namespace DeltaEngine.Input.Tests
 		{
 			Start(resolver, (InputCommands input) =>
 			{
-				var command = new Command();
-				input.Add(command);
-				command.Add(new KeyTrigger(Key.A, State.Pressed));
-				bool triggered = false;
-				command.Attach(trigger => triggered = true);
-				if (testResolver != null)
-				{
-					testResolver.SetKeyboardState(Key.A, State.Pressed);
-					testResolver.AdvanceTimeAndExecuteRunners(0.1f);
-					Assert.IsTrue(triggered);
-				}
+				SimulateKeyOrMousePress(input, true);
 			});
+		}
+
+		private void SimulateKeyOrMousePress(InputCommands input, bool key)
+		{
+			var command = new Command();
+			InputIsKeyOrMouse(input, key, command);
+			bool triggered = false;
+			command.Attach(trigger => triggered = true);
+			if (testResolver != null)
+			{
+				if (key)
+					testResolver.SetKeyboardState(Key.A, State.Pressed);
+				else
+					testResolver.SetMouseButtonState(MouseButton.Left, State.Releasing);
+
+				testResolver.AdvanceTimeAndExecuteRunners(0.1f);
+				Assert.IsTrue(triggered);
+			}
+		}
+
+		private static void InputIsKeyOrMouse(InputCommands input, bool key, Command command)
+		{
+			input.Add(command);
+			if (key)
+				command.Add(new KeyTrigger(Key.A, State.Pressed));
+			else
+				command.Add(new MouseButtonTrigger(MouseButton.Left, State.Releasing));
 		}
 
 		[IntegrationTest]
 		public void Run(Type resolver)
 		{
-			Start(resolver, (InputCommands input) =>
+			Start(resolver, (InputCommands input, Time time) =>
 			{
 				var command = new Command();
 				command.Add(new KeyTrigger(Key.Y, State.Releasing));
-				command.Run(input);
+				command.Run(input, time);
 			});
 		}
 
@@ -99,7 +106,7 @@ namespace DeltaEngine.Input.Tests
 			{
 				var command = new TestResolver().Resolve<Command>();
 				command.Add(new KeyTrigger(Key.Y, State.Released));
-				command.Run(input);
+				command.Run(input, null);
 			});
 		}
 

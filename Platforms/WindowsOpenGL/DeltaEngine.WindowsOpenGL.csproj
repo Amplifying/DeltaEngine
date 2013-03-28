@@ -38,10 +38,12 @@
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <DocumentationFile>bin\Release\DeltaEngine.WindowsOpenGL.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\DeltaEngine.WindowsOpenGL.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\DeltaEngine.WindowsOpenGL.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
-    <Compile Include="OpenTKAppForTestStarter.cs" />
+    <Compile Include="OpenTKResolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -57,7 +59,7 @@
       <Name>DeltaEngine.Graphics</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Graphics\OpenTK\DeltaEngine.Graphics.OpenTK.csproj">
-      <Project>{eb455aba-14f1-4145-86c1-0ca2bbcf157f}</Project>
+      <Project>{EB455ABA-14F1-4145-86C1-0CA2BBCF157F}</Project>
       <Name>DeltaEngine.Graphics.OpenTK</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Input\DeltaEngine.Input.csproj">
@@ -73,7 +75,7 @@
       <Name>DeltaEngine.Multimedia</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Multimedia\OpenTK\DeltaEngine.Multimedia.OpenTK.csproj">
-      <Project>{6f82824d-1f58-4584-848e-8172b0449c2d}</Project>
+      <Project>{32665d04-5a07-4f99-9e20-0639cd1c1d6d}</Project>
       <Name>DeltaEngine.Multimedia.OpenTK</Name>
     </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Platforms.csproj">

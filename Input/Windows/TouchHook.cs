@@ -47,7 +47,7 @@ namespace DeltaEngine.Input.Windows
 				nativeTouches.AddRange(newTouches);
 		}
 
-		internal NativeTouchInput[] GetTouchDataFromHandle(int inputCount, IntPtr handle)
+		internal static NativeTouchInput[] GetTouchDataFromHandle(int inputCount, IntPtr handle)
 		{
 			var inputs = new NativeTouchInput[inputCount];
 			bool isTouchProcessed = NativeMethods.GetTouchInputInfo(handle, inputCount, inputs, 

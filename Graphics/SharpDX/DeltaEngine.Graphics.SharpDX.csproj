@@ -54,6 +54,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SharpDXCircularBuffer.cs" />
     <Compile Include="SharpDXSampler.cs" />
     <Compile Include="SharpDXBuffer.cs" />
     <Compile Include="SharpDXStates.cs" />

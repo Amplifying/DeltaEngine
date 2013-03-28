@@ -25,7 +25,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-    <CodeAnalysisRuleSet>..\..\..\..\Users\Stephan\Desktop\DeltaEngineModifiedRuleSet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -73,9 +72,17 @@
       <Project>{d0aad622-ed82-40e5-88a9-980eafc12c16}</Project>
       <Name>DeltaEngine.Platforms.Tests</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Platforms\Windows\DeltaEngine.Platforms.Windows.csproj">
+      <Project>{BD8A80E2-A313-437E-B0EF-FC0B066280A7}</Project>
+      <Name>DeltaEngine.Platforms.Windows</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Graphics.csproj">
       <Project>{8f701b0d-48b6-45cf-85e0-286bd53328ba}</Project>
       <Name>DeltaEngine.Graphics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OpenTK\DeltaEngine.Graphics.OpenTK.csproj">
+      <Project>{EB455ABA-14F1-4145-86C1-0CA2BBCF157F}</Project>
+      <Name>DeltaEngine.Graphics.OpenTK</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

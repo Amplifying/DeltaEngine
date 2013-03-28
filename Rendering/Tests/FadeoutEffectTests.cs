@@ -14,7 +14,8 @@ namespace DeltaEngine.Rendering.Tests
 		{
 			var resolver = new TestResolver();
 			var content = resolver.Resolve<Content>();
-			var effect = new FadeoutEffect(content.Load<Image>("test"), Point.Half, Size.One);
+			var effect = new FadeoutEffect(content.Load<Image>("test"), Rectangle.FromCenter(Point.Half,
+				Size.One));
 			Assert.IsTrue(effect.IsVisible);
 			Assert.AreEqual(Point.Half, effect.DrawArea.Center);
 			Assert.AreEqual(Color.White, effect.Color);
@@ -36,7 +37,8 @@ namespace DeltaEngine.Rendering.Tests
 		{
 			Start(typeof(TestResolver), (Content content, Renderer renderer) =>
 			{
-				var effect = new FadeoutEffect(content.Load<Image>("test"), Point.Half, Size.One);
+				var effect = new FadeoutEffect(content.Load<Image>("test"), Rectangle.FromCenter(Point.Half,
+					Size.One));
 				renderer.Add(effect);
 				Assert.AreEqual(1, renderer.NumberOfActiveRenderableObjects);
 				Assert.AreEqual(Color.White, effect.Color);
@@ -53,8 +55,8 @@ namespace DeltaEngine.Rendering.Tests
 		{
 			Start(resolver,
 				(Content content, Renderer renderer) =>
-					renderer.Add(new FadeoutEffect(content.Load<Image>("DeltaEngineLogo"), Point.Half,
-						Size.Half, 2.0f)));
+					renderer.Add(new FadeoutEffect(content.Load<Image>("DeltaEngineLogo"),
+						Rectangle.FromCenter(Point.Half, Size.Half), 2.0f)));
 		}
 	}
 }

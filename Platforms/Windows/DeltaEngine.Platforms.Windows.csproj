@@ -42,6 +42,7 @@
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\DeltaEngine.Platforms.Windows.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\DeltaEngine.Platforms.Windows.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -52,7 +53,6 @@
     <Compile Include="FormsWindow.cs" />
     <Compile Include="WindowsResolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="XmlContentFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">

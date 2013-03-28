@@ -6,6 +6,7 @@
 	public enum Key
 	{
 		None = 0,
+		//// ReSharper disable UnusedMember.Global
 		BackSpace = 8,
 		Tab = 9,
 		Enter = 13,

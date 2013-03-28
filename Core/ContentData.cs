@@ -7,13 +7,17 @@ namespace DeltaEngine.Core
 	/// </summary>
 	public abstract class ContentData : IDisposable
 	{
-		protected ContentData(string contentFilename)
+		protected ContentData(string filename)
 		{
-			if (string.IsNullOrEmpty(contentFilename))
+			if (string.IsNullOrEmpty(filename))
 				throw new ContentNameMissing();
+
+			Filename = filename;
 		}
 
-		public class ContentNameMissing : Exception { }
+		public class ContentNameMissing : Exception {}
+
+		public string Filename { get; private set; }
 
 		public abstract void Dispose();
 	}

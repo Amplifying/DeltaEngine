@@ -1,28 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using DeltaEngine.Core;
-using DeltaEngine.Input.Devices;
-using DeltaEngine.Input.Triggers;
 
 namespace DeltaEngine.Input
 {
 	/// <summary>
 	/// Provides a way to check and trigger all input commands in the run loop.
 	/// </summary>
-	public class InputCommands : Runner
+	public class InputCommands : Runner<Time>
 	{
-		public InputCommands(Keyboard keyboard, Mouse mouse, Touch touch, GamePad gamePad)
+		public InputCommands(Keyboard keyboard, PointerDevices pointerDevices, GamePad gamePad)
 		{
 			this.keyboard = keyboard;
-			this.mouse = mouse;
-			this.touch = touch;
+			this.pointerDevices = pointerDevices;
 			this.gamePad = gamePad;
 		}
 
 		internal readonly Keyboard keyboard;
-		internal readonly Mouse mouse;
-		internal readonly Touch touch;
+		private readonly PointerDevices pointerDevices;
 		internal readonly GamePad gamePad;
+		internal Mouse Mouse
+		{
+			get { return pointerDevices.mouse; }
+		}
+
+		internal Touch Touch
+		{
+			get { return pointerDevices.touch; }
+		}
 
 		public Command Add(Key key, Action callback)
 		{
@@ -46,7 +51,7 @@ namespace DeltaEngine.Input
 		public Command Add(MouseButton mouseButton, State buttonState, Action<Mouse> callback)
 		{
 			var command = new Command();
-			command.Callback += trigger => callback(mouse);
+			command.Callback += trigger => callback(Mouse);
 			command.Add(new MouseButtonTrigger(mouseButton, buttonState));
 			Add(command);
 			return command;
@@ -55,8 +60,17 @@ namespace DeltaEngine.Input
 		public Command AddMouseMovement(Action<Mouse> mouseMovementCallback)
 		{
 			var command = new Command();
-			command.Callback += trigger => mouseMovementCallback(mouse);
+			command.Callback += trigger => mouseMovementCallback(Mouse);
 			command.Add(new MouseMovementTrigger());
+			Add(command);
+			return command;
+		}
+
+		public Command AddMouseHover(Action<Mouse> mouseHoverCallback)
+		{
+			var command = new Command();
+			command.Callback += trigger => mouseHoverCallback(Mouse);
+			command.Add(new MouseHoverTrigger());
 			Add(command);
 			return command;
 		}
@@ -69,7 +83,7 @@ namespace DeltaEngine.Input
 		public Command Add(State touchState, Action<Touch> callback)
 		{
 			var command = new Command();
-			command.Callback += trigger => callback(touch);
+			command.Callback += trigger => callback(Touch);
 			command.Add(new TouchPressTrigger(touchState));
 			Add(command);
 			return command;
@@ -107,11 +121,11 @@ namespace DeltaEngine.Input
 			get { return commands.Count; }
 		}
 
-		public void Run()
+		public void Run(Time time)
 		{
 			var activeCommands = new List<Command>(commands);
 			foreach (Command command in activeCommands)
-				command.Run(this);
+				command.Run(this, time);
 		}
 	}
 }

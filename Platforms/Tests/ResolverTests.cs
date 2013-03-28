@@ -19,11 +19,19 @@ namespace DeltaEngine.Platforms.Tests
 			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
 				return;
 
-			using (var resolver = (AutofacStarter)Activator.CreateInstance(resolverType))
+			using (var resolver = CreateResolver(resolverType))
 			{
 				resolver.Start<T>();
 				Assert.IsNotNull(resolver.Resolve<T>());
 			}
+		}
+
+		private static AutofacStarter CreateResolver(Type resolverType)
+		{
+			if (resolverType == typeof(TestResolver))
+				return (TestResolver)Activator.CreateInstance(resolverType);
+
+			return (AutofacStarter)Activator.CreateInstance(resolverType); // ncrunch: no coverage
 		}
 
 		[IntegrationTest]

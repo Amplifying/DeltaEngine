@@ -126,7 +126,7 @@ namespace DeltaEngine.Rendering.Shapes
 
 		private float theta;
 
-		protected int GetPointsCount(float maxRadius)
+		protected static int GetPointsCount(float maxRadius)
 		{
 			var pointsCount = (int)(MaxPoints * MathExtensions.Max(0.22f + maxRadius / 2, maxRadius));
 			return MathExtensions.Max(pointsCount, MinPoints);

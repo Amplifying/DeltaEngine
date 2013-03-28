@@ -1,43 +1,35 @@
 ﻿using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
-using DeltaEngine.Input.Devices;
 using Moq;
 
 namespace DeltaEngine.Platforms.Tests
 {
 	public class TestInputResolver : TestModuleResolver
 	{
-		public TestInputResolver(TestResolver testResolver) 
-			: base(testResolver)
+		public TestInputResolver(TestResolver testResolver)
+			: base(testResolver) {}
+
+		public override void Register()
 		{
 			AllocateStates();
-			InitializePositions();
-			SetupInput();
+			CurrentTouchPosition = Point.Half;
+			SetupInput();			
 		}
 
-		public State[] KeyboardStates { get; set; }
-		public State[] MouseButtonStates { get; set; }
-		public State[] TouchStates { get; set; }
-		public State[] GamePadButtonStates { get; set; }
-		public Point CurrentMousePosition { get; set; }
-		public Point CurrentTouchPosition { get; set; }
-
-		private const int MaxNumberOfTouchIndices = 10;
+		internal Point CurrentTouchPosition { get; set; }
 
 		private void AllocateStates()
 		{
 			KeyboardStates = new State[(int)Key.NumberOfKeys];
-			MouseButtonStates = new State[MouseButton.Left.GetCount()];
 			TouchStates = new State[MaxNumberOfTouchIndices];
 			GamePadButtonStates = new State[GamePadButton.A.GetCount()];
 		}
 
-		private void InitializePositions()
-		{
-			CurrentMousePosition = Point.Half;
-			CurrentTouchPosition = Point.Half;
-		}
+		internal State[] KeyboardStates { get; set; }
+		internal State[] TouchStates { get; set; }
+		internal State[] GamePadButtonStates { get; set; }
+		private const int MaxNumberOfTouchIndices = 10;
 
 		private void SetupInput()
 		{
@@ -45,6 +37,7 @@ namespace DeltaEngine.Platforms.Tests
 			SetupMockMouse();
 			SetupTouch();
 			SetupGamePad();
+			testResolver.RegisterSingleton<PointerDevices>();
 			testResolver.RegisterSingleton<InputCommands>();
 		}
 
@@ -58,24 +51,61 @@ namespace DeltaEngine.Platforms.Tests
 
 		private void SetupMockMouse()
 		{
-			var mouse = testResolver.RegisterMock<Mouse>();
-			mouse.SetupGet(k => k.IsAvailable).Returns(true);
-			mouse.Setup(k => k.SetPosition(It.IsAny<Point>())).Callback(
-				(Point p) => CurrentMousePosition = p);
-			mouse.SetupGet(k => k.Position).Returns(() => CurrentMousePosition);
-			mouse.SetupGet(k => k.ScrollWheelValue).Returns(0);
-			SetupMockMouseButtons(mouse);
+			mouse = testResolver.RegisterMock(new MockMouse());
 		}
 
-		private void SetupMockMouseButtons(Mock<Mouse> mouse)
+		private MockMouse mouse;
+
+		internal void SetMouseButtonState(MouseButton button, State state)
 		{
-			mouse.SetupGet(k => k.LeftButton).Returns(() => MouseButtonStates[(int)MouseButton.Left]);
-			mouse.SetupGet(k => k.MiddleButton).Returns(() => MouseButtonStates[(int)MouseButton.Middle]);
-			mouse.SetupGet(k => k.RightButton).Returns(() => MouseButtonStates[(int)MouseButton.Right]);
-			mouse.SetupGet(k => k.X1Button).Returns(() => MouseButtonStates[(int)MouseButton.X1]);
-			mouse.SetupGet(k => k.X2Button).Returns(() => MouseButtonStates[(int)MouseButton.X2]);
-			mouse.Setup(k => k.GetButtonState(It.IsAny<MouseButton>())).Returns(
-				(MouseButton button) => MouseButtonStates[(int)button]);
+			mouse.SetButtonState(button, state);
+		}
+
+		internal void SetMousePosition(Point newMousePosition)
+		{
+			mouse.SetPosition(newMousePosition);
+		}
+
+		/// <summary>
+		/// Unlike Keyboard, Touch and Gamepad, which are just interfaces, in the case 
+		/// of the Mouse we need a specific mock class to be able to define a customized 
+		/// behaviour that allows us to set the position and the mouse buttons states 
+		/// in order to simulate events (mouse movement, button pressing) from the tests
+		/// </summary>
+		private class MockMouse : Mouse
+		{
+			public MockMouse()
+			{
+				Position = Point.Half;
+			}
+
+			public override bool IsAvailable
+			{
+				get { return true; }
+			}
+
+			public void SetButtonState(MouseButton button, State state)
+			{
+				if (button == MouseButton.Right)
+					RightButton = state;
+				else if (button == MouseButton.Middle)
+					MiddleButton = state;
+				else if (button == MouseButton.X1)
+					X1Button = state;
+				else if (button == MouseButton.X2)
+					X2Button = state;
+				else
+					LeftButton = state;
+			}
+
+			public override void SetPosition(Point newPosition)
+			{
+				Position = newPosition;
+			}
+
+			public override void Run() {}
+
+			public override void Dispose() {}
 		}
 
 		private void SetupTouch()

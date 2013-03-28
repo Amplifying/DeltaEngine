@@ -1,4 +1,5 @@
-﻿using DeltaEngine.Core;
+﻿using System.Collections.Generic;
+using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
 
@@ -10,19 +11,27 @@ namespace DeltaEngine.Rendering
 	/// </summary>
 	public class AnimatedSprite : Sprite
 	{
-		public AnimatedSprite(Image image, Rectangle initialDrawArea, Color color, int width, 
-			int height, int spritesPerSecond, Point[] frames)
-			: base(image, initialDrawArea, color)
+		public AnimatedSprite(IList<Image> images, Rectangle initialDrawArea)
+			: base(images[0], initialDrawArea)
 		{
-			sizeSprite.Width = width;
-			sizeSprite.Height = height;
-			spriteTime = (1.0f / spritesPerSecond);
-			this.frames = frames;
+			spriteTime = 0.25f;
+			this.images = images;
+			currentFrame = 0;
 		}
 
-		private readonly Size sizeSprite;
-		private readonly Point[] frames;
-		private readonly float spriteTime;
+		private float spriteTime;
+		private readonly IList<Image> images;
+		private int currentFrame;
+
+		public void AddImage(Image image)
+		{
+			images.Add(image);
+		}
+
+		public void SetNumberSpritesPerSecond(int number)
+		{
+			spriteTime = 1.0f / number;
+		}
 
 		protected override void Render(Renderer renderer, Time time)
 		{
@@ -32,41 +41,32 @@ namespace DeltaEngine.Rendering
 
 		private void DrawImage(Time time)
 		{
-			var sprite = GetCurrentSprite(time);
-			var heightSprite = 1.0f / Image.PixelSize.Height * sizeSprite.Height;
-			var widthSprite = 1.0f / Image.PixelSize.Width * sizeSprite.Width;
-			CalculateCornersAndPaint(sprite, widthSprite, heightSprite);
+			CalculateCurrentFrame(time);
+			CalculateCornersAndPaint();
 		}
 
-		private Point GetCurrentSprite(Time time)
+		private void CalculateCurrentFrame(Time time)
 		{
 			frameOffset += time.CurrentDelta;
 			if (frameOffset > spriteTime)
 			{
-				frameNumber = (frameNumber + 1) % frames.Length;
+				currentFrame = (currentFrame + 1) % images.Count;
 				frameOffset = 0;
 			}
-			return frames[frameNumber];
 		}
 
-		private int frameNumber;
 		private float frameOffset;
 
-		private void CalculateCornersAndPaint(Point sprite, float widthSprite, float heightSprite)
+		private void CalculateCornersAndPaint()
 		{
-			var topLeft = new Point(sprite.X * widthSprite, sprite.Y * heightSprite);
-			var topRight = new Point((sprite.X + 1.0f) * widthSprite, sprite.Y * heightSprite);
-			var botLeft = new Point(sprite.X * widthSprite, (sprite.Y + 1.0f) * heightSprite);
-			var botRight = new Point((sprite.X + 1.0f) * widthSprite, (sprite.Y + 1.0f) * heightSprite);
-
 			var vertices = new[]
 			{
-				GetVertex(Rotate(DrawArea.TopLeft), topLeft), 
-				GetVertex(Rotate(DrawArea.TopRight), topRight),
-				GetVertex(Rotate(DrawArea.BottomRight), botRight),
-				GetVertex(Rotate(DrawArea.BottomLeft), botLeft)
+				GetVertex(Rotate(DrawArea.TopLeft), Point.Zero), 
+				GetVertex(Rotate(DrawArea.TopRight), Point.UnitX),
+				GetVertex(Rotate(DrawArea.BottomRight), Point.One),
+				GetVertex(Rotate(DrawArea.BottomLeft), Point.UnitY)
 			};
-			Image.Draw(vertices);
+			images[currentFrame].Draw(vertices);
 		}
 	}
 }

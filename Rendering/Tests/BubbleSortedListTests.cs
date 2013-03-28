@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Linq;
-using DeltaEngine.Datatypes;
+﻿using DeltaEngine.Datatypes;
 using DeltaEngine.Rendering.Shapes;
 using NUnit.Framework;
 
@@ -8,26 +6,32 @@ namespace DeltaEngine.Rendering.Tests
 {
 	public class BubbleSortedListTests
 	{
-		private readonly Ellipse ellipse1 = new Ellipse(Point.Zero, 0.5f, 0.7f) { RenderLayer = -4 };
-		private readonly Ellipse ellipse2 = new Ellipse(Point.Zero, 0.5f, 0.7f) { RenderLayer = -3 };
-		private readonly Ellipse ellipse3 = new Ellipse(Point.Zero, 0.5f, 0.7f) { RenderLayer = -2 };
-		private readonly Ellipse ellipse4 = new Ellipse(Point.Zero, 0.5f, 0.7f) { RenderLayer = -1 };
-
 		[Test]
 		public void AddElements()
 		{
-			var bubbleList = new BubbleSortedList();
-			var ellipse5 = new Ellipse(Point.Zero, 0.5f, 0.7f) { RenderLayer = 3 };
-			var ellipse6 = new Ellipse(Point.Zero, 0.5f, 0.7f) { RenderLayer = 0 };
-			bubbleList.Add(ellipse5);
-			bubbleList.Add(ellipse3);
-			bubbleList.Add(ellipse4);
-			bubbleList.Add(ellipse6);
+			var bubbleList = CreateBubbleList();
 			Assert.AreEqual(ellipse3, bubbleList[0]);
 			Assert.AreEqual(ellipse4, bubbleList[1]);
 			Assert.AreEqual(ellipse6, bubbleList[2]);
 			Assert.AreEqual(ellipse5, bubbleList[3]);
 		}
+
+		private BubbleSortedList CreateBubbleList()
+		{
+			var bubbleList = new BubbleSortedList();
+			bubbleList.Add(ellipse5);
+			bubbleList.Add(ellipse3);
+			bubbleList.Add(ellipse4);
+			bubbleList.Add(ellipse6);
+			bubbleList.Add(ellipse5);
+			Assert.AreEqual(4, bubbleList.Count); 
+			return bubbleList;
+		}
+
+		private readonly Ellipse ellipse3 = new Ellipse(Point.Zero, 0.5f, 0.7f) { RenderLayer = -2 };
+		private readonly Ellipse ellipse4 = new Ellipse(Point.Zero, 0.5f, 0.7f) { RenderLayer = -1 };
+		private readonly Ellipse ellipse5 = new Ellipse(Point.Zero, 0.5f, 0.7f) { RenderLayer = 3 };
+		private readonly Ellipse ellipse6 = new Ellipse(Point.Zero, 0.5f, 0.7f) { RenderLayer = 0 };
 
 		[Test]
 		public void CopyConstructor()
@@ -39,6 +43,9 @@ namespace DeltaEngine.Rendering.Tests
 			Assert.AreEqual(ellipse3, otherList[2]);
 			Assert.AreEqual(ellipse4, otherList[3]);
 		}
+
+		private readonly Ellipse ellipse1 = new Ellipse(Point.Zero, 0.5f, 0.7f) { RenderLayer = -4 };
+		private readonly Ellipse ellipse2 = new Ellipse(Point.Zero, 0.5f, 0.7f) { RenderLayer = -3 };
 
 		[Test]
 		public void GetData()
@@ -53,13 +60,7 @@ namespace DeltaEngine.Rendering.Tests
 		[Test]
 		public void Resort()
 		{
-			var bubbleList = new BubbleSortedList();
-			var ellipse5 = new Ellipse(Point.Zero, 0.5f, 0.7f) { RenderLayer = 3 };
-			var ellipse6 = new Ellipse(Point.Zero, 0.5f, 0.7f) { RenderLayer = 0 };
-			bubbleList.Add(ellipse5);
-			bubbleList.Add(ellipse3);
-			bubbleList.Add(ellipse4);
-			bubbleList.Add(ellipse6);
+			var bubbleList = CreateBubbleList();
 			ellipse5.RenderLayer = -5;
 			bubbleList.Resort();
 			Assert.AreEqual(ellipse5, bubbleList[0]);

@@ -5,35 +5,39 @@ using Moq;
 
 namespace DeltaEngine.Platforms.Tests
 {
-	/// <summary>
-	/// Mocks common Rendering and Graphics objects for testing
-	/// </summary>
 	public class TestRenderingResolver : TestModuleResolver
 	{
-		public TestRenderingResolver(TestResolver testResolver)
-			: base(testResolver)
-		{
-			Window window = SetupWindow();
-			Drawing drawing = SetupGraphics();
-			SetupRenderer(window, drawing);
-		}
+		public TestRenderingResolver(TestResolver testResolver) 
+			: base(testResolver) {}
 
-		private Window SetupWindow()
+		public override void Register()
+		{
+			SetupWindow();
+			SetupGraphics();
+			SetupRenderer();			
+		}
+		
+		internal Drawing Drawing { get; private set; }
+		internal Renderer Renderer { get; private set; }
+		internal Mock<Image> MockImage { get; private set; }
+
+		private void SetupWindow()
 		{
 			var windowMock = testResolver.RegisterMock<Window>();
 			windowMock.Setup(w => w.IsVisible).Returns(true);
 			windowMock.Setup(w => w.IsClosing).Returns(true);
 			windowMock.SetupProperty(w => w.Title, "WindowMock");
 			SetupWindowSizeProperties(windowMock);
-			return windowMock.Object;
+			window = windowMock.Object;
 		}
 
-		private static void SetupWindowSizeProperties(Mock<Window> windowMock)
+		private Window window;
+
+		private void SetupWindowSizeProperties(Mock<Window> windowMock)
 		{
-			Window window = windowMock.Object;
 			var currentSize = new Size(1024, 640);
 			windowMock.SetupGet(w => w.TotalPixelSize).Returns(() => currentSize);
-#pragma warning disable 0618
+#pragma warning disable 612,618
 			windowMock.SetupSet(w => w.TotalPixelSize).Callback(s =>
 			{
 				currentSize = s;
@@ -56,45 +60,44 @@ namespace DeltaEngine.Platforms.Tests
 			windowMock.SetupGet(w => w.IsFullscreen).Returns(() => isFullscreen);
 		}
 
-		private Drawing SetupGraphics()
+		private void SetupGraphics()
 		{
-			Device device = SetupGraphicsDevice();
-			Drawing drawing = SetupDrawing(device);
-			SetupImage(drawing);
-			return drawing;
+			SetupGraphicsDevice();
+			SetupDrawing();
+			SetupImage();
 		}
 
-		private Device SetupGraphicsDevice()
+		private void SetupGraphicsDevice()
 		{
-			Device device = new Mock<Device>().Object;
+			device = new Mock<Device>().Object;
 			testResolver.RegisterMock(device);
-			return device;
 		}
 
-		private Drawing SetupDrawing(Device device)
+		private Device device;
+
+		private void SetupDrawing()
 		{
 			var mockDrawing = new Mock<Drawing>(device);
 			mockDrawing.Setup(
 				d => d.DrawVertices(It.IsAny<VerticesMode>(), It.IsAny<VertexPositionColor[]>())).Callback(
 					(VerticesMode mode, VertexPositionColor[] vertices) =>
 						testResolver.NumberOfVerticesDrawn += vertices.Length);
-			return testResolver.RegisterMock(mockDrawing.Object);
+			Drawing = testResolver.RegisterMock(mockDrawing.Object);
 		}
 
-		private void SetupImage(Drawing drawing)
+		private void SetupImage()
 		{
-			MockImage = new Mock<Image>("dummy", drawing);
+			MockImage = new Mock<Image>("dummy", Drawing);
 			MockImage.SetupGet(i => i.PixelSize).Returns(new Size(128, 128));
 			MockImage.CallBase = true;
 			testResolver.RegisterMock(MockImage.Object);
 		}
 
-		internal Mock<Image> MockImage { get; private set; }
-
-		private void SetupRenderer(Window window, Drawing drawing)
+		private void SetupRenderer()
 		{
-			ScreenSpace screen = testResolver.RegisterMock(new QuadraticScreenSpace(window));
-			testResolver.RegisterMock(new Mock<Renderer>(drawing, screen).Object);
+			var screen = testResolver.RegisterMock(new QuadraticScreenSpace(window));
+			Renderer = new Mock<Renderer>(Drawing, screen).Object;
+			testResolver.RegisterMock(Renderer);
 		}
 	}
 }

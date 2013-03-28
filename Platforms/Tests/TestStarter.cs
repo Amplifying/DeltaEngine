@@ -15,14 +15,14 @@ namespace DeltaEngine.Platforms.Tests
 		protected TestStarter()
 		{
 			// By default all slow integration tests (using a non test resolver) are excluded from NCrunch
-			// runs, but you can either enable them all here or just selectivly in derived classes.
+			// runs. You can either temporary enable them all here or just selectivly in derived classes.
 			NCrunchAllowIntegrationTests = false;
 		}
 
 		protected bool NCrunchAllowIntegrationTests { get; set; }
 
 		//ncrunch: no coverage start
-		// ReSharper disable UnusedMember.Global
+		//// ReSharper disable UnusedMember.Global
 		/// <summary>
 		/// NCrunch will always execute all resolvers as it does not understand the Ignore, but only
 		/// TestResolver will be executed (rest is ignored by default). ReSharper will ignore all test
@@ -31,13 +31,15 @@ namespace DeltaEngine.Platforms.Tests
 		public static readonly TestCaseData[] Resolvers =
 		{
 			new TestCaseData(typeof(TestResolver)),
-			new TestCaseData(typeof(OpenTKAppForTestStarter)),
-			new TestCaseData(typeof(SharpDxAppForTestStarter)).Ignore(),
-			new TestCaseData(typeof(XnaAppForTestStarter)).Ignore()
+			new TestCaseData(typeof(OpenTKResolver)), new TestCaseData(typeof(SharpDxResolver)).Ignore()
+			, new TestCaseData(typeof(SlimDxResolver)).Ignore(),
+			new TestCaseData(typeof(XnaResolver)).Ignore()
 		};
-		public static readonly Type OpenGL = typeof(OpenTKAppForTestStarter);
-		public static readonly Type DirectX = typeof(SharpDxAppForTestStarter);
-		public static readonly Type Xna = typeof(XnaAppForTestStarter);
+
+		public static readonly Type OpenGL = typeof(OpenTKResolver);
+		public static readonly Type DirectX = typeof(SharpDxResolver);
+		public static readonly Type DirectX9 = typeof(SlimDxResolver);
+		public static readonly Type Xna = typeof(XnaResolver);
 		//ncrunch: no coverage end
 
 		public void Start<AppEntryRunner>(Type resolverType, int instancesToCreate = 1)
@@ -61,23 +63,7 @@ namespace DeltaEngine.Platforms.Tests
 			if (resolver == typeof(TestResolver) || NCrunchAllowIntegrationTests)
 				return false;
 
-			return StackTraceExtensions.StartedFromNCrunch || IsStartedFromNunitConsole();
-		}
-
-		private static bool IsStartedFromNCrunch()
-		{
-			var stackFrames = new StackTrace().GetFrames();
-			if (stackFrames != null)
-				foreach (var frame in stackFrames)
-					if (frame.GetMethod().ReflectedType.FullName.StartsWith("nCrunch.TestExecution."))
-						return true;
-
-			return false; //ncrunch: no coverage
-		}
-
-		private static bool IsStartedFromNunitConsole()
-		{
-			return AppDomain.CurrentDomain.FriendlyName.StartsWith("test-domain-");
+			return IsStartedFromNunit() || StackTraceExtensions.StartedFromNCrunch;
 		}
 
 		private static void IsFrameInVisualTestCase(StackFrame frame)
@@ -92,15 +78,33 @@ namespace DeltaEngine.Platforms.Tests
 			}
 		}
 
+		private static bool IsStartedFromNCrunch()
+		{
+			var stackFrames = new StackTrace().GetFrames();
+			if (stackFrames != null)
+				foreach (var frame in stackFrames)
+					if (frame.GetMethod().ReflectedType.FullName.StartsWith("nCrunch.TestExecution."))
+						return true;
+
+			return false; //ncrunch: no coverage
+		}
+
+		private static bool IsStartedFromNunit()
+		{
+			string currentDomainName = AppDomain.CurrentDomain.FriendlyName;
+			return currentDomainName == "NUnit Domain" || currentDomainName.StartsWith("test-domain-");
+		}
+
 		private AutofacStarter CreateResolver(Type resolverType)
 		{
-			Assert.IsTrue(resolverType.IsSubclassOf(typeof(AutofacResolver)));
+			if (resolverType == typeof(TestResolver))
+				return testResolver = (TestResolver)Activator.CreateInstance(resolverType);
 			var resolver = (AutofacStarter)Activator.CreateInstance(resolverType);
-			testResolver = resolver as TestResolver;
+			testResolver.SetTestStarter(resolver);
 			return resolver;
 		}
 
-		protected TestResolver testResolver;
+		protected TestResolver testResolver = new TestResolver();
 
 		protected void Start<FirstClass>(Type resolverType, Action<FirstClass> initCode,
 			Action runCode = null)
@@ -110,6 +114,20 @@ namespace DeltaEngine.Platforms.Tests
 
 			using (var resolver = CreateResolver(resolverType))
 				resolver.Start(initCode, runCode);
+		}
+
+		protected void Start<First, Second>(Type resolverType, Action<First> initCode,
+			Action<Second> runCode)
+		{
+			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
+				return;
+
+			// ReSharper disable AccessToDisposedClosure
+			using (var resolver = CreateResolver(resolverType))
+			{
+				resolver.RegisterSingleton<Second>();
+				resolver.Start(initCode, () => runCode(resolver.Resolve<Second>()));
+			}
 		}
 
 		protected void Start<First, Second>(Type resolverType, Action<First, Second> initCode,
@@ -132,16 +150,17 @@ namespace DeltaEngine.Platforms.Tests
 				resolver.Start(initCode, runCode);
 		}
 
-		// ncrunch: no coverage start
-		protected void Start<First, Second>(Type resolverType, Action<First> initCode,
-			Action<Second> runCode)
+		protected void Start<First, Second, Third>(Type resolverType, Action<First, Second> initCode,
+			Action<Third> runCode)
 		{
 			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
 				return;
 
-			// ReSharper disable AccessToDisposedClosure
 			using (var resolver = CreateResolver(resolverType))
-				resolver.Start(initCode, () => runCode(resolver.Resolve<Second>()));
+			{
+				resolver.RegisterSingleton<Third>();
+				resolver.Start(initCode, () => runCode(resolver.Resolve<Third>()));
+			}
 		}
 
 		protected void Start<First, Second, Third>(Type resolverType, Action<First> initCode,
@@ -151,40 +170,12 @@ namespace DeltaEngine.Platforms.Tests
 				return;
 
 			using (var resolver = CreateResolver(resolverType))
+			{
+				resolver.RegisterSingleton<Second>();
+				resolver.RegisterSingleton<Third>();
 				resolver.Start(initCode,
 					() => runCode(resolver.Resolve<Second>(), resolver.Resolve<Third>()));
-		}
-
-		protected void Start<First, Second, Third, Forth>(Type resolverType, Action<First> initCode,
-			Action<Second, Third, Forth> runCode)
-		{
-			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
-				return;
-
-			using (var r = CreateResolver(resolverType))
-				r.Start(initCode,
-					() => runCode(r.Resolve<Second>(), r.Resolve<Third>(), r.Resolve<Forth>()));
-		}
-
-		protected void Start<First, Second, Third>(Type resolverType, Action<First, Second> initCode,
-			Action<Third> runCode)
-		{
-			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
-				return;
-
-			using (var resolver = CreateResolver(resolverType))
-				resolver.Start(initCode, () => runCode(resolver.Resolve<Third>()));
-		}
-
-		protected void Start<First, Second, Third, Forth>(Type resolverType,
-			Action<First, Second> initCode, Action<Third, Forth> runCode)
-		{
-			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
-				return;
-
-			using (var resolver = CreateResolver(resolverType))
-				resolver.Start(initCode,
-					() => runCode(resolver.Resolve<Third>(), resolver.Resolve<Forth>()));
+			}
 		}
 
 		protected void Start<First, Second, Third, Forth>(Type resolverType,
@@ -194,7 +185,42 @@ namespace DeltaEngine.Platforms.Tests
 				return;
 
 			using (var resolver = CreateResolver(resolverType))
+			{
+				resolver.RegisterSingleton<Forth>();
 				resolver.Start(initCode, () => runCode(resolver.Resolve<Forth>()));
+			}
+		}
+
+		protected void Start<First, Second, Third, Forth>(Type resolverType,
+			Action<First, Second> initCode, Action<Third, Forth> runCode)
+		{
+			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
+				return;
+
+			using (var resolver = CreateResolver(resolverType))
+			{
+				resolver.RegisterSingleton<Third>();
+				resolver.RegisterSingleton<Forth>();
+				resolver.Start(initCode,
+					() => runCode(resolver.Resolve<Third>(), resolver.Resolve<Forth>()));
+			}
+		}
+
+		protected void Start<First, Second, Third, Forth>(Type resolverType, Action<First> initCode,
+			Action<Second, Third, Forth> runCode)
+		{
+			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
+				return;
+
+			using (var resolver = CreateResolver(resolverType))
+			{
+				resolver.RegisterSingleton<Second>();
+				resolver.RegisterSingleton<Third>();
+				resolver.RegisterSingleton<Forth>();
+				resolver.Start(initCode,
+					() =>
+						runCode(resolver.Resolve<Second>(), resolver.Resolve<Third>(), resolver.Resolve<Forth>()));
+			}
 		}
 
 		protected void Start<First, Second, Third, Forth, Fifth>(Type resolverType,
@@ -204,8 +230,12 @@ namespace DeltaEngine.Platforms.Tests
 				return;
 
 			using (var resolver = CreateResolver(resolverType))
+			{
+				resolver.RegisterSingleton<Forth>();
+				resolver.RegisterSingleton<Fifth>();
 				resolver.Start(initCode,
 					() => runCode(resolver.Resolve<Forth>(), resolver.Resolve<Fifth>()));
+			}
 		}
 
 		protected void Start<First, Second, Third, Forth, Fifth>(Type resolverType,
@@ -214,8 +244,15 @@ namespace DeltaEngine.Platforms.Tests
 			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
 				return;
 
-			using (var r = CreateResolver(resolverType))
-				r.Start(initCode, () => runCode(r.Resolve<Third>(), r.Resolve<Forth>(), r.Resolve<Fifth>()));
+			using (var resolver = CreateResolver(resolverType))
+			{
+				resolver.RegisterSingleton<Third>();
+				resolver.RegisterSingleton<Forth>();
+				resolver.RegisterSingleton<Fifth>();
+				resolver.Start(initCode,
+					() =>
+						runCode(resolver.Resolve<Third>(), resolver.Resolve<Forth>(), resolver.Resolve<Fifth>()));
+			}
 		}
 	}
 }

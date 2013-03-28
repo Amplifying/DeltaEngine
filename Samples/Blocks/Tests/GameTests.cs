@@ -2,6 +2,7 @@
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
+using DeltaEngine.Platforms;
 using DeltaEngine.Platforms.Tests;
 using DeltaEngine.Rendering;
 using NUnit.Framework;
@@ -13,13 +14,14 @@ namespace Blocks.Tests
 	/// </summary>
 	public class GameTests : TestStarter
 	{
-		[Test]
-		public void CreatingGameRendersLotsOfObjects()
+		[IntegrationTest]
+		public void CreateGameInPortrait(Type resolver)
 		{
-			int renderedObjectCount = ExceptionExtensions.IsReleaseMode ? 5 : 9;
-			Start(typeof(TestResolver),
-				(Game game, Renderer renderer) =>
-					Assert.AreEqual(renderedObjectCount, renderer.NumberOfActiveRenderableObjects));
+			Start(resolver, (Game game, Renderer renderer, Window window) =>
+			{
+				window.TotalPixelSize = new Size(600, 800);
+				Assert.AreEqual(5, renderer.NumberOfActiveRenderableObjects);
+			});
 		}
 
 		[Test]
@@ -31,7 +33,7 @@ namespace Blocks.Tests
 			Assert.AreEqual(0, userInterface.Score);
 			resolver.AdvanceTimeAndExecuteRunners(10.0f);
 			Assert.AreEqual(1, userInterface.Score);
-			Assert.AreEqual("Score 1", userInterface.Scoreboard.Text);
+			Assert.AreEqual("Score 1", userInterface.Scoreboard);
 		}
 
 		[Test]
@@ -39,12 +41,17 @@ namespace Blocks.Tests
 		{
 			Start(typeof(TestResolver), (Game game, TestController controller, BlocksContent content) =>
 			{
-				controller.SetUpcomingBlock(new Block(content, new FixedRandom(), Point.Zero));
-				controller.SetFallingBlock(new Block(content, new FixedRandom(), new Point(6, 1)));
+				InitializeBlocks(controller, content);
 				testResolver.SetKeyboardState(Key.CursorLeft, State.Pressing);
 				testResolver.AdvanceTimeAndExecuteRunners(0.01f);
 				Assert.AreEqual(5, controller.FallingBlock.Left);
 			});
+		}
+
+		private static void InitializeBlocks(TestController controller, BlocksContent content)
+		{
+			controller.SetUpcomingBlock(new Block(content, new FixedRandom(), Point.Zero));
+			controller.SetFallingBlock(new Block(content, new FixedRandom(), new Point(6, 1)));
 		}
 
 		[Test]
@@ -52,13 +59,12 @@ namespace Blocks.Tests
 		{
 			Start(typeof(TestResolver), (Game game, TestController controller, BlocksContent content) =>
 			{
-				controller.SetUpcomingBlock(new Block(content, new FixedRandom(), Point.Zero));
-				controller.SetFallingBlock(new Block(content, new FixedRandom(), new Point(6, 1)));
+				InitializeBlocks(controller, content);
 				testResolver.SetKeyboardState(Key.CursorLeft, State.Pressing);
 				testResolver.AdvanceTimeAndExecuteRunners(0.01f);
 				testResolver.SetKeyboardState(Key.CursorLeft, State.Pressed);
 				testResolver.AdvanceTimeAndExecuteRunners(0.1f);
-				Assert.AreEqual(5, controller.FallingBlock.Left); 
+				Assert.AreEqual(5, controller.FallingBlock.Left);
 				testResolver.AdvanceTimeAndExecuteRunners(0.1f);
 				Assert.AreEqual(4, controller.FallingBlock.Left);
 			});
@@ -69,8 +75,7 @@ namespace Blocks.Tests
 		{
 			Start(typeof(TestResolver), (Game game, TestController controller, BlocksContent content) =>
 			{
-				controller.SetUpcomingBlock(new Block(content, new FixedRandom(), Point.Zero));
-				controller.SetFallingBlock(new Block(content, new FixedRandom(), new Point(6, 1)));
+				InitializeBlocks(controller, content);
 				testResolver.SetKeyboardState(Key.CursorRight, State.Pressing);
 				testResolver.AdvanceTimeAndExecuteRunners(0.01f);
 				Assert.AreEqual(7, controller.FallingBlock.Left);
@@ -82,8 +87,7 @@ namespace Blocks.Tests
 		{
 			Start(typeof(TestResolver), (Game game, TestController controller, BlocksContent content) =>
 			{
-				controller.SetUpcomingBlock(new Block(content, new FixedRandom(), Point.Zero));
-				controller.SetFallingBlock(new Block(content, new FixedRandom(), new Point(6, 1)));
+				InitializeBlocks(controller, content);
 				testResolver.SetKeyboardState(Key.CursorRight, State.Pressing);
 				testResolver.AdvanceTimeAndExecuteRunners(0.01f);
 				testResolver.SetKeyboardState(Key.CursorRight, State.Pressed);
@@ -99,8 +103,7 @@ namespace Blocks.Tests
 		{
 			Start(typeof(TestResolver), (Game game, TestController controller, BlocksContent content) =>
 			{
-				controller.SetUpcomingBlock(new Block(content, new FixedRandom(), Point.Zero));
-				controller.SetFallingBlock(new Block(content, new FixedRandom(), new Point(6, 1)));
+				InitializeBlocks(controller, content);
 				testResolver.SetKeyboardState(Key.CursorUp, State.Pressing);
 				Assert.AreEqual("OOOO/..../..../....", controller.FallingBlock.ToString());
 				testResolver.AdvanceTimeAndExecuteRunners(0.01f);
@@ -113,7 +116,7 @@ namespace Blocks.Tests
 		{
 			Start(typeof(TestResolver), (Game game, TestController controller, BlocksContent content) =>
 			{
-				controller.SetFallingBlock(new Block(content, new FixedRandom(), new Point(6, 1)));
+				InitializeBlocks(controller, content);
 				Assert.IsFalse(controller.IsFallingFast);
 				testResolver.SetKeyboardState(Key.CursorDown, State.Pressing);
 				testResolver.AdvanceTimeAndExecuteRunners(0.01f);
@@ -129,9 +132,9 @@ namespace Blocks.Tests
 		{
 			Start(typeof(TestResolver), (Game game, TestController controller, BlocksContent content) =>
 			{
-				controller.SetUpcomingBlock(new Block(content, new FixedRandom(), Point.Zero));
-				controller.SetFallingBlock(new Block(content, new FixedRandom(), new Point(6, 1)));
-				testResolver.SetMouseButtonState(MouseButton.Left, State.Pressing, new Point(0.35f, 0.0f));
+				InitializeBlocks(controller, content);
+				testResolver.SetMousePosition(new Point(0.35f, 0.0f));
+				testResolver.SetMouseButtonState(MouseButton.Left, State.Pressing);
 				testResolver.AdvanceTimeAndExecuteRunners(0.01f);
 				Assert.AreEqual(5, controller.FallingBlock.Left);
 			});
@@ -142,9 +145,9 @@ namespace Blocks.Tests
 		{
 			Start(typeof(TestResolver), (Game game, TestController controller, BlocksContent content) =>
 			{
-				controller.SetUpcomingBlock(new Block(content, new FixedRandom(), Point.Zero));
-				controller.SetFallingBlock(new Block(content, new FixedRandom(), new Point(6, 1)));
-				testResolver.SetMouseButtonState(MouseButton.Left, State.Pressing, new Point(0.65f, 0.0f));
+				InitializeBlocks(controller, content);
+				testResolver.SetMousePosition(new Point(0.65f, 0.0f));
+				testResolver.SetMouseButtonState(MouseButton.Left, State.Pressing);
 				testResolver.AdvanceTimeAndExecuteRunners(0.01f);
 				Assert.AreEqual(7, controller.FallingBlock.Left);
 			});
@@ -155,10 +158,10 @@ namespace Blocks.Tests
 		{
 			Start(typeof(TestResolver), (Game game, TestController controller, BlocksContent content) =>
 			{
-				controller.SetUpcomingBlock(new Block(content, new FixedRandom(), Point.Zero));
-				controller.SetFallingBlock(new Block(content, new FixedRandom(), new Point(6, 1)));
+				InitializeBlocks(controller, content);
 				Assert.AreEqual("OOOO/..../..../....", controller.FallingBlock.ToString());
-				testResolver.SetMouseButtonState(MouseButton.Left, State.Pressing, new Point(0.5f, 0.4f));
+				testResolver.SetMousePosition(new Point(0.5f, 0.4f));
+				testResolver.SetMouseButtonState(MouseButton.Left, State.Pressing);
 				testResolver.AdvanceTimeAndExecuteRunners(0.01f);
 				Assert.AreEqual("O.../O.../O.../O...", controller.FallingBlock.ToString());
 			});
@@ -169,12 +172,14 @@ namespace Blocks.Tests
 		{
 			Start(typeof(TestResolver), (Game game, TestController controller, BlocksContent content) =>
 			{
-				controller.SetFallingBlock(new Block(content, new FixedRandom(), new Point(6, 1)));
+				InitializeBlocks(controller, content);
 				Assert.IsFalse(controller.IsFallingFast);
-				testResolver.SetMouseButtonState(MouseButton.Left, State.Pressing, new Point(0.5f, 0.6f));
+				testResolver.SetMousePosition(new Point(0.5f, 0.6f));
+				testResolver.SetMouseButtonState(MouseButton.Left, State.Pressing);
 				testResolver.AdvanceTimeAndExecuteRunners(0.01f);
 				Assert.IsTrue(controller.IsFallingFast);
-				testResolver.SetMouseButtonState(MouseButton.Left, State.Releasing, new Point(0.5f, 0.6f));
+				testResolver.SetMousePosition(new Point(0.5f, 0.6f));
+				testResolver.SetMouseButtonState(MouseButton.Left, State.Releasing);
 				testResolver.AdvanceTimeAndExecuteRunners(0.01f);
 				Assert.IsFalse(controller.IsFallingFast);
 			});
@@ -185,8 +190,7 @@ namespace Blocks.Tests
 		{
 			Start(typeof(TestResolver), (Game game, TestController controller, BlocksContent content) =>
 			{
-				controller.SetUpcomingBlock(new Block(content, new FixedRandom(), Point.Zero));
-				controller.SetFallingBlock(new Block(content, new FixedRandom(), new Point(6, 1)));
+				InitializeBlocks(controller, content);
 				testResolver.SetTouchState(0, State.Pressing, new Point(0.35f, 0.0f));
 				testResolver.AdvanceTimeAndExecuteRunners(0.01f);
 				Assert.AreEqual(5, controller.FallingBlock.Left);
@@ -198,8 +202,7 @@ namespace Blocks.Tests
 		{
 			Start(typeof(TestResolver), (Game game, TestController controller, BlocksContent content) =>
 			{
-				controller.SetUpcomingBlock(new Block(content, new FixedRandom(), Point.Zero));
-				controller.SetFallingBlock(new Block(content, new FixedRandom(), new Point(6, 1)));
+				InitializeBlocks(controller, content);
 				testResolver.SetTouchState(0, State.Pressing, new Point(0.65f, 0.0f));
 				testResolver.AdvanceTimeAndExecuteRunners(0.01f);
 				Assert.AreEqual(7, controller.FallingBlock.Left);
@@ -211,8 +214,7 @@ namespace Blocks.Tests
 		{
 			Start(typeof(TestResolver), (Game game, TestController controller, BlocksContent content) =>
 			{
-				controller.SetUpcomingBlock(new Block(content, new FixedRandom(), Point.Zero));
-				controller.SetFallingBlock(new Block(content, new FixedRandom(), new Point(6, 1)));
+				InitializeBlocks(controller, content);
 				Assert.AreEqual("OOOO/..../..../....", controller.FallingBlock.ToString());
 				testResolver.SetTouchState(0, State.Pressing, new Point(0.5f, 0.4f));
 				testResolver.AdvanceTimeAndExecuteRunners(0.01f);
@@ -225,7 +227,7 @@ namespace Blocks.Tests
 		{
 			Start(typeof(TestResolver), (Game game, TestController controller, BlocksContent content) =>
 			{
-				controller.SetFallingBlock(new Block(content, new FixedRandom(), new Point(6, 1)));
+				InitializeBlocks(controller, content);
 				Assert.IsFalse(controller.IsFallingFast);
 				testResolver.SetTouchState(0, State.Pressing, new Point(0.5f, 0.6f));
 				testResolver.AdvanceTimeAndExecuteRunners(0.01f);
@@ -242,8 +244,8 @@ namespace Blocks.Tests
 			var resolver = SetupResolver();
 			PlaceLosingBlocks(resolver);
 			var userInterface = resolver.Resolve<UserInterface>();
-			Assert.AreEqual("Game Over", userInterface.Message.Text);
-			Assert.AreEqual("Score 2", userInterface.Scoreboard.Text);
+			Assert.AreEqual("Game Over", userInterface.Message);
+			Assert.AreEqual("Score 2", userInterface.Scoreboard);
 			Assert.AreEqual(0, userInterface.Score);
 		}
 
@@ -266,12 +268,6 @@ namespace Blocks.Tests
 			resolver.Resolve<Grid>().AffixBlock(new Block(content, new FixedRandom(), new Point(0, 0)));
 			controller.SetFallingBlock(new Block(content, new FixedRandom(), new Point(4, 18)));
 			resolver.AdvanceTimeAndExecuteRunners(1.1f);
-		}
-
-		[VisualTest]
-		public void PlayGame(Type resolver)
-		{
-			Start(resolver, (Game game) => { });
 		}
 	}
 }

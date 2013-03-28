@@ -1,43 +1,43 @@
 ﻿using System;
-using DeltaEngine.Graphics.Xna;
-using DeltaEngine.Input.Windows;
-using DeltaEngine.Input.Xna;
-using DeltaEngine.Multimedia.Xna;
-using DeltaEngine.Platforms.Windows;
+using System.Collections.Generic;
 
 namespace DeltaEngine.Platforms
 {
 	/// <summary>
 	/// Windows Xna config (graphics, sound, input) for any Delta Engine application or test.
 	/// </summary>
-	public class App : WindowsResolver
+	public class App
 	{
-		public App()
+		public void Start<AppEntryRunner>(int instancesToCreate = 1)
 		{
-			RegisterSingleton<XnaWindow>();
-			RegisterSingleton<XnaSoundDevice>();
-			Register<XnaImage>();
-			RegisterSingleton<XnaDevice>();
-			Register<XnaSound>();
-			Register<XnaMusic>();
-			RegisterSingleton<XnaDrawing>();
-			RegisterSingleton<XnaMouse>();
-			RegisterSingleton<XnaKeyboard>();
-			RegisterSingleton<XnaTouch>();
-			RegisterSingleton<CursorPositionTranslater>();
-			RegisterSingleton<XnaGamePad>();
+			resolver.Start<AppEntryRunner>(instancesToCreate);
 		}
 
-		/// <summary>
-		/// Instead of starting the game normally and blocking we will delay the initialization in
-		/// XnaGame until the game class has been constructed and the graphics device is available.
-		/// </summary>
-		public override void Run(Action runCode = null)
+		private readonly XnaResolver resolver = new XnaResolver();
+
+		public void Start<AppEntryRunner, FirstClassToRegisterAndResolve>(int instancesToCreate = 1)
 		{
-			var game = new XnaGame(this, RaiseInitializedEvent);
-			RegisterInstance(game);
-			Resolve<XnaDevice>();
-			game.Run(runCode);
+			resolver.Start<AppEntryRunner, FirstClassToRegisterAndResolve>(instancesToCreate);
+		}
+
+		public void Start
+			<AppEntryRunner, FirstClassToRegisterAndResolve, SecondClassToRegisterAndResolve>(
+			int instancesToCreate = 1)
+		{
+			resolver.Start
+				<AppEntryRunner, FirstClassToRegisterAndResolve, SecondClassToRegisterAndResolve>(
+					instancesToCreate);
+		}
+
+		public void Start<AppEntryRunner>(IEnumerable<Type> typesToRegisterAndResolve,
+			int instancesToCreate = 1)
+		{
+			resolver.Start<AppEntryRunner>(typesToRegisterAndResolve, instancesToCreate);
+		}
+
+		public void RegisterSingleton<T>()
+		{
+			resolver.RegisterSingleton<T>();
 		}
 	}
 }

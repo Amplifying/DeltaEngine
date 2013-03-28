@@ -57,6 +57,7 @@
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\EmptyGame.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\EmptyGame.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>EmptyGame.ico</ApplicationIcon>
@@ -80,10 +81,6 @@
     <ProjectReference Include="..\..\Platforms\WindowsOpenGL\DeltaEngine.WindowsOpenGL.csproj">
       <Project>{cc943ae0-a1cc-4788-ac9b-01db3a0ebcd6}</Project>
       <Name>DeltaEngine.WindowsOpenGL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Platforms\Windows\DeltaEngine.Platforms.Windows.csproj">
-      <Project>{bd8a80e2-a313-437e-b0ef-fc0b066280a7}</Project>
-      <Name>DeltaEngine.Platforms.Windows</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

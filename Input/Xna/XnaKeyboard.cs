@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using DeltaEngine.Core;
-using DeltaEngine.Input.Devices;
 using Microsoft.Xna.Framework.Input;
-using Keyboard = DeltaEngine.Input.Devices.Keyboard;
 using NativeKeyboard = Microsoft.Xna.Framework.Input.Keyboard;
 using XnaKeys = Microsoft.Xna.Framework.Input.Keys;
 

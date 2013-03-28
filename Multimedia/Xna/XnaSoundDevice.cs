@@ -1,7 +1,6 @@
-﻿using System;
-using System.IO;
-using Microsoft.Xna.Framework;
+﻿using DeltaEngine.Graphics.Xna;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Media;
 
 namespace DeltaEngine.Multimedia.Xna
 {
@@ -10,35 +9,22 @@ namespace DeltaEngine.Multimedia.Xna
 	/// </summary>
 	public class XnaSoundDevice : SoundDevice
 	{
-		public XnaSoundDevice()
+		public XnaSoundDevice(XnaDevice graphicsDevice)
 		{
-			serviceProvider = new XnaServiceProvider();
-			string contentPath = Path.Combine(Directory.GetCurrentDirectory(), "Content");
-			Content = new ContentManager(serviceProvider, contentPath);
+			Content = graphicsDevice.NativeContent;
+			NativePlayer = new VideoPlayer();
 		}
-
-		private class XnaServiceProvider : IServiceProvider
-		{
-			public object GetService(Type serviceType)
-			{
-				return null;
-			}
-		}
-
-		private readonly XnaServiceProvider serviceProvider;
 
 		public ContentManager Content { get; private set; }
 
-		public override void Run()
-		{
-			FrameworkDispatcher.Update();
-			base.Run();
-		}
+		public VideoPlayer NativePlayer { get; private set; }
 
 		public override void Dispose()
 		{
-			if (Content != null)
-				Content.Dispose();
+			if (NativePlayer != null)
+				NativePlayer.Dispose();
+
+			NativePlayer = null;
 			Content = null;
 		}
 	}

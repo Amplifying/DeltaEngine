@@ -55,17 +55,17 @@ namespace DeltaEngine.Input.Windows
 				wasReleasedThisFrame[(int)button] = true;
 		}
 
-		internal bool IsPressed(int wParam)
+		internal static bool IsPressed(int wParam)
 		{
 			return IsAnyId(wParam, DownButtonIds);
 		}
 
-		internal bool IsReleased(int wParam)
+		internal static bool IsReleased(int wParam)
 		{
 			return IsAnyId(wParam, UpButtonIds);
 		}
 
-		internal MouseButton GetMessageButton(int intParam, int mouseData)
+		internal static MouseButton GetMessageButton(int intParam, int mouseData)
 		{
 			if (IsAnyId(intParam, LeftButtonIds))
 				return MouseButton.Left;

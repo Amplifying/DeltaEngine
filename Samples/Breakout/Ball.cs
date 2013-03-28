@@ -23,7 +23,7 @@ namespace Breakout
 			RegisterFireBallCommand(inputCommands);
 		}
 
-		protected readonly Paddle paddle;
+		private readonly Paddle paddle;
 		private readonly Sound fireBallSound;
 		private readonly Sound collisionSound;
 

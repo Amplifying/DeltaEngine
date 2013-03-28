@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using DeltaEngine.Datatypes;
 using NUnit.Framework;
 
@@ -31,14 +30,9 @@ namespace DeltaEngine.Logging.Tests
 		public void CheckSaveAndLoadWithBinaryDataFactory()
 		{
 			var error = new Error(TestException);
-			using (var dataFactory = new BinaryDataFactory())
-			using (var dataStream = new MemoryStream())
-			{
-				dataFactory.Save(error, new BinaryWriter(dataStream));
-				dataStream.Position = 0;
-				var loadedError = (Error)dataFactory.Load(new BinaryReader(dataStream));
-				Assert.AreEqual(error, loadedError);
-			}
+			var data = error.SaveToMemoryStream();
+			var loadedError = data.CreateFromMemoryStream<Error>();
+			Assert.AreEqual(error, loadedError);
 		}
 	}
 }

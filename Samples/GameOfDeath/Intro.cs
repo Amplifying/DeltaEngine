@@ -13,7 +13,8 @@ namespace GameOfDeath
 		public Intro(Content content)
 			: base(content.Load<Image>("Logo"), Rectangle.Zero, 5)
 		{
-			DrawArea = Rectangle.FromCenter(Point.Half, Image.PixelSize / Score.QuadraticFullscreenSize);
+			DrawArea = Rectangle.FromCenter(Point.Half,
+				Image.PixelSize / Scoreboard.QuadraticFullscreenSize);
 			RenderLayer = 255;
 		}
 

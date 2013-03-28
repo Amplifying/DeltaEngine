@@ -59,7 +59,6 @@ namespace Blocks.Tests
 			});
 		}
 
-		//ncrunch: no coverage start
 		[VisualTest]
 		public void LoadContentWithPrefixSet(Type resolver)
 		{

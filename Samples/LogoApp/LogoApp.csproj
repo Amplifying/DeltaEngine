@@ -34,12 +34,14 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\Release\LogoApp.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\LogoApp.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\LogoApp.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>LogoApp.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Icons\DeltaEngineIcon.ico</ApplicationIcon>
+    <ApplicationIcon>DeltaEngineIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="BouncingLogo.cs" />
@@ -56,20 +58,12 @@
       <Name>DeltaEngine.Datatypes</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Graphics\DeltaEngine.Graphics.csproj">
-      <Project>{8F701B0D-48B6-45CF-85E0-286BD53328BA}</Project>
+      <Project>{8f701b0d-48b6-45cf-85e0-286bd53328ba}</Project>
       <Name>DeltaEngine.Graphics</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Platforms\DeltaEngine.Platforms.csproj">
-      <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
-      <Name>DeltaEngine.Platforms</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Platforms\WindowsOpenGL\DeltaEngine.WindowsOpenGL.csproj">
       <Project>{cc943ae0-a1cc-4788-ac9b-01db3a0ebcd6}</Project>
       <Name>DeltaEngine.WindowsOpenGL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Platforms\Windows\DeltaEngine.Platforms.Windows.csproj">
-      <Project>{BD8A80E2-A313-437E-B0EF-FC0B066280A7}</Project>
-      <Name>DeltaEngine.Platforms.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
       <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
@@ -77,12 +71,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Icons\DeltaEngineIcon.ico" />
-    <Content Include="Icons\DeltaEngineIcon150x150.png" />
-    <Content Include="Icons\DeltaEngineIcon173x173.png" />
-    <Content Include="Icons\DeltaEngineIcon30x30.png" />
-    <Content Include="Icons\DeltaEngineIcon310x150.png" />
-    <Content Include="Icons\DeltaEngineIcon64x64.png" />
+    <Content Include="DeltaEngineIcon.ico" />
     <Content Include="Content\DeltaEngineLogo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 using DeltaEngine.Platforms.Tests;
+using NUnit.Framework;
 
 namespace DeltaEngine.Graphics.Tests
 {
@@ -58,10 +60,7 @@ namespace DeltaEngine.Graphics.Tests
 			Start(resolver, (Drawing drawing, Window window) =>
 			{
 				remDrawing = drawing;
-				vertices[0] = new VertexPositionColor(Point.Zero, Color.Red);
-				vertices[1] = new VertexPositionColor(window.ViewportPixelSize, Color.Red);
-				window.ViewportSizeChanged +=
-					size => vertices[1] = new VertexPositionColor(size, Color.Red);
+				ShowLineFullscreenOrNot(window, vertices, false);
 			}, () => remDrawing.DrawVertices(VerticesMode.Lines, vertices));
 		}
 
@@ -72,13 +71,22 @@ namespace DeltaEngine.Graphics.Tests
 			Drawing remDrawing = null;
 			Start(resolver, (Drawing drawing, Window window) =>
 			{
-				window.SetFullscreen(new Size(640, 480));
 				remDrawing = drawing;
-				vertices[0] = new VertexPositionColor(Point.Zero, Color.Yellow);
-				vertices[1] = new VertexPositionColor(window.ViewportPixelSize, Color.Yellow);
-				window.ViewportSizeChanged +=
-					size => vertices[1] = new VertexPositionColor(size, Color.Yellow);
+				ShowLineFullscreenOrNot(window, vertices, true);
 			}, () => remDrawing.DrawVertices(VerticesMode.Lines, vertices));
+		}
+
+		private void ShowLineFullscreenOrNot(Window window, IList<VertexPositionColor> vertices,
+			bool fullscreen)
+		{
+			if(fullscreen)
+				window.SetFullscreen(new Size(640, 480));
+			vertices[0] = new VertexPositionColor(Point.Zero, Color.Red);
+			vertices[1] = new VertexPositionColor(window.ViewportPixelSize, Color.Red);
+			window.ViewportSizeChanged +=
+				size => vertices[1] = new VertexPositionColor(size, Color.Red);
+			if (testResolver != null)
+				window.TotalPixelSize = new Size(640, 480);
 		}
 	}
 }

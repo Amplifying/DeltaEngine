@@ -19,50 +19,35 @@ namespace DeltaEngine.Core.Xml
 		public List<XmlData> Children { get; private set; }
 		public List<XmlAttribute> Attributes { get; private set; }
 
-		public XmlData(string name, XmlData parent = null)
+		public XmlData(string name)
 			: this()
 		{
 			Name = name;
-			if (parent != null)
-				parent.AddChild(this);
 		}
 
 		public string Name
 		{
 			get { return name; }
-			set { name = CleanUpRootName(value); }
+			set
+			{
+				if (string.IsNullOrEmpty(value) || value.Contains(" "))
+					throw new InvalidXmlNameException();
+
+				name = value;
+			}
 		}
+
+		public class InvalidXmlNameException : Exception {}
 
 		private string name;
 
-		public void AddChild(XmlData child)
-		{
-			child.Parent = this;
-			Children.Add(child);
-		}
-
-		private static string CleanUpRootName(string name)
-		{
-			if (String.IsNullOrEmpty(name))
-				name = "_Empty";
-
-			name = name.Replace(" ", "");
-			return name;
-		}
-
-		internal XmlData(XElement root, XmlData parent = null)
+		internal XmlData(XElement root)
 			: this()
 		{
-			Parent = parent;
 			Name = root.Name.LocalName;
-			string text = string.Concat(root.Nodes().OfType<XText>().Select(t => t.Value));
-			if (!string.IsNullOrEmpty(text))
-				Value = text;
-
+			Value = string.Concat(root.Nodes().OfType<XText>().Select(t => t.Value));
 			InitializeAttributes(root);
 			InitializeChildren(root);
-			if (parent != null)
-				parent.Children.Add(this);
 		}
 
 		public XmlData Parent { get; private set; }
@@ -78,8 +63,29 @@ namespace DeltaEngine.Core.Xml
 		private void InitializeChildren(XElement root)
 		{
 			var children = new List<XElement>(root.Elements());
-			foreach (XElement child in children)
-				new XmlData(child, this);
+			foreach (XElement childXElement in children)
+				AddChild(new XmlData(childXElement));
+		}
+
+		public void AddChild(XmlData child)
+		{
+			child.Parent = this;
+			Children.Add(child);
+		}
+
+		public void AddAttribute(string attribute, char value)
+		{
+			Attributes.Add(new XmlAttribute(attribute, value));
+		}
+
+		public void AddAttribute(string attribute, float value)
+		{
+			Attributes.Add(new XmlAttribute(attribute, value));
+		}
+
+		public void AddAttribute(string attribute, double value)
+		{
+			Attributes.Add(new XmlAttribute(attribute, value));
 		}
 
 		public void AddAttribute(string attribute, object value)

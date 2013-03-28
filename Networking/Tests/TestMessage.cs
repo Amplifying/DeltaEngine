@@ -5,8 +5,6 @@ namespace DeltaEngine.Networking.Tests
 {
 	public class TestMessage : BinaryData
 	{
-		public TestMessage() { }
-
 		public TestMessage(string text)
 		{
 			Text = text;
@@ -14,14 +12,16 @@ namespace DeltaEngine.Networking.Tests
 
 		public string Text { get; set; }
 
-		public void Save(BinaryWriter writer)
-		{
-			writer.Write(Text);
-		}
+		private TestMessage() {}
 
-		public void Load(BinaryReader reader)
+		public void LoadData(BinaryReader reader)
 		{
 			Text = reader.ReadString();
+		}
+
+		public void SaveData(BinaryWriter writer)
+		{
+			writer.Write(Text);
 		}
 	}
 }

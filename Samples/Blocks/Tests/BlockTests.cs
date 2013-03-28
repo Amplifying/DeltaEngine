@@ -99,7 +99,7 @@ namespace Blocks.Tests
 						count++;
 				}
 
-				Assert.AreEqual(1000, count, 70);
+				Assert.AreEqual(1000, count, 100);
 			});
 		}
 

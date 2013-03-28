@@ -9,12 +9,6 @@ namespace DeltaEngine.Rendering
 	/// </summary>
 	public class FadeoutEffect : Sprite
 	{
-		public FadeoutEffect(Image image, Point position, Size size, float timeout = 1.0f)
-			: base(image, Rectangle.FromCenter(position, size))
-		{
-			this.timeout = timeout;
-		}
-
 		public FadeoutEffect(Image image, Rectangle drawArea, float timeout = 1.0f)
 			: base(image, drawArea)
 		{

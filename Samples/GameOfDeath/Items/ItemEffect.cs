@@ -11,21 +11,21 @@ namespace GameOfDeath.Items
 	/// </summary>
 	public class ItemEffect : FadeoutEffect
 	{
-		public ItemEffect(Image image, Point position, Size size, float duration)
-			: base(image, position, size, duration)
+		public ItemEffect(Image image, Rectangle drawArea, float duration)
+			: base(image, drawArea, duration)
 		{
 			RenderLayer = 1;
 		}
 
-		public Action DoDamage;
-		public float DoDamageEvery = 0.25f;
-
 		protected override void Render(Renderer renderer, Time time)
 		{
 			if (IsVisible && time.CheckEvery(DoDamageEvery))
-				DoDamage();
+				DidDamage();
 
 			base.Render(renderer, time);
 		}
+
+		public float DoDamageEvery = 0.25f;
+		public Action DidDamage;
 	}
 }

@@ -29,7 +29,7 @@ namespace Blocks
 			return base.Load<ContentType>(Prefix + contentName);
 		}
 
-		public virtual string GetFilenameWithoutPrefix(string filenameWithPrefix)
+		public string GetFilenameWithoutPrefix(string filenameWithPrefix)
 		{
 			if (!filenameWithPrefix.StartsWith(Prefix))
 				throw new FilenameWrongPrefixException();

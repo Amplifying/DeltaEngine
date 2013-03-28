@@ -17,6 +17,13 @@ namespace DeltaEngine.Core.Xml
 		public readonly string Name;
 		public readonly string Value;
 
+		public XmlAttribute(string name, char value)
+			: this()
+		{
+			Name = name;
+			Value = value.ToString(CultureInfo.InvariantCulture);
+		}
+
 		public XmlAttribute(string name, float value)
 			: this()
 		{

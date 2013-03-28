@@ -4,7 +4,7 @@ using SysPoint = System.Drawing.Point;
 
 namespace DeltaEngine.Input.Windows
 {
-	internal class NativeMethods
+	internal static class NativeMethods
 	{
 		internal delegate int HookProc(int code, IntPtr wParam, IntPtr lParam);
 

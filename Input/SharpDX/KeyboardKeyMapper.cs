@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using DInput = SharpDX.DirectInput;
 
 namespace DeltaEngine.Input.SharpDX
@@ -33,22 +34,22 @@ namespace DeltaEngine.Input.SharpDX
 		private static void AddLeftRightKeys(string directEndName, string deltaName = null)
 		{
 			deltaName = deltaName ?? directEndName;
-			keyMap.Add(ParseDirectInputKeyByName("Left" + directEndName), ParseKeyByName(deltaName));
-			keyMap.Add(ParseDirectInputKeyByName("Right" + directEndName), ParseKeyByName(deltaName));
+			KeyMap.Add(ParseDirectInputKeyByName("Left" + directEndName), ParseKeyByName(deltaName));
+			KeyMap.Add(ParseDirectInputKeyByName("Right" + directEndName), ParseKeyByName(deltaName));
 		}
 
 		private static void AddFunctionKeys()
 		{
 			for (int i = 1; i <= 12; i++)
-				keyMap.Add(ParseDirectInputKeyByName("F" + i), ParseKeyByName("F" + i));
+				KeyMap.Add(ParseDirectInputKeyByName("F" + i), ParseKeyByName("F" + i));
 		}
 
 		private static void AddNumbers()
 		{
 			for (int i = 0; i <= 9; i++)
 			{
-				keyMap.Add(ParseDirectInputKeyByName("D" + i), ParseKeyByName("D" + i));
-				keyMap.Add(ParseDirectInputKeyByName("NumberPad" + i), ParseKeyByName("NumPad" + i));
+				KeyMap.Add(ParseDirectInputKeyByName("D" + i), ParseKeyByName("D" + i));
+				KeyMap.Add(ParseDirectInputKeyByName("NumberPad" + i), ParseKeyByName("NumPad" + i));
 			}
 		}
 
@@ -57,46 +58,62 @@ namespace DeltaEngine.Input.SharpDX
 			char currentCharacter = 'A';
 			do
 			{
-				keyMap.Add(ParseDirectInputKeyByName(currentCharacter.ToString()),
-					ParseKeyByName(currentCharacter.ToString()));
+				KeyMap.Add(
+					ParseDirectInputKeyByName(currentCharacter.ToString(CultureInfo.InvariantCulture)),
+					ParseKeyByName(currentCharacter.ToString(CultureInfo.InvariantCulture)));
 				currentCharacter++;
 			} while (currentCharacter != ('Z' + 1));
 		}
 
 		private static void AddSpecialKeys()
 		{
-			keyMap.Add(DInput.Key.Unknown, Key.None);
-			keyMap.Add(DInput.Key.Tab, Key.Tab);
-			keyMap.Add(DInput.Key.Return, Key.Enter);
-			keyMap.Add(DInput.Key.Pause, Key.Pause);
-			keyMap.Add(DInput.Key.Capital, Key.CapsLock);
-			keyMap.Add(DInput.Key.Escape, Key.Escape);
-			keyMap.Add(DInput.Key.Space, Key.Space);
-			keyMap.Add(DInput.Key.PageUp, Key.PageUp);
-			keyMap.Add(DInput.Key.PageDown, Key.PageDown);
-			keyMap.Add(DInput.Key.End, Key.End);
-			keyMap.Add(DInput.Key.Home, Key.Home);
-			keyMap.Add(DInput.Key.Left, Key.CursorLeft);
-			keyMap.Add(DInput.Key.UpArrow, Key.CursorUp);
-			keyMap.Add(DInput.Key.Right, Key.CursorRight);
-			keyMap.Add(DInput.Key.Down, Key.CursorDown);
-			keyMap.Add(DInput.Key.PrintScreen, Key.PrintScreen);
-			keyMap.Add(DInput.Key.Insert, Key.Insert);
-			keyMap.Add(DInput.Key.Delete, Key.Delete);
-			keyMap.Add(DInput.Key.Multiply, Key.Multiply);
-			keyMap.Add(DInput.Key.Add, Key.Add);
-			keyMap.Add(DInput.Key.Subtract, Key.Subtract);
-			keyMap.Add(DInput.Key.Decimal, Key.Decimal);
-			keyMap.Add(DInput.Key.Divide, Key.Divide);
-			keyMap.Add(DInput.Key.NumberLock, Key.NumLock);
-			keyMap.Add(DInput.Key.ScrollLock, Key.Scroll);
-			keyMap.Add(DInput.Key.Semicolon, Key.Semicolon);
-			keyMap.Add(DInput.Key.Comma, Key.Comma);
-			keyMap.Add(DInput.Key.Minus, Key.Minus);
-			keyMap.Add(DInput.Key.Period, Key.Period);
-			keyMap.Add(DInput.Key.Backslash, Key.Backslash);
-			keyMap.Add(DInput.Key.LeftBracket, Key.OpenBrackets);
-			keyMap.Add(DInput.Key.RightBracket, Key.CloseBrackets);
+			KeyMap.Add(DInput.Key.Unknown, Key.None);
+			KeyMap.Add(DInput.Key.Tab, Key.Tab);
+			KeyMap.Add(DInput.Key.Return, Key.Enter);
+			KeyMap.Add(DInput.Key.Pause, Key.Pause);
+			KeyMap.Add(DInput.Key.Capital, Key.CapsLock);
+			KeyMap.Add(DInput.Key.Escape, Key.Escape);
+			KeyMap.Add(DInput.Key.Space, Key.Space);
+			AddHomeEndDeleteBlockKeys();
+			AddArrowKeys();
+			KeyMap.Add(DInput.Key.PrintScreen, Key.PrintScreen);
+			AddMathKeys();
+			KeyMap.Add(DInput.Key.NumberLock, Key.NumLock);
+			KeyMap.Add(DInput.Key.ScrollLock, Key.Scroll);
+			KeyMap.Add(DInput.Key.Semicolon, Key.Semicolon);
+			KeyMap.Add(DInput.Key.Comma, Key.Comma);
+			KeyMap.Add(DInput.Key.Period, Key.Period);
+			KeyMap.Add(DInput.Key.Backslash, Key.Backslash);
+			KeyMap.Add(DInput.Key.LeftBracket, Key.OpenBrackets);
+			KeyMap.Add(DInput.Key.RightBracket, Key.CloseBrackets);
+		}
+
+		private static void AddMathKeys()
+		{
+			KeyMap.Add(DInput.Key.Multiply, Key.Multiply);
+			KeyMap.Add(DInput.Key.Add, Key.Add);
+			KeyMap.Add(DInput.Key.Minus, Key.Minus);
+			KeyMap.Add(DInput.Key.Subtract, Key.Subtract);
+			KeyMap.Add(DInput.Key.Decimal, Key.Decimal);
+			KeyMap.Add(DInput.Key.Divide, Key.Divide);
+		}
+
+		private static void AddHomeEndDeleteBlockKeys()
+		{
+			KeyMap.Add(DInput.Key.PageUp, Key.PageUp);
+			KeyMap.Add(DInput.Key.PageDown, Key.PageDown);
+			KeyMap.Add(DInput.Key.Insert, Key.Insert);
+			KeyMap.Add(DInput.Key.Delete, Key.Delete);
+			KeyMap.Add(DInput.Key.End, Key.End);
+			KeyMap.Add(DInput.Key.Home, Key.Home);
+		}
+
+		private static void AddArrowKeys()
+		{
+			KeyMap.Add(DInput.Key.Left, Key.CursorLeft);
+			KeyMap.Add(DInput.Key.UpArrow, Key.CursorUp);
+			KeyMap.Add(DInput.Key.Right, Key.CursorRight);
+			KeyMap.Add(DInput.Key.Down, Key.CursorDown);
 		}
 
 		private static Key ParseKeyByName(string name)
@@ -109,12 +126,12 @@ namespace DeltaEngine.Input.SharpDX
 			return (DInput.Key)Enum.Parse(typeof(DInput.Key), name);
 		}
 
-		private static readonly Dictionary<DInput.Key, Key> keyMap =
-	new Dictionary<DInput.Key, Key>();
+		private static readonly Dictionary<DInput.Key, Key> KeyMap =
+			new Dictionary<DInput.Key, Key>();
 
 		public static Key Translate(DInput.Key key)
 		{
-			return keyMap.ContainsKey(key) ? keyMap[key] : Key.None;
+			return KeyMap.ContainsKey(key) ? KeyMap[key] : Key.None;
 		}
 	}
 }

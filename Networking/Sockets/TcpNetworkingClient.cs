@@ -17,6 +17,11 @@ namespace DeltaEngine.Networking.Sockets
 		public TcpNetworkingClient(IPEndPoint serverAddress)
 		{
 			this.serverAddress = serverAddress;
+			InitTcpSocket();
+		}
+
+		private void InitTcpSocket()
+		{
 			socket = new TcpSocket();
 			socket.DataReceived += OnDataReceived;
 		}

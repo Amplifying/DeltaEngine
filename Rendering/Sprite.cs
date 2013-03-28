@@ -9,6 +9,9 @@ namespace DeltaEngine.Rendering
 	/// </summary>
 	public class Sprite : Renderable
 	{
+		public Sprite(Image image, Rectangle initialDrawArea)
+			: this(image, initialDrawArea, Color.White) { }
+
 		public Sprite(Image image, Rectangle initialDrawArea, Color color)
 		{
 			Image = image;
@@ -16,12 +19,14 @@ namespace DeltaEngine.Rendering
 			Color = color;
 		}
 
-		public Image Image { get; protected set; }
+		public Image Image { get; private set; }
 		public Rectangle DrawArea;
 		public Color Color;
 
-		public Sprite(Image image, Rectangle initialDrawArea)
-			: this(image, initialDrawArea, Color.White) {}
+		public void SetImage(Image image)
+		{
+			Image = image;
+		}
 
 		protected override void Render(Renderer renderer, Time time)
 		{
