@@ -44,6 +44,8 @@
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <DocumentationFile>bin\Release\DeltaEngine.Datatypes.Tests.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\DeltaEngine.Datatypes.Tests.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\DeltaEngine.Datatypes.Tests.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
@@ -55,10 +57,10 @@
   <ItemGroup>
     <Compile Include="BinaryDataTests.cs" />
     <Compile Include="ColorTests.cs" />
+    <Compile Include="ComponentTests.cs" />
+    <Compile Include="EntityTests.cs" />
     <Compile Include="MatrixTests.cs" />
-    <Compile Include="MockBinaryData.cs" />
     <Compile Include="Triangle2DTests.cs" />
-    <Compile Include="UnknownBinaryTests.cs" />
     <Compile Include="VectorTests.cs" />
     <Compile Include="PointTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -69,6 +71,10 @@
     <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
       <Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
       <Name>DeltaEngine.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\Tests\DeltaEngine.Core.Tests.csproj">
+      <Project>{8ED0A7F1-77FB-47E7-AB6C-59C711BA3A9A}</Project>
+      <Name>DeltaEngine.Core.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Datatypes.csproj">
       <Project>{460983FF-AA91-4E10-B70E-10D0BDA15A58}</Project>

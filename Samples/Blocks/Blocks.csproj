@@ -55,6 +55,8 @@
     <Compile Include="Block.cs" />
     <Compile Include="Soundbank.cs" />
     <Compile Include="UserInterface.cs" />
+    <Compile Include="UserInterfaceLandscape.cs" />
+    <Compile Include="UserInterfacePortrait.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\JewelBlocks_VectorText.xml">
@@ -333,28 +335,27 @@
       <Name>DeltaEngine.Multimedia</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Platforms\DeltaEngine.Platforms.csproj">
-      <Project>{bae8830e-5f62-48d6-b772-c4b1e8665fb3}</Project>
+      <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
       <Name>DeltaEngine.Platforms</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Platforms\WindowsOpenGL\DeltaEngine.WindowsOpenGL.csproj">
       <Project>{cc943ae0-a1cc-4788-ac9b-01db3a0ebcd6}</Project>
       <Name>DeltaEngine.WindowsOpenGL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Platforms\Windows\DeltaEngine.Platforms.Windows.csproj">
-      <Project>{bd8a80e2-a313-437e-b0ef-fc0b066280a7}</Project>
-      <Name>DeltaEngine.Platforms.Windows</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
       <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
       <Name>DeltaEngine.Rendering</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Scenes\DeltaEngine.Scenes.csproj">
+      <Project>{75bb4c75-de36-47b3-9910-10ea8e8973b7}</Project>
+      <Name>DeltaEngine.Scenes</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-xcopy /s /y "$(SolutionDir)packages\OpenTKWithOpenAL.1.1.1160.61462\NativeBinaries\x86\*.*" "$(TargetDir)"</PostBuildEvent>
+    <PostBuildEvent>xcopy /s /y "$(SolutionDir)packages\OpenTKWithOpenAL.1.1.1160.61462\NativeBinaries\x86\*.*" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -19,9 +19,7 @@ namespace DeltaEngine.Core.Xml
 		private static string RemoveLeadingJunk(string xmlAsText)
 		{
 			int cutOffIndex = xmlAsText.IndexOf('<');
-			if (cutOffIndex > 0)
-				xmlAsText = xmlAsText.Substring(cutOffIndex);
-			return xmlAsText;
+			return cutOffIndex > 0 ? xmlAsText.Substring(cutOffIndex) : xmlAsText;
 		}
 	}
 }

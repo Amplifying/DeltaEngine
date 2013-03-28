@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<NDepend AppName="Delta Engine" Platform="DotNet">
-  <OutputDir KeepHistoric="True" KeepXmlFiles="True">C:\Users\Hendrik\Desktop\NDependOut</OutputDir>
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<NDepend AppName="New Project" Platform="DotNet">
+  <OutputDir KeepHistoric="True" KeepXmlFiles="True">C:\Users\Carlos\Desktop\NDependOut3</OutputDir>
   <Assemblies>
     <Name>DeltaEngine.Graphics</Name>
     <Name>DeltaEngine.Platforms</Name>
@@ -37,6 +37,10 @@
     <Name>Blocks.Tests</Name>
     <Name>Breakout</Name>
     <Name>Breakout.Tests</Name>
+    <Name>DeltaEngine.Networking</Name>
+    <Name>DeltaEngine.Networking.Tests</Name>
+    <Name>DeltaEngine.Networking.Sockets</Name>
+    <Name>DeltaEngine.Networking.Sockets.Tests</Name>
     <Name>DeltaEngine.Logging</Name>
     <Name>DeltaEngine.Logging.Tests</Name>
     <Name>DeltaEngine.Logging.Basic</Name>
@@ -46,17 +50,27 @@
     <Name>DeltaEngine.Input.Xna.Tests</Name>
     <Name>DeltaEngine.Input.SharpDX.Tests</Name>
     <Name>DeltaEngine.Input.Windows.Tests</Name>
-    <Name>DeltaEngine.Multimedia.OpenTK</Name>
     <Name>DeltaEngine.Multimedia.BaseOpenAL</Name>
+    <Name>DeltaEngine.Multimedia.OpenTK</Name>
+    <Name>EmptyGame</Name>
+    <Name>EmptyGame.Tests</Name>
+    <Name>DeltaEngine.Scenes</Name>
+    <Name>DeltaEngine.Scenes.Tests</Name>
+    <Name>DeltaEngine.Graphics.SlimDX</Name>
+    <Name>DeltaEngine.WindowsSlimX</Name>
+    <Name>CreepyTowers</Name>
+    <Name>CreepyTowers.Tests</Name>
+    <Name>Blobs</Name>
+    <Name>Blobs.Tests</Name>
   </Assemblies>
   <FrameworkAssemblies>
     <Name>mscorlib</Name>
     <Name>Autofac</Name>
+    <Name>System</Name>
     <Name>System.Core</Name>
     <Name>nunit.framework</Name>
     <Name>System.Drawing</Name>
     <Name>Moq</Name>
-    <Name>System</Name>
     <Name>Microsoft.Xna.Framework.Graphics</Name>
     <Name>Microsoft.Xna.Framework</Name>
     <Name>Microsoft.Xna.Framework.Game</Name>
@@ -68,127 +82,76 @@
     <Name>SharpDX.DirectInput</Name>
     <Name>SharpDX.XInput</Name>
     <Name>Microsoft.Xna.Framework.Input.Touch</Name>
+    <Name>Microsoft.Xna.Framework.Video</Name>
     <Name>SharpDX.XAudio2</Name>
     <Name>ToyMp3</Name>
     <Name>System.Xml.Linq</Name>
     <Name>OpenTK</Name>
+    <Name>SlimDX</Name>
   </FrameworkAssemblies>
   <Dirs>
     <Dir>C:\Windows\Microsoft.NET\Framework\v4.0.30319</Dir>
     <Dir>C:\Windows\Microsoft.NET\Framework\v4.0.30319\WPF</Dir>
-    <Dir>C:\Windows\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework\v4.0_4.0.0.0__842cf8be1de50553</Dir>
-    <Dir>C:\Windows\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework.Game\v4.0_4.0.0.0__842cf8be1de50553</Dir>
-    <Dir>C:\Windows\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework.Graphics\v4.0_4.0.0.0__842cf8be1de50553</Dir>
-    <Dir>C:\Windows\Microsoft.Net\assembly\GAC_MSIL\Microsoft.Xna.Framework.Input.Touch\v4.0_4.0.0.0__842cf8be1de50553</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Datatypes\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Datatypes\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\OpenTK\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsOpenGL\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\LogoApp\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\LogoApp\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Core\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Rendering\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Rendering\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\Xna\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\SharpDX\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Core\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsXna\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsDirectX\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\Windows\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\Windows\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\SharpDX\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\Xna\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\Xna\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\SharpDX\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\OpenTK\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Core\Xml\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\GameOfDeath\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Core\Xml\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\GameOfDeath\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Blocks\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Blocks\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Breakout\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Breakout\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\Mp3Reader\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsXnaWithoutAutofac\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsXnaWithoutAutofac\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Editor\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Editor\ContentManager\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Networking\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Networking\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Networking\Sockets\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Networking\Sockets\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Basic\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Basic\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Log4Net\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Log4Net\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\NLog\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\NLog\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\QueryableLog\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\QueryableLog\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Editor\ContentManager\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\BaseOpenGL\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\OpenTKWithBaseOpenGL\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\Xna\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\SharpDX\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\OpenTK\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\Windows\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Datatypes\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Datatypes\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsOpenGL\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\LogoApp\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\LogoApp\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Core\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Rendering\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Rendering\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\Xna\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\SharpDX\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Core\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsXna\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\WindowsDirectX\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Platforms\Windows\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\Windows\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\SharpDX\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\Xna\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\Xna\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\SharpDX\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Core\Xml\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\GameOfDeath\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Core\Xml\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\GameOfDeath\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Blocks\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Blocks\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Breakout\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Samples\Breakout\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Basic\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Logging\Basic\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\BaseOpenGL\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Graphics\OpenTK\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\Xna\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\SharpDX\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Input\Windows\Tests\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\OpenTK\bin\Release</Dir>
-    <Dir>D:\CruiseControl\Tools\Scripts\WorkingSolution\Multimedia\BaseOpenAL\bin\Release</Dir>
+    <Dir>C:\Code\DeltaEngine\Graphics\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Platforms\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Datatypes\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Datatypes\Tests\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Graphics\Tests\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Platforms\Tests\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Platforms\WindowsOpenGL\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Samples\LogoApp\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Samples\LogoApp\Tests\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Core\Tests\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Rendering\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Rendering\Tests\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Graphics\Xna\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Graphics\SharpDX\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Core\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Platforms\WindowsXna\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Platforms\WindowsDirectX\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Platforms\Windows\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Input\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Input\Tests\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Input\Windows\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Input\SharpDX\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Input\Xna\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Multimedia\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Multimedia\Tests\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Multimedia\Xna\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Multimedia\SharpDX\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Core\Xml\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Samples\GameOfDeath\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Core\Xml\Tests\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Samples\GameOfDeath\Tests\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Samples\Blocks\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Samples\Blocks\Tests\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Samples\Breakout\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Samples\Breakout\Tests\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Networking\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Networking\Tests\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Networking\Sockets\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Networking\Sockets\Tests\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Logging\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Logging\Tests\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Logging\Basic\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Logging\Basic\Tests\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Graphics\BaseOpenGL\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Graphics\OpenTK\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Input\Xna\Tests\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Input\SharpDX\Tests\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Input\Windows\Tests\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Multimedia\BaseOpenAL\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Multimedia\OpenTK\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Samples\EmptyGame\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Samples\EmptyGame\Tests\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Scenes\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Scenes\Tests\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Graphics\SlimDX\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Platforms\WindowsSlimDX\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Samples\CreepyTowers\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Samples\CreepyTowers\Tests\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Samples\Blobs\bin\Debug</Dir>
+    <Dir>C:\Code\DeltaEngine\Samples\Blobs\Tests\bin\Debug</Dir>
   </Dirs>
   <Report Kind="0" SectionsEnabled="12287" XslPath="" Flags="64512">
     <Section Enabled="True">Application Metrics</Section>
@@ -206,7 +169,8 @@
   <BuildComparisonSetting ProjectMode="DontCompare" BuildMode="MostRecentAnalysisResultAvailable" ProjectFileToCompareWith="" BuildFileToCompareWith="" NDaysAgo="1" />
   <BaselineInUISetting ProjectMode="DontCompare" BuildMode="MostRecentAnalysisResultAvailable" ProjectFileToCompareWith="" BuildFileToCompareWith="" NDaysAgo="1" />
   <CoverageFiles UncoverableAttribute="" />
-  <SourceFileRebasing FromPath="" ToPath="" /><Queries>
+  <SourceFileRebasing FromPath="" ToPath="" />
+  <Queries>
     <Group Name="Code Quality" Active="True" ShownInReport="False">
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="True"><![CDATA[// <Name>Types too big - critical</Name>
 warnif count > 0 from t in JustMyCode.Types where 
@@ -249,6 +213,9 @@ select new { m, m.ILCyclomaticComplexity, m.ILNestingDepth }
 warnif count > 0 from m in JustMyCode.Methods where 
   m.NbParameters > 3 &&
   !m.HasAttribute("System.Runtime.InteropServices.DllImportAttribute") &&
+  (!m.IsClassConstructor &&
+  !m.ParentNamespace.Name.Contains("Breakout") &&
+  !m.ParentNamespace.Name.Contains("GameOfDeath")) &&
   !m.ParentType.IsStructure
   orderby m.NbParameters descending
 select new { m, m.NbParameters }
@@ -279,15 +246,17 @@ warnif count > 0 from m in JustMyCode.Methods where
   m.NbVariables > 8 ||              // http://www.ndepend.com/Metrics.aspx#NbVariables
   (m.NbOverloads > 6 &&
  !m.FullName.Contains("TestStarter.Start") &&
- !m.FullName.Contains("InputCommands.Add"))                 // http://www.ndepend.com/Metrics.aspx#NbOverloads
-
+ !m.FullName.Contains("InputCommands.Add")) &&                // http://www.ndepend.com/Metrics.aspx#NbOverloads
+ !m.Name.Contains("SetupWindowSizeProperties")
 select new { m, m.NbLinesOfCode, m.NbILInstructions, m.CyclomaticComplexity, 
              m.ILCyclomaticComplexity, m.ILNestingDepth, 
              m.NbParameters, m.NbVariables, m.NbOverloads } ]]></Query>
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Methods too big</Name>
 warnif count > 0 from m in JustMyCode.Methods where 
-   m.NbLinesOfCode > 30 ||
-   m.NbILInstructions > 200
+   (m.NbLinesOfCode > 30 ||
+   m.NbILInstructions > 200) &&
+   !(m.ParentNamespace.Name =="DeltaEngine.Datatypes") &&
+   !(m.Name =="SetupWindowSizeProperties(Mock<Window>)") 
    orderby m.NbLinesOfCode descending,
            m.NbILInstructions descending
 select new { m, m.NbLinesOfCode, m.NbILInstructions }
@@ -331,11 +300,12 @@ select new { m, m.PercentageComment, m.NbLinesOfCode, m.NbLinesOfComment }
 // http://www.ndepend.com/Metrics.aspx#NbLinesOfComment ]]></Query>
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Methods with too many parameters</Name>
 warnif count > 0 from m in JustMyCode.Methods where 
-   (m.NbParameters > 3  &&
+   ((m.NbParameters > 3  &&
  !m.HasAttribute("System.Runtime.InteropServices.DllImportAttribute") &&
  !m.ParentType.IsStructure && !m.ParentType.DeriveFrom("DeltaEngine.Rendering.Sprite") &&
  m.ParentType.FullName != "DeltaEngine.Input.InputCommands"|| 
-  m.NbParameters > 4)
+  m.NbParameters > 4) &&
+ !m.Name.Contains("BufferData"))
   orderby m.NbParameters descending
 select new { m, m.NbParameters }
 
@@ -379,7 +349,10 @@ select new { m, m.NbOverloads }
 // http://www.ndepend.com/Metrics.aspx#NbOverloads]]></Query>
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Types with too many methods</Name>
 warnif count > 0 from t in JustMyCode.Types where 
-!t.IsStructure && !t.FullName.EndsWith("Tests") && 
+!t.IsStructure && !t.FullName.EndsWith("Tests") &&
+!(t.Name == "XmlData") &&
+!(t.Name == "TestInputResolver") &&
+!(t.Name == "Grid") &&
 (t.Methods.Count() > 22  &&
  t.InterfacesImplemented.Count() == 0 ||
  t.Methods.Count() > 33)
@@ -409,7 +382,41 @@ select new { t, t.InstanceFields, t.StaticFields, t.SizeOfInst }
 // standard class has more than 200 fields.]]></Query>
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Types with poor cohesion</Name>
 warnif count > 0 from t in JustMyCode.Types where 
-  (t.LCOM > 0.8 || t.LCOMHS > 0.95) && 
+  (t.LCOM > 0.85 || t.LCOMHS > 0.95) && 
+  t.NbFields > 10 && 
+  t.NbMethods >10 
+  orderby t.LCOM descending, t.LCOMHS descending
+select new { t, t.LCOM, t.LCOMHS, 
+                t.NbMethods, t.NbFields }
+
+// Types where LCOM > 0.8 and NbFields > 10 
+// and NbMethods >10 might be problematic. 
+// However, it is very hard to avoid such 
+// non-cohesive types. The LCOMHS metric
+// is often considered as more efficient to 
+// detect non-cohesive types.
+// See the definition of the LCOM metric here 
+// http://www.ndepend.com/Metrics.aspx#LCOM]]></Query>
+      <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Types with poor cohesion</Name>
+warnif count > 0 from t in JustMyCode.Types where 
+  (t.LCOM > 0.85 || t.LCOMHS > 0.95) && 
+  t.NbFields > 10 && 
+  t.NbMethods >10 
+  orderby t.LCOM descending, t.LCOMHS descending
+select new { t, t.LCOM, t.LCOMHS, 
+                t.NbMethods, t.NbFields }
+
+// Types where LCOM > 0.8 and NbFields > 10 
+// and NbMethods >10 might be problematic. 
+// However, it is very hard to avoid such 
+// non-cohesive types. The LCOMHS metric
+// is often considered as more efficient to 
+// detect non-cohesive types.
+// See the definition of the LCOM metric here 
+// http://www.ndepend.com/Metrics.aspx#LCOM]]></Query>
+      <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Types with poor cohesion</Name>
+warnif count > 0 from t in JustMyCode.Types where 
+  (t.LCOM > 0.85 || t.LCOMHS > 0.95) && 
   t.NbFields > 10 && 
   t.NbMethods >10 
   orderby t.LCOM descending, t.LCOMHS descending
@@ -661,28 +668,7 @@ where baseClass.IsClass && baseClass.NbChildren > 0 // <-- for optimization!
 let derivedClassesUsed = baseClass.DerivedTypes.UsedBy(baseClass)
 where derivedClassesUsed.Count() > 0
 select new { baseClass, derivedClassesUsed }]]></Query>
-      <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Class shouldn't be too deep in inheritance tree</Name>
-warnif count > 0 from t in JustMyCode.Types 
-where t.IsClass
-let baseClasses = t.BaseClasses.ExceptThirdParty()
-
-// Warn for classes with 4 or more base classes.
-// Notice that we don't count third-party classes 
-// because this rule concerns your code design,
-// not third-party libraries consumed design.
-where baseClasses.Count() >= 4 &&
-// Only check the depth inside the own namespace
-t.ParentNamespace.Name.Split('.')[0] != t.FullName.Split('.')[0]
-
-select new { t, baseClasses,
-                // The metric value DepthOfInheritance takes account
-                // of third-party base classes
-                t.DepthOfInheritance } 
-
-// Branches too long in the derivation should be avoided.
-// See the definition of the DepthOfInheritance metric here 
-// http://www.ndepend.com/Metrics.aspx#DIT
-]]></Query>
+      <Query Active="False" DisplayList="False" DisplayStat="False" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[]]></Query>
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Class with no descendant should be sealed if possible</Name>
 warnif count > 0 from t in JustMyCode.Types where 
   t.IsClass && 
@@ -716,6 +702,8 @@ where t.IsClass && t.NbChildren > 0
 from mBase in t.InstanceMethods
 where  mBase.IsVirtual &&
       !mBase.IsThirdParty &&
+      mBase.ParentType.Name != "Sprite" &&
+      !(mBase.ParentNamespace.Name == "DeltaEngine.Rendering.Shapes") &&
       !mBase.IsAbstract && 
       !mBase.IsExplicitInterfaceImpl
 from mOverride in mBase.OverridesDirectDerived
@@ -790,6 +778,7 @@ where  t.IsClass &&
    // Exclude test classes
    !t.Name.EndsWith("Tests") &&
   !t.Name.Contains("Tests+") &&
+  !t.Name.Contains("TestStarter") &&
   !t.Name.Contains("XnaGame") &&
 
       !t.IsStatic && 
@@ -859,6 +848,8 @@ from t in Application.Types where
   !t.IsSealed &&
   t.Name != "ScreenSpace" &&
   t.Name != "FormsWindow" &&
+  t.Name != "Warning" &&
+  t.Name != "NetworkClientLogProvider" &&
   t.Name != "XnaWindow"
 
 
@@ -908,13 +899,15 @@ from f in Application.Fields where
  !f.IsInitOnly &&
  !f.IsGeneratedByCompiler &&
   // Contract API define such a insideContractEvaluation static field
-  f.Name != "insideContractEvaluation"
+  f.Name != "insideContractEvaluation" &&
+  f.Name != "provider"
 let assignedBy = f.MethodsAssigningMe.Where(m => !m.IsStatic)
 where assignedBy .Count() > 0
 select new { f, assignedBy }]]></Query>
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Avoid empty interfaces</Name>
 warnif count > 0 from t in JustMyCode.Types where 
-  t.IsInterface && 
+  t.IsInterface &&
+  t.Name != "Device" && 
   t.NbMethods == 0
 select new { t, t.TypesThatImplementMe }
 
@@ -3875,4 +3868,5 @@ from f in Application.Fields where
   f.Name == "components" && f.ParentType.DeriveFrom("System.Windows.Forms.Control".AllowNoMatch())
 select f]]></Query>
     </Group>
-  </Queries></NDepend>
+  </Queries>
+</NDepend>

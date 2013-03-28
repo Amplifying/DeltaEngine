@@ -1,9 +1,6 @@
-﻿using System;
-using System.IO;
-using System.IO.Pipes;
-using System.Reflection;
-using DeltaEngine.Datatypes;
+﻿using DeltaEngine.Datatypes;
 using NUnit.Framework;
+
 namespace DeltaEngine.Networking.Tests
 {
 	public class ClientTests
@@ -34,8 +31,8 @@ namespace DeltaEngine.Networking.Tests
 			var server = new ServerMock();
 			Assert.IsNull(server.ReceivedMessage);
 			new ClientMock(server).Send(new TestMessage("Hi"));
-			var serverMessage = server.ReceivedMessage.ToBinaryData() as TestMessage;
-			byte[] byteArray = serverMessage.ToArrayWithLengthHeader();
+			var serverMessage = server.ReceivedMessage.ToBinaryData<TestMessage>();
+			byte[] byteArray = serverMessage.ToByteArrayWithLengthHeader();
 			Assert.AreEqual(19, byteArray.Length);
 		}
 
@@ -45,7 +42,7 @@ namespace DeltaEngine.Networking.Tests
 			var server = new ServerMock();
 			Assert.IsNull(server.ReceivedMessage);
 			new ClientMock(server).Send(new TestMessage("Hi"));
-			var serverMessage = server.ReceivedMessage.ToBinaryData() as TestMessage;
+			var serverMessage = server.ReceivedMessage.ToBinaryData<TestMessage>();
 			Assert.IsNotNull(serverMessage);
 			Assert.AreEqual("Hi", serverMessage.Text);
 		}
@@ -61,24 +58,6 @@ namespace DeltaEngine.Networking.Tests
 				client.Receive();
 				Assert.IsTrue(eventTriggered);
 			}
-		}
-
-		[Test]
-		public void DisposeBinaryData()
-		{
-			BinaryDataFactory binaryDataFactory = new BinaryDataFactory();
-			binaryDataFactory.Dispose();
-		}
-
-		[Test]
-		public void AssemblyLoadedInCurrentDomain()
-		{
-			AssemblyLoadEventArgs assemblyEvent = new AssemblyLoadEventArgs(Assembly.GetAssembly(GetType()));
-			BinaryDataFactory binaryDataFactory = new BinaryDataFactory();
-			binaryDataFactory.OnAssemblyLoadInCurrentDomain(null, assemblyEvent);
-
-			Assert.That(binaryDataFactory.shortNames.Count, Is.GreaterThanOrEqualTo(4));
-			Assert.That(binaryDataFactory.typeMap.Count, Is.GreaterThanOrEqualTo(4));
 		}
 	}
 }

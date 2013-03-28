@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Input.Devices;
 using DeltaEngine.Platforms;
 using DeltaEngine.Rendering;
 

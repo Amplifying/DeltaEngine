@@ -8,5 +8,7 @@
 		}
 
 		protected TestResolver testResolver;
+
+		public abstract void Register();
 	}
 }

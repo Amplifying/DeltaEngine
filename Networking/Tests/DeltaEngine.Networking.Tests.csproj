@@ -58,10 +58,6 @@
       <Project>{5231706e-2955-43bf-9c06-291e12af5c5c}</Project>
       <Name>DeltaEngine.Networking</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Sockets\DeltaEngine.Networking.Sockets.csproj">
-      <Project>{9e085ab9-b4de-4815-bd90-d975c75dfe94}</Project>
-      <Name>DeltaEngine.Networking.Sockets</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

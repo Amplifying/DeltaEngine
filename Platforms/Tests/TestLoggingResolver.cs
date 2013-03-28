@@ -6,7 +6,9 @@ namespace DeltaEngine.Platforms.Tests
 	public class TestLoggingResolver : TestModuleResolver
 	{
 		public TestLoggingResolver(TestResolver testResolver)
-			: base(testResolver)
+			: base(testResolver) {}
+
+		public override void Register()
 		{
 			SetupLogProvider();
 			SetupLogger();
@@ -22,6 +24,10 @@ namespace DeltaEngine.Platforms.Tests
 
 		private static Mock<LogProvider> provider;
 
+		/// <summary>
+		/// Needed because Autofac is unable to resolve the constructor parameter for a 
+		/// Moq Logger class
+		/// </summary>
 		private class MockLogger : Logger
 		{
 			public MockLogger()

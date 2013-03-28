@@ -24,9 +24,10 @@ namespace DeltaEngine.Rendering.Tests
 		private static XmlData CreateVectorTextData()
 		{
 			var vectorTextData = new XmlData("VectorText");
-			var character = new XmlData("Char1", vectorTextData);
+			var character = new XmlData("Char1");
 			character.AddAttribute("Character", "A");
 			character.AddAttribute("Lines", "(0,0)-(1,1)");
+			vectorTextData.AddChild(character);
 			return vectorTextData;
 		}
 

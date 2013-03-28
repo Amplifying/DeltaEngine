@@ -1,5 +1,4 @@
-﻿using DeltaEngine.Input.Tests.Devices;
-using DeltaEngine.Platforms.Tests;
+﻿using DeltaEngine.Platforms.Tests;
 
 namespace DeltaEngine.Input.Tests
 {

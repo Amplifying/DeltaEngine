@@ -13,7 +13,7 @@ namespace GameOfDeath
 		public Rabbit(Image image, Point position)
 			: base(image, Rectangle.One)
 		{
-			originalSize = image.PixelSize / Score.QuadraticFullscreenSize;
+			originalSize = image.PixelSize / Scoreboard.QuadraticFullscreenSize;
 			DrawArea = Rectangle.FromCenter(position, originalSize);
 			velocity = new Point(Random.Get(-0.035f, 0.035f), Random.Get(-0.025f, 0.025f));
 			boundingBox = Rectangle.FromCenter(position, originalSize * 1.2f);
@@ -21,9 +21,9 @@ namespace GameOfDeath
 		}
 
 		private readonly Size originalSize;
-		private static readonly Randomizer Random = new PseudoRandom();
 		private Point velocity;
-		private Rectangle boundingBox;
+		private static readonly Randomizer Random = new PseudoRandom();
+		private readonly Rectangle boundingBox;
 
 		public void SetHealth(float initialHealth)
 		{
@@ -53,7 +53,7 @@ namespace GameOfDeath
 			renderer.DrawRectangle(HealthBox, HealthColor);
 		}
 
-		protected Rectangle HealthBox
+		private Rectangle HealthBox
 		{
 			get
 			{
@@ -61,16 +61,19 @@ namespace GameOfDeath
 					HealthPercentage * DrawArea.Width * 0.5f, HealthBarHeight);
 			}
 		}
-		protected float HealthPercentage
+
+		private float HealthPercentage
 		{
 			get { return currentHealth / maxHealth; }
 		}
+
 		private const float HealthBarHeight = 5.0f / 1920;
 
 		private Color HealthColor
 		{
 			get { return HealthPercentage < 0.25f ? Red : HealthPercentage < 0.5f ? Yellow : Green; }
 		}
+
 		private static readonly Color Red = new Color(96, 0, 0, 128);
 		private static readonly Color Yellow = new Color(96, 96, 0, 128);
 		private static readonly Color Green = new Color(0, 96, 0, 128);

@@ -40,6 +40,7 @@
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\DeltaEngine.Rendering.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\DeltaEngine.Rendering.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -48,7 +49,9 @@
     <Compile Include="AnimatedSprite.cs" />
     <Compile Include="BubbleSortedList.cs" />
     <Compile Include="Camera2DControlledQuadraticScreenSpace.cs" />
+    <Compile Include="LineEntity.cs" />
     <Compile Include="OutlinedRect.cs" />
+    <Compile Include="LineShape.cs" />
     <Compile Include="Shapes\Circle.cs" />
     <Compile Include="Shapes\Ellipse.cs" />
     <Compile Include="Shapes\Rect.cs" />

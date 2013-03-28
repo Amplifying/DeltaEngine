@@ -46,7 +46,7 @@ namespace GameOfDeath.Tests
 			{
 				var rabbitImage = content.Load<Image>("Rabbit");
 				var viewport = renderer.Screen.Viewport;
-				var size = RabbitsGrid.CellSize;
+				var size = RabbitGrid.CellSize;
 				for (float x = viewport.Left + size.Width / 2; x <= viewport.Right; x += size.Width)
 					for (float y = viewport.Top + size.Height / 2; y <= viewport.Bottom; y += size.Height)
 						renderer.Add(CreateRabbitWith50Health(rabbitImage, new Point(x, y)));
@@ -63,12 +63,12 @@ namespace GameOfDeath.Tests
 					mouse =>
 						renderer.Add(new DeadRabbit(deadRabbitImage,
 							Rectangle.FromCenter(mouse.Position,
-								deadRabbitImage.PixelSize / Score.QuadraticFullscreenSize))));
-				if (testResolver != null)
-				{
-					testResolver.SetMouseButtonState(MouseButton.Left, State.Releasing, Point.Half);
-					testResolver.AdvanceTimeAndExecuteRunners(1);
-				}
+								deadRabbitImage.PixelSize / Scoreboard.QuadraticFullscreenSize))));
+				if (testResolver == null)
+					return;
+
+				testResolver.SetMouseButtonState(MouseButton.Left, State.Releasing);
+				testResolver.AdvanceTimeAndExecuteRunners(1);
 			});
 		}
 	}

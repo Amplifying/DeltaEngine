@@ -4,12 +4,8 @@ namespace DeltaEngine.Networking.Tests
 {
 	public class LoginMock : Login
 	{
-		public override void Save(BinaryWriter writer)
-		{
-		}
+		public override void SaveData(BinaryWriter writer) {}
 
-		public override void Load(BinaryReader reader)
-		{
-		}
+		public override void LoadData(BinaryReader reader) {}
 	}
 }

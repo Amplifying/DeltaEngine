@@ -25,13 +25,14 @@ namespace Blocks
 		public int AffixBlock(Block block)
 		{
 			foreach (Brick brick in block.Bricks)
-				AffixBrick(brick);
+				if (!IsOccupied(brick))
+					AffixBrick(brick);
 
 			RemoveFilledRows();
 			return removedRows;
 		}
 
-		protected Brick[,] bricks = new Brick[Width,Height];
+		protected readonly Brick[,] bricks = new Brick[Width,Height];
 		internal const int Width = 12;
 		internal const int Height = 19;
 
@@ -73,7 +74,10 @@ namespace Blocks
 			for (int x = 0; x < Width; x++)
 				RemoveBrick(x, row);
 
-			MoveRowsDown(row);
+			for (int x = 0; x < Width; x++)
+				for (int y = row; y > 0; y--)
+					MoveBrickDown(x, y);
+
 			removedRows++;
 		}
 
@@ -83,15 +87,15 @@ namespace Blocks
 			renderer.Remove(brick);
 			bricks[x, y] = null;
 			if (content.DoBricksSplitInHalfWhenRowFull)
-				AddTwoFallingBricks(brick);
+				AddPairOfFallingBricks(brick);
 			else
 				AddFallingBrick(brick);
 		}
 
-		private void AddTwoFallingBricks(Brick brick)
+		private void AddPairOfFallingBricks(Brick brick)
 		{
-			AddBottomFallingBrick(brick);
 			AddTopFallingBrick(brick);
+			AddBottomFallingBrick(brick);
 		}
 
 		private void AddTopFallingBrick(Sprite brick)
@@ -129,13 +133,6 @@ namespace Blocks
 				RotationSpeed = Random.Get(-360, 360),
 				RenderLayer = (int)RenderLayer.FallingBrick
 			});
-		}
-
-		private void MoveRowsDown(int row)
-		{
-			for (int x = 0; x < Width; x++)
-				for (int y = row; y > 0; y--)
-					MoveBrickDown(x, y);
 		}
 
 		private void MoveBrickDown(int x, int y)

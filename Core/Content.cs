@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DeltaEngine.Core
 {
@@ -11,6 +12,8 @@ namespace DeltaEngine.Core
 	{
 		public Content(Resolver resolver)
 		{
+			if (resolver == null)
+				throw new NullReferenceException();
 			this.resolver = resolver;
 		}
 
@@ -19,18 +22,10 @@ namespace DeltaEngine.Core
 		public ContentType Load<ContentType>(string contentName)
 			where ContentType : ContentData
 		{
-			var contentData = TryLoadFromCache(contentName);
-			if (contentData != null)
-				return (ContentType)contentData;
+			if (resources.ContainsKey(contentName.GetHashCode()))
+				return resources[contentName.GetHashCode()] as ContentType;
 
 			return LoadAndCacheContent<ContentType>(contentName);
-		}
-
-		private ContentData TryLoadFromCache(string contentName)
-		{
-			ContentData contentData = null;
-			resources.TryGetValue(contentName.GetHashCode(), out contentData);
-			return contentData;
 		}
 
 		private ContentType LoadAndCacheContent<ContentType>(string contentName)
@@ -41,6 +36,6 @@ namespace DeltaEngine.Core
 			return contentData;
 		}
 
-		private Dictionary<int, ContentData> resources = new Dictionary<int, ContentData>();
+		private readonly Dictionary<int, ContentData> resources = new Dictionary<int, ContentData>();
 	}
 }

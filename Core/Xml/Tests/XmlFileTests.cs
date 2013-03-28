@@ -12,7 +12,7 @@ namespace DeltaEngine.Core.Xml.Tests
 			Assert.AreEqual(data, file.Root);
 		}
 
-		[Test, Category("Slow")]
+		[Test]
 		public void SavingAndLoadingLeavesItUnchanged()
 		{
 			XmlData data = CreateTestXmlData();
@@ -25,14 +25,26 @@ namespace DeltaEngine.Core.Xml.Tests
 		private static XmlData CreateTestXmlData()
 		{
 			var root = new XmlData("Root");
-			var child1 = new XmlData("Child1", root);
+			AddChild1(root);
+			AddChild2(root);
+			return root;
+		}
+
+		private static void AddChild1(XmlData root)
+		{
+			var child1 = new XmlData("Child1");
 			child1.AddAttribute("Attr1", "Value with space");
 			child1.AddAttribute("Attr2", "Value2");
-			var child2 = new XmlData("Child2", root);
+			root.AddChild(child1);
+		}
+
+		private static void AddChild2(XmlData root)
+		{
+			var child2 = new XmlData("Child2");
 			child2.AddAttribute("Attr3", "Value3");
 			child2.AddAttribute("Attr4", "Value4");
-			new XmlData("Grandchild", child2);
-			return root;
+			child2.AddChild(new XmlData("Grandchild"));
+			root.AddChild(child2);
 		}
 	}
 }

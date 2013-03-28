@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using DeltaEngine.Input.Devices;
 
 namespace DeltaEngine.Input.Windows
 {

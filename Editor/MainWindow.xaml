@@ -1,0 +1,126 @@
+﻿<Window
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:avalonDock="clr-namespace:AvalonDock;assembly=AvalonDock"
+	xmlns:avalonDockLayout="clr-namespace:AvalonDock.Layout;assembly=AvalonDock"
+	xmlns:themes="clr-namespace:AvalonDock.Themes;assembly=AvalonDock.Themes.Metro"
+	xmlns:sampleBrowser2="clr-namespace:DeltaEngine.Editor.SampleBrowser;assembly=DeltaEngine.Editor.SampleBrowser"
+	x:Class="DeltaEngine.Editor.MainWindow"
+	Title="Delta Engine Editor" Height="800" Width="1200" Icon="DeltaEngineIcon.ico" Closing="WindowClosing">
+	<Grid>
+		<ToolBarTray Background="White" VerticalAlignment="Top" Visibility="Hidden">
+			<ToolBar BandIndex="1">
+				<Button>
+					<Image Source="Icons\New.png" />
+				</Button>
+				<Button>
+					<Image Source="Icons\YourProjects.png" />
+				</Button>
+				<Button>
+					<Image Source="Icons\PublicProjects.png" />
+				</Button>
+				<Separator/>
+				<Button>
+					<Image Source="Icons\Settings.png" />
+				</Button>
+			</ToolBar>
+			<ToolBar BandIndex="2">
+				<Button>
+					<Image Source="Icons\Start.png" />
+				</Button>
+				<Button>
+					<Image Source="Icons\Pause.png" />
+				</Button>
+				<Button>
+					<Image Source="Icons\Restart.png" />
+				</Button>
+			</ToolBar>
+			<ToolBar BandIndex="3">
+				<Button Click="SampleBrowserClick">
+					<Image Source="Icons\Samples.png" ToolTip="SampleBrowser" />
+				</Button>
+				<Button>
+					<Image Source="Icons\Content.png" />
+				</Button>
+				<Button>
+					<Image Source="Icons\Emulator.png" />
+				</Button>
+				<Button>
+					<Image Source="Icons\Launcher.png" />
+				</Button>
+				<Separator/>
+				<Button>
+					<Image Source="Icons\UI.png" />
+				</Button>
+				<Button>
+					<Image Source="Icons\Font.png" />
+				</Button>
+				<Button>
+					<Image Source="Icons\Input.png" />
+				</Button>
+				<Button>
+					<Image Source="Icons\Trigger.png" />
+				</Button>
+				<Button>
+					<Image Source="Icons\Material.png" />
+				</Button>
+				<Button>
+					<Image Source="Icons\ImageAnimation.png" />
+				</Button>
+				<Button>
+					<Image Source="Icons\Model.png" />
+				</Button>
+				<Button>
+					<Image Source="Icons\MeshAnimation.png" />
+				</Button>
+				<Button>
+					<Image Source="Icons\Level.png" />
+				</Button>
+				<Button>
+					<Image Source="Icons\ParticleEffect.png" />
+				</Button>
+				<Button>
+					<Image Source="Icons\Xml.png" />
+				</Button>
+				<Separator/>
+				<Button>
+					<Image Source="Icons\Account.png" />
+				</Button>
+				<Button>
+					<Image Source="Icons\Forum.png" />
+				</Button>
+				<Button>
+					<Image Source="Icons\Help.png" />
+				</Button>
+			</ToolBar>
+			<ToolBar BandIndex="4">
+				<Button Command="ApplicationCommands.Undo">
+					<Image Source="Icons\Undo.png" />
+				</Button>
+				<Button Command="ApplicationCommands.Redo">
+					<Image Source="Icons\Redo.png" />
+				</Button>
+				<Separator/>
+				<Button HorizontalAlignment="Right" x:Name="Search" Command="ApplicationCommands.Find" Click="SearchClick">
+					<Image Source="Icons\Search.png" />
+				</Button>
+				<TextBox HorizontalAlignment="Right" Width="100" />
+				<ToolBarTray Height="38" VerticalAlignment="Top" Width="100"/>
+			</ToolBar>
+		</ToolBarTray>
+		<avalonDock:DockingManager Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top">
+			<avalonDock:DockingManager.Theme>
+				<themes:MetroTheme/>
+			</avalonDock:DockingManager.Theme>
+			<avalonDockLayout:LayoutRoot PropertyChanged="OnLayoutRootPropertyChanged">
+				<avalonDockLayout:LayoutPanel Orientation="Horizontal">
+					<avalonDockLayout:LayoutAnchorablePane DockWidth="100">
+						<avalonDockLayout:LayoutAnchorable x:Name="SampleBrowserPlugin" ContentId="SampleBroswer" Title="Sample Browser" CanHide="False" CanClose="False" >
+							<sampleBrowser2:SampleBrowserView />
+						</avalonDockLayout:LayoutAnchorable>
+					</avalonDockLayout:LayoutAnchorablePane>
+				</avalonDockLayout:LayoutPanel>
+			</avalonDockLayout:LayoutRoot>
+		</avalonDock:DockingManager>
+	</Grid>
+</Window>

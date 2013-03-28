@@ -10,7 +10,8 @@ namespace Breakout.Tests
 			//new PaddleTests().Draw(TestStarter.DirectX);
 			//new BallTests().Draw(TestStarter.DirectX);
 			//new LevelTests().Draw(TestStarter.DirectX);
-			new GameTests().Draw(TestStarter.DirectX);
+			//new GameTests().Draw(TestStarter.DirectX);
+			new GameTests().ResurrectBricksRandomly(TestStarter.DirectX);
 		}
 	}
 }

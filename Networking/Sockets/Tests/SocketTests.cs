@@ -24,11 +24,9 @@ namespace DeltaEngine.Networking.Sockets.Tests
 		[Test, Category("Slow")]
 		public void ConnectClientAndDisposeServer()
 		{
-			using (var client = CreatedConnectedClient())
-			{
-				ShutDownServer();
-				Assert.IsFalse(client.IsConnected);
-			}
+			var client = CreatedConnectedClient();
+			server.ClientConnected += connection => Assert.IsFalse(client.IsConnected);
+			ShutDownServer();
 		}
 
 		private void ShutDownServer()

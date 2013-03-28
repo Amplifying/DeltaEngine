@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6F82824D-1F58-4584-848E-8172B0449C2D}   </ProjectGuid>
+    <ProjectGuid>{32665D04-5A07-4F99-9E20-0639CD1C1D6D}      </ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DeltaEngine.Multimedia.OpenTK</RootNamespace>
@@ -62,6 +62,10 @@
       <Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
       <Name>DeltaEngine.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
+      <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
+      <Name>DeltaEngine.Rendering</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Multimedia.csproj">
       <Project>{6016abb8-05f5-4a07-8fba-16576277dde7}</Project>
       <Name>DeltaEngine.Multimedia</Name>
@@ -73,9 +77,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /y "$(SolutionDir)packages\OpenTKWithOpenAL.1.1.804.3121\NativeBinaries\x86\OpenAL32.dll" "$(TargetDir)OpenAL32.dll"
-copy /y "$(SolutionDir)packages\OpenTKWithOpenAL.1.1.804.3121\NativeBinaries\x86\wrap_oal.dll" "$(TargetDir)wrap_oal.dll"
-xcopy /s /y "$(SolutionDir)packages\OpenTKWithOpenAL.1.1.1160.61462\NativeBinaries\x86\*.*" "$(TargetDir)"</PostBuildEvent>
+    <PostBuildEvent>xcopy /s /y "$(SolutionDir)packages\OpenTKWithOpenAL.1.1.1160.61462\NativeBinaries\x86\*.*" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

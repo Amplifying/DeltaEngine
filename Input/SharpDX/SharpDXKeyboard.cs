@@ -1,5 +1,5 @@
 ﻿using System;
-using DeltaEngine.Input.Devices;
+using System.Collections.Generic;
 using DeltaEngine.Platforms;
 using DInput = SharpDX.DirectInput;
 
@@ -8,13 +8,24 @@ namespace DeltaEngine.Input.SharpDX
 	/// <summary>
 	/// Native implementation of the Keyboard interface using DirectInput.
 	/// </summary>
-	public class SharpDXKeyboard : BaseKeyboard
+	public class SharpDXKeyboard : Keyboard
 	{
 		public SharpDXKeyboard(Window window)
 		{
 			windowHandle = window.Handle;
+			CreateAndFillKeyStatesDictionary();
 			CreateNativeKeyboard();
 		}
+
+		private readonly IntPtr windowHandle;
+
+		private void CreateAndFillKeyStatesDictionary()
+		{
+			foreach (Key key in Enum.GetValues(typeof(Key)))
+				keyStates.Add(key, State.Released);
+		}
+
+		private readonly Dictionary<Key, State> keyStates = new Dictionary<Key, State>();
 
 		private void CreateNativeKeyboard()
 		{
@@ -26,12 +37,11 @@ namespace DeltaEngine.Input.SharpDX
 			nativeKeyboard.Acquire();
 		}
 
-		private readonly IntPtr windowHandle;
 		private DInput.KeyboardState nativeState;
 		private DInput.DirectInput directInput;
 		private DInput.Keyboard nativeKeyboard;
 
-		public override void Dispose()
+		public void Dispose()
 		{
 			if (nativeKeyboard != null)
 			{
@@ -42,12 +52,27 @@ namespace DeltaEngine.Input.SharpDX
 			directInput = null;
 		}
 
-		public override void Run()
+		public bool IsAvailable
+		{
+			get { return true; }
+		}
+
+		public State GetKeyState(Key key)
+		{
+			return keyStates[key];
+		}
+
+		public void Run()
 		{
 			nativeKeyboard.GetCurrentState(ref nativeState);
 			Array keys = Enum.GetValues(typeof(DInput.Key));
 			foreach (DInput.Key key in keys)
 				UpdateKeyState(KeyboardKeyMapper.Translate(key), nativeState.IsPressed(key));
+		}
+
+		private void UpdateKeyState(Key key, bool nowPressed)
+		{
+			keyStates[key] = keyStates[key].UpdateOnNativePressing(nowPressed);
 		}
 	}
 }

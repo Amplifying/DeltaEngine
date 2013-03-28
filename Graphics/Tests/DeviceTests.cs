@@ -22,7 +22,7 @@ namespace DeltaEngine.Graphics.Tests
 		[IntegrationTest]
 		public void Present(Type resolver)
 		{
-			Start(resolver, (Device device) => device.Present());
+			Start(resolver, (Device device, Window window) => device.Present());
 		}
 
 		[VisualTest]

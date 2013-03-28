@@ -10,9 +10,7 @@ namespace Breakout
 	{
 		public static void Main()
 		{
-			var app = new App();
-			app.Register<RelativeScreenSpace>();
-			app.Start<Game>();
+			new App().Start<UI, Background, RelativeScreenSpace>();
 		}
 	}
 }

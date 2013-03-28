@@ -74,18 +74,29 @@ namespace DeltaEngine.Datatypes.Tests
 		public void CommonColors()
 		{
 			Assert.AreEqual(new Color(0, 0, 0), Color.Black);
+			Assert.AreEqual(new Color(255, 255, 255), Color.White);
 			Assert.AreEqual(new Color(0, 0, 255), Color.Blue);
-			Assert.AreEqual(new Color(100, 149, 237), Color.CornflowerBlue);
 			Assert.AreEqual(new Color(0, 255, 255), Color.Cyan);
 			Assert.AreEqual(new Color(128, 128, 128), Color.Gray);
 			Assert.AreEqual(new Color(0, 255, 0), Color.Green);
 			Assert.AreEqual(new Color(255, 165, 0), Color.Orange);
-			Assert.AreEqual(new Color(152, 251, 152), Color.PaleGreen);
 			Assert.AreEqual(new Color(255, 192, 203), Color.Pink);
 			Assert.AreEqual(new Color(255, 0, 255), Color.Purple);
 			Assert.AreEqual(new Color(255, 0, 0), Color.Red);
-			Assert.AreEqual(new Color(255, 255, 255), Color.White);
+			Assert.AreEqual(new Color(0, 128, 128), Color.Teal);
 			Assert.AreEqual(new Color(255, 255, 0), Color.Yellow);
+		}
+
+		[Test]
+		public void NotSoCommonColors()
+		{
+			Assert.AreEqual(new Color(100, 149, 237), Color.CornflowerBlue);
+			Assert.AreEqual(new Color(0.65f, 0.795f, 1f), Color.LightBlue);
+			Assert.AreEqual(new Color(165, 165, 165), Color.LightGray);
+			Assert.AreEqual(new Color(89, 89, 89), Color.DarkGray);
+			Assert.AreEqual(new Color(0, 100, 0), Color.DarkGreen);
+			Assert.AreEqual(new Color(255, 215, 0), Color.Gold);
+			Assert.AreEqual(new Color(152, 251, 152), Color.PaleGreen);
 		}
 
 		[Test]
@@ -210,7 +221,7 @@ namespace DeltaEngine.Datatypes.Tests
 			{
 				var writer = new BinaryWriter(dataStream);
 				var data = Color.Red;
-				data.Save(writer);
+				data.SaveData(writer);
 				byte[] savedBytes = dataStream.ToArray();
 				Assert.AreEqual(4, savedBytes.Length);
 				Assert.AreEqual(255, savedBytes[0]);
@@ -227,10 +238,10 @@ namespace DeltaEngine.Datatypes.Tests
 			{
 				var writer = new BinaryWriter(dataStream);
 				var data = Color.Red;
-				data.Save(writer);
+				data.SaveData(writer);
 				dataStream.Seek(0, SeekOrigin.Begin);
 				var reader = new BinaryReader(dataStream);
-				data.Load(reader);
+				data.LoadData(reader);
 				Assert.AreEqual(Color.Red, data);
 			}
 		}

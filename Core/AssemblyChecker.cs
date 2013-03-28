@@ -4,8 +4,12 @@ using System.Reflection;
 
 namespace DeltaEngine.Core
 {
+	/// <summary>
+	/// Only used for Apps and visual tests, not for automated tests or NCrunch (slow & unsupported).
+	/// </summary>
 	public class AssemblyChecker
 	{
+		//ncrunch: no coverage start
 		public AssemblyChecker(Assembly assembly)
 		{
 			assemblyName = assembly.GetName().Name;

@@ -39,7 +39,6 @@
     <Compile Include="BasicLogger.cs" />
     <Compile Include="ConsoleLogger.cs" />
     <Compile Include="ConsoleLogProvider.cs" />
-    <Compile Include="LogClientLogin.cs" />
     <Compile Include="NetworkClientLogProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

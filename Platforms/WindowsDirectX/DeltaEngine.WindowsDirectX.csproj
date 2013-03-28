@@ -40,6 +40,7 @@
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\DeltaEngine.WindowsDirectX.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\DeltaEngine.WindowsDirectX.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -47,10 +48,7 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SharpDxAppForTestStarter.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
+    <Compile Include="SharpDxResolver.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
@@ -84,6 +82,10 @@
     <ProjectReference Include="..\..\Multimedia\SharpDX\DeltaEngine.Multimedia.SharpDX.csproj">
       <Project>{7D6C8627-CF35-4E3F-A3FE-1600327437C7}</Project>
       <Name>DeltaEngine.Multimedia.SharpDX</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
+      <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
+      <Name>DeltaEngine.Rendering</Name>
     </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Platforms.csproj">
       <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>

@@ -22,13 +22,13 @@ namespace DeltaEngine.Logging
 		public string Text { get; protected set; }
 		public string ProjectName { get; set; }
 
-		public void Save(BinaryWriter writer)
+		public void SaveData(BinaryWriter writer)
 		{
 			writer.Write(Text);
 			writer.Write(ProjectName);
 		}
 
-		public void Load(BinaryReader reader)
+		public void LoadData(BinaryReader reader)
 		{
 			Text = reader.ReadString();
 			ProjectName = reader.ReadString();

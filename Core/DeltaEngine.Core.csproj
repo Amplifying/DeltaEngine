@@ -40,13 +40,17 @@
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\DeltaEngine.Core.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\DeltaEngine.Core.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArrayExtensions.cs" />
-    <Compile Include="AssemblyChecker.cs" />
+    <Compile Include="AssemblyChecker.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="AssemblyExtensions.cs" />
     <Compile Include="ContentData.cs" />
     <Compile Include="Content.cs" />

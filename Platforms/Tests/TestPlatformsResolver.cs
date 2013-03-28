@@ -6,9 +6,11 @@
 		/// Mocks Platform objects for testing
 		/// </summary>
 		public TestPlatformsResolver(TestResolver testResolver)
-			: base(testResolver)
+			: base(testResolver) {}
+
+		public override void Register()
 		{
-			SetupPlatforms();
+			SetupPlatforms();			
 		}
 
 		private void SetupPlatforms()

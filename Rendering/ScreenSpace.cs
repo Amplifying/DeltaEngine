@@ -11,11 +11,13 @@ namespace DeltaEngine.Rendering
 	{
 		protected ScreenSpace(Window window)
 		{
+			Window = window;
 			viewportPixelSize = window.ViewportPixelSize;
 			window.ViewportSizeChanged += Update;
 			window.OrientationChanged += orientation => Update(window.ViewportPixelSize);
 		}
 
+		public Window Window { get; private set; }
 		protected Size viewportPixelSize;
 
 		protected virtual void Update(Size newViewportSize)

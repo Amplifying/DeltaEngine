@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("Blocks")]
@@ -9,6 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
 [assembly: Guid("8d02900e-a9a6-4510-acd1-f8df74602ed0")]
-[assembly: AssemblyVersion("0.9.7.4")]
-[assembly: AssemblyFileVersion("0.9.7.4")]
+[assembly: AssemblyVersion("0.9.7.5")]
+[assembly: AssemblyFileVersion("0.9.7.5")]
 [assembly: AssemblyProductAttribute("Blocks")]
+[assembly: InternalsVisibleTo("Blocks.Tests")]

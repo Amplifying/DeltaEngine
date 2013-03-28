@@ -17,9 +17,4 @@
   <UseBuildPlatform></UseBuildPlatform>
   <ProxyProcessPath></ProxyProcessPath>
   <UseCPUArchitecture>AutoDetect</UseCPUArchitecture>
-  <IgnoredTests>
-    <RegexTestSelector>
-      <RegularExpression>DeltaEngine\.Logging\.Tests\.LoggerTests\..*</RegularExpression>
-    </RegexTestSelector>
-  </IgnoredTests>
 </ProjectConfiguration>

@@ -42,11 +42,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GameOfAi.cs" />
-    <Compile Include="GameOfAiTests.cs" />
     <Compile Include="IntroTests.cs" />
-    <Compile Include="ScoreTests.cs" />
+    <Compile Include="ScoreboardTests.cs" />
     <Compile Include="ItemHandlerTests.cs" />
-    <Compile Include="GameTests.cs" />
+    <Compile Include="RabbitGridTests.cs" />
     <Compile Include="RabbitTests.cs" />
     <Compile Include="GameOfLifeTests.cs" />
     <Compile Include="UITests.cs" />

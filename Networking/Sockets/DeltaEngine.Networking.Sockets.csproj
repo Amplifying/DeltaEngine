@@ -44,6 +44,7 @@
     <Compile Include="TcpSocket.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TcpNetworkingClient.cs" />
+    <Compile Include="UnknownBinaryData.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Datatypes\DeltaEngine.Datatypes.csproj">

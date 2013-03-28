@@ -1,3 +1,4 @@
+using System;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
 using DeltaEngine.Multimedia;
@@ -10,8 +11,8 @@ namespace GameOfDeath.Items
 	/// </summary>
 	public abstract class Item : Sprite
 	{
-		protected Item(Image image, Image imageEffect, Sound soundEffect, Point initialPosition)
-			: base(image, Rectangle.FromCenter(initialPosition, Size.Zero))
+		protected Item(Image image, Image imageEffect, Sound soundEffect)
+			: base(image, Rectangle.FromCenter(Point.Half, Size.Zero))
 		{
 			this.imageEffect = imageEffect;
 			this.soundEffect = soundEffect;
@@ -23,7 +24,8 @@ namespace GameOfDeath.Items
 
 		public virtual void UpdatePosition(Point newPosition)
 		{
-			DrawArea = Rectangle.FromCenter(newPosition, Image.PixelSize / Score.QuadraticFullscreenSize);
+			DrawArea = Rectangle.FromCenter(newPosition,
+				Image.PixelSize / Scoreboard.QuadraticFullscreenSize);
 		}
 
 		protected abstract float ImpactSize { get; }
@@ -32,17 +34,20 @@ namespace GameOfDeath.Items
 		protected abstract float DoDamageEvery { get; }
 		public abstract int Cost { get; }
 
-		public virtual ItemEffect CreateEffect(Point position, Game game)
+		public virtual ItemEffect CreateEffect(Point position)
 		{
 			soundEffect.Play();
 			var size = new Size(ImpactSize * 2);
 			if (imageEffect == null)
 				size.Width *= DrawArea.Size.AspectRatio;
-			return new ItemEffect(imageEffect ?? Image, position, size, ImpactTime)
+
+			return new ItemEffect(imageEffect ?? Image, Rectangle.FromCenter(position, size), ImpactTime)
 			{
 				DoDamageEvery = DoDamageEvery,
-				DoDamage = () => game.DoDamage(position, ImpactSize, Damage),
+				DidDamage = () => DidDamage(position, ImpactSize, Damage),
 			};
 		}
+
+		public Action<Point, float, float> DidDamage;
 	}
 }

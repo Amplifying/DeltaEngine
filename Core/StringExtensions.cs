@@ -26,7 +26,7 @@ namespace DeltaEngine.Core
 				return TryConvertInvariantString(value, defaultValue);
 			}
 			catch (FormatException)
-			{
+		{
 				return defaultValue;
 			}
 		}

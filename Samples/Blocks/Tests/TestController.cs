@@ -1,4 +1,7 @@
-﻿namespace Blocks.Tests
+﻿using DeltaEngine.Core;
+using DeltaEngine.Datatypes;
+
+namespace Blocks.Tests
 {
 	public class TestController : Controller
 	{
@@ -9,10 +12,15 @@
 		public TestController(Grid grid, Soundbank soundbank, BlocksContent content)
 			: base(grid, soundbank, content) {}
 
+		public void AssignFixedBlocks()
+		{
+			FallingBlock = new Block(content, new FixedRandom(), Point.Zero);
+			UpcomingBlock = new Block(content, new FixedRandom(), Point.Zero);
+		}
+
 		public void SetFallingBlock(Block block)
 		{
 			FallingBlock = block;
-			FallingBlock.Affix += AffixBlock;
 		}
 
 		public void SetUpcomingBlock(Block block)

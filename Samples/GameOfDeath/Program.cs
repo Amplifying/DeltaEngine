@@ -10,7 +10,7 @@ namespace GameOfDeath
 	{
 		private static void Main()
 		{
-			new App().Start<UI>();
+			new App().Start<Intro, UI, InputCoordinator>();
 		}
 	}
 }

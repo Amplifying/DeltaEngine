@@ -1,42 +1,33 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Input;
 using DeltaEngine.Rendering;
 using GameOfDeath.Items;
 
 namespace GameOfDeath
 {
 	/// <summary>
-	/// Each item cost a different amount of money. Also displays icons shown on top of the screen.
+	/// Each item costs a different amount of money. Also displays icons shown on top of the screen.
 	/// </summary>
 	public class ItemHandler
 	{
-		public ItemHandler(Game game, Score score, Content content, InputCommands inputCommands,
-			Renderer renderer)
+		public ItemHandler(Content content, Renderer renderer)
 		{
-			this.game = game;
-			this.score = score;
 			this.renderer = renderer;
 			CreateItems(content);
 			CreateIcons(content);
 			SelectItem(0);
-			inputCommands.AddMouseMovement(mouse => CurrentItem.UpdatePosition(mouse.Position));
-			inputCommands.Add(MouseButton.Left, State.Pressing,
-				mouse => SelectIconOrHandleItemInGame(mouse.Position));
-			inputCommands.Add(touch => SelectIconOrHandleItemInGame(touch.GetPosition(0)));
 		}
 
-		private readonly Game game;
-		private readonly Score score;
 		private readonly Renderer renderer;
 
 		private void CreateItems(Content content)
 		{
-			cachedItems.Add(new Mallet(content, Point.Half));
-			cachedItems.Add(new Fire(content, Point.Half));
-			cachedItems.Add(new Toxic(content, Point.Half));
-			cachedItems.Add(new Atomic(content, Point.Half));
+			cachedItems.Add(new Mallet(content));
+			cachedItems.Add(new Fire(content));
+			cachedItems.Add(new Toxic(content));
+			cachedItems.Add(new Atomic(content));
 		}
 
 		private readonly List<Item> cachedItems = new List<Item>();
@@ -47,50 +38,11 @@ namespace GameOfDeath
 				renderer.Add(icons[index] = new Icon(content, index, renderer.Screen));
 		}
 
-		private readonly Sprite[] icons = new Sprite[NumberOfItems];
 		private const int NumberOfItems = 4;
+		private readonly Sprite[] icons = new Sprite[NumberOfItems];
 
-		private void SelectIconOrHandleItemInGame(Point position)
+		private void SelectItem(int itemIndex)
 		{
-			if (game.IsGameOver() || IsMouseOverIcon(position))
-				return;
-
-			HandleInGameItem(position);
-		}
-
-		private bool IsMouseOverIcon(Point position)
-		{
-			for (int index = 0; index < NumberOfItems; index++)
-				if (icons[index].DrawArea.Contains(position))
-				{
-					SelectItem(index);
-					CurrentItem.UpdatePosition(position);
-					return true;
-				}
-
-			return false;
-		}
-
-		private void HandleInGameItem(Point position)
-		{
-			if (score.CurrentMoney >= CurrentItem.Cost)
-			{
-				var effect = CurrentItem.CreateEffect(position, game);
-				if (effect != null)
-				{
-					score.CurrentMoney -= CurrentItem.Cost;
-					renderer.Add(effect);
-				}
-			}
-			else
-				SelectItem(0);
-		}
-
-		public void SelectItem(int itemIndex)
-		{
-			if (itemIndex > 0 && score.CurrentMoney < cachedItems[itemIndex].Cost)
-				return;
-
 			renderer.Remove(CurrentItem);
 			icons[currentIndex].Color = Color.Gray;
 			currentIndex = itemIndex;
@@ -99,9 +51,63 @@ namespace GameOfDeath
 		}
 
 		private int currentIndex;
+
 		public Item CurrentItem
 		{
 			get { return cachedItems[currentIndex]; }
 		}
+
+		public void SelectIconOrHandleItemInGame(Point position, int money)
+		{
+			if (IsMouseOverIcon(position, money))
+				return;
+
+			HandleInGameItem(position, money);
+		}
+
+		private bool IsMouseOverIcon(Point position, int money)
+		{
+			for (int index = 0; index < NumberOfItems; index++)
+				if (icons[index].DrawArea.Contains(position))
+				{
+					SelectItemIfSufficientFunds(index, money);
+					CurrentItem.UpdatePosition(position);
+					return true;
+				}
+
+			return false;
+		}
+
+		internal void SelectItemIfSufficientFunds(int itemIndex, int money)
+		{
+			if (money >= cachedItems[itemIndex].Cost)
+				SelectItem(itemIndex);
+		}
+
+		private void HandleInGameItem(Point position, int money)
+		{
+			if (money >= CurrentItem.Cost)
+				CreateEffect(position);
+			else
+				SelectItem(0);
+		}
+
+		private void CreateEffect(Point position)
+		{
+			var effect = CurrentItem.CreateEffect(position);
+			if (effect == null)
+				return;
+
+			renderer.Add(effect);
+
+			if (DidDamage != null)
+				CurrentItem.DidDamage = (point, impactSize, damage) => DidDamage(point, impactSize, damage);
+
+			if (MoneySpent != null)
+				MoneySpent(CurrentItem.Cost);
+		}
+
+		public event Action<Point, float, float> DidDamage;
+		public event Action<int> MoneySpent;
 	}
 }

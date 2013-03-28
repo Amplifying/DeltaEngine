@@ -1,28 +1,43 @@
-﻿using DeltaEngine.Graphics.OpenTK;
-using DeltaEngine.Input.Windows;
-using DeltaEngine.Multimedia.OpenTK;
-using DeltaEngine.Platforms.Windows;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DeltaEngine.Platforms
 {
 	/// <summary>
 	/// Provides the easily exchangeable App.Start function for OpenTK applications and visual tests.
 	/// </summary>
-	public class App : WindowsResolver
+	public class App
 	{
-		public App()
+		public void Start<AppEntryRunner>(int instancesToCreate = 1)
 		{
-			RegisterSingleton<OpenTKDevice>();
-			RegisterSingleton<OpenTKDrawing>();
-			Register<OpenTKImage>();
-			RegisterSingleton<OpenTKSoundDevice>();
-			Register<OpenTKSound>();
-			Register<OpenTKMusic>();
-			RegisterSingleton<WindowsMouse>();
-			RegisterSingleton<WindowsKeyboard>();
-			RegisterSingleton<WindowsTouch>();
-			RegisterSingleton<WindowsGamePad>();
-			RegisterSingleton<CursorPositionTranslater>();
+			resolver.Start<AppEntryRunner>(instancesToCreate);
+		}
+
+		private readonly OpenTKResolver resolver = new OpenTKResolver();
+
+		public void Start<AppEntryRunner, FirstClassToRegisterAndResolve>(int instancesToCreate = 1)
+		{
+			resolver.Start<AppEntryRunner, FirstClassToRegisterAndResolve>(instancesToCreate);
+		}
+
+		public void Start
+			<AppEntryRunner, FirstClassToRegisterAndResolve, SecondClassToRegisterAndResolve>(
+			int instancesToCreate = 1)
+		{
+			resolver.Start
+				<AppEntryRunner, FirstClassToRegisterAndResolve, SecondClassToRegisterAndResolve>(
+					instancesToCreate);
+		}
+
+		public void Start<AppEntryRunner>(IEnumerable<Type> typesToRegisterAndResolve,
+			int instancesToCreate = 1)
+		{
+			resolver.Start<AppEntryRunner>(typesToRegisterAndResolve, instancesToCreate);
+		}
+
+		public void RegisterSingleton<T>()
+		{
+			resolver.RegisterSingleton<T>();
 		}
 	}
 }

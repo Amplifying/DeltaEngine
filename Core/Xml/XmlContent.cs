@@ -5,8 +5,8 @@
 	/// </summary>
 	public abstract class XmlContent : ContentData
 	{
-		protected XmlContent(string contentFilename)
-			: base(contentFilename) {}
+		protected XmlContent(string filename)
+			: base(filename) {}
 
 		public virtual XmlData XmlData { get; set; }
 

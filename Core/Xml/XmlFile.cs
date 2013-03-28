@@ -18,18 +18,21 @@ namespace DeltaEngine.Core.Xml
 
 		public XmlFile(string filePath)
 		{
-			XDocument xDoc;
 			using (
 				var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-				xDoc = XDocument.Load(stream);
-
-			Root = new XmlData(xDoc.Root);
+				Root = new XmlData(XDocument.Load(stream).Root);
 		}
 
 		public void Save(string filePath)
 		{
 			using (
-				var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
+				var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write,
+					FileShare.ReadWrite))
+				SaveDocumentToStream(stream);
+		}
+
+		private void SaveDocumentToStream(Stream stream)
+		{
 			using (var writer = new StreamWriter(stream, new UTF8Encoding(false)))
 				SaveDocument(writer);
 		}

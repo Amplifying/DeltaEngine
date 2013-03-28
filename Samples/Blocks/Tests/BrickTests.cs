@@ -2,6 +2,7 @@
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
+using DeltaEngine.Platforms;
 using DeltaEngine.Platforms.Tests;
 using DeltaEngine.Rendering;
 using NUnit.Framework;
@@ -23,8 +24,8 @@ namespace Blocks.Tests
 		[Test]
 		public void Constants()
 		{
-			Assert.AreEqual(new Point(0.38f, 0.385f), Brick.RenderOffset);
-			Assert.AreEqual(0.02f, Brick.RenderZoom);
+			Assert.AreEqual(new Point(0.38f, 0.385f), Brick.OffsetLandscape);
+			Assert.AreEqual(0.02f, Brick.ZoomLandscape);
 		}
 
 		[Test]
@@ -44,10 +45,7 @@ namespace Blocks.Tests
 		[Test]
 		public void Position()
 		{
-			var brick = new Brick(null, new Point(0.1f, 0.2f))
-			{
-				TopLeft = new Point(0.4f, 0.8f)
-			};
+			var brick = new Brick(null, new Point(0.1f, 0.2f)) { TopLeft = new Point(0.4f, 0.8f) };
 			Assert.AreEqual(new Point(0.5f, 1.0f), brick.Position);
 		}
 
@@ -56,6 +54,17 @@ namespace Blocks.Tests
 		{
 			Start(resolver, (Renderer renderer, Content content) =>
 			{
+				var image = content.Load<Image>("DeltaEngineLogo");
+				renderer.Add(new Brick(image, new Point(5, 5)));
+			});
+		}
+
+		[VisualTest]
+		public void RenderBrickInPortrait(Type resolver)
+		{
+			Start(resolver, (Renderer renderer, Content content, Window window) =>
+			{
+				window.TotalPixelSize = new Size(600, 800);
 				var image = content.Load<Image>("DeltaEngineLogo");
 				renderer.Add(new Brick(image, new Point(5, 5)));
 			});

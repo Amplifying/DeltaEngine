@@ -20,7 +20,7 @@ namespace Blocks
 
 		private readonly Grid grid;
 		protected readonly Soundbank soundbank;
-		private readonly BlocksContent content;
+		protected readonly BlocksContent content;
 
 		public void Run(Time time, Renderer renderer)
 		{
@@ -32,41 +32,12 @@ namespace Blocks
 
 		public Block FallingBlock { get; protected set; }
 
-		private void MoveFallingBlock(Time time)
-		{
-			float top = FallingBlock.Top;
-			FallingBlock.Run(time, FallSpeed);
-			if (grid.IsValidPosition(FallingBlock))
-				return;
-
-			FallingBlock.Top = top;
-			FallingBlock.Settle(time, FallSpeed);
-		}
-
-		public float FallSpeed
-		{
-			get { return IsFallingFast ? FastFallSpeed : SlowFallSpeed; }
-		}
-
-		public bool IsFallingFast { get; set; }
-
-		public float SlowFallSpeed
-		{
-			get { return BaseSpeed + totalRowsRemoved * SpeedUpPerRowRemoved; }
-		}
-
-		internal const float BaseSpeed = 2.0f;
-		private int totalRowsRemoved;
-		private const float SpeedUpPerRowRemoved = 0.2f;
-		private const float FastFallSpeed = 16.0f;
-
 		private void GetNewFallingBlock(Renderer renderer)
 		{
 			if (UpcomingBlock == null)
 				CreateUpcomingBlock(renderer);
 
 			FallingBlock = UpcomingBlock;
-			FallingBlock.Affix += AffixBlock;
 			CreateUpcomingBlock(renderer);
 
 			while (IsABrickOnTopRowOrIsNoRoomForNextBlock())
@@ -111,7 +82,48 @@ namespace Blocks
 
 		public event Action Lose;
 
-		protected void AffixBlock()
+		private void MoveFallingBlock(Time time)
+		{
+			float top = FallingBlock.Top;
+			FallingBlock.Run(time, FallSpeed);
+			if (grid.IsValidPosition(FallingBlock))
+				return;
+
+			FallingBlock.Top = top;
+			Settle(time);
+		}
+
+		private void Settle(Time time)
+		{
+			settling += FallSpeed * time.CurrentDelta;
+			if (settling < SettleTime)
+				return;
+
+			AffixBlock();
+			settling = 0.0f;
+		}
+
+		private float settling;
+		private const float SettleTime = 1.0f;
+
+		private float FallSpeed
+		{
+			get { return IsFallingFast ? FastFallSpeed : SlowFallSpeed; }
+		}
+
+		public bool IsFallingFast { get; set; }
+
+		private float SlowFallSpeed
+		{
+			get { return BaseSpeed + totalRowsRemoved * SpeedUpPerRowRemoved; }
+		}
+
+		private const float BaseSpeed = 2.0f;
+		private int totalRowsRemoved;
+		private const float SpeedUpPerRowRemoved = 0.2f;
+		private const float FastFallSpeed = 16.0f;
+
+		private void AffixBlock()
 		{
 			int rowsRemoved = grid.AffixBlock(FallingBlock);
 			FallingBlock.Dispose();
@@ -141,13 +153,10 @@ namespace Blocks
 			if (grid.IsValidPosition(FallingBlock))
 				soundbank.BlockMoved.Play();
 			else
-				CancelBlockLeftMove();
-		}
-
-		private void CancelBlockLeftMove()
-		{
-			FallingBlock.Left++;
-			soundbank.BlockCouldntMove.Play();
+			{
+				FallingBlock.Left++;
+				soundbank.BlockCouldntMove.Play();
+			}
 		}
 
 		public void MoveBlockRightIfPossible()
@@ -156,13 +165,10 @@ namespace Blocks
 			if (grid.IsValidPosition(FallingBlock))
 				soundbank.BlockMoved.Play();
 			else
-				CancelBlockRightMove();
-		}
-
-		private void CancelBlockRightMove()
-		{
-			FallingBlock.Left--;
-			soundbank.BlockCouldntMove.Play();
+			{
+				FallingBlock.Left--;
+				soundbank.BlockCouldntMove.Play();
+			}
 		}
 
 		public void RotateBlockAntiClockwiseIfPossible()
@@ -171,13 +177,10 @@ namespace Blocks
 			if (grid.IsValidPosition(FallingBlock))
 				soundbank.BlockMoved.Play();
 			else
-				CancelBlockRotation();
-		}
-
-		private void CancelBlockRotation()
-		{
-			FallingBlock.RotateClockwise();
-			soundbank.BlockCouldntMove.Play();
+			{
+				FallingBlock.RotateClockwise();
+				soundbank.BlockCouldntMove.Play();
+			}
 		}
 	}
 }

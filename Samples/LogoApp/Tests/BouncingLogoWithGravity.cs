@@ -1,7 +1,6 @@
 ﻿using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
-using DeltaEngine.Input.Devices;
 using DeltaEngine.Rendering;
 
 namespace LogoApp.Tests
@@ -16,7 +15,7 @@ namespace LogoApp.Tests
 		{
 			inputCommands.Add(Key.Space, () => Reset(random));
 			inputCommands.Add(MouseButton.Left, mouse => Reset(random));
-			inputCommands.Add((Touch touch) => Reset(random));
+			inputCommands.Add(touch => Reset(random));
 		}
 
 		private void Reset(Randomizer random)

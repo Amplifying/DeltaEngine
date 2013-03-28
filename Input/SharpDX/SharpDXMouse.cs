@@ -1,5 +1,4 @@
 ﻿using DeltaEngine.Datatypes;
-using DeltaEngine.Input.Devices;
 using DeltaEngine.Input.Windows;
 using DInput = SharpDX.DirectInput;
 using SysPoint = System.Drawing.Point;
@@ -9,7 +8,7 @@ namespace DeltaEngine.Input.SharpDX
 	/// <summary>
 	/// Native implementation of the BaseMouse class using DirectInput.
 	/// </summary>
-	public class SharpDXMouse : BaseMouse
+	public class SharpDXMouse : Mouse
 	{
 		public SharpDXMouse(CursorPositionTranslater positionTranslater)
 		{

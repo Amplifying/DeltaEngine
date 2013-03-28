@@ -1,30 +1,43 @@
-﻿using DeltaEngine.Graphics.SharpDX;
-using DeltaEngine.Input.SharpDX;
-using DeltaEngine.Input.Windows;
-using DeltaEngine.Multimedia.SharpDX;
-using DeltaEngine.Platforms.Windows;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DeltaEngine.Platforms
 {
 	/// <summary>
 	/// Exchangable App entry point for Windows DirectX applications and visual tests.
 	/// </summary>
-	public class App : WindowsResolver
+	public class App
 	{
-		public App()
+		public void Start<AppEntryRunner>(int instancesToCreate = 1)
 		{
-			RegisterSingleton<SharpDXDevice>();
-			RegisterSingleton<SharpDXDrawing>();
-			Register<SharpDXImage>();
-			RegisterSingleton<XAudioDevice>();
-			Register<XAudioSound>();
-			Register<XAudioMusic>();
-			RegisterSingleton<SharpDXMouse>();
-			RegisterSingleton<SharpDXKeyboard>();
-			RegisterSingleton<SharpDXGamePad>();
-			RegisterSingleton<WindowsTouch>();
-			RegisterSingleton<WindowsGamePad>();
-			RegisterSingleton<CursorPositionTranslater>();
+			resolver.Start<AppEntryRunner>(instancesToCreate);
+		}
+
+		private readonly SharpDxResolver resolver = new SharpDxResolver();
+
+		public void Start<AppEntryRunner, FirstClassToRegisterAndResolve>(int instancesToCreate = 1)
+		{
+			resolver.Start<AppEntryRunner, FirstClassToRegisterAndResolve>(instancesToCreate);
+		}
+
+		public void Start
+			<AppEntryRunner, FirstClassToRegisterAndResolve, SecondClassToRegisterAndResolve>(
+			int instancesToCreate = 1)
+		{
+			resolver.Start
+				<AppEntryRunner, FirstClassToRegisterAndResolve, SecondClassToRegisterAndResolve>(
+					instancesToCreate);
+		}
+
+		public void Start<AppEntryRunner>(IEnumerable<Type> typesToRegisterAndResolve,
+			int instancesToCreate = 1)
+		{
+			resolver.Start<AppEntryRunner>(typesToRegisterAndResolve, instancesToCreate);
+		}
+
+		public void RegisterSingleton<T>()
+		{
+			resolver.RegisterSingleton<T>();
 		}
 	}
 }

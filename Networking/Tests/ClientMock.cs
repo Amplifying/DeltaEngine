@@ -27,7 +27,7 @@ namespace DeltaEngine.Networking.Tests
 		public void Send(BinaryData message)
 		{
 			if (IsConnected)
-				server.ReceivedMessage = message.ToArray();
+				server.ReceivedMessage = message.ToByteArray();
 		}
 
 		public void Receive()

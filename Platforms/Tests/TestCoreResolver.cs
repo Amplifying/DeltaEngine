@@ -9,10 +9,12 @@ namespace DeltaEngine.Platforms.Tests
 	public class TestCoreResolver : TestModuleResolver
 	{
 		public TestCoreResolver(TestResolver testResolver) 
-			: base(testResolver)
+			: base(testResolver) {}
+
+		public override void Register()
 		{
 			SetupTime();
-			SetupContentAndRandom();
+			SetupContentAndRandom();			
 		}
 
 		private void SetupTime()

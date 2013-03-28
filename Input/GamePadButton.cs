@@ -76,16 +76,6 @@
 		RightShoulder,
 
 		/// <summary>
-		/// Left Trigger, which is a button, but also has a strength (see GamePad class).
-		/// </summary>
-		LeftTrigger,
-
-		/// <summary>
-		/// Right Trigger, which is a button, but also has a strength (see GamePad class).
-		/// </summary>
-		RightTrigger,
-
-		/// <summary>
 		/// Big Button if supported on a Xbox 360 controller. Not supported on a standard controller.
 		/// </summary>
 		BigButton,

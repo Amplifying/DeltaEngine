@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
@@ -130,17 +129,6 @@ namespace Blocks
 		{
 			Top += MathExtensions.Min(fallSpeed * time.CurrentDelta, 1.0f);
 		}
-
-		public void Settle(Time time, float fallSpeed)
-		{
-			settling += MathExtensions.Min(fallSpeed * time.CurrentDelta, 1.0f);
-			if (settling >= SettleTime && Affix != null)
-				Affix();
-		}
-
-		private float settling;
-		private const float SettleTime = 1.0f;
-		public event Action Affix;
 
 		protected override void Render(Renderer renderer, Time time)
 		{

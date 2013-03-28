@@ -5,7 +5,7 @@ namespace DeltaEngine.Networking
 {
 	public abstract class Login : BinaryData
 	{
-		public abstract void Save(BinaryWriter writer);
-		public abstract void Load(BinaryReader reader);
+		public abstract void SaveData(BinaryWriter writer);
+		public abstract void LoadData(BinaryReader reader);
 	}
 }

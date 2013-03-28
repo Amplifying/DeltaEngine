@@ -32,13 +32,13 @@ namespace DeltaEngine.Graphics.Xna
 			deviceManager.PreferredBackBufferFormat = SurfaceFormat.Color;
 			deviceManager.PreferredBackBufferWidth = 1024;
 			deviceManager.PreferredBackBufferHeight = 640;
+			deviceManager.ApplyChanges();
 			NativeContent = game.Content;
-			// We only need the 'Directory.GetCurrentDirectory()' for testing because otherwise Resharper
-			// would fail (NCrunch and normal execution would work without too)
 			NativeContent.RootDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Content");
 		}
 
 		private GraphicsDeviceManager deviceManager;
+
 		public GraphicsDevice NativeDevice
 		{
 			get { return deviceManager.GraphicsDevice; }

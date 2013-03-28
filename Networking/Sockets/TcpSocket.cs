@@ -17,7 +17,6 @@ namespace DeltaEngine.Networking.Sockets
 			buffer = new byte[256];
 			dataCollector = new DataCollector();
 			dataCollector.ObjectFinished += OnObjectFinished;
-			dataFactory = new BinaryDataFactory();
 			isDisposed = false;
 		}
 
@@ -25,7 +24,6 @@ namespace DeltaEngine.Networking.Sockets
 		private readonly byte[] buffer;
 		private bool isDisposed;
 		private readonly DataCollector dataCollector;
-		private readonly BinaryDataFactory dataFactory;
 
 		private void OnObjectFinished(MessageData dataContainer)
 		{
@@ -38,14 +36,14 @@ namespace DeltaEngine.Networking.Sockets
 			}
 		}
 
-		private BinaryData GetReceivedMessage(BinaryReader dataReader)
+		private static BinaryData GetReceivedMessage(BinaryReader dataReader)
 		{
 			BinaryData receivedMessage;
 			try
 			{
-				receivedMessage = dataFactory.Load(dataReader);
+				receivedMessage = dataReader.Create<BinaryData>();
 			}
-			catch (UnknownMessageTypeReceived ex)
+			catch (BinaryDataExtension.UnknownMessageTypeReceived ex)
 			{
 				receivedMessage = new UnknownBinaryData(ex.Message);
 			}
@@ -103,7 +101,7 @@ namespace DeltaEngine.Networking.Sockets
 
 		private void TrySendData(BinaryData data)
 		{
-			int numberOfSendBytes = nativeSocket.Send(data.ToArrayWithLengthHeader());
+			int numberOfSendBytes = nativeSocket.Send(data.ToByteArrayWithLengthHeader());
 			if (numberOfSendBytes == 0)
 				throw new SocketException();
 		}
@@ -141,8 +139,6 @@ namespace DeltaEngine.Networking.Sockets
 
 			if (Disconnected != null)
 				Disconnected(this);
-
-			dataFactory.Dispose();
 		}
 
 		public event Action<ClientConnection> Disconnected;

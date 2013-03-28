@@ -100,7 +100,8 @@ namespace Breakout
 			return LevelThreeColors[(x * 4 + y) % LevelThreeColors.Length];
 		}
 
-		private static readonly Color[] LevelThreeColors = new[] { Color.Yellow, Color.Teal, Color.Green, Color.LightBlue, Color.Teal };
+		private static readonly Color[] LevelThreeColors = new[] { Color.Yellow, Color.Teal,
+			Color.Green, Color.LightBlue, Color.Teal };
 
 		private static Color GetLevelFourBrickColor(int x, int y)
 		{
@@ -140,7 +141,7 @@ namespace Breakout
 			}
 		}
 
-		public virtual Sprite GetBrickAt(float x, float y)
+		public Sprite GetBrickAt(float x, float y)
 		{
 			var brickIndexX = (int)(x / brickWidth);
 			var brickIndexY = (int)(y / brickHeight);
@@ -155,14 +156,16 @@ namespace Breakout
 		{
 			score.IncreasePoints();
 			brick.Dispose();
-			renderer.Add(new FadeoutEffect(explosionImage, brick.DrawArea.Center, new Size(brickWidth)));
+			renderer.Add(new FadeoutEffect(explosionImage, Rectangle.FromCenter(brick.DrawArea.Center, 
+				new Size(brickWidth))));
 			explosionSound.Play();
 		}
 
 		public void LifeLost(Point ballLostPosition)
 		{
 			score.LifeLost();
-			renderer.Add(new FadeoutEffect(explosionImage, ballLostPosition, new Size(0.2f)));
+			renderer.Add(new FadeoutEffect(explosionImage, Rectangle.FromCenter(ballLostPosition, 
+				new Size(0.2f))));
 			lostBallSound.Play();
 		}
 	}

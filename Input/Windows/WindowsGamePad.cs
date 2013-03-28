@@ -1,10 +1,9 @@
 ﻿using DeltaEngine.Datatypes;
-using DeltaEngine.Input.Devices;
 
 namespace DeltaEngine.Input.Windows
 {
 	/// <summary>
-	/// Native Windows implementation of the Touch interface.
+	/// Native Windows implementation of the GamePad interface. Not implemented yet!
 	/// </summary>
 	public class WindowsGamePad : GamePad
 	{
@@ -15,12 +14,12 @@ namespace DeltaEngine.Input.Windows
 			get { return false; }
 		}
 
-		public Point GetPosition(int touchIndex)
+		public static Point GetPosition(int touchIndex)
 		{
 			return Point.Zero;
 		}
 
-		public State GetState(int touchIndex)
+		public static State GetState(int touchIndex)
 		{
 			return State.Released;
 		}

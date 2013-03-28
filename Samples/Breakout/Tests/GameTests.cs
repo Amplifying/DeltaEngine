@@ -46,7 +46,7 @@ namespace Breakout.Tests
 		[VisualTest]
 		public void UpdateScore(Type type)
 		{
-			Start(type, (Game game, Window window) =>
+			Start(type, (Game game, UI ui, Window window) =>
 			{
 				if (testResolver != null)
 					testResolver.AdvanceTimeAndExecuteRunners(0.2f);
@@ -84,44 +84,37 @@ namespace Breakout.Tests
 		[VisualTest]
 		public void ResurrectBricksRandomly(Type type)
 		{
-			Start(type, (Game game, LevelWithRessurrection level) => { }, () =>
+			LevelWithRessurrection level = null;
+			Start(type, (Game game, LevelWithRessurrection l) => { level = l; }, () =>
 			{
-				if (testResolver != null)
-				{
-					testResolver.SetKeyboardState(Key.Space, State.Pressing);
-					var level = testResolver.Resolve<LevelWithRessurrection>();
-					level.GetBrickAt(0.25f, 0.125f).Dispose();
-					level.GetBrickAt(0.75f, 0.125f).Dispose();
-					level.GetBrickAt(0.25f, 0.375f).Dispose();
-					testResolver.AdvanceTimeAndExecuteRunners(4.0f);
-				}
+				if (testResolver == null)
+					return;
+
+				testResolver.SetKeyboardState(Key.Space, State.Pressing);
+				level.GetBrickAt(0.25f, 0.125f).Dispose();
+				level.GetBrickAt(0.75f, 0.125f).Dispose();
+				level.GetBrickAt(0.25f, 0.375f).Dispose();
+				testResolver.AdvanceTimeAndExecuteRunners(4.0f);
 			});
 		}
 
-		public class LevelWithRessurrection : Level
+		private class LevelWithRessurrection : Level, Runner<Time>
 		{
-			public LevelWithRessurrection(Content content, Renderer renderer, Score score, Time time)
-				: base(content, renderer, score)
+			public LevelWithRessurrection(Content content, Renderer renderer, Score score)
+				: base(content, renderer, score) { }
+
+			public void Run(Time time)
 			{
-				this.time = time;
-			}
+				if (!time.CheckEvery(2))
+					return;
 
-			private readonly Time time;
+				var random = new PseudoRandom();
+				var brick = bricks[random.Get(0, rows), random.Get(0, columns)];
+				if (brick == null || brick.IsVisible)
+					return;
 
-			public override Sprite GetBrickAt(float x, float y)
-			{
-				if (time.CheckEvery(2))
-				{
-					var random = new PseudoRandom();
-					var brick = bricks[random.Get(0, rows), random.Get(0, columns)];
-					if (brick != null && !brick.IsVisible)
-					{
-						brick.IsVisible = true;
-						renderer.Add(brick);
-					}
-				}
-
-				return base.GetBrickAt(x, y);
+				brick.IsVisible = true;
+				renderer.Add(brick);
 			}
 		}
 

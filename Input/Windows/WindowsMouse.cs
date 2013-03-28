@@ -1,5 +1,4 @@
 ﻿using DeltaEngine.Datatypes;
-using DeltaEngine.Input.Devices;
 using SysPoint = System.Drawing.Point;
 
 namespace DeltaEngine.Input.Windows
@@ -7,9 +6,9 @@ namespace DeltaEngine.Input.Windows
 	/// <summary>
 	/// Native mouse implementation using a windows hook and invokes.
 	/// </summary>
-	public class WindowsMouse : BaseMouse
+	public class WindowsMouse : Mouse
 	{
-		public WindowsMouse(CursorPositionTranslater  positionTranslater)
+		public WindowsMouse(CursorPositionTranslater positionTranslater)
 		{
 			hook = new MouseHook();
 			this.positionTranslater = positionTranslater;

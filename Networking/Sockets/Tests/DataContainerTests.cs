@@ -14,9 +14,9 @@ namespace DeltaEngine.Networking.Sockets.Tests
 			Assert.IsEmpty(collectedDataObjects);
 
 			var byteList = new List<byte>();
-			byteList.AddRange(dataCollector.GetTestBytesWithLengthHeader(6));
-			byteList.AddRange(dataCollector.GetTestBytesWithLengthHeader(4));
-			byteList.AddRange(dataCollector.GetTestBytesWithLengthHeader(10));
+			byteList.AddRange(DataCollector.GetTestBytesWithLengthHeader(6));
+			byteList.AddRange(DataCollector.GetTestBytesWithLengthHeader(4));
+			byteList.AddRange(DataCollector.GetTestBytesWithLengthHeader(10));
 			Assert.AreEqual(32, byteList.Count);
 
 			var bytePackages = SplitDataStream(byteList, 10, 10, 11, 1);
@@ -26,7 +26,7 @@ namespace DeltaEngine.Networking.Sockets.Tests
 			Assert.AreEqual(3, collectedDataObjects.Count);
 		}
 
-		private List<byte[]> SplitDataStream(List<byte> dataStream, params int[] splits)
+		private static IEnumerable<byte[]> SplitDataStream(List<byte> dataStream, params int[] splits)
 		{
 			byte[] allByteData = dataStream.ToArray();
 			int currentIndex = 0;

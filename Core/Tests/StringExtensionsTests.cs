@@ -21,6 +21,7 @@ namespace DeltaEngine.Core.Tests
 		{
 			Assert.AreEqual(1.0f, "1.0".FromInvariantString(0.0f));
 			Assert.AreEqual("abc", "abc".FromInvariantString("abc"));
+			Assert.AreEqual(0.0f, "val".FromInvariantString(0.0f));
 		}
 
 		[Test]
@@ -69,6 +70,15 @@ namespace DeltaEngine.Core.Tests
 			var stringFloats = new[]
 			{ "1.0", "2.0", "0511.580254", Math.PI.ToString(CultureInfo.InvariantCulture) };
 			var expectedFloats = new[] { 1.0f, 2.0f, 511.580261f, 3.14159274f };
+			float[] floats = stringFloats.SplitIntoFloats();
+			CollectionAssert.AreEqual(expectedFloats, floats);
+		}
+
+		[Test]
+		public void SplitIntoFloatsWithSeparator()
+		{
+			var stringFloats = "1.0, 2.0, 0511.580254";
+			var expectedFloats = new[] { 1.0f, 2.0f, 511.580261f };
 			float[] floats = stringFloats.SplitIntoFloats();
 			CollectionAssert.AreEqual(expectedFloats, floats);
 		}

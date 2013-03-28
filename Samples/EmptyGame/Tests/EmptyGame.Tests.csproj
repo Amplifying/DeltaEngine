@@ -88,7 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Core\DeltaEngine.Core.csproj">
-      <Project>{A8D386EA-D376-46EA-A721-2BA51426A721}</Project>
+      <Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
       <Name>DeltaEngine.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Datatypes\DeltaEngine.Datatypes.csproj">
@@ -96,7 +96,7 @@
       <Name>DeltaEngine.Datatypes</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Platforms\DeltaEngine.Platforms.csproj">
-      <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
+      <Project>{bae8830e-5f62-48d6-b772-c4b1e8665fb3}</Project>
       <Name>DeltaEngine.Platforms</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Platforms\Tests\DeltaEngine.Platforms.Tests.csproj">

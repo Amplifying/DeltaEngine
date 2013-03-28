@@ -17,13 +17,18 @@ namespace DeltaEngine.Platforms
 	{
 		public void Register<T>()
 		{
-			if (alreadyRegisteredTypes.Contains(typeof(T)))
+			Register(typeof(T));
+		}
+
+		public void Register(Type typeToRegister)
+		{
+			if (alreadyRegisteredTypes.Contains(typeToRegister))
 				return;
 
 			if (IsAlreadyInitialized)
 				throw new UnableToRegisterMoreTypesAppAlreadyStarted();
 
-			RegisterBaseTypes<T>(RegisterType(typeof(T)));
+			RegisterBaseTypes(typeToRegister, RegisterType(typeToRegister));
 		}
 
 		protected readonly List<Type> alreadyRegisteredTypes = new List<Type>();
@@ -32,13 +37,18 @@ namespace DeltaEngine.Platforms
 
 		public void RegisterSingleton<T>()
 		{
-			if (alreadyRegisteredTypes.Contains(typeof(T)))
+			RegisterSingleton(typeof(T));
+		}
+
+		public void RegisterSingleton(Type typeToRegister)
+		{
+			if (alreadyRegisteredTypes.Contains(typeToRegister))
 				return;
 
 			if (IsAlreadyInitialized)
 				throw new UnableToRegisterMoreTypesAppAlreadyStarted();
 
-			RegisterBaseTypes<T>(RegisterType(typeof(T)).InstancePerLifetimeScope());
+			RegisterBaseTypes(typeToRegister, RegisterType(typeToRegister).InstancePerLifetimeScope());
 		}
 
 		private
@@ -89,13 +99,13 @@ namespace DeltaEngine.Platforms
 
 		private readonly List<object> resolvedInstances = new List<object>();
 
-		private void RegisterBaseTypes<T>(
+		private void RegisterBaseTypes(Type typeToRegister,
 			IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle>
 				registration)
 		{
-			alreadyRegisteredTypes.AddRange(typeof(T).GetInterfaces());
+			alreadyRegisteredTypes.AddRange(typeToRegister.GetInterfaces());
 			registration.AsImplementedInterfaces();
-			var baseType = typeof(T).BaseType;
+			var baseType = typeToRegister.BaseType;
 			while (baseType != null && baseType != typeof(object))
 			{
 				alreadyRegisteredTypes.Add(baseType);
@@ -179,7 +189,7 @@ namespace DeltaEngine.Platforms
 			foreach (Type t in exeAssembly.GetTypes())
 				if (!alreadyRegisteredTypes.Contains(t))
 					builder.RegisterType(t).AsSelf().OnActivating(ActivatingInstance()).
-					        InstancePerLifetimeScope();
+									InstancePerLifetimeScope();
 		}
 	}
 }

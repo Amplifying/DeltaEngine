@@ -35,7 +35,7 @@ namespace DeltaEngine.Graphics.SharpDX
 			}
 		}
 
-		protected SwapChainDescription CreateSwapChainDescription(int width, int height,
+		protected static SwapChainDescription CreateSwapChainDescription(int width, int height,
 			IntPtr handle)
 		{
 			return new SwapChainDescription

@@ -1,5 +1,5 @@
 ﻿using System;
-using DeltaEngine.Input.Devices;
+using System.Collections.Generic;
 using DeltaEngine.Platforms;
 using DeltaEngine.Platforms.Tests;
 using NUnit.Framework;
@@ -47,16 +47,47 @@ namespace DeltaEngine.Input.Tests
 				input.Add(MouseButton.Left, State.Pressing, mouse => { });
 				input.Add(MouseButton.Middle, delegate(Mouse mouse) { });
 				input.AddMouseMovement(mouse => { });
+				input.AddMouseHover(mouse => { });
 				input.Add(touch => { });
+				Assert.AreEqual(7, input.Count);
+			});
+		}
+
+		[IntegrationTest]
+		public void StoreAndRemoveCommands(Type resolver)
+		{
+			Start(resolver, (InputCommands input) =>
+			{
+				List<Command> commands = CreateAndStoreCommands(input);
+				Assert.AreEqual(9, input.Count);
+				input.Remove(commands[2]);
+				input.Remove(commands[4]);
+				input.Remove(commands[7]);
 				Assert.AreEqual(6, input.Count);
 			});
+		}
+
+		private static List<Command> CreateAndStoreCommands(InputCommands input)
+		{
+			return new List<Command>
+			{
+				input.Add(Key.A, () => { }),
+				input.Add(Key.A, State.Released, () => { }),
+				input.Add(MouseButton.Left, mouse => { }),
+				input.Add(MouseButton.Left, State.Pressing, mouse => { }),
+				input.AddMouseMovement(mouse => { }),
+				input.AddMouseHover(mouse => { }),
+				input.Add(touch => { }),
+				input.Add(State.Pressing, touch => { }),
+				input.Add(GamePadButton.A, State.Pressing, () => { })
+			};
 		}
 
 		[Test]
 		public void AddTouchCallback()
 		{
-			var input = new InputCommands(null, null, null, null);
-			input.Add(touch => {});
+			var input = new InputCommands(null, null, null);
+			input.Add(touch => { });
 			Assert.AreEqual(1, input.Count);
 		}
 
@@ -76,7 +107,8 @@ namespace DeltaEngine.Input.Tests
 		[VisualTest]
 		public void QuitWithEscape(Type resolver)
 		{
-			Start(resolver, (InputCommands input, Window window) => input.Add(Key.Escape, window.Dispose));
+			Start(resolver,
+				(InputCommands input, Window window) => input.Add(Key.Escape, window.Dispose));
 		}
 	}
 }

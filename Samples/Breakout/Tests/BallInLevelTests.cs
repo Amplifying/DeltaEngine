@@ -52,9 +52,10 @@ namespace Breakout.Tests
 			Start(type, (Paddle paddle, BallWithGravity ball) => { });
 		}
 
-		public class BallWithGravity : BallInLevel
+		private class BallWithGravity : BallInLevel
 		{
-			public BallWithGravity(Paddle paddle, Content content, InputCommands inputCommands, Level level)
+			public BallWithGravity(Paddle paddle, Content content, InputCommands inputCommands,
+				Level level)
 				: base(paddle, content, inputCommands, level) {}
 
 			protected override void Render(Renderer renderer, Time time)

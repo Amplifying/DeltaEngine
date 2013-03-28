@@ -26,7 +26,13 @@ namespace Blocks
 
 		protected override void Render(Renderer renderer, Time time)
 		{
-			DrawArea = new Rectangle(RenderOffset + (Position - Point.UnitY) * RenderZoom, Size);
+			if (renderer.Screen.Viewport.Aspect >= 1.0f)
+				DrawArea = new Rectangle(OffsetLandscape + (Position - Point.UnitY) * ZoomLandscape,
+					SizeLandscape);
+			else
+				DrawArea = new Rectangle(OffsetPortrait + (Position - Point.UnitY) * ZoomPortrait,
+					SizePortrait);
+
 			base.Render(renderer, time);
 		}
 
@@ -36,8 +42,11 @@ namespace Blocks
 		}
 
 		public Point TopLeft;
-		public static readonly Point RenderOffset = new Point(0.38f, 0.385f);
-		public static readonly float RenderZoom = 0.02f;
-		private static readonly Size Size = new Size(RenderZoom);
+		public static readonly Point OffsetLandscape = new Point(0.38f, 0.385f);
+		public static readonly Point OffsetPortrait = new Point(0.38f, 0.385f);
+		public const float ZoomLandscape = 0.02f;
+		public const float ZoomPortrait = 0.02f;
+		private static readonly Size SizeLandscape = new Size(ZoomLandscape);
+		private static readonly Size SizePortrait = new Size(ZoomPortrait);
 	}
 }
