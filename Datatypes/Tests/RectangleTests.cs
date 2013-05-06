@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.IO;
 using NUnit.Framework;
 
 namespace DeltaEngine.Datatypes.Tests
@@ -49,6 +50,7 @@ namespace DeltaEngine.Datatypes.Tests
 			Assert.IsTrue(rect1 != rect2);
 			Assert.IsFalse(rect1.Equals(rect2));
 			Assert.IsTrue(rect1.Equals(rect1));
+			Assert.False(rect1.Equals((object)Rectangle.One));
 		}
 
 		[Test]
@@ -102,34 +104,22 @@ namespace DeltaEngine.Datatypes.Tests
 		[Test]
 		public void TopRight()
 		{
-			var rect = new Rectangle(1, 2, 10, 20) { TopRight = new Point(13, 4) };
-			Assert.AreEqual(3, rect.Left);
-			Assert.AreEqual(4, rect.Top);
-			Assert.AreEqual(10, rect.Width);
-			Assert.AreEqual(20, rect.Height);
-			Assert.AreEqual(new Point(13, 4), rect.TopRight);
+			var rect = new Rectangle(1, 2, 10, 20);
+			Assert.AreEqual(new Point(11, 2), rect.TopRight);
 		}
 
 		[Test]
 		public void BottomLeft()
 		{
-			var rect = new Rectangle(1, 2, 10, 20) { BottomLeft = new Point(3, 24) };
-			Assert.AreEqual(3, rect.Left);
-			Assert.AreEqual(4, rect.Top);
-			Assert.AreEqual(10, rect.Width);
-			Assert.AreEqual(20, rect.Height);
-			Assert.AreEqual(new Point(3, 24), rect.BottomLeft);
+			var rect = new Rectangle(1, 2, 10, 20);
+			Assert.AreEqual(new Point(1, 22), rect.BottomLeft);
 		}
 
 		[Test]
 		public void BottomRight()
 		{
-			var rect = new Rectangle(1, 2, 10, 20) { BottomRight = new Point(13, 24) };
-			Assert.AreEqual(3, rect.Left);
-			Assert.AreEqual(4, rect.Top);
-			Assert.AreEqual(10, rect.Width);
-			Assert.AreEqual(20, rect.Height);
-			Assert.AreEqual(new Point(13, 24), rect.BottomRight);
+			var rect = new Rectangle(1, 2, 10, 20);
+			Assert.AreEqual(new Point(11, 22), rect.BottomRight);
 		}
 
 		[Test]
@@ -201,6 +191,72 @@ namespace DeltaEngine.Datatypes.Tests
 			Assert.AreEqual(rect, rect.Move(Point.Zero));
 			Assert.AreEqual(new Rectangle(2.0f, 2.0f, 1.0f, 1.0f), rect.Move(Point.One));
 			Assert.AreEqual(new Rectangle(-1.0f, -2.0f, 1.0f, 1.0f), rect.Move(new Point(-2, -3)));
+		}
+
+		[Test]
+		public void SaveAndLoad()
+		{
+			var data = Rectangle.One.SaveToMemoryStream();
+			byte[] savedBytes = data.ToArray();
+			Assert.AreEqual(1 + "Rectangle".Length + Rectangle.SizeInBytes, savedBytes.Length);
+			Assert.AreEqual("Rectangle".Length, savedBytes[0]);
+			var reconstructed = data.CreateFromMemoryStream();
+			Assert.AreEqual(Rectangle.One, reconstructed);
+		}
+
+		[Test]
+		public void SaveAndLoadManuallyWithBinaryWriterAndReader()
+		{
+			using (var dataStream = new MemoryStream())
+			{
+				var writer = new BinaryWriter(dataStream);
+				var data = Rectangle.One;
+				data.Save(writer);
+				dataStream.Seek(0, SeekOrigin.Begin);
+				var reader = new BinaryReader(dataStream);
+				data = (Rectangle)reader.Create();
+				Assert.AreEqual(Rectangle.One, data);
+			}
+		}
+
+		[Test]
+		public void GetRotatedRectangleCornersWithoutRotation()
+		{
+			var points = new Rectangle(1, 1, 1, 1).GetRotatedRectangleCorners(Point.Zero, 0);
+			Assert.AreEqual(4, points.Length);
+			Assert.AreEqual(Point.One, points[0]);
+			Assert.AreEqual(new Point(2, 1), points[1]);
+			Assert.AreEqual(new Point(2, 2), points[2]);
+		}
+
+		[Test]
+		public void GetRotatedRectangleCornersWith180DegreesRotation()
+		{
+			var points = new Rectangle(1, 1, 1, 1).GetRotatedRectangleCorners(Point.Zero, 180);
+			Assert.AreEqual(-Point.One, points[0]);
+			Assert.AreEqual(-new Point(2, 1), points[1]);
+			Assert.AreEqual(-new Point(2, 2), points[2]);
+		}
+
+		[Test]
+		public void IsColliding()
+		{
+			var screenRect = Rectangle.One;
+			var insideRect = new Rectangle(0.1f, 0.1f, 2.9f, 0.3f);
+			var outsideRect = new Rectangle(2.4f, 0.35f, 0.1f, 0.1f);
+			Assert.IsTrue(insideRect.IsColliding(0, screenRect, 0));
+			Assert.IsFalse(outsideRect.IsColliding(0, screenRect, 0));
+			Assert.IsTrue(outsideRect.IsColliding(0, insideRect, 0));
+			Assert.IsFalse(outsideRect.IsColliding(0, insideRect, 70));
+		}
+
+		[Test]
+		public void IsOneRectangleCollidingWhenInsideAnother()
+		{
+			var insideRect = new Rectangle(0.3f, 0.3f, 0.1f, 0.1f);
+			var outsideRect = new Rectangle(0.2f, 0.2f, 0.3f, 0.3f);
+			Assert.IsTrue(outsideRect.IsColliding(0, insideRect, 0));
+			Assert.IsTrue(outsideRect.IsColliding(0, insideRect, 70));
 		}
 	}
 }

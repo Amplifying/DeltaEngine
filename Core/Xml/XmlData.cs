@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
@@ -67,10 +67,11 @@ namespace DeltaEngine.Core.Xml
 				AddChild(new XmlData(childXElement));
 		}
 
-		public void AddChild(XmlData child)
+		public XmlData AddChild(XmlData child)
 		{
 			child.Parent = this;
 			Children.Add(child);
+			return this;
 		}
 
 		public void AddAttribute(string attribute, char value)

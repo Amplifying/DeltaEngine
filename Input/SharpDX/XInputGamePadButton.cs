@@ -1,4 +1,4 @@
-﻿namespace DeltaEngine.Input.SharpDX
+namespace DeltaEngine.Input.SharpDX
 {
 	/// <summary>
 	/// The buttons are set read from a Bitmask.

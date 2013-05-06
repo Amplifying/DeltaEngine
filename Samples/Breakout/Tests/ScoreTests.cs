@@ -1,10 +1,10 @@
-﻿using System;
-using DeltaEngine.Platforms.Tests;
+using System;
+using DeltaEngine.Platforms.All;
 using NUnit.Framework;
 
 namespace Breakout.Tests
 {
-	public class ScoreTests : TestStarter
+	public class ScoreTests : TestWithAllFrameworks
 	{
 		[IntegrationTest]
 		public void IncreasePoints(Type type)

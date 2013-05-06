@@ -1,7 +1,11 @@
-﻿namespace DeltaEngine.Networking.Tests
+namespace DeltaEngine.Networking.Tests
 {
 	public sealed class ServerMock : Server
 	{
+		public override void Start(int listenPort) {}
+
+		public override void Start(Client serverSocket) {}
+
 		public ServerMock()
 		{
 			IsRunning = true;

@@ -1,5 +1,4 @@
-﻿using System;
-using DeltaEngine.Core;
+using System;
 
 namespace DeltaEngine.Input
 {
@@ -14,10 +13,22 @@ namespace DeltaEngine.Input
 			this.state = state;
 		}
 
-		private readonly MouseButton button;
-		private readonly State state;
+		private MouseButton button;
+		private State state;
+	
+		public MouseButton Button
+		{
+			get { return button; }
+			set { button = value; }
+		}
+	
+		public State State
+		{
+			get { return state; }
+			set { state = value; }
+		}
 
-		public override bool ConditionMatched(InputCommands input, Time time)
+		public override bool ConditionMatched(InputCommands input)
 		{
 			return input.Mouse.IsAvailable && input.Mouse.GetButtonState(button) == state;
 		}
@@ -29,6 +40,7 @@ namespace DeltaEngine.Input
 
 		public override int GetHashCode()
 		{
+			//// ReSharper disable NonReadonlyFieldInGetHashCode
 			return ((int)button).GetHashCode() ^ ((int)state).GetHashCode();
 		}
 	}

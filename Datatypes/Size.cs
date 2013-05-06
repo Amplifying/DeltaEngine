@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using DeltaEngine.Core;
@@ -12,7 +12,7 @@ namespace DeltaEngine.Datatypes
 	public struct Size : IEquatable<Size>
 	{
 		public Size(float widthAndHeight)
-			: this(widthAndHeight, widthAndHeight) { }
+			: this(widthAndHeight, widthAndHeight) {}
 
 		public Size(float width, float height)
 			: this()
@@ -42,6 +42,18 @@ namespace DeltaEngine.Datatypes
 		public static readonly Size Half = new Size(0.5f, 0.5f);
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Size));
 		
+		public static Size Lerp(Size size1, Size size2, float percentage)
+		{
+			float width = MathExtensions.Lerp(size1.Width, size2.Width, percentage);
+			float height = MathExtensions.Lerp(size1.Height, size2.Height, percentage);
+			return new Size(width, height);
+		}
+
+		public float AspectRatio
+		{
+			get { return Width / Height; }
+		}
+
 		public static bool operator ==(Size s1, Size s2)
 		{
 			return s1.Equals(s2);
@@ -115,19 +127,6 @@ namespace DeltaEngine.Datatypes
 		public override string ToString()
 		{
 			return "(" + Width.ToInvariantString() + ", " + Height.ToInvariantString() + ")";
-		}
-
-		public static Size Lerp(Size size1, Size size2, float percentage)
-		{
-			float width = MathExtensions.Lerp(size1.Width, size2.Width, percentage);
-			float height = MathExtensions.Lerp(size1.Height, size2.Height, percentage);
-
-			return new Size(width, height);
-		}
-
-		public float AspectRatio
-		{
-			get { return Width / Height; }
 		}
 	}
 }

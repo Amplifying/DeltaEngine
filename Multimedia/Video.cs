@@ -1,5 +1,5 @@
-﻿using DeltaEngine.Core;
-using DeltaEngine.Rendering;
+using DeltaEngine.Content;
+using System;
 
 namespace DeltaEngine.Multimedia
 {
@@ -8,42 +8,41 @@ namespace DeltaEngine.Multimedia
 	/// </summary>
 	public abstract class Video : ContentData
 	{
-		protected Video(string filename, Renderer renderer)
+		protected Video(string filename, SoundDevice device)
 			: base(filename)
 		{
-			this.renderer = renderer;
+			this.device = device;
 		}
 
-		protected readonly Renderer renderer;
+		protected readonly SoundDevice device;
 
-		public void Play(float volume = 1f)
+		public void Play(float volume = 1.0f)
 		{
-			surface = PlayNativeVideo(volume);
-			renderer.Add(surface);
+			device.RegisterCurrentVideo(this);
+			PlayNativeVideo(volume);
 		}
 
-		private VideoSurface surface;
-
-		protected internal abstract VideoSurface PlayNativeVideo(float volume);
-
+		protected abstract void PlayNativeVideo(float volume);
 		public void Stop()
 		{
-			renderer.Remove(surface);
-			surface = null;
+			device.RegisterCurrentVideo(null);
 			StopNativeVideo();
 		}
-
-		protected internal abstract void StopNativeVideo();
+		protected abstract void StopNativeVideo();
 		public abstract bool IsPlaying();
-
 		protected internal abstract void Run();
-
 		public abstract float DurationInSeconds { get; }
 		public abstract float PositionInSeconds { get; }
-
-		public override void Dispose()
+		protected override void DisposeData()
 		{
 			Stop();
+		}
+
+		//ncrunch: no coverage start
+		public class VideoNotFoundOrAccessible : Exception
+		{
+			public VideoNotFoundOrAccessible(string videoName, Exception innerException)
+				: base(videoName, innerException) { }
 		}
 	}
 }

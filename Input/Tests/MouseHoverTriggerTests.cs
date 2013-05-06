@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms.All;
 using NUnit.Framework;
 
 namespace DeltaEngine.Input.Tests
 {
-	public class MouseHoverTriggerTests : TestStarter
+	public class MouseHoverTriggerTests : TestWithAllFrameworks
 	{
 		[IntegrationTest]
 		public void HoverTriggersIfMouseDoesntMove(Type resolver)
@@ -14,10 +14,10 @@ namespace DeltaEngine.Input.Tests
 			{
 				bool triggered = false;
 				input.AddMouseHover(mouse => { triggered = true; });
-				testResolver.SetMousePosition(Point.Zero);
-				testResolver.AdvanceTimeAndExecuteRunners(1.0f);
+				mockResolver.input.SetMousePosition(Point.Zero);
+				mockResolver.AdvanceTimeAndExecuteRunners(1.0f);
 				Assert.False(triggered);
-				testResolver.AdvanceTimeAndExecuteRunners(1.0f);
+				mockResolver.AdvanceTimeAndExecuteRunners(1.0f);
 				Assert.True(triggered);
 			});
 		}
@@ -29,11 +29,11 @@ namespace DeltaEngine.Input.Tests
 			{
 				bool triggered = false;
 				input.AddMouseHover(mouse => { triggered = true; });
-				testResolver.SetMousePosition(Point.Zero);
-				testResolver.AdvanceTimeAndExecuteRunners(1.0f);
+				mockResolver.input.SetMousePosition(Point.Zero);
+				mockResolver.AdvanceTimeAndExecuteRunners(1.0f);
 				Assert.False(triggered);
-				testResolver.SetMousePosition(Point.Half);
-				testResolver.AdvanceTimeAndExecuteRunners(1.0f);
+				mockResolver.input.SetMousePosition(Point.Half);
+				mockResolver.AdvanceTimeAndExecuteRunners(1.0f);
 				Assert.False(triggered);
 			});
 		}

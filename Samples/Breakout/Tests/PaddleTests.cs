@@ -1,64 +1,81 @@
-﻿using System;
+using System;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
+using DeltaEngine.Platforms.All;
 using DeltaEngine.Platforms.Tests;
 using NUnit.Framework;
 
 namespace Breakout.Tests
 {
-	public class PaddleTests : TestStarter
+	public class PaddleTests : TestWithAllFrameworks
 	{
 		[VisualTest]
 		public void Draw(Type type)
 		{
-			Start(type, (Paddle paddle) => { });
+			Start(type, (Paddle paddle, TestBall ball) =>
+			{
+				Assert.AreEqual(0.5f, paddle.Position.X);
+				Assert.IsTrue(ball.IsCurrentlyOnPaddle);
+				Assert.AreEqual(0.5f, ball.Position.X);
+			});
 		}
 
 		[Test]
 		public void ControlPaddleVirtuallyWithKeyboard()
 		{
-			var resolver = new TestResolver();
-			var paddle = resolver.Resolve<Paddle>();
+			Start(typeof(MockResolver), (Paddle paddle, TestBall ball) =>
+			{
+				mockResolver.input.SetKeyboardState(Key.CursorLeft, State.Pressed);
+				AssertPaddleMovesLeftCorrectly(paddle);
+				mockResolver.input.SetKeyboardState(Key.CursorLeft, State.Released);
+				mockResolver.input.SetKeyboardState(Key.CursorRight, State.Pressed);
+				AssertPaddleMovesRightCorrectly(paddle);
+			});
+		}
+
+		private void AssertPaddleMovesLeftCorrectly(Paddle paddle)
+		{
 			Assert.AreEqual(0.5f, paddle.Position.X);
-			resolver.SetKeyboardState(Key.CursorLeft, State.Pressed);
-			resolver.AdvanceTimeAndExecuteRunners(0.1f);
-			resolver.SetKeyboardState(Key.CursorLeft, State.Released);
+			mockResolver.AdvanceTimeAndExecuteRunners(0.1f);
 			Assert.IsTrue(paddle.Position.X < 0.5f);
 			Assert.IsTrue(paddle.Position.Y > 0.75f);
-			resolver.SetKeyboardState(Key.CursorRight, State.Pressed);
-			resolver.AdvanceTimeAndExecuteRunners(0.2f);
+		}
+
+		// ReSharper disable UnusedParameter.Local
+		private void AssertPaddleMovesRightCorrectly(Paddle paddle)
+		{
+			mockResolver.AdvanceTimeAndExecuteRunners(0.2f);
 			Assert.IsTrue(paddle.Position.X > 0.5f);
+		}
+
+		// ReSharper restore UnusedParameter.Local
+
+		[Test]
+		public void ControlPaddleVirtuallyWithGamePad()
+		{
+			Start(typeof(MockResolver), (Paddle paddle, TestBall ball) =>
+			{
+				mockResolver.input.SetGamePadState(GamePadButton.Left, State.Pressed);
+				AssertPaddleMovesLeftCorrectly(paddle);
+				mockResolver.input.SetGamePadState(GamePadButton.Left, State.Released);
+				mockResolver.input.SetGamePadState(GamePadButton.Right, State.Pressed);
+				AssertPaddleMovesRightCorrectly(paddle);
+			});
 		}
 
 		[Test]
 		public void ControlPaddleVirtuallyWithMouseAndTouch()
 		{
-			var resolver = new TestResolver();
-			var paddle = resolver.Resolve<Paddle>();
-			Assert.AreEqual(0.5f, paddle.Position.X);
-			resolver.SetMousePosition(Point.One);
-			resolver.SetMouseButtonState(MouseButton.Left, State.Pressed);
-			resolver.AdvanceTimeAndExecuteRunners(0.1f);
-			resolver.SetMouseButtonState(MouseButton.Left, State.Released);
-			Assert.IsTrue(paddle.Position.X > 0.5f);
-			resolver.SetTouchState(0, State.Pressed, Point.Zero);
-			resolver.AdvanceTimeAndExecuteRunners(0.1f);
-			Assert.IsTrue(paddle.Position.X < 1.0f);
-		}
-
-		[Test]
-		public void ControlPaddleVirtuallyWithGamePad()
-		{
-			var resolver = new TestResolver();
-			var paddle = resolver.Resolve<Paddle>();
-			Assert.AreEqual(0.5f, paddle.Position.X);
-			resolver.SetGamePadState(GamePadButton.Left, State.Pressed);
-			resolver.AdvanceTimeAndExecuteRunners(0.1f);
-			resolver.SetGamePadState(GamePadButton.Left, State.Released);
-			Assert.IsTrue(paddle.Position.X < 0.5f);
-			resolver.SetGamePadState(GamePadButton.Right, State.Pressed);
-			resolver.AdvanceTimeAndExecuteRunners(0.2f);
-			Assert.IsTrue(paddle.Position.X > 0.5f);
+			Start(typeof(MockResolver), (Paddle paddle, TestBall ball) =>
+			{
+				mockResolver.input.SetMousePosition(Point.Zero);
+				mockResolver.input.SetMouseButtonState(MouseButton.Left, State.Pressed);
+				AssertPaddleMovesLeftCorrectly(paddle);
+				mockResolver.input.SetMouseButtonState(MouseButton.Left, State.Released);
+				mockResolver.input.SetMousePosition(Point.One);
+				mockResolver.input.SetMouseButtonState(MouseButton.Left, State.Pressed);
+				AssertPaddleMovesRightCorrectly(paddle);
+			});
 		}
 
 		[VisualTest]
@@ -68,15 +85,22 @@ namespace Breakout.Tests
 			Start(type, (Paddle paddle, TestBall ball) =>
 			{
 				remBall = ball;
-				Assert.AreEqual(0.5f, paddle.Position.X);
-				Assert.IsTrue(ball.IsCurrentlyOnPaddle);
-				Assert.AreEqual(0.5f, ball.Position.X);
-				if (testResolver != null)
-				{
-					testResolver.SetKeyboardState(Key.Space, State.Pressing);
-					testResolver.AdvanceTimeAndExecuteRunners(1);
-				}
+				PressSpaceOneSecond();
 			});
+			AssertBallIsReleasedAndPaddleStay(remBall);
+		}
+
+		private void PressSpaceOneSecond()
+		{
+			if (mockResolver == null)
+				return;
+
+			mockResolver.input.SetKeyboardState(Key.Space, State.Pressing);
+			mockResolver.AdvanceTimeAndExecuteRunners(1);
+		}
+
+		private static void AssertBallIsReleasedAndPaddleStay(TestBall remBall)
+		{
 			if (remBall != null)
 			{
 				Assert.IsFalse(remBall.IsCurrentlyOnPaddle);

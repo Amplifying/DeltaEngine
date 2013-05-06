@@ -1,55 +1,55 @@
-﻿using System;
-using System.IO;
-using DeltaEngine.Core;
-using DeltaEngine.Core.Xml;
-using DeltaEngine.Datatypes;
-using DeltaEngine.Input;
-using DeltaEngine.Platforms.Tests;
-using DeltaEngine.Rendering;
-using DeltaEngine.Scenes.UserInterfaces;
-using NUnit.Framework;
+//TODO: VectorTextControlTests
 
-namespace DeltaEngine.Scenes.Tests.UserInterfaces
-{
-	public class VectorTextControlTests : TestStarter
-	{
-		[VisualTest]
-		public void CreateSaveLoadAndShowRedHello(Type resolver)
-		{
-			Start(resolver, (Renderer renderer, Content content, InputCommands input) =>
-			{
-				var vectorText = CreateVectorTextControl(content);
-				var scene = new Scene();
-				scene.Add(vectorText);
-				MemoryStream stream = scene.SaveToMemoryStream();
-				CheckControlsMatch(vectorText,
-					stream.CreateFromMemoryStream<Scene>().Find("VectorText") as VectorTextControl);
-				scene.Show(renderer, content, input);
-			});
-		}
+//using System;
+//using System.IO;
+//using DeltaEngine.Content;
+//using DeltaEngine.Core.Xml;
+//using DeltaEngine.Datatypes;
+//using DeltaEngine.Input;
+//using DeltaEngine.Platforms.All;
+//using DeltaEngine.Rendering;
+//using DeltaEngine.Scenes.UserInterfaces;
+//using NUnit.Framework;
 
-		private static VectorTextControl CreateVectorTextControl(Content content)
-		{
-			return new VectorTextControl(content.Load<XmlContent>("TestXml"), new Point(0.3f, 0.4f), 0.1f)
-			{
-				Color = Color.Red,
-				IsVisible = true,
-				Name = "VectorText",
-				RenderLayer = 5,
-				Text = "Hello"
-			};
-		}
+//namespace DeltaEngine.Scenes.Tests.UserInterfaces
+//{
+//	public class VectorTextControlTests : TestWithAllFrameworks
+//	{
+//		[VisualTest]
+//		public void CreateSaveLoadAndShowRedHello(Type resolver)
+//		{
+//			Start(resolver, (ObsRenderer renderer, ContentLoader content, InputCommands input) =>
+//			{
+//				var vectorText = CreateVectorTextControl(content);
+//				var scene = new Scene();
+//				scene.Add(vectorText);
+//				MemoryStream stream = scene.SaveToMemoryStream();
+//				CheckControlsMatch(vectorText,
+//					(stream.CreateFromMemoryStream() as Scene).Find("VectorText") as VectorTextControl);
+//				scene.Show(renderer, content, input);
+//			});
+//		}
 
-		private static void CheckControlsMatch(VectorTextControl vectorText1,
-			VectorTextControl vectorText2)
-		{
-			Assert.AreEqual(vectorText1.Color, vectorText2.Color);
-			Assert.AreEqual(vectorText1.Height, vectorText2.Height);
-			Assert.AreEqual(vectorText1.IsVisible, vectorText2.IsVisible);
-			Assert.AreEqual(vectorText1.RenderLayer, vectorText2.RenderLayer);
-			Assert.AreEqual(vectorText1.Text, vectorText2.Text);
-			Assert.AreEqual(vectorText1.TopLeft, vectorText2.TopLeft);
-			Assert.AreEqual(vectorText1.VectorTextContentFilename, vectorText2.VectorTextContentFilename);
-		}
-	}
-}
+//		private static VectorTextControl CreateVectorTextControl(ContentLoader content)
+//		{
+//			return new VectorTextControl(content.Load<XmlContent>("VectorText"), new Point(0.3f, 0.4f),
+//				0.1f)
+//			{
+//				Name = "VectorText",
+//				VectorText = { Color = Color.Red, Visibility = true, RenderLayer = 5, Text = "Hello" }
+//			};
+//		}
+
+//		private static void CheckControlsMatch(VectorTextControl vectorText1,
+//			VectorTextControl vectorText2)
+//		{
+//			Assert.AreEqual(vectorText1.VectorText.Color, vectorText2.VectorText.Color);
+//			Assert.AreEqual(vectorText1.VectorText.Height, vectorText2.VectorText.Height);
+//			Assert.AreEqual(vectorText1.VectorText.Visibility, vectorText2.VectorText.Visibility);
+//			Assert.AreEqual(vectorText1.VectorText.RenderLayer, vectorText2.VectorText.RenderLayer);
+//			Assert.AreEqual(vectorText1.VectorText.Text, vectorText2.VectorText.Text);
+//			Assert.AreEqual(vectorText1.VectorText.TopLeft, vectorText2.VectorText.TopLeft);
+//			Assert.AreEqual(vectorText1.VectorTextContentName, vectorText2.VectorTextContentName);
+//		}
+//	}
+//}

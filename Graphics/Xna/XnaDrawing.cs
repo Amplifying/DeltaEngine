@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 using Microsoft.Xna.Framework.Graphics;
@@ -18,14 +18,17 @@ namespace DeltaEngine.Graphics.Xna
 			InitializeBuffers();
 		}
 
+		private new readonly XnaDevice device;
+		private readonly Window window;
+
 		private void Reset(Size obj)
 		{
 			lastTexture = null;
 			lastIndices = null;
 		}
 
-		private new readonly XnaDevice device;
-		private readonly Window window;
+		private Texture lastTexture;
+		private short[] lastIndices;
 
 		private void InitializeBuffers()
 		{
@@ -33,8 +36,8 @@ namespace DeltaEngine.Graphics.Xna
 			positionColorUvVertexBuffer = new CircularBuffer(NumberOfVertexBufferChunks);
 		}
 
-		private const int NumberOfVertexBufferChunks = 4;
 		private CircularBuffer positionColorVertexBuffer;
+		private const int NumberOfVertexBufferChunks = 4;
 		private CircularBuffer positionColorUvVertexBuffer;
 
 		public override void Dispose()
@@ -42,6 +45,8 @@ namespace DeltaEngine.Graphics.Xna
 			if (basicEffect != null)
 				basicEffect.Dispose();
 		}
+
+		private BasicEffect basicEffect;
 
 		public override void DisableTexturing()
 		{
@@ -54,20 +59,22 @@ namespace DeltaEngine.Graphics.Xna
 			SetVerticesData(positionColorUvVertexBuffer, vertices);
 			BindVertexBuffer(positionColorUvVertexBuffer.Handle);
 			if (lastTexture != device.NativeDevice.Textures[0])
-			{
-				ApplyEffect(true);
-				lastTexture = device.NativeDevice.Textures[0];
-			}
+				ApplyEffectAndSetLastTexture();
 
-			if (lastIndicesCount == -1)
-				DoDraw(mode, vertices.Length, positionColorUvVertexBuffer);
-			else
-				DoDrawIndexed(mode, vertices.Length, lastIndicesCount, positionColorUvVertexBuffer);
-
-			positionColorUvVertexBuffer.SelectNextChunk();
+			DecideKindOfDrawAndSelectNextChunk(positionColorUvVertexBuffer, mode, vertices.Length);
 		}
 
-		private static void SetVerticesData(CircularBuffer buffer, 
+		private void CheckCreatePositionColorTextureBuffer(int vertexCount = 8192)
+		{
+			if (positionColorUvVertexBuffer.Handle != null)
+				return;
+
+			positionColorUvVertexBuffer.Handle = new DynamicVertexBuffer(device.NativeDevice,
+				typeof(VertexPositionColorTexture),
+				vertexCount * positionColorUvVertexBuffer.NumberOfChunks, BufferUsage.WriteOnly);
+		}
+
+		private static void SetVerticesData(CircularBuffer buffer,
 			VertexPositionColorTextured[] vertices)
 		{
 			int vertexSize = Marshal.SizeOf(vertices[0]);
@@ -76,16 +83,80 @@ namespace DeltaEngine.Graphics.Xna
 				vertexSize, SetDataOptions.Discard);
 		}
 
-		private Texture lastTexture;
-
-		private void CheckCreatePositionColorTextureBuffer(int vertexCount = 8192)
+		private void BindVertexBuffer(VertexBuffer vertexBuffer)
 		{
-			if (positionColorUvVertexBuffer.Handle != null)
+			device.NativeDevice.SetVertexBuffer(vertexBuffer);
+		}
+
+		private void ApplyEffectAndSetLastTexture()
+		{
+			ApplyEffect(true);
+			lastTexture = device.NativeDevice.Textures[0];
+		}
+
+		private void ApplyEffect(bool vertexColorEnabled)
+		{
+			InitializeBasicEffectIfRequired();
+			basicEffect.VertexColorEnabled = vertexColorEnabled;
+			CheckEnableEffectTexture();
+			basicEffect.CurrentTechnique.Passes[0].Apply();
+		}
+
+		private void InitializeBasicEffectIfRequired()
+		{
+			if (basicEffect != null)
 				return;
 
-			positionColorUvVertexBuffer.Handle = new DynamicVertexBuffer(device.NativeDevice,
-				typeof(VertexPositionColorTexture), 
-				vertexCount * positionColorUvVertexBuffer.NumberOfChunks, BufferUsage.WriteOnly);
+			basicEffect = new BasicEffect(device.NativeDevice);
+			UpdateProjectionMatrix(window.ViewportPixelSize);
+			window.ViewportSizeChanged += UpdateProjectionMatrix;
+			FixHalfPixelOffset();
+			device.NativeDevice.BlendState = BlendState.NonPremultiplied;
+		}
+
+		private void CheckEnableEffectTexture()
+		{
+			if (device.NativeDevice.Textures[0] == null)
+				basicEffect.TextureEnabled = false;
+			else
+				SetTextureEnabled();
+		}
+
+		private void SetTextureEnabled()
+		{
+			basicEffect.TextureEnabled = true;
+			basicEffect.Texture = device.NativeDevice.Textures[0] as Texture2D;
+		}
+
+		private void DecideKindOfDrawAndSelectNextChunk(CircularBuffer buffer, VerticesMode mode,
+			int length)
+		{
+			if (lastIndicesCount == -1)
+				DoDraw(mode, length, buffer);
+			else
+				DoDrawIndexed(mode, length, lastIndicesCount, buffer);
+
+			buffer.SelectNextChunk();
+		}
+
+		private int lastIndicesCount = -1;
+
+		private void DoDraw(VerticesMode mode, int verticesCount, CircularBuffer vertexBuffer)
+		{
+			var primitiveMode = Convert(mode);
+			var primitiveCount = GetPrimitiveCount(verticesCount, primitiveMode);
+			var verticesPerPrimitive = mode == VerticesMode.Triangles ? 3 : 2;
+			device.NativeDevice.DrawPrimitives(primitiveMode,
+				verticesPerPrimitive * primitiveCount * vertexBuffer.CurrentChunk, primitiveCount);
+		}
+
+		private void DoDrawIndexed(VerticesMode mode, int verticesCount, int indicesCount,
+			CircularBuffer vertexBuffer)
+		{
+			var primitiveMode = Convert(mode);
+			var primitiveCount = GetPrimitiveCount(indicesCount, primitiveMode);
+			device.NativeDevice.DrawIndexedPrimitives(primitiveMode,
+				verticesCount * vertexBuffer.CurrentChunk, 0, verticesCount, 0, primitiveCount);
 		}
 
 		public override void DrawVertices(VerticesMode mode, VertexPositionColor[] vertices)
@@ -95,12 +166,7 @@ namespace DeltaEngine.Graphics.Xna
 			SetVerticesData(positionColorVertexBuffer, vertices);
 			BindVertexBuffer(positionColorVertexBuffer.Handle);
 			ApplyEffect(true);
-			if (lastIndicesCount == -1)
-				DoDraw(mode, vertices.Length, positionColorVertexBuffer);
-			else
-				DoDrawIndexed(mode, vertices.Length, lastIndicesCount, positionColorVertexBuffer);
-
-			positionColorVertexBuffer.SelectNextChunk();
+			DecideKindOfDrawAndSelectNextChunk(positionColorVertexBuffer, mode, vertices.Length);
 		}
 
 		private static void SetVerticesData(CircularBuffer buffer, VertexPositionColor[] vertices)
@@ -126,36 +192,8 @@ namespace DeltaEngine.Graphics.Xna
 			lastIndicesCount = usedIndicesCount;
 		}
 
-		private short[] lastIndices;
-		private int lastIndicesCount = -1;
-
-		private void BindVertexBuffer(VertexBuffer vertexBuffer)
-		{
-			device.NativeDevice.SetVertexBuffer(vertexBuffer);
-		}
-
-		private void ApplyEffect(bool vertexColorEnabled)
-		{
-			InitializeBasicEffectIfRequired();
-			basicEffect.VertexColorEnabled = vertexColorEnabled;
-			CheckEnableEffectTexture();
-			basicEffect.CurrentTechnique.Passes[0].Apply();
-		}
-
-		private void InitializeBasicEffectIfRequired()
-		{
-			if (basicEffect != null)
-				return;
-			
-			basicEffect = new BasicEffect(device.NativeDevice);
-			UpdateProjectionMatrix(window.ViewportPixelSize);
-			window.ViewportSizeChanged += UpdateProjectionMatrix;
-			FixHalfPixelOffset();
-			device.NativeDevice.BlendState = BlendState.NonPremultiplied;
-		}
-
-		private BasicEffect basicEffect;
-
+		private DynamicIndexBuffer indexBuffer;
+		
 		private void UpdateProjectionMatrix(Size newViewportSize)
 		{
 			basicEffect.Projection = Matrix.CreateOrthographicOffCenter(0, newViewportSize.Width,
@@ -166,37 +204,6 @@ namespace DeltaEngine.Graphics.Xna
 		{
 			basicEffect.View = Matrix.CreateTranslation(-0.5f, -0.5f, 0.0f);
 		}
-
-		private void CheckEnableEffectTexture()
-		{
-			if (device.NativeDevice.Textures[0] == null)
-				basicEffect.TextureEnabled = false;
-			else
-			{
-				basicEffect.TextureEnabled = true;
-				basicEffect.Texture = device.NativeDevice.Textures[0] as Texture2D;
-			}
-		}
-
-		private void DoDraw(VerticesMode mode, int verticesCount, CircularBuffer vertexBuffer)
-		{
-			var primitiveMode = Convert(mode);
-			var primitiveCount = GetPrimitiveCount(verticesCount, primitiveMode);
-			var verticesPerPrimitive = mode == VerticesMode.Triangles ? 3 : 2;
-			device.NativeDevice.DrawPrimitives(primitiveMode, 
-				verticesPerPrimitive * primitiveCount * vertexBuffer.CurrentChunk, primitiveCount);
-		}
-
-		private void DoDrawIndexed(VerticesMode mode, int verticesCount, int indicesCount,
-			CircularBuffer vertexBuffer)
-		{
-			var primitiveMode = Convert(mode);
-			var primitiveCount = GetPrimitiveCount(indicesCount, primitiveMode);
-			device.NativeDevice.DrawIndexedPrimitives(primitiveMode, 
-				VerticesPerRectangle * vertexBuffer.CurrentChunk, 0, verticesCount, 0, primitiveCount);
-		}
-
-		private const int VerticesPerRectangle = 4;
 		
 		private void CheckCreatePositionColorBuffer(int vertexCount = 400)
 		{
@@ -204,7 +211,7 @@ namespace DeltaEngine.Graphics.Xna
 				return;
 
 			positionColorVertexBuffer.Handle = new DynamicVertexBuffer(device.NativeDevice,
-				typeof(XnaGraphics.VertexPositionColor), 
+				typeof(XnaGraphics.VertexPositionColor),
 				vertexCount * positionColorVertexBuffer.NumberOfChunks, BufferUsage.WriteOnly);
 		}
 
@@ -217,16 +224,14 @@ namespace DeltaEngine.Graphics.Xna
 				indexCount, BufferUsage.WriteOnly);
 		}
 
-		private DynamicIndexBuffer indexBuffer;
-
 		private static PrimitiveType Convert(VerticesMode mode)
 		{
 			switch (mode)
 			{
-			case VerticesMode.Lines:
-				return PrimitiveType.LineList;
-			default:
-				return PrimitiveType.TriangleList;
+				case VerticesMode.Lines:
+					return PrimitiveType.LineList;
+				default:
+					return PrimitiveType.TriangleList;
 			}
 		}
 
@@ -234,10 +239,10 @@ namespace DeltaEngine.Graphics.Xna
 		{
 			switch (primitiveType)
 			{
-			case PrimitiveType.LineList:
-				return numVerticesOrIndices / 2;
-			default:
-				return numVerticesOrIndices / 3;
+				case PrimitiveType.LineList:
+					return numVerticesOrIndices / 2;
+				default:
+					return numVerticesOrIndices / 3;
 			}
 		}
 	}

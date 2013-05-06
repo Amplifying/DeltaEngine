@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 using DeltaEngine.Core;
 
@@ -15,6 +15,10 @@ namespace DeltaEngine.Datatypes
 			Z = setZ;
 		}
 
+		public float X { get; set; }
+		public float Y { get; set; }
+		public float Z { get; set; }
+
 		public Vector(Point setFromPoint, float setZ = 0.0f)
 			: this()
 		{
@@ -22,10 +26,6 @@ namespace DeltaEngine.Datatypes
 			Y = setFromPoint.Y;
 			Z = setZ;
 		}
-
-		public float X { get; set; }
-		public float Y { get; set; }
-		public float Z { get; set; }
 
 		public Vector(string vectorAsString)
 			: this()
@@ -39,7 +39,7 @@ namespace DeltaEngine.Datatypes
 			Z = floats[2];
 		}
 
-		public class InvalidNumberOfComponents : Exception { }
+		public class InvalidNumberOfComponents : Exception {}
 
 		public static readonly Vector Zero;
 		public static readonly Vector One = new Vector(1, 1, 1);

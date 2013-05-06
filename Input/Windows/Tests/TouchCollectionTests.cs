@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Platforms;
 using DeltaEngine.Platforms.Tests;
 using DeltaEngine.Rendering;
 using NUnit.Framework;
@@ -11,10 +10,10 @@ namespace DeltaEngine.Input.Windows.Tests
 	{
 		public TouchCollectionTests()
 		{
-			resolver = new TestResolver();
+			resolver = new MockResolver();
 		}
 
-		private readonly TestResolver resolver;
+		private readonly MockResolver resolver;
 
 		[Test]
 		public void FindIndexByIdOrGetFreeIndex()
@@ -185,7 +184,7 @@ namespace DeltaEngine.Input.Windows.Tests
 
 		private TouchCollection CreateCollection()
 		{
-			var window = resolver.Resolve<Window>();
+			var window = resolver.rendering.Window;
 			var screen = new PixelScreenSpace(window);
 			var positionTranslator = new CursorPositionTranslater(window, screen);
 			return new TouchCollection(positionTranslator);

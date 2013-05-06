@@ -1,15 +1,14 @@
-﻿using System.Drawing;
+using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
+using System;
+using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Platform;
-using Point = DeltaEngine.Datatypes.Point;
+using Color = System.Drawing.Color;
 
 namespace DeltaEngine.Graphics.OpenTK
 {
-	/// <summary>
-	/// The OpenGL color buffer is cleared in Run and shown in Present.
-	/// </summary>
 	public sealed class OpenTKDevice : Device
 	{
 		public OpenTKDevice(Window window)
@@ -17,39 +16,54 @@ namespace DeltaEngine.Graphics.OpenTK
 			this.window = window;
 			if (window.Title == "")
 				window.Title = "OpenTK Device";
-			InitGL();
-			InitializeModelViewMatrix();
-			InitializeProjectionMatrix();
+
+			Initialize();
 			window.ViewportSizeChanged += size => InitializeProjectionMatrix();
+			window.FullscreenChanged += OnFullscreenChanged;
 		}
 
+		private IWindowInfo windowInfo;
+		private GraphicsContext context;
+		private const int BitsPerPixel = 32;
 		private readonly Window window;
 
-		private void InitGL()
+		private void Initialize()
 		{
 			windowInfo = Utilities.CreateWindowsWindowInfo(window.Handle);
+			CreateContext();
+			InitializeModelViewMatrix();
+			InitializeProjectionMatrix();
+		}
+
+		private void CreateContext()
+		{
 			context = new GraphicsContext(GraphicsMode.Default, windowInfo);
 			context.MakeCurrent(windowInfo);
 			context.LoadAll();
 		}
 
-		private IWindowInfo windowInfo;
-		private GraphicsContext context;
+		private void InitializeModelViewMatrix()
+		{
+			SetModelViewMatrix(Matrix.Identity);
+		}
 
-		private static void InitializeModelViewMatrix()
+		public void SetModelViewMatrix(Matrix matrix)
 		{
 			GL.MatrixMode(MatrixMode.Modelview);
-			GL.LoadIdentity();
+			GL.LoadMatrix(matrix.GetValues);
 		}
 
 		private void InitializeProjectionMatrix()
 		{
+			var projection = Matrix.GenerateOrthographicProjection(window.ViewportPixelSize);
+			SetProjectionMatrix(projection);
+			GL.Viewport(0, 0, (int)window.ViewportPixelSize.Width, (int)window.ViewportPixelSize.Height);
+		}
+
+		public void SetProjectionMatrix(Matrix matrix)
+		{
 			GL.MatrixMode(MatrixMode.Projection);
-			GL.LoadIdentity();
-			var width = (int)window.ViewportPixelSize.Width;
-			var height = (int)window.ViewportPixelSize.Height;
-			GL.Ortho(0, width, height, 0, -1, 1);
-			GL.Viewport(0, 0, width, height);
+			GL.LoadMatrix(matrix.GetValues);
 		}
 
 		public void Run()
@@ -64,15 +78,42 @@ namespace DeltaEngine.Graphics.OpenTK
 
 		public void Present()
 		{
-			if (window.IsVisible && context != null)
+			if (window.Visibility && context != null)
 				context.SwapBuffers();
 		}
 
 		public void Dispose()
 		{
+			if (windowInfo != null)
+				windowInfo.Dispose();
+
 			if (context != null)
 				context.Dispose();
+
 			context = null;
+		}
+
+		private static void OnFullscreenChanged(Size displaySize, bool b)
+		{
+			DisplayResolution resolution = 
+				DisplayDevice.Default.SelectResolution((int)displaySize.Width, (int)displaySize.Height, 
+					BitsPerPixel, 0);
+			DisplayDevice.Default.ChangeResolution(resolution);
+			if (IsResolutionNotEqualDisplaySize(resolution, displaySize))
+				throw new ResolutionRequestFailed("Could not find resolution: " + displaySize);
+		}
+
+		private static bool IsResolutionNotEqualDisplaySize(DisplayResolution resolution, Size 
+			displaySize)
+		{
+			return resolution.Width != (int)displaySize.Width || resolution.Height != 
+				(int)displaySize.Height;
+		}
+		private class ResolutionRequestFailed : Exception
+		{
+			public ResolutionRequestFailed(string message) : base(message)
+			{
+			}
 		}
 	}
 }

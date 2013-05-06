@@ -1,4 +1,4 @@
-﻿namespace DeltaEngine.Core
+namespace DeltaEngine.Core
 {
 	/// <summary>
 	/// Allows classes to automatically run before any app code each frame (clearing, actors, physics,

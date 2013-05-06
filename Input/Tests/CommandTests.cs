@@ -1,14 +1,14 @@
-﻿using System;
-using DeltaEngine.Core;
+using System;
+using System.Linq;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Platforms.Tests;
-using DeltaEngine.Rendering;
+using DeltaEngine.Entities;
+using DeltaEngine.Platforms.All;
 using DeltaEngine.Rendering.Shapes;
 using NUnit.Framework;
 
 namespace DeltaEngine.Input.Tests
 {
-	public class CommandTests : TestStarter
+	public class CommandTests : TestWithAllFrameworks
 	{
 		[IntegrationTest]
 		public void AddAndRemoveTrigger(Type resolver)
@@ -41,12 +41,29 @@ namespace DeltaEngine.Input.Tests
 				var command = new Command();
 				input.Add(command);
 				command.Add(new MouseMovementTrigger());
-				if (testResolver != null)
+				if (mockResolver != null)
 				{
-					testResolver.SetMousePosition(Point.Half);
-					testResolver.AdvanceTimeAndExecuteRunners(0.1f);
-					testResolver.SetMousePosition(Point.One);
-					testResolver.AdvanceTimeAndExecuteRunners(0.1f);
+					mockResolver.input.SetMousePosition(Point.Half);
+					mockResolver.AdvanceTimeAndExecuteRunners(0.1f);
+					mockResolver.input.SetMousePosition(Point.One);
+					mockResolver.AdvanceTimeAndExecuteRunners(0.1f);
+					Assert.IsTrue(command.TriggerFired);
+				}
+			});
+		}
+
+		[IntegrationTest]
+		public void SimulateTouch(Type resolver)
+		{
+			Start(resolver, (InputCommands input) =>
+			{
+				var command = new Command();
+				input.Add(command);
+				command.Add(new TouchPressTrigger(State.Pressed));
+				if (mockResolver != null)
+				{
+					mockResolver.input.SetTouchState(0, State.Pressed, Point.Half);
+					mockResolver.AdvanceTimeAndExecuteRunners(0.1f);
 					Assert.IsTrue(command.TriggerFired);
 				}
 			});
@@ -55,9 +72,28 @@ namespace DeltaEngine.Input.Tests
 		[IntegrationTest]
 		public void SimulateKeyPress(Type resolver)
 		{
+			Start(resolver, (InputCommands input) => SimulateKeyOrMousePress(input, true));
+		}
+
+		[IntegrationTest]
+		public void SimulateGamePad(Type resolver)
+		{
 			Start(resolver, (InputCommands input) =>
 			{
-				SimulateKeyOrMousePress(input, true);
+				var command = new Command();
+				input.Add(command);
+				command.Add(new GamePadButtonTrigger(GamePadButton.A, State.Pressed));
+				if (mockResolver != null)
+				{
+					mockResolver.input.SetGamePadState(GamePadButton.A, State.Pressed);
+					mockResolver.AdvanceTimeAndExecuteRunners(0.1f);
+					Assert.IsTrue(command.TriggerFired);
+					foreach (var buttonTrigger in command.GetTriggers().Cast<GamePadButtonTrigger>())
+					{
+						Assert.AreEqual(GamePadButton.A, buttonTrigger.Button);
+						Assert.AreEqual(State.Pressed, buttonTrigger.State);
+					}
+				}
 			});
 		}
 
@@ -67,15 +103,16 @@ namespace DeltaEngine.Input.Tests
 			InputIsKeyOrMouse(input, key, command);
 			bool triggered = false;
 			command.Attach(trigger => triggered = true);
-			if (testResolver != null)
+			if (mockResolver != null)
 			{
 				if (key)
-					testResolver.SetKeyboardState(Key.A, State.Pressed);
+					mockResolver.input.SetKeyboardState(Key.A, State.Pressed);
 				else
-					testResolver.SetMouseButtonState(MouseButton.Left, State.Releasing);
+					mockResolver.input.SetMouseButtonState(MouseButton.Left, State.Releasing);
 
-				testResolver.AdvanceTimeAndExecuteRunners(0.1f);
+				mockResolver.AdvanceTimeAndExecuteRunners(0.1f);
 				Assert.IsTrue(triggered);
+				CheckTriggers(command, key);
 			}
 		}
 
@@ -88,14 +125,30 @@ namespace DeltaEngine.Input.Tests
 				command.Add(new MouseButtonTrigger(MouseButton.Left, State.Releasing));
 		}
 
+		private static void CheckTriggers(Command command, bool key)
+		{
+			if(key)
+				foreach (var keyTrigger in command.GetTriggers().Cast<KeyTrigger>())
+				{
+					Assert.AreEqual(Key.A, keyTrigger.Key);
+					Assert.AreEqual(State.Pressed, keyTrigger.State);
+				}
+			else
+				foreach (var buttonTrigger in command.GetTriggers().Cast<MouseButtonTrigger>())
+				{
+					Assert.AreEqual(MouseButton.Left, buttonTrigger.Button);
+					Assert.AreEqual(State.Releasing, buttonTrigger.State);
+				}
+		}
+
 		[IntegrationTest]
 		public void Run(Type resolver)
 		{
-			Start(resolver, (InputCommands input, Time time) =>
+			Start(resolver, (InputCommands input) =>
 			{
 				var command = new Command();
 				command.Add(new KeyTrigger(Key.Y, State.Releasing));
-				command.Run(input, time);
+				command.Run(input);
 			});
 		}
 
@@ -104,25 +157,24 @@ namespace DeltaEngine.Input.Tests
 		{
 			Start(resolver, (InputCommands input) =>
 			{
-				var command = new TestResolver().Resolve<Command>();
+				var command = new Command();
 				command.Add(new KeyTrigger(Key.Y, State.Released));
-				command.Run(input, null);
+				command.Run(input);
 			});
 		}
 
 		[VisualTest]
 		public void GraphicalUnitTest(Type resolver)
 		{
-			Rect rectangle = null;
+			Ellipse ellipse = null;
 			var currentPosition = new Point(0.1f, 0.1f);
-
-			Start(resolver, (Renderer renderer, InputCommands input) =>
+			Start(resolver, (EntitySystem entitySystem, InputCommands input) =>
 			{
-				rectangle = new Rect(Point.Zero, new Size(0.1f, 0.1f), Color.Red);
-				renderer.Add(rectangle);
+				ellipse = new Ellipse(new Rectangle(Point.Zero, new Size(0.1f, 0.1f)), Color.Red);
+				entitySystem.Add(ellipse);
 				input.Add(Key.A, State.Pressing, () => currentPosition = new Point(0.6f, 0.5f));
 				input.Add(Key.A, State.Released, () => currentPosition = new Point(0.1f, 0.1f));
-			}, () => rectangle.DrawArea.TopLeft = currentPosition);
+			}, () => ellipse.Center = currentPosition);
 		}
 	}
 }

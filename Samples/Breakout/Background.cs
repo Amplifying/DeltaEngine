@@ -1,7 +1,7 @@
-﻿using DeltaEngine.Core;
+using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.Sprites;
 
 namespace Breakout
 {
@@ -10,10 +10,10 @@ namespace Breakout
 	/// </summary>
 	public class Background : Sprite
 	{
-		public Background(Content content)
+		public Background(ContentLoader content)
 			: base(content.Load<Image>("Background"), Rectangle.One)
 		{
-			RenderLayer = MinRenderLayer;
+			RenderLayer = DefaultRenderLayer;
 		}
 	}
 }

@@ -1,19 +1,21 @@
-﻿using System;
+using System;
+using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
 using DeltaEngine.Input;
 using DeltaEngine.Multimedia;
 using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.Sprites;
 
 namespace Breakout
 {
 	/// <summary>
 	/// The player interacts with the ball with his paddle and navigates it to destroy bricks.
 	/// </summary>
-	public class Ball : Sprite
+	public class Ball : Sprite, Runner<ScreenSpace>
 	{
-		public Ball(Paddle paddle, Content content, InputCommands inputCommands)
+		public Ball(Paddle paddle, ContentLoader content, InputCommands inputCommands)
 			: base(content.Load<Image>("Ball"), Rectangle.Zero)
 		{
 			this.paddle = paddle;
@@ -45,16 +47,15 @@ namespace Breakout
 
 		private void FireBallFromPaddle()
 		{
-			if (!isOnPaddle || !IsVisible)
+			if (!isOnPaddle || Visibility != Visibility.Show)
 				return;
 
 			isOnPaddle = false;
-			float randomXSpeed = randomizer.Get(-0.15f, 0.15f);
+			float randomXSpeed = Randomizer.Current.Get(-0.15f, 0.15f);
 			velocity = new Point(randomXSpeed.Abs() < 0.01f ? 0.01f : randomXSpeed, StartBallSpeedY);
 			fireBallSound.Play();
 		}
 
-		private readonly PseudoRandom randomizer = new PseudoRandom();
 		protected Point velocity;
 		private const float StartBallSpeedY = -1f;
 
@@ -64,20 +65,19 @@ namespace Breakout
 			velocity = Point.Zero;
 		}
 
-		protected override void Render(Renderer renderer, Time time)
+		public virtual void Run(ScreenSpace screen)
 		{
 			if (isOnPaddle)
 				UpdateOnPaddle();
 			else
-				UpdateInFlight(time.CurrentDelta);
+				UpdateInFlight(Time.Current.Delta);
 
-			float aspect = renderer.Screen.ToPixelSpace(Size).AspectRatio;
+			float aspect = screen.ToPixelSpace(BallSize).AspectRatio;
 			DrawArea = Rectangle.FromCenter(Position, new Size(Height / aspect, Height));
-			base.Render(renderer, time);
 		}
 
 		public Point Position { get; protected set; }
-		public static readonly Size Size = new Size(Height);
+		public static readonly Size BallSize = new Size(Height);
 		private const float Height = Radius * 2.0f;
 		internal const float Radius = 0.02f;
 
@@ -164,10 +164,10 @@ namespace Breakout
 		private const float SpeedYIncrease = 1.015f;
 		private const float SpeedXIncrease = 2.5f;
 
-		public override void Dispose()
+		public void Dispose()
 		{
-			base.Dispose();
-			paddle.Dispose();
+			Visibility = Visibility.Hide;
+			paddle.Visibility = Visibility.Hide;
 		}
 	}
 }

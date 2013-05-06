@@ -1,4 +1,4 @@
-﻿namespace DeltaEngine.Input
+namespace DeltaEngine.Input
 {
 	/// <summary>
 	/// All available Keyboard keys that can be used via the Keyboard class.

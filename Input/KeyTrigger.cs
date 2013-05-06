@@ -1,5 +1,4 @@
-﻿using System;
-using DeltaEngine.Core;
+using System;
 
 namespace DeltaEngine.Input
 {
@@ -14,10 +13,22 @@ namespace DeltaEngine.Input
 			this.state = state;
 		}
 
-		private readonly Key key;
-		private readonly State state;
+		private Key key;
+		private State state;
 
-		public override bool ConditionMatched(InputCommands input, Time time)
+		public Key Key
+		{
+			get { return key; }
+			set { key = value; }
+		}
+
+		public State State
+		{
+			get { return state; }
+			set { state = value; }
+		}
+
+		public override bool ConditionMatched(InputCommands input)
 		{
 			return input.keyboard.IsAvailable && input.keyboard.GetKeyState(key) == state;
 		}
@@ -29,6 +40,7 @@ namespace DeltaEngine.Input
 
 		public override int GetHashCode()
 		{
+			//// ReSharper disable NonReadonlyFieldInGetHashCode
 			return ((int)key).GetHashCode() ^ ((int)state).GetHashCode();
 		}
 	}

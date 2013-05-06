@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Datatypes;
+using DeltaEngine.Datatypes;
 using SysPoint = System.Drawing.Point;
 
 namespace DeltaEngine.Input.Windows

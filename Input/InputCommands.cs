@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DeltaEngine.Core;
 
@@ -7,7 +7,7 @@ namespace DeltaEngine.Input
 	/// <summary>
 	/// Provides a way to check and trigger all input commands in the run loop.
 	/// </summary>
-	public class InputCommands : Runner<Time>
+	public class InputCommands : PriorityRunner
 	{
 		public InputCommands(Keyboard keyboard, PointerDevices pointerDevices, GamePad gamePad)
 		{
@@ -19,6 +19,7 @@ namespace DeltaEngine.Input
 		internal readonly Keyboard keyboard;
 		private readonly PointerDevices pointerDevices;
 		internal readonly GamePad gamePad;
+
 		internal Mouse Mouse
 		{
 			get { return pointerDevices.mouse; }
@@ -121,11 +122,11 @@ namespace DeltaEngine.Input
 			get { return commands.Count; }
 		}
 
-		public void Run(Time time)
+		public void Run()
 		{
 			var activeCommands = new List<Command>(commands);
 			foreach (Command command in activeCommands)
-				command.Run(this, time);
+				command.Run(this);
 		}
 	}
 }

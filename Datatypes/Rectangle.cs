@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using DeltaEngine.Core;
@@ -8,9 +9,8 @@ namespace DeltaEngine.Datatypes
 	/// <summary>
 	/// Holds data for a rectangle by specifying its top left corner and the width and height.
 	/// </summary>
-	[StructLayout(LayoutKind.Explicit),
-	 DebuggerDisplay("Rectangle(Left={Left}, Top={Top}, Width={Width}, Height={Height})")]
-	public struct Rectangle
+	[DebuggerDisplay("Rectangle(Left={Left}, Top={Top}, Width={Width}, Height={Height})")]
+	public struct Rectangle : IEquatable<Rectangle>
 	{
 		public Rectangle(float left, float top, float width, float height)
 			: this()
@@ -21,8 +21,13 @@ namespace DeltaEngine.Datatypes
 			Height = height;
 		}
 
+		public float Left { get; set; }
+		public float Top { get; set; }
+		public float Width { get; set; }
+		public float Height { get; set; }
+
 		public Rectangle(Point position, Size size)
-			: this(position.X, position.Y, size.Width, size.Height) { }
+			: this(position.X, position.Y, size.Width, size.Height) {}
 
 		public Rectangle(string rectangleAsString)
 			: this()
@@ -37,25 +42,12 @@ namespace DeltaEngine.Datatypes
 			Height = componentStrings[3].FromInvariantString(0.0f);
 		}
 
-		[FieldOffset(0)]
-		public float Left;
-		[FieldOffset(4)]
-		public float Top;
-		[FieldOffset(8)]
-		public float Width;
-		[FieldOffset(12)]
-		public float Height;
-		[FieldOffset(0)]
-		public Point TopLeft;
-		[FieldOffset(8)]
-		public Size Size;
+		public class InvalidNumberOfComponents : Exception {}
 
-		public class InvalidNumberOfComponents : Exception { }
-
-		public static readonly Rectangle Zero;
+		public static readonly Rectangle Zero = new Rectangle();
 		public static readonly Rectangle One = new Rectangle(Point.Zero, Size.One);
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Rectangle));
-		
+
 		public float Right
 		{
 			get { return Left + Width; }
@@ -68,34 +60,29 @@ namespace DeltaEngine.Datatypes
 			set { Top = value - Height; }
 		}
 
+		public Size Size
+		{
+			get { return new Size(Width, Height); }
+		}
+
+		public Point TopLeft
+		{
+			get { return new Point(Left, Top); }
+		}
+
 		public Point TopRight
 		{
 			get { return new Point(Left + Width, Top); }
-			set
-			{
-				Left = value.X - Width;
-				Top = value.Y;
-			}
 		}
 
 		public Point BottomLeft
 		{
 			get { return new Point(Left, Top + Height); }
-			set
-			{
-				Left = value.X;
-				Top = value.Y - Height;
-			}
 		}
 
 		public Point BottomRight
 		{
 			get { return new Point(Left + Width, Top + Height); }
-			set
-			{
-				Left = value.X - Width;
-				Top = value.Y - Height;
-			}
 		}
 
 		public Point Center
@@ -108,6 +95,12 @@ namespace DeltaEngine.Datatypes
 			}
 		}
 
+		public static Rectangle Lerp(Rectangle rectangle1, Rectangle rectangle2, float percentage)
+		{
+			return new Rectangle(Point.Lerp(rectangle1.TopLeft, rectangle2.TopLeft, percentage),
+				Size.Lerp(rectangle1.Size, rectangle2.Size, percentage));
+		}
+
 		public static Rectangle FromCenter(float x, float y, float width, float height)
 		{
 			return FromCenter(new Point(x, y), new Size(width, height));
@@ -116,6 +109,34 @@ namespace DeltaEngine.Datatypes
 		public static Rectangle FromCenter(Point center, Size size)
 		{
 			return new Rectangle(new Point(center.X - size.Width / 2, center.Y - size.Height / 2), size);
+		}
+
+		public bool Contains(Point position)
+		{
+			return position.X >= Left && position.X < Right && position.Y >= Top && position.Y < Bottom;
+		}
+
+		public float Aspect
+		{
+			get { return Width / Height; }
+		}
+
+		public Rectangle Reduce(Size size)
+		{
+			return new Rectangle(Left + size.Width / 2, Top + size.Height / 2, Width - size.Width,
+				Height - size.Height);
+		}
+
+		public Rectangle GetInnerRectangle(Rectangle relativeRectangle)
+		{
+			return new Rectangle(Left + Width * relativeRectangle.Left,
+				Top + Height * relativeRectangle.Top, Width * relativeRectangle.Width,
+				Height * relativeRectangle.Height);
+		}
+
+		public Rectangle Move(Point translation)
+		{
+			return new Rectangle(Left + translation.X, Top + translation.Y, Width, Height);
 		}
 
 		public static bool operator ==(Rectangle rect1, Rectangle rect2)
@@ -140,13 +161,8 @@ namespace DeltaEngine.Datatypes
 
 		public override int GetHashCode()
 		{
-			// ReSharper disable NonReadonlyFieldInGetHashCode
+			//// ReSharper disable NonReadonlyFieldInGetHashCode
 			return Left.GetHashCode() ^ Top.GetHashCode() ^ Width.GetHashCode() ^ Height.GetHashCode();
-		}
-
-		public bool Contains(Point position)
-		{
-			return position.X >= Left && position.X < Right && position.Y >= Top && position.Y < Bottom;
 		}
 
 		public override string ToString()
@@ -155,27 +171,61 @@ namespace DeltaEngine.Datatypes
 				Width.ToInvariantString() + " " + Height.ToInvariantString();
 		}
 
-		public float Aspect
+		public Point[] GetRotatedRectangleCorners(Point center, float rotation)
 		{
-			get { return Width / Height; }
+			return new[]
+			{
+				TopLeft.RotateAround(center, rotation), TopRight.RotateAround(center, rotation),
+				BottomRight.RotateAround(center, rotation), BottomLeft.RotateAround(center, rotation) 
+			};
 		}
 
-		public Rectangle Reduce(Size size)
+		public bool IsColliding(float rotation, Rectangle otherRect, float otherRotation)
 		{
-			return new Rectangle(Left + size.Width / 2, Top + size.Height / 2, Width - size.Width,
-				Height - size.Height);
+			var rotatedRect = GetRotatedRectangleCorners(Center, rotation);
+			var rotatedOtherRect = otherRect.GetRotatedRectangleCorners(otherRect.Center, otherRotation);
+			foreach (var axis in GetAxes(otherRect))
+				if (IsProjectedAxisOutsideRectangles(axis, rotatedRect, rotatedOtherRect))
+					return false;
+			return true;
 		}
 
-		public Rectangle GetInnerRectangle(Rectangle relativeRectangle)
+		private IEnumerable<Point> GetAxes(Rectangle rectangle)
 		{
-			return new Rectangle(Left + Width * relativeRectangle.Left,
-				Top + Height * relativeRectangle.Top, Width * relativeRectangle.Width,
-				Height * relativeRectangle.Height);
+			return new[]
+			{
+				new Point(TopRight.X - TopLeft.X, TopRight.Y - TopLeft.Y),
+				new Point(TopRight.X - BottomRight.X, TopRight.Y - BottomRight.Y),
+				new Point(rectangle.TopLeft.X - rectangle.BottomLeft.X,
+					rectangle.TopLeft.Y - rectangle.BottomLeft.Y),
+				new Point(rectangle.TopLeft.X - rectangle.TopRight.X,
+					rectangle.TopLeft.Y - rectangle.TopRight.Y)
+			};
 		}
 
-		public Rectangle Move(Point translation)
+		private static bool IsProjectedAxisOutsideRectangles(Point axis, Point[] rotatedRect,
+			Point[] rotatedOtherRect)
 		{
-			return new Rectangle(Left + translation.X, Top + translation.Y, Width, Height);
+			var rectMin = float.MaxValue;
+			var rectMax = float.MinValue;
+			var otherMin = float.MaxValue;
+			var otherMax = float.MinValue;
+			GetRectangleProjectionResult(axis, rotatedRect, ref rectMin, ref rectMax);
+			GetRectangleProjectionResult(axis, rotatedOtherRect, ref otherMin, ref otherMax);
+			return rectMin > otherMax || rectMax < otherMin;
+		}
+
+		private static void GetRectangleProjectionResult(Point axis, IEnumerable<Point> cornerList,
+			ref float min, ref float max)
+		{
+			foreach (var corner in cornerList)
+			{
+				float projectedValue = corner.DistanceFromProjectAxisPoint(axis) * axis.X + axis.Y;
+				if (projectedValue < min)
+					min = projectedValue;
+				if (projectedValue > max)
+					max = projectedValue;
+			}
 		}
 	}
 }

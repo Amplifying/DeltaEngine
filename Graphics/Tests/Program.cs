@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms.All;
 
 namespace DeltaEngine.Graphics.Tests
 {
@@ -6,8 +6,9 @@ namespace DeltaEngine.Graphics.Tests
 	{
 		public static void Main()
 		{
-			//new DrawingTests().DrawVertices(TestStarter.Xna);
-			new DrawingTests().ShowRedLine(TestStarter.OpenGL);
+			//new DrawingTests().ShowRedLine(TestWithAllFrameworks.OpenGL);
+			//new DrawingTests().DrawVertices(TestStarterWithAllFrameworks.Xna);
+			new ImageTests().DrawImage(TestWithAllFrameworks.DirectX9);
 		}
 	}
 }

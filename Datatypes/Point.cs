@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using DeltaEngine.Core;
@@ -144,9 +144,10 @@ namespace DeltaEngine.Datatypes
 			return new Point(x, y);
 		}
 
-		public void RotateAround(Point center, float angleInDegrees)
+		public Point RotateAround(Point center, float angleInDegrees)
 		{
 			RotateAround(center, MathExtensions.Sin(angleInDegrees), MathExtensions.Cos(angleInDegrees));
+			return this;
 		}
 
 		public void RotateAround(Point center, float rotationSin, float rotationCos)
@@ -166,6 +167,11 @@ namespace DeltaEngine.Datatypes
 		public float DotProduct(Point point)
 		{
 			return X * point.X + Y * point.Y;
+		}
+
+		public float DistanceFromProjectAxisPoint(Point axis)
+		{
+			return (X * axis.X + Y * axis.Y) / (axis.X * axis.X + axis.Y * axis.Y) * axis.X;
 		}
 	}
 }

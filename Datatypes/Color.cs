@@ -1,17 +1,16 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Runtime.InteropServices;
 using DeltaEngine.Core;
 
 namespace DeltaEngine.Datatypes
 {
 	/// <summary>
-	/// Color with a byte or float per component (red, green, blue, alpha)
+	/// Color with a byte per component (red, green, blue, alpha), also provides float properties.
 	/// </summary>
 	[DebuggerDisplay("Color(R={R}, G={G}, B={B}, A={A})")]
-	public struct Color : IEquatable<Color>, BinaryData
+	public struct Color : IEquatable<Color>
 	{
 		public Color(byte r, byte g, byte b, byte a = 255)
 			: this()
@@ -26,24 +25,6 @@ namespace DeltaEngine.Datatypes
 		public byte G { get; set; }
 		public byte B { get; set; }
 		public byte A { get; set; }
-
-		public float RedValue
-		{
-			get { return R / 255.0f; }
-		}
-		public float GreenValue
-		{
-			get { return G / 255.0f; }
-		}
-		public float BlueValue
-		{
-			get { return B / 255.0f; }
-		}
-		public float AlphaValue
-		{
-			get { return A / 255.0f; }
-			set { A = (byte)(value.Clamp(0.0f, 1.0f) * 255); }
-		}
 
 		public Color(float r, float g, float b, float a = 1.0f)
 			: this()
@@ -61,24 +42,13 @@ namespace DeltaEngine.Datatypes
 			if (components.Length != 4)
 				throw new InvalidNumberOfComponents();
 
-			byte[] values = ParseComponents(components);
-			R = values[0];
-			G = values[1];
-			B = values[2];
-			A = values[3];
+			R = FindComponentValue(components, "R");
+			G = FindComponentValue(components, "G");
+			B = FindComponentValue(components, "B");
+			A = FindComponentValue(components, "A");
 		}
 
 		public class InvalidNumberOfComponents : Exception {}
-
-		private static byte[] ParseComponents(string[] components)
-		{
-			var values = new byte[4];
-			values[0] = FindComponentValue(components, "R");
-			values[1] = FindComponentValue(components, "G");
-			values[2] = FindComponentValue(components, "B");
-			values[3] = FindComponentValue(components, "A");
-			return values;
-		}
 
 		private static byte FindComponentValue(IEnumerable<string> components, string color)
 		{
@@ -101,15 +71,42 @@ namespace DeltaEngine.Datatypes
 		{
 			string valueString = component.Substring(component.IndexOf('=') + 1);
 			byte value;
+			if (byte.TryParse(valueString, out value))
+				return value;
 
-			if (!byte.TryParse(valueString, out value))
-				throw new InvalidNumberOfComponents();
+			throw new InvalidColorComponentValue(component);
+		}
 
-			return value;
+		public class InvalidColorComponentValue : Exception
+		{
+			public InvalidColorComponentValue(string message)
+				: base(message) {}
+		}
+
+		public float RedValue
+		{
+			get { return R / 255.0f; }
+		}
+
+		public float GreenValue
+		{
+			get { return G / 255.0f; }
+		}
+
+		public float BlueValue
+		{
+			get { return B / 255.0f; }
+		}
+
+		public float AlphaValue
+		{
+			get { return A / 255.0f; }
+			set { A = (byte)(value.Clamp(0.0f, 1.0f) * 255); }
 		}
 
 		public static readonly Color Black = new Color(0, 0, 0);
 		public static readonly Color White = new Color(255, 255, 255);
+		public static readonly Color TransparentWhite = Transparent(White);
 		public static readonly Color Blue = new Color(0, 0, 255);
 		public static readonly Color Cyan = new Color(0, 255, 255);
 		public static readonly Color Gray = new Color(128, 128, 128);
@@ -129,10 +126,14 @@ namespace DeltaEngine.Datatypes
 		public static readonly Color PaleGreen = new Color(152, 251, 152);
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Color));
 
+		public static Color Transparent(Color color)
+		{
+			return new Color(color.R, color.G, color.B, 0);
+		}
+
 		/// <summary>
-		/// Colors are stored as RGBA byte values and this gives back the usual RGBA format as a 32 bit
-		/// value. R takes the first 8 bits, G the next 8 up to A for the last 8 bits. This call can be
-		/// optimized away by the build service, always use this when working with colors if possible.
+		/// Colors are stored as RGBA byte values and this gives back the usual RGBA format as an
+		/// optimized 32 bit value. R takes the first 8 bits, G the next 8 up to A for the last 8 bits.
 		/// </summary>
 		public int PackedRgba
 		{
@@ -140,12 +141,33 @@ namespace DeltaEngine.Datatypes
 		}
 
 		/// <summary>
-		/// Similar to PackedBgra, but R and B are switched around. This format is commonly used for
-		/// Windows bitmaps and usually needed to load or process bitmap file or in memory data.
+		/// Similar to PackedRgba, but R and B are switched around, used for loading Windows bitmaps.
 		/// </summary>
 		public int PackedBgra
 		{
 			get { return B + (G << 8) + (R << 16) + (A << 24); }
+		}
+
+		public static Color Lerp(Color color1, Color color2, float percentage)
+		{
+			var r = (byte)(MathExtensions.Lerp(color1.R, color2.R, percentage));
+			var g = (byte)(MathExtensions.Lerp(color1.G, color2.G, percentage));
+			var b = (byte)(MathExtensions.Lerp(color1.B, color2.B, percentage));
+			var a = (byte)(MathExtensions.Lerp(color1.A, color2.A, percentage));
+			return new Color(r, g, b, a);
+		}
+
+		public static Color GetRandomColor(byte lowValue = 16, byte highValue = 255)
+		{
+			var r = (byte)Randomizer.Current.Get(lowValue, highValue + 1);
+			var g = (byte)Randomizer.Current.Get(lowValue, highValue + 1);
+			var b = (byte)Randomizer.Current.Get(lowValue, highValue + 1);
+			return new Color(r, g, b);
+		}
+
+		public static Color GetRandomBrightColor()
+		{
+			return GetRandomColor(128);
 		}
 
 		public static bool operator !=(Color c1, Color c2)
@@ -188,69 +210,6 @@ namespace DeltaEngine.Datatypes
 		public override string ToString()
 		{
 			return "(R=" + R + ", G=" + G + ", B=" + B + ", A=" + A + ")";
-		}
-
-		public static Color Lerp(Color color1, Color color2, float percentage)
-		{
-			var r = (byte)(MathExtensions.Lerp(color1.R, color2.R, percentage));
-			var g = (byte)(MathExtensions.Lerp(color1.G, color2.G, percentage));
-			var b = (byte)(MathExtensions.Lerp(color1.B, color2.B, percentage));
-			var a = (byte)(MathExtensions.Lerp(color1.A, color2.A, percentage));
-
-			return new Color(r, g, b, a);
-		}
-
-		public static Color GetRandomColor()
-		{
-			if (Randomizer == null)
-				Randomizer = new PseudoRandom();
-
-			var r = (byte)Randomizer.Get(16, 256);
-			var g = (byte)Randomizer.Get(16, 256);
-			var b = (byte)Randomizer.Get(16, 256);
-			return new Color(r, g, b);
-		}
-
-		public static Randomizer Randomizer { get; set; }
-
-		public static Color GetRandomBrightColor()
-		{
-			if (Randomizer == null)
-				Randomizer = new PseudoRandom();
-
-			var r = (byte)Randomizer.Get(128, 256);
-			var g = (byte)Randomizer.Get(128, 256);
-			var b = (byte)Randomizer.Get(128, 256);
-			return new Color(r, g, b);
-		}
-
-		public void SaveData(BinaryWriter writer)
-		{
-			writer.Write(R);
-			writer.Write(G);
-			writer.Write(B);
-			writer.Write(A);
-		}
-
-		public void LoadData(BinaryReader reader)
-		{
-			R = reader.ReadByte();
-			G = reader.ReadByte();
-			B = reader.ReadByte();
-			A = reader.ReadByte();
-		}
-
-		public static byte[] GetBytes(Color[] colors)
-		{
-			var bytes = new byte[colors.Length * 4];
-			for (int colorIndex = 0; colorIndex < colors.Length; colorIndex++)
-			{
-				bytes[colorIndex * 4 + 0] = colors[colorIndex].R;
-				bytes[colorIndex * 4 + 1] = colors[colorIndex].G;
-				bytes[colorIndex * 4 + 2] = colors[colorIndex].B;
-				bytes[colorIndex * 4 + 3] = colors[colorIndex].A;
-			}
-			return bytes;
 		}
 	}
 }

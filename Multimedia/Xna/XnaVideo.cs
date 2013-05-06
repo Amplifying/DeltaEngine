@@ -1,8 +1,10 @@
-﻿using System;
-using DeltaEngine.Graphics;
-using DeltaEngine.Graphics.Xna;
-using DeltaEngine.Rendering;
+using System;
+using System.IO;
+using DeltaEngine.Datatypes;
+using DeltaEngine.Rendering.Sprites;
+using Microsoft.Xna.Framework.Media;
 using Media = Microsoft.Xna.Framework.Media;
+using System.Diagnostics;
 
 namespace DeltaEngine.Multimedia.Xna
 {
@@ -11,49 +13,48 @@ namespace DeltaEngine.Multimedia.Xna
 	/// </summary>
 	public class XnaVideo : Video
 	{
-		public XnaVideo(string filename, Drawing drawing, Renderer renderer, XnaSoundDevice device,
-			XnaDevice graphicsDevice)
-			: base(filename, renderer)
+		public XnaVideo(string filename, VideoPlayer player, VideoRenderingDependencies rendering,
+			SoundDevice device)
+			: base(filename, device)
 		{
-			this.drawing = drawing;
-			this.device = device;
-			this.graphicsDevice = graphicsDevice;
-			if (graphicsDevice == null || device.Content == null)
-				throw new UnableToContinueWithoutXnaGraphicsDevice();
-
-			video = device.Content.Load<Media.Video>(filename);
+			this.player = player;
+			this.rendering = rendering;
+			image = new VideoImage(rendering, player);
 		}
 
-		private readonly Drawing drawing;
+		private readonly VideoPlayer player;
+		private readonly VideoRenderingDependencies rendering;
 		private Media.Video video;
-		private readonly XnaDevice graphicsDevice;
-		private readonly XnaSoundDevice device;
+		private readonly VideoImage image;
 
-		internal class UnableToContinueWithoutXnaGraphicsDevice : Exception {}
-
-		protected override VideoSurface PlayNativeVideo(float volume)
+		protected override void PlayNativeVideo(float volume)
 		{
 			positionInSeconds = 0f;
-			device.NativePlayer.Volume = volume;
-			device.NativePlayer.Play(video);
-			return new XnaVideoSurface(this, drawing, renderer, graphicsDevice, device);
+			player.Volume = volume;
+			player.Play(video);
+			surface = new Sprite(image, rendering.Screen.Viewport, Color.White);
+			rendering.EntitySystem.Add(surface);
 		}
 
+		private Sprite surface;
 		private float positionInSeconds;
 
 		protected override void StopNativeVideo()
 		{
-			device.NativePlayer.Stop();
+			if (surface != null)
+				rendering.EntitySystem.Remove(surface);
+			surface = null;
+			player.Stop();
 		}
 
 		public override bool IsPlaying()
 		{
-			return device.NativePlayer.State != Media.MediaState.Stopped && IsActiveVideo();
+			return player.State != Media.MediaState.Stopped && IsActiveVideo();
 		}
 
 		private bool IsActiveVideo()
 		{
-			return device.NativePlayer.Video == video;
+			return player.Video == video;
 		}
 
 		protected override void Run()
@@ -61,11 +62,45 @@ namespace DeltaEngine.Multimedia.Xna
 			if (!IsActiveVideo())
 				return;
 
-			positionInSeconds = (float)device.NativePlayer.PlayPosition.TotalSeconds;
+			image.UpdateTexture();
+			positionInSeconds = (float)player.PlayPosition.TotalSeconds;
 		}
 
-		public override void Dispose()
+		protected override bool CanLoadDataFromStream
 		{
+			get { return false; }
+		}
+
+		protected override void LoadData(Stream fileData)
+		{
+			throw new XnaOnlyAllowsLoadingThroughContentNames();
+		}
+
+		public class XnaOnlyAllowsLoadingThroughContentNames : Exception {}
+
+		protected override void LoadFromContentName(string contentName)
+		{
+			try
+			{
+				video = rendering.NativeContent.Load<Media.Video>(contentName);
+			}
+			catch (Exception ex)
+			{
+				//logger.Error(ex);
+				if (Debugger.IsAttached)
+					throw new XnaVideoContentNotFound(contentName, ex);
+			}
+		}
+
+		private class XnaVideoContentNotFound : Exception
+		{
+			public XnaVideoContentNotFound(string contentName, Exception exception)
+				: base(contentName, exception) {}
+		}
+
+		protected override void DisposeData()
+		{
+			base.DisposeData();
 			video = null;
 		}
 

@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Datatypes;
+using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Input
 {

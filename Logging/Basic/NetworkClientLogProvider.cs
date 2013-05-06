@@ -1,32 +1,53 @@
-﻿using System.Net;
-using DeltaEngine.Networking.Sockets;
+using System;
+using DeltaEngine.Networking;
 
 namespace DeltaEngine.Logging.Basic
 {
-	public class NetworkClientLogProvider : TcpNetworkingClient, LogProvider
+	public class NetworkClientLogProvider : LogProvider, IDisposable
 	{
-		public NetworkClientLogProvider(string logServerDnsAddress, int serverPort)
-			: this(new IPEndPoint(Dns.GetHostEntry(logServerDnsAddress).AddressList[0], serverPort)) { }
-
-		public NetworkClientLogProvider(IPEndPoint serverAddress)
-			: base(serverAddress)
+		public NetworkClientLogProvider(Client client, string serverAddress, int serverPort)
 		{
-			Connect();
+			this.client = client;
+			this.serverAddress = serverAddress;
+			this.serverPort = serverPort;
 		}
+
+		private readonly Client client;
+		private readonly string serverAddress;
+		private readonly int serverPort;
 
 		public void Log(Info info)
 		{
-			Send(info);
+			ConnectClientIfNotDoneYet();
+			client.Send(info);
+		}
+
+		public bool IsConnected
+		{
+			get { return client.IsConnected; }
+		}
+
+		private void ConnectClientIfNotDoneYet()
+		{
+			if (!IsConnected)
+				client.Connect(serverAddress, serverPort);
 		}
 
 		public void Log(Warning warning)
 		{
-			Send(warning);
+			ConnectClientIfNotDoneYet();
+			client.Send(warning);
 		}
 
 		public void Log(Error error)
 		{
-			Send(error);
+			ConnectClientIfNotDoneYet();
+			client.Send(error);
+		}
+
+		public void Dispose()
+		{
+			client.Dispose();
 		}
 	}
 }

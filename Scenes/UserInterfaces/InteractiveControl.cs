@@ -1,17 +1,13 @@
-﻿using System;
+using System;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
 
 namespace DeltaEngine.Scenes.UserInterfaces
 {
 	/// <summary>
 	/// Is the base class for an interactive control like Button
 	/// </summary>
-	public abstract class InteractiveControl : Label
+	public abstract class InteractiveControl : Control
 	{
-		protected InteractiveControl(Image image, Rectangle initialDrawArea)
-			: base(image, initialDrawArea) {}
-
 		public virtual void Press()
 		{
 			IsPressed = true;
@@ -22,11 +18,11 @@ namespace DeltaEngine.Scenes.UserInterfaces
 		public bool IsPressed { get; private set; }
 		public event Action Pressed;
 
-		public virtual void Tap()
+		public virtual void Tap(Point position)
 		{
 			Release();
 			if (Tapped != null)
-				Tapped();
+				Tapped(position);
 		}
 
 		public virtual void Release()
@@ -34,7 +30,7 @@ namespace DeltaEngine.Scenes.UserInterfaces
 			IsPressed = false;
 		}
 
-		public event Action Tapped;
+		public event Action<Point> Tapped;
 
 		public virtual void Enter()
 		{
@@ -55,7 +51,7 @@ namespace DeltaEngine.Scenes.UserInterfaces
 
 		public event Action Exited;
 
-		public virtual void Hover()
+		public void Hover()
 		{
 			IsHovering = true;
 			if (Hovered != null)
@@ -65,7 +61,7 @@ namespace DeltaEngine.Scenes.UserInterfaces
 		public bool IsHovering { get; private set; }
 		public event Action Hovered;
 
-		public virtual void StopHover()
+		public void StopHover()
 		{
 			IsHovering = false;
 			if (StoppedHover != null)
@@ -73,5 +69,7 @@ namespace DeltaEngine.Scenes.UserInterfaces
 		}
 
 		public event Action StoppedHover;
+
+		internal abstract bool Contains(Point point);
 	}
 }

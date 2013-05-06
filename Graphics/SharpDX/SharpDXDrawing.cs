@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Datatypes;
+using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 using SharpDX.DXGI;
 using SharpDX.Direct3D;
@@ -18,7 +18,8 @@ namespace DeltaEngine.Graphics.SharpDX
 			: base(device)
 		{
 			this.device = device;
-			drawShader = new SharpDXDrawShader(device);
+			positionColorShader = new SharpDXPositionColorShader(device);
+			positionColorTextureShader = new SharpDXPositionColorTextureShader(device);
 			Reset(window.ViewportPixelSize);
 			window.ViewportSizeChanged += Reset;
 			device.Context.OutputMerger.BlendState = device.GetAlphaBlendStateLazy();
@@ -26,7 +27,8 @@ namespace DeltaEngine.Graphics.SharpDX
 		}
 
 		private new readonly SharpDXDevice device;
-		private readonly SharpDXDrawShader drawShader;
+		private readonly SharpDXPositionColorShader positionColorShader;
+		private readonly SharpDXPositionColorTextureShader positionColorTextureShader;
 
 		private void InitializeBuffers()
 		{
@@ -50,10 +52,11 @@ namespace DeltaEngine.Graphics.SharpDX
 				M41 = -1.0f,
 				M42 = 1.0f
 			};
-			drawShader.WorldViewProjection = viewportTransform;
+			positionColorTextureShader.WorldViewProjection = viewportTransform;
+			positionColorShader.WorldViewProjection = viewportTransform;
 		}
 
-		public override void Dispose() { }
+		public override void Dispose() {}
 
 		public override void DisableTexturing()
 		{
@@ -64,13 +67,13 @@ namespace DeltaEngine.Graphics.SharpDX
 		{
 			CheckCreatePositionColorBuffer();
 			device.SetData(positionColorVertexBuffer, vertices, vertices.Length);
-			drawShader.Apply();
-			BindVertexBuffer(positionColorVertexBuffer,
-				VertexPositionColor.SizeInBytes);
+			positionColorShader.Apply();
+			BindVertexBuffer(positionColorVertexBuffer, VertexPositionColor.SizeInBytes);
 			if (lastIndicesCount == -1)
 				DoDraw(mode, vertices.Length);
 			else
-				DoDrawIndexed(mode, lastIndicesCount);
+				DoDrawIndexed(mode, vertices.Length, lastIndicesCount);
+
 			AfterDraw();
 		}
 
@@ -87,12 +90,13 @@ namespace DeltaEngine.Graphics.SharpDX
 		{
 			CheckCreatePositionColorTextureBuffer();
 			device.SetData(positionColorUvVertexBuffer, vertices, vertices.Length);
-			drawShader.Apply();
+			positionColorTextureShader.Apply();
 			BindVertexBuffer(positionColorUvVertexBuffer.Handle, VertexPositionColorTextured.SizeInBytes);
 			if (lastIndicesCount == -1)
 				DoDraw(mode, vertices.Length, positionColorUvVertexBuffer.CurrentChunk);
 			else
-				DoDrawIndexed(mode, lastIndicesCount, positionColorUvVertexBuffer.CurrentChunk);
+				DoDrawIndexed(mode, vertices.Length, lastIndicesCount,
+					positionColorUvVertexBuffer.CurrentChunk);
 
 			AfterDraw();
 			positionColorUvVertexBuffer.SelectNextChunk();
@@ -143,16 +147,15 @@ namespace DeltaEngine.Graphics.SharpDX
 			context.Draw(vertexCount, vertexCount * currentChunk);
 		}
 
-		private void DoDrawIndexed(VerticesMode mode, int indexCount, int currentChunk = 0)
+		private void DoDrawIndexed(VerticesMode mode, int vertexCount, int indexCount,
+			int currentChunk = 0)
 		{
 			var primitiveMode = Convert(mode);
 			var context = device.Context;
 			context.InputAssembler.PrimitiveTopology = primitiveMode;
 			device.Context.InputAssembler.SetIndexBuffer(indexBuffer, Format.R16_UInt, 0);
-			context.DrawIndexed(indexCount, 0, VerticesPerRectangle * currentChunk);
+			context.DrawIndexed(indexCount, 0, vertexCount * currentChunk);
 		}
-
-		private const int VerticesPerRectangle = 4;
 
 		private void AfterDraw()
 		{

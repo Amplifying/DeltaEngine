@@ -1,5 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using Autofac.Core;
+using DeltaEngine.Core;
 using DeltaEngine.Logging;
 
 namespace DeltaEngine.Platforms
@@ -40,16 +43,35 @@ namespace DeltaEngine.Platforms
 			RaiseInitializedEvent();
 			var window = Resolve<Window>();
 			do
-				TryRunAllRunnersAndPresenters(runCode); 
+				TryRunAllRunnersAndPresenters(runCode);
 			while (!window.IsClosing);
 		}
 
 		protected void RaiseInitializedEvent()
 		{
-			if (Initialized != null)
-				Initialized();
+			try
+			{
+				if (Initialized != null)
+					Initialized();
 
-			Initialized = null;
+				Initialized = null;
+			}
+			catch (DependencyResolutionException exception)
+			{
+				LogException(exception.InnerException);
+				if (Debugger.IsAttached || StackTraceExtensions.StartedFromNCrunch)
+					throw;
+
+				DisplayMessageBoxAndCloseApp(exception.InnerException, "Fatal Initialization Error");
+			}
+			catch (Exception exception)
+			{
+				LogException(exception);
+				if (Debugger.IsAttached || StackTraceExtensions.StartedFromNCrunch)
+					throw;
+
+				DisplayMessageBoxAndCloseApp(exception, "Fatal Initialization Error");
+			}
 		}
 
 		private void TryRunAllRunnersAndPresenters(Action runCode)
@@ -62,18 +84,39 @@ namespace DeltaEngine.Platforms
 
 				RunAllPresenters();
 			}
+			catch (DependencyResolutionException exception)
+			{
+				LogException(exception.InnerException);
+				if (Debugger.IsAttached || StackTraceExtensions.StartedFromNCrunch)
+					throw;
+
+				DisplayMessageBoxAndCloseApp(exception.InnerException, "Fatal Runtime Error");
+			}
 			catch (Exception exception)
 			{
-				var logger = Resolve<Logger>();
-				if (logger != null)
-					logger.Error(exception);
-				throw;
+				LogException(exception);
+				if (Debugger.IsAttached || StackTraceExtensions.StartedFromNCrunch)
+					throw;
+
+				if (exception.IsWeak())
+					return; //ncrunch: no coverage
+
+				DisplayMessageBoxAndCloseApp(exception, "Fatal Runtime Error");				
 			}
 		}
 
-		public void Close()
+		private void LogException(Exception exception)
 		{
-			Resolve<Window>().Dispose();
+			var logger = Resolve<Logger>();
+			logger.Error(exception);
+		}
+
+		private void DisplayMessageBoxAndCloseApp(Exception exception, string title)
+		{
+			var window = Resolve<Window>();
+			if (window.ShowMessageBox(title, "Unable to continue: " + exception,
+				MessageBoxButton.Ignore) != MessageBoxButton.Ignore)
+				window.Dispose();
 		}
 
 		public void Start<FirstClass>(Action<FirstClass> initCode, Action runCode = null)
@@ -103,6 +146,34 @@ namespace DeltaEngine.Platforms
 			Run(runCode);
 		}
 
+		public void Start<FirstClass, SecondClass, ThirdClass, FourthClass>(
+			Action<FirstClass, SecondClass, ThirdClass, FourthClass> initCode, Action runCode = null)
+		{
+			RegisterSingleton<FirstClass>();
+			RegisterSingleton<SecondClass>();
+			RegisterSingleton<ThirdClass>();
+			RegisterSingleton<FourthClass>();
+			Initialized +=
+				() => initCode(Resolve<FirstClass>(), Resolve<SecondClass>(), Resolve<ThirdClass>(),
+					Resolve<FourthClass>());
+			Run(runCode);
+		}
+
+		public void Start<FirstClass, SecondClass, ThirdClass, FourthClass, FifthClass>(
+			Action<FirstClass, SecondClass, ThirdClass, FourthClass, FifthClass> initCode,
+			Action runCode = null)
+		{
+			RegisterSingleton<FirstClass>();
+			RegisterSingleton<SecondClass>();
+			RegisterSingleton<ThirdClass>();
+			RegisterSingleton<FourthClass>();
+			RegisterSingleton<FifthClass>();
+			Initialized +=
+				() => initCode(Resolve<FirstClass>(), Resolve<SecondClass>(), Resolve<ThirdClass>(),
+					Resolve<FourthClass>(), Resolve<FifthClass>());
+			Run(runCode);
+		}
+
 		public void Start<AppEntryRunner, FirstClassToRegisterAndResolve>(int instancesToCreate = 1)
 		{
 			RegisterEntryRunner<AppEntryRunner>(instancesToCreate);
@@ -125,7 +196,7 @@ namespace DeltaEngine.Platforms
 			Run();
 		}
 
-		public void Start<AppEntryRunner>(IEnumerable<Type> typesToRegisterAndResolve,
+		public void Start<AppEntryRunner>(List<Type> typesToRegisterAndResolve,
 			int instancesToCreate = 1)
 		{
 			RegisterAllTypesToRegister<AppEntryRunner>(typesToRegisterAndResolve, instancesToCreate);

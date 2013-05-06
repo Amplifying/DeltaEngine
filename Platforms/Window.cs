@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 
@@ -7,10 +7,10 @@ namespace DeltaEngine.Platforms
 	/// <summary>
 	/// Window form the application is running in. In Windows this is done with Windows Forms or WPF.
 	/// </summary>
-	public interface Window : Runner, IDisposable
+	public interface Window : Presenter, IDisposable
 	{
 		string Title { get; set; }
-		bool IsVisible { get; }
+		bool Visibility { get; }
 		IntPtr Handle { get; }
 		Size ViewportPixelSize { get; }
 		event Action<Size> ViewportSizeChanged;
@@ -24,5 +24,6 @@ namespace DeltaEngine.Platforms
 		void SetWindowed();
 		bool IsClosing { get; }
 		bool ShowCursor { get; set; }
+		MessageBoxButton ShowMessageBox(string title, string message, MessageBoxButton buttons);
 	}
 }

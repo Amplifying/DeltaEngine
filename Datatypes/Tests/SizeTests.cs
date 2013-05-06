@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace DeltaEngine.Datatypes.Tests
@@ -171,6 +171,17 @@ namespace DeltaEngine.Datatypes.Tests
 			Assert.AreEqual(0.5f, portrait.AspectRatio);
 			Assert.AreEqual(1.0f, square.AspectRatio);
 			Assert.AreEqual(2.0f, landscape.AspectRatio);
+		}
+
+		[Test]
+		public void SaveAndLoad()
+		{
+			var data = Size.Half.SaveToMemoryStream();
+			byte[] savedBytes = data.ToArray();
+			Assert.AreEqual(1 + "Size".Length + Size.SizeInBytes, savedBytes.Length);
+			Assert.AreEqual("Size".Length, savedBytes[0]);
+			var reconstructed = data.CreateFromMemoryStream();
+			Assert.AreEqual(Size.Half, reconstructed);
 		}
 	}
 }

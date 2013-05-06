@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Text;
 using System.Xml.Linq;
 
@@ -18,30 +18,25 @@ namespace DeltaEngine.Core.Xml
 
 		public XmlFile(string filePath)
 		{
-			using (
-				var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-				Root = new XmlData(XDocument.Load(stream).Root);
+			using (var s = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+				Root = new XmlData(XDocument.Load(s).Root);
 		}
 
 		public void Save(string filePath)
 		{
-			using (
-				var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write,
-					FileShare.ReadWrite))
-				SaveDocumentToStream(stream);
-		}
-
-		private void SaveDocumentToStream(Stream stream)
-		{
+			using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write,
+				FileShare.ReadWrite))
 			using (var writer = new StreamWriter(stream, new UTF8Encoding(false)))
-				SaveDocument(writer);
+				Root.XRootElement.Document.Save(writer);
 		}
 
-		private void SaveDocument(TextWriter writer)
+		public Stream ToMemoryStream()
 		{
+			var stream = new MemoryStream();
+			var writer = new StreamWriter(stream, new UTF8Encoding(false));
 			Root.XRootElement.Document.Save(writer);
-			writer.Write(writer.NewLine);
-			writer.Flush();
+			stream.Position = 0;
+			return stream;
 		}
 	}
 }

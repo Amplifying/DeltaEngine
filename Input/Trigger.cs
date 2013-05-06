@@ -1,5 +1,3 @@
-﻿using DeltaEngine.Core;
-
 namespace DeltaEngine.Input
 {
 	/// <summary>
@@ -7,6 +5,6 @@ namespace DeltaEngine.Input
 	/// </summary>
 	public abstract class Trigger
 	{
-		public abstract bool ConditionMatched(InputCommands inputCommands, Time time);
+		public abstract bool ConditionMatched(InputCommands inputCommands);
 	}
 }

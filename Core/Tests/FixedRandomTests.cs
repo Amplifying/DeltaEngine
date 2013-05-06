@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 
 namespace DeltaEngine.Core.Tests
 {
@@ -19,6 +19,14 @@ namespace DeltaEngine.Core.Tests
 			var random = new FixedRandom();
 			Assert.AreEqual(-3, random.Get(-3, 5));
 			Assert.AreEqual(-7.1f, random.Get(-7.1f, -1.1f));
+		}
+
+		[Test]
+		public void FixedValueOutOfRangeThrowsException()
+		{
+			Assert.Throws<FixedRandom.FixedValueOutOfRange>(
+				() => new FixedRandom(new[] { 0.0f, 1.0f, 0.0f }));
+			Assert.Throws<FixedRandom.FixedValueOutOfRange>(() => new FixedRandom(new[] { -0.01f }));
 		}
 	}
 }

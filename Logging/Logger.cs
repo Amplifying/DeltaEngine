@@ -1,11 +1,12 @@
-﻿using System;
+using System;
+using System.Linq;
 
 namespace DeltaEngine.Logging
 {
 	/// <summary>
 	/// Allows to use all the registered log provider for logging purposes.
 	/// </summary>
-	public abstract class Logger
+	public abstract class Logger : IDisposable
 	{
 		protected Logger(params LogProvider[] providers)
 		{
@@ -45,6 +46,12 @@ namespace DeltaEngine.Logging
 			foreach (var logProvider in providers)
 				logProvider.Log(errorLog);
 			LastMessage = errorLog;
+		}
+
+		public void Dispose()
+		{
+			foreach (var logProvider in providers.OfType<IDisposable>())
+				logProvider.Dispose();
 		}
 	}
 }

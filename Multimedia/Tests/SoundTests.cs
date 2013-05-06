@@ -1,19 +1,20 @@
-﻿using System;
-using DeltaEngine.Core;
-using DeltaEngine.Platforms.Tests;
+using System;
+using System.Diagnostics;
+using DeltaEngine.Content;
+using DeltaEngine.Platforms.All;
 using NUnit.Framework;
 
 namespace DeltaEngine.Multimedia.Tests
 {
 	/// <summary>
-	/// Test sound playback. Xna sound loading won't work from ReSharper, use Program.cs instead.
+	/// Test sound playback.
 	/// </summary>
-	public class SoundTests : TestStarter
+	public class SoundTests : TestWithAllFrameworks
 	{
 		[IntegrationTest]
 		public void PlaySoundAndDispose(Type resolver)
 		{
-			Start(resolver, (Content content) =>
+			Start(resolver, (ContentLoader content) =>
 			{ 
 				var sound = content.Load<Sound>("DefaultSound");
 				sound.Dispose();
@@ -23,13 +24,13 @@ namespace DeltaEngine.Multimedia.Tests
 		[IntegrationTest]
 		public void PlaySoundLeft(Type resolver)
 		{
-			Start(resolver, (Content content) => content.Load<Sound>("DefaultSound").Play(1, -1));
+			Start(resolver, (ContentLoader content) => content.Load<Sound>("DefaultSound").Play(1, -1));
 		}
 
 		[IntegrationTest]
 		public void PlaySoundRightAndPitched(Type resolver)
 		{
-			Start(resolver, (Content content) =>
+			Start(resolver, (ContentLoader content) =>
 			{
 				var sound = content.Load<Sound>("DefaultSound");
 				var instance = sound.CreateSoundInstance();
@@ -42,10 +43,11 @@ namespace DeltaEngine.Multimedia.Tests
 		[IntegrationTest]
 		public void PlaySoundInstance(Type resolver)
 		{
-			Start(resolver, (Content content) =>
+			Start(resolver, (ContentLoader content) =>
 			{
 				var sound = content.Load<Sound>("DefaultSound");
 				var instance = sound.CreateSoundInstance();
+				Assert.AreEqual(0.48f, sound.LengthInSeconds, 0.01f);
 				Assert.AreEqual(false, instance.IsPlaying);
 				instance.Play();
 				Assert.AreEqual(true, instance.IsPlaying);
@@ -55,7 +57,7 @@ namespace DeltaEngine.Multimedia.Tests
 		[IntegrationTest]
 		public void PlayMultipleSoundInstances(Type resolver)
 		{
-			Start(resolver, (Content content) =>
+			Start(resolver, (ContentLoader content) =>
 			{
 				var sound = content.Load<Sound>("DefaultSound");
 				var instance1 = sound.CreateSoundInstance();
@@ -74,7 +76,7 @@ namespace DeltaEngine.Multimedia.Tests
 		[IntegrationTest]
 		public void NumberOfPlayingInstances(Type resolver)
 		{
-			Start(resolver, (Content content) =>
+			Start(resolver, (ContentLoader content) =>
 			{
 				var sound = content.Load<Sound>("DefaultSound");
 				Assert.AreEqual(0, sound.NumberOfPlayingInstances);
@@ -88,7 +90,7 @@ namespace DeltaEngine.Multimedia.Tests
 		[IntegrationTest]
 		public void PlayAndStop(Type resolver)
 		{
-			Start(resolver, (Content content) =>
+			Start(resolver, (ContentLoader content) =>
 			{
 				var sound = content.Load<Sound>("DefaultSound");
 				Assert.IsFalse(sound.IsAnyInstancePlaying);
@@ -102,17 +104,35 @@ namespace DeltaEngine.Multimedia.Tests
 		}
 
 		[IntegrationTest]
+		public void PlayAndStopEvents(Type resolver)
+		{
+			Start(resolver, (ContentLoader content) =>
+			{
+				var sound = content.Load<Sound>("DefaultSound");
+				sound.OnPlay += instance => Assert.True(sound.IsAnyInstancePlaying);
+				sound.OnStop += instance => Assert.False(sound.IsAnyInstancePlaying);
+				sound.Play();
+				sound.StopAll();
+				WaitUntilSoundStateIsUpdated();
+			});
+		}
+
+		[IntegrationTest]
 		public void PlayAndStopInstance(Type resolver)
 		{
-			Start(resolver, (Content content) =>
+			Start(resolver, (ContentLoader content) =>
 			{
 				var sound = content.Load<Sound>("DefaultSound");
 				var instance = sound.CreateSoundInstance();
 				Assert.IsFalse(sound.IsAnyInstancePlaying);
+				Assert.AreEqual(0f, instance.PositionInSeconds);
 				instance.Play();
 				Assert.IsTrue(sound.IsAnyInstancePlaying);
+				WaitUntilSoundStateIsUpdated();
+				Assert.Greater(instance.PositionInSeconds, 0f);
 				sound.StopAll();
 				WaitUntilSoundStateIsUpdated();
+				Assert.AreEqual(0f, instance.PositionInSeconds);
 				Assert.IsFalse(sound.IsAnyInstancePlaying);
 			});
 		}
@@ -125,7 +145,7 @@ namespace DeltaEngine.Multimedia.Tests
 		[IntegrationTest]
 		public void DisposeSoundInstance(Type resolver)
 		{
-			Start(resolver, (Content content) =>
+			Start(resolver, (ContentLoader content) =>
 			{
 				var sound = content.Load<Sound>("DefaultSound");
 				var instance = sound.CreateSoundInstance();
@@ -140,7 +160,7 @@ namespace DeltaEngine.Multimedia.Tests
 		[IntegrationTest]
 		public void DisposeSoundInstancesFromSoundClass(Type resolver)
 		{
-			Start(resolver, (Content content) =>
+			Start(resolver, (ContentLoader content) =>
 			{
 				var sound = content.Load<Sound>("DefaultSound");
 				sound.CreateSoundInstance();
@@ -150,6 +170,18 @@ namespace DeltaEngine.Multimedia.Tests
 				sound.Dispose();
 				Assert.AreEqual(0, sound.NumberOfInstances);
 				Assert.AreEqual(0, sound.NumberOfPlayingInstances);
+			});
+		}
+
+		[IntegrationTest]
+		public void ShouldThrowIfSoundNotLoadedInDebugModeOrWithDebuggerAttached(Type resolver)
+		{
+			Start(resolver, (ContentLoader content) =>
+			{
+				if (!Debugger.IsAttached || resolver.FullName.Contains("Mock"))
+					return;
+				//ncrunch: no coverage start
+				Assert.Throws<ContentLoader.ContentNotFound>(() => content.Load<Sound>("UnavailableSound"));
 			});
 		}
 	}

@@ -1,7 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
+	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+	<PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{C9EFF5F8-501C-4ADE-B7C1-20D6991EB10F}</ProjectGuid>
@@ -11,170 +11,140 @@
     <AssemblyName>Breakout</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-  </PropertyGroup>
+	</PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>..\..\DeltaEngineModifiedRuleSet.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>x86</PlatformTarget>
+    <DocumentationFile>bin\Debug\Breakout.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\Release</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <DocumentationFile>bin\Release\Breakout.XML</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>Icons\BreakoutIcon.ico</ApplicationIcon>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Ball.cs" />
-    <Compile Include="Background.cs" />
-    <Compile Include="UI.cs" />
-    <Compile Include="Game.cs" />
-    <Compile Include="BallInLevel.cs" />
-    <Compile Include="Score.cs" />
-    <Compile Include="Level.cs" />
-    <Compile Include="Paddle.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
-      <Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
-      <Name>DeltaEngine.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Datatypes\DeltaEngine.Datatypes.csproj">
-      <Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
-      <Name>DeltaEngine.Datatypes</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Graphics\DeltaEngine.Graphics.csproj">
-      <Project>{8f701b0d-48b6-45cf-85e0-286bd53328ba}</Project>
-      <Name>DeltaEngine.Graphics</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Input\DeltaEngine.Input.csproj">
-      <Project>{cc65e69e-fafd-4c2b-85eb-5e57fd3af847}</Project>
-      <Name>DeltaEngine.Input</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Multimedia\DeltaEngine.Multimedia.csproj">
-      <Project>{6016ABB8-05F5-4A07-8FBA-16576277DDE7}</Project>
-      <Name>DeltaEngine.Multimedia</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Platforms\DeltaEngine.Platforms.csproj">
-      <Project>{bae8830e-5f62-48d6-b772-c4b1e8665fb3}</Project>
-      <Name>DeltaEngine.Platforms</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Platforms\WindowsOpenGL\DeltaEngine.WindowsOpenGL.csproj">
-      <Project>{cc943ae0-a1cc-4788-ac9b-01db3a0ebcd6}</Project>
-      <Name>DeltaEngine.WindowsOpenGL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
-      <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
-      <Name>DeltaEngine.Rendering</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Icons\BreakoutIcon.ico" />
-    <Content Include="Icons\BreakoutIcon150x150.png" />
-    <Content Include="Icons\BreakoutIcon173x173.png" />
-    <Content Include="Icons\BreakoutIcon30x30.png" />
-    <Content Include="Icons\BreakoutIcon310x150.png" />
-    <Content Include="Icons\BreakoutIcon50x50.png" />
-    <Content Include="Icons\BreakoutIcon64x64.png" />
-    <Content Include="Content\Ball.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Brick.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Explosion.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Paddle.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Background.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\BrickExplosion.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\PaddleBallStart.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\BallCollision.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\LostBall.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Victory.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Icons\BreakOutSplashScreen.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Content\Background.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Ball.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\BallCollision.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Brick.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\BrickExplosion.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Explosion.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\LostBall.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Paddle.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\PaddleBallStart.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Victory.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup />
+<PropertyGroup>
+  <ApplicationIcon>BreakoutIcon.ico</ApplicationIcon>
+</PropertyGroup>
+	<ItemGroup>
+		<Reference Include="System" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Content\DeltaEngine.Content.csproj">
+			<Project>{f1b6345b-6f28-482f-9230-8f1d8674c28a}</Project>
+			<Name>DeltaEngine.Content</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
+			<Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
+			<Name>DeltaEngine.Core</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\Datatypes\DeltaEngine.Datatypes.csproj">
+			<Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
+			<Name>DeltaEngine.Datatypes</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\Entities\DeltaEngine.Entities.csproj">
+			<Project>{c6ba144d-59b0-41b1-8682-b092b4efbbb1}</Project>
+			<Name>DeltaEngine.Entities</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\Graphics\DeltaEngine.Graphics.csproj">
+			<Project>{8f701b0d-48b6-45cf-85e0-286bd53328ba}</Project>
+			<Name>DeltaEngine.Graphics</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\Input\DeltaEngine.Input.csproj">
+			<Project>{cc65e69e-fafd-4c2b-85eb-5e57fd3af847}</Project>
+			<Name>DeltaEngine.Input</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\Multimedia\DeltaEngine.Multimedia.csproj">
+			<Project>{6016ABB8-05F5-4A07-8FBA-16576277DDE7}</Project>
+			<Name>DeltaEngine.Multimedia</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\Multimedia\OpenTK\DeltaEngine.Multimedia.OpenTK.csproj">
+			<Project>{32665d04-5a07-4f99-9e20-0639cd1c1d6d}</Project>
+			<Name>DeltaEngine.Multimedia.OpenTK</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\Platforms\DeltaEngine.Platforms.csproj">
+			<Project>{bae8830e-5f62-48d6-b772-c4b1e8665fb3}</Project>
+			<Name>DeltaEngine.Platforms</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\Platforms\WindowsOpenTK\DeltaEngine.WindowsOpenTK.csproj">
+			<Project>{cc943ae0-a1cc-4788-ac9b-01db3a0ebcd6}</Project>
+			<Name>DeltaEngine.WindowsOpenTK</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
+			<Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
+			<Name>DeltaEngine.Rendering</Name>
+		</ProjectReference>
+	</ItemGroup>
+	<ItemGroup>
+	<Content Include="BreakoutIcon.ico" />
+		<Content Include="Content\ContentMetaData.xml">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	<Content Include="Icons\BreakoutIcon.ico" />
+	<Content Include="Icons\BreakoutIcon150x150.png" />
+	<Content Include="Icons\BreakoutIcon173x173.png" />
+	<Content Include="Icons\BreakoutIcon30x30.png" />
+	<Content Include="Icons\BreakoutIcon310x150.png" />
+	<Content Include="Icons\BreakoutIcon50x50.png" />
+	<Content Include="Icons\BreakoutIcon64x64.png" />
+		<Content Include="Content\Ball.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Content\Brick.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Content\Explosion.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Content\Paddle.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Content\Background.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Content\BrickExplosion.wav">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Content\PaddleBallStart.wav">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Content\BallCollision.wav">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Content\LostBall.wav">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Content\Victory.wav">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	<Content Include="Icons\BreakOutSplashScreen.png" />
+	</ItemGroup>
+	<ItemGroup>
+	<None Include="packages.config" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Include="Properties\AssemblyInfo.cs" />
+		<Compile Include="Ball.cs" />
+		<Compile Include="Background.cs" />
+		<Compile Include="UI.cs" />
+		<Compile Include="Game.cs" />
+		<Compile Include="BallInLevel.cs" />
+		<Compile Include="Score.cs" />
+		<Compile Include="Level.cs" />
+		<Compile Include="Paddle.cs" />
+		<Compile Include="Program.cs" />
+	</ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>xcopy /s /y "$(SolutionDir)packages\OpenTKWithOpenAL.1.1.1160.61462\NativeBinaries\x86\*.*" "$(TargetDir)"</PostBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

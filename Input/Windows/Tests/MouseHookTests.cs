@@ -1,5 +1,4 @@
-﻿using System;
-using DeltaEngine.Platforms;
+using System;
 using DeltaEngine.Platforms.Tests;
 using DeltaEngine.Rendering;
 using NUnit.Framework;
@@ -8,18 +7,19 @@ namespace DeltaEngine.Input.Windows.Tests
 {
 	public class MouseHookTests
 	{
-		[Test]
+		[Test, Category("Slow")]
 		public void WindowsMouseHandleProcMessage()
 		{
 			IntPtr lParamHandle = GenerateMouseHookData(new[] { 0, 0, 0, 0, 0, 240 });
 			WindowsMouse windowsMouse = GetMouse();
+			Assert.AreEqual(0, windowsMouse.ScrollWheelValue);
 			windowsMouse.Dispose();
 			windowsMouse.hook.HandleProcMessage((IntPtr)MouseHook.WMMousewheel, lParamHandle, 0);
 			windowsMouse.Run();
-			Assert.AreEqual(240, windowsMouse.ScrollWheelValue);
+			Assert.GreaterOrEqual(windowsMouse.ScrollWheelValue, 240);
 		}
 
-		[Test]
+		[Test, Category("Slow")]
 		public void WindowsMouseHandleProcMessageButton()
 		{
 			IntPtr lParamHandle = GenerateMouseHookData(new[] { 50, 3, 0, 0, 0, 0x0201 });
@@ -33,7 +33,7 @@ namespace DeltaEngine.Input.Windows.Tests
 			Assert.AreEqual(State.Releasing, windowsMouse.LeftButton);
 		}
 
-		[Test]
+		[Test, Category("Slow")]
 		public void RunWithPressAndReleasesBetweenTicks()
 		{
 			IntPtr lParamHandle = GenerateMouseHookData(new[] { 50, 3, 0, 0, 0, 0x0201 });
@@ -66,8 +66,8 @@ namespace DeltaEngine.Input.Windows.Tests
 
 		private static WindowsMouse GetMouse()
 		{
-			var resolver = new TestResolver();
-			var window = resolver.Resolve<Window>();
+			var resolver = new MockResolver();
+			var window = resolver.rendering.Window;
 			var screen = new QuadraticScreenSpace(window);
 			var positionTranslater = new CursorPositionTranslater(window, screen);
 			return new WindowsMouse(positionTranslater);

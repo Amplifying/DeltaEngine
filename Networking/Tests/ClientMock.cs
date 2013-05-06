@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Networking.Tests
@@ -9,7 +9,7 @@ namespace DeltaEngine.Networking.Tests
 		{
 			this.server = server;
 			if (server != null)
-				Connect();
+				Connect("Target", 0);
 		}
 
 		private ServerMock server;
@@ -19,42 +19,42 @@ namespace DeltaEngine.Networking.Tests
 			get { return server != null; }
 		}
 
-		public void Connect()
+		public void Connect(string serverAddress, int serverPort)
 		{
 			server.ClientConnectedToServer(this);
 		}
 
-		public void Send(BinaryData message)
+		public string TargetAddress
+		{
+			get { return "Target:0"; }
+		}
+
+		public void Send(object message)
 		{
 			if (IsConnected)
-				server.ReceivedMessage = message.ToByteArray();
+				server.ReceivedMessage = message.ToByteArrayWithTypeInformation();
 		}
 
 		public void Receive()
 		{
 			if (DataReceived != null)
-				DataReceived(this, null);
+				DataReceived(null);
 		}
 
-		public event Action<ClientConnection, BinaryData> DataReceived;
+		public event Action<object> DataReceived;
+		public event Action Connected;
 
 		public void Dispose()
-		{
-			if (IsConnected)
-				Disconnect();
-
-			server = null;
-		}
-
-		public void Disconnect()
 		{
 			if (IsConnected)
 				server.ClientDisconnectedFromServer(this);
 
 			if (Disconnected != null)
-				Disconnected(this);
+				Disconnected();
+
+			server = null;
 		}
 
-		public event Action<ClientConnection> Disconnected;
+		public event Action Disconnected;
 	}
 }

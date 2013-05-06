@@ -1,14 +1,14 @@
-﻿using System;
+using System;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.Tests;
-using DeltaEngine.Rendering;
+using DeltaEngine.Platforms.All;
 using DeltaEngine.Rendering.Shapes;
 using NUnit.Framework;
 
 namespace DeltaEngine.Input.Tests
 {
-	public class GamePadTests : TestStarter
+	public class GamePadTests : TestWithAllFrameworks
 	{
 		[IntegrationTest]
 		public void UpdateGamepad(Type resolver)
@@ -25,23 +25,23 @@ namespace DeltaEngine.Input.Tests
 		[VisualTest]
 		public void GraphicalUnitTest(Type resolver)
 		{
-			Rect rect = null;
-			Start(resolver, (Renderer renderer) =>
+			Ellipse ellipse = null;
+			Start(resolver, (EntitySystem entitySystem) =>
 			{
-				rect = new Rect(new Rectangle(0.1f, 0.1f, 0.1f, 0.1f), Color.GetRandomBrightColor());
-				renderer.Add(rect);
+				ellipse = new Ellipse(new Rectangle(0.1f, 0.1f, 0.1f, 0.1f), Color.GetRandomBrightColor());
+				entitySystem.Add(ellipse);
 			}, (GamePad gamepad) =>
 			{
-				rect.DrawArea.TopLeft = gamepad.GetButtonState(GamePadButton.X) == State.Pressed
+				ellipse.Center = gamepad.GetButtonState(GamePadButton.X) == State.Pressed
 					? Point.Half : Point.Zero;
-				rect.Color = Color.GetRandomBrightColor();
+				ellipse.Color = Color.GetRandomBrightColor();
 			});
 		}
 
 		[VisualTest]
 		public void CheckLeftTrigger(Type resolver)
 		{
-			Start(resolver, (GamePad gamepad) => { }, (GamePad gamepad, Window window) =>
+			Start(resolver, (GamePad gamepad) => {}, (GamePad gamepad, Window window) =>
 			{
 				gamepad.Run();
 				window.Title = "LeftTrigger=" + gamepad.GetLeftTrigger();
@@ -51,7 +51,7 @@ namespace DeltaEngine.Input.Tests
 		[VisualTest]
 		public void CheckLeftThumb(Type resolver)
 		{
-			Start(resolver, (GamePad gamepad) => { }, (GamePad gamepad, Window window) =>
+			Start(resolver, (GamePad gamepad) => {}, (GamePad gamepad, Window window) =>
 			{
 				gamepad.Run();
 				window.Title = "LeftThumb=" + gamepad.GetLeftThumbStick();
@@ -61,7 +61,7 @@ namespace DeltaEngine.Input.Tests
 		[VisualTest]
 		public void CheckRightTrigger(Type resolver)
 		{
-			Start(resolver, (GamePad gamepad) => { }, (GamePad gamepad, Window window) =>
+			Start(resolver, (GamePad gamepad) => {}, (GamePad gamepad, Window window) =>
 			{
 				gamepad.Run();
 				window.Title = "RightTrigger=" + gamepad.GetRightTrigger();
@@ -71,7 +71,7 @@ namespace DeltaEngine.Input.Tests
 		[VisualTest]
 		public void CheckRightThumb(Type resolver)
 		{
-			Start(resolver, (GamePad gamepad) => { }, (GamePad gamepad, Window window) =>
+			Start(resolver, (GamePad gamepad) => {}, (GamePad gamepad, Window window) =>
 			{
 				gamepad.Run();
 				window.Title = "RightThumb=" + gamepad.GetRightThumbStick();

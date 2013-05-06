@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 
@@ -8,8 +9,15 @@ namespace DeltaEngine.Core.Tests
 	/// </summary>
 	public class RunnerTests : Runner
 	{
-		[Test]
+		//ncrunch: no coverage start
 		public void Run()
+		{
+			Console.WriteLine("Hi, change me while AssemblyUpdaterTests is running! " + DateTime.Now);
+		}
+		//ncrunch: no coverage end
+
+		[Test]
+		public void CheckRunOrder()
 		{
 			Output.Clear();
 			var window = new Window();
@@ -20,12 +28,16 @@ namespace DeltaEngine.Core.Tests
 
 			const string ExpectedOutput = "Window.Run, Device.Run, RunnerTests.Run, Device.Present";
 			Assert.AreEqual(ExpectedOutput, Output.ToText());
+			Assert.IsNotNull(new Device());
 		}
 
 		private static readonly List<string> Output = new List<string>();
 
 		internal class Device : Presenter
 		{
+			public Device()
+				: this(new Window()) {}
+
 			public Device(Window window)
 			{
 				this.window = window;

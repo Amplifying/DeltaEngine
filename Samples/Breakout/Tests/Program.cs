@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms.All;
 
 namespace Breakout.Tests
 {
@@ -6,12 +6,7 @@ namespace Breakout.Tests
 	{
 		public static void Main()
 		{
-			//new BackgroundTests().Draw(TestStarter.DirectX);
-			//new PaddleTests().Draw(TestStarter.DirectX);
-			//new BallTests().Draw(TestStarter.DirectX);
-			//new LevelTests().Draw(TestStarter.DirectX);
-			//new GameTests().Draw(TestStarter.DirectX);
-			new GameTests().ResurrectBricksRandomly(TestStarter.DirectX);
+			new BackgroundTests().Draw(TestWithAllFrameworks.OpenGL);
 		}
 	}
 }

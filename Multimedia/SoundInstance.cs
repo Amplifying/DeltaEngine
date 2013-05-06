@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using DeltaEngine.Core;
 
 namespace DeltaEngine.Multimedia
@@ -46,6 +46,9 @@ namespace DeltaEngine.Multimedia
 		{
 			get
 			{
+				if (!IsPlaying)
+					return 0f;
+
 				float elapsedSeconds = (float)DateTime.Now.Subtract(startPlayTime).TotalSeconds;
 				return elapsedSeconds.Clamp(0f, sound.LengthInSeconds);
 			}

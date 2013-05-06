@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Windows.Forms;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using Microsoft.Xna.Framework;
@@ -61,7 +62,7 @@ namespace DeltaEngine.Platforms
 			set { game.Window.Title = value; }
 		}
 
-		public bool IsVisible
+		public bool Visibility
 		{
 			get { return game.IsActive; }
 		}
@@ -130,9 +131,26 @@ namespace DeltaEngine.Platforms
 			set { game.IsMouseVisible = value; }
 		}
 
+		public MessageBoxButton ShowMessageBox(string title, string message, MessageBoxButton buttons)
+		{
+			var buttonCombination = MessageBoxButtons.OK;
+			if ((buttons & MessageBoxButton.Cancel) != 0)
+				buttonCombination = MessageBoxButtons.OKCancel;
+			if ((buttons & MessageBoxButton.Ignore) != 0)
+				buttonCombination = MessageBoxButtons.AbortRetryIgnore;
+			var result = MessageBox.Show(message, Title + " " + title, buttonCombination);
+			if (result == DialogResult.OK || result == DialogResult.Abort)
+				return MessageBoxButton.Okay;
+			return result == DialogResult.Ignore ? MessageBoxButton.Ignore : MessageBoxButton.Cancel;
+		}
+
 		public void Run()
 		{
 			FrameworkDispatcher.Update();
+		}
+
+		public void Present()
+		{
 			if (closeAfterOneFrameIfInIntegrationTest)
 				game.Exit();
 		}

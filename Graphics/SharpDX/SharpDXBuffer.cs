@@ -1,4 +1,4 @@
-﻿using SharpDX.Direct3D11;
+using SharpDX.Direct3D11;
 using Buffer = SharpDX.Direct3D11.Buffer;
 using DxDevice = SharpDX.Direct3D11.Device;
 

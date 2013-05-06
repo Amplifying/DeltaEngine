@@ -1,15 +1,13 @@
-﻿using System;
-using DeltaEngine.Platforms.Tests;
-using DeltaEngine.Rendering;
+using System;
+using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
+using DeltaEngine.Platforms.All;
 using DeltaEngine.Rendering.Shapes;
 using NUnit.Framework;
-using Color = DeltaEngine.Datatypes.Color;
-using Point = DeltaEngine.Datatypes.Point;
-using Rectangle = DeltaEngine.Datatypes.Rectangle;
 
 namespace DeltaEngine.Input.Tests
 {
-	public class TouchTests : TestStarter
+	public class TouchTests : TestWithAllFrameworks
 	{
 		[IntegrationTest]
 		public void TestPositionAndState(Type resolver)
@@ -26,19 +24,20 @@ namespace DeltaEngine.Input.Tests
 		[VisualTest]
 		public void GraphicalUnitTest(Type resolver)
 		{
-			Rect rect = null;
+			Ellipse ellipse = null;
 			Touch currentTouch = null;
-			Start(resolver, (Renderer renderer, Touch touch) =>
+			Start(resolver, (EntitySystem entitySystem, Touch touch) =>
 			{
 				currentTouch = touch;
-				rect = new Rect(new Rectangle(0.1f, 0.1f, 0.1f, 0.1f), Color.Red);
-				renderer.Add(rect);
-			},
-			delegate
+				ellipse = new Ellipse(new Rectangle(0.1f, 0.1f, 0.1f, 0.1f), Color.Red);
+				entitySystem.Add(ellipse);
+			}, delegate
 			{
 				Point position = currentTouch.GetPosition(0);
-				rect.DrawArea.Left = position.X;
-				rect.DrawArea.Top = position.Y;
+				var drawArea = ellipse.DrawArea;
+				drawArea.Left = position.X;
+				drawArea.Top = position.Y;
+				ellipse.DrawArea = drawArea;
 			});
 		}
 

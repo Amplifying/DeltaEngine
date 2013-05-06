@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Runtime.InteropServices;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
@@ -45,7 +45,7 @@ namespace DeltaEngine.Graphics.SharpDX
 			get { return (int)window.ViewportPixelSize.Height; }
 		}
 		private readonly DxDevice nativeDevice;
-		internal DxDevice NativeDevice
+		public DxDevice NativeDevice
 		{
 			get { return nativeDevice; }
 		}
@@ -82,6 +82,12 @@ namespace DeltaEngine.Graphics.SharpDX
 		private Texture2D backBuffer;
 		private RenderTargetView backBufferView;
 		private Surface surface;
+
+		public Texture2D BackBuffer
+		{
+			get { return backBuffer; }
+			set { backBuffer = value; }
+		}
 
 		public void Run()
 		{

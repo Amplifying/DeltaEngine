@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms.All;
 
 namespace LogoApp.Tests
 {
@@ -6,8 +6,7 @@ namespace LogoApp.Tests
 	{
 		public static void Main()
 		{
-			new BouncingLogoTests().ShowOneLogo(TestStarter.Xna);
-			//new BouncingLogoTests().Show50LogosAndDisplayFps(TestStarter.OpenGL);
+			new BouncingLogoTests().ShowOneLogo(TestWithAllFrameworks.OpenGL);
 		}
 	}
 }

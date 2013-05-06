@@ -1,74 +1,178 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using DeltaEngine.Core;
-using DeltaEngine.Graphics;
-using DeltaEngine.Rendering;
 using NUnit.Framework;
 
 namespace DeltaEngine.Platforms.Tests
 {
-	public class ResolverTests : TestStarter
+	/// <summary>
+	/// Tests the Runner and Presenter classes manually without Platforms implementations.
+	/// </summary>
+	public sealed class ResolverTests : Resolver
 	{
-		[IntegrationTest]
-		public void ResolveTime(Type resolver)
+		[TestFixtureSetUp]
+		public void CreateMockWindowAndDevice()
 		{
-			MakeSureTypeCanBeResolved<Time>(resolver);
+			window = new MockWindow();
+			RegisterInstance(window);
+			device = new MockDevice();
+			RegisterInstance(device);
+			Assert.AreEqual(window, Resolve<MockWindow>());
+			Assert.AreEqual(device, Resolve<MockDevice>());
 		}
 
-		private void MakeSureTypeCanBeResolved<T>(Type resolverType)
-		{
-			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
-				return;
+		private static readonly List<string> Output = new List<string>();
+		private MockWindow window;
+		private MockDevice device;
 
-			using (var resolver = CreateResolver(resolverType))
+		private class MockWindow : Runner
+		{
+			public void Run()
 			{
-				resolver.Start<T>();
-				Assert.IsNotNull(resolver.Resolve<T>());
+				Output.Add("Window.Run");
 			}
 		}
 
-		private static AutofacStarter CreateResolver(Type resolverType)
+		private class MockDevice : Presenter
 		{
-			if (resolverType == typeof(TestResolver))
-				return (TestResolver)Activator.CreateInstance(resolverType);
-
-			return (AutofacStarter)Activator.CreateInstance(resolverType); // ncrunch: no coverage
-		}
-
-		[IntegrationTest]
-		public void ResolveWindow(Type resolver)
-		{
-			MakeSureTypeCanBeResolved<Window>(resolver);
-		}
-
-		[IntegrationTest]
-		public void ResolveDevice(Type resolver)
-		{
-			MakeSureTypeCanBeResolved<Device>(resolver);
-		}
-
-		[IntegrationTest]
-		public void ResolveRenderer(Type resolver)
-		{
-			MakeSureTypeCanBeResolved<Renderer>(resolver);
-		}
-
-		[IntegrationTest]
-		public void CloseApp(Type resolverType)
-		{
-			Start(resolverType, (AutofacStarter resolver) => resolver.Close());
-		}
-
-		[IntegrationTest]
-		public void RegisterAfterResolveIsNotAllowed(Type resolverType)
-		{
-			Start(resolverType, (AutofacResolver resolver) =>
+			public void Run()
 			{
-				resolver.Resolve<Device>();
-				Assert.Throws<AutofacResolver.UnableToRegisterMoreTypesAppAlreadyStarted>(
-					resolver.Register<object>);
-				Assert.Throws<AutofacResolver.UnableToRegisterMoreTypesAppAlreadyStarted>(
-					resolver.RegisterSingleton<object>);
-			});
+				Output.Add("Device.Run");
+			}
+
+			public void Present()
+			{
+				Output.Add("Device.Present");
+			}
+		}
+
+		[Test]
+		public void ResolveUnknownClassAlwaysReturnsNull()
+		{
+			Assert.IsNull(Resolve<ResolverTests>());
+			Assert.IsNull(Resolve(typeof(ResolverTests)));
+		}
+
+		[Test]
+		public void RunnersAreExecutedInCorrectOrder()
+		{
+			Output.Clear();
+			Run();
+			const string ExpectedOutput = "Window.Run, Device.Run, AppRunnerTests, Device.Present";
+			Assert.AreEqual(ExpectedOutput, Output.ToText());
+		}
+
+		private void RegisterInstance(object instance)
+		{
+			registeredInstances.Add(instance);
+			RegisterInstanceAsRunnerOrPresenterIfPossible(instance);
+		}
+
+		private readonly List<object> registeredInstances = new List<object>();
+
+		private void Run()
+		{
+			RunAllRunners();
+			Output.Add("AppRunnerTests");
+			RunAllPresenters();
+		}
+
+		internal override object Resolve(Type baseType, object customParameter = null)
+		{
+			if (customParameter != null)
+				throw new CustomParameterNotSupportedYet();
+
+			return null;
+		}
+
+		internal override BaseType Resolve<BaseType>()
+		{
+			foreach (BaseType instance in registeredInstances.OfType<BaseType>())
+				return instance;
+
+			return default(BaseType);
+		}
+
+		private class CustomParameterNotSupportedYet : Exception {}
+
+		[Test]
+		public void ResolveCustomNotSupported()
+		{
+			Assert.Throws<CustomParameterNotSupportedYet>(
+				() => Resolve(typeof(Time), new StopwatchTime()));
+		}
+
+		[Test]
+		public void EmptyConfigurationShouldNotCrash()
+		{
+			var resolver = new MockResolver();
+			resolver.resolver.Resolve<MockDevice>();
+			resolver.Dispose();
+		}
+
+		[Test]
+		public void RegisterDisposableInstance()
+		{
+			var instance = new SomeDisposableRunner();
+			instance.Run();
+			using (var newResolver = new ResolverTests())
+				newResolver.RegisterInstance(instance);
+			Assert.IsTrue(instance.DisposeWasCalled);
+		}
+
+		public class SomeDisposableRunner : Runner, IDisposable
+		{
+			public void Run() {}
+
+			public void Dispose()
+			{
+				DisposeWasCalled = true;
+			}
+
+			public bool DisposeWasCalled { get; private set; }
+		}
+
+		[Test]
+		public void RegisterDisposablePriorityRunner()
+		{
+			var instance = new SomeDisposablePriorityRunner();
+			instance.Run();
+			using (var newResolver = new ResolverTests())
+				newResolver.RegisterInstance(instance);
+			Assert.IsTrue(instance.DisposeWasCalled);
+		}
+
+		public class SomeDisposablePriorityRunner : PriorityRunner, IDisposable
+		{
+			public void Run() { }
+
+			public void Dispose()
+			{
+				DisposeWasCalled = true;
+			}
+
+			public bool DisposeWasCalled { get; private set; }
+		}
+
+		[Test]
+		public void RegisterGenericRunner()
+		{
+			var instance = new GenericRunner();
+			instance.Run(Time.Current);
+			RegisterInstance(instance);
+		}
+
+		private class GenericRunner : Runner<Time>
+		{
+			public void Run(Time first) {}
+		}
+
+		[Test]
+		public void DisposeTwice()
+		{
+			Dispose();
+			Dispose();
 		}
 	}
 }

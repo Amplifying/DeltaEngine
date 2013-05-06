@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 using DeltaEngine.Core;
@@ -18,7 +18,7 @@ namespace DeltaEngine.Platforms.Windows
 			form = new NativeMessageForm
 			{
 				Text = StackTraceExtensions.GetEntryName(),
-				Size = new System.Drawing.Size(1024, 640),
+				ClientSize = new System.Drawing.Size(640, 360),
 				MinimumSize = new System.Drawing.Size(1, 1),
 				FormBorderStyle = FormBorderStyle.Sizable,
 				StartPosition = FormStartPosition.CenterScreen
@@ -29,7 +29,8 @@ namespace DeltaEngine.Platforms.Windows
 				form.Icon = appIcon;
 			form.SizeChanged += OnSizeChanged;
 			form.Show();
-			closeAfterOneFrameIfInIntegrationTest = !StackTraceExtensions.ContainsNoTestOrIsVisualTest();
+			closeAfterOneFrameIfInIntegrationTest =
+				!StackTraceExtensions.ContainsNoTestOrIsVisualTest();
 		}
 
 		private sealed class NativeMessageForm : Form
@@ -84,7 +85,7 @@ namespace DeltaEngine.Platforms.Windows
 			set { form.Text = value; }
 		}
 
-		public bool IsVisible
+		public bool Visibility
 		{
 			get { return form.Visible; }
 		}
@@ -171,11 +172,29 @@ namespace DeltaEngine.Platforms.Windows
 					Cursor.Show();
 			}
 		}
+
+		public MessageBoxButton ShowMessageBox(string title, string message, MessageBoxButton buttons)
+		{
+			var buttonCombination = MessageBoxButtons.OK;
+			if ((buttons & MessageBoxButton.Cancel) != 0)
+				buttonCombination = MessageBoxButtons.OKCancel;
+			if ((buttons & MessageBoxButton.Ignore) != 0)
+				buttonCombination = MessageBoxButtons.AbortRetryIgnore;
+			var result = MessageBox.Show(form, message, Title + " " + title, buttonCombination);
+			if (result == DialogResult.OK || result == DialogResult.Abort)
+				return MessageBoxButton.Okay;
+			return result == DialogResult.Ignore ? MessageBoxButton.Ignore : MessageBoxButton.Cancel;
+		}
+
 		private bool remDisabledShowCursor;
 
 		public void Run()
 		{
 			Application.DoEvents();
+		}
+
+		public void Present()
+		{
 			if (closeAfterOneFrameIfInIntegrationTest)
 				form.Close();
 		}

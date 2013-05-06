@@ -1,45 +1,45 @@
-﻿using DeltaEngine.Core;
+using DeltaEngine.Content;
+using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
 using DeltaEngine.Input;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.Sprites;
 
 namespace Breakout
 {
 	/// <summary>
 	/// Holds the paddle position
 	/// </summary>
-	public class Paddle : Sprite
+	public class Paddle : Sprite, Runner
 	{
-		public Paddle(Content content, InputCommands inputCommands, Time time)
+		public Paddle(ContentLoader content, InputCommands inputCommands)
 			: base(content.Load<Image>("Paddle"), Rectangle.One)
 		{
-			RegisterInputCommands(inputCommands, time);
+			RegisterInputCommands(inputCommands);
 		}
 
-		private void RegisterInputCommands(InputCommands inputCommands, Time time)
+		private void RegisterInputCommands(InputCommands inputCommands)
 		{
 			inputCommands.Add(Key.CursorLeft, State.Pressed,
-				() => xPosition -= PaddleMovementSpeed * time.CurrentDelta);
+				() => xPosition -= PaddleMovementSpeed * Time.Current.Delta);
 			inputCommands.Add(Key.CursorRight, State.Pressed,
-				() => xPosition += PaddleMovementSpeed * time.CurrentDelta);
+				() => xPosition += PaddleMovementSpeed * Time.Current.Delta);
 			inputCommands.Add(MouseButton.Left, State.Pressed,
 				mouse => xPosition += mouse.Position.X - Position.X);
 			inputCommands.Add(State.Pressed, touch => xPosition += touch.GetPosition(0).X - Position.X);
 			inputCommands.Add(GamePadButton.Left, State.Pressed,
-				() => xPosition -= PaddleMovementSpeed * time.CurrentDelta);
+				() => xPosition -= PaddleMovementSpeed * Time.Current.Delta);
 			inputCommands.Add(GamePadButton.Right, State.Pressed,
-				() => xPosition += PaddleMovementSpeed * time.CurrentDelta);
+				() => xPosition += PaddleMovementSpeed * Time.Current.Delta);
 		}
 
 		private float xPosition = 0.5f;
 		private const float PaddleMovementSpeed = 1.5f;
 
-		protected override void Render(Renderer renderer, Time time)
+		public void Run()
 		{
 			xPosition = xPosition.Clamp(HalfWidth, 1.0f - HalfWidth);
 			DrawArea = Rectangle.FromCenter(xPosition, YPosition, Width, Height);
-			base.Render(renderer, time);
 		}
 
 		private const float YPosition = 0.9f;

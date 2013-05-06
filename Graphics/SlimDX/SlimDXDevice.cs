@@ -1,127 +1,109 @@
-﻿using DeltaEngine.Datatypes;
+using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 using SlimDX;
-using SlimDX.DXGI;
-using SlimDX.Direct2D;
-using SlimDX.Direct3D11;
-using Factory = SlimDX.Direct2D.Factory;
-using SlimD3D11 = SlimDX.Direct3D11;
+using SlimDX.Direct3D9;
+using SlimD3D9 = SlimDX.Direct3D9;
 
 namespace DeltaEngine.Graphics.SlimDX
 {
-    public class SlimDXDevice : Device
-    {
-			public SlimDXDevice(Window window)
+	public class SlimDXDevice : Device
+	{
+		public SlimDXDevice(Window window)
+		{
+			this.window = window;
+			d3D = new Direct3D();
+			InitializeDevice();
+			SetAlphaBlending();
+			window.ViewportSizeChanged += OnViewportSizeChanged;
+			window.FullscreenChanged += OnFullscreenChanged;
+		}
+
+		private readonly Window window;
+		private readonly Direct3D d3D;
+
+		public SlimD3D9.Device Device { get; private set; }
+
+		private void InitializeDevice()
+		{
+			var presentParameters = new PresentParameters
 			{
-				this.window = window;
-				SlimD3D11.Device.CreateWithSwapChain(DriverType.Hardware, DeviceCreationFlags.BgraSupport,
-					GetSwapChainDescription(), out device, out swapChain);
-				window.ViewportSizeChanged += ResetDeviceToNewViewportSize;
-				ResetDeviceToNewViewportSize(window.ViewportPixelSize);
-				window.FullscreenChanged += OnFullscreenChanged;
-			}
-
-	    private readonly Window window;
-
-			private int Width
-			{
-				get { return (int)window.ViewportPixelSize.Width; }
-			}
-
-			private int Height
-			{
-				get { return (int)window.ViewportPixelSize.Height; }
-			}
-
-	    private readonly SlimD3D11.Device device;
-	    private readonly SwapChain swapChain;
-
-			internal SlimD3D11.Device Device
-			{
-				get { return device; }
-			}
-
-			internal DeviceContext Context
-			{
-				get { return device.ImmediateContext; }
-			}
+				Windowed = !window.IsFullscreen,
+				DeviceWindowHandle = window.Handle,
+				SwapEffect = SwapEffect.Discard,
+				PresentationInterval = PresentInterval.Immediate,
+				BackBufferWidth = (int)window.ViewportPixelSize.Width,
+				BackBufferHeight = (int)window.ViewportPixelSize.Height
+			};
 			
-			internal RenderTarget RenderTarget { get; private set; }
+			Device = new SlimD3D9.Device(d3D, 0, DeviceType.Hardware, window.Handle,
+				CreateFlags.HardwareVertexProcessing, presentParameters);
+		}
+		
+		private void SetAlphaBlending()
+		{
+			Device.SetRenderState(RenderState.AlphaBlendEnable, true);
+			Device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+			Device.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
+		}
 
-			private SwapChainDescription GetSwapChainDescription()
+		private void OnViewportSizeChanged(Size displaySize)
+		{
+			deviceMustBeReset = true;
+		}
+
+		private bool deviceMustBeReset;
+
+		private void OnFullscreenChanged(Size displaySize, bool b)
+		{
+			deviceMustBeReset = true;
+		}
+
+		public void Run()
+		{
+			if (Device == null)
+				return;
+
+			if (deviceMustBeReset)
+				ResetDevice();
+
+			var slimDxColor = new Color4(window.BackgroundColor.AlphaValue,
+				window.BackgroundColor.RedValue, window.BackgroundColor.GreenValue,
+				window.BackgroundColor.BlueValue);
+			Device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, slimDxColor, 1.0f, 0);
+			Device.BeginScene();
+			runExecuted = true;
+		}
+
+		private bool runExecuted;
+
+		private void ResetDevice()
+		{
+			var presentParameters = new PresentParameters
 			{
-				return new SwapChainDescription
-				{
-					BufferCount = 2,
-					Usage = Usage.RenderTargetOutput,
-					OutputHandle = window.Handle,
-					IsWindowed = !window.IsFullscreen,
-					ModeDescription = new ModeDescription(0, 0, new Rational(60, 1), Format.R8G8B8A8_UNorm),
-					SampleDescription = new SampleDescription(1, 0),
-					Flags = SwapChainFlags.AllowModeSwitch,
-					SwapEffect = SwapEffect.Discard
-				};
-			}
+				Windowed = !window.IsFullscreen,
+				DeviceWindowHandle = window.Handle,
+				SwapEffect = SwapEffect.Discard,
+				PresentationInterval = PresentInterval.Immediate,
+				BackBufferWidth = (int)window.ViewportPixelSize.Width,
+				BackBufferHeight = (int)window.ViewportPixelSize.Height
+			};
 
-			private void ResetDeviceToNewViewportSize(Size newSizeInPixel)
-			{
-				ResizeBackBufferIfItExistedBefore();
-				backBuffer = SlimD3D11.Resource.FromSwapChain<Texture2D>(swapChain, 0);
-				backBufferView = new RenderTargetView(device, backBuffer);
-				var properties = new WindowRenderTargetProperties();
-				properties.Handle = window.Handle;
-				properties.PixelSize = new System.Drawing.Size((int)window.ViewportPixelSize.Width,
-					(int)window.ViewportPixelSize.Height);
-				RenderTarget = new WindowRenderTarget(new Factory(), properties);
-			}
+			deviceMustBeReset = false;
+		}
 
-			private Texture2D backBuffer;
-			private RenderTargetView backBufferView;
+		public void Present()
+		{
+			if (Device == null || !runExecuted)
+				return;
 
-			private void ResizeBackBufferIfItExistedBefore()
-			{
-				if (backBuffer == null)
-					return;
+			Device.EndScene();
+			Device.Present();
+		}
 
-				backBuffer.Dispose();
-				backBufferView.Dispose();
-				RenderTarget.Dispose();
-				swapChain.ResizeBuffers(1, Width, Height, Format.B8G8R8A8_UNorm,
-					SwapChainFlags.AllowModeSwitch);
-			}
-
-			private void OnFullscreenChanged(Size displaySize, bool b)
-			{
-				if(device != null)
-					device.Dispose();
-
-				ResetDeviceToNewViewportSize(window.ViewportPixelSize);
-			}
-
-	    public void Run()
-	    {
-				RenderTarget.BeginDraw();
-				Context.OutputMerger.SetTargets(backBufferView);
-				var viewport = new Viewport(0.0f, 0.0f, window.ViewportPixelSize.Width,
-					window.ViewportPixelSize.Height);
-				Context.Rasterizer.SetViewports(viewport);
-		    Context.ClearRenderTargetView(backBufferView,
-			    new Color4(window.BackgroundColor.R, window.BackgroundColor.G, window.BackgroundColor.B));
-	    }
-
-			public void Present()
-			{
-				RenderTarget.EndDraw();
-				swapChain.Present(0, PresentFlags.None);
-			}
-
-	    public void Dispose()
-	    {
-				backBuffer.Dispose();
-				backBufferView.Dispose();
-				RenderTarget.Dispose();
-				swapChain.Dispose();
-				device.Dispose();
-	    }
-    }
+		public void Dispose()
+		{
+			Device.Dispose();
+			d3D.Dispose();
+		}
+	}
 }

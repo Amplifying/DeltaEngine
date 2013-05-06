@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using DeltaEngine.Datatypes;
 using NUnit.Framework;
 
@@ -20,17 +20,16 @@ namespace DeltaEngine.Logging.Tests
 		[Test]
 		public void CheckListContains()
 		{
-			var list = new List<Info>();
-			list.Add(new Info(TestInfoText));
+			var list = new List<Info> { new Info(TestInfoText) };
 			Assert.IsTrue(list.Contains(new Info(TestInfoText)));
 		}
 
 		[Test]
-		public void CheckSaveAndLoadWithBinaryDataFactory()
+		public void SaveAndLoad()
 		{
 			var info = new Info(TestInfoText);
 			var data = info.SaveToMemoryStream();
-			var loadedInfo = data.CreateFromMemoryStream<Info>();
+			var loadedInfo = data.CreateFromMemoryStream() as Info;
 			Assert.AreEqual(info, loadedInfo);
 		}
 	}

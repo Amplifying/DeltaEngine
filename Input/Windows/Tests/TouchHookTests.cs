@@ -1,5 +1,4 @@
-﻿using System;
-using DeltaEngine.Platforms;
+using System;
 using DeltaEngine.Platforms.Tests;
 using NUnit.Framework;
 
@@ -9,10 +8,10 @@ namespace DeltaEngine.Input.Windows.Tests
 	{
 		public TouchHookTests()
 		{
-			resolver = new TestResolver();
+			resolver = new MockResolver();
 		}
 
-		private readonly TestResolver resolver;
+		private readonly MockResolver resolver;
 
 		[Test]
 		public void GetTouchDataFromHandleWithInvalidHandle()
@@ -24,7 +23,7 @@ namespace DeltaEngine.Input.Windows.Tests
 		[Test]
 		public void HandleProcMessage()
 		{
-			var window = resolver.Resolve<Window>();
+			var window = resolver.rendering.Window;
 			var hook = new TouchHook(window);
 			hook.HandleProcMessage((IntPtr)4, IntPtr.Zero, 0);
 			Assert.IsEmpty(hook.nativeTouches);
@@ -33,7 +32,7 @@ namespace DeltaEngine.Input.Windows.Tests
 		[Test]
 		public void DisposeHook()
 		{
-			var window = resolver.Resolve<Window>();
+			var window = resolver.rendering.Window;
 			var hook = new TouchHook(window);
 			hook.Dispose();
 		}

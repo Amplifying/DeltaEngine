@@ -1,9 +1,11 @@
-﻿using System;
+using System;
+using DeltaEngine.Content.Disk;
 using DeltaEngine.Graphics.Xna;
 using DeltaEngine.Input.Windows;
 using DeltaEngine.Input.Xna;
 using DeltaEngine.Multimedia.Xna;
 using DeltaEngine.Platforms.Windows;
+using Microsoft.Xna.Framework.Media;
 
 namespace DeltaEngine.Platforms
 {
@@ -13,13 +15,15 @@ namespace DeltaEngine.Platforms
 		{
 			game = new XnaGame(this, RaiseInitializedEvent);
 			RegisterInstance(game);
+			RegisterInstance(game.Content);
+			RegisterInstance(new AutofacContentDataResolver(this));
+			RegisterSingleton<DiskContentLoader>();
 			RegisterSingleton<XnaWindow>();
 			RegisterSingleton<XnaSoundDevice>();
-			Register<XnaImage>();
+			RegisterSingleton<XnaScreenshotCapturer>();
 			RegisterSingleton<XnaDevice>();
-			Register<XnaSound>();
-			Register<XnaMusic>();
-			Register<XnaVideo>();
+			RegisterSingleton<VideoRenderingDependencies>();
+			RegisterSingleton<VideoPlayer>();
 			RegisterSingleton<XnaDrawing>();
 			RegisterSingleton<XnaMouse>();
 			RegisterSingleton<XnaKeyboard>();

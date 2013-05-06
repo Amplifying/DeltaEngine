@@ -1,7 +1,7 @@
-﻿using System.Diagnostics;
-using NUnit.Framework;
 using System;
+using System.Diagnostics;
 using System.Reflection;
+using NUnit.Framework;
 
 namespace DeltaEngine.Core.Tests
 {
@@ -55,20 +55,12 @@ namespace DeltaEngine.Core.Tests
 		}
 
 		[Test]
-		public void CheckIfDebugModeAndNoDebuggerAttached()
+		public void IsDebugMode()
 		{
 #if DEBUG
-			Assert.AreEqual(!Debugger.IsAttached, ExceptionExtensions.IsDebugModeAndNoDebuggerAttached);
-#endif
-		}
-
-		[Test]
-		public void CheckIfReleaseMode()
-		{
-#if RELEASE
-			Assert.IsTrue(ExceptionExtensions.IsReleaseMode);
+			Assert.IsTrue(ExceptionExtensions.IsDebugMode);
 #else
-			Assert.IsFalse(ExceptionExtensions.IsReleaseMode);
+			Assert.IsFalse(ExceptionExtensions.IsDebugMode);
 #endif
 		}
 	}

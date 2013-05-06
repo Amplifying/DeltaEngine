@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -7,11 +7,10 @@ using DeltaEngine.Core;
 namespace DeltaEngine.Datatypes
 {
 	/// <summary>
-	/// 4x4 Matrix from 16 floats internally, access happens via indexer, optimizations done in
-	///  BuildService.
+	/// 4x4 Matrix from 16 floats, access happens via indexer, optimizations done in BuildService.
 	/// </summary>
-	[DebuggerDisplay("Matrix(Right={m11, m12, m13}\n, Up={m21, m22, m23}\n," +
-		" Front={m31, m32, m33}\n, Translation={m41, m42, m43})")]
+	[DebuggerDisplay("Matrix(Right={m11, m12, m13}\n, Up={m21, m22, m23}\n, " +
+		"Front={m31, m32, m33}\n, Translation={m41, m42, m43})")]
 	public struct Matrix : IEquatable<Matrix>
 	{
 		public Matrix(params float[] values)
@@ -26,7 +25,7 @@ namespace DeltaEngine.Datatypes
 			get
 			{
 				if (index >= 0 && index < 16)
-					return Values[index];
+					return GetValues[index];
 
 				throw new IndexOutOfRangeException();
 			}
@@ -36,11 +35,12 @@ namespace DeltaEngine.Datatypes
 			}
 		}
 
-		public float[] Values
+		public float[] GetValues
 		{
 			get
 			{
-				return new[] { m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44 };
+				return new[]
+				{ m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44 };
 			}
 		}
 
@@ -109,7 +109,7 @@ namespace DeltaEngine.Datatypes
 		/// <summary>
 		/// THe multiplication order is first Z, then Y and finally X
 		/// </summary>
-		public static Matrix CreateRotationXyz(float x, float y, float z)
+		public static Matrix CreateRotationZyx(float x, float y, float z)
 		{
 			var cx = MathExtensions.Cos(x);
 			var sx = MathExtensions.Sin(x);
@@ -131,25 +131,24 @@ namespace DeltaEngine.Datatypes
 
 		public static Matrix Transpose(Matrix matrix)
 		{
-			return new Matrix(new[]{
+			return new Matrix(
 				matrix[0], matrix[4], matrix[8], matrix[12],
 				matrix[1], matrix[5], matrix[9], matrix[13],
 				matrix[2], matrix[6], matrix[10], matrix[14],
-				matrix[3], matrix[7], matrix[11], matrix[15]});
+				matrix[3], matrix[7], matrix[11], matrix[15]);
 		}
 
 		public static Matrix GenerateOrthographicProjection(Size size)
 		{
-			return new Matrix(new[]{
+			return new Matrix(
 				2.0f / size.Width, 0, 0, 0,
 				0, 2.0f / -size.Height, 0, 0,
 				0, 0, -1, 0,
-				-1, 1, 0, 1});
+				-1, 1, 0, 1);
 		}
 
 		/// <summary>
-		/// For more information about how to calculate Matrix Determinant see
-		/// http://en.wikipedia.org/wiki/Determinant
+		/// More details how to calculate Matrix Determinants: http://en.wikipedia.org/wiki/Determinant
 		/// </summary>
 		public float GetDeterminant()
 		{
@@ -197,9 +196,9 @@ namespace DeltaEngine.Datatypes
 		public static Vector operator *(Matrix matrix, Vector vector)
 		{
 			return new Vector(
-				(vector.X * matrix[0]) + (vector.Y * matrix[4]) + (vector.Z * matrix[8]) + matrix[12],
-				(vector.X * matrix[1]) + (vector.Y * matrix[5]) + (vector.Z * matrix[9]) + matrix[13],
-				(vector.X * matrix[2]) + (vector.Y * matrix[6]) + (vector.Z * matrix[10]) + matrix[14]);
+				vector.X * matrix[0] + vector.Y * matrix[4] + vector.Z * matrix[8] + matrix[12],
+				vector.X * matrix[1] + vector.Y * matrix[5] + vector.Z * matrix[9] + matrix[13],
+				vector.X * matrix[2] + vector.Y * matrix[6] + vector.Z * matrix[10] + matrix[14]);
 		}
 
 		public static Matrix operator*(Matrix matrix1, Matrix matrix2)
@@ -215,7 +214,7 @@ namespace DeltaEngine.Datatypes
 
 		public override int GetHashCode()
 		{
-			return (int)Values.Aggregate((a, b) => a.GetHashCode() ^ b.GetHashCode());
+			return (int)GetValues.Aggregate((a, b) => a.GetHashCode() ^ b.GetHashCode());
 		}
 
 		public override bool Equals(object obj)
@@ -225,7 +224,7 @@ namespace DeltaEngine.Datatypes
 
 		public override string ToString()
 		{
-			return string.Join(", ", Values);
+			return string.Join(", ", GetValues);
 		}
 	}
 }

@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using System.IO;
-using OpenTK.Audio.OpenAL;
 
 namespace DeltaEngine.Multimedia.OpenTK.Helpers
 {
@@ -8,25 +7,21 @@ namespace DeltaEngine.Multimedia.OpenTK.Helpers
 	/// Helper class to parse the headers and chunks of a wave file and
 	/// calling the needed converter classes.
 	/// </summary>
-	internal class WaveSoundData
+	public class WaveSoundData
 	{
-		//ncrunch: no coverage start
 		public WaveSoundData(string filepath)
 		{
 			using (var reader = new BinaryReader(File.OpenRead(filepath)))
 				ParseWaveData(reader);
 			SetOpenAlFormat();
-
 			if (waveFormat != WaveFormat.Pcm)
 				ConvertToPcm();
 		}
-		//ncrunch: no coverage end
 
-		internal WaveSoundData(BinaryReader reader)
+		public WaveSoundData(BinaryReader reader)
 		{
 			ParseWaveData(reader);
 			SetOpenAlFormat();
-
 			if (waveFormat != WaveFormat.Pcm)
 				ConvertToPcm();
 		}
@@ -53,7 +48,6 @@ namespace DeltaEngine.Multimedia.OpenTK.Helpers
 
 			int chunkLength = reader.ReadInt32();
 			long positionBeforeReading = reader.BaseStream.Position;
-
 			if (identifier == "fmt ")
 				ReadFmtChunk(reader, chunkLength);
 			if (identifier == "data")
@@ -70,7 +64,6 @@ namespace DeltaEngine.Multimedia.OpenTK.Helpers
 			reader.ReadInt32();
 			blockAlign = reader.ReadInt16();
 			bitsPerSample = reader.ReadInt16();
-
 			if (chunkLength > 18)
 				ReadExtendedFormatFmtData(reader);
 		}
@@ -100,9 +93,9 @@ namespace DeltaEngine.Multimedia.OpenTK.Helpers
 		private void SetOpenAlFormat()
 		{
 			if (Channels == 1)
-				Format = bitsPerSample == 8 ? ALFormat.Mono8 : ALFormat.Mono16;
+				Format = bitsPerSample == 8 ? AudioFormat.Mono8 : AudioFormat.Mono16;
 			else
-				Format = bitsPerSample == 8 ? ALFormat.Stereo8 : ALFormat.Stereo16;
+				Format = bitsPerSample == 8 ? AudioFormat.Stereo8 : AudioFormat.Stereo16;
 		}
 
 		private void ConvertToPcm()
@@ -132,6 +125,7 @@ namespace DeltaEngine.Multimedia.OpenTK.Helpers
 		{
 			if (ReadFourCharIdentifier(reader) != "RIFF")
 				throw new NotSupportedException("The file is no RIFF(Wave) file.");
+
 			reader.ReadInt32();
 			if (ReadFourCharIdentifier(reader) != "WAVE")
 				throw new NotSupportedException("The file is no RIFF(Wave) file.");
@@ -144,7 +138,7 @@ namespace DeltaEngine.Multimedia.OpenTK.Helpers
 
 		public int Channels { get; private set; }
 		public int SampleRate { get; private set; }
-		public ALFormat Format { get; private set; }
+		public AudioFormat Format { get; private set; }
 		public byte[] BufferData { get; private set; }
 	}
 }

@@ -1,4 +1,5 @@
-﻿using DeltaEngine.Core;
+using DeltaEngine.Content;
+using System;
 
 namespace DeltaEngine.Multimedia
 {
@@ -22,14 +23,26 @@ namespace DeltaEngine.Multimedia
 		}
 
 		protected abstract void PlayNativeMusic(float volume);
-		public abstract void Stop();
-		public abstract bool IsPlaying { get; }
-		protected abstract void Run();
-		internal void InternalRun()
+		public void Stop()
 		{
-			Run();
+			device.RegisterCurrentMusic(null);
+			StopNativeMusic();
 		}
+		protected abstract void StopNativeMusic();
+		public abstract bool IsPlaying();
+		protected internal abstract void Run();
 		public abstract float DurationInSeconds { get; }
 		public abstract float PositionInSeconds { get; }
+		protected override void DisposeData()
+		{
+			Stop();
+		}
+
+		//ncrunch: no coverage start
+		public class MusicNotFoundOrAccessible : Exception
+		{
+			public MusicNotFoundOrAccessible(string musicName, Exception innerException)
+				: base(musicName, innerException) { }
+		}
 	}
 }

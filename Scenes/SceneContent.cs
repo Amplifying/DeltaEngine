@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Core;
+using DeltaEngine.Content;
 
 namespace DeltaEngine.Scenes
 {
@@ -7,11 +7,9 @@ namespace DeltaEngine.Scenes
 	/// </summary>
 	public abstract class SceneContent : ContentData
 	{
-		protected SceneContent(string contentFilename)
-			: base(contentFilename) { }
+		protected SceneContent(string contentName)
+			: base(contentName) { }
 
-		public virtual Scene Scene { get; set; }
-
-		public override void Dispose() { }
+		public Scene Scene { get; set; }
 	}
 }

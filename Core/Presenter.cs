@@ -1,4 +1,4 @@
-﻿namespace DeltaEngine.Core
+namespace DeltaEngine.Core
 {
 	/// <summary>
 	/// While Runners execute before app code is run, presenters are run after app code has been

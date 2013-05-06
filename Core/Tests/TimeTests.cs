@@ -9,7 +9,7 @@ namespace DeltaEngine.Core.Tests
 		[Test]
 		public void RunTime()
 		{
-			var time = new Time(new MockElapsedTime());
+			var time = new MockTime();
 			time.Run();
 			Assert.AreEqual(0, time.Milliseconds);
 		}
@@ -17,22 +17,29 @@ namespace DeltaEngine.Core.Tests
 		[Test]
 		public void RunTimeWithStopwatch()
 		{
-			var time = new Time(new StopwatchTime());
+			var time = new StopwatchTime();
 			time.Run();
 			Assert.IsTrue(time.Milliseconds < 2);
+		}
+		
+		[Test]
+		public void GetCurrentDelta()
+		{
+			Time.Current.Run();
+			Assert.IsTrue(Time.Current.Delta < 2);
 		}
 
 		[Test]
 		public void CheckEveryWithInvalidStepAlwaysReturnsTrue()
 		{
-			var time = new Time(new MockElapsedTime());
+			var time = new MockTime();
 			Assert.IsTrue(time.CheckEvery(-1));
 		}
 
 		[Test]
 		public void CalculateFps()
 		{
-			var time = new Time(new MockElapsedTime());
+			var time = new MockTime();
 			do
 				time.Run();
 			while (!time.CheckEvery(1.0f));
@@ -42,17 +49,23 @@ namespace DeltaEngine.Core.Tests
 		[Test]
 		public void GetSecondsSinceStartToday()
 		{
-			var time = new Time(new MockElapsedTime());
+			var time = new MockTime();
 			Assert.AreEqual(0.0f, time.GetSecondsSinceStartToday());
 			time.Run();
 			Assert.AreNotEqual(0.0f, time.GetSecondsSinceStartToday());
+		}
+		
+		[Test]
+		public void FpsShouldBeSixty()
+		{
+			Assert.AreEqual(60, Time.Current.Fps);
 		}
 
 		//ncrunch: no coverage start
 		[Test, Category("Slow")]
 		public void CalculateFpsWithStopwatch()
 		{
-			var time = new Time(new StopwatchTime());
+			var time = new StopwatchTime();
 			const int TargetFps = 50;
 			do
 			{

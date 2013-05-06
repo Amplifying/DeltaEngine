@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using NUnit.Framework;
 
@@ -77,9 +77,9 @@ namespace DeltaEngine.Core.Tests
 		[Test]
 		public void SplitIntoFloatsWithSeparator()
 		{
-			var stringFloats = "1.0, 2.0, 0511.580254";
+			const string StringFloats = "1.0, 2.0, 0511.580254";
+			float[] floats = StringFloats.SplitIntoFloats();
 			var expectedFloats = new[] { 1.0f, 2.0f, 511.580261f };
-			float[] floats = stringFloats.SplitIntoFloats();
 			CollectionAssert.AreEqual(expectedFloats, floats);
 		}
 

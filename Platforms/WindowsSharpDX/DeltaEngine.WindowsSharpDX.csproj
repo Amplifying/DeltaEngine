@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+	<PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{05569371-855C-4667-8228-20491337C431}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DeltaEngine.WindowsSharpDX</RootNamespace>
+    <AssemblyName>DeltaEngine.WindowsSharpDX</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+	</PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <DocumentationFile>bin\Debug\DeltaEngine.WindowsSharpDX.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <DocumentationFile>bin\Release\DeltaEngine.WindowsSharpDX.XML</DocumentationFile>
+  </PropertyGroup>
+	<ItemGroup>
+		<Reference Include="System" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Content\DeltaEngine.Content.csproj">
+			<Project>{f1b6345b-6f28-482f-9230-8f1d8674c28a}</Project>
+			<Name>DeltaEngine.Content</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
+			<Project>{A8D386EA-D376-46EA-A721-2BA51426A721}</Project>
+			<Name>DeltaEngine.Core</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\Graphics\DeltaEngine.Graphics.csproj">
+			<Project>{8F701B0D-48B6-45CF-85E0-286BD53328BA}</Project>
+			<Name>DeltaEngine.Graphics</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\Graphics\SharpDX\DeltaEngine.Graphics.SharpDX.csproj">
+			<Project>{9066595C-9E66-4631-A53A-28C2D22CFE53}</Project>
+			<Name>DeltaEngine.Graphics.SharpDX</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\Input\DeltaEngine.Input.csproj">
+			<Project>{CC65E69E-FAFD-4C2B-85EB-5E57FD3AF847}</Project>
+			<Name>DeltaEngine.Input</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\Input\SharpDX\DeltaEngine.Input.SharpDX.csproj">
+			<Project>{9f4e86dd-9fdd-4c6b-8b28-19ed35c1d768}</Project>
+			<Name>DeltaEngine.Input.SharpDX</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\Input\Windows\DeltaEngine.Input.Windows.csproj">
+			<Project>{c0d2430e-714d-476c-80e7-5c80a7fa68ee}</Project>
+			<Name>DeltaEngine.Input.Windows</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\Multimedia\DeltaEngine.Multimedia.csproj">
+			<Project>{6016ABB8-05F5-4A07-8FBA-16576277DDE7}</Project>
+			<Name>DeltaEngine.Multimedia</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\Multimedia\SharpDX\DeltaEngine.Multimedia.SharpDX.csproj">
+			<Project>{7D6C8627-CF35-4E3F-A3FE-1600327437C7}</Project>
+			<Name>DeltaEngine.Multimedia.SharpDX</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
+			<Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
+			<Name>DeltaEngine.Rendering</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\DeltaEngine.Platforms.csproj">
+			<Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
+			<Name>DeltaEngine.Platforms</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\Windows\DeltaEngine.Platforms.Windows.csproj">
+			<Project>{bd8a80e2-a313-437e-b0ef-fc0b066280a7}</Project>
+			<Name>DeltaEngine.Platforms.Windows</Name>
+		</ProjectReference>
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Include="Properties\AssemblyInfo.cs" />
+		<Compile Include="App.cs" />
+		<Compile Include="SharpDxResolver.cs" />
+	</ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

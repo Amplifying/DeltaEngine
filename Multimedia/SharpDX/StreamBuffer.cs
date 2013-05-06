@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SharpDX.XAudio2;
 using ToyMp3;
 

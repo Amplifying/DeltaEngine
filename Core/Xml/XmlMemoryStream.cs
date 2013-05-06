@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Text;
 using System.Xml.Linq;
 
@@ -18,7 +18,6 @@ namespace DeltaEngine.Core.Xml
 
 		public XmlMemoryStream(Stream stream)
 		{
-			stream.Seek(0, SeekOrigin.Begin);
 			XDocument xDoc = XDocument.Load(stream);
 			Root = new XmlData(xDoc.Root);
 		}

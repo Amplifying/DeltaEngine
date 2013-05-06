@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Datatypes;
+using DeltaEngine.Datatypes;
 using DeltaEngine.Input.Windows;
 using DInput = SharpDX.DirectInput;
 using SysPoint = System.Drawing.Point;

@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms.All;
 using DeltaEngine.Scenes.Tests.UserInterfaces;
 
 namespace DeltaEngine.Scenes.Tests
@@ -11,7 +11,8 @@ namespace DeltaEngine.Scenes.Tests
 			//new SceneTests().Draw(TestStarter.OpenGL);
 			//new SceneFileTests().CreateSaveLoadAndShowScene(TestStarter.OpenGL);
 			//new LabelTests().SaveAndLoad(TestStarter.OpenGL);
-			new VectorTextControlTests().CreateSaveLoadAndShowRedHello(TestStarter.OpenGL);
+			//new VectorTextControlTests().CreateSaveLoadAndShowRedHello(TestStarter.OpenGL);
+			//new TileMapTests().Show4X5DeltaEngineLogoTileMap(TestWithAllFrameworks.OpenGL);
 		}
 	}
 }

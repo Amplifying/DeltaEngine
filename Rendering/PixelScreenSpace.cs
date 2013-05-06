@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Datatypes;
+using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 
 namespace DeltaEngine.Rendering

@@ -1,13 +1,13 @@
-﻿using System;
+using System;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms.All;
 using DeltaEngine.Rendering;
 using NUnit.Framework;
 
 namespace DeltaEngine.Input.Windows.Tests
 {
-	public class CursorPositionTranslaterTests : TestStarter
+	public class CursorPositionTranslaterTests : TestWithAllFrameworks
 	{
 		[IntegrationTest]
 		public void GetClientPositionOnScreen(Type resolver)

@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Platforms;
+using DeltaEngine.Platforms;
 using DeltaEngine.Rendering;
 
 namespace Breakout

@@ -1,4 +1,6 @@
-﻿using DeltaEngine.Platforms;
+using DeltaEngine.Content;
+using DeltaEngine.Entities;
+using DeltaEngine.Platforms;
 
 namespace LogoApp
 {
@@ -9,7 +11,9 @@ namespace LogoApp
 	{
 		public static void Main()
 		{
-			new App().Start<BouncingLogo>(100);
+			new App().Start<BouncingLogo, ContentLoader, EntitySystem>(NumberOfBouncingLogos);
 		}
+
+		private const int NumberOfBouncingLogos = 100;
 	}
 }

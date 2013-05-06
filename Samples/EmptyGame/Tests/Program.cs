@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms.All;
 
 namespace EmptyGame.Tests
 {
@@ -6,7 +6,7 @@ namespace EmptyGame.Tests
 	{
 		public static void Main()
 		{
-			new GameTests().ContinuouslyChangeBackgroundColor(TestStarter.OpenGL);
+			new GameTests().ContinuouslyChangeBackgroundColor(TestWithAllFrameworks.OpenGL);
 		}
 	}
 }

@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Windows.Input;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 
 namespace DeltaEngine.Editor.SampleBrowser
@@ -13,105 +12,58 @@ namespace DeltaEngine.Editor.SampleBrowser
 	/// Used to display Sample Games, Tutorials and Tests of engine and user code.
 	/// http://deltaengine.net/Start/SampleBrowser
 	/// </summary>
-	internal class SampleBrowserViewModel : INotifyPropertyChanged
+	public class SampleBrowserViewModel : ViewModelBase
 	{
 		public SampleBrowserViewModel()
 		{
+			Samples = new List<Sample>();
 			AddSelectionFilters();
-			allSampleGames = GetSamplesHardcoded();
-			AddEverythingTogether();
-			//ToolTip += " - " + allSampleGames.Count + " Games, " + allVisualTests.Count + " Visual Tests";
+			RegisterCommands();
+		}
 
+		public List<Sample> Samples
+		{
+			get { return samples; }
+			set
+			{
+				samples = value;
+				RaisePropertyChanged("Samples");
+			}
+		}
+		private List<Sample> samples;
+
+		private void AddSelectionFilters()
+		{
+			AssembliesAvailable = new List<String>
+			{
+				"All",
+				"Sample Games",
+				//"Tutorials",
+				"Visual Tests"
+			};
+			SelectedAssembly = AssembliesAvailable[1];
+		}
+
+		public List<string> AssembliesAvailable { get; private set; }
+		public string SelectedAssembly { get; private set; }
+
+		private void RegisterCommands()
+		{
 			OnComboBoxSelectionChanged = new RelayCommand(UpdateItems);
 			OnSearchTextChanged = new RelayCommand(UpdateItems);
 			OnSearchTextRemoved = new RelayCommand(ClearSearchFilter);
 			OnHelpClicked = new RelayCommand(OpenHelpWebsite);
-			OnViewButtonClicked = new RelayCommand<Sample>(ViewSourceCode);
-			OnStartButtonClicked = new RelayCommand<Sample>(StartExecutable);
-			OnLaunchButtonClicked = new RelayCommand<Sample>(LaunchOnDevice);
+			OnViewButtonClicked = new RelayCommand<Sample>(ViewSourceCode, CanViewSourceCode);
+			OnStartButtonClicked = new RelayCommand<Sample>(StartExecutable, CanStartExecutable);
 		}
 
-		private void AddSelectionFilters()
-		{
-			AssembliesAvailable = new List<String> { "Everything", "All Sample Games" };
-			SelectedAssembly = AssembliesAvailable[0];
-		}
-
-		public List<string> AssembliesAvailable { get; private set; }
-		public string SelectedAssembly { get; set; }
-
-		private readonly List<Sample> everything = new List<Sample>();
-		private readonly List<Sample> allSampleGames = new List<Sample>();
-
-		private static List<Sample> GetSamplesHardcoded()
-		{
-			return
-				new List<Sample>(new[]
-				{
-					new Sample
-					{
-						Title = "Blobs",
-						Description = "Blobs Sample",
-						ImageFilePath = "http://DeltaEngine.net/Content/Icons/Blobs.png",
-						ProjectFilePath = "C:\\Code\\DeltaEngine\\Samples\\Blobs\\Blobs.csproj",
-						ExecutableFilePath = "\\Samples\\Blobs\\bin\\Debug\\Blobs.exe"
-					},
-					new Sample
-					{
-						Title = "Blocks",
-						Description = "Blocks Sample",
-						ImageFilePath = "http://DeltaEngine.net/Content/Icons/Blocks.png",
-						ProjectFilePath = "C:\\Code\\DeltaEngine\\Samples\\Blocks\\Blocks.csproj",
-						ExecutableFilePath = "\\Samples\\Blocks\\bin\\Debug\\Blocks.exe"
-					},
-					new Sample
-					{
-						Title = "Breakout",
-						Description = "Breakout Sample",
-						ImageFilePath = "http://DeltaEngine.net/Content/Icons/Breakout.png",
-						ProjectFilePath = "C:\\Code\\DeltaEngine\\Samples\\Breakout\\Breakout.csproj",
-						ExecutableFilePath = "\\Samples\\Breakout\\bin\\Debug\\Breakout.exe"
-					},
-					new Sample
-					{
-						Title = "EmptyGame",
-						Description = "EmptyGame Sample",
-						ImageFilePath = "http://DeltaEngine.net/Content/Icons/EmptyGame.png",
-						ProjectFilePath = "C:\\Code\\DeltaEngine\\Samples\\EmptyGame\\EmptyGame.csproj",
-						ExecutableFilePath = "\\Samples\\EmptyGame\\bin\\Debug\\EmptyGame.exe"
-					},
-					new Sample
-					{
-						Title = "GameOfDeath",
-						Description = "GameOfDeath Sample",
-						ImageFilePath = "http://DeltaEngine.net/Content/Icons/GameOfDeath.png",
-						ProjectFilePath = "C:\\Code\\DeltaEngine\\Samples\\GameOfDeath\\GameOfDeath.csproj",
-						ExecutableFilePath = "\\Samples\\GameOfDeath\\bin\\Debug\\GameOfDeath.exe"
-					},
-					new Sample
-					{
-						Title = "LogoApp",
-						Description = "LogoApp Sample",
-						ImageFilePath = "http://DeltaEngine.net/Content/Icons/LogoApp.png",
-						ProjectFilePath = "C:\\Code\\DeltaEngine\\Samples\\LogoApp\\LogoApp.csproj",
-						ExecutableFilePath = "\\Samples\\LogoApp\\bin\\Debug\\LogoApp.exe"
-					}
-				});
-		}
-
-		private void AddEverythingTogether()
-		{
-			everything.AddRange(allSampleGames);
-			UpdateItems();
-		}
-
-		public ICommand OnComboBoxSelectionChanged { get; set; }
+		public ICommand OnComboBoxSelectionChanged { get; private set; }
 
 		private void UpdateItems()
 		{
 			SelectItemsByAssemblyComboBoxSelection();
 			FilterItemsBySearchBox();
-			Samples = itemsToDisplay;
+			Samples = itemsToDisplay.OrderBy(o => o.ProjectFilePath).ToList();
 		}
 
 		private void SelectItemsByAssemblyComboBoxSelection()
@@ -120,9 +72,14 @@ namespace DeltaEngine.Editor.SampleBrowser
 				itemsToDisplay = everything;
 			else if (SelectedAssembly == AssembliesAvailable[1])
 				itemsToDisplay = allSampleGames;
+			else if (SelectedAssembly == AssembliesAvailable[2])
+				itemsToDisplay = allVisualTests;
 		}
 
 		private List<Sample> itemsToDisplay = new List<Sample>();
+		private List<Sample> everything = new List<Sample>();
+		private List<Sample> allSampleGames = new List<Sample>();
+		private List<Sample> allVisualTests = new List<Sample>();
 
 		private void FilterItemsBySearchBox()
 		{
@@ -133,74 +90,107 @@ namespace DeltaEngine.Editor.SampleBrowser
 			itemsToDisplay = itemsToDisplay.Where(item => item.ContainsFilterText(filterText)).ToList();
 		}
 
-		private List<Sample> samples;
-		public List<Sample> Samples
-		{
-			get { return samples; }
-			set
-			{
-				samples = value;
-				OnPropertyChanged("Samples");
-			}
-		}
-
-		public ICommand OnSearchTextChanged { get; set; }
-		public ICommand OnSearchTextRemoved { get; set; }
+		public ICommand OnSearchTextChanged { get; private set; }
+		public ICommand OnSearchTextRemoved { get; private set; }
 
 		private void ClearSearchFilter()
 		{
 			SearchFilter = "";
 		}
 
-		private string searchFilter;
 		public string SearchFilter
 		{
 			get { return searchFilter; }
 			set
 			{
 				searchFilter = value;
-				OnPropertyChanged("SearchFilter");
+				RaisePropertyChanged("SearchFilter");
 			}
 		}
+		private string searchFilter;
 
-		public ICommand OnHelpClicked { get; set; }
+		public ICommand OnHelpClicked { get; private set; }
 
-		private void OpenHelpWebsite()
+		private static void OpenHelpWebsite()
 		{
 			Process.Start("http://DeltaEngine.net/Start/SampleBrowser");
 		}
 
-		public ICommand OnViewButtonClicked { get; set; }
-		private void ViewSourceCode(Sample button) {}
+		public ICommand OnViewButtonClicked { get; private set; }
 
-		public ICommand OnStartButtonClicked { get; set; }
-
-		private void StartExecutable(Sample button)
+		private void ViewSourceCode(Sample sample)
 		{
-			string exePath = button.ExecutableFilePath;
-			var directory = Directory.GetParent(Directory.GetCurrentDirectory());
-			directory = Directory.GetParent(directory.FullName);
-			directory = Directory.GetParent(directory.FullName);
-			exePath = directory.FullName + exePath;
-			int index = exePath.LastIndexOf("\\", StringComparison.Ordinal);
-			string exeDirectory = exePath.Substring(0, index);
-			var compiledOutputDirectory = new ProcessStartInfo(exePath)
-			{
-				WorkingDirectory = exeDirectory
-			};
-			Process.Start(compiledOutputDirectory);
+			sampleLauncher.OpenProject(sample);
 		}
 
-		public ICommand OnLaunchButtonClicked { get; set; }
-		private void LaunchOnDevice(Sample button) {}
+		private SampleLauncher sampleLauncher;
 
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		private void OnPropertyChanged(string propertyName)
+		private bool CanViewSourceCode(Sample sample)
 		{
-			PropertyChangedEventHandler handler = PropertyChanged;
-			if (handler != null)
-				handler(this, new PropertyChangedEventArgs(propertyName));
+			return sampleLauncher.DoesProjectExist(sample);
+		}
+
+		public ICommand OnStartButtonClicked { get; private set; }
+
+		private void StartExecutable(Sample sample)
+		{
+			sampleLauncher.StartExecutable(sample);
+		}
+
+		private bool CanStartExecutable(Sample sample)
+		{
+			return sampleLauncher.DoesAssemblyExist(sample);
+		}
+
+		public void GetSamples()
+		{
+			var sampleCreator = new SampleCreator();
+			sampleCreator.CreateSamples();
+			foreach (var sample in sampleCreator.Samples)
+				if (sample.Category == SampleCategory.Game)
+					allSampleGames.Add(sample);
+				else
+					allVisualTests.Add(sample);
+
+			AddEverythingTogether();
+			sampleLauncher = new SampleLauncher();
+		}
+
+		public void AddEverythingTogether()
+		{
+			everything.AddRange(allSampleGames);
+			everything.AddRange(allVisualTests);
+			UpdateItems();
+		}
+
+		public void SetAllSamples(List<Sample> list)
+		{
+			everything = list;
+		}
+
+		public void SetSampleGames(List<Sample> list)
+		{
+			allSampleGames = list;
+		}
+
+		public void SetVisualTests(List<Sample> list)
+		{
+			allVisualTests = list;
+		}
+
+		public List<Sample> GetItemsToDisplay()
+		{
+			return itemsToDisplay;
+		}
+
+		public void SetSelection(int index)
+		{
+			SelectedAssembly = AssembliesAvailable[index];
+		}
+
+		public void SetSearchText(string text)
+		{
+			SearchFilter = text;
 		}
 	}
 }

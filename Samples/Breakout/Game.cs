@@ -1,11 +1,11 @@
-﻿using DeltaEngine.Core;
+using DeltaEngine.Core;
 
 namespace Breakout
 {
 	/// <summary>
 	/// Renders the background, ball, level and score; Also handles starting new levels
 	/// </summary>
-	public class Game : Runner<Time>
+	public class Game : Runner
 	{
 		public Game(BallInLevel ball, Score score)
 		{
@@ -17,7 +17,7 @@ namespace Breakout
 		private readonly BallInLevel ball;
 		public Score Score { get; private set; }
 
-		public void Run(Time time)
+		public void Run()
 		{
 			StartNewLevelIfAllBricksAreDestroyed();
 		}
