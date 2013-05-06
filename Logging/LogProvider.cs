@@ -1,4 +1,4 @@
-﻿namespace DeltaEngine.Logging
+namespace DeltaEngine.Logging
 {
 	/// <summary>
 	/// Derived classes specify how logging is implemented.

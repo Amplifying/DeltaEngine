@@ -149,5 +149,16 @@ namespace DeltaEngine.Datatypes.Tests
 			string vectorAsString = v.ToString();
 			Assert.AreEqual(v, new Vector(vectorAsString));
 		}
+
+		[Test]
+		public void SaveAndLoad()
+		{
+			var data = Vector.UnitZ.SaveToMemoryStream();
+			byte[] savedBytes = data.ToArray();
+			Assert.AreEqual(1 + "Vector".Length + Vector.SizeInBytes, savedBytes.Length);
+			Assert.AreEqual("Vector".Length, savedBytes[0]);
+			var reconstructed = data.CreateFromMemoryStream();
+			Assert.AreEqual(Vector.UnitZ, reconstructed);
+		}
 	}
 }

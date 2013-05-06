@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -6,7 +7,7 @@ using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Networking.Sockets
 {
-	public class TcpSocket : ClientConnection
+	public class TcpSocket : Client
 	{
 		public TcpSocket()
 			: this(new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)) {}
@@ -20,7 +21,7 @@ namespace DeltaEngine.Networking.Sockets
 			isDisposed = false;
 		}
 
-		protected Socket nativeSocket;
+		protected readonly Socket nativeSocket;
 		private readonly byte[] buffer;
 		private bool isDisposed;
 		private readonly DataCollector dataCollector;
@@ -30,24 +31,109 @@ namespace DeltaEngine.Networking.Sockets
 			using (var dataStream = new MemoryStream(dataContainer.Data))
 			using (var dataReader = new BinaryReader(dataStream))
 			{
-				BinaryData receivedMessage = GetReceivedMessage(dataReader);
+				object receivedMessage = GetReceivedMessage(dataReader);
 				if (DataReceived != null)
-					DataReceived(this, receivedMessage);
+					DataReceived(receivedMessage);
+				else
+					throw new NoDataReceivedEventWasAttached(receivedMessage);
 			}
 		}
 
-		private static BinaryData GetReceivedMessage(BinaryReader dataReader)
+		public event Action<object> DataReceived;
+
+		private static object GetReceivedMessage(BinaryReader dataReader)
 		{
-			BinaryData receivedMessage;
+			object receivedMessage;
 			try
 			{
-				receivedMessage = dataReader.Create<BinaryData>();
+				receivedMessage = dataReader.Create();
 			}
-			catch (BinaryDataExtension.UnknownMessageTypeReceived ex)
+			catch (BinaryDataExtensions.UnknownMessageTypeReceived ex)
 			{
-				receivedMessage = new UnknownBinaryData(ex.Message);
+				receivedMessage = new UnknownMessage(ex.Message);
 			}
 			return receivedMessage;
+		}
+
+		private class NoDataReceivedEventWasAttached : Exception
+		{
+			public NoDataReceivedEventWasAttached(object receivedMessage)
+				: base(receivedMessage.ToString()) {}
+		}
+
+		public void Connect(string serverAddress, int serverPort)
+		{
+			Connect(serverAddress.ToEndPoint(serverPort));
+		}
+
+		public void Connect(EndPoint targetAddress)
+		{
+			try
+			{
+				var socketArgs = new SocketAsyncEventArgs { RemoteEndPoint = targetAddress };
+				socketArgs.Completed += SocketConnectionComplete;
+				nativeSocket.ConnectAsync(socketArgs);
+			}
+			catch (SocketException)
+			{
+				Console.WriteLine("An error has occurred when trying to request a connection " +
+					"to the server (" + targetAddress + ")");
+			}
+		}
+
+		private void SocketConnectionComplete(object sender, SocketAsyncEventArgs socketAsyncEventArgs)
+		{
+			lock (syncObject)
+			{
+				if (socketAsyncEventArgs.SocketError == SocketError.Success)
+				{
+					WaitForData();
+					if (Connected != null)
+						Connected();
+					SendAllMessagesInTheQueue();
+				}
+			}
+		}
+
+		public event Action Connected;
+
+		public void Send(object data)
+		{
+			try
+			{
+				SendOrEnqueueData(data);
+			}
+			catch (SocketException)
+			{
+				Dispose();
+			}
+		}
+
+		private void SendOrEnqueueData(object data)
+		{
+			lock (syncObject)
+			{
+				if (IsConnected)
+					SendDataThroughNativeSocket(data);
+				else
+					messages.Enqueue(data);
+			}
+		}
+
+		private readonly Queue<object> messages = new Queue<object>();
+		private readonly Object syncObject = new Object();
+
+		private void SendDataThroughNativeSocket(object message)
+		{
+			int numberOfSendBytes = nativeSocket.Send(message.ToByteArrayWithLengthHeader());
+			if (numberOfSendBytes == 0)
+				throw new SocketException();			
+		}
+
+		private void SendAllMessagesInTheQueue()
+		{
+			while (messages.Count > 0)
+				SendDataThroughNativeSocket(messages.Dequeue());
 		}
 
 		public void WaitForData()
@@ -59,7 +145,10 @@ namespace DeltaEngine.Networking.Sockets
 			{
 				nativeSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, ReceivingBytes, null);
 			}
-			catch (SocketException) { }
+			catch (SocketException)
+			{
+				Console.WriteLine("An error has occurred when setting the socket to receive data");
+			}
 		}
 
 		private void ReceivingBytes(IAsyncResult asyncResult)
@@ -75,6 +164,10 @@ namespace DeltaEngine.Networking.Sockets
 			{
 				Dispose();
 			}
+			catch (ObjectDisposedException)
+			{
+				Dispose();
+			}
 		}
 
 		private void TryReceiveBytes(IAsyncResult asyncResult)
@@ -87,41 +180,9 @@ namespace DeltaEngine.Networking.Sockets
 			WaitForData();
 		}
 
-		public void Send(BinaryData data)
+		public string TargetAddress
 		{
-			try
-			{
-				TrySendData(data);
-			}
-			catch (SocketException)
-			{
-				Dispose();
-			}
-}
-
-		private void TrySendData(BinaryData data)
-		{
-			int numberOfSendBytes = nativeSocket.Send(data.ToByteArrayWithLengthHeader());
-			if (numberOfSendBytes == 0)
-				throw new SocketException();
-		}
-
-		protected virtual void OnReceived(BinaryData message)
-		{
-			if (DataReceived != null)
-				DataReceived(this, message);
-		}
-
-		public event Action<ClientConnection, BinaryData> DataReceived;
-
-		public void ConnectAndWaitForData(EndPoint targetAddress)
-		{
-			try
-			{
-				nativeSocket.Connect(targetAddress);
-				WaitForData();
-			}
-			catch (SocketException) {}
+			get { return IsConnected ? nativeSocket.RemoteEndPoint.ToString() : ""; }
 		}
 
 		public bool IsConnected
@@ -138,9 +199,9 @@ namespace DeltaEngine.Networking.Sockets
 			nativeSocket.Close();
 
 			if (Disconnected != null)
-				Disconnected(this);
+				Disconnected();
 		}
 
-		public event Action<ClientConnection> Disconnected;
+		public event Action Disconnected;
 	}
 }

@@ -1,38 +1,68 @@
-﻿using System.Net;
 using System.Threading;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Networking.Tests;
 using NUnit.Framework;
 
 namespace DeltaEngine.Networking.Sockets.Tests
 {
 	public class SocketTests
 	{
+		[SetUp]
+		public void CreateLocalEchoServer()
+		{
+			serverReceivedMessageCount = 0;
+			clientReceivedResponseCount = 0;
+			echoServer = new TcpServer();
+			echoServer.Start(ServerPort);
+			echoServer.ClientDataReceived +=
+				(connection, data) => connection.Send(new TextMessage("TestMessage"));
+		}
+
+		private int serverReceivedMessageCount;
+		private int clientReceivedResponseCount;
+		private TcpServer echoServer;
+		private const int ServerPort = 8585;
+
 		[Test, Category("Slow")]
 		public void ConnectAndDisposeClientConnection()
 		{
-			server.ClientConnected +=
-				connection => Assert.AreEqual(1, server.NumberOfConnectedClients);
-			server.ClientDisconnected +=
-				connection => Assert.AreEqual(0, server.NumberOfConnectedClients);
-
+			echoServer.ClientConnected +=
+				connection => Assert.AreEqual(1, echoServer.NumberOfConnectedClients);
+			echoServer.ClientDisconnected +=
+				connection => Assert.AreEqual(0, echoServer.NumberOfConnectedClients);
 			var client = CreatedConnectedClient();
-			client.Dispose();
+			bool clientDisconnected = false;
+			client.Disconnected += () => clientDisconnected = true;
 			WaitForServerResponse();
+			Assert.AreEqual(ServerAddress + ":" + ServerPort, client.TargetAddress);
+			client.Dispose();
+			Assert.IsTrue(clientDisconnected);
+		}
+
+		private const string ServerAddress = "127.0.0.1";
+
+		private static Client CreatedConnectedClient()
+		{
+			var client = new TcpSocket();
+			client.Connect(ServerAddress, ServerPort);
+			return client;
+		}
+
+		private static void WaitForServerResponse(int milliseconds = 10)
+		{
+			Thread.Sleep(milliseconds);
 		}
 
 		[Test, Category("Slow")]
 		public void ConnectClientAndDisposeServer()
 		{
 			var client = CreatedConnectedClient();
-			server.ClientConnected += connection => Assert.IsFalse(client.IsConnected);
+			echoServer.ClientConnected += connection => Assert.IsTrue(client.IsConnected);
 			ShutDownServer();
 		}
 
 		private void ShutDownServer()
 		{
-			server.Dispose();
-			server = null;
+			echoServer.Dispose();
 			WaitForServerResponse();
 		}
 
@@ -47,37 +77,14 @@ namespace DeltaEngine.Networking.Sockets.Tests
 			}
 		}
 
-		private TcpNetworkingServer server;
-
-		[SetUp]
-		public void CreateLocalEchoServer()
-		{
-			var endPoint = new IPEndPoint(IPAddress.Any, 8585);
-			server = new EchoServer(new TcpServerSocket(endPoint));
-		}
-
-		[TearDown]
-		public void DisposeConnectionsSockets()
-		{
-			if (server != null)
-				server.Dispose();
-		}
-
-		private Client CreatedConnectedClient()
-		{
-			var client = new TcpNetworkingClient("127.0.0.1", 8585);
-			client.Connect();
-
-			return client;
-		}
-
 		[Test, Category("Slow")]
 		public void ConnectionWithServerShouldWork()
 		{
 			using (var client = CreatedConnectedClient())
 			{
+				WaitForServerResponse();
 				Assert.IsTrue(client.IsConnected);
-				Assert.IsTrue(server.IsRunning);
+				Assert.IsTrue(echoServer.IsRunning);
 			}
 		}
 
@@ -86,8 +93,17 @@ namespace DeltaEngine.Networking.Sockets.Tests
 		{
 			using (var client = CreatedConnectedClient())
 			{
-				client.Send(new TestMessage("TestMessage"));
+				var message = new TextMessage("TestMessage");
+				echoServer.ClientDataReceived += VerifyReceivedMessage;
+				client.Send(message);
 			}
+		}
+
+		private void VerifyReceivedMessage(Client connection, object receivedMessage)
+		{
+			var sentMessage = new TextMessage("TestMessage");
+			Assert.AreEqual(sentMessage, receivedMessage);
+			Assert.AreEqual(sentMessage, echoServer.LastMessageReceived);
 		}
 
 		[Test, Category("Slow")]
@@ -95,51 +111,38 @@ namespace DeltaEngine.Networking.Sockets.Tests
 		{
 			using (var client = CreatedConnectedClient())
 			{
-				client.DataReceived += (clientConnection, message) => { clientReceivedResponseCount++; };
-				server.ClientDataReceived += (clientConnection, data) => { serverReceivedMessageCount++; };
+				client.DataReceived += (message) => clientReceivedResponseCount++;
+				echoServer.ClientDataReceived += (connection, data) => serverReceivedMessageCount++;
 				WaitForServerResponse();
-				Assert.AreEqual(1, server.NumberOfConnectedClients);
-
-				SendTestMessageAndCheckMessageCount(client, 1);
-				SendTestMessageAndCheckMessageCount(client, 2);
-				SendTestMessageAndCheckMessageCount(client, 3);
+				Assert.AreEqual(1, echoServer.NumberOfConnectedClients);
+				for (int messageIndex = 1; messageIndex <= 5; messageIndex++)
+					SendTestMessageAndCheckMessageCount(client, messageIndex);
 			}
-		}
-
-		private int serverReceivedMessageCount;
-		private int clientReceivedResponseCount;
-
-		[SetUp]
-		public void InitializeMessageCounter()
-		{
-			serverReceivedMessageCount = 0;
-			clientReceivedResponseCount = 0;
 		}
 
 		private void SendTestMessageAndCheckMessageCount(Client client, int expectedMessageCount)
 		{
-			client.Send(new TestMessage("TestMessage"));
+			client.Send(new TextMessage("TestMessage"));
 			WaitForServerResponse();
-			Assert.AreEqual(1, server.NumberOfConnectedClients);
+			Assert.AreEqual(1, echoServer.NumberOfConnectedClients);
 			Assert.AreEqual(expectedMessageCount, serverReceivedMessageCount);
 			Assert.AreEqual(expectedMessageCount, clientReceivedResponseCount);
 		}
 
-		private void WaitForServerResponse(int milliseconds = 30)
+		[Test, Category("Slow")]
+		public void SendMalformedMessageToServer()
 		{
-			Thread.Sleep(milliseconds);
-		}
-	}
-
-	public class EchoServer : TcpNetworkingServer
-	{
-		public EchoServer(TcpServerSocket socket)
-			: base(socket)
-		{
-			ClientDataReceived += (socket1, data) =>
+			using (var client = CreatedConnectedClient())
 			{
-				socket1.Send(new TestMessage("TestMessage"));
-			};
+				client.Dispose();
+				client.Send(new TextMessage("TestMessage"));
+			}
+		}
+
+		[TearDown]
+		public void DisposeConnectionsSockets()
+		{
+			echoServer.Dispose();
 		}
 	}
 }

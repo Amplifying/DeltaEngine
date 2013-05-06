@@ -1,18 +1,20 @@
-﻿using System;
+using System;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
 using DeltaEngine.Platforms;
+using DeltaEngine.Platforms.All;
 using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Rendering;
 using NUnit.Framework;
 
 namespace Breakout.Tests
 {
-	public class LevelTests : TestStarter
+	public class LevelTests : TestWithAllFrameworks
 	{
 		[VisualTest]
 		public void Draw(Type type)
 		{
-			Start(type, (Level level) => { });
+			Start(type, (Level level) => {});
 		}
 
 		[VisualTest]
@@ -63,14 +65,14 @@ namespace Breakout.Tests
 		[Test]
 		public void SwitchLevels()
 		{
-			var resolver = new TestResolver();
-			var level = resolver.Resolve<Level>();
-			var score = resolver.Resolve<Score>();
-			for (int levelNum = 1; levelNum <= 5; levelNum++)
+			Start(typeof(MockResolver), (Level level, Score score) =>
 			{
-				Assert.AreEqual(levelNum, score.Level);
-				level.InitializeNextLevel();
-			}
+				for (int levelNum = 1; levelNum <= 5; levelNum++)
+				{
+					Assert.AreEqual(levelNum, score.Level);
+					level.InitializeNextLevel();
+				}
+			});
 		}
 
 		[IntegrationTest]
@@ -103,9 +105,8 @@ namespace Breakout.Tests
 			{
 				Assert.AreEqual(4, level.BricksLeft);
 				var brick = level.GetBrickAt(0.25f, 0.25f);
-				Assert.IsTrue(brick.IsVisible);
-				brick.Dispose();
-				Assert.IsFalse(brick.IsVisible);
+				Assert.IsTrue(brick.Visibility == Visibility.Show);
+				brick.Visibility = Visibility.Hide;
 				Assert.AreEqual(3, level.BricksLeft);
 				Assert.IsNull(level.GetBrickAt(0.25f, 0.25f));
 			});
@@ -118,12 +119,13 @@ namespace Breakout.Tests
 			Start(type, (Level level, TestBall ball) =>
 			{
 				remBall = ball;
-				if (testResolver != null)
-				{
-					testResolver.SetKeyboardState(Key.Space, State.Pressing);
-					testResolver.AdvanceTimeAndExecuteRunners(0.1f);
-				}
+				if (mockResolver == null)
+					return;
+
+				mockResolver.input.SetKeyboardState(Key.Space, State.Pressing);
+				mockResolver.AdvanceTimeAndExecuteRunners(0.1f);
 			});
+
 			if (remBall != null)
 				Assert.IsFalse(remBall.IsCurrentlyOnPaddle);
 		}

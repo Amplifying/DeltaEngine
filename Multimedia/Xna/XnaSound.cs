@@ -1,5 +1,9 @@
-﻿using DeltaEngine.Core;
+using System;
+using System.IO;
+using DeltaEngine.Core;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
+using System.Diagnostics;
 
 namespace DeltaEngine.Multimedia.Xna
 {
@@ -8,17 +12,53 @@ namespace DeltaEngine.Multimedia.Xna
 	/// </summary>
 	public class XnaSound : Sound
 	{
-		public XnaSound(string filename, XnaSoundDevice device)
-			: base(filename, device)
+		public XnaSound(string contentName, XnaSoundDevice device, ContentManager contentManager)
+			: base(contentName, device)
 		{
-			effect = device.Content.Load<SoundEffect>(filename);
+			this.contentManager = contentManager;
 		}
+
+		private readonly ContentManager contentManager;
 
 		private SoundEffect effect;
 
-		public override void Dispose()
+		protected override bool CanLoadDataFromStream
 		{
-			base.Dispose();
+			get { return false; }
+		}
+
+		protected override void LoadData(Stream fileData)
+		{
+			throw new XnaVideo.XnaOnlyAllowsLoadingThroughContentNames();	
+		}
+
+		protected override void LoadFromContentName(string contentName)
+		{
+			try
+			{
+				effect = contentManager.Load<SoundEffect>(contentName);
+			}
+			catch (Exception ex)
+			{
+				//logger.Error(ex);
+				if (!Debugger.IsAttached)
+				{
+					return;
+				}
+				else
+					throw new XnaSoundContentNotFound(contentName, ex);
+			}
+		}
+
+		public class XnaSoundContentNotFound : Exception
+		{
+			public XnaSoundContentNotFound(string contentName, Exception exception)
+				: base(contentName, exception) {}
+		}
+
+		protected override void DisposeData()
+		{
+			base.DisposeData();
 			if (effect != null)
 				effect.Dispose();
 			effect = null;

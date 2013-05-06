@@ -1,99 +1,119 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
+	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+	<PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <PlatformTarget>x86</PlatformTarget>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DeltaEngine.Rendering</RootNamespace>
     <AssemblyName>DeltaEngine.Rendering</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+	</PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
-    <WarningLevel>4</WarningLevel>
     <Optimize>false</Optimize>
-    <CodeAnalysisRuleSet>..\..\..\Users\Stephan\Desktop\DeltaEngineModifiedRuleSet.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\DeltaEngine.Rendering.XML</DocumentationFile>
+    <PlatformTarget>x86</PlatformTarget>
+    <DocumentationFile>bin\Debug\DeltaEngine.Rendering.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
     <DocumentationFile>bin\Release\DeltaEngine.Rendering.XML</DocumentationFile>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AnimatedSprite.cs" />
-    <Compile Include="BubbleSortedList.cs" />
-    <Compile Include="Camera2DControlledQuadraticScreenSpace.cs" />
-    <Compile Include="LineEntity.cs" />
-    <Compile Include="OutlinedRect.cs" />
-    <Compile Include="LineShape.cs" />
-    <Compile Include="Shapes\Circle.cs" />
-    <Compile Include="Shapes\Ellipse.cs" />
-    <Compile Include="Shapes\Rect.cs" />
-    <Compile Include="OutlinedCircle.cs" />
-    <Compile Include="VectorText.cs" />
-    <Compile Include="ZoomingEffect.cs" />
-    <Compile Include="FallingEffect.cs" />
-    <Compile Include="OutlinedEllipse.cs" />
-    <Compile Include="FadeoutEffect.cs" />
-    <Compile Include="FlipMode.cs" />
-    <Compile Include="PixelScreenSpace.cs" />
-    <Compile Include="RelativeScreenSpace.cs" />
-    <Compile Include="ScreenSpace.cs" />
-    <Compile Include="Sprite.cs" />
-    <Compile Include="Line2D.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Renderable.cs" />
-    <Compile Include="Renderer.cs" />
-    <Compile Include="QuadraticScreenSpace.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Core\DeltaEngine.Core.csproj">
-      <Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
-      <Name>DeltaEngine.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Core\Xml\DeltaEngine.Core.Xml.csproj">
-      <Project>{138a40b5-3d80-4ba3-bd84-d82c151ee7fe}</Project>
-      <Name>DeltaEngine.Core.Xml</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Datatypes\DeltaEngine.Datatypes.csproj">
-      <Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
-      <Name>DeltaEngine.Datatypes</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Graphics\DeltaEngine.Graphics.csproj">
-      <Project>{8f701b0d-48b6-45cf-85e0-286bd53328ba}</Project>
-      <Name>DeltaEngine.Graphics</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Platforms\DeltaEngine.Platforms.csproj">
-      <Project>{bae8830e-5f62-48d6-b772-c4b1e8665fb3}</Project>
-      <Name>DeltaEngine.Platforms</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup />
+	<ItemGroup>
+		<Reference Include="System" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Content\DeltaEngine.Content.csproj">
+			<Project>{f1b6345b-6f28-482f-9230-8f1d8674c28a}</Project>
+			<Name>DeltaEngine.Content</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\Core\DeltaEngine.Core.csproj">
+			<Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
+			<Name>DeltaEngine.Core</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\Core\Xml\DeltaEngine.Core.Xml.csproj">
+			<Project>{138a40b5-3d80-4ba3-bd84-d82c151ee7fe}</Project>
+			<Name>DeltaEngine.Core.Xml</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\Datatypes\DeltaEngine.Datatypes.csproj">
+			<Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
+			<Name>DeltaEngine.Datatypes</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\Entities\DeltaEngine.Entities.csproj">
+			<Project>{c6ba144d-59b0-41b1-8682-b092b4efbbb1}</Project>
+			<Name>DeltaEngine.Entities</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\Graphics\DeltaEngine.Graphics.csproj">
+			<Project>{8f701b0d-48b6-45cf-85e0-286bd53328ba}</Project>
+			<Name>DeltaEngine.Graphics</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\Platforms\DeltaEngine.Platforms.csproj">
+			<Project>{bae8830e-5f62-48d6-b772-c4b1e8665fb3}</Project>
+			<Name>DeltaEngine.Platforms</Name>
+		</ProjectReference>
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Include="Properties\AssemblyInfo.cs" />
+		<Compile Include="Sprites\FallingSprite.cs" />
+		<Compile Include="Sprites\MoveSpriteReflectingAtBorder.cs" />
+		<Compile Include="Shapes\Rect.cs" />
+		<Compile Include="Sprites\AnimatedSprite.cs" />
+		<Compile Include="Camera2DControlledQuadraticScreenSpace.cs" />
+		<Compile Include="Triggers\CollisionTrigger.cs" />
+		<Compile Include="Entity2D.cs" />
+		<Compile Include="Sprites\Fall.cs" />
+		<Compile Include="Shapes\Line2D.cs" />
+		<Compile Include="Sprites\PhysicsObject.cs" />
+		<Compile Include="Sprites\PhysicsSprite.cs" />
+		<Compile Include="SortAndRenderEntity2D.cs" />
+		<Compile Include="Shapes\Render2DLines.cs" />
+		<Compile Include="Shapes\RenderPolygon.cs" />
+		<Compile Include="Shapes\Polygon.cs" />
+		<Compile Include="Shapes\RenderPolygonOutline.cs" />
+		<Compile Include="Shapes\Ellipse.cs" />
+		<Compile Include="Shapes\CalculateEllipsePoints.cs" />
+		<Compile Include="Shapes\OutlineColor.cs" />
+		<Compile Include="RenderLayer.cs" />
+		<Compile Include="Rotation.cs" />
+		<Compile Include="RotationCenter.cs" />
+		<Compile Include="Sprites\RotateSpriteByRotationSpeed.cs" />
+		<Compile Include="Sprites\Sprite.cs" />
+		<Compile Include="Sprites\RenderSprite.cs" />
+		<Compile Include="Sprites\SpriteAnimationData.cs" />
+		<Compile Include="Triggers\TimeTrigger.cs" />
+		<Compile Include="Triggers\TimeTriggerData.cs" />
+		<Compile Include="Transitions\Transition.cs" />
+		<Compile Include="Shapes\Triangle2D.cs" />
+		<Compile Include="Transitions\PerformTransition.cs" />
+		<Compile Include="FlipMode.cs" />
+		<Compile Include="PixelScreenSpace.cs" />
+		<Compile Include="RelativeScreenSpace.cs" />
+		<Compile Include="ScreenSpace.cs" />
+		<Compile Include="QuadraticScreenSpace.cs" />
+		<Compile Include="Sprites\UpdateAnimation.cs" />
+		<Compile Include="Transitions\TransitionColor.cs" />
+		<Compile Include="Transitions\TransitionOutlineColor.cs" />
+		<Compile Include="Transitions\TransitionPosition.cs" />
+		<Compile Include="Transitions\TransitionRotation.cs" />
+		<Compile Include="Transitions\TransitionSize.cs" />
+		<Compile Include="Triggers\Trigger2D.cs" />
+		<Compile Include="Triggers\CollisionTriggerData.cs" />
+		<Compile Include="Shapes\CalculateRectCorners.cs" />
+		<Compile Include="Visibility.cs" />
+	</ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

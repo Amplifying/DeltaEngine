@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace DeltaEngine.Logging
 {
@@ -7,7 +7,10 @@ namespace DeltaEngine.Logging
 	/// </summary>
 	public class Error : Warning
 	{
-		public Error() { }
+		/// <summary>
+		/// Need empty constructor for BinaryDataExtensions class reconstruction
+		/// </summary>
+		private Error() { } 
 
 		public Error(Exception ex)
 			: base(ex) {}

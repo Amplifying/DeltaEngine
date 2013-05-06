@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
 
 namespace DeltaEngine.Core
 {
@@ -119,6 +120,16 @@ namespace DeltaEngine.Core
 		{
 			return value != null &&
 				value.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0;
+		}
+
+		public static byte[] ToByteArray(string text)
+		{
+			return Encoding.UTF8.GetBytes(text);
+		}
+
+		public static string FromByteArray(byte[] byteArray)
+		{
+			return Encoding.UTF8.GetString(byteArray);
 		}
 	}
 }

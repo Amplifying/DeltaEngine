@@ -1,9 +1,9 @@
-﻿using System.Net;
+using System.Net;
 using NUnit.Framework;
 
 namespace DeltaEngine.Networking.Sockets.Tests
 {
-	internal class NetworkExtensionsTests
+	public class NetworkExtensionsTests
 	{
 		[Test]
 		public void TestToEndPointWithExternalAddress()

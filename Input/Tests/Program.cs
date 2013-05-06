@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms.Tests;
 
 namespace DeltaEngine.Input.Tests
 {
@@ -6,7 +6,7 @@ namespace DeltaEngine.Input.Tests
 	{
 		public static void Main()
 		{
-			new MouseTests().CountPressingAndReleasing(TestStarter.OpenGL);
+			//new MouseTests().CountPressingAndReleasing(TestStarter.OpenGL);
 		}
 	}
 }

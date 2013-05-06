@@ -1,4 +1,4 @@
-﻿namespace DeltaEngine.Input
+namespace DeltaEngine.Input
 {
 	/// <summary>
 	/// Extensions to make it easier to work with Input states used for keys, buttons and gestures.

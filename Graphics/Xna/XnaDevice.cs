@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 using Microsoft.Xna.Framework;
@@ -25,19 +25,29 @@ namespace DeltaEngine.Graphics.Xna
 		private void CreateAndSetupNativeDeviceManager(Game game)
 		{
 			game.SuppressDraw();
-			deviceManager = new GraphicsDeviceManager(game);
-			deviceManager.SupportedOrientations = DisplayOrientation.Portrait |
-				DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;
-			deviceManager.SynchronizeWithVerticalRetrace = false;
-			deviceManager.PreferredBackBufferFormat = SurfaceFormat.Color;
-			deviceManager.PreferredBackBufferWidth = 1024;
-			deviceManager.PreferredBackBufferHeight = 640;
-			deviceManager.ApplyChanges();
+			CreateDeviceManager(game);
 			NativeContent = game.Content;
 			NativeContent.RootDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Content");
 		}
 
+		private void CreateDeviceManager(Game game)
+		{
+			deviceManager = new GraphicsDeviceManager(game)
+			{
+				SupportedOrientations =
+					DisplayOrientation.Portrait | DisplayOrientation.LandscapeLeft |
+						DisplayOrientation.LandscapeRight,
+				SynchronizeWithVerticalRetrace = false,
+				PreferredBackBufferFormat = SurfaceFormat.Color,
+				PreferredBackBufferWidth = 640,
+				PreferredBackBufferHeight = 360,
+				GraphicsProfile = GraphicsProfile.HiDef
+			};
+			deviceManager.ApplyChanges();
+		}
+
 		private GraphicsDeviceManager deviceManager;
+
 
 		public GraphicsDevice NativeDevice
 		{

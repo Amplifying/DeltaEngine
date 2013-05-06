@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using DeltaEngine.Platforms;
+using System.Collections.Generic;
 using DeltaEngine.Platforms.Tests;
 using DeltaEngine.Rendering;
 using Microsoft.Xna.Framework;
@@ -9,12 +8,12 @@ using Point = DeltaEngine.Datatypes.Point;
 
 namespace DeltaEngine.Input.Xna.Tests
 {
-	public class XnaTouchTests : TestStarter
+	public class XnaTouchTests
 	{
 		[Test]
 		public void TestXnaTouchLogic()
 		{
-			var window = new TestResolver().Resolve<Window>();
+			var window = new MockResolver().rendering.Window;
 			var screen = new PixelScreenSpace(window);
 			var touch = new XnaMockTouch(window, screen) { TouchCollection = GetFirstTouchCollection() };
 			touch.Run();

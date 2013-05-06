@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using SharpDXKey = global::SharpDX.DirectInput.Key;
 
 namespace DeltaEngine.Input.SharpDX.Tests

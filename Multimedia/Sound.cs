@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using DeltaEngine.Core;
+using DeltaEngine.Content;
 
 namespace DeltaEngine.Multimedia
 {
@@ -10,8 +10,8 @@ namespace DeltaEngine.Multimedia
 	/// </summary>
 	public abstract class Sound : ContentData
 	{
-		protected Sound(string filename, SoundDevice device)
-			: base(filename)
+		protected Sound(string contentName, SoundDevice device)
+			: base(contentName)
 		{
 			this.device = device;
 		}
@@ -32,7 +32,7 @@ namespace DeltaEngine.Multimedia
 			}
 		}
 
-		public override void Dispose()
+		protected override void DisposeData()
 		{
 			foreach (var instance in internalInstances.ToList())
 				Remove(instance);
@@ -46,7 +46,7 @@ namespace DeltaEngine.Multimedia
 			SoundInstance freeInstance = GetInternalNonPlayingInstance();
 			freeInstance.Volume = volume;
 			freeInstance.Panning = panning;
-			PlayInstance(freeInstance);
+			freeInstance.Play();
 		}
 
 		private SoundInstance GetInternalNonPlayingInstance()
@@ -126,5 +126,12 @@ namespace DeltaEngine.Multimedia
 
 		public event Action<SoundInstance> OnPlay;
 		public event Action<SoundInstance> OnStop;
+
+		//ncrunch: no coverage start
+		public class SoundNotFoundOrAccessible : Exception
+		{
+			public SoundNotFoundOrAccessible(string soundName, Exception innerException)
+				: base(soundName, innerException) { }
+		}
 	}
 }

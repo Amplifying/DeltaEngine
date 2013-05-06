@@ -1,14 +1,34 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
+using DeltaEngine.Platforms.All;
 using DeltaEngine.Platforms.Tests;
 using NUnit.Framework;
 
 namespace DeltaEngine.Graphics.Tests
 {
-	public class DrawingTests : TestStarter
+	public class DrawingTests : TestWithAllFrameworks
 	{
+		[VisualTest, ApproveFirstFrameScreenshot]
+		public void ShowRedLine(Type resolver)
+		{
+			var vertices = new VertexPositionColor[2];
+			Drawing remDrawing = null;
+			Start(resolver, (Drawing drawing, Window window) =>
+			{
+				remDrawing = drawing;
+				DrawLine(window, vertices, Color.Red);
+			}, () => remDrawing.DrawVertices(VerticesMode.Lines, vertices));
+		}
+
+		private static void DrawLine(Window window, IList<VertexPositionColor> vertices, Color color)
+		{
+			vertices[0] = new VertexPositionColor(Point.Zero, color);
+			vertices[1] = new VertexPositionColor(window.ViewportPixelSize, color);
+			window.ViewportSizeChanged += s => vertices[1] = new VertexPositionColor(s, Color.White);
+		}
+
 		[IntegrationTest]
 		public void DrawVertices(Type resolver)
 		{
@@ -52,19 +72,8 @@ namespace DeltaEngine.Graphics.Tests
 			});
 		}
 
-		[VisualTest]
-		public void ShowRedLine(Type resolver)
-		{
-			var vertices = new VertexPositionColor[2];
-			Drawing remDrawing = null;
-			Start(resolver, (Drawing drawing, Window window) =>
-			{
-				remDrawing = drawing;
-				ShowLineFullscreenOrNot(window, vertices, false);
-			}, () => remDrawing.DrawVertices(VerticesMode.Lines, vertices));
-		}
-
-		[VisualTest]
+		//ncrunch: no coverage start
+		[VisualTest, ApproveFirstFrameScreenshot, Ignore]
 		public void ShowYellowLineFullscreen(Type resolver)
 		{
 			var vertices = new VertexPositionColor[2];
@@ -72,21 +81,9 @@ namespace DeltaEngine.Graphics.Tests
 			Start(resolver, (Drawing drawing, Window window) =>
 			{
 				remDrawing = drawing;
-				ShowLineFullscreenOrNot(window, vertices, true);
-			}, () => remDrawing.DrawVertices(VerticesMode.Lines, vertices));
-		}
-
-		private void ShowLineFullscreenOrNot(Window window, IList<VertexPositionColor> vertices,
-			bool fullscreen)
-		{
-			if(fullscreen)
 				window.SetFullscreen(new Size(640, 480));
-			vertices[0] = new VertexPositionColor(Point.Zero, Color.Red);
-			vertices[1] = new VertexPositionColor(window.ViewportPixelSize, Color.Red);
-			window.ViewportSizeChanged +=
-				size => vertices[1] = new VertexPositionColor(size, Color.Red);
-			if (testResolver != null)
-				window.TotalPixelSize = new Size(640, 480);
+				DrawLine(window, vertices, Color.Yellow);
+			}, () => remDrawing.DrawVertices(VerticesMode.Lines, vertices));
 		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Scenes
@@ -18,22 +18,21 @@ namespace DeltaEngine.Scenes
 		public SceneFile(string filePath)
 		{
 			if (Path.GetExtension(filePath) == "")
-				filePath += ".dat";
+				filePath += SceneContentFile.FileExtension;
 
 			using (var s = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
 			using (var reader = new BinaryReader(s))
-				Scene = reader.Create<Scene>();
+				Scene = reader.Create() as Scene;
 		}
 
 		public void Save(string filePath)
 		{
 			if (Path.GetExtension(filePath) == "")
-				filePath += ".dat";
+				filePath += SceneContentFile.FileExtension;
 
-			using (
-				var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write,
-					FileShare.ReadWrite))
-			using (var writer = new BinaryWriter(stream))
+			using (var s = new FileStream(filePath, FileMode.Create, FileAccess.Write,
+				FileShare.ReadWrite))
+			using (var writer = new BinaryWriter(s))
 				Scene.Save(writer);
 		}
 	}

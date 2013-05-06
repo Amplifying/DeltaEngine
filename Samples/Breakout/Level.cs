@@ -1,9 +1,11 @@
-﻿using System;
-using DeltaEngine.Core;
+using System;
+using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
 using DeltaEngine.Multimedia;
 using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.Sprites;
 
 namespace Breakout
 {
@@ -12,13 +14,13 @@ namespace Breakout
 	/// </summary>
 	public class Level : IDisposable
 	{
-		public Level(Content content, Renderer renderer, Score score)
+		public Level(EntitySystem entitySystem, ContentLoader content, Score score)
 		{
 			brickImage = content.Load<Image>("Brick");
 			explosionImage = content.Load<Image>("Explosion");
 			explosionSound = content.Load<Sound>("BrickExplosion");
 			lostBallSound = content.Load<Sound>("LostBall");
-			this.renderer = renderer;
+			this.entitySystem = entitySystem;
 			this.score = score;
 			Initialize();
 		}
@@ -27,14 +29,14 @@ namespace Breakout
 		private readonly Image explosionImage;
 		private readonly Sound explosionSound;
 		private readonly Sound lostBallSound;
-		protected readonly Renderer renderer;
+		private readonly EntitySystem entitySystem;
 		private readonly Score score;
 
 		private void Initialize()
 		{
 			rows = score.Level + 1;
 			columns = score.Level + 1;
-			bricks = new Sprite[rows, columns];
+			bricks = new Sprite[rows,columns];
 			brickWidth = 1.0f / rows;
 			brickHeight = 0.5f / columns;
 			CreateBricks();
@@ -56,7 +58,7 @@ namespace Breakout
 		private Sprite CreateBrick(int x, int y)
 		{
 			var brick = new Sprite(brickImage, GetBounds(x, y), GetBrickColor(x, y));
-			renderer.Add(brick);
+			entitySystem.Add(brick);
 			return brick;
 		}
 
@@ -100,8 +102,8 @@ namespace Breakout
 			return LevelThreeColors[(x * 4 + y) % LevelThreeColors.Length];
 		}
 
-		private static readonly Color[] LevelThreeColors = new[] { Color.Yellow, Color.Teal,
-			Color.Green, Color.LightBlue, Color.Teal };
+		private static readonly Color[] LevelThreeColors = new[]
+		{ Color.Yellow, Color.Teal, Color.Green, Color.LightBlue, Color.Teal };
 
 		private static Color GetLevelFourBrickColor(int x, int y)
 		{
@@ -124,7 +126,7 @@ namespace Breakout
 		{
 			for (int x = 0; x < rows; x++)
 				for (int y = 0; y < columns; y++)
-					bricks[x, y].Dispose();
+					bricks[x, y].Visibility = Visibility.Hide;
 		}
 
 		public int BricksLeft
@@ -134,7 +136,7 @@ namespace Breakout
 				var bricksAlive = 0;
 				for (int x = 0; x < rows; x++)
 					for (int y = 0; y < columns; y++)
-						if (bricks[x, y].IsVisible)
+						if (bricks[x, y].Visibility == Visibility.Show)
 							bricksAlive++;
 
 				return bricksAlive;
@@ -146,7 +148,7 @@ namespace Breakout
 			var brickIndexX = (int)(x / brickWidth);
 			var brickIndexY = (int)(y / brickHeight);
 			if (brickIndexX < 0 || brickIndexX >= rows || brickIndexY < 0 || brickIndexY >= columns ||
-				!bricks[brickIndexX, brickIndexY].IsVisible)
+				bricks[brickIndexX, brickIndexY].Visibility != Visibility.Show)
 				return null;
 
 			return bricks[brickIndexX, brickIndexY];
@@ -155,17 +157,13 @@ namespace Breakout
 		public void Explode(Sprite brick)
 		{
 			score.IncreasePoints();
-			brick.Dispose();
-			renderer.Add(new FadeoutEffect(explosionImage, Rectangle.FromCenter(brick.DrawArea.Center, 
-				new Size(brickWidth))));
+			brick.Visibility = Visibility.Hide;
 			explosionSound.Play();
 		}
 
 		public void LifeLost(Point ballLostPosition)
 		{
 			score.LifeLost();
-			renderer.Add(new FadeoutEffect(explosionImage, Rectangle.FromCenter(ballLostPosition, 
-				new Size(0.2f))));
 			lostBallSound.Play();
 		}
 	}

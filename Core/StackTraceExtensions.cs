@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -22,14 +22,15 @@ namespace DeltaEngine.Core
 
 		private static bool HasNoTestOrIsVisualTest(IEnumerable<StackFrame> frames)
 		{
-			return !frames.Any(IsTestMethod) || GetIsVisualTestCaseAndReset();
+			return !frames.Any(IsJustTestMethod) || GetIsVisualTestCaseAndReset();
 		}
 
-		private static bool IsTestMethod(StackFrame frame)
+		private static bool IsJustTestMethod(StackFrame frame)
 		{
-			return frame.HasAttribute(TestAttribute) && !frame.HasAttribute(IgnoreAttribute) ||
-				frame.HasAttribute(TestCaseAttribute) || frame.HasAttribute(IntegrationTestAttribute) ||
-				StartedFromNCrunch && frame.HasAttribute(VisualTestAttribute);
+			bool isVisualTest = frame.HasAttribute(VisualTestAttribute);
+			return frame.HasAttribute(TestAttribute) && !frame.HasAttribute(IgnoreAttribute) &&
+				!isVisualTest || frame.HasAttribute(TestCaseAttribute) ||
+				frame.HasAttribute(IntegrationTestAttribute) || StartedFromNCrunch && isVisualTest;
 		}
 
 		public static bool StartedFromNCrunch { get; set; }
@@ -38,10 +39,18 @@ namespace DeltaEngine.Core
 		private const string IgnoreAttribute = "NUnit.Framework.IgnoreAttribute";
 		private const string TestCaseAttribute = "NUnit.Framework.TestCaseAttribute";
 		private const string IntegrationTestAttribute =
-			"DeltaEngine.Platforms.Tests.IntegrationTestAttribute";
-		private const string VisualTestAttribute = "DeltaEngine.Platforms.Tests.VisualTestAttribute";
+			"DeltaEngine.Platforms.All.IntegrationTestAttribute";
+		private const string VisualTestAttribute = "DeltaEngine.Platforms.All.VisualTestAttribute";
+		private const string ApproveFirstFrameScreenshotAttribute =
+			"DeltaEngine.Platforms.Tests.ApproveFirstFrameScreenshotAttribute";
 
-		public static bool GetIsVisualTestCaseAndReset()
+		public static bool IsApprovalTest(this IEnumerable<StackFrame> frames)
+		{
+			return frames.Any(f => f.HasAttribute(ApproveFirstFrameScreenshotAttribute) &&
+				(f.HasAttribute(IntegrationTestAttribute) || f.HasAttribute(VisualTestAttribute)));
+		}
+
+		private static bool GetIsVisualTestCaseAndReset()
 		{
 			if (IsVisualTestCase == false)
 				return false;
@@ -83,7 +92,7 @@ namespace DeltaEngine.Core
 			Debug.Assert(frames != null);
 
 			var testName = GetTestMethodName(frames);
-			if (testName != "")
+			if (!string.IsNullOrEmpty(testName))
 				return testName;
 
 			foreach (StackFrame frame in frames.Where(frame => frame.GetMethod().Name == "Main"))
@@ -95,16 +104,30 @@ namespace DeltaEngine.Core
 		public static string GetTestMethodName(this IEnumerable<StackFrame> frames)
 		{
 			foreach (StackFrame frame in frames)
-				if (frame.HasAttribute(TestAttribute) || frame.HasAttribute(TestCaseAttribute) ||
-					frame.HasAttribute(VisualTestAttribute) || frame.HasAttribute(IntegrationTestAttribute))
+				if (IsAnyTestAttribute(frame))
 					return frame.GetMethod().Name;
-			return "";
+
+			return string.Empty;
+		}
+
+		private static bool IsAnyTestAttribute(StackFrame frame)
+		{
+			return frame.HasAttribute(TestAttribute) || frame.HasAttribute(TestCaseAttribute) ||
+				frame.HasAttribute(VisualTestAttribute) || frame.HasAttribute(IntegrationTestAttribute);
 		}
 
 		private static string GetNamespaceName(StackFrame frame)
 		{
 			var classType = frame.GetMethod().DeclaringType;
 			return classType != null ? classType.Namespace : "";
+		}
+
+		public static string GetClassName(this IEnumerable<StackFrame> frames)
+		{
+			foreach (StackFrame frame in frames.Where(frame => IsAnyTestAttribute(frame)))
+				return frame.GetMethod().DeclaringType.Name;
+
+			return string.Empty;
 		}
 	}
 }

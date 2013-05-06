@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Networking
 {
@@ -9,21 +8,21 @@ namespace DeltaEngine.Networking
 	/// </summary>
 	public abstract class Server : IDisposable
 	{
+		public abstract void Start(int listenPort);
+		public abstract void Start(Client serverSocket);
 		public virtual bool IsRunning { get; protected set; }
-
 		public int ListenPort { get; protected set; }
-
 		public int NumberOfConnectedClients
 		{
 			get { return connectedClients.Count; }
 		}
 
-		protected readonly List<ClientConnection> connectedClients = new List<ClientConnection>();
+		protected readonly List<Client> connectedClients = new List<Client>();
 
-		protected void OnClientConnected(ClientConnection client)
+		protected void OnClientConnected(Client client)
 		{
-			client.Disconnected += OnClientDisconnected;
-			client.DataReceived += OnClientDataReceived;
+			client.Disconnected += () => OnClientDisconnected(client);
+			client.DataReceived += message => OnClientDataReceived(client, message);
 
 			lock (connectedClients)
 				connectedClients.Add(client);
@@ -32,7 +31,7 @@ namespace DeltaEngine.Networking
 				ClientConnected(client);
 		}
 
-		protected virtual void OnClientDisconnected(ClientConnection client)
+		protected virtual void OnClientDisconnected(Client client)
 		{
 			lock (connectedClients)
 				connectedClients.Remove(client);
@@ -41,22 +40,22 @@ namespace DeltaEngine.Networking
 				ClientDisconnected(client);
 		}
 
-		public event Action<ClientConnection> ClientDisconnected;
-		public event Action<ClientConnection> ClientConnected;
+		public event Action<Client> ClientDisconnected;
+		public event Action<Client> ClientConnected;
 
-		protected virtual void OnClientDataReceived(ClientConnection client, BinaryData message)
+		public void OnClientDataReceived(Client client, object message)
 		{
 			if (ClientDataReceived != null)
 				ClientDataReceived(client, message);
 		}
 
-		public event Action<ClientConnection, BinaryData> ClientDataReceived;
+		public event Action<Client, object> ClientDataReceived;
 
 		public virtual void Dispose()
 		{
 			lock (connectedClients)
 			{
-				var closingConnections = new List<ClientConnection>(connectedClients);
+				var closingConnections = new List<Client>(connectedClients);
 				foreach (var connection in closingConnections)
 					connection.Dispose();
 			}

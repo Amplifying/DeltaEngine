@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using SharpDX;
 using SharpDX.Multimedia;
 using SharpDX.XAudio2;
+using System.Diagnostics;
+using System;
 
 namespace DeltaEngine.Multimedia.SharpDX
 {
@@ -15,24 +17,33 @@ namespace DeltaEngine.Multimedia.SharpDX
 			: base(filename, device)
 		{
 			xAudio = device.XAudio2;
-			using (var stream = LoadStream("Content/" + filename + ".wav"))
-			{
-				format = stream.Format;
-				length = CalculateLengthInSeconds(format, (int)stream.Length);
-				buffer = CreateAudioBuffer(stream.ToDataStream());
-				decodedInfo = stream.DecodedPacketsInfo;
-			}
 		}
 
 		private readonly XAudio2 xAudio;
-		private readonly uint[] decodedInfo;
-		private readonly WaveFormat format;
-		private AudioBuffer buffer;
 
-		private static SoundStream LoadStream(string filename)
+		protected override void LoadData(Stream fileData)
 		{
-			return new SoundStream(File.OpenRead(filename));
+			try
+			{
+				var soundStream = new SoundStream(fileData);
+				format = soundStream.Format;
+				length = CalculateLengthInSeconds(format, (int)soundStream.Length);
+				buffer = CreateAudioBuffer(soundStream.ToDataStream());
+				decodedInfo = soundStream.DecodedPacketsInfo;
+			}
+			catch (Exception ex)
+			{
+				if (!Debugger.IsAttached)
+					return;
+				else
+					throw new SoundNotFoundOrAccessible(Name, ex);
+			}
 		}
+
+		private WaveFormat format;
+		private float length;
+		private AudioBuffer buffer;
+		private uint[] decodedInfo;
 
 		private static AudioBuffer CreateAudioBuffer(DataStream dataStream)
 		{
@@ -49,16 +60,14 @@ namespace DeltaEngine.Multimedia.SharpDX
 			return (float)dataLength / format.BlockAlign / format.SampleRate;
 		}
 
-		private readonly float length;
-
 		public override float LengthInSeconds
 		{
 			get { return length; }
 		}
 
-		public override void Dispose()
+		protected override void DisposeData()
 		{
-			base.Dispose();
+			base.DisposeData();
 			if (buffer != null)
 				buffer.Stream.Dispose();
 			buffer = null;

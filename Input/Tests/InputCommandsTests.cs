@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms.All;
 using NUnit.Framework;
 
 namespace DeltaEngine.Input.Tests
 {
-	public class InputCommandsTests : TestStarter
+	public class InputCommandsTests : TestWithAllFrameworks
 	{
 		[IntegrationTest]
 		public void CountCommandsForSimpleCommand(Type resolver)

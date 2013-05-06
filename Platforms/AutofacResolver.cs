@@ -1,11 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Autofac;
 using Autofac.Builder;
 using Autofac.Core;
 using Autofac.Features.ResolveAnything;
+using DeltaEngine.Content;
 using DeltaEngine.Core;
+using DeltaEngine.Core.Xml;
+using DeltaEngine.Entities;
 
 namespace DeltaEngine.Platforms
 {
@@ -57,10 +61,22 @@ namespace DeltaEngine.Platforms
 		{
 			if (assemblyOfFirstNonDeltaEngineType == null &&
 				!t.Assembly.FullName.Contains("DeltaEngine."))
-				assemblyOfFirstNonDeltaEngineType = t.Assembly;
+				assemblyOfFirstNonDeltaEngineType = t.Assembly; // ncrunch: no coverage
 
-			alreadyRegisteredTypes.Add(t);
+			AddRegisteredType(t);
 			return builder.RegisterType(t).AsSelf().OnActivating(ActivatingInstance());
+		}
+
+		private void AddRegisteredType(Type t)
+		{
+			if (!alreadyRegisteredTypes.Contains(t))
+			{
+				alreadyRegisteredTypes.Add(t);
+				return;
+			}
+
+			if (ExceptionExtensions.IsDebugMode && !t.IsInterface && !t.IsAbstract)
+				Console.WriteLine("Warning: Type " + t + " already exists in alreadyRegisteredTypes");
 		}
 
 		private Assembly assemblyOfFirstNonDeltaEngineType;
@@ -69,8 +85,9 @@ namespace DeltaEngine.Platforms
 		protected void RegisterInstance(object instance)
 		{
 			var registration =
-				builder.RegisterInstance(instance).SingleInstance().AsImplementedInterfaces();
-			alreadyRegisteredTypes.Add(instance.GetType());
+				builder.RegisterInstance(instance).SingleInstance().AsSelf().AsImplementedInterfaces();
+			RegisterInstanceAsRunnerOrPresenterIfPossible(instance);
+			AddRegisteredType(instance.GetType());
 			RegisterAllBaseTypes(instance.GetType().BaseType, registration);
 		}
 
@@ -79,7 +96,7 @@ namespace DeltaEngine.Platforms
 		{
 			while (baseType != null && baseType != typeof(object))
 			{
-				alreadyRegisteredTypes.Add(baseType);
+				AddRegisteredType(baseType);
 				registration.As(baseType);
 				baseType = baseType.BaseType;
 			}
@@ -103,28 +120,36 @@ namespace DeltaEngine.Platforms
 			IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle>
 				registration)
 		{
-			alreadyRegisteredTypes.AddRange(typeToRegister.GetInterfaces());
+			foreach (var type in typeToRegister.GetInterfaces())
+				AddRegisteredType(type);
 			registration.AsImplementedInterfaces();
 			var baseType = typeToRegister.BaseType;
 			while (baseType != null && baseType != typeof(object))
 			{
-				alreadyRegisteredTypes.Add(baseType);
+				AddRegisteredType(baseType);
 				registration.As(baseType);
 				baseType = baseType.BaseType;
 			}
 		}
 
-		public override BaseType Resolve<BaseType>(object customParameter = null)
+		internal override BaseType Resolve<BaseType>()
 		{
-			if (IsAlreadyInitialized == false)
-				Register<BaseType>();
-
+			RegisterUnknownTypes<BaseType>();
 			MakeSureContainerIsInitialized();
-			if (customParameter == null)
-				return (BaseType)container.Resolve(typeof(BaseType));
+			return (BaseType)container.Resolve(typeof(BaseType));
+		}
 
-			Parameter autofacParameter = new TypedParameter(customParameter.GetType(), customParameter);
-			return (BaseType)container.Resolve(typeof(BaseType), new[] { autofacParameter });
+		private void RegisterUnknownTypes<FirstResolveType>()
+		{
+			if (IsAlreadyInitialized)
+				return;
+
+			RegisterAllTypesFromAllAssemblies<ContentData, EntityHandler>();
+			// This line is required to force Core.Xml Assembly to load to register XmlContent
+			Register<XmlContent>();
+			RegisterInstance(new EntitySystem(new AutofacEntityResolver(this)));
+			RegisterAllTypesFromExecutable();
+			Register<FirstResolveType>();
 		}
 
 		protected virtual void MakeSureContainerIsInitialized()
@@ -132,8 +157,6 @@ namespace DeltaEngine.Platforms
 			if (IsAlreadyInitialized)
 				return; //ncrunch: no coverage
 
-			RegisterInstance(this);
-			RegisterAllTypesFromExecutable();
 			container = builder.Build();
 		}
 
@@ -144,10 +167,65 @@ namespace DeltaEngine.Platforms
 
 		private IContainer container;
 
-		protected override object Resolve(Type baseType)
+		protected class AutofacContentDataResolver : ContentDataResolver
+		{
+			public AutofacContentDataResolver(Resolver resolver)
+			{
+				this.resolver = resolver;
+			}
+
+			private readonly Resolver resolver;
+
+			public ContentData Resolve(Type contentType, string contentName)
+			{
+				return resolver.Resolve(contentType, contentName) as ContentData;
+			}
+		}
+
+		private void RegisterAllTypesFromAllAssemblies<InstanceType, SingletonType>()
+		{
+			Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+			foreach (Assembly assembly in assemblies.Where(assembly => assembly.IsAllowed()))
+			{
+				RegisterAllTypesInAssembly<InstanceType>(assembly, false);
+				RegisterAllTypesInAssembly<SingletonType>(assembly, true);
+			}
+		}
+
+		private void RegisterAllTypesInAssembly<T>(Assembly exeAssembly, bool registerAsSingleton)
+		{
+			foreach (Type type in exeAssembly.GetTypes())
+				if (typeof(T).IsAssignableFrom(type) && !type.IsAbstract &&
+					!type.FullName.Contains("Mock") && !IgnoreForResolverAttribute.IsTypeIgnored(type))
+					if (registerAsSingleton)
+						RegisterSingleton(type);
+					else
+						Register(type);
+		}
+
+		private class AutofacEntityResolver : EntityHandlerResolver
+		{
+			public AutofacEntityResolver(Resolver resolver)
+			{
+				this.resolver = resolver;
+			}
+
+			private readonly Resolver resolver;
+
+			public EntityHandler Resolve(Type handlerType)
+			{
+				return resolver.Resolve(handlerType) as EntityHandler;
+			}
+		}
+
+		internal override object Resolve(Type baseType, object customParameter = null)
 		{
 			MakeSureContainerIsInitialized();
-			return container.Resolve(baseType);
+			if (customParameter == null)
+				return container.Resolve(baseType);
+			
+			Parameter autofacParameter = new TypedParameter(customParameter.GetType(), customParameter);
+			return container.Resolve(baseType, new[] { autofacParameter });
 		}
 
 		public void RegisterAllUnknownTypesAutomatically()
@@ -188,8 +266,11 @@ namespace DeltaEngine.Platforms
 		{
 			foreach (Type t in exeAssembly.GetTypes())
 				if (!alreadyRegisteredTypes.Contains(t))
+				{
 					builder.RegisterType(t).AsSelf().OnActivating(ActivatingInstance()).
 									InstancePerLifetimeScope();
+					AddRegisteredType(t);
+				}
 		}
 	}
 }

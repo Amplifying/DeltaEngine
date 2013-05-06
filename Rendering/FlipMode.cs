@@ -1,4 +1,4 @@
-﻿namespace DeltaEngine.Rendering
+namespace DeltaEngine.Rendering
 {
 	/// <summary>
 	/// Allows to flip sprite drawing horizontally or vertically.

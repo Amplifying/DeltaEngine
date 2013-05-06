@@ -1,4 +1,4 @@
-﻿using SharpDX.Direct3D11;
+using SharpDX.Direct3D11;
 using DxDevice = SharpDX.Direct3D11.Device;
 
 namespace DeltaEngine.Graphics.SharpDX

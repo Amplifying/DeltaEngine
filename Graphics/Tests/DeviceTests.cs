@@ -1,22 +1,25 @@
-﻿using System;
+using System;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
+using DeltaEngine.Platforms.All;
 using DeltaEngine.Platforms.Tests;
+using NUnit.Framework;
 
 namespace DeltaEngine.Graphics.Tests
 {
-	public class DeviceTests : TestStarter
+	public class DeviceTests : TestWithAllFrameworks
 	{
-		[IntegrationTest]
-		public void Dispose(Type resolver)
-		{
-			Start(resolver, (Device device) => device.Dispose());
-		}
-
-		[VisualTest]
+		[VisualTest, ApproveFirstFrameScreenshot]
 		public void DrawRedBackground(Type resolver)
 		{
-			Start(resolver, (Device device, Window window) => window.BackgroundColor = Color.Red);
+			Start(resolver, (Device device, Window window) => { window.BackgroundColor = Color.Red; });
+		}
+		
+		[VisualTest]
+		public void SizeChanged(Type resolver)
+		{
+			Start(resolver,
+				(Device device, Window window) => window.TotalPixelSize = new Size(100, 100));
 		}
 
 		[IntegrationTest]
@@ -25,13 +28,14 @@ namespace DeltaEngine.Graphics.Tests
 			Start(resolver, (Device device, Window window) => device.Present());
 		}
 
-		[VisualTest]
-		public void SizeChanged(Type resolver)
+		[IntegrationTest]
+		public void Dispose(Type resolver)
 		{
-			Start(resolver, (Device device, Window window) => window.TotalPixelSize = new Size(100, 100));
+			Start(resolver, (Device device) => device.Dispose());
 		}
 
-		[VisualTest]
+		//ncrunch: no coverage start
+		[VisualTest, ApproveFirstFrameScreenshot, Ignore]
 		public void SetFullscreenResolutionRedBackground(Type resolver)
 		{
 			Start(resolver, (Device device, Window window) =>

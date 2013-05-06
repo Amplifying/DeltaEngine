@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Core;
+using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 
@@ -7,11 +7,11 @@ namespace EmptyGame
 	/// <summary>
 	/// Just creates a window and slowly changes the background color.
 	/// </summary>
-	public class Game : Runner<Time, Window>
+	public class Game : Runner<Window>
 	{
-		public void Run(Time time, Window window)
+		public void Run(Window window)
 		{
-			FadePercentage += time.CurrentDelta;
+			FadePercentage += Time.Current.Delta;
 			if (FadePercentage >= 1.0f)
 				SwitchToNextRandomColor();
 

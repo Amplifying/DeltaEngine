@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using NUnit.Framework;
 
 namespace DeltaEngine.Core.Xml.Tests
@@ -19,6 +19,7 @@ namespace DeltaEngine.Core.Xml.Tests
 			var data = CreateTestXmlData();
 			var xmlMemoryStream = new XmlMemoryStream(data);
 			MemoryStream stream = xmlMemoryStream.Save();
+			stream.Seek(0, SeekOrigin.Begin);
 			Assert.AreEqual(data.ToXmlString(), new XmlMemoryStream(stream).Root.ToXmlString());
 		}
 

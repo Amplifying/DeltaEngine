@@ -1,6 +1,6 @@
-﻿using System.IO;
 using DeltaEngine.Core;
 using NUnit.Framework;
+using Randomizer = DeltaEngine.Core.Randomizer;
 
 namespace DeltaEngine.Datatypes.Tests
 {
@@ -47,6 +47,14 @@ namespace DeltaEngine.Datatypes.Tests
 		}
 
 		[Test]
+		public void CreateTransparentVersionsOfColors()
+		{
+			Assert.AreEqual(new Color(255, 0, 0, 0), Color.Transparent(Color.Red));
+			Assert.AreEqual(new Color(0, 128, 128, 0), Color.Transparent(Color.Teal));
+			Assert.AreEqual(Color.TransparentWhite, Color.Transparent(Color.White));
+		}
+
+		[Test]
 		public void MissingComponentThrowsError()
 		{
 			Assert.Throws<Color.InvalidNumberOfComponents>(() => new Color("R=1,B=3,A=4"));
@@ -67,7 +75,7 @@ namespace DeltaEngine.Datatypes.Tests
 		[Test]
 		public void NonByteComponentThrowsError()
 		{
-			Assert.Throws<Color.InvalidNumberOfComponents>(() => new Color("R=1,G=999,B=3,A=4"));
+			Assert.Throws<Color.InvalidColorComponentValue>(() => new Color("R=1,G=999,B=3,A=4"));
 		}
 
 		[Test]
@@ -195,62 +203,51 @@ namespace DeltaEngine.Datatypes.Tests
 		}
 
 		[Test]
-		public void GetRandomBrightColorWithRandomizerInjected()
-		{
-			Color.Randomizer = new PseudoRandom();
-			Color color = Color.GetRandomBrightColor();
-			Assert.IsTrue(color.R > 127);
-			Assert.IsTrue(color.G > 127);
-			Assert.IsTrue(color.B > 127);
-			Assert.AreEqual(255, color.A);
-		}
-
-		[Test]
 		public void GetRandomColor()
 		{
-			Color.Randomizer = null;
 			Color color = Color.GetRandomColor();
 			Assert.IsTrue(color.R > 0 && color.G > 0 && color.B > 0);
 			Assert.AreEqual(255, color.A);
 		}
 
 		[Test]
+		public void GetRandomBrightColorUsingFixedRandomValues()
+		{
+			using (Randomizer.Use(new FixedRandom(new[] { 0.0f, 0.5f, 0.999f })))
+			{
+				Color color = Color.GetRandomBrightColor();
+				Assert.AreEqual(128, color.R);
+				Assert.AreEqual(192, color.G);
+				Assert.AreEqual(255, color.B);
+				Assert.AreEqual(255, color.A);
+			}
+		}
+
+		[Test]
 		public void SaveColor()
 		{
-			using (var dataStream = new MemoryStream())
-			{
-				var writer = new BinaryWriter(dataStream);
-				var data = Color.Red;
-				data.SaveData(writer);
-				byte[] savedBytes = dataStream.ToArray();
-				Assert.AreEqual(4, savedBytes.Length);
-				Assert.AreEqual(255, savedBytes[0]);
-				Assert.AreEqual(0, savedBytes[1]);
-				Assert.AreEqual(0, savedBytes[2]);
-				Assert.AreEqual(255, savedBytes[3]);
-			}
+			byte[] savedBytes = Color.Red.ToByteArray();
+			Assert.AreEqual(4, savedBytes.Length);
+			Assert.AreEqual(255, savedBytes[0]);
+			Assert.AreEqual(0, savedBytes[1]);
+			Assert.AreEqual(0, savedBytes[2]);
+			Assert.AreEqual(255, savedBytes[3]);
 		}
 
 		[Test]
 		public void LoadColor()
 		{
-			using (var dataStream = new MemoryStream())
-			{
-				var writer = new BinaryWriter(dataStream);
-				var data = Color.Red;
-				data.SaveData(writer);
-				dataStream.Seek(0, SeekOrigin.Begin);
-				var reader = new BinaryReader(dataStream);
-				data.LoadData(reader);
-				Assert.AreEqual(Color.Red, data);
-			}
+			var data = Color.Red.SaveToMemoryStream();
+			var reconstructedColor = data.CreateFromMemoryStream();
+			Assert.AreEqual(Color.Red, reconstructedColor);
 		}
 
 		[Test]
 		public void GetBytes()
 		{
 			var colors = new[] { Color.Black, Color.White };
-			Assert.AreEqual(new byte[] { 0, 0, 0, 255, 255, 255, 255, 255 }, Color.GetBytes(colors));
+			Assert.AreEqual(new byte[] { 0, 0, 0, 255, 255, 255, 255, 255 },
+				BinaryDataExtensions.GetBytesFromArray(colors));
 		}
 	}
 }

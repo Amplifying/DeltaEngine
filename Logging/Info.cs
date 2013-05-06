@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using DeltaEngine.Datatypes;
+using System;
 using DeltaEngine.Core;
 
 namespace DeltaEngine.Logging
@@ -9,30 +7,19 @@ namespace DeltaEngine.Logging
 	/// Base class and lowest available log level.
 	/// Used for notifications like a successful operation or debug output.
 	/// </summary>
-	public class Info : BinaryData, IEquatable<Info>
+	public class Info : IEquatable<Info>
 	{
-		public Info() { }
+		/// <summary>
+		/// Need empty constructor for BinaryDataExtensions class reconstruction
+		/// </summary>
+		protected Info() { }
 
 		public Info(string text)
 		{
 			Text = text;
-			ProjectName = AssemblyExtensions.DetermineProjectName();
 		}
 
 		public string Text { get; protected set; }
-		public string ProjectName { get; set; }
-
-		public void SaveData(BinaryWriter writer)
-		{
-			writer.Write(Text);
-			writer.Write(ProjectName);
-		}
-
-		public void LoadData(BinaryReader reader)
-		{
-			Text = reader.ReadString();
-			ProjectName = reader.ReadString();
-		}
 
 		public override bool Equals(object other)
 		{
@@ -41,12 +28,12 @@ namespace DeltaEngine.Logging
 
 		public bool Equals(Info other)
 		{
-			return other.Text == Text && other.ProjectName == ProjectName;
+			return other.Text == Text;
 		}
 
 		public override int GetHashCode()
 		{
-			return Text.GetHashCode() ^ ProjectName.GetHashCode();
+			return Text.GetHashCode();
 		}
 	}
 }

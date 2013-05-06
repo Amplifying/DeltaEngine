@@ -1,25 +1,32 @@
-﻿using System;
+using System;
 using OpenTK;
 using OpenTK.Audio.OpenAL;
 
 namespace DeltaEngine.Multimedia.OpenTK
 {
-	/// <summary>
-	/// Native implementation of a SoundDevice using OpenAL and the default sound device.
-	/// </summary>
-	public class OpenTKSoundDevice : SoundDevice
+	public sealed class OpenTKSoundDevice : SoundDevice
 	{
 		public OpenTKSoundDevice()
+		{
+			InitDeviceAndContext();
+		}
+
+		private IntPtr deviceHandle;
+		private ContextHandle context;
+
+		public override void Dispose()
+		{
+			ReleaseDeviceAndContext();
+		}
+
+		private void InitDeviceAndContext()
 		{
 			deviceHandle = Alc.OpenDevice("");
 			context = Alc.CreateContext(deviceHandle, new int[0]);
 			Alc.MakeContextCurrent(context);
 		}
 
-		private readonly ContextHandle context;
-		private IntPtr deviceHandle;
-
-		public override void Dispose()
+		private void ReleaseDeviceAndContext()
 		{
 			if (deviceHandle == IntPtr.Zero)
 				return;

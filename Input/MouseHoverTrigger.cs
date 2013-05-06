@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Core;
+using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Input
@@ -10,13 +10,13 @@ namespace DeltaEngine.Input
 	/// </summary>
 	public class MouseHoverTrigger : Trigger
 	{
-		public override bool ConditionMatched(InputCommands inputCommands, Time time)
+		public override bool ConditionMatched(InputCommands inputCommands)
 		{
 			if (!inputCommands.Mouse.IsAvailable)
-				return false;
+				return false; //ncrunch: no coverage
 
 			if (lastPosition == inputCommands.Mouse.Position)
-				return ProcessHover(time);
+				return ProcessHover();
 
 			lastPosition = inputCommands.Mouse.Position;
 			elapsed = 0.0f;
@@ -26,12 +26,12 @@ namespace DeltaEngine.Input
 		private Point lastPosition;
 		private float elapsed;
 
-		private bool ProcessHover(Time time)
+		private bool ProcessHover()
 		{
 			if (elapsed >= HoverTime)
 				return false;
 
-			elapsed += time.CurrentDelta;
+			elapsed += Time.Current.Delta;
 			return elapsed >= HoverTime;
 		}
 

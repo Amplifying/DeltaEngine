@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Datatypes;
+using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 
 namespace DeltaEngine.Rendering
@@ -9,7 +9,7 @@ namespace DeltaEngine.Rendering
 	public class Camera2DControlledQuadraticScreenSpace : QuadraticScreenSpace
 	{
 		public Camera2DControlledQuadraticScreenSpace(Window window)
-			: base(window) { }
+			: base(window) {}
 
 		public override Point ToPixelSpace(Point currentScreenSpacePos)
 		{

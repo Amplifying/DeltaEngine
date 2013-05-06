@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using NUnit.Framework;
@@ -25,6 +25,13 @@ namespace DeltaEngine.Core.Tests
 		}
 
 		[Test]
+		public void IsApprovalTest()
+		{
+			var frames = new StackTrace().GetFrames();
+			Assert.IsFalse(frames.IsApprovalTest());
+		}
+
+		[Test]
 		public void GetEntryName()
 		{
 			Assert.AreEqual("GetEntryName", StackTraceExtensions.GetEntryName());
@@ -37,15 +44,22 @@ namespace DeltaEngine.Core.Tests
 			Assert.AreEqual("DeltaEngine.Core.Tests", StackTraceExtensions.GetEntryName());
 			Assert.NotNull(new DerivedTestToFakeMainAttribute());
 		}
-			
+
 		[AttributeUsage(AttributeTargets.Method)]
-		private class DerivedTestToFakeMainAttribute : TestAttribute {}
+		private class DerivedTestToFakeMainAttribute : TestAttribute { }
 
 		[Test]
 		public void GetTestMethodName()
 		{
 			Assert.AreEqual("GetTestMethodName", new StackTrace().GetFrames().GetTestMethodName());
 			Assert.AreEqual("", new StackFrame[0].GetTestMethodName());
+		}
+
+		[Test]
+		public void GetClassName()
+		{
+			Assert.AreEqual("StackTraceExtensionsTests", new StackTrace().GetFrames().GetClassName());
+			Assert.AreEqual("", new StackFrame[0].GetClassName());
 		}
 
 		[Test]

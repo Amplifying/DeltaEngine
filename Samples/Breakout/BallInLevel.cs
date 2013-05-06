@@ -1,6 +1,6 @@
-﻿using DeltaEngine.Core;
+using DeltaEngine.Content;
 using DeltaEngine.Input;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.Sprites;
 
 namespace Breakout
 {
@@ -9,7 +9,8 @@ namespace Breakout
 	/// </summary>
 	public class BallInLevel : Ball
 	{
-		public BallInLevel(Paddle paddle, Content content, InputCommands inputCommands, Level level)
+		public BallInLevel(Paddle paddle, ContentLoader content, InputCommands inputCommands,
+			Level level)
 			: base(paddle, content, inputCommands)
 		{
 			Level = level;

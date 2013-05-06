@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ContentMetaData Name="DeltaEngine.Breakout" Type="Scene" LastTimeUpdated="2013-04-22 17:00:00" ContentDeviceName="Delta">
+  <ContentMetaData Name="Background" Type="Image" LastTimeUpdated="2012-10-18 14:04:49" PlatformFileId="20383" FileSize="5230" LocalFilePath="Background.png" PixelSize="128, 128"></ContentMetaData>
+  <ContentMetaData Name="Ball" Type="Image" LastTimeUpdated="2012-10-18 14:04:49" PlatformFileId="20383" FileSize="5230" LocalFilePath="Ball.png" PixelSize="128, 128"></ContentMetaData>
+  <ContentMetaData Name="Brick" Type="Image" LastTimeUpdated="2012-10-18 14:04:49" PlatformFileId="20383" FileSize="5230" LocalFilePath="Brick.png" PixelSize="128, 128"></ContentMetaData>
+  <ContentMetaData Name="Explosion" Type="Image" LastTimeUpdated="2012-10-18 14:04:49" PlatformFileId="20383" FileSize="5230" LocalFilePath="Explosion.png" PixelSize="128, 128"></ContentMetaData>
+  <ContentMetaData Name="Paddle" Type="Image" LastTimeUpdated="2012-10-18 14:04:49" PlatformFileId="20383" FileSize="5230" LocalFilePath="Paddle.png" PixelSize="128, 128"></ContentMetaData>
+  <ContentMetaData Name="BallCollision" Type="Sound" LastTimeUpdated="2012-10-18 14:04:49" PlatformFileId="20383" FileSize="5230" LocalFilePath="BallCollision.wav"></ContentMetaData>
+  <ContentMetaData Name="BrickExplosion" Type="Sound" LastTimeUpdated="2012-10-18 14:04:49" PlatformFileId="20383" FileSize="5230" LocalFilePath="BrickExplosion.wav"></ContentMetaData>
+  <ContentMetaData Name="LostBall" Type="Sound" LastTimeUpdated="2012-10-18 14:04:49" PlatformFileId="20383" FileSize="5230" LocalFilePath="LostBall.wav"></ContentMetaData>
+  <ContentMetaData Name="PaddleBallStart" Type="Sound" LastTimeUpdated="2012-10-18 14:04:49" PlatformFileId="20383" FileSize="5230" LocalFilePath="PaddleBallStart.wav"></ContentMetaData>
+  <ContentMetaData Name="Victory" Type="Sound" LastTimeUpdated="2012-10-18 14:04:49" PlatformFileId="20383" FileSize="5230" LocalFilePath="Victory.wav"></ContentMetaData>
+</ContentMetaData>

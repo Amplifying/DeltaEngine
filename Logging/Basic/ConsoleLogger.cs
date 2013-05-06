@@ -1,4 +1,4 @@
-﻿namespace DeltaEngine.Logging.Basic
+namespace DeltaEngine.Logging.Basic
 {
 	public class ConsoleLogger : Logger
 	{

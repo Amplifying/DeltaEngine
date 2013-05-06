@@ -42,7 +42,7 @@ namespace DeltaEngine.Core.Tests
 
 		internal class Injection { }
 
-		internal class Example : Runner<Injection>
+		private class Example : Runner<Injection>
 		{
 			public void Run(Injection some)
 			{

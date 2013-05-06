@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Datatypes;
+using DeltaEngine.Datatypes;
 using NUnit.Framework;
 
 namespace DeltaEngine.Networking.Tests
@@ -21,7 +21,7 @@ namespace DeltaEngine.Networking.Tests
 			using (var client = new ClientMock(null))
 			{
 				Assert.IsFalse(client.IsConnected);
-				client.Send(new TestMessage(""));
+				client.Send(new TextMessage(""));
 			}
 		}
 
@@ -30,10 +30,15 @@ namespace DeltaEngine.Networking.Tests
 		{
 			var server = new ServerMock();
 			Assert.IsNull(server.ReceivedMessage);
-			new ClientMock(server).Send(new TestMessage("Hi"));
-			var serverMessage = server.ReceivedMessage.ToBinaryData<TestMessage>();
+			new ClientMock(server).Send(new TextMessage("Hi"));
+			var serverMessage = server.ReceivedMessage.ToBinaryData() as TextMessage;
 			byte[] byteArray = serverMessage.ToByteArrayWithLengthHeader();
-			Assert.AreEqual(19, byteArray.Length);
+			const int LenghtOfNetworkMessage = 4;
+			const int StringLenghtByte = 1;
+			const int StringIsNullBooleanByte = 1;
+			int classNameLenght = "TestMessage".Length + StringLenghtByte;
+			int textLenght = "Hi".Length + StringLenghtByte + StringIsNullBooleanByte;
+			Assert.AreEqual(LenghtOfNetworkMessage + classNameLenght + textLenght, byteArray.Length);
 		}
 
 		[Test]
@@ -41,8 +46,8 @@ namespace DeltaEngine.Networking.Tests
 		{
 			var server = new ServerMock();
 			Assert.IsNull(server.ReceivedMessage);
-			new ClientMock(server).Send(new TestMessage("Hi"));
-			var serverMessage = server.ReceivedMessage.ToBinaryData<TestMessage>();
+			new ClientMock(server).Send(new TextMessage("Hi"));
+			var serverMessage = server.ReceivedMessage.ToBinaryData() as TextMessage;
 			Assert.IsNotNull(serverMessage);
 			Assert.AreEqual("Hi", serverMessage.Text);
 		}
@@ -54,7 +59,7 @@ namespace DeltaEngine.Networking.Tests
 			using (var client = new ClientMock(server))
 			{
 				bool eventTriggered = false;
-				client.DataReceived += (clientConnection, binaryData) => eventTriggered = true;
+				client.DataReceived += (binaryData) => eventTriggered = true;
 				client.Receive();
 				Assert.IsTrue(eventTriggered);
 			}

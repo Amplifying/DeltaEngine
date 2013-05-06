@@ -1,7 +1,9 @@
-﻿using DeltaEngine.Core;
-using DeltaEngine.Core.Xml;
+using DeltaEngine.Content.Disk;
+using DeltaEngine.Core;
 using DeltaEngine.Input;
 using DeltaEngine.Logging.Basic;
+using DeltaEngine.Networking.Sockets;
+using DeltaEngine.Physics2D.Farseer;
 using DeltaEngine.Rendering;
 
 namespace DeltaEngine.Platforms.Windows
@@ -13,26 +15,22 @@ namespace DeltaEngine.Platforms.Windows
 	{
 		protected WindowsResolver()
 		{
+			RegisterInstance(new AutofacContentDataResolver(this));
+			RegisterSingleton<DiskContentLoader>();
 			RegisterSingleton<FormsWindow>();
 			RegisterSingleton<QuadraticScreenSpace>();
-			RegisterSingleton<Renderer>();
-			RegisterSingleton<StopwatchTime>();
-			RegisterSingleton<Time>();
-			RegisterSingleton<PseudoRandom>();
-			RegisterSingleton<Content>();
-			RegisterSingleton<BasicLogger>();
+			RegisterSingleton<DefaultLogger>();
 			RegisterSingleton<PointerDevices>();
 			RegisterSingleton<InputCommands>();
-			Register<XmlContentFile>();
+			Register<TcpSocket>();
+			RegisterSingleton<FarseerPhysics>();
 		}
 
-		protected override void RegisterInstanceAsRunnerOrPresenterIfPossible(object instance)
+		protected override void MakeSureContainerIsInitialized()
 		{
-			var renderable = instance as Renderable;
-			if (renderable != null)
-				Resolve<Renderer>().Add(renderable);
-
-			base.RegisterInstanceAsRunnerOrPresenterIfPossible(instance);
+			if (!IsAlreadyInitialized)
+				RegisterInstanceAsRunnerOrPresenterIfPossible(Time.Current);
+			base.MakeSureContainerIsInitialized();
 		}
 	}
 }

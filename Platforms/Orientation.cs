@@ -1,4 +1,4 @@
-﻿namespace DeltaEngine.Platforms
+namespace DeltaEngine.Platforms
 {
 	/// <summary>
 	/// Indicates the current orientation of a screen

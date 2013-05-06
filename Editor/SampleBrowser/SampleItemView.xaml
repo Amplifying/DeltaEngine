@@ -4,18 +4,20 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:helpers="clr-namespace:DeltaEngine.Editor.SampleBrowser.Helpers"
 	mc:Ignorable="d"
+	d:DataContext="{d:DesignInstance Type=helpers:DesignSampleItem, IsDesignTimeCreatable=True}"
 	d:DesignHeight="110" d:DesignWidth="520"
-	BorderBrush="Black" BorderThickness="1" Height="110">
+	BorderBrush="Black" BorderThickness="0" Height="110">
 	<Grid>
 		<Grid.Background>
-			<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-				<GradientStop Color="#212121" Offset="1" />
-				<GradientStop Color="#494949" />
+			<LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+				<GradientStop Color="#FFE2E2E2" Offset="1" />
+				<GradientStop Color="#FFF0F0F0" />
 			</LinearGradientBrush>
 		</Grid.Background>
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="110px" />
+			<ColumnDefinition Width="150px" />
 			<ColumnDefinition Width="*" />
 		</Grid.ColumnDefinitions>
 		<Image
@@ -25,44 +27,32 @@
 		<TextBlock
 			Text="{Binding Path=Title}"
 			Grid.Column="1" HorizontalAlignment="Left" Margin="0,5,0,0"
-			VerticalAlignment="Top" FontSize="13" FontWeight="Bold"
-			Foreground="#FF8CB0E8" />
+			VerticalAlignment="Top" FontSize="18"
+			Foreground="#FF646464" FontFamily="Arial" FontWeight="Bold" TextDecorations="{x:Null}" />
 		<TextBlock
-			Text="{Binding Path=DifficultyLevel}"
-			Grid.Column="1" HorizontalAlignment="Right" Margin="0,5,8,0"
-			VerticalAlignment="Top" FontSize="10.667" Foreground="#FF8CB0E8" />
-		<TextBlock
-			Text="{Binding Path=EntryPointName}"
-			Grid.Column="1" HorizontalAlignment="Left" Margin="0,22,0,0"
-			FontSize="9.4" Foreground="Silver" VerticalAlignment="Top" />
+			Text="{Binding Path=EntryClass}"
+			Grid.Column="1" HorizontalAlignment="Left" Margin="0,29,0,0" Foreground="Silver" VerticalAlignment="Top" />
 		<TextBlock
 			Text="{Binding Path=Description}"
-			Grid.Column="1" HorizontalAlignment="Left" Margin="0,35,0,0"
-			FontSize="10.667" Foreground="#FF8CB0E8" FontStyle="Italic"
-			VerticalAlignment="Top" TextWrapping="Wrap" MaxWidth="400" />
+			Grid.Column="1" HorizontalAlignment="Left" Margin="0,47,0,0" Foreground="White"
+			VerticalAlignment="Top" TextWrapping="Wrap" MaxWidth="400" FontWeight="Bold" FontSize="14" Background="#FFAEAEAE" />
 		<Button
 			Content="View source code"
 			Tag="{Binding Path=ProjectFilePath}"
 			CommandParameter="{Binding}"
 			Command="{Binding ElementName=SampleBrowserUserControl, Path=DataContext.OnViewButtonClicked}"
-			IsEnabled="{Binding Path=AllowLauncher}"
-			Grid.Column="1" Margin="0,0,260,8" VerticalAlignment="Bottom"
-			Width="120" FontSize="10.667" HorizontalAlignment="Right" />
+			ToolTip="{Binding Path=ProjectFilePath}"
+			Grid.Column="1" Margin="0,0,8,57" VerticalAlignment="Bottom"
+			Width="153" FontSize="14" HorizontalAlignment="Right" FontFamily="Arial" FontWeight="Bold"
+			Foreground="#FFEBF5FF" Background="#FF4F4783" Height="43" />
 		<Button
-			Content="Start Executable"
-			Tag="{Binding Path=EntryPointName}"
+			Content="Start"
+			Tag="{Binding Path=AssemblyFilePath}"
 			CommandParameter="{Binding}"
 			Command="{Binding ElementName=SampleBrowserUserControl, Path=DataContext.OnStartButtonClicked}"
-			ToolTip="{Binding Path=ExecutableFilePath}"
-			Grid.Column="2" Margin="0,0,134,8" VerticalAlignment="Bottom"
-			Width="120" FontSize="10.667" HorizontalAlignment="Right" />
-		<Button
-			Content="Launch on device"
-			Tag="{Binding Path=EntryPointName}"
-			CommandParameter="{Binding}"
-			Command="{Binding ElementName=SampleBrowserUserControl, Path=DataContext.OnLaunchButtonClicked}"
-			IsEnabled="{Binding Path=AllowLauncher}"
-			Grid.Column="2" Margin="0,0,8,8" VerticalAlignment="Bottom"
-			Width="120" FontSize="10.667" HorizontalAlignment="Right" />
+			ToolTip="{Binding Path=AssemblyFilePath}"
+			Grid.Column="1" Margin="0,0,8,8" VerticalAlignment="Bottom"
+			Width="153" FontSize="14" HorizontalAlignment="Right" FontFamily="Arial" FontWeight="Bold"
+			Foreground="#FFEBF5FF" Background="#FF453D7A" Height="43" />
 	</Grid>
 </UserControl>

@@ -1,88 +1,75 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
+	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+	<PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <PlatformTarget>x86</PlatformTarget>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8ED0A7F1-77FB-47E7-AB6C-59C711BA3A9A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DeltaEngine.Core.Tests</RootNamespace>
     <AssemblyName>DeltaEngine.Core.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+	</PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
-    <WarningLevel>4</WarningLevel>
     <Optimize>false</Optimize>
-    <CodeAnalysisRuleSet>..\..\..\..\Users\Stephan\Desktop\DeltaEngineModifiedRuleSet.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\DeltaEngine.Core.Tests.XML</DocumentationFile>
+    <PlatformTarget>x86</PlatformTarget>
+    <DocumentationFile>bin\Debug\DeltaEngine.Core.Tests.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
     <DocumentationFile>bin\Release\DeltaEngine.Core.Tests.XML</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="FakeResolver.cs" />
-    <Compile Include="SimulatedAppTests.cs" />
-    <Compile Include="ArrayExtensionsTests.cs" />
-    <Compile Include="ContentTests.cs" />
-    <Compile Include="FixedRandomTests.cs" />
-    <Compile Include="GenericRunnerTests.cs" />
-    <Compile Include="EnumExtensionTests.cs" />
-    <Compile Include="PseudoRandomTests.cs" />
-    <Compile Include="ResolverTests.cs" />
-    <Compile Include="StackTraceExtensionsTests.cs" />
-    <Compile Include="MockElapsedTime.cs" />
-    <Compile Include="ThreadExtensionTests.cs" />
-    <Compile Include="TimeTests.cs" />
-    <Compile Include="ExceptionExtensionsTests.cs" />
-    <Compile Include="MathExtensionsTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RunnerTests.cs" />
-    <Compile Include="StringExtensionsTests.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DeltaEngine.Core.csproj">
-      <Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
-      <Name>DeltaEngine.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
+	<ItemGroup>
+		<Reference Include="nunit.framework" >
+		<HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+	</Reference>
+		<Reference Include="System" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\DeltaEngine.Core.csproj">
+			<Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
+			<Name>DeltaEngine.Core</Name>
+		</ProjectReference>
+	</ItemGroup>
+	<ItemGroup>
+	<None Include="packages.config" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Include="Properties\AssemblyInfo.cs" />
+		<Compile Include="ArrayExtensionsTests.cs" />
+		<Compile Include="AssemblyStarterTests.cs" />
+		<Compile Include="AssemblyUpdaterTests.cs" />
+		<Compile Include="AssemblyCheckerTests.cs" />
+		<Compile Include="DateExtensionsTests.cs" />
+		<Compile Include="FixedRandomTests.cs" />
+		<Compile Include="GenericRunnerTests.cs" />
+		<Compile Include="EnumExtensionTests.cs" />
+		<Compile Include="PseudoRandomTests.cs" />
+		<Compile Include="StackTraceExtensionsTests.cs" />
+		<Compile Include="MockTime.cs" />
+		<Compile Include="ThreadExtensionTests.cs" />
+		<Compile Include="ThreadStaticTests.cs" />
+		<Compile Include="TimeTests.cs" />
+		<Compile Include="ExceptionExtensionsTests.cs" />
+		<Compile Include="MathExtensionsTests.cs" />
+		<Compile Include="RunnerTests.cs" />
+		<Compile Include="StringExtensionsTests.cs" />
+	</ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>

@@ -1,118 +1,199 @@
-﻿using System.Drawing;
-using SlimDX;
-using SlimDX.Direct2D;
-using SlimDX.Direct3D11;
-using Color = DeltaEngine.Datatypes.Color;
+using DeltaEngine.Datatypes;
+using DeltaEngine.Platforms;
+using SlimDX.Direct3D9;
 
 namespace DeltaEngine.Graphics.SlimDX
 {
 	public class SlimDXDrawing : Drawing
 	{
-		public SlimDXDrawing(SlimDXDevice device)
+		public SlimDXDrawing(SlimDXDevice device, Window window)
 			: base(device)
 		{
 			this.device = device;
-			context = device.Device.ImmediateContext;
-			drawShader = new SlimDXDrawShader(device);
-			brush = new SolidColorBrush(device.RenderTarget, new Color4(0.0f, 0.0f, 0.0f));
+			CreateShaders();
+			SetupWorldViewProjectionMatrix(window.ViewportPixelSize);
+			window.ViewportSizeChanged += SetupWorldViewProjectionMatrix;
+			CreateBuffers();
 		}
 
 		private new readonly SlimDXDevice device;
-		private readonly DeviceContext context;
-		private readonly SlimDXDrawShader drawShader;
-		private readonly SolidColorBrush brush;
 
-		private void SetColor(Color color)
+		private void CreateShaders()
 		{
-			if (color == lastColor)
-				return;
-
-			lastColor = color;
-			brush.Color = new Color4(color.R, color.G, color.B);
+			positionColorShader = new SlimDXShader(device, SlimDXShadersSourceCode.PositionColor);
+			positionColorTextureShader = new SlimDXShader(device,
+				SlimDXShadersSourceCode.PositionColorTexture);
 		}
 
-		private Color lastColor;
+		private SlimDXShader positionColorShader;
+		private SlimDXShader positionColorTextureShader;
 
-		private void CheckCreatePositionColorUvBuffer(VertexPositionColorTextured[] vertices, 
-			DataStream data)
+		private void SetupWorldViewProjectionMatrix(Size size)
 		{
-			if(positionColorTextureBuffer != null)
-				return;
+			var xScale = (size.Width > 0) ? 2.0f / size.Width : 0.0f;
+			var yScale = (size.Height > 0) ? 2.0f / size.Height : 0.0f;
+			var matrix = new []
+			{
+				xScale, 0.0f, 0.0f, -1.0f,
+				0.0f, -yScale, 0.0f, 1.0f,
+				0.0f, 0.0f, 1.0f, 0.0f,
+				0.0f, 0.0f, 0.0f, 1.0f
+			};
 
-			positionColorTextureBuffer = new Buffer(device.Device, data,
-				VertexPositionColorUvSize * vertices.Length, ResourceUsage.Default, BindFlags.VertexBuffer,
-				CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+			positionColorShader.WorldViewProjectionMatrix = matrix;
+			positionColorTextureShader.WorldViewProjectionMatrix = matrix;
 		}
 
-		private Buffer positionColorTextureBuffer;
-		private const int VertexPositionColorUvSize = sizeof(float) * (3 + 4 + 2);
+		public void CreateBuffers()
+		{
+			CreatePositionColorBuffer();
+			CreatePositionColorUvBuffer();
+			CreateIndexBuffer();			
+		}
+
+		private void CreatePositionColorBuffer()
+		{
+			if (positionColorBuffer != null)
+				positionColorBuffer.Dispose();
+
+			positionColorBuffer = new VertexBuffer(device.Device,
+				VertexBufferSize * VertexPositionColorSize, Usage.Dynamic, VertexFormat.None, Pool.Default);
+			SetVertexBufferPositionColorDeclaration();
+		}
+
+		private VertexBuffer positionColorBuffer;
+		private const int VertexPositionColorSize = 16;
+		private const int VertexBufferSize = 1024;
+
+		private void SetVertexBufferPositionColorDeclaration()
+		{
+			var vertexElems = new []
+			{
+				new VertexElement(0, 0, DeclarationType.Float3, DeclarationMethod.Default,
+					DeclarationUsage.Position, 0),
+				new VertexElement(0, 12, DeclarationType.Color, DeclarationMethod.Default,
+					DeclarationUsage.Color, 0),
+				VertexElement.VertexDeclarationEnd
+			};
+
+			positionColorVertexDeclaration = new VertexDeclaration(device.Device, vertexElems);
+		}
+
+		private VertexDeclaration positionColorVertexDeclaration;
+
+		private void CreatePositionColorUvBuffer()
+		{
+			if (positionColorTextureBuffer != null)
+				positionColorTextureBuffer.Dispose();
+
+			positionColorTextureBuffer = new VertexBuffer(device.Device,
+				VertexBufferSize * VertexPositionColorUvSize, Usage.Dynamic, VertexFormat.None,
+				Pool.Default);
+			SetVertexBufferPositionColorTextureDeclaration();
+		}
+
+		private VertexBuffer positionColorTextureBuffer;
+		private const int VertexPositionColorUvSize = 24;
+
+		private void SetVertexBufferPositionColorTextureDeclaration()
+		{
+			var vertexElems = new []
+			{
+				new VertexElement(0, 0, DeclarationType.Float3, DeclarationMethod.Default,
+					DeclarationUsage.Position, 0),
+				new VertexElement(0, 12, DeclarationType.Color, DeclarationMethod.Default,
+					DeclarationUsage.Color, 0),
+				new VertexElement(0, 16, DeclarationType.Float2, DeclarationMethod.Default,
+					DeclarationUsage.TextureCoordinate, 0), 
+				VertexElement.VertexDeclarationEnd
+			};
+
+			positionColorTextureVertexDeclaration = new VertexDeclaration(device.Device, vertexElems);
+		}
+
+		private VertexDeclaration positionColorTextureVertexDeclaration;
+
+		private void CreateIndexBuffer()
+		{
+			if (indexBuffer != null)
+				indexBuffer.Dispose();
+
+			indexBuffer = new IndexBuffer(device.Device, IndexBufferSize, Usage.Dynamic, Pool.Default,
+				true);
+		}
+
+		private IndexBuffer indexBuffer;
+		private int indicesCount;
+		private const int IndexBufferSize = 1024;
 
 		public override void DisableTexturing() {}
 
-		public override void SetIndices(short[] indices, int usedIndicesCount) {}
-
-		public override void DrawVertices(VerticesMode mode, VertexPositionColorTextured[] vertices)
+		public override void SetIndices(short[] indices, int usedIndicesCount)
 		{
-			DataStream dataStream = FillDataStreamPositionColorUv(vertices);
-			CheckCreatePositionColorUvBuffer(vertices, dataStream);
-			context.InputAssembler.SetVertexBuffers(0,
-				new VertexBufferBinding(positionColorTextureBuffer, VertexPositionColorUvSize, 0));
-			drawShader.Apply();
-			context.InputAssembler.PrimitiveTopology = mode == VerticesMode.Triangles ?
-				PrimitiveTopology.TriangleList : PrimitiveTopology.LineList;
-			context.Draw(vertices.Length, 0);
-		}
-
-		private static DataStream FillDataStreamPositionColorUv(VertexPositionColorTextured[] vertices)
-		{
-			var dataStream = new DataStream(VertexPositionColorUvSize * vertices.Length, true, true);
-			for(int i = 0; i < vertices.Length; i++)
-			{
-				dataStream.Write(new Vector3(vertices[i].Position.X, vertices[i].Position.Y,
-					vertices[i].Position.Z));
-				dataStream.Write(new Vector4(vertices[i].Color.R / 255.0f, vertices[i].Color.G / 255.0f, 
-					vertices[i].Color.B / 255.0f, vertices[i].Color.A / 255.0f));
-				dataStream.Write(new Vector2(vertices[i].TextureCoordinate.X, 
-					vertices[i].TextureCoordinate.Y));
-			}
-
-			dataStream.Position = 0;
-
-			return dataStream;			
+			indicesCount = indices.Length;
+			indexBuffer.Lock(0, indices.Length * sizeof(short), LockFlags.None).WriteRange(indices, 0,
+				indices.Length);
+			indexBuffer.Unlock();
 		}
 
 		public override void DrawVertices(VerticesMode mode, VertexPositionColor[] vertices)
 		{
-			SetColor(vertices[0].Color);
-			if (mode == VerticesMode.Lines)
-				for (int num = 0; num + 1 < vertices.Length; num += 2)
-					DrawLines(vertices[num], vertices[num + 1]);
+			FillDataStreamPositionColor(vertices);
+			device.Device.VertexDeclaration = positionColorVertexDeclaration;
+			device.Device.SetStreamSource(0, positionColorBuffer, 0, VertexPositionColorSize);
+			positionColorShader.Apply();
+			DrawPrimitives(mode, vertices.Length);
+		}
+
+		private void DrawPrimitives(VerticesMode mode, int verticesCount)
+		{
+			device.Device.Indices = indexBuffer;
+			var primitiveType = mode == VerticesMode.Triangles
+				? PrimitiveType.TriangleList : PrimitiveType.LineList;
+			var verticesPerPrimitive = mode == VerticesMode.Triangles
+				? VerticesPerTriangle : VerticesPerLine;
+			if (indicesCount > 0)
+				device.Device.DrawIndexedPrimitives(primitiveType, 0, 0, verticesCount, 0,
+					indicesCount / verticesPerPrimitive);
 			else
-				for (int num = 0; num + 3 < vertices.Length; num += 4)
-					DrawRectangles(vertices[num], vertices[num + 2]);
+				device.Device.DrawPrimitives(primitiveType, 0, verticesCount / verticesPerPrimitive);
 		}
 
-		private void DrawRectangles(VertexPositionColor topLeft, VertexPositionColor bottomRight)
+		private const int VerticesPerLine = 2;
+		private const int VerticesPerTriangle = 3;
+
+		private void FillDataStreamPositionColor(VertexPositionColor[] vertices)
 		{
-			var sharpRect = new RectangleF(topLeft.Position.X, topLeft.Position.Y, 
-				bottomRight.Position.X, bottomRight.Position.Y);
-			device.RenderTarget.FillRectangle(brush, sharpRect);
+			positionColorBuffer.Lock(0, VertexPositionColorSize * vertices.Length,
+				LockFlags.None).WriteRange(vertices, 0, 0);
+			positionColorBuffer.Unlock();
 		}
 
-		private void DrawLines(VertexPositionColor start, VertexPositionColor end)
+		public override void DrawVertices(VerticesMode mode, VertexPositionColorTextured[] vertices)
 		{
-			var sharpStart = new PointF(start.Position.X, start.Position.Y);
-			var sharpEnd = new PointF(end.Position.X, end.Position.Y);
-			device.RenderTarget.DrawLine(brush, sharpStart, sharpEnd);
+			FillDataStreamPositionColorUv(vertices);
+			device.Device.VertexDeclaration = positionColorTextureVertexDeclaration;
+			device.Device.SetStreamSource(0, positionColorTextureBuffer, 0, VertexPositionColorUvSize);
+			positionColorTextureShader.Apply();
+			DrawPrimitives(mode, vertices.Length);
+		}
+
+		private void FillDataStreamPositionColorUv(VertexPositionColorTextured[] vertices)
+		{
+			positionColorTextureBuffer.Lock(0, VertexPositionColorUvSize * vertices.Length,
+				LockFlags.None).WriteRange(vertices, 0, 0);
+			positionColorTextureBuffer.Unlock();
 		}
 
 		public override void Dispose()
 		{
-			brush.Dispose();
-			drawShader.Dispose();
-
-			if(positionColorTextureBuffer != null)
-				positionColorTextureBuffer.Dispose();
+			indexBuffer.Dispose();
+			positionColorBuffer.Dispose();
+			positionColorShader.Dispose();
+			positionColorVertexDeclaration.Dispose();
+			positionColorTextureBuffer.Dispose();
+			positionColorTextureShader.Dispose();
+			positionColorTextureVertexDeclaration.Dispose();
 		}
 	}
 }

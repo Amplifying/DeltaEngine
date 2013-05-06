@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+using System;
+using System.Linq;
+using System.Reflection;
 
 namespace DeltaEngine.Core
 {
@@ -14,7 +16,40 @@ namespace DeltaEngine.Core
 			if (entryAssembly != null)
 				return entryAssembly.GetName().Name;
 
-			return Assembly.GetCallingAssembly().GetName().Name + ".Tests";
+			return StackTraceExtensions.GetEntryName();
+		}
+
+		public static bool IsAllowed(this Assembly assembly)
+		{
+			assemblyName = assembly.GetName().Name;
+			return !(IsMicrosoftAssembly() || IsIdeHelperTool() || IsThirdPartyLibrary());
+		}
+		
+		private static string assemblyName;
+
+		private static bool IsMicrosoftAssembly()
+		{
+			return StartsWith("System", "mscorlib", "WindowsBase", "PresentationFramework",
+				"PresentationCore", "WindowsFormsIntegration", "Microsoft.");
+		}
+
+		private static bool StartsWith(params string[] partialNames)
+		{
+			return
+				partialNames.Any(
+					x => assemblyName.StartsWith(x, StringComparison.InvariantCultureIgnoreCase));
+		}
+
+		private static bool IsIdeHelperTool()
+		{
+			return StartsWith("JetBrains.", "NUnit.", "NCrunch.", "ReSharper.");
+		}
+
+		private static bool IsThirdPartyLibrary()
+		{
+			return StartsWith("OpenAL32", "wrap_oal", "libEGL", "libgles", "libGLESv2", "libvlc",
+				"libvlccore", "csogg", "csvorbis", "Autofac", "Moq", "DynamicProxyGen",
+				"Anonymously Hosted", "AvalonDock");
 		}
 	}
 }

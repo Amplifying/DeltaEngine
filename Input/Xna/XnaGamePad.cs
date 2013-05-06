@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Core;
+using DeltaEngine.Core;
 using Microsoft.Xna.Framework;
 using Point = DeltaEngine.Datatypes.Point;
 using XnaInput = Microsoft.Xna.Framework.Input;

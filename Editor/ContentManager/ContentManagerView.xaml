@@ -1,0 +1,52 @@
+﻿<UserControl
+	x:Class="DeltaEngine.Editor.ContentManager.ContentManagerView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	mc:Ignorable="d"
+	d:DesignHeight="450" d:DesignWidth="800">
+	<Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="791*"/>
+            <ColumnDefinition Width="9*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="6"/>
+            <RowDefinition Height="361*"/>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="11"/>
+        </Grid.RowDefinitions>
+        <Grid.Background>
+			<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+				<GradientStop Color="#FFFBFBFB" Offset="0" />
+				<GradientStop Color="#FFE2E2E2" Offset="1" />
+			</LinearGradientBrush>
+		</Grid.Background>
+		<Canvas Margin="434,0,0,0" Background="Black" AllowDrop="True" Drop="OnImageViewDrop" Grid.Row="3">
+			<Image Source="{Binding Path=ViewImage}" Width="344" Height="345"
+			       Canvas.Left="6" Canvas.Top="6" Name="ImageView" />
+        </Canvas>
+		<ListBox Margin="10,0,0,0" 
+						 ItemsSource="{Binding Path=Projects}" SelectedItem="{Binding Path=SelectedProject}" Background="#FFFDFDFD" Grid.Row="3" HorizontalAlignment="Left" Width="200" />
+		<ListBox Margin="215,0,0,0" 
+						 ItemsSource="{Binding Path=Images}" Name="ImageList"
+		         SelectedItem="{Binding Path=SelectedContent}" Background="WhiteSmoke" Grid.Row="3" HorizontalAlignment="Left" Width="200">
+			<ListBox.ContextMenu>
+				<ContextMenu>
+					<MenuItem Header="Delete" Click="DeleteSelectedImage"></MenuItem>
+				</ContextMenu>
+			</ListBox.ContextMenu>
+		</ListBox>
+		<TextBox Margin="10,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"
+		         Width="200" Height="30" Text="{Binding Path=NewProjectName}" Grid.Row="5"/>
+        <Button Margin="215,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"
+		        Content="Add new project" Click="AddProject" Width="200" Height="30" Grid.Row="5"/>
+        <Label Content="Projects" HorizontalAlignment="Left" Margin="10,0,0,0" Grid.Row="1" FontSize="14" FontFamily="Arial" FontWeight="Bold" Background="#FFAEAEAE" Foreground="White"/>
+        <Label Content="Content Files" HorizontalAlignment="Left" Margin="215,0,0,0" Grid.Row="1" FontSize="14" FontWeight="Bold" FontFamily="Arial" Background="#FFAEAEAE" Foreground="White"/>
+        <Label Content="Preview Window (drag and drop your files here)" HorizontalAlignment="Left" Margin="434,0,0,0" Grid.Row="1" FontSize="14" FontWeight="Bold" FontFamily="Arial" Background="#FFAEAEAE" Foreground="White"/>
+    </Grid>
+</UserControl>

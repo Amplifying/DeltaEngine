@@ -1,69 +1,101 @@
-﻿using System;
+using System;
 using System.IO;
 using DeltaEngine.Core;
-using OpenTK.Audio.OpenAL;
+using DeltaEngine.Multimedia.OpenTK.Helpers;
 using ToyMp3;
+using System.Diagnostics;
+using DeltaEngine.Logging;
 
 namespace DeltaEngine.Multimedia.OpenTK
 {
-	/// <summary>
-	/// Native OpenAL implementation for music playback.
-	/// </summary>
 	public class OpenTKMusic : Music
 	{
-		public OpenTKMusic(string filename, SoundDevice device)
-			: base(filename, device)
+		public OpenTKMusic(string filename, SoundDevice device, Logger log) : base(filename, device)
 		{
-			musicStream = new Mp3Stream(File.OpenRead("Content/" + filename + ".mp3"));
-			format = musicStream.Channels == 2 ? ALFormat.Stereo16 : ALFormat.Mono16;
-			source = AL.GenSource();
-			buffers = AL.GenBuffers(NumberOfBuffers);
+			this.openAL = new OpenTKOpenAL();
+			channelHandle = openAL.CreateChannel();
+			buffers = openAL.CreateBuffers(NumberOfBuffers);
 			bufferData = new byte[BufferSize];
+			this.log = log;
 		}
 
-		private Mp3Stream musicStream;
-		private readonly ALFormat format;
-		private readonly int source;
+		private readonly Logger log;
+		private OpenTKOpenAL openAL;
+		private int channelHandle;
+		private int[] buffers;
+		private byte[] bufferData;
 		private const int NumberOfBuffers = 2;
-		private readonly int[] buffers;
-		private readonly byte[] bufferData;
 		private const int BufferSize = 1024 * 8;
+		private Mp3Stream musicStream;
+		private AudioFormat format;
+		private DateTime playStartTime;
+
+		public override float DurationInSeconds
+		{
+			get
+			{
+				return musicStream.LengthInSeconds;
+			}
+		}
+
+		public override float PositionInSeconds
+		{
+			get
+			{
+				var seconds = (float)DateTime.Now.Subtract(playStartTime).TotalSeconds;
+				return MathExtensions.Round(seconds.Clamp(0f, DurationInSeconds), 2);
+			}
+		}
+
+		protected override void LoadData(Stream fileData)
+		{
+			try
+			{
+				var stream = new MemoryStream();
+				fileData.CopyTo(stream);
+				musicStream = new Mp3Stream(stream);
+				format = musicStream.Channels == 2 ? AudioFormat.Stereo16 : AudioFormat.Mono16;
+			}
+			catch (Exception ex)
+			{
+				ExecuteLogger(ex);
+				if (Debugger.IsAttached)
+					throw new MusicNotFoundOrAccessible(Name, ex);
+			}
+		}
 
 		protected override void PlayNativeMusic(float volume)
 		{
 			for (int index = 0; index < NumberOfBuffers; index++)
-				if (!Stream(buffers[index]))
+				if (!Stream(buffers [index]))
 					break;
 
-			AL.SourcePlay(source);
-			AL.Source(source, ALSourcef.Gain, volume);
+			openAL.Play(channelHandle);
+			openAL.SetVolume(channelHandle, volume);
 			playStartTime = DateTime.Now;
 		}
 
-		private DateTime playStartTime;
-
-		public override void Stop()
+		protected override void StopNativeMusic()
 		{
-			AL.SourceStop(source);
+			openAL.Stop(channelHandle);
 			EmptyBuffers();
 		}
 
 		private void EmptyBuffers()
 		{
-			int queued;
-			AL.GetSource(source, ALGetSourcei.BuffersQueued, out queued);
+			int queued = openAL.GetNumberOfBuffersQueued(channelHandle);
 			while (queued-- > 0)
-				AL.SourceUnqueueBuffer(source);
+				openAL.UnqueueBufferFromChannel(channelHandle);
 		}
 
-		public override bool IsPlaying
+		public override bool IsPlaying()
 		{
-			get { return GetState() != ALSourceState.Stopped; }
+			return GetState() != ChannelState.Stopped;
 		}
 
 		protected override void Run()
 		{
-			if (GetState() == ALSourceState.Paused)
+			if (GetState() == ChannelState.Paused)
 				return;
 
 			bool isFinished = UpdateBuffersAndCheckFinished();
@@ -72,33 +104,24 @@ namespace DeltaEngine.Multimedia.OpenTK
 				Stop();
 				return;
 			}
-
-			if (GetState() != ALSourceState.Playing)
-				AL.SourcePlay(source);
+			if (GetState() != ChannelState.Playing)
+				openAL.Play(channelHandle);
 		}
 
-		private ALSourceState GetState()
+		private ChannelState GetState()
 		{
-			int sourceState;
-			AL.GetSource(source, ALGetSourcei.SourceState, out sourceState);
-			return (ALSourceState)sourceState;
+			return openAL.GetChannelState(channelHandle);
 		}
 
 		private bool UpdateBuffersAndCheckFinished()
 		{
-			int processed;
-			AL.GetSource(source, ALGetSourcei.BuffersProcessed, out processed);
-			while (processed > 0)
+			int processed = openAL.GetNumberOfBuffersProcesed(channelHandle);
+			while (processed-- > 0)
 			{
-				int buffer = AL.SourceUnqueueBuffer(source);
-				int oldBufferSize;
-				AL.GetBuffer(buffer, ALGetBufferi.Size, out oldBufferSize);
+				int buffer = openAL.UnqueueBufferFromChannel(channelHandle);
 				if (!Stream(buffer))
 					return true;
-
-				processed--;
 			}
-
 			return false;
 		}
 
@@ -108,31 +131,22 @@ namespace DeltaEngine.Multimedia.OpenTK
 			if (bytesRead == 0)
 				return false;
 
-			AL.BufferData(buffer, format, bufferData, bytesRead, musicStream.Samplerate);
-			AL.SourceQueueBuffer(source, buffer);
-
+			openAL.BufferData(buffer, format, bufferData, bytesRead, musicStream.Samplerate);
+			openAL.QueueBufferInChannel(buffer, channelHandle);
 			return true;
 		}
 
-		public override void Dispose()
+		protected override void DisposeData()
 		{
-			AL.DeleteBuffers(buffers);
-			AL.DeleteSource(source);
+			base.DisposeData();
+			openAL.DeleteBuffers(buffers);
+			openAL.DeleteChannel(channelHandle);
 			musicStream = null;
 		}
 
-		public override float DurationInSeconds
+		private void ExecuteLogger(Exception ex)
 		{
-			get { return musicStream.LengthInSeconds; }
-		}
-
-		public override float PositionInSeconds
-		{
-			get
-			{
-				float seconds = (float)DateTime.Now.Subtract(playStartTime).TotalSeconds;
-				return MathExtensions.Round(seconds.Clamp(0f, DurationInSeconds), 2);
-			}
+			log.Error(ex);
 		}
 	}
 }

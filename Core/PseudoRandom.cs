@@ -1,28 +1,27 @@
-﻿using System;
+using System;
 
 namespace DeltaEngine.Core
 {
 	/// <summary>
-	/// Returns quick random integers and floats (faster than System.Random). For more info see:
-	/// http://www.codeproject.com/Articles/25172/Simple-Random-Number-Generation
+	/// Default implementation of Randomizer, returns quick random integers and floats (faster than
+	/// System.Random). See http://www.codeproject.com/Articles/25172/Simple-Random-Number-Generation
 	/// which is based on: http://www.bobwheeler.com/statistics/Password/MarsagliaPost.txt
 	/// </summary>
 	public class PseudoRandom : Randomizer
 	{
 		public PseudoRandom()
 		{
-			seed = Environment.TickCount;
+			long seed = Environment.TickCount;
 			var u = (uint)(seed >> 16);
 			var v = (uint)(seed % 4294967296);
 			w = u == 0 ? 521288629 : u;
 			z = v == 0 ? 362436069 : v;
 		}
 
-		private readonly long seed;
 		private uint w;
 		private uint z;
 
-		public int Get(int min, int max)
+		public override int Get(int min, int max)
 		{
 			return (int)(GetNextDouble() * (max - min) + min);
 		}
@@ -40,7 +39,7 @@ namespace DeltaEngine.Core
 			return (z << 16) + w;
 		}
 
-		public float Get(float min = 0.0f, float max = 1.0f)
+		public override float Get(float min = 0.0f, float max = 1.0f)
 		{
 			return (float)(GetNextDouble() * (max - min) + min);
 		}

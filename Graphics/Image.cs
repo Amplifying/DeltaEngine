@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Core;
+using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Graphics
@@ -8,13 +8,14 @@ namespace DeltaEngine.Graphics
 	/// </summary>
 	public abstract class Image : ContentData
 	{
-		protected Image(string filename, Drawing drawing)
-			: base(filename)
+		protected Image(string contentName, Drawing drawing)
+			: base(contentName)
 		{
 			this.drawing = drawing;
 		}
 
 		protected readonly Drawing drawing;
+
 		public abstract Size PixelSize { get; }
 		protected bool DisableLinearFiltering { get; set; }
 
@@ -28,9 +29,9 @@ namespace DeltaEngine.Graphics
 
 		protected readonly Color[] checkerMapColors =
 		{
-			Color.LightGray, Color.DarkGray, Color.LightGray, Color.DarkGray,
-			Color.DarkGray, Color.LightGray, Color.DarkGray, Color.LightGray,
-			Color.LightGray, Color.DarkGray, Color.LightGray, Color.DarkGray,
+			Color.LightGray, Color.DarkGray,
+			Color.LightGray, Color.DarkGray, Color.DarkGray, Color.LightGray, Color.DarkGray,
+			Color.LightGray, Color.LightGray, Color.DarkGray, Color.LightGray, Color.DarkGray,
 			Color.DarkGray, Color.LightGray, Color.DarkGray, Color.LightGray
 		};
 

@@ -1,4 +1,4 @@
-﻿namespace DeltaEngine.Input
+namespace DeltaEngine.Input
 {
 	/// <summary>
 	/// All states a mouse button, keyboard key, touch, gamepad or gesture may have.

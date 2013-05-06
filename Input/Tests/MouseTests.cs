@@ -1,15 +1,16 @@
-﻿using System;
+using System;
 using System.Threading;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
 using DeltaEngine.Platforms;
+using DeltaEngine.Platforms.All;
 using DeltaEngine.Platforms.Tests;
-using DeltaEngine.Rendering;
 using DeltaEngine.Rendering.Shapes;
 using NUnit.Framework;
 
 namespace DeltaEngine.Input.Tests
 {
-	public class MouseTests : TestStarter
+	public class MouseTests : TestWithAllFrameworks
 	{
 		[IntegrationTest]
 		public void UpdateMouse(Type resolver)
@@ -28,31 +29,35 @@ namespace DeltaEngine.Input.Tests
 		[Test]
 		public void GetButtonState()
 		{
-			var mouse = new TestResolver().Resolve<Mouse>();
-			Assert.AreEqual(State.Released, mouse.GetButtonState(MouseButton.Left));
-			Assert.AreEqual(State.Released, mouse.GetButtonState(MouseButton.Middle));
-			Assert.AreEqual(State.Released, mouse.GetButtonState(MouseButton.Right));
-			Assert.AreEqual(State.Released, mouse.GetButtonState(MouseButton.X1));
-			Assert.AreEqual(State.Released, mouse.GetButtonState(MouseButton.X2));
+			Start(typeof(MockResolver), (Mouse mouse) =>
+			{
+				Assert.AreEqual(State.Released, mouse.GetButtonState(MouseButton.Left));
+				Assert.AreEqual(State.Released, mouse.GetButtonState(MouseButton.Middle));
+				Assert.AreEqual(State.Released, mouse.GetButtonState(MouseButton.Right));
+				Assert.AreEqual(State.Released, mouse.GetButtonState(MouseButton.X1));
+				Assert.AreEqual(State.Released, mouse.GetButtonState(MouseButton.X2));
+			});
 		}
 
 		[VisualTest]
 		public void GraphicalUnitTest(Type resolver)
 		{
-			Rect rect = null;
+			Ellipse ellipse = null;
 			Mouse remMouse = null;
 
-			Start(resolver, (Renderer renderer, Mouse mouse, Window window) =>
+			Start(resolver, (EntitySystem entitySystem, Mouse mouse, Window window) =>
 			{
 				window.Title = "Click to draw";
 				remMouse = mouse;
-				rect = new Rect(new Rectangle(-0.1f, -0.1f, 0.1f, 0.1f), Color.Red);
-				renderer.Add(rect);
-			}, delegate
+				ellipse = new Ellipse(new Rectangle(-0.1f, -0.1f, 0.1f, 0.1f), Color.Red);
+				entitySystem.Add(ellipse);
+			}, () =>
 			{
 				var position = remMouse.LeftButton == State.Pressed ? remMouse.Position : -Point.Half;
-				rect.DrawArea.Left = position.X;
-				rect.DrawArea.Top = position.Y;
+				var drawArea = ellipse.DrawArea;
+				drawArea.Left = position.X;
+				drawArea.Top = position.Y;
+				ellipse.DrawArea = drawArea;
 			});
 		}
 
@@ -64,7 +69,7 @@ namespace DeltaEngine.Input.Tests
 		[VisualTest]
 		public void DisplayCurrentStateWithTwoFps(Type resolver)
 		{
-			Start(resolver, (Window window) => { }, (Window window, InputCommands input) =>
+			Start(resolver, (Window window) => {}, (Window window, InputCommands input) =>
 			{
 				window.Title = "MouseLeft: " + input.Mouse.GetButtonState(MouseButton.Left);
 				Thread.Sleep(500);
@@ -83,11 +88,11 @@ namespace DeltaEngine.Input.Tests
 				input.Add(MouseButton.Left, State.Releasing,
 					trigger => window.Title = "MouseLeft pressed: " + pressed + " released: " + ++released);
 
-				if (testResolver != null)
+				if (mockResolver != null)
 				{
-					testResolver.SetMouseButtonState(MouseButton.Left, State.Pressing);
-					testResolver.AdvanceTimeAndExecuteRunners(1);
-					testResolver.SetMouseButtonState(MouseButton.Left, State.Releasing);
+					mockResolver.input.SetMouseButtonState(MouseButton.Left, State.Pressing);
+					mockResolver.AdvanceTimeAndExecuteRunners(1);
+					mockResolver.input.SetMouseButtonState(MouseButton.Left, State.Releasing);
 				}
 			});
 		}

@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Graphics.SlimDX;
+using DeltaEngine.Graphics.SlimDX;
 using DeltaEngine.Input.SharpDX;
 using DeltaEngine.Input.Windows;
 using DeltaEngine.Multimedia.SharpDX;
@@ -12,11 +12,8 @@ namespace DeltaEngine.Platforms
 		{
 			RegisterSingleton<SlimDXDevice>();
 			RegisterSingleton<SlimDXDrawing>();
-			Register<SlimDXImage>();
+			RegisterSingleton<SlimDXScreenshotCapturer>();
 			RegisterSingleton<XAudioDevice>();
-			Register<XAudioSound>();
-			Register<XAudioMusic>();
-			Register<SharpDXVideo>();
 			RegisterSingleton<SharpDXMouse>();
 			RegisterSingleton<SharpDXKeyboard>();
 			RegisterSingleton<SharpDXGamePad>();

@@ -1,7 +1,8 @@
-﻿using System.IO;
-using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
+using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.Sprites;
 
 namespace DeltaEngine.Scenes.UserInterfaces
 {
@@ -12,19 +13,24 @@ namespace DeltaEngine.Scenes.UserInterfaces
 	public class Button : InteractiveControl
 	{
 		public Button(Image image, Rectangle initialDrawArea)
-			: base(image, initialDrawArea)
 		{
-			PressedImage = image;
-			NormalImage = image;
-			MouseoverImage = image;
+			Sprite = new Sprite(image, initialDrawArea);
+			pressedImage = image;
+			normalImage = image;
+			mouseoverImage = image;
 		}
 
-		public Image PressedImage { get; set; }
-		public Image NormalImage { get; set; }
-		public Image MouseoverImage { get; set; }
+		public Sprite Sprite { get; private set; }
+		private readonly Image pressedImage;
+		private readonly Image normalImage;
+		private readonly Image mouseoverImage;
 
-		private Button()
-			: base(null, Rectangle.Zero) {}
+		private Button() {}
+
+		internal override bool Contains(Point point)
+		{
+			return Sprite.DrawArea.Contains(point);
+		}
 
 		public override void Press()
 		{
@@ -44,8 +50,8 @@ namespace DeltaEngine.Scenes.UserInterfaces
 
 		private void SetPressedImageAndColor()
 		{
-			Image = PressedImage;
-			Color = PressedColor;
+			Sprite.Image = pressedImage;
+			Sprite.Color = PressedColor;
 		}
 
 		public Color PressedColor
@@ -62,8 +68,8 @@ namespace DeltaEngine.Scenes.UserInterfaces
 
 		private void SetMouseoverImageAndColor()
 		{
-			Image = MouseoverImage;
-			Color = MouseoverColor;
+			Sprite.Image = mouseoverImage;
+			Sprite.Color = MouseoverColor;
 		}
 
 		public Color MouseoverColor
@@ -80,8 +86,8 @@ namespace DeltaEngine.Scenes.UserInterfaces
 
 		private void SetNormalImageAndColor()
 		{
-			Image = NormalImage;
-			Color = NormalColor;
+			Sprite.Image = normalImage;
+			Sprite.Color = NormalColor;
 		}
 
 		public Color NormalColor
@@ -114,43 +120,19 @@ namespace DeltaEngine.Scenes.UserInterfaces
 			SetImageAndColor();
 		}
 
-		public override void LoadData(BinaryReader reader)
+		internal override void Show()
 		{
-			base.LoadData(reader);
-			normalImageFilename = reader.ReadString();
-			mouseoverImageFilename = reader.ReadString();
-			pressedImageFilename = reader.ReadString();
-			normalColor.LoadData(reader);
-			mouseoverColor.LoadData(reader);
-			pressedColor.LoadData(reader);
+			Sprite.Visibility = Visibility.Show;
 		}
 
-		private string normalImageFilename;
-		private string mouseoverImageFilename;
-		private string pressedImageFilename;
-
-		internal override void LoadContent(Content content)
+		internal override void Hide()
 		{
-			base.LoadContent(content);
-			if (NormalImage == null && !string.IsNullOrEmpty(normalImageFilename))
-				NormalImage = content.Load<Image>(normalImageFilename);
-
-			if (MouseoverImage == null && !string.IsNullOrEmpty(mouseoverImageFilename))
-				MouseoverImage = content.Load<Image>(mouseoverImageFilename);
-
-			if (PressedImage == null && !string.IsNullOrEmpty(pressedImageFilename))
-				PressedImage = content.Load<Image>(pressedImageFilename);
+			Sprite.Visibility = Visibility.Hide;
 		}
 
-		public override void SaveData(BinaryWriter writer)
+		public override void Dispose()
 		{
-			base.SaveData(writer);
-			writer.Write(NormalImage.Filename);
-			writer.Write(MouseoverImage.Filename);
-			writer.Write(PressedImage.Filename);
-			normalColor.SaveData(writer);
-			mouseoverColor.SaveData(writer);
-			pressedColor.SaveData(writer);
+			Sprite.IsActive = false;
 		}
 	}
 }

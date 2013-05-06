@@ -1,14 +1,12 @@
-﻿using System;
-using DeltaEngine.Core;
+using System;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Input;
-using DeltaEngine.Platforms;
+using DeltaEngine.Platforms.All;
 using DeltaEngine.Platforms.Tests;
 using NUnit.Framework;
 
 namespace LogoApp.Tests
 {
-	public class BouncingLogoTests : TestStarter
+	public class BouncingLogoTests : TestWithAllFrameworks
 	{
 		[IntegrationTest]
 		public void Create(Type resolver)
@@ -30,19 +28,18 @@ namespace LogoApp.Tests
 			{
 				remLogo = logo;
 				remPosition = logo.DrawArea.Center;
-				if (testResolver != null)
-					testResolver.AdvanceTimeAndExecuteRunners(1);
+			}, () =>
+			{
+				if (remLogo != null)
+					Assert.AreNotEqual(remPosition, remLogo.DrawArea.Center);
 			});
-			if (remLogo != null)
-				Assert.AreNotEqual(remPosition, remLogo.DrawArea.Center);
 		}
 
 		[Test]
 		public void RunAFewTimesAndCloseGame()
 		{
-			var resolver = new TestResolver();
-			resolver.Resolve<BouncingLogo>();
-			resolver.AdvanceTimeAndExecuteRunners(5.0f);
+			Start(typeof(MockResolver),
+				(BouncingLogo logo) => mockResolver.AdvanceTimeAndExecuteRunners(5.0f));
 		}
 
 		[VisualTest]
@@ -55,55 +52,6 @@ namespace LogoApp.Tests
 		public void ShowManyLogos(Type resolver)
 		{
 			Start<BouncingLogo>(resolver, 100);
-		}
-
-		[VisualTest]
-		public void ShowOneLogoWithFriction(Type resolver)
-		{
-			Start(resolver, (BouncingLogoWithFriction logo, InputCommands input) =>
-			{
-				if (testResolver != null)
-					testResolver.AdvanceTimeAndExecuteRunners(30.0f);
-			});
-		}
-
-		[VisualTest]
-		public void ShowManyLogosWithFriction(Type resolver)
-		{
-			Start<BouncingLogoWithFriction>(resolver, 100);
-		}
-
-		[VisualTest]
-		public void ShowOneLogoWithGravity(Type resolver)
-		{
-			Start(resolver, (BouncingLogoWithGravity logo) =>
-			{
-				if (testResolver != null)
-				{
-					testResolver.SetKeyboardState(Key.Space, State.Releasing);
-					testResolver.AdvanceTimeAndExecuteRunners(0.1f);
-				}
-			});
-		}
-
-		[VisualTest]
-		public void ShowManyLogosWithGravity(Type resolver)
-		{
-			Start<BouncingLogoWithGravity>(resolver, 100);
-		}
-
-		[VisualTest]
-		public void Show50LogosAndDisplayFps(Type resolver)
-		{
-			Start(resolver, (BouncingLogo initializeLogo, Resolver r) =>
-			{
-				for (int num = 0; num < 50; num++)
-					r.Resolve<BouncingLogo>();
-			}, (Window window, Time time) =>
-			{
-				if (time.CheckEvery(1) || resolver == typeof(TestResolver))
-					window.Title = "Show50LogosAndDisplayFps: " + time.Fps;
-			});
 		}
 	}
 }

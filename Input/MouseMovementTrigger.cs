@@ -1,4 +1,3 @@
-﻿using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Input
@@ -8,7 +7,7 @@ namespace DeltaEngine.Input
 	/// </summary>
 	public class MouseMovementTrigger : Trigger
 	{
-		public override bool ConditionMatched(InputCommands inputCommands, Time time)
+		public override bool ConditionMatched(InputCommands inputCommands)
 		{
 			bool changedPosition = inputCommands.Mouse.IsAvailable &&
 				inputCommands.Mouse.Position != lastPosition && lastPosition != UnusedPosition;

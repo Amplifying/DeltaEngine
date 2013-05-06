@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Datatypes;
+using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Input.Windows
 {
@@ -12,16 +12,6 @@ namespace DeltaEngine.Input.Windows
 		public bool IsAvailable
 		{
 			get { return false; }
-		}
-
-		public static Point GetPosition(int touchIndex)
-		{
-			return Point.Zero;
-		}
-
-		public static State GetState(int touchIndex)
-		{
-			return State.Released;
 		}
 
 		public void Dispose() { }

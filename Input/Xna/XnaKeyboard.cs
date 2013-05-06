@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using DeltaEngine.Core;
 using Microsoft.Xna.Framework.Input;
 using NativeKeyboard = Microsoft.Xna.Framework.Input.Keyboard;

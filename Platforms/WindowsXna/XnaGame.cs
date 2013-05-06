@@ -1,5 +1,4 @@
-﻿using System;
-using DeltaEngine.Core;
+using System;
 using Microsoft.Xna.Framework;
 
 namespace DeltaEngine.Platforms

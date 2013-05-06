@@ -1,21 +1,21 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 
 namespace DeltaEngine.Core
 {
 	/// <summary>
 	/// Provides ticks for the Time class via the System.Diagnostics.Stopwatch class. This class is
-	/// usually the fallback if nothing else has been registered for the ElapsedTime interface.
+	/// usually the fallback if nothing else has been registered for Time.Current.
 	/// </summary>
-	public class StopwatchTime : ElapsedTime
+	public class StopwatchTime : Time
 	{
 		private readonly Stopwatch timer = Stopwatch.StartNew();
 
-		public long GetTicks()
+		protected override long GetTicks()
 		{
 			return timer.ElapsedTicks;
 		}
 
-		public long TicksPerSecond
+		protected override long TicksPerSecond
 		{
 			get { return Stopwatch.Frequency; }
 		}

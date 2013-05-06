@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace DeltaEngine.Platforms
@@ -29,7 +29,7 @@ namespace DeltaEngine.Platforms
 					instancesToCreate);
 		}
 
-		public void Start<AppEntryRunner>(IEnumerable<Type> typesToRegisterAndResolve,
+		public void Start<AppEntryRunner>(List<Type> typesToRegisterAndResolve,
 			int instancesToCreate = 1)
 		{
 			resolver.Start<AppEntryRunner>(typesToRegisterAndResolve, instancesToCreate);

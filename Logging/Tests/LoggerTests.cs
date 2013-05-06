@@ -1,29 +1,31 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
+using DeltaEngine.Logging.Basic;
+using DeltaEngine.Networking;
 using DeltaEngine.Platforms.Tests;
 using NUnit.Framework;
 
 namespace DeltaEngine.Logging.Tests
 {
-	public class LoggerTests : TestStarter
+	[Category("Slow")]
+	public class LoggerTests : TestWithMockResolver
 	{
-		[IntegrationTest]
-		public void LogInfoMessage(Type resolver)
+		//ncrunch: no coverage start
+		[Test]
+		public void LogInfoMessage()
 		{
-			Start(resolver, (Logger logger) =>
+			Start(typeof(MockResolver), (Logger logger) =>
 			{
 				Assert.IsNull(logger.LastMessage);
 				logger.Info("Hello");
 				Assert.AreEqual("Hello", logger.LastMessage.Text);
 			});
-
 		}
 
-		[IntegrationTest]
-		public void LogWarning(Type resolver)
+		[Test]
+		public void LogWarning()
 		{
-
-			Start(resolver, (Logger logger) =>
+			Start(typeof(MockResolver), (Logger logger) =>
 			{
 				logger.Warning("Ohoh");
 				Assert.AreEqual("Ohoh", logger.LastMessage.Text);
@@ -32,14 +34,34 @@ namespace DeltaEngine.Logging.Tests
 			});
 		}
 
-		[IntegrationTest]
-		public void LogError(Type resolver)
+		[Test]
+		public void LogError()
 		{
-
-			Start(resolver, (Logger logger) =>
+			Start(typeof(MockResolver), (Logger logger) =>
 			{
 				logger.Error(new ExternalException());
 				Assert.IsTrue(logger.LastMessage.Text.Contains("ExternalException"));
+			});
+		}
+
+		[Test]
+		public void DisposeLogger()
+		{
+			Start(typeof(MockResolver), (Logger logger) =>
+			{
+				logger.Info("Hello");
+				logger.Dispose();
+			});
+		}
+
+		[Test]
+		public void DisposeProviders()
+		{
+			Start(typeof(MockResolver), (Client client) =>
+			{
+				Logger logger = new DefaultLogger(client);
+				logger.Info("Hello");
+				logger.Dispose();
 			});
 		}
 	}

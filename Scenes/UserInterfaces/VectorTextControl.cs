@@ -1,111 +1,79 @@
-﻿using System.IO;
-using DeltaEngine.Core;
-using DeltaEngine.Core.Xml;
-using DeltaEngine.Datatypes;
-using DeltaEngine.Rendering;
+//TODO: VectorTextControl
 
-namespace DeltaEngine.Scenes.UserInterfaces
-{
-	/// <summary>
-	/// This allows VectorText to be added to a Scene
-	/// </summary>
-	public class VectorTextControl : Control
-	{
-		public VectorTextControl(XmlContent vectorTextContent, Point topLeft, float height)
-		{
-			vectorText = new VectorText(vectorTextContent, topLeft, height);
-			VectorTextContentFilename = vectorTextContent.Filename;
-		}
+//using DeltaEngine.Content;
+//using DeltaEngine.Core.Xml;
+//using DeltaEngine.Datatypes;
+//using DeltaEngine.Rendering;
 
-		private VectorText vectorText;
-		internal string VectorTextContentFilename { get; private set; }
+//namespace DeltaEngine.Scenes.UserInterfaces
+//{
+//	/// <summary>
+//	/// This allows VectorText to be added to a Scene
+//	/// </summary>
+//	public class VectorTextControl : Control
+//	{
+//		public VectorTextControl(XmlContent vectorTextContent, Point topLeft, float height)
+//		{
+//			VectorText = new VectorText(vectorTextContent, topLeft, height);
+//			VectorTextContentName = vectorTextContent.Name;
+//		}
 
-		private VectorTextControl()
-		{
-			vectorText = new VectorText(new XmlData("Placeholder"), Point.Zero, 0.0f);
-		}
+//		public VectorText VectorText { get; private set; }
+//		internal string VectorTextContentName { get; private set; }
 
-		public override void SaveData(BinaryWriter writer)
-		{
-			base.SaveData(writer);
-			writer.Write(VectorTextContentFilename);
-			writer.Write(TopLeft.ToString());
-			writer.Write(Text);
-			writer.Write(Height);
-			Color.SaveData(writer);
-		}
+//		// ReSharper disable UnusedMember.Local
+//		private VectorTextControl()
+//		{
+//			VectorText = new VectorText(new XmlData("Placeholder"), Point.Zero, 0.0f);
+//		}
 
-		public Point TopLeft
-		{
-			get { return vectorText.TopLeft; }
-			set { vectorText.TopLeft = value; }
-		}
+//		/*
+//		public override void SaveData(BinaryWriter writer)
+//		{
+//			base.SaveData(writer);
+//			writer.Write(VectorTextContentFilename);
+//			writer.Write(VectorText.TopLeft.ToString());
+//			writer.Write(VectorText.Text);
+//			writer.Write(VectorText.Height);
+//			VectorText.Color.SaveData(writer);
+//			writer.Write(VectorText.RenderLayer);
+//		public override void LoadData(BinaryReader reader)
+//		{
+//			base.LoadData(reader);
+//			VectorTextContentFilename = reader.ReadString();
+//			VectorText.TopLeft = new Point(reader.ReadString());
+//			VectorText.Text = reader.ReadString();
+//			VectorText.Height = reader.ReadSingle();
+//			VectorText.Color.LoadData(reader);
+//			VectorText.RenderLayer = reader.ReadInt32();
+//		}
+//		*/
 
-		public string Text
-		{
-			get { return vectorText.Text; }
-			set { vectorText.Text = value; }
-		}
+//		internal override void LoadContent(ContentLoader content)
+//		{
+//			var vectorTextContent = content.Load<XmlContent>(VectorTextContentName);
+//			VectorText = new VectorText(vectorTextContent, VectorText.TopLeft, VectorText.Height)
+//			{
+//				Color = VectorText.Color,
+//				Visibility = VectorText.Visibility,
+//				RenderLayer = VectorText.RenderLayer,
+//				Text = VectorText.Text
+//			};
+//		}
 
-		public float Height
-		{
-			get { return vectorText.Height; }
-			set { vectorText.Height = value; }
-		}
+//		internal override void Show(ObsRenderer renderer)
+//		{
+//			renderer.Add(VectorText);
+//		}
 
-		public Color Color
-		{
-			get { return vectorText.Color; }
-			set { vectorText.Color = value; }
-		}
+//		internal override void Hide(ObsRenderer renderer)
+//		{
+//			renderer.Remove(VectorText);
+//		}
 
-		public override int RenderLayer
-		{
-			get { return vectorText.RenderLayer; }
-			set { vectorText.RenderLayer = value; }
-		}
-
-		public override bool IsVisible
-		{
-			get { return vectorText.IsVisible; }
-			set { vectorText.IsVisible = value; }
-		}
-
-		public override void LoadData(BinaryReader reader)
-		{
-			base.LoadData(reader);
-			VectorTextContentFilename = reader.ReadString();
-			TopLeft = new Point(reader.ReadString());
-			Text = reader.ReadString();
-			Height = reader.ReadSingle();
-			vectorText.Color.LoadData(reader);
-		}
-
-		internal override void LoadContent(Content content)
-		{
-			var vectorTextContent = content.Load<XmlContent>(VectorTextContentFilename);
-			vectorText = new VectorText(vectorTextContent, TopLeft, Height)
-			{
-				Color = Color,
-				IsVisible = IsVisible,
-				RenderLayer = RenderLayer,
-				Text = Text
-			};
-		}
-
-		internal override void Show(Renderer renderer)
-		{
-			renderer.Add(vectorText);
-		}
-
-		internal override void Hide(Renderer renderer)
-		{
-			renderer.Remove(vectorText);
-		}
-
-		public override void Dispose()
-		{
-			vectorText.Dispose();
-		}
-	}
-}
+//		public override void Dispose()
+//		{
+//			VectorText.Dispose();
+//		}
+//	}
+//}

@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using DeltaEngine.Core;
 
 namespace DeltaEngine.Input
 {
@@ -42,17 +41,21 @@ namespace DeltaEngine.Input
 			attachedTriggers.Remove(trigger);
 		}
 
-		internal void Run(InputCommands inputCommands, Time time)
+		internal void Run(InputCommands inputCommands)
 		{
 			var copy = new List<Trigger>(attachedTriggers);
-			foreach (
-				Trigger trigger in copy.Where(trigger => trigger.ConditionMatched(inputCommands, time)))
+			foreach (Trigger trigger in copy.Where(trigger => trigger.ConditionMatched(inputCommands)))
 				Invoke(trigger);
 		}
 
 		private void Invoke(Trigger trigger)
 		{
 			Callback.Invoke(trigger);
+		}
+
+		public List<Trigger> GetTriggers()
+		{
+			return attachedTriggers;
 		}
 	}
 }

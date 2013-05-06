@@ -1,25 +1,32 @@
-﻿using System.Net;
-using DeltaEngine.Datatypes;
+using System;
+using System.Net;
 using DeltaEngine.Networking;
 using DeltaEngine.Networking.Sockets;
 
 namespace DeltaEngine.Logging.Basic.Tests
 {
-	internal class LocalhostLogServer : TcpNetworkingServer
+	internal class LocalhostLogServer : IDisposable
 	{
-		public LocalhostLogServer()
-			: base(new TcpServerSocket(new IPEndPoint(IPAddress.Loopback, Port)))
+		public LocalhostLogServer(Server server)
 		{
+			this.server = server;
+			server.ClientDataReceived += (client, message) => { LastMessage = message as Info; };
+		}
+
+		private readonly Server server;
+
+		public Info LastMessage { get; private set; }
+
+		public void Start()
+		{
+			server.Start(Port);
 		}
 
 		public const int Port = 33333;
 
-		protected override void OnClientDataReceived(ClientConnection client, BinaryData message)
+		public void Dispose()
 		{
-			LastMessage = message as Info;
-			base.OnClientDataReceived(client, message);
+			server.Dispose();
 		}
-
-		public Info LastMessage { get; private set; }
 	}
 }

@@ -4,7 +4,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+	xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
 	xmlns:sampleBrowser="clr-namespace:DeltaEngine.Editor.SampleBrowser"
 	x:Name="SampleBrowserUserControl"
 	MinWidth="570" MinHeight="400" mc:Ignorable="d"
@@ -16,7 +16,13 @@
 		</LinearGradientBrush>
 	</UserControl.Background>
 	<Grid>
-		<ComboBox
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                <GradientStop Color="#FFFBFBFB" Offset="0"/>
+                <GradientStop Color="#FFE2E2E2" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        <ComboBox
 			Margin="8,7,160,0" VerticalAlignment="Top"
 			FontSize="10.667" Height="22"
 			ItemsSource="{Binding Path=AssembliesAvailable}"
@@ -64,8 +70,7 @@
 												<Condition Property="IsFocused" Value="False" />
 												<Condition Property="Text" Value="" />
 											</MultiTrigger.Conditions>
-											<Setter Property="Visibility" TargetName="textBlock"
-															Value="Visible" />
+											<Setter Property="Visibility" TargetName="textBlock" Value="Visible" />
 										</MultiTrigger>
 									</ControlTemplate.Triggers>
 								</ControlTemplate>

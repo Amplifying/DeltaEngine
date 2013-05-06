@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Reflection;
 
@@ -35,21 +35,12 @@ namespace DeltaEngine.Core
 				ex is ArgumentException || ex is IndexOutOfRangeException;
 		}
 
-		public static bool IsDebugModeAndNoDebuggerAttached
+		public static bool IsDebugMode
 		{
 #if DEBUG
-			get { return !Debugger.IsAttached; }
-#else
-			get { return false; }
-#endif
-		}
-
-		public static bool IsReleaseMode
-		{
-#if DEBUG
-			get { return false; }
-#else
 			get { return true; }
+#else
+			get { return false; }
 #endif
 		}
 	}

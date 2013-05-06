@@ -1,10 +1,10 @@
-﻿using System;
-using DeltaEngine.Platforms.Tests;
+using System;
+using DeltaEngine.Platforms.All;
 using NUnit.Framework;
 
 namespace DeltaEngine.Input.Windows.Tests
 {
-	public class WindowsKeyboardTests : TestStarter
+	public class WindowsKeyboardTests : TestWithAllFrameworks
 	{
 		[Test]
 		public void HandleProcMessageKeyDown()

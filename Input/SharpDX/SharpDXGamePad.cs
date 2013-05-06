@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using XInput = SharpDX.XInput;

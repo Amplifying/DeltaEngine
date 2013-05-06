@@ -1,156 +1,54 @@
-﻿using DeltaEngine.Core;
+using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Rendering.Shapes
 {
 	/// <summary>
-	/// Draws a filled ellipse in 2D space, with the border optionally a different color
+	/// Renders a filled 2D ellipse shape
 	/// </summary>
-	public class Ellipse : Renderable
+	public class Ellipse : Polygon
 	{
-		public Ellipse(Point center, float radiusX, float radiusY)
+		public Ellipse()
+			: this(Rectangle.Zero, Color.White) {}
+
+		public Ellipse(Rectangle drawArea, Color color)
+			: base(color)
 		{
-			Center = center;
-			this.radiusX = radiusX;
-			this.radiusY = radiusY;
+			DrawArea = drawArea;
+			Add<CalculateEllipsePoints>();
 		}
 
-		public Point Center;
+		public Ellipse(Point center, float radiusX, float radiusY)
+			: this(Rectangle.FromCenter(center, new Size(2 * radiusX, 2 * radiusY)), Color.White) {}
 
 		public float RadiusX
 		{
-			get { return radiusX; }
+			get { return DrawArea.Width / 2.0f; }
 			set
 			{
-				if (radiusX == value)
-					return;
-
-				radiusX = value;
-				areEllipsePointsOutOfDate = true;
+				var drawArea = DrawArea;
+				DrawArea = Rectangle.FromCenter(drawArea.Center, new Size(2 * value, drawArea.Height));
 			}
 		}
-
-		private float radiusX;
-		protected bool areEllipsePointsOutOfDate = true;
 
 		public float RadiusY
 		{
-			get { return radiusY; }
+			get { return DrawArea.Height / 2.0f; }
 			set
 			{
-				if (radiusY == value)
-					return;
-
-				radiusY = value;
-				areEllipsePointsOutOfDate = true;
+				var drawArea = DrawArea;
+				DrawArea = Rectangle.FromCenter(drawArea.Center, new Size(drawArea.Width, 2 * value));
 			}
 		}
 
-		private float radiusY;
-
-		public float MaxRadius
+		public float Radius
 		{
-			get { return MathExtensions.Max(radiusX, radiusY); }
-		}
-
-		public float Rotation
-		{
-			get { return rotation; }
+			get { return MathExtensions.Max(RadiusX, RadiusY); }
 			set
 			{
-				if (rotation == value)
-					return;
-
-				rotation = value;
-				areEllipsePointsOutOfDate = true;
+				var drawArea = DrawArea;
+				DrawArea = Rectangle.FromCenter(drawArea.Center, new Size(2 * value, 2 * value));
 			}
 		}
-
-		private float rotation;
-
-		protected override void Render(Renderer renderer, Time time)
-		{
-			AreEllipsePointsOutOfDate();
-			DrawInnerEllipse(renderer);
-			DrawBorderEllipse(renderer);
-		}
-
-		private void AreEllipsePointsOutOfDate()
-		{
-			if (areEllipsePointsOutOfDate)
-				StoreEllipsePoints();
-		}
-
-		private void DrawInnerEllipse(Renderer renderer)
-		{
-			for (int i = 1; i < ellipsePoints.Length; i++)
-				renderer.DrawTriangle(
-					new Triangle2D(Center, Center + ellipsePoints[i], Center + ellipsePoints[i - 1]), Color);
-		}
-
-		private void DrawBorderEllipse(Renderer renderer)
-		{
-			if (BorderColor != Color)
-				for (int i = 1; i < ellipsePoints.Length; i++)
-					renderer.DrawLine(Center + ellipsePoints[i], Center + ellipsePoints[i - 1], BorderColor);
-		}
-
-		public Color BorderColor;
-
-		protected void StoreEllipsePoints()
-		{
-			StoreRotationSinCos();
-			FormEllipsePoints();
-			areEllipsePointsOutOfDate = false;
-		}
-
-		private void StoreRotationSinCos()
-		{
-			rotationSin = MathExtensions.Sin(rotation);
-			rotationCos = MathExtensions.Cos(rotation);
-		}
-
-		private float rotationSin;
-		private float rotationCos;
-
-		private void FormEllipsePoints()
-		{
-			float maxRadius = MathExtensions.Max(radiusX, radiusY);
-			var pointsCount = GetPointsCount(maxRadius);
-
-			theta = CalculateTheta(pointsCount);
-
-			for (int i = 0; i < pointsCount; i++)
-				FormRotatedEllipsePoint(i);
-		}
-
-		private float theta;
-
-		protected static int GetPointsCount(float maxRadius)
-		{
-			var pointsCount = (int)(MaxPoints * MathExtensions.Max(0.22f + maxRadius / 2, maxRadius));
-			return MathExtensions.Max(pointsCount, MinPoints);
-		}
-
-		private const int MinPoints = 5;
-		private const int MaxPoints = 96;
-
-		protected float CalculateTheta(int pointsCount)
-		{
-			float thetaFloat = 360.0f / (pointsCount - 1);
-			ellipsePoints = new Point[pointsCount];
-			return thetaFloat;
-		}
-
-		private void FormRotatedEllipsePoint(int i)
-		{
-			var ellipsePoint = new Point(radiusX * MathExtensions.Sin(i * theta),
-				radiusY * MathExtensions.Cos(i * theta));
-			ellipsePoint.RotateAround(Point.Zero, rotationSin, rotationCos);
-			ellipsePoints[i] = ellipsePoint;
-		}
-
-		protected Point[] ellipsePoints;
-		public Color Color = Color.White;
 	}
 }

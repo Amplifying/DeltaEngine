@@ -1,4 +1,4 @@
-﻿using SharpDX.XAudio2;
+using SharpDX.XAudio2;
 
 namespace DeltaEngine.Multimedia.SharpDX
 {

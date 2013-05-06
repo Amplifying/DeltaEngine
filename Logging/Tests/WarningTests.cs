@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DeltaEngine.Datatypes;
 using NUnit.Framework;
@@ -30,17 +30,16 @@ namespace DeltaEngine.Logging.Tests
 		[Test]
 		public void CheckListContains()
 		{
-			var list = new List<Warning>();
-			list.Add(new Warning());
-			Assert.IsTrue(list.Contains(new Warning()));
+			var list = new List<Warning> { new Warning("test1") };
+			Assert.IsTrue(list.Contains(new Warning("test1")));
 		}
 
 		[Test]
-		public void CheckSaveAndLoadWithBinaryDataFactory()
+		public void SaveAndLoad()
 		{
 			var warning = new Warning(TestWarningText);
 			var data = warning.SaveToMemoryStream();
-			var loadedWarning = data.CreateFromMemoryStream<Warning>();
+			var loadedWarning = data.CreateFromMemoryStream() as Warning;
 			Assert.AreEqual(warning, loadedWarning);
 		}
 	}

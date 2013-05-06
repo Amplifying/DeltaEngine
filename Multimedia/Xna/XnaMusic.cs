@@ -1,4 +1,8 @@
-﻿using Microsoft.Xna.Framework.Media;
+using System;
+using System.IO;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Media;
+using System.Diagnostics;
 
 namespace DeltaEngine.Multimedia.Xna
 {
@@ -7,13 +11,13 @@ namespace DeltaEngine.Multimedia.Xna
 	/// </summary>
 	public class XnaMusic : Music
 	{
-		public XnaMusic(string filename, XnaSoundDevice device)
+		public XnaMusic(string filename, XnaSoundDevice device, ContentManager contentManager)
 			: base(filename, device)
 		{
-			music = device.Content.Load<Song>(filename);
+			this.contentManager = contentManager;
 		}
 
-		private Song music;
+		private readonly ContentManager contentManager;
 
 		protected override void PlayNativeMusic(float volume)
 		{
@@ -22,16 +26,17 @@ namespace DeltaEngine.Multimedia.Xna
 			MediaPlayer.Play(music);
 		}
 
+		private Song music;
 		private float positionInSeconds;
 
-		public override void Stop()
+		protected override void StopNativeMusic()
 		{
 			MediaPlayer.Stop();
 		}
-
-		public override bool IsPlaying
+		
+		public override bool IsPlaying()
 		{
-			get { return MediaPlayer.State != MediaState.Stopped && IsActiveMusic(); }
+			return MediaPlayer.State != MediaState.Stopped && IsActiveMusic();
 		}
 
 		private bool IsActiveMusic()
@@ -41,15 +46,49 @@ namespace DeltaEngine.Multimedia.Xna
 
 		protected override void Run()
 		{
-			if (IsActiveMusic())
-				positionInSeconds = (float)MediaPlayer.PlayPosition.TotalSeconds;
+			positionInSeconds = (float)MediaPlayer.PlayPosition.TotalSeconds;
 		}
 
-		public override void Dispose()
+		protected override bool CanLoadDataFromStream
+		{
+			get { return false; }
+		}
+
+		protected override void LoadData(Stream fileData)
+		{
+			throw new XnaVideo.XnaOnlyAllowsLoadingThroughContentNames();
+		}
+
+		protected override void LoadFromContentName(string contentName)
+		{
+			try
+			{
+				music = contentManager.Load<Song>(contentName);
+			}
+			catch (Exception ex)
+			{
+				//logger.Error(ex);
+				if (!Debugger.IsAttached)
+				{
+					return;
+				}
+				else
+					throw new XnaMusicContentNotFound(contentName, ex);
+			}
+		}
+
+		public class XnaMusicContentNotFound : Exception
+		{
+			public XnaMusicContentNotFound(string contentName, Exception exception)
+				: base(contentName, exception) {}
+		}
+
+		protected override void DisposeData()
 		{
 			if (music == null)
 				return;
 
+			base.DisposeData();
 			music.Dispose();
 			music = null;
 		}

@@ -1,33 +1,29 @@
-﻿using DeltaEngine.Core;
+using DeltaEngine.Content;
+using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.Sprites;
 
 namespace LogoApp
 {
 	/// <summary>
-	/// Extends a sprite and displays a colored Delta Engine logo bouncing around with random values.
+	/// Colored Delta Engine logo which spins and bounces around the screen
 	/// </summary>
-	public class BouncingLogo : Sprite
+	public class BouncingLogo : PhysicsSprite
 	{
-		public BouncingLogo(Content content, Randomizer random)
-			: base(content.Load<Image>("DeltaEngineLogo"), Rectangle.One, Color.GetRandomColor())
+		public BouncingLogo(ContentLoader content)
+			: base(
+				content.Load<Image>("DeltaEngineLogo"), new Rectangle(0.4f, 0.4f, 0.2f, 0.2f),
+				Color.GetRandomColor())
 		{
-			DrawArea = Rectangle.FromCenter(Point.Half, new Size(random.Get(0.1f, 0.2f)));
-			velocity = new Point(random.Get(-0.4f, +0.4f), random.Get(-0.4f, +0.4f));
-			Rotation = random.Get(0, 360);
-			rotationSpeed = random.Get(-50, 50);
-		}
+			Gravity = Point.Zero;
+			Rotation = Randomizer.Current.Get(0, 360);
+			RotationSpeed = Randomizer.Current.Get(-50, 50);
+			Velocity = new Point(Randomizer.Current.Get(-0.4f, +0.4f),
+				Randomizer.Current.Get(-0.4f, +0.4f));
 
-		protected Point velocity;
-		protected float rotationSpeed;
-
-		protected override void Render(Renderer renderer, Time time)
-		{
-			Rotation += rotationSpeed * time.CurrentDelta;
-			DrawArea.Center += velocity * time.CurrentDelta;
-			velocity.ReflectIfHittingBorder(DrawArea, renderer.Screen.Viewport);
-			base.Render(renderer, time);
+			Add<MoveSpriteReflectingAtBorder>();
+			Add<RotateSpriteByRotationSpeed>();
 		}
 	}
 }

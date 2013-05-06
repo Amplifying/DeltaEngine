@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.IO;
 using DeltaEngine.Core;
 using SharpDX.Multimedia;
 using SharpDX.XAudio2;
 using ToyMp3;
+using System.Diagnostics;
 
 namespace DeltaEngine.Multimedia.SharpDX
 {
@@ -15,17 +16,30 @@ namespace DeltaEngine.Multimedia.SharpDX
 		public XAudioMusic(string filename, XAudioDevice device)
 			: base(filename, device)
 		{
-			musicStream = new Mp3Stream(File.OpenRead("Content/" + filename + ".mp3"));
-			source = new SourceVoice(device.XAudio2,
-				new WaveFormat(musicStream.Samplerate, 16, musicStream.Channels), false);
 			CreateBuffers();
+		}
+
+		protected override void LoadData(Stream fileData)
+		{
+			try
+			{
+				var stream = new MemoryStream();
+				fileData.CopyTo(stream);
+				musicStream = new Mp3Stream(stream);
+				source = new SourceVoice((device as XAudioDevice).XAudio2,
+					new WaveFormat(musicStream.Samplerate, 16, musicStream.Channels), false);
+			}
+			catch (Exception ex)
+			{
+				if (!Debugger.IsAttached)
+					return;
+				else
+					throw new MusicNotFoundOrAccessible(Name, ex);
+			}
 		}
 
 		private Mp3Stream musicStream;
 		private SourceVoice source;
-		private StreamBuffer[] buffers;
-		private int nextBufferIndex;
-		private const int NumberOfBuffers = 2;
 
 		private void CreateBuffers()
 		{
@@ -33,6 +47,9 @@ namespace DeltaEngine.Multimedia.SharpDX
 			for (int i = 0; i < NumberOfBuffers; i++)
 				buffers[i] = new StreamBuffer();
 		}
+
+		private StreamBuffer[] buffers;
+		private const int NumberOfBuffers = 2;
 
 		protected override void PlayNativeMusic(float volume)
 		{
@@ -49,12 +66,6 @@ namespace DeltaEngine.Multimedia.SharpDX
 
 		protected override void Run()
 		{
-			if (isPlaying)
-				RunIfPlaying();
-		}
-
-		private void RunIfPlaying()
-		{
 			while (source.State.BuffersQueued < NumberOfBuffers)
 			{
 				PutInStreamIfDataAvailable();
@@ -65,7 +76,7 @@ namespace DeltaEngine.Multimedia.SharpDX
 			}
 		}
 
-		public override void Stop()
+		protected override void StopNativeMusic()
 		{
 			if (!isPlaying)
 				return;
@@ -74,10 +85,10 @@ namespace DeltaEngine.Multimedia.SharpDX
 			source.Stop();
 			source.FlushSourceBuffers();
 		}
-
-		public override bool IsPlaying
+		
+		public override bool IsPlaying()
 		{
-			get { return isPlaying; }
+			return isPlaying;
 		}
 
 		private void PutInStreamIfDataAvailable()
@@ -90,14 +101,15 @@ namespace DeltaEngine.Multimedia.SharpDX
 			nextBufferIndex = (nextBufferIndex + 1) % NumberOfBuffers;
 		}
 
-		bool isAbleToStream;
+		private int nextBufferIndex;
+		private bool isAbleToStream;
 
-		public override void Dispose()
+		protected override void DisposeData()
 		{
 			if (musicStream == null)
 				return;
 
-			Stop();
+			base.DisposeData();
 			musicStream = null;
 
 			if (source != null)

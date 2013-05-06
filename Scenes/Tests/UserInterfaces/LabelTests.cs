@@ -1,43 +1,39 @@
-﻿using System;
+using System;
 using System.IO;
-using DeltaEngine.Core;
+using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
 using DeltaEngine.Input;
-using DeltaEngine.Platforms.Tests;
-using DeltaEngine.Rendering;
+using DeltaEngine.Platforms.All;
 using DeltaEngine.Scenes.UserInterfaces;
 using NUnit.Framework;
 
 namespace DeltaEngine.Scenes.Tests.UserInterfaces
 {
-	public class LabelTests : TestStarter
+	public class LabelTests : TestWithAllFrameworks
 	{
 		[VisualTest]
 		public void SaveAndLoad(Type resolver)
 		{
-			Start(resolver, (Renderer renderer, Content content, InputCommands input) =>
+			Start(resolver, (EntitySystem entitySystem, ContentLoader content, InputCommands input) =>
 			{
 				var label = CreateLabel(content);
 				var scene = new Scene();
 				scene.Add(label);
 				MemoryStream stream = scene.SaveToMemoryStream();
-				CheckLabelsMatch(label, stream.CreateFromMemoryStream<Scene>().Find("Label") as Label);
-				scene.Show(renderer, content, input);
+				var loadedScene = (Scene)stream.CreateFromMemoryStream();
+				CheckLabelsMatch(label, loadedScene.Find("Label") as Label);
+				scene.Show(entitySystem, content, input);
 			});
 		}
 
-		private static Label CreateLabel(Content content)
+		private static Label CreateLabel(ContentLoader content)
 		{
 			return new Label(content.Load<Image>("DeltaEngineLogo"), Centered)
 			{
 				Name = "Label",
-				Color = Color.Red,
-				Flip = FlipMode.Horizontal,
-				IsVisible = true,
-				RenderLayer = 5,
-				Rotation = 45,
-				RotationCenter = new Point(0.5f, 0.5f)
+				Sprite = { Color = Color.Red, RenderLayer = 5, Rotation = 45 }
 			};
 		}
 
@@ -45,14 +41,12 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces
 
 		private static void CheckLabelsMatch(Label label1, Label label2)
 		{
-			Assert.AreEqual(label1.Color, label2.Color);
-			Assert.AreEqual(label1.DrawArea, label2.DrawArea);
-			Assert.AreEqual(label1.Flip, label2.Flip);
-			Assert.IsTrue(label2.ImageFilename == "dummy" || label2.ImageFilename == "DeltaEngineLogo");
-			Assert.AreEqual(label1.IsVisible, label2.IsVisible);
-			Assert.AreEqual(label1.RenderLayer, label2.RenderLayer);
-			Assert.AreEqual(label1.Rotation, label2.Rotation);
-			Assert.AreEqual(label1.RotationCenter, label2.RotationCenter);
+			Assert.AreEqual(label1.Sprite.Color, label2.Sprite.Color);
+			Assert.AreEqual(label1.Sprite.DrawArea, label2.Sprite.DrawArea);
+			Assert.IsTrue(label2.Sprite.Image.Name == "DeltaEngineLogo");
+			Assert.AreEqual(label1.Sprite.Visibility, label2.Sprite.Visibility);
+			Assert.AreEqual(label1.Sprite.RenderLayer, label2.Sprite.RenderLayer);
+			Assert.AreEqual(label1.Sprite.Rotation, label2.Sprite.Rotation);
 		}
 	}
 }

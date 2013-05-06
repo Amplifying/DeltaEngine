@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Breakout
 {
@@ -38,7 +38,7 @@ namespace Breakout
 		{
 			lives--;
 			destroyedBlocksInARow /= 2;
-			if (lives == 0 && GameOver!=null)
+			if (lives == 0 && GameOver != null)
 				GameOver();
 		}
 

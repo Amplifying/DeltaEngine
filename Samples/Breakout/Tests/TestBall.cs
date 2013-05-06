@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Core;
+using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
 
@@ -6,8 +6,8 @@ namespace Breakout.Tests
 {
 	public class TestBall : Ball
 	{
-		public TestBall(Paddle paddle, Content content, InputCommands inputCommands)
-			: base(paddle, content, inputCommands) { }
+		public TestBall(Paddle paddle, ContentLoader content, InputCommands inputCommands)
+			: base(paddle, content, inputCommands) {}
 
 		public Point CurrentVelocity
 		{

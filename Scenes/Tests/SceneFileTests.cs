@@ -1,34 +1,35 @@
-﻿using System;
-using DeltaEngine.Core;
+using System;
+using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
 using DeltaEngine.Input;
-using DeltaEngine.Platforms.Tests;
-using DeltaEngine.Rendering;
+using DeltaEngine.Platforms.All;
 using DeltaEngine.Scenes.UserInterfaces;
 using NUnit.Framework;
 
 namespace DeltaEngine.Scenes.Tests
 {
-	public class SceneFileTests : TestStarter
+	public class SceneFileTests : TestWithAllFrameworks
 	{
 		[VisualTest]
 		public void CreateSaveLoadAndShowScene(Type resolverType)
 		{
-			Start(resolverType, (Renderer renderer, Content content, InputCommands input) =>
-			{
-				var originalScene = CreateAndSaveScene(content);
-				var loadedScene = LoadAndShowScene(renderer, content, input);
-				var originalLabel = (Label)originalScene.Find("Label");
-				var loadedLabel = (Label)originalScene.Find("Label");
-				Assert.AreEqual(originalLabel.DrawArea, loadedLabel.DrawArea);
-				var originalButton = (Button)originalScene.Find("Button");
-				var loadedButton = (Button)loadedScene.Find("Button");
-				Assert.AreEqual(originalButton.PressedColor, loadedButton.PressedColor);
-			});
+			Start(resolverType,
+				(EntitySystem entitySystem, ContentLoader content, InputCommands input) =>
+				{
+					var originalScene = CreateAndSaveScene(content);
+					var loadedScene = LoadAndShowScene(entitySystem, content, input);
+					var originalLabel = (Label)originalScene.Find("Label");
+					var loadedLabel = (Label)originalScene.Find("Label");
+					Assert.AreEqual(originalLabel.Sprite.DrawArea, loadedLabel.Sprite.DrawArea);
+					var originalButton = (Button)originalScene.Find("Button");
+					var loadedButton = (Button)loadedScene.Find("Button");
+					Assert.AreEqual(originalButton.PressedColor, loadedButton.PressedColor);
+				});
 		}
 
-		private static Scene CreateAndSaveScene(Content content)
+		private static Scene CreateAndSaveScene(ContentLoader content)
 		{
 			var logo = content.Load<Image>("DeltaEngineLogo");
 			var scene = new Scene();
@@ -43,10 +44,11 @@ namespace DeltaEngine.Scenes.Tests
 			return scene;
 		}
 
-		private static Scene LoadAndShowScene(Renderer renderer, Content content, InputCommands input)
+		private static Scene LoadAndShowScene(EntitySystem entitySystem, ContentLoader content,
+			InputCommands input)
 		{
 			var scene = new SceneFile("Scene").Scene;
-			scene.Show(renderer, content, input);
+			scene.Show(entitySystem, content, input);
 			return scene;
 		}
 	}

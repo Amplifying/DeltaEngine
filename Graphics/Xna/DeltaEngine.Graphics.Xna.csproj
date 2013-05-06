@@ -1,7 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
+	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+	<PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{CC533B9B-FC08-411A-B02D-9BB0E2DD90EC}</ProjectGuid>
@@ -11,65 +11,67 @@
     <AssemblyName>DeltaEngine.Graphics.Xna</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
-  </PropertyGroup>
+	</PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-    <CodeAnalysisRuleSet>..\..\..\..\Users\Stephan\Desktop\DeltaEngineModifiedRuleSet.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\Debug\DeltaEngine.Graphics.Xna.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\Release</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
+    <DocumentationFile>bin\Release\DeltaEngine.Graphics.Xna.XML</DocumentationFile>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
-    <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
-    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
-    <Reference Include="System" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="XnaCircularBuffer.cs" />
-    <Compile Include="XnaImage.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="XnaDevice.cs" />
-    <Compile Include="XnaDrawing.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
-      <Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
-      <Name>DeltaEngine.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Datatypes\DeltaEngine.Datatypes.csproj">
-      <Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
-      <Name>DeltaEngine.Datatypes</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Platforms\DeltaEngine.Platforms.csproj">
-      <Project>{bae8830e-5f62-48d6-b772-c4b1e8665fb3}</Project>
-      <Name>DeltaEngine.Platforms</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DeltaEngine.Graphics.csproj">
-      <Project>{8f701b0d-48b6-45cf-85e0-286bd53328ba}</Project>
-      <Name>DeltaEngine.Graphics</Name>
-    </ProjectReference>
-  </ItemGroup>
+	<ItemGroup>
+		<Reference Include="Microsoft.Xna.Framework" />
+		<Reference Include="Microsoft.Xna.Framework.Game" />
+		<Reference Include="Microsoft.Xna.Framework.Graphics" />
+		<Reference Include="System" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Content\DeltaEngine.Content.csproj">
+			<Project>{f1b6345b-6f28-482f-9230-8f1d8674c28a}</Project>
+			<Name>DeltaEngine.Content</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
+			<Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
+			<Name>DeltaEngine.Core</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\Datatypes\DeltaEngine.Datatypes.csproj">
+			<Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
+			<Name>DeltaEngine.Datatypes</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\Logging\DeltaEngine.Logging.csproj">
+			<Project>{E4440567-3D5D-4670-AB49-8163B18E302E}</Project>
+			<Name>DeltaEngine.Logging</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\Platforms\DeltaEngine.Platforms.csproj">
+			<Project>{bae8830e-5f62-48d6-b772-c4b1e8665fb3}</Project>
+			<Name>DeltaEngine.Platforms</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\DeltaEngine.Graphics.csproj">
+			<Project>{8f701b0d-48b6-45cf-85e0-286bd53328ba}</Project>
+			<Name>DeltaEngine.Graphics</Name>
+		</ProjectReference>
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Include="Properties\AssemblyInfo.cs" />
+		<Compile Include="XnaCircularBuffer.cs" />
+		<Compile Include="XnaImage.cs" />
+		<Compile Include="XnaDevice.cs" />
+		<Compile Include="XnaDrawing.cs" />
+		<Compile Include="XnaScreenshotCapturer.cs" />
+	</ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

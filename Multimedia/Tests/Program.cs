@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms.All;
 
 namespace DeltaEngine.Multimedia.Tests
 {
@@ -7,9 +7,10 @@ namespace DeltaEngine.Multimedia.Tests
 		//ncrunch: no coverage start
 		public static void Main()
 		{
-			//new SoundTests().PlaySoundRightAndPitched(TestStarter.Xna);
-			//new MusicTests().PlayMusic(TestStarter.Xna);
-			new VideoTests().PlayVideo(TestStarter.Xna);
+			//new SoundTests().PlaySoundRightAndPitched(TestWithAllFrameworks.Xna);
+			//new MusicTests().PlayMusic(TestWithAllFrameworks.OpenGL);
+			new VideoTests().PlayVideo(TestWithAllFrameworks.OpenGL);
+			//new VideoTests().StartAndStopVideo(TestWithAllFrameworks.OpenGL);
 		}
 	}
 }

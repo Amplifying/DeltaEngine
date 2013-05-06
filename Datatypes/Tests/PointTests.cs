@@ -200,5 +200,16 @@ namespace DeltaEngine.Datatypes.Tests
 			Assert.AreEqual(0.0f, point1.DotProduct(point2));
 			Assert.AreEqual(0.7071f, point1.DotProduct(Point.UnitY), 0.0001f);
 		}
+
+		[Test]
+		public void SaveAndLoad()
+		{
+			var data = Point.Half.SaveToMemoryStream();
+			byte[] savedBytes = data.ToArray();
+			Assert.AreEqual(1 + "Point".Length +  Point.SizeInBytes, savedBytes.Length);
+			Assert.AreEqual("Point".Length, savedBytes[0]);
+			var reconstructed = data.CreateFromMemoryStream();
+			Assert.AreEqual(Point.Half, reconstructed);
+		}
 	}
 }

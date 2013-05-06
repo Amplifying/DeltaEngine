@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using NUnit.Framework;
 
 namespace DeltaEngine.Datatypes.Tests
@@ -9,7 +9,6 @@ namespace DeltaEngine.Datatypes.Tests
 		public void MatrixZero()
 		{
 			var matrix = new Matrix();
-			Console.WriteLine(matrix);
 			for (int i = 0; i < 16; i++)
 				Assert.AreEqual(0, matrix[i]);
 		}
@@ -21,14 +20,6 @@ namespace DeltaEngine.Datatypes.Tests
 			AssertValues0To15(matrix);
 		}
 
-		[Test]
-		public void CreateWithFloatArray()
-		{
-			float[] values = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-			var matrix = new Matrix(values);
-			AssertValues0To15(matrix);
-		}
-
 		private static void AssertValues0To15(Matrix matrix)
 		{
 			for (int i = 0; i < 16; i++)
@@ -36,23 +27,11 @@ namespace DeltaEngine.Datatypes.Tests
 		}
 
 		[Test]
-		public void CreateScaleFromOneScalar()
+		public void CreateWithFloatArray()
 		{
-			var matrix = Matrix.CreateScale(5, 5, 5);
-			Assert.AreEqual(5, matrix[0]);
-			Assert.AreEqual(5, matrix[5]);
-			Assert.AreEqual(5, matrix[10]);
-			Assert.AreEqual(1, matrix[15]);
-		}
-
-		[Test]
-		public void CreateScaleFromVector()
-		{
-			var matrix = Matrix.CreateScale(1, 1, 1);
-			Assert.AreEqual(1, matrix[0]);
-			Assert.AreEqual(1, matrix[5]);
-			Assert.AreEqual(1, matrix[10]);
-			Assert.AreEqual(1, matrix[15]);
+			float[] values = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+			var matrix = new Matrix(values);
+			AssertValues0To15(matrix);
 		}
 
 		[Test]
@@ -78,10 +57,10 @@ namespace DeltaEngine.Datatypes.Tests
 			var matrix2 = new Matrix(new float[]{0, 0, -1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1});
 			var matrix3 = new Matrix(new float[]{0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1});
 			var matrix4 = matrix1 * (matrix2 * matrix3);
-			Assert.IsTrue(matrix1.IsNearlyEqual(Matrix.CreateRotationXyz(90, 0, 0)));
-			Assert.IsTrue(matrix2.IsNearlyEqual(Matrix.CreateRotationXyz(0, 90, 0)));
-			Assert.IsTrue(matrix3.IsNearlyEqual(Matrix.CreateRotationXyz(0, 0, 90)));
-			Assert.IsTrue(matrix4.IsNearlyEqual(Matrix.CreateRotationXyz(90, 90, 90)));
+			Assert.IsTrue(matrix1.IsNearlyEqual(Matrix.CreateRotationZyx(90, 0, 0)));
+			Assert.IsTrue(matrix2.IsNearlyEqual(Matrix.CreateRotationZyx(0, 90, 0)));
+			Assert.IsTrue(matrix3.IsNearlyEqual(Matrix.CreateRotationZyx(0, 0, 90)));
+			Assert.IsTrue(matrix4.IsNearlyEqual(Matrix.CreateRotationZyx(90, 90, 90)));
 		}
 
 		[Test]
@@ -113,7 +92,7 @@ namespace DeltaEngine.Datatypes.Tests
 		}
 
 		[Test]
-		public void AccesViolation()
+		public void AccessViolation()
 		{
 			var matrix1 = new Matrix(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
 			float num = matrix1[15];
@@ -172,7 +151,7 @@ namespace DeltaEngine.Datatypes.Tests
 		[Test]
 		public void IsNotNearlyEqual()
 		{
-			var matrix1 = new Matrix(new float[]{1, 0, 3, 0, 0, 2, 0, 4, 0, 3, 2, 0, 1, 0, 0, 2});
+			var matrix1 = new Matrix(1, 0, 3, 0, 0, 2, 0, 4, 0, 3, 2, 0, 1, 0, 0, 2);
 			Assert.IsFalse(matrix1.IsNearlyEqual(Matrix.Identity));
 		}
 
@@ -198,11 +177,22 @@ namespace DeltaEngine.Datatypes.Tests
 		{
 			var position = new Vector(3, 5, 2);
 			var translation = Matrix.CreateTranslation(2, 0, 5);
-			var rotation = Matrix.CreateRotationXyz(0, 90, 0);
+			var rotation = Matrix.CreateRotationZyx(0, 90, 0);
 			var scale = Matrix.CreateScale(3, 3, 3);
 			var transformation = scale * rotation * translation;
 			var result = translation * (rotation * (scale * position));
 			Assert.AreEqual(result, transformation * position);
+		}
+
+		[Test]
+		public void SaveAndLoad()
+		{
+			var data = Matrix.Identity.SaveToMemoryStream();
+			byte[] savedBytes = data.ToArray();
+			Assert.AreEqual(1 + "Matrix".Length + Matrix.SizeInBytes, savedBytes.Length);
+			Assert.AreEqual("Matrix".Length, savedBytes[0]);
+			var reconstructed = (Matrix)data.CreateFromMemoryStream();
+			Assert.AreEqual(Matrix.Identity, reconstructed);
 		}
 	}
 }
