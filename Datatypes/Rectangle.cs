@@ -180,7 +180,7 @@ namespace DeltaEngine.Datatypes
 			};
 		}
 
-		public bool IsColliding(float rotation, Rectangle otherRect, float otherRotation)
+		public bool IsColliding(Rectangle otherRect, float rotation = 0, float otherRotation = 0)
 		{
 			var rotatedRect = GetRotatedRectangleCorners(Center, rotation);
 			var rotatedOtherRect = otherRect.GetRotatedRectangleCorners(otherRect.Center, otherRotation);

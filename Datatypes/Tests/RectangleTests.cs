@@ -244,10 +244,10 @@ namespace DeltaEngine.Datatypes.Tests
 			var screenRect = Rectangle.One;
 			var insideRect = new Rectangle(0.1f, 0.1f, 2.9f, 0.3f);
 			var outsideRect = new Rectangle(2.4f, 0.35f, 0.1f, 0.1f);
-			Assert.IsTrue(insideRect.IsColliding(0, screenRect, 0));
-			Assert.IsFalse(outsideRect.IsColliding(0, screenRect, 0));
-			Assert.IsTrue(outsideRect.IsColliding(0, insideRect, 0));
-			Assert.IsFalse(outsideRect.IsColliding(0, insideRect, 70));
+			Assert.IsTrue(insideRect.IsColliding(screenRect));
+			Assert.IsFalse(outsideRect.IsColliding(screenRect));
+			Assert.IsTrue(outsideRect.IsColliding(insideRect));
+			Assert.IsFalse(outsideRect.IsColliding(insideRect, 0, 70));
 		}
 
 		[Test]
@@ -255,8 +255,8 @@ namespace DeltaEngine.Datatypes.Tests
 		{
 			var insideRect = new Rectangle(0.3f, 0.3f, 0.1f, 0.1f);
 			var outsideRect = new Rectangle(0.2f, 0.2f, 0.3f, 0.3f);
-			Assert.IsTrue(outsideRect.IsColliding(0, insideRect, 0));
-			Assert.IsTrue(outsideRect.IsColliding(0, insideRect, 70));
+			Assert.IsTrue(outsideRect.IsColliding(insideRect));
+			Assert.IsTrue(outsideRect.IsColliding(insideRect, 0, 70));
 		}
 	}
 }
