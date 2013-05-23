@@ -35,8 +35,8 @@ namespace DeltaEngine.Rendering.Triggers
 		private static bool IsEntityRectCollidingWithOtherEntityRect(Entity entity,
 			Entity otherEntity)
 		{
-			return entity.Get<Rectangle>().IsColliding(entity.Get<Rotation>().Value,
-				otherEntity.Get<Rectangle>(), otherEntity.Get<Rotation>().Value);
+			return entity.Get<Rectangle>().IsColliding(otherEntity.Get<Rectangle>(),
+				entity.Get<Rotation>().Value, otherEntity.Get<Rotation>().Value);
 		}
 	}
 }
