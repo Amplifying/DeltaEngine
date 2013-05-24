@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Platforms;
 using DeltaEngine.Platforms.All;
 using DeltaEngine.Platforms.Tests;
@@ -45,12 +44,11 @@ namespace DeltaEngine.Input.Tests
 			Ellipse ellipse = null;
 			Mouse remMouse = null;
 
-			Start(resolver, (EntitySystem entitySystem, Mouse mouse, Window window) =>
+			Start(resolver, (Mouse mouse, Window window) =>
 			{
 				window.Title = "Click to draw";
 				remMouse = mouse;
 				ellipse = new Ellipse(new Rectangle(-0.1f, -0.1f, 0.1f, 0.1f), Color.Red);
-				entitySystem.Add(ellipse);
 			}, () =>
 			{
 				var position = remMouse.LeftButton == State.Pressed ? remMouse.Position : -Point.Half;
@@ -69,7 +67,7 @@ namespace DeltaEngine.Input.Tests
 		[VisualTest]
 		public void DisplayCurrentStateWithTwoFps(Type resolver)
 		{
-			Start(resolver, (Window window) => {}, (Window window, InputCommands input) =>
+			Start(resolver, (Window window) => { }, (Window window, InputCommands input) =>
 			{
 				window.Title = "MouseLeft: " + input.Mouse.GetButtonState(MouseButton.Left);
 				Thread.Sleep(500);

@@ -12,7 +12,5 @@ namespace DeltaEngine.Multimedia.Xna
 			base.Run();
 			FrameworkDispatcher.Update();
 		}
-
-		public override void Dispose() {}
 	}
 }

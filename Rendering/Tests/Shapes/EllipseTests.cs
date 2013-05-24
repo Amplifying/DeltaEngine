@@ -1,8 +1,8 @@
 using System;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Platforms.All;
 using DeltaEngine.Rendering.Shapes;
+using DeltaEngine.Rendering.Sprites;
 using NUnit.Framework;
 
 namespace DeltaEngine.Rendering.Tests.Shapes
@@ -27,42 +27,31 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 		[VisualTest]
 		public void RenderRedEllipse(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem) =>
-			{
-				var ellipse = new Ellipse(Point.Half, 0.4f, 0.2f) { Color = Color.Red };
-				entitySystem.Add(ellipse.Add<RenderPolygon>());
-			});
+			Start(resolver, () => { new Ellipse(Point.Half, 0.4f, 0.2f, Color.Red); });
 		}
 
 		[VisualTest]
 		public void RenderRedOutlinedEllipse(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem) =>
-			{
-				var ellipse = new Ellipse(Point.Half, 0.4f, 0.2f) { OutlineColor = Color.Red };
-				entitySystem.Add(ellipse.Add<RenderPolygonOutline>());
-			});
+			Start(resolver,
+				() =>
+				{
+					new Ellipse(Point.Half, 0.4f, 0.2f, Color.Red).Add(new OutlineColor(Color.Yellow)).Add
+						<Polygon.RenderOutline>();
+				});
 		}
 
 		[VisualTest]
 		public void RenderingWithEntityHandlersInAnyOrder(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem) =>
+			Start(resolver, () =>
 			{
-				var ellipse1 = new Ellipse(Point.Half, 0.4f, 0.2f)
-				{
-					Color = Color.Blue,
-					OutlineColor = Color.Red,
-					RenderLayer = 0
-				};
-				entitySystem.Add(ellipse1.Add<RenderPolygon, RenderPolygonOutline>());
-				var ellipse2 = new Ellipse(Point.Half, 0.1f, 0.2f)
-				{
-					Color = Color.Green,
-					OutlineColor = Color.Purple,
-					RenderLayer = 1
-				};
-				entitySystem.Add(ellipse2.Add<RenderPolygonOutline, RenderPolygon>());
+				var ellipse1 = new Ellipse(Point.Half, 0.4f, 0.2f, Color.Blue) { RenderLayer = 0 };
+				ellipse1.Add(new OutlineColor(Color.Red));
+				ellipse1.Add<Polygon.Render, Polygon.RenderOutline>();
+				var ellipse2 = new Ellipse(Point.Half, 0.1f, 0.2f, Color.Green) { RenderLayer = 1 };
+				ellipse2.Add(new OutlineColor(Color.Red));
+				ellipse2.Add<Polygon.RenderOutline, Polygon.Render>();
 			});
 		}
 	}

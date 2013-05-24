@@ -1,7 +1,6 @@
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Input;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 using DeltaEngine.Rendering.Shapes;
 
 namespace Blobs.Creatures
@@ -11,8 +10,8 @@ namespace Blobs.Creatures
 	/// </summary>
 	public class Player : Blob
 	{
-		public Player(EntitySystem entitySystem, ScreenSpace screen, InputCommands input)
-			: base(entitySystem, screen, input)
+		public Player(ScreenSpace screen, InputCommands input)
+			: base(screen, input)
 		{
 			RespondToMouseDragging();
 		}
@@ -66,12 +65,9 @@ namespace Blobs.Creatures
 			if (Velocity != Point.Zero)
 				return;
 
-			entitySystem.Add(
-				aim = new Line2D(Center, Center, Color.Red) { RenderLayer = ArrowRenderLayer });
-			entitySystem.Add(
-				arrow1 = new Line2D(Center, Center, Color.Red) { RenderLayer = ArrowRenderLayer });
-			entitySystem.Add(
-				arrow2 = new Line2D(Center, Center, Color.Red) { RenderLayer = ArrowRenderLayer });
+			aim = new Line2D(Center, Center, Color.Red) { RenderLayer = ArrowRenderLayer };
+			arrow1 = new Line2D(Center, Center, Color.Red) { RenderLayer = ArrowRenderLayer };
+			arrow2 = new Line2D(Center, Center, Color.Red) { RenderLayer = ArrowRenderLayer };
 		}
 
 		private const int ArrowRenderLayer = 9;

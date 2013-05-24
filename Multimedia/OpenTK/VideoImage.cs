@@ -10,8 +10,8 @@ namespace DeltaEngine.Multimedia.OpenTK
 	[IgnoreForResolver]
 	public class VideoImage : Image
 	{
-		public VideoImage(Drawing drawing)
-			: base("<VideoTexture>", drawing)
+		public VideoImage()
+			: base("<VideoTexture>")
 		{
 			GL.GenTextures(1, out glHandle);
 			GL.BindTexture(TextureTarget.Texture2D, glHandle);
@@ -35,10 +35,18 @@ namespace DeltaEngine.Multimedia.OpenTK
 		{
 			get { return size; }
 		}
+		public override bool HasAlpha
+		{
+			get
+			{
+				//TODO
+				return false;
+			}
+		}
 
 		private Size size;
 
-		public override void Draw(VertexPositionColorTextured[] vertices)
+		public void Draw(VertexPositionColorTextured[] vertices)
 		{
 			vertices[0] = new VertexPositionColorTextured(vertices[0].Position, vertices[0].Color,
 				Point.UnitY);
@@ -51,7 +59,6 @@ namespace DeltaEngine.Multimedia.OpenTK
 
 			GL.Enable(EnableCap.Texture2D);
 			GL.BindTexture(TextureTarget.Texture2D, glHandle);
-			base.Draw(vertices);
 		}
 
 		public void UpdateTexture(VideoStream stream, int frameIndex)

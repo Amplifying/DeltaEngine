@@ -1,33 +1,38 @@
-﻿using System;
+using System;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Platforms.All;
 using DeltaEngine.Platforms.Tests;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 using NUnit.Framework;
 
 namespace Snake.Tests
 {
 	public class SnakeTests : TestWithAllFrameworks
 	{
+		// ReSharper disable PossibleLossOfFraction
 		[SetUp]
 		public void Init()
 		{
 			gridSize = 25;
 			blockSize = 1.0f / gridSize;
 			startPosition = blockSize * (gridSize / 2);
+			moveSpeed = 0.15f;
 		}
+
+		// ReSharper restore PossibleLossOfFraction
 
 		private int gridSize;
 		private float blockSize;
 		private float startPosition;
+		private float moveSpeed;
 
 		[IntegrationTest]
 		public void CreateSnakeAtOrigin(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem) =>
+			Start(resolver, () =>
 			{
-				var snake = new Snake(entitySystem, gridSize);
+				var snake = new Snake(gridSize);
 				Assert.AreEqual(new Point(startPosition, startPosition),
 					snake.Get<Snake.Body>().BodyParts[0].TopLeft);
 			});
@@ -39,12 +44,6 @@ namespace Snake.Tests
 			Start(resolver,
 				(SnakeGame game, ScreenSpace screen) =>
 					Assert.AreEqual(2, game.Snake.Get<Snake.Body>().BodyParts.Count));
-		}
-
-		[VisualTest]
-		public void PartsOfSnakeBodyAreNotOnSamePlace(Type resolver)
-		{
-			Start(resolver, (SnakeGame game) => { });
 		}
 
 		[IntegrationTest]
@@ -59,22 +58,19 @@ namespace Snake.Tests
 		{
 			Start(typeof(MockResolver), (SnakeGame game) =>
 			{
-				mockResolver.AdvanceTimeAndExecuteRunners(MoveSpeed);
+				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				Assert.AreEqual(new Point(startPosition, startPosition - blockSize),
 					game.Snake.Get<Snake.Body>().BodyParts[0].TopLeft);
 			});
 		}
-
-		private const float MoveSpeed = 0.15f;
 
 		[Test]
 		public void TouchTopBorder()
 		{
 			Start(typeof(MockResolver), (SnakeGame game) =>
 			{
-				mockResolver.AdvanceTimeAndExecuteRunners(MoveSpeed * gridSize / 2);
-				Assert.AreEqual(new Point(startPosition, startPosition),
-					game.Snake.Get<Snake.Body>().BodyParts[0].TopLeft);
+				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed * gridSize / 2);
+				Assert.AreEqual(0, game.Snake.NumberOfComponents);
 			});
 		}
 
@@ -84,9 +80,8 @@ namespace Snake.Tests
 			Start(typeof(MockResolver), (SnakeGame game) =>
 			{
 				game.MoveLeft();
-				mockResolver.AdvanceTimeAndExecuteRunners(MoveSpeed * gridSize / 2);
-				Assert.AreEqual(new Point(startPosition, startPosition),
-					game.Snake.Get<Snake.Body>().BodyParts[0].TopLeft);
+				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed * gridSize / 2);
+				Assert.AreEqual(0, game.Snake.NumberOfComponents);
 			});
 		}
 
@@ -96,9 +91,8 @@ namespace Snake.Tests
 			Start(typeof(MockResolver), (SnakeGame game) =>
 			{
 				game.MoveRight();
-				mockResolver.AdvanceTimeAndExecuteRunners(MoveSpeed * gridSize / 2);
-				Assert.AreEqual(new Point(startPosition, startPosition),
-					game.Snake.Get<Snake.Body>().BodyParts[0].TopLeft);
+				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed * gridSize / 2);
+				Assert.AreEqual(0, game.Snake.NumberOfComponents);
 			});
 		}
 
@@ -108,20 +102,19 @@ namespace Snake.Tests
 			Start(typeof(MockResolver), (SnakeGame game) =>
 			{
 				game.MoveLeft();
-				mockResolver.AdvanceTimeAndExecuteRunners(MoveSpeed);
+				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				game.MoveDown();
-				mockResolver.AdvanceTimeAndExecuteRunners(MoveSpeed * gridSize / 2);
-				Assert.AreEqual(new Point(startPosition, startPosition),
-					game.Snake.Get<Snake.Body>().BodyParts[0].TopLeft);
+				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed * gridSize / 2);
+				Assert.AreEqual(0, game.Snake.NumberOfComponents);
 			});
 		}
 
 		[Test]
 		public void CheckTrailingVector()
 		{
-			Start(typeof(MockResolver), (EntitySystem entitySystem) =>
+			Start(typeof(MockResolver), () =>
 			{
-				var snake = new Snake(entitySystem, gridSize);
+				var snake = new Snake(gridSize);
 				Assert.AreEqual(new Point(0, blockSize), snake.Get<Snake.Body>().GetTrailingVector());
 			});
 		}
@@ -135,25 +128,26 @@ namespace Snake.Tests
 				game.Snake.Get<Snake.Body>().AddSnakeBody();
 				game.Snake.Get<Snake.Body>().AddSnakeBody();
 				game.MoveLeft();
-				mockResolver.AdvanceTimeAndExecuteRunners(MoveSpeed);
+				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				game.MoveDown();
-				mockResolver.AdvanceTimeAndExecuteRunners(MoveSpeed);
+				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				game.MoveRight();
-				mockResolver.AdvanceTimeAndExecuteRunners(MoveSpeed);
-				Assert.AreEqual(2, game.Snake.Get<Snake.Body>().BodyParts.Count);
+				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
+				Assert.AreEqual(0, game.Snake.NumberOfComponents);
 			});
 		}
 
 		[Test]
 		public void DisposeSnake()
 		{
-			Start(typeof(MockResolver), (EntitySystem entitySystem) =>
+			Start(typeof(MockResolver), () =>
 			{
-				var snake = new Snake(entitySystem, gridSize);
+				var snake = new Snake(gridSize) { IsActive = false };
 				Assert.AreEqual(2, snake.Get<Snake.Body>().BodyParts.Count);
-				snake.Dispose(entitySystem);
+				snake.Dispose();
+				EntitySystem.Current.Run();
 				Assert.AreEqual(0, snake.NumberOfComponents);
-				Assert.AreEqual(0, entitySystem.NumberOfEntities);
+				Assert.AreEqual(0, EntitySystem.Current.NumberOfEntities);
 				Assert.Throws<Entity.ComponentNotFound>(() => snake.Get<Snake.Body>());
 			});
 		}

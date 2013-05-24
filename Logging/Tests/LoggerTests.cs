@@ -44,7 +44,7 @@ namespace DeltaEngine.Logging.Tests
 			});
 		}
 
-		[Test]
+		[Test, Category("Slow")]
 		public void DisposeLogger()
 		{
 			Start(typeof(MockResolver), (Logger logger) =>
@@ -54,7 +54,7 @@ namespace DeltaEngine.Logging.Tests
 			});
 		}
 
-		[Test]
+		[Test, Category("Slow")]
 		public void DisposeProviders()
 		{
 			Start(typeof(MockResolver), (Client client) =>

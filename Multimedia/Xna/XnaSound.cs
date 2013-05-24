@@ -41,11 +41,7 @@ namespace DeltaEngine.Multimedia.Xna
 			catch (Exception ex)
 			{
 				//logger.Error(ex);
-				if (!Debugger.IsAttached)
-				{
-					return;
-				}
-				else
+				if (Debugger.IsAttached)
 					throw new XnaSoundContentNotFound(contentName, ex);
 			}
 		}

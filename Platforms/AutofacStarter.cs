@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Autofac.Core;
 using DeltaEngine.Core;
+using DeltaEngine.Entities;
 using DeltaEngine.Logging;
 
 namespace DeltaEngine.Platforms
@@ -15,6 +16,7 @@ namespace DeltaEngine.Platforms
 		public void Start<AppEntryRunner>(int instancesToCreate = 1)
 		{
 			RegisterEntryRunner<AppEntryRunner>(instancesToCreate);
+			CreateEntitySystemAndAddAsRunner();
 			Initialize<AppEntryRunner>(instancesToCreate);
 			Run();
 		}
@@ -25,6 +27,28 @@ namespace DeltaEngine.Platforms
 				Register<AppEntryRunner>();
 			else
 				RegisterSingleton<AppEntryRunner>();
+		}
+
+		internal void CreateEntitySystemAndAddAsRunner()
+		{
+			var entitySystem = new EntitySystem(new AutofacEntityResolver(this));
+			RegisterInstanceAsRunnerOrPresenterIfPossible(entitySystem);
+			EntitySystem.Use(entitySystem);
+		}
+
+		private class AutofacEntityResolver : EntityHandlerResolver
+		{
+			public AutofacEntityResolver(Resolver resolver)
+			{
+				this.resolver = resolver;
+			}
+
+			private readonly Resolver resolver;
+
+			public EntityHandler Resolve(Type handlerType)
+			{
+				return resolver.Resolve(handlerType) as EntityHandler;
+			}
 		}
 
 		private void Initialize<AppEntryRunner>(int instancesToCreate)
@@ -41,9 +65,10 @@ namespace DeltaEngine.Platforms
 		public virtual void Run(Action runCode = null)
 		{
 			RaiseInitializedEvent();
+
 			var window = Resolve<Window>();
 			do
-				TryRunAllRunnersAndPresenters(runCode);
+				TryRunAllRunnersAndPresenters(runCode); 
 			while (!window.IsClosing);
 		}
 
@@ -58,11 +83,12 @@ namespace DeltaEngine.Platforms
 			}
 			catch (DependencyResolutionException exception)
 			{
-				LogException(exception.InnerException);
+				LogException(exception.InnerException ?? exception);
 				if (Debugger.IsAttached || StackTraceExtensions.StartedFromNCrunch)
 					throw;
 
-				DisplayMessageBoxAndCloseApp(exception.InnerException, "Fatal Initialization Error");
+				DisplayMessageBoxAndCloseApp(exception.InnerException ?? exception,
+					"Fatal Initialization Error");
 			}
 			catch (Exception exception)
 			{
@@ -86,11 +112,11 @@ namespace DeltaEngine.Platforms
 			}
 			catch (DependencyResolutionException exception)
 			{
-				LogException(exception.InnerException);
+				LogException(exception.InnerException ?? exception);
 				if (Debugger.IsAttached || StackTraceExtensions.StartedFromNCrunch)
 					throw;
 
-				DisplayMessageBoxAndCloseApp(exception.InnerException, "Fatal Runtime Error");
+				DisplayMessageBoxAndCloseApp(exception.InnerException ?? exception, "Fatal Runtime Error");
 			}
 			catch (Exception exception)
 			{
@@ -101,7 +127,7 @@ namespace DeltaEngine.Platforms
 				if (exception.IsWeak())
 					return; //ncrunch: no coverage
 
-				DisplayMessageBoxAndCloseApp(exception, "Fatal Runtime Error");				
+				DisplayMessageBoxAndCloseApp(exception, "Fatal Runtime Error");
 			}
 		}
 
@@ -114,14 +140,23 @@ namespace DeltaEngine.Platforms
 		private void DisplayMessageBoxAndCloseApp(Exception exception, string title)
 		{
 			var window = Resolve<Window>();
-			if (window.ShowMessageBox(title, "Unable to continue: " + exception,
-				MessageBoxButton.Ignore) != MessageBoxButton.Ignore)
+			if (
+				window.ShowMessageBox(title, "Unable to continue: " + exception, MessageBoxButton.Ignore) !=
+					MessageBoxButton.Ignore)
 				window.Dispose();
+		}
+
+		public void Start(Action initCode, Action runCode = null)
+		{
+			CreateEntitySystemAndAddAsRunner();
+			Initialized += initCode;
+			Run(runCode);
 		}
 
 		public void Start<FirstClass>(Action<FirstClass> initCode, Action runCode = null)
 		{
 			RegisterSingleton<FirstClass>();
+			CreateEntitySystemAndAddAsRunner();
 			Initialized += () => initCode(Resolve<FirstClass>());
 			Run(runCode);
 		}
@@ -131,6 +166,7 @@ namespace DeltaEngine.Platforms
 		{
 			RegisterSingleton<FirstClass>();
 			RegisterSingleton<SecondClass>();
+			CreateEntitySystemAndAddAsRunner();
 			Initialized += () => initCode(Resolve<FirstClass>(), Resolve<SecondClass>());
 			Run(runCode);
 		}
@@ -141,6 +177,7 @@ namespace DeltaEngine.Platforms
 			RegisterSingleton<FirstClass>();
 			RegisterSingleton<SecondClass>();
 			RegisterSingleton<ThirdClass>();
+			CreateEntitySystemAndAddAsRunner();
 			Initialized +=
 				() => initCode(Resolve<FirstClass>(), Resolve<SecondClass>(), Resolve<ThirdClass>());
 			Run(runCode);
@@ -153,9 +190,11 @@ namespace DeltaEngine.Platforms
 			RegisterSingleton<SecondClass>();
 			RegisterSingleton<ThirdClass>();
 			RegisterSingleton<FourthClass>();
+			CreateEntitySystemAndAddAsRunner();
 			Initialized +=
-				() => initCode(Resolve<FirstClass>(), Resolve<SecondClass>(), Resolve<ThirdClass>(),
-					Resolve<FourthClass>());
+				() =>
+					initCode(Resolve<FirstClass>(), Resolve<SecondClass>(), Resolve<ThirdClass>(),
+						Resolve<FourthClass>());
 			Run(runCode);
 		}
 
@@ -168,9 +207,11 @@ namespace DeltaEngine.Platforms
 			RegisterSingleton<ThirdClass>();
 			RegisterSingleton<FourthClass>();
 			RegisterSingleton<FifthClass>();
+			CreateEntitySystemAndAddAsRunner();
 			Initialized +=
-				() => initCode(Resolve<FirstClass>(), Resolve<SecondClass>(), Resolve<ThirdClass>(),
-					Resolve<FourthClass>(), Resolve<FifthClass>());
+				() =>
+					initCode(Resolve<FirstClass>(), Resolve<SecondClass>(), Resolve<ThirdClass>(),
+						Resolve<FourthClass>(), Resolve<FifthClass>());
 			Run(runCode);
 		}
 
@@ -178,6 +219,7 @@ namespace DeltaEngine.Platforms
 		{
 			RegisterEntryRunner<AppEntryRunner>(instancesToCreate);
 			Register<FirstClassToRegisterAndResolve>();
+			CreateEntitySystemAndAddAsRunner();
 			Resolve<FirstClassToRegisterAndResolve>();
 			Initialize<AppEntryRunner>(instancesToCreate);
 			Run();
@@ -190,6 +232,7 @@ namespace DeltaEngine.Platforms
 			RegisterEntryRunner<AppEntryRunner>(instancesToCreate);
 			Register<FirstClassToRegisterAndResolve>();
 			Register<SecondClassToRegisterAndResolve>();
+			CreateEntitySystemAndAddAsRunner();
 			Resolve<FirstClassToRegisterAndResolve>();
 			Resolve<SecondClassToRegisterAndResolve>();
 			Initialize<AppEntryRunner>(instancesToCreate);
@@ -200,6 +243,7 @@ namespace DeltaEngine.Platforms
 			int instancesToCreate = 1)
 		{
 			RegisterAllTypesToRegister<AppEntryRunner>(typesToRegisterAndResolve, instancesToCreate);
+			CreateEntitySystemAndAddAsRunner();
 			ResolveAllTypesToResolve(typesToRegisterAndResolve);
 			Initialize<AppEntryRunner>(instancesToCreate);
 			Run();
@@ -209,6 +253,7 @@ namespace DeltaEngine.Platforms
 			IEnumerable<Type> typesToRegisterAndResolve, int instancesToCreate)
 		{
 			RegisterEntryRunner<AppEntryRunner>(instancesToCreate);
+			CreateEntitySystemAndAddAsRunner();
 			foreach (Type type in typesToRegisterAndResolve)
 				Register(type);
 		}

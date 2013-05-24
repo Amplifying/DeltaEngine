@@ -11,6 +11,7 @@ namespace DeltaEngine.Platforms
 		public void Start<AppEntryRunner>(int instancesToCreate = 1)
 		{
 			resolver.Start<AppEntryRunner>(instancesToCreate);
+			
 		}
 
 		private readonly OpenTKResolver resolver = new OpenTKResolver();
@@ -37,5 +38,7 @@ namespace DeltaEngine.Platforms
 		{
 			resolver.RegisterSingleton<T>();
 		}
+
+		public event Action ApplicationExit;
 	}
 }

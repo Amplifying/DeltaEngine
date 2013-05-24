@@ -1,5 +1,5 @@
 using DeltaEngine.Platforms;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 
 namespace Breakout
 {

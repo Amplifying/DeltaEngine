@@ -1,15 +1,14 @@
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Input;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 
 namespace Blobs.Levels
 {
 	public abstract class WalledLevel : Level
 	{
-		protected WalledLevel(EntitySystem entitySystem, ScreenSpace screen, InputCommands input, ContentLoader content)
-			: base(entitySystem, screen, input, content) {}
+		protected WalledLevel(ScreenSpace screen, InputCommands input, ContentLoader content)
+			: base(screen, input, content) {}
 
 		protected Color Color;
 

@@ -21,7 +21,7 @@ namespace DeltaEngine.Graphics.SlimDX
 		private readonly Window window;
 		private readonly Direct3D d3D;
 
-		public SlimD3D9.Device Device { get; private set; }
+		public SlimD3D9.Device NativeDevice { get; private set; }
 
 		private void InitializeDevice()
 		{
@@ -35,15 +35,15 @@ namespace DeltaEngine.Graphics.SlimDX
 				BackBufferHeight = (int)window.ViewportPixelSize.Height
 			};
 			
-			Device = new SlimD3D9.Device(d3D, 0, DeviceType.Hardware, window.Handle,
+			NativeDevice = new SlimD3D9.Device(d3D, 0, DeviceType.Hardware, window.Handle,
 				CreateFlags.HardwareVertexProcessing, presentParameters);
 		}
 		
 		private void SetAlphaBlending()
 		{
-			Device.SetRenderState(RenderState.AlphaBlendEnable, true);
-			Device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-			Device.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
+			NativeDevice.SetRenderState(RenderState.AlphaBlendEnable, true);
+			NativeDevice.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+			NativeDevice.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
 		}
 
 		private void OnViewportSizeChanged(Size displaySize)
@@ -60,7 +60,7 @@ namespace DeltaEngine.Graphics.SlimDX
 
 		public void Run()
 		{
-			if (Device == null)
+			if (NativeDevice == null)
 				return;
 
 			if (deviceMustBeReset)
@@ -69,8 +69,8 @@ namespace DeltaEngine.Graphics.SlimDX
 			var slimDxColor = new Color4(window.BackgroundColor.AlphaValue,
 				window.BackgroundColor.RedValue, window.BackgroundColor.GreenValue,
 				window.BackgroundColor.BlueValue);
-			Device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, slimDxColor, 1.0f, 0);
-			Device.BeginScene();
+			NativeDevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, slimDxColor, 1.0f, 0);
+			NativeDevice.BeginScene();
 			runExecuted = true;
 		}
 
@@ -93,16 +93,16 @@ namespace DeltaEngine.Graphics.SlimDX
 
 		public void Present()
 		{
-			if (Device == null || !runExecuted)
+			if (NativeDevice == null || !runExecuted)
 				return;
 
-			Device.EndScene();
-			Device.Present();
+			NativeDevice.EndScene();
+			NativeDevice.Present();
 		}
 
 		public void Dispose()
 		{
-			Device.Dispose();
+			NativeDevice.Dispose();
 			d3D.Dispose();
 		}
 	}

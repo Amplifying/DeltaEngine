@@ -1,12 +1,13 @@
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
+using DeltaEngine.Rendering.Sprites;
 
 namespace DeltaEngine.Scenes.UserInterfaces
 {
 	/// <summary>
 	/// Manages a tile within a TileMap
 	/// </summary>
-	public class Tile : Label
+	public class Tile : Sprite
 	{
 		public Tile(Image image, int column, int row)
 			: base(image, Rectangle.Zero)

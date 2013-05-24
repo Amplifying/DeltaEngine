@@ -4,7 +4,7 @@ using DeltaEngine.Input;
 using DeltaEngine.Logging.Basic;
 using DeltaEngine.Networking.Sockets;
 using DeltaEngine.Physics2D.Farseer;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 
 namespace DeltaEngine.Platforms.Windows
 {
@@ -30,6 +30,7 @@ namespace DeltaEngine.Platforms.Windows
 		{
 			if (!IsAlreadyInitialized)
 				RegisterInstanceAsRunnerOrPresenterIfPossible(Time.Current);
+
 			base.MakeSureContainerIsInitialized();
 		}
 	}

@@ -24,7 +24,7 @@ namespace DeltaEngine.Core.Tests
 		[Test]
 		public void Start2()
 		{
-			Thread t = ThreadExtensions.Start("thread name", () => {});
+			Thread t = ThreadExtensions.Start("thread name", () => { });
 			Assert.AreEqual("thread name", t.Name);
 		}
 
@@ -37,9 +37,39 @@ namespace DeltaEngine.Core.Tests
 			Assert.AreEqual(Param, t.Name);
 		}
 
-		private void UpdateNameViaParameter(object name)
+		private static void UpdateNameViaParameter(object name)
 		{
 			Thread.CurrentThread.Name = (string)name;
 		}
+
+		[Test]
+		public void EnqueueWorkerThreadNoArgs()
+		{
+			Assert.IsTrue(ThreadExtensions.EnqueueWorkerThread(() => ValueSettingTestAction()));
+		}
+
+		[Test]
+		public void EnqueueWorkerThreadOneArg()
+		{
+			const int Num = 1;
+			ThreadExtensions.EnqueueWorkerThread(Num, val => { ValueSettingTestAction(Num); });
+		}
+
+		[Test]
+		public void EnqueueWorkerThreadTwoArgs()
+		{
+			const int Num1 = 1;
+			const int Num2 = 2;
+			ThreadExtensions.EnqueueWorkerThread(Num1, Num2,
+				(val1, val2) => { ValueSettingTestAction(val1, val2); });
+		}
+
+		private static void ValueSettingTestAction(int val1 = 0, int val2 = 0)
+		{
+			testValue = 5 + val1 + val2;
+			Assert.AreEqual(5 + val1 + val2, testValue);
+		}
+
+		private static int testValue;
 	}
 }

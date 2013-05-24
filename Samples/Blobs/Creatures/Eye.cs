@@ -1,9 +1,9 @@
 using System;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Input;
 using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 using DeltaEngine.Rendering.Shapes;
 
 namespace Blobs.Creatures
@@ -13,34 +13,23 @@ namespace Blobs.Creatures
 	/// </summary>
 	public class Eye : IDisposable
 	{
-		public Eye(EntitySystem entitySystem, ScreenSpace screen, InputCommands input, Mood mood)
+		public Eye(ScreenSpace screen, InputCommands input, Mood mood)
 		{
-			this.entitySystem = entitySystem;
 			camera = screen as Camera2DControlledQuadraticScreenSpace;
 			this.mood = mood;
 			CreateEyeElements();
 			input.AddMouseMovement(StoreMousePosition);
 		}
 
-		private readonly EntitySystem entitySystem;
 		private readonly Camera2DControlledQuadraticScreenSpace camera;
 		private readonly Mood mood;
 
 		private void CreateEyeElements()
 		{
-			entitySystem.Add(
-				eyeball =
-					new Ellipse(Rectangle.Zero, Color.White)
-					{
-						RenderLayer = 12,
-						Color = Color.White,
-						OutlineColor = Color.Black
-					});
-
-			entitySystem.Add(
-				pupil = new Ellipse(Rectangle.Zero, Color.White) { RenderLayer = 13, Color = Color.Black });
-			entitySystem.Add(
-				blink = new Line2D(Point.Zero, Point.Zero, Color.Black) { RenderLayer = 13 });
+			eyeball = new Ellipse(Rectangle.Zero, Color.White) { RenderLayer = 12, Color = Color.White };
+			eyeball.Add(new OutlineColor(Color.Black)).Add<Polygon.RenderOutline>();
+			pupil = new Ellipse(Rectangle.Zero, Color.White) { RenderLayer = 13, Color = Color.Black };
+			blink = new Line2D(Point.Zero, Point.Zero, Color.Black) { RenderLayer = 13 };
 		}
 
 		private Ellipse eyeball;

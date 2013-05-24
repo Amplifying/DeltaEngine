@@ -1,9 +1,8 @@
 using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Input;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 
 namespace Blobs.Levels
 {
@@ -12,9 +11,8 @@ namespace Blobs.Levels
 	/// </summary>
 	public class Intro : Level
 	{
-		public Intro(EntitySystem entitySystem, ScreenSpace screen, InputCommands input,
-			ContentLoader content)
-			: base(entitySystem, screen, input, content) {}
+		public Intro(ScreenSpace screen, InputCommands input, ContentLoader content)
+			: base(screen, input, content) {}
 
 		protected override void PositionPlayer()
 		{

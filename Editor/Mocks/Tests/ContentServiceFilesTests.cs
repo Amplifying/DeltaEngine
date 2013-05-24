@@ -86,5 +86,12 @@ namespace DeltaEngine.Editor.Mocks.Tests
 			service.DeleteContent(null, "test.png");
 			Assert.AreEqual(1, service.GetContentNames("BreakOut").Count);
 		}
+
+		[Test, Category("Slow")]
+		public void AddANewProject()
+		{
+			service.AddProject("TestProject");
+			Assert.AreEqual(1, service.GetContentNames("BreakOut").Count);
+		}
 	}
 }

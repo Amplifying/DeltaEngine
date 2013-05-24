@@ -25,5 +25,6 @@ namespace DeltaEngine.Platforms
 		bool IsClosing { get; }
 		bool ShowCursor { get; set; }
 		MessageBoxButton ShowMessageBox(string title, string message, MessageBoxButton buttons);
+		event Action WindowClosing;
 	}
 }

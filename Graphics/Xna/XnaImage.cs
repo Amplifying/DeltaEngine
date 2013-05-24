@@ -15,9 +15,8 @@ namespace DeltaEngine.Graphics.Xna
 	/// </summary>
 	public class XnaImage : Image
 	{
-		public XnaImage(string contentName, Drawing drawing, XnaDevice device, Logger logger,
-			ContentManager manager)
-			: base(contentName, drawing)
+		public XnaImage(string contentName, XnaDevice device, Logger logger, ContentManager manager)
+			: base(contentName)
 		{
 			nativeDevice = device.NativeDevice;
 			this.logger = logger;
@@ -32,8 +31,8 @@ namespace DeltaEngine.Graphics.Xna
 
 		private class UnableToContinueWithoutXnaGraphicsDevice : Exception {}
 
-		protected XnaImage(Drawing drawing, XnaDevice device, Texture2D nativeTexture)
-			: base("<NativeImage>", drawing)
+		protected XnaImage(XnaDevice device, Texture2D nativeTexture)
+			: base("<NativeImage>")
 		{
 			nativeDevice = device.NativeDevice;
 			NativeTexture = nativeTexture;
@@ -43,6 +42,13 @@ namespace DeltaEngine.Graphics.Xna
 		{
 			NativeTexture = Texture2D.FromStream(nativeDevice, fileData);
 			pixelSize = new Size(NativeTexture.Width, NativeTexture.Height);
+			hasImageAlpha = IsUsingAlphaChannel(NativeTexture);
+		}
+
+		private static bool IsUsingAlphaChannel(Texture2D texture)
+		{
+			return texture.Format == SurfaceFormat.Color || texture.Format == SurfaceFormat.Bgra4444 ||
+				texture.Format == SurfaceFormat.Bgra5551 || texture.Format == SurfaceFormat.Rgba1010102;
 		}
 
 		protected override bool CanLoadDataFromStream
@@ -74,30 +80,30 @@ namespace DeltaEngine.Graphics.Xna
 
 		public Texture2D NativeTexture { get; protected set; }
 		private Size pixelSize;
+
 		public override Size PixelSize
 		{
 			get { return pixelSize; }
 		}
+
+		public override bool HasAlpha
+		{
+			get { return hasImageAlpha; }
+		}
+		private bool hasImageAlpha;
 
 		protected override void DisposeData()
 		{
 			if (NativeTexture != null)
 				NativeTexture.Dispose();
 		}
-
-		public override void Draw(VertexPositionColorTextured[] vertices)
-		{
-			nativeDevice.Textures[0] = NativeTexture;
-			nativeDevice.SamplerStates[0] = DisableLinearFiltering
-				? SamplerState.PointClamp : SamplerState.LinearClamp;
-			base.Draw(vertices);
-		}
-
+		
 		private void CreateDefaultTexture()
 		{
 			NativeTexture = new Texture2D(nativeDevice, (int)DefaultTextureSize.Width,
 				(int)DefaultTextureSize.Height);
 			NativeTexture.SetData(ConvertToXnaColors(checkerMapColors));
+			hasImageAlpha = false;
 			pixelSize = DefaultTextureSize;
 			DisableLinearFiltering = true;
 		}
@@ -105,7 +111,7 @@ namespace DeltaEngine.Graphics.Xna
 		public class XnaTextureContentNotFound : Exception
 		{
 			public XnaTextureContentNotFound(string contentName, Exception innerException)
-				: base(contentName, innerException) { }
+				: base(contentName, innerException) {}
 		}
 
 		private static XnaColor[] ConvertToXnaColors(Color[] deltaColors)

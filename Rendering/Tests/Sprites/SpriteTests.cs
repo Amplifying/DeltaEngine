@@ -1,10 +1,10 @@
 using System;
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
 using DeltaEngine.Platforms.All;
 using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Rendering.Shapes;
 using DeltaEngine.Rendering.Sprites;
 using NUnit.Framework;
 
@@ -28,6 +28,12 @@ namespace DeltaEngine.Rendering.Tests.Sprites
 		private readonly Rectangle screenCenter = Rectangle.FromCenter(Point.Half, Size.Half);
 
 		[Test]
+		public void SpriteWithNoImageThrowsException()
+		{
+			Assert.Throws<NullReferenceException>(() => new Sprite(null, Rectangle.Zero));
+		}
+
+		[Test]
 		public void ChangeImage()
 		{
 			Start(typeof(MockResolver), (ContentLoader content) =>
@@ -44,26 +50,35 @@ namespace DeltaEngine.Rendering.Tests.Sprites
 		[VisualTest]
 		public void RenderSprite(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem, ContentLoader content) =>
-			{
-				var image = content.Load<Image>("DeltaEngineLogo");
-				var sprite = new Sprite(image, screenCenter, Color.White);
-				entitySystem.Add(sprite);
-			});
+			Start(resolver,
+				(ContentLoader content) =>
+				{ new Sprite(content.Load<Image>("DeltaEngineLogo"), screenCenter, Color.White); });
 		}
 
 		[VisualTest]
 		public void RenderRedSpriteOverBlue(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem, ContentLoader content) =>
+			Start(resolver, (ContentLoader content) =>
 			{
 				var image = content.Load<Image>("DeltaEngineLogo");
-				entitySystem.Add(new Sprite(image, screenCenter, Color.Red) { RenderLayer = 1 });
-				entitySystem.Add(new Sprite(image, screenTopLeft, Color.Blue) { RenderLayer = 0 });
+				new Sprite(image, screenCenter, Color.Red) { RenderLayer = 1 };
+				new Sprite(image, screenTopLeft, Color.Blue) { RenderLayer = 0 };
 			});
 		}
 
 		private readonly Rectangle screenTopLeft = Rectangle.FromCenter(new Point(0.3f, 0.3f),
 			Size.Half);
+
+		[VisualTest]
+		public void RenderSpriteAndLines(Type resolver)
+		{
+			Start(resolver, (ContentLoader content) =>
+			{
+				new Line2D(Point.Zero, Point.One, Color.Blue);
+				var image = content.Load<Image>("DeltaEngineLogo");
+				new Sprite(image, screenCenter, Color.Red);
+				new Line2D(Point.UnitX, Point.UnitY, Color.Purple);
+			});
+		}
 	}
 }

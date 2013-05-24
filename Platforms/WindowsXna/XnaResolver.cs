@@ -1,5 +1,4 @@
 using System;
-using DeltaEngine.Content.Disk;
 using DeltaEngine.Graphics.Xna;
 using DeltaEngine.Input.Windows;
 using DeltaEngine.Input.Xna;
@@ -17,7 +16,6 @@ namespace DeltaEngine.Platforms
 			RegisterInstance(game);
 			RegisterInstance(game.Content);
 			RegisterInstance(new AutofacContentDataResolver(this));
-			RegisterSingleton<DiskContentLoader>();
 			RegisterSingleton<XnaWindow>();
 			RegisterSingleton<XnaSoundDevice>();
 			RegisterSingleton<XnaScreenshotCapturer>();

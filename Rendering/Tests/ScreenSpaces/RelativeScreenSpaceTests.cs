@@ -1,6 +1,7 @@
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Rendering.ScreenSpaces;
 using NUnit.Framework;
 
 namespace DeltaEngine.Rendering.Tests.ScreenSpaces

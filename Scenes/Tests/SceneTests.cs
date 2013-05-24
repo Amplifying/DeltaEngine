@@ -1,12 +1,15 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using DeltaEngine.Content;
+using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
+using DeltaEngine.Entities.Tests;
 using DeltaEngine.Graphics;
 using DeltaEngine.Input;
 using DeltaEngine.Platforms.All;
-using DeltaEngine.Platforms.Tests;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.Sprites;
 using DeltaEngine.Scenes.UserInterfaces;
 using NUnit.Framework;
 
@@ -14,123 +17,252 @@ namespace DeltaEngine.Scenes.Tests
 {
 	public class SceneTests : TestWithAllFrameworks
 	{
-		[VisualTest]
-		public void RenderThreeLabelsAndAButton(Type resolver)
+		[Test]
+		public void AddingControlAddsToListOfControls()
 		{
-			Start(resolver, (EntitySystem entitySystem, ContentLoader content, InputCommands input) =>
-			{
-				Scene scene = CreateScene(content);
-				var label = new Label(content.Load<Image>("DeltaEngineLogo"), Centered);
-				scene.Show(entitySystem, content, input);
-				scene.Add(label);
-				entitySystem.Run();
-				Assert.AreEqual(4, scene.Controls.Count);
-				Assert.AreEqual(4,
-					entitySystem.GetHandler<SortAndRenderEntity2D>().NumberOfActiveRenderableObjects);
-			});
-		}
-
-		private static Scene CreateScene(ContentLoader content)
-		{
-			var image = content.Load<Image>("DeltaEngineLogo");
 			var scene = new Scene();
-			scene.Add(new Label(image, TopLeft) { Sprite = { Color = Color.Red, Rotation = 45.0f } });
-			scene.Add(new Label(image, TopRight) { Sprite = { Color = Color.Blue, Rotation = 90.0f } });
-			scene.Add(new Button(image, Bottom) { Sprite = { Color = Color.Red, Rotation = 180.0f } });
-			//TODO: VectorText
-			//var vectorTextContent = content.Load<XmlContent>("VectorText");
-			//scene.Add(new VectorTextControl(vectorTextContent, Top, Height)
-			//{
-			//	VectorText = { Text = "Hello" }
-			//});
-			return scene;
-		}
-
-		private static readonly Point Top = new Point(0.4f, 0.3f);
-		private const float Height = 0.05f;
-		private static readonly Rectangle TopLeft = new Rectangle(0.3f, 0.4f, 0.1f, 0.1f);
-		private static readonly Rectangle TopRight = new Rectangle(0.6f, 0.4f, 0.1f, 0.1f);
-		private static readonly Rectangle Bottom = new Rectangle(0.45f, 0.6f, 0.1f, 0.1f);
-		private static readonly Rectangle Centered = new Rectangle(0.475f, 0.475f, 0.05f, 0.05f);
-
-		[IntegrationTest]
-		public void RemoveControl(Type resolver)
-		{
-			Start(resolver, (EntitySystem entitySystem, ContentLoader content, InputCommands input) =>
-			{
-				Scene scene = CreateScene(content);
-				scene.Show(entitySystem, content, input);
-				scene.Remove(scene.Controls[1]);
-				entitySystem.Run();
-				Assert.AreEqual(2, scene.Controls.Count);
-				Assert.AreEqual(3,
-					entitySystem.GetHandler<SortAndRenderEntity2D>().NumberOfActiveRenderableObjects);
-			});
-		}
-
-		[IntegrationTest]
-		public void Clear(Type resolver)
-		{
-			Start(resolver, (EntitySystem entitySystem, ContentLoader content, InputCommands input) =>
-			{
-				Scene scene = CreateScene(content);
-				scene.Show(entitySystem, content, input);
-				scene.Clear();
-				Assert.AreEqual(0, scene.Controls.Count);
-				Assert.AreEqual(0,
-					entitySystem.GetHandler<SortAndRenderEntity2D>().NumberOfActiveRenderableObjects);
-			});
+			Assert.AreEqual(0, scene.Controls.Count);
+			var control = new EmptyEntity();
+			scene.Add(control);
+			Assert.AreEqual(1, scene.Controls.Count);
+			Assert.AreEqual(control, scene.Controls[0]);
 		}
 
 		[Test]
-		public void Find()
+		public void AddingControlTwiceOnlyAddsItOnce()
 		{
-			Start(typeof(MockResolver), (ContentLoader content) =>
+			var scene = new Scene();
+			var control = new EmptyEntity();
+			scene.Add(control);
+			scene.Add(control);
+			Assert.AreEqual(1, scene.Controls.Count);
+		}
+
+		[IntegrationTest]
+		public void AddingControlToActiveSceneActivatesIt(Type resolver)
+		{
+			Start(resolver, (ContentLoader content) =>
 			{
 				var image = content.Load<Image>("DeltaEngineLogo");
+				var label = new Sprite(image, Rectangle.One);
 				var scene = new Scene();
-				var label1 = new Label(image, Rectangle.Zero) { Name = "Label1" };
-				scene.Add(label1);
-				var label2 = new Label(image, Rectangle.Zero) { Name = "Label2" };
-				scene.Add(label2);
-				var button = new Button(image, Rectangle.Zero) { Name = "Button" };
+				scene.Show();
+				scene.Show();
+				scene.Add(label);
+				Assert.IsTrue(label.IsActive);
+			});
+		}
+
+		[IntegrationTest]
+		public void AddingControlToInactiveSceneDeactivatesIt(Type resolver)
+		{
+			Start(resolver, (ContentLoader content) =>
+			{
+				var image = content.Load<Image>("DeltaEngineLogo");
+				var label = new Sprite(image, Rectangle.One) { IsActive = true };
+				var scene = new Scene();
+				scene.Add(label);
+				Assert.IsFalse(label.IsActive);
+			});
+		}
+
+		[IntegrationTest]
+		public void RemovingControlRemovesFromListOfControls(Type resolver)
+		{
+			Start(resolver, (ContentLoader content) =>
+			{
+				var image = content.Load<Image>("DeltaEngineLogo");
+				var label = new Sprite(image, Rectangle.One);
+				var scene = new Scene();
+				scene.Add(label);
+				scene.Remove(label);
+				Assert.AreEqual(0, scene.Controls.Count);
+			});
+		}
+
+		[IntegrationTest]
+		public void RemovingControlDeactivatesIt(Type resolver)
+		{
+			Start(resolver, (ContentLoader content) =>
+			{
+				var scene = new Scene();
+				scene.Show();
+				var image = content.Load<Image>("DeltaEngineLogo");
+				var label = new Sprite(image, Rectangle.One) { IsActive = true };
+				scene.Add(label);
+				scene.Remove(label);
+				Assert.IsFalse(label.IsActive);
+			});
+		}
+
+		[IntegrationTest]
+		public void ClearingControlsDeactivatesThem(Type resolver)
+		{
+			Start(resolver, (ContentLoader content) =>
+			{
+				var image = content.Load<Image>("DeltaEngineLogo");
+				var label = new Sprite(image, Rectangle.One) { IsActive = true };
+				var control = new EmptyEntity { IsActive = true };
+				var scene = ActivateSceneAndAddControls(new List<Entity> { label, control });
+				scene.Clear();
+				Assert.AreEqual(0, scene.Controls.Count);
+				Assert.IsFalse(label.IsActive);
+				Assert.IsFalse(control.IsActive);
+			});
+		}
+
+		private static Scene ActivateSceneAndAddControls(IEnumerable<Entity> controls)
+		{
+			var scene = new Scene();
+			scene.Show();
+			foreach (Entity control in controls)
+				scene.Add(control);
+
+			return scene;
+		}
+
+		[IntegrationTest]
+		public void HidingSceneDeactivatesControls(Type resolver)
+		{
+			Start(resolver, (ContentLoader content) =>
+			{
+				var image = content.Load<Image>("DeltaEngineLogo");
+				var label = new Sprite(image, Rectangle.One) { IsActive = true };
+				var control = new EmptyEntity { IsActive = true };
+				var scene = ActivateSceneAndAddControls(new List<Entity> { label, control });
+				scene.Hide();
+				scene.Hide();
+				Assert.AreEqual(2, scene.Controls.Count);
+				Assert.IsFalse(label.IsActive);
+				Assert.IsFalse(control.IsActive);
+			});
+		}
+
+		[IntegrationTest]
+		public void ControlsDontRespondToInputWhenSceneIsHidden(Type resolver)
+		{
+			Start(resolver, (ContentLoader content) =>
+			{
+				var button = CreateHiddenSceneWithButton(content);
+				bool pressed = false;
+				button.Messaged += message =>
+				{
+					if (message is Interact.ControlPressed)
+						pressed = true;
+				};
+				SetMouseState(State.Pressing, Point.Half);
+				Assert.IsFalse(pressed);
+				Assert.AreEqual(NormalColor, button.Color);
+			});
+		}
+
+		private static readonly Color NormalColor = Color.Green;
+
+		private static Button CreateHiddenSceneWithButton(ContentLoader content)
+		{
+			var button = CreateButton(content);
+			var scene = new Scene();
+			scene.Add(button);
+			scene.Show();
+			scene.Hide();
+			return button;
+		}
+
+		private static Button CreateButton(ContentLoader content)
+		{
+			return new Button(content.Load<Image>("DeltaEngineLogo"), Small, NormalColor)
+			{
+				NormalColor = Color.LightGray,
+				MouseoverColor = Color.White,
+				PressedColor = Color.Red
+			};
+		}
+
+		private void SetMouseState(State state, Point position)
+		{
+			mockResolver.input.SetMousePosition(position);
+			mockResolver.input.SetMouseButtonState(MouseButton.Left, state);
+			mockResolver.AdvanceTimeAndExecuteRunners();
+		}
+
+		[VisualTest]
+		public void DrawButtonWhichChangesColorAndSizeAndSpinsOnHover(Type resolver)
+		{
+			Start(resolver, (Scene scene, ContentLoader content) =>
+			{
+				var button = CreateButton(content);
+				button.Add<SpinIfHovering, ChangeSizeDynamically>();
 				scene.Add(button);
-				Assert.AreEqual(label2, scene.Find("Label2"));
-				Assert.AreEqual(button, scene.Find("Button"));
-				Assert.AreEqual(null, scene.Find("unknown"));
+				scene.Show();
 			});
 		}
 
-		[IntegrationTest]
-		public void ShowAndHide(Type resolver)
+		private static readonly Rectangle Small = Rectangle.FromCenter(0.5f, 0.5f, 0.3f, 0.1f);
+		private static readonly Rectangle Big = Rectangle.FromCenter(0.5f, 0.5f, 0.36f, 0.12f);
+
+		private class SpinIfHovering : EntityHandler
 		{
-			Start(resolver, (EntitySystem entitySystem, ContentLoader content, InputCommands input) =>
+			public override void Handle(List<Entity> entities)
 			{
-				Scene scene = CreateScene(content);
-				var renderer = entitySystem.GetHandler<SortAndRenderEntity2D>();
-				Assert.AreEqual(0, renderer.NumberOfActiveRenderableObjects);
-				scene.Hide();
-				Assert.AreEqual(0, renderer.NumberOfActiveRenderableObjects);
-				scene.Show(entitySystem, content, input);
-				scene.Show(entitySystem, content, input);
-				entitySystem.Run();
-				Assert.AreEqual(3, renderer.NumberOfActiveRenderableObjects);
-				scene.Hide();
-				entitySystem.Run();
-				Assert.AreEqual(0, renderer.NumberOfActiveRenderableObjects);
-			});
+				foreach (Entity entity in
+					entities.Where(
+						e =>
+							e.Contains<float>() && e.Contains<Interact.State>() &&
+								e.Get<Interact.State>().IsHovering))
+					entity.Set(entity.Get<float>() + Time.Current.Delta * SpinRate);
+			}
+
+			private const int SpinRate = 180;
+		}
+
+		private class ChangeSizeDynamically : EntityListener
+		{
+			public override void ReceiveMessage(Entity entity, object message)
+			{
+				if (!entity.Contains<Interact.State>())
+					return;
+
+				var state = entity.Get<Interact.State>();
+				if (state.IsInside && !state.IsPressed)
+					entity.Set(Big);
+				else
+					entity.Set(Small);
+			}
+
+			public override EntityHandlerPriority Priority
+			{
+				get { return EntityHandlerPriority.Low; }
+			}
 		}
 
 		[IntegrationTest]
-		public void Dispose(Type resolver)
+		public void ChangeBackgroundImage(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem, ContentLoader content, InputCommands input) =>
+			Start(resolver, (Scene scene, ContentLoader content) =>
 			{
-				Scene scene = CreateScene(content);
-				scene.Show(entitySystem, content, input);
-				scene.Dispose();
-				Assert.AreEqual(0,
-					entitySystem.GetHandler<SortAndRenderEntity2D>().NumberOfActiveRenderableObjects);
+				Assert.AreEqual(0, scene.Controls.Count);
+				var background = content.Load<Image>("SimpleMainMenuBackground");
+				scene.SetBackground(background);
+				Assert.AreEqual(1, scene.Controls.Count);
+				Assert.AreEqual(background, ((Sprite)scene.Controls[0]).Image);
+				var logo = content.Load<Image>("DeltaEngineLogo");
+				scene.SetBackground(logo);
+				Assert.AreEqual(1, scene.Controls.Count);
+				Assert.AreEqual(logo, ((Sprite)scene.Controls[0]).Image);
+			});
+		}
+
+		[VisualTest]
+		public void BackgroundImageChangesWhenButtonClicked(Type resolver)
+		{
+			Start(resolver, (Scene scene, ContentLoader content) =>
+			{
+				scene.SetBackground(content.Load<Image>("SimpleSubMenuBackground"));
+				var button = CreateButton(content);
+				button.Clicked +=
+					() => scene.SetBackground(content.Load<Image>("SimpleMainMenuBackground"));
+				scene.Add(button);
+				scene.Show();
 			});
 		}
 	}

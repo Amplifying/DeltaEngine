@@ -1,6 +1,7 @@
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
+using DeltaEngine.Multimedia;
 using DeltaEngine.Platforms;
 
 namespace Breakout
@@ -10,9 +11,10 @@ namespace Breakout
 	/// </summary>
 	public class UI : Runner
 	{
-		public UI(Window window, InputCommands inputCommands, Game game)
+		public UI(Window window, InputCommands inputCommands, Game game, SoundDevice soundDevice)
 		{
 			this.window = window;
+			this.window.WindowClosing += ()=>soundDevice.Dispose();
 			inputCommands.Add(Key.Escape, window.Dispose);
 			inputCommands.Add(Key.F, () => window.SetFullscreen(new Size(1920, 1080)));
 			this.game = game;

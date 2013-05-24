@@ -1,6 +1,6 @@
 using System;
 using DeltaEngine.Platforms.Tests;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 using NUnit.Framework;
 
 namespace DeltaEngine.Input.Windows.Tests

@@ -28,11 +28,7 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		public bool AreAllTemplateFilesAvailable()
 		{
-			foreach (var file in Template.GetAllFilePathsAsList())
-				if (!DoesFileExist(file))
-					return false;
-
-			return true;
+			return Template.GetAllFilePathsAsList().All(file => DoesFileExist(file));
 		}
 
 		private bool DoesFileExist(string path)
@@ -42,11 +38,10 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		public void CreateProject()
 		{
-			if (IsTargetDirectoryAvailable())
-				CreateTargetDirectoryHierarchy();
-			else
+			if (!IsTargetDirectoryAvailable())
 				return;
 
+			CreateTargetDirectoryHierarchy();
 			CopyTemplateFilesToLocation();
 			ReplacePlaceholdersWithUserInput();
 		}
@@ -96,17 +91,12 @@ namespace DeltaEngine.Editor.ProjectCreator
 				Project.Name);
 		}
 
-		private string GetFileName(string path)
-		{
-			return FileSystem.Path.GetFileName(path);
-		}
-
 		private void ReplacePlaceholdersWithUserInput()
 		{
 			ReplaceAssemblyInfo();
 			ReplaceCsproj();
-			ReplaceGame();
-			ReplaceProgram();
+			ReplaceSourceCodeFile("Game.cs");
+			ReplaceSourceCodeFile("Program.cs");
 		}
 
 		private void ReplaceAssemblyInfo()
@@ -119,12 +109,12 @@ namespace DeltaEngine.Editor.ProjectCreator
 			WriteAllText(Project.Location + Project.Name + "\\Properties\\" + AssemblyInfo, newFile);
 		}
 
+		private const string AssemblyInfo = "AssemblyInfo.cs";
+
 		private IEnumerable<string> ReadAllLines(string path)
 		{
 			return FileSystem.File.ReadAllLines(path);
 		}
-
-		private const string AssemblyInfo = "AssemblyInfo.cs";
 
 		private static string ReplaceFile(IEnumerable<string> fileContent,
 			List<Replacement> replacements)
@@ -138,10 +128,8 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		private static string ReplaceLine(string line, IEnumerable<Replacement> replacements)
 		{
-			foreach (var replacement in replacements)
-				line = line.Replace(replacement.OldValue, replacement.NewValue);
-
-			return line;
+			return replacements.Aggregate(line,
+				(current, replacement) => current.Replace(replacement.OldValue, replacement.NewValue));
 		}
 
 		private void WriteAllText(string path, string contents)
@@ -156,7 +144,7 @@ namespace DeltaEngine.Editor.ProjectCreator
 			var replacements = new List<Replacement>();
 			replacements.Add(new Replacement("$guid1$", ""));
 			replacements.Add(new Replacement("$safeprojectname$", Project.Name));
-			replacements.Add(new Replacement("EmptyGameIcon.ico", Project.Name + "Icon.ico"));
+			replacements.Add(new Replacement(Template.Ico, Project.Name + IcoSuffixAndExtension));
 			replacements.Add(GetReplacementDependingOnFramework());
 			var newFile = ReplaceFile(oldFile, replacements);
 			WriteAllText(Project.Location + Project.Name + "\\" + Project.Name + CsprojExtension,
@@ -179,27 +167,14 @@ namespace DeltaEngine.Editor.ProjectCreator
 			return new Replacement("", "");
 		}
 
-		private void ReplaceGame()
+		private void ReplaceSourceCodeFile(string sourceFileName)
 		{
-			var oldFile = ReadAllLines(Project.Location + Project.Name + "\\" + GameCs);
+			var oldFile = ReadAllLines(Project.Location + Project.Name + "\\" + sourceFileName);
 			var replacements = new List<Replacement>();
 			replacements.Add(new Replacement("$safeprojectname$", Project.Name));
 			var newFile = ReplaceFile(oldFile, replacements);
-			WriteAllText(Project.Location + Project.Name + "\\" + GameCs, newFile);
+			WriteAllText(Project.Location + Project.Name + "\\" + sourceFileName, newFile);
 		}
-
-		private const string GameCs = "Game.cs";
-
-		private void ReplaceProgram()
-		{
-			var oldFile = ReadAllLines(Project.Location + Project.Name + "\\" + ProgramCs);
-			var replacements = new List<Replacement>();
-			replacements.Add(new Replacement("$safeprojectname$", Project.Name));
-			var newFile = ReplaceFile(oldFile, replacements);
-			WriteAllText(Project.Location + Project.Name + "\\" + ProgramCs, newFile);
-		}
-
-		private const string ProgramCs = "Program.cs";
 
 		public bool HasDirectoryHierarchyBeenCreated()
 		{
@@ -216,6 +191,11 @@ namespace DeltaEngine.Editor.ProjectCreator
 			return DoesFileExist(Project.Location + Project.Name + "\\Properties\\" + AssemblyInfo) &&
 				DoesFileExist(Project.Location + Project.Name + "\\" + Project.Name + CsprojExtension) &&
 				DoesFileExist(Project.Location + Project.Name + "\\" + Project.Name + IcoSuffixAndExtension);
+		}
+
+		private string GetFileName(string path)
+		{
+			return FileSystem.Path.GetFileName(path);
 		}
 
 		private const string IcoSuffixAndExtension = "Icon.ico";

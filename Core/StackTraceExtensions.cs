@@ -33,7 +33,32 @@ namespace DeltaEngine.Core
 				frame.HasAttribute(IntegrationTestAttribute) || StartedFromNCrunch && isVisualTest;
 		}
 
-		public static bool StartedFromNCrunch { get; set; }
+		public static bool StartedFromNCrunch
+		{
+			get
+			{
+				if (alreadyCheckedIfStartedFromNCrunch)
+					return wasStartedFromNCrunch;
+
+				alreadyCheckedIfStartedFromNCrunch = true;
+				wasStartedFromNCrunch = IsStartedFromNCrunch();
+				return wasStartedFromNCrunch;
+			}
+		}
+
+		private static bool alreadyCheckedIfStartedFromNCrunch;
+		private static bool wasStartedFromNCrunch;
+
+		private static bool IsStartedFromNCrunch()
+		{
+			var stackFrames = new StackTrace().GetFrames();
+			if (stackFrames != null)
+				foreach (var frame in stackFrames)
+					if (frame.GetMethod().ReflectedType.FullName.StartsWith("nCrunch.TestExecution."))
+						return true;
+
+			return false; //ncrunch: no coverage
+		}
 
 		private const string TestAttribute = "NUnit.Framework.TestAttribute";
 		private const string IgnoreAttribute = "NUnit.Framework.IgnoreAttribute";

@@ -1,32 +1,29 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Graphics.SharpDX;
 using DeltaEngine.Logging;
 using DeltaEngine.Multimedia.AviVideo;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 using DeltaEngine.Rendering.Sprites;
 using SharpDX.Multimedia;
 using SharpDX.XAudio2;
-using System.Diagnostics;
 
 namespace DeltaEngine.Multimedia.SharpDX
 {
 	public class SharpDXVideo : Video
 	{
-		public SharpDXVideo(string filename, SoundDevice device, Logger log, SharpDXDrawing drawing,
-			SharpDXDevice graphicsDevice, EntitySystem entitySystem, ScreenSpace screen)
+		public SharpDXVideo(string filename, SoundDevice device, Logger log,
+			SharpDXDevice graphicsDevice, ScreenSpace screen)
 			: base(filename, device)
 		{
-			this.entitySystem = entitySystem;
 			this.screen = screen;
-			image = new VideoImage(drawing, graphicsDevice, log);
+			image = new VideoImage(graphicsDevice, log);
 			CreateBuffers();
 		}
 
-		private readonly EntitySystem entitySystem;
 		private readonly ScreenSpace screen;
 		private readonly VideoImage image;
 		private SourceVoice source;
@@ -53,9 +50,7 @@ namespace DeltaEngine.Multimedia.SharpDX
 			}
 			catch (Exception ex)
 			{
-				if (!Debugger.IsAttached)
-					return;
-				else
+				if (Debugger.IsAttached)
 					throw new VideoNotFoundOrAccessible(Name, ex);
 			}
 		}
@@ -93,7 +88,6 @@ namespace DeltaEngine.Multimedia.SharpDX
 			video.GetFrameOpen();
 			elapsedSeconds = 0f;
 			surface = new Sprite(image, screen.Viewport, Color.White);
-			entitySystem.Add(surface);
 		}
 
 		private bool isPlaying;
@@ -109,7 +103,8 @@ namespace DeltaEngine.Multimedia.SharpDX
 			source.Stop();
 			source.FlushSourceBuffers();
 			if (surface != null)
-				entitySystem.Remove(surface);
+				surface.IsActive = false;
+
 			surface = null;
 			video.GetFrameClose();
 		}

@@ -9,8 +9,8 @@ namespace DeltaEngine.Graphics.SlimDX
 {
 	public class SlimDXImage : Image
 	{
-		public SlimDXImage(string filename, SlimDXDrawing drawing, Logger log, SlimDXDevice device)
-			: base(filename, drawing)
+		public SlimDXImage(string filename, Logger log, SlimDXDevice device)
+			: base(filename)
 		{
 			this.device = device;
 			this.log = log;
@@ -26,7 +26,7 @@ namespace DeltaEngine.Graphics.SlimDX
 		{
 			try
 			{
-				NativeTexture = Texture.FromFile(device.Device, filename);
+				NativeTexture = Texture.FromFile(device.NativeDevice, filename);
 				pixelSize = new Size(NativeTexture.GetLevelDescription(0).Width,
 					NativeTexture.GetLevelDescription(0).Height);
 			}
@@ -42,23 +42,32 @@ namespace DeltaEngine.Graphics.SlimDX
 
 		private void CreateDefaultTexture()
 		{
-			NativeTexture = new Texture(device.Device, (int)DefaultTextureSize.Width,
+			NativeTexture = new Texture(device.NativeDevice, (int)DefaultTextureSize.Width,
 				(int)DefaultTextureSize.Height, 0, Usage.None, Format.A8B8G8R8, Pool.Default);
 			pixelSize = DefaultTextureSize;
 		}
 
-		public override void Draw(VertexPositionColorTextured[] vertices)
+		public void Draw(VertexPositionColorTextured[] vertices)
 		{
-			device.Device.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.None);
-			device.Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Anisotropic);
-			device.Device.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Anisotropic);
-			device.Device.SetTexture(0, NativeTexture);
-			base.Draw(vertices);
+			device.NativeDevice.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.None);
+			device.NativeDevice.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Anisotropic);
+			device.NativeDevice.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Anisotropic);
+			device.NativeDevice.SetTexture(0, NativeTexture);
+			//TODO: base.Draw(vertices);
 		}
 
 		public override Size PixelSize
 		{
 			get { return pixelSize; }
+		}
+
+		public override bool HasAlpha
+		{
+			get
+			{
+				//TODO
+				return false;
+			}
 		}
 
 		protected override void LoadData(Stream fileData)

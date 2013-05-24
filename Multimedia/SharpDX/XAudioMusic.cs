@@ -3,8 +3,8 @@ using System.IO;
 using DeltaEngine.Core;
 using SharpDX.Multimedia;
 using SharpDX.XAudio2;
-using ToyMp3;
 using System.Diagnostics;
+using ToyMp3;
 
 namespace DeltaEngine.Multimedia.SharpDX
 {
@@ -31,9 +31,7 @@ namespace DeltaEngine.Multimedia.SharpDX
 			}
 			catch (Exception ex)
 			{
-				if (!Debugger.IsAttached)
-					return;
-				else
+				if (Debugger.IsAttached)
 					throw new MusicNotFoundOrAccessible(Name, ex);
 			}
 		}

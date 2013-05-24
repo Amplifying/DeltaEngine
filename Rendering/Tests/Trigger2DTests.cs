@@ -23,6 +23,7 @@ namespace DeltaEngine.Rendering.Tests
 			{
 				var image = content.Load<Image>("DeltaEngineLogo");
 				var trigger = new Sprite(image, new Rectangle(Point.Zero, (Size)Point.One), Color.Red);
+				trigger.Add(new TimeTriggerData(Color.Red, Color.Gray, 1));
 				trigger.Add<Trigger2D>();
 				Assert.AreEqual(Point.Zero, trigger.Get<Rectangle>().TopLeft);
 				Assert.AreEqual(Point.One, trigger.Get<Rectangle>().BottomRight);
@@ -32,7 +33,7 @@ namespace DeltaEngine.Rendering.Tests
 		[VisualTest]
 		public void ChangeColorIfTwoRectanglesCollide(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem, ContentLoader content, Window window) =>
+			Start(resolver, (ContentLoader content, Window window) =>
 			{
 				window.BackgroundColor = Color.Red;
 				var image = content.Load<Image>("DeltaEngineLogo");
@@ -40,27 +41,24 @@ namespace DeltaEngine.Rendering.Tests
 				sprite.Add<CollisionTrigger>().Add<Rotate>().Add(new CollisionTriggerData(Color.Yellow,
 					Color.Blue));
 				sprite.Get<CollisionTriggerData>().SearchTags.Add("Creep");
-				entitySystem.Add(sprite);
 				var sprite2 = new Sprite(image, new Rectangle(0.5f, 0.2f, 0.1f, 0.5f), Color.White);
 				sprite2.Tag = "Creep";
-				entitySystem.Add(sprite2);
 			});
 		}
 
 		public class Rotate : EntityHandler
 		{
-			public void Handle(List<Entity> entities)
+			public override void Handle(List<Entity> entities)
 			{
 				foreach (var sprite in entities)
 				{
-					float angle = sprite.Get<Rotation>().Value;
+					var angle = sprite.Get<float>();
 					angle = angle + 50 * Time.Current.Delta;
-					var rotation = new Rotation(angle);
-					sprite.Set(rotation);
+					sprite.Set(angle);
 				}
 			}
 
-			public EntityHandlerPriority Priority
+			public override EntityHandlerPriority Priority
 			{
 				get { return EntityHandlerPriority.First; }
 			}
@@ -69,13 +67,12 @@ namespace DeltaEngine.Rendering.Tests
 		[VisualTest]
 		public void ChangeColorOverTime(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem, ContentLoader content, Window window) =>
+			Start(resolver, (ContentLoader content, Window window) =>
 			{
 				window.BackgroundColor = Color.Red;
 				var image = content.Load<Image>("DeltaEngineLogo");
 				var sprite = new Sprite(image, new Rectangle(0.25f, 0.2f, 0.5f, 0.5f), Color.Green);
 				sprite.Add<TimeTrigger>().Add(new TimeTriggerData(Color.Green, Color.Gold, 0.1f));
-				entitySystem.Add(sprite);
 			});
 		}
 	}

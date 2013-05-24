@@ -11,7 +11,7 @@ namespace DeltaEngine.Core
 	/// </summary>
 	public class ThreadStatic<T>
 	{
-		public ThreadStatic() { }
+		public ThreadStatic() {}
 
 		public ThreadStatic(T fallback)
 		{
@@ -60,7 +60,7 @@ namespace DeltaEngine.Core
 			}
 		}
 
-		public class NoValueAvailable : Exception { }
+		public class NoValueAvailable : Exception {}
 
 		public IDisposable Use(T value)
 		{
@@ -114,7 +114,7 @@ namespace DeltaEngine.Core
 			DisposeCurrentScope(valueToDispose);
 		}
 
-		public class DisposingOnDifferentThreadToCreation : Exception { }
+		public class DisposingOnDifferentThreadToCreation : Exception {}
 
 		private ThreadStaticValue innerMost;
 

@@ -40,19 +40,19 @@ namespace DeltaEngine.Logging.Basic.Tests
 			}
 		}
 
-		[Test]
+		[Test, Category("Slow")]
 		public void LogInfoAndOpenFile()
 		{
 			provider.Log(new Info("Test for logging info"));
 		}
 
-		[Test]
+		[Test, Category("Slow")]
 		public void LogWarningAndOpenFile()
 		{
 			provider.Log(new Warning("Something strange happened"));
 		}
 
-		[Test]
+		[Test, Category("Slow")]
 		public void LogErrorAndOpenFile()
 		{
 			provider.Log(new Error(new InsufficientMemoryException()));

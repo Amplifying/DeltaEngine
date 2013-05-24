@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using DeltaEngine.Content.Disk;
 using NUnit.Framework;
 
@@ -55,5 +56,23 @@ namespace DeltaEngine.Content.Tests
 			Assert.IsTrue(contentLoader.SetPathIfAcceptable("Content"));
 			Assert.IsFalse(contentLoader.SetPathIfAcceptable("sdkfz,>"));
 		}
+
+		[Test]
+		public void LoadListOfContentDataFromParentEntry()
+		{
+			List<TestImage> animationImageList =
+				contentLoader.LoadRecursively<TestImage>("TestAnimation");
+			Assert.AreEqual(2, animationImageList.Count);
+		}
+
+		[Test]
+		public void LoadingNonExistantParentCausesException()
+		{
+			var animationImageList = new List<TestImage>();
+			Assert.Throws<DiskContentLoader.ParentEntryForRecursiveLoadingNotExistant>(
+				() => { animationImageList = contentLoader.LoadRecursively<TestImage>("NoAniForYou!"); });
+		}
+
+		//ncrunch: no coverage end
 	}
 }

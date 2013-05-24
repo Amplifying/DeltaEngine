@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using DeltaEngine.Core;
 
 namespace DeltaEngine.Content
 {
@@ -40,13 +41,13 @@ namespace DeltaEngine.Content
 		public bool IsDisposed { get; private set; }
 		protected abstract void DisposeData();
 
-		internal void InternalLoad(string contentName, Func<string, Stream> getContentDataStream)
+		internal void InternalLoad(Func<string, Stream> getContentDataStream)
 		{
 			if (CanLoadDataFromStream)
-				using (var stream = getContentDataStream(contentName))
+				using (var stream = getContentDataStream(Name))
 					LoadData(stream);
 			else
-				LoadFromContentName(contentName);
+				LoadFromContentName(Name);
 		}
 
 		protected virtual bool CanLoadDataFromStream

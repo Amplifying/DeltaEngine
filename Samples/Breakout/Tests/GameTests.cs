@@ -4,6 +4,7 @@ using DeltaEngine.Platforms;
 using DeltaEngine.Platforms.All;
 using DeltaEngine.Platforms.Tests;
 using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 using NUnit.Framework;
 
 namespace Breakout.Tests

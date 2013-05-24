@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using DeltaEngine.Editor.Common;
+using DeltaEngine.Editor.Helpers;
 using DeltaEngine.Networking.Sockets;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;

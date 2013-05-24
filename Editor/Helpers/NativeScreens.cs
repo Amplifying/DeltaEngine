@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace DeltaEngine.Editor.Helpers
 {
-	class NativeScreens
+	internal class NativeScreens
 	{
 		/// <summary>
 		/// Another way to use this is System.Windows.Forms.Screen.AllScreens;

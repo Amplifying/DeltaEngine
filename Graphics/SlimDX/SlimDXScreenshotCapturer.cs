@@ -13,7 +13,7 @@ namespace DeltaEngine.Graphics.SlimDX
 
 		public void MakeScreenshot(string fileName)
 		{
-			Surface.ToFile(device.Device.GetBackBuffer(0, 0), fileName, ImageFileFormat.Png);
+			Surface.ToFile(device.NativeDevice.GetBackBuffer(0, 0), fileName, ImageFileFormat.Png);
 		}
 	}
 }

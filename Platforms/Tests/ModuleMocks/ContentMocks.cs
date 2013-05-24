@@ -19,7 +19,8 @@ namespace DeltaEngine.Platforms.Tests.ModuleMocks
 		{
 			SetupVectorText();
 			SetupXmlContent();
-			SetupSceneContent();		
+			//TODO: Mock Scenes
+			//SetupSceneContent();		
 		}
 		
 		private static void SetupVectorText()
@@ -66,39 +67,40 @@ namespace DeltaEngine.Platforms.Tests.ModuleMocks
 			}
 		}
 
-		private void SetupSceneContent()
-		{
-			resolver.Register<MockSceneContent>();
-			resolver.Register<MockScene>();
-		}
+		//TODO: Mock Scenes
+		//private void SetupSceneContent()
+		//{
+		//	resolver.Register<MockSceneContent>();
+		//	resolver.Register<MockScene>();
+		//}
 
-		[IgnoreForResolver]
-		public class MockScene : Scene
-		{
-			public MockScene(ContentLoader content)
-			{
-				var demoImage = content.Load<Image>("test");
-				Add(new Label(demoImage, new Rectangle(0.45f, 0.3f, 0.1f, 0.1f)) { Name = "Label" });
-				Add(new Button(demoImage, new Rectangle(0.4f, 0.4f, 0.2f, 0.2f))
-				{
-					Name = "Button",
-					NormalColor = Color.Red,
-					MouseoverColor = Color.Green,
-					PressedColor = Color.Blue
-				});
-			}
-		}
+		//[IgnoreForResolver]
+		//public class MockScene : Scene
+		//{
+		//	public MockScene(ContentLoader content)
+		//	{
+		//		var demoImage = content.Load<Image>("test");
+		//		Add(new Label(demoImage, new Rectangle(0.45f, 0.3f, 0.1f, 0.1f)) { Name = "Label" });
+		//		Add(new Button(demoImage, new Rectangle(0.4f, 0.4f, 0.2f, 0.2f))
+		//		{
+		//			Name = "Button",
+		//			NormalColor = Color.Red,
+		//			MouseoverColor = Color.Green,
+		//			PressedColor = Color.Blue
+		//		});
+		//	}
+		//}
 
-		public class MockSceneContent : SceneContent
-		{
-			public MockSceneContent(string contentName, MockScene scene)
-				: base(contentName)
-			{
-				Scene = scene;
-			}
+		//public class MockSceneContent : SceneContent
+		//{
+		//	public MockSceneContent(string contentName, MockScene scene)
+		//		: base(contentName)
+		//	{
+		//		Scene = scene;
+		//	}
 
-			protected override void LoadData(Stream fileData) {}
-			protected override void DisposeData() {}
-		}
+		//	protected override void LoadData(Stream fileData) {}
+		//	protected override void DisposeData() {}
+		//}
 	}
 }

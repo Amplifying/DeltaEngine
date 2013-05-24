@@ -7,15 +7,14 @@ namespace DeltaEngine.Input
 	/// </summary>
 	public class MouseMovementTrigger : Trigger
 	{
-		public override bool ConditionMatched(InputCommands inputCommands)
+		public override bool ConditionMatched(InputCommands input)
 		{
-			bool changedPosition = inputCommands.Mouse.IsAvailable &&
-				inputCommands.Mouse.Position != lastPosition && lastPosition != UnusedPosition;
-			lastPosition = inputCommands.Mouse.Position;
+			bool changedPosition = input.Mouse.IsAvailable &&
+				input.Mouse.Position != lastPosition && lastPosition != Point.Unused;
+			lastPosition = input.Mouse.Position;
 			return changedPosition;
 		}
 
-		private Point lastPosition = UnusedPosition;
-		private static readonly Point UnusedPosition = new Point(-1, -1);
+		private Point lastPosition = Point.Unused;
 	}
 }

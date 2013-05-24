@@ -103,7 +103,16 @@ namespace DeltaEngine.Platforms.Windows
 		public Size TotalPixelSize
 		{
 			get { return new Size(form.Width, form.Height); }
-			set { form.Size = new System.Drawing.Size((int)value.Width, (int)value.Height); }
+			set { ResizeCentered(value.Width, value.Height); }
+		}
+
+		private void ResizeCentered(float widthInPixels, float heightInPixels)
+		{
+			int xPosOffset = (int)((form.Width - widthInPixels) / 2.0f);
+			int yPosOffset = (int)((form.Height - heightInPixels) / 2.0f);
+			form.Location = new System.Drawing.Point(form.Location.X + xPosOffset,
+				form.Location.Y + yPosOffset);
+			form.Size = new System.Drawing.Size((int)widthInPixels, (int)heightInPixels);
 		}
 
 		public Point PixelPosition
@@ -197,7 +206,16 @@ namespace DeltaEngine.Platforms.Windows
 		{
 			if (closeAfterOneFrameIfInIntegrationTest)
 				form.Close();
+
+			if (IsClosing)
+			{
+				if (WindowClosing != null)
+					WindowClosing();
+			}
+				
 		}
+
+		public event Action WindowClosing;
 
 		public void Dispose()
 		{

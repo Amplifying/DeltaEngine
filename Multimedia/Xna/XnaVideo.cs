@@ -33,7 +33,6 @@ namespace DeltaEngine.Multimedia.Xna
 			player.Volume = volume;
 			player.Play(video);
 			surface = new Sprite(image, rendering.Screen.Viewport, Color.White);
-			rendering.EntitySystem.Add(surface);
 		}
 
 		private Sprite surface;
@@ -42,14 +41,15 @@ namespace DeltaEngine.Multimedia.Xna
 		protected override void StopNativeVideo()
 		{
 			if (surface != null)
-				rendering.EntitySystem.Remove(surface);
+				surface.IsActive=false;
+
 			surface = null;
 			player.Stop();
 		}
 
 		public override bool IsPlaying()
 		{
-			return player.State != Media.MediaState.Stopped && IsActiveVideo();
+			return player.State != MediaState.Stopped && IsActiveVideo();
 		}
 
 		private bool IsActiveVideo()

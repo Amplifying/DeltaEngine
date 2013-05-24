@@ -36,12 +36,11 @@ namespace DeltaEngine.Editor.SampleBrowser.Tests
 
 		private static string GetTestAssemblyData()
 		{
-			string assembly =
-				Path.GetFullPath(Path.Combine("..", "..", "Assemblies", "TestAssembly.dll"));
+			string assembly = Path.GetFullPath(Path.Combine("Content", "TestAssembly.dll"));
 			return File.ReadAllText(assembly);
 		}
 
-		[Test, Ignore]
+		[Test, Category("Slow")]
 		public void CreateSampleFromMockAssembly()
 		{
 			Assert.AreEqual(0, sampleCreator.Samples.Count);

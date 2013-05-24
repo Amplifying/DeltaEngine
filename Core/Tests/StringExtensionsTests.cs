@@ -14,14 +14,21 @@ namespace DeltaEngine.Core.Tests
 			Assert.AreEqual("01", 1.0f.ToInvariantString("00"));
 			Assert.AreEqual("1.23", 1.2345f.ToInvariantString("0.00"));
 			Assert.AreNotEqual("1.2345", 1.2345f.ToInvariantString("0.00"));
+			Assert.AreEqual("1", StringExtensions.ToInvariantString(1));
 		}
 
 		[Test]
 		public void FromInvariantString()
 		{
 			Assert.AreEqual(1.0f, "1.0".FromInvariantString(0.0f));
-			Assert.AreEqual("abc", "abc".FromInvariantString("abc"));
+			Assert.AreEqual("abc", "abc".FromInvariantString(""));
 			Assert.AreEqual(0.0f, "val".FromInvariantString(0.0f));
+			Assert.AreEqual(1, "1".FromInvariantString(0));
+			Assert.AreEqual(24, "24".FromInvariantString(0));
+			Assert.AreEqual('A', "A".FromInvariantString(' '));
+			Assert.AreEqual(943578.39543, "943578.39543".FromInvariantString(0.0));
+			Assert.AreEqual(true, "True".FromInvariantString(false));
+			Assert.AreEqual(false, "False".FromInvariantString(false));
 		}
 
 		[Test]
@@ -99,6 +106,23 @@ namespace DeltaEngine.Core.Tests
 			Assert.IsTrue("Hello".ContainsCaseInsensitive("hel"));
 			Assert.IsFalse("Banana".ContainsCaseInsensitive("Apple"));
 			Assert.IsFalse(((String)null).ContainsCaseInsensitive("abc"));
+		}
+
+		[Test]
+		public void IsFirstCharacterInLowerCase()
+		{
+			Assert.IsFalse("Banana".IsFirstCharacterInLowerCase());
+			Assert.IsTrue("banana".IsFirstCharacterInLowerCase());
+			Assert.IsTrue("".IsFirstCharacterInLowerCase());
+		}
+
+		[Test]
+		public void ConvertFirstCharactertoUpperCase()
+		{
+			const string UpperCaseWord = "Banana";
+			Assert.AreEqual(UpperCaseWord, UpperCaseWord.ConvertFirstCharactertoUpperCase());
+			Assert.AreEqual(UpperCaseWord, "banana".ConvertFirstCharactertoUpperCase());
+			Assert.AreEqual("", "".ConvertFirstCharactertoUpperCase());
 		}
 	}
 }

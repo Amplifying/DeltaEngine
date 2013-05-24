@@ -1,8 +1,6 @@
 using System;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Input;
-using DeltaEngine.Rendering;
 using DeltaEngine.Rendering.Shapes;
 using NUnit.Framework;
 
@@ -78,15 +76,16 @@ namespace DeltaEngine.Platforms.All
 		[VisualTest]
 		public void ShowColoredRectangle(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem) => entitySystem.Add(new Ellipse(new Rectangle(Point.Half, Size.Half), Color.Red)));
+			Start(resolver, () => new Ellipse(new Rectangle(Point.Half, Size.Half), Color.Red));
 		}
 
 		[VisualTest]
 		public void ShowCursorAndToggleHideWhenClicking(Type resolver)
 		{
 			bool showCursor = true;
-			Start(resolver, (Window window, InputCommands input) =>
-				input.Add(MouseButton.Left, mouse => window.ShowCursor = showCursor = !showCursor));
+			Start(resolver,
+				(Window window, InputCommands input) =>
+					input.Add(MouseButton.Left, mouse => window.ShowCursor = showCursor = !showCursor));
 		}
 	}
 }

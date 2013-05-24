@@ -33,9 +33,7 @@ namespace DeltaEngine.Multimedia.SharpDX
 			}
 			catch (Exception ex)
 			{
-				if (!Debugger.IsAttached)
-					return;
-				else
+				if (Debugger.IsAttached)
 					throw new SoundNotFoundOrAccessible(Name, ex);
 			}
 		}

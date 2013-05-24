@@ -4,6 +4,7 @@ using DeltaEngine.Core;
 using DeltaEngine.Multimedia.OpenTK.Helpers;
 using ToyMp3;
 using System.Diagnostics;
+using ToyMp3;
 using DeltaEngine.Logging;
 
 namespace DeltaEngine.Multimedia.OpenTK
@@ -95,16 +96,9 @@ namespace DeltaEngine.Multimedia.OpenTK
 
 		protected override void Run()
 		{
-			if (GetState() == ChannelState.Paused)
-				return;
-
-			bool isFinished = UpdateBuffersAndCheckFinished();
-			if (isFinished)
-			{
+			if (UpdateBuffersAndCheckFinished())
 				Stop();
-				return;
-			}
-			if (GetState() != ChannelState.Playing)
+			else if (!IsPlaying())
 				openAL.Play(channelHandle);
 		}
 
@@ -127,12 +121,19 @@ namespace DeltaEngine.Multimedia.OpenTK
 
 		private bool Stream(int buffer)
 		{
-			int bytesRead = musicStream.Read(bufferData, BufferSize);
-			if (bytesRead == 0)
-				return false;
+			try
+			{
+				int bytesRead = musicStream.Read(bufferData, BufferSize);
+				if (bytesRead == 0)
+					return false;
 
-			openAL.BufferData(buffer, format, bufferData, bytesRead, musicStream.Samplerate);
-			openAL.QueueBufferInChannel(buffer, channelHandle);
+				openAL.BufferData(buffer, format, bufferData, bytesRead, musicStream.Samplerate);
+				openAL.QueueBufferInChannel(buffer, channelHandle);
+			}
+			catch (Exception)
+			{
+				return false;
+			}
 			return true;
 		}
 

@@ -1,6 +1,5 @@
 using System;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Platforms.All;
 using DeltaEngine.Rendering.Shapes;
 using NUnit.Framework;
@@ -26,11 +25,10 @@ namespace DeltaEngine.Input.Tests
 		{
 			Ellipse ellipse = null;
 			Touch currentTouch = null;
-			Start(resolver, (EntitySystem entitySystem, Touch touch) =>
+			Start(resolver, (Touch touch) =>
 			{
 				currentTouch = touch;
 				ellipse = new Ellipse(new Rectangle(0.1f, 0.1f, 0.1f, 0.1f), Color.Red);
-				entitySystem.Add(ellipse);
 			}, delegate
 			{
 				Point position = currentTouch.GetPosition(0);

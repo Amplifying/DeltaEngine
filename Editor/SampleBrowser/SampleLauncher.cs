@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Windows;
 using DeltaEngine.Core;
 
 namespace DeltaEngine.Editor.SampleBrowser
@@ -17,17 +18,33 @@ namespace DeltaEngine.Editor.SampleBrowser
 			LoadOpenTKResolverAssembly();
 		}
 
-		public SampleLauncher(Type resolver)
-		{
-			this.resolver = resolver;
-		}
-
 		private void LoadOpenTKResolverAssembly()
 		{
 			string pathToOpenTKResolver = GetOpenTKResolverPath();
-			Assembly assembly = Assembly.LoadFrom(pathToOpenTKResolver);
-			foreach (var type in assembly.GetTypes().Where(type => type.Name == "OpenTKResolver"))
-				resolver = type;
+			try
+			{
+				Assembly assembly = Assembly.LoadFrom(pathToOpenTKResolver);
+				foreach (var type in assembly.GetTypes().Where(type => type.Name == "OpenTKResolver"))
+					resolver = type;
+			}
+			catch (FileNotFoundException e)
+			{
+				resolver = null;
+				MessageBox.Show(pathToOpenTKResolver + " not found: " + e.Message, "File not found");
+			}
+			catch (ReflectionTypeLoadException e)
+			{
+				resolver = null;
+				MessageBox.Show("Failed to load OpenTK Resolver: " + e.LoaderExceptions.ToText(),
+					"File not loaded");
+			}
+		}
+
+		private Type resolver;
+
+		public SampleLauncher(Type resolver)
+		{
+			this.resolver = resolver;
 		}
 
 		private static string GetOpenTKResolverPath()
@@ -36,8 +53,6 @@ namespace DeltaEngine.Editor.SampleBrowser
 				Path.GetFullPath(Path.Combine("..", "..", "..", "Platforms", "WindowsOpenTK", "bin",
 					"Debug", "DeltaEngine.WindowsOpenTK.dll"));
 		}
-
-		private Type resolver;
 
 		public void OpenProject(Sample sample)
 		{
@@ -76,6 +91,9 @@ namespace DeltaEngine.Editor.SampleBrowser
 
 		public bool DoesAssemblyExist(Sample sample)
 		{
+			if (sample.Category == SampleCategory.Test)
+				return File.Exists(sample.AssemblyFilePath) && resolver != null;
+
 			return File.Exists(sample.AssemblyFilePath);
 		}
 	}

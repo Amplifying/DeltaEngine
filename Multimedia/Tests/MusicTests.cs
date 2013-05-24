@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Threading;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Platforms.All;
@@ -19,8 +20,37 @@ namespace DeltaEngine.Multimedia.Tests
 			{
 				var music = content.Load<Music>("DefaultMusic");
 				music.Play();
-				//music.Dispose();
 			});
+		}
+
+		[IntegrationTest]
+		public void PlayMusicWith5Fps(Type resolver)
+		{
+			Start(resolver, (ContentLoader content) =>
+			{
+				var music = content.Load<Music>("DefaultMusic");
+				music.Play();
+			}, () => Thread.Sleep(200));
+		}
+
+		[IntegrationTest]
+		public void PlayMusicWith10Fps(Type resolver)
+		{
+			Start(resolver, (ContentLoader content) =>
+			{
+				var music = content.Load<Music>("DefaultMusic");
+				music.Play();
+			}, () => Thread.Sleep(100));
+		}
+
+		[IntegrationTest]
+		public void PlayMusicWith30Fps(Type resolver)
+		{
+			Start(resolver, (ContentLoader content) =>
+			{
+				var music = content.Load<Music>("DefaultMusic");
+				music.Play();
+			}, () => Thread.Sleep(1000 / 30));
 		}
 
 		[IntegrationTest]

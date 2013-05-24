@@ -17,39 +17,72 @@ namespace DeltaEngine.Entities
 
 		private readonly EntityHandlerResolver handlerResolver;
 
-		public void Add(Entity entity)
+		public static bool HasCurrent
 		{
-			entity.IsActive = true;
-			if (WasEntityAlreadyAddedBefore(entity))
+			get { return ThreadStaticEntitySystem.HasCurrent; }
+		}
+
+		public static EntitySystem Current
+		{
+			get { return ThreadStaticEntitySystem.Current; }
+		}
+
+		private static readonly ThreadStatic<EntitySystem> ThreadStaticEntitySystem =
+			new ThreadStatic<EntitySystem>();
+
+		public static IDisposable Use(EntitySystem entitySystem)
+		{
+			return ThreadStaticEntitySystem.Use(entitySystem);
+		}
+
+		internal void Add(Entity entity)
+		{
+			if (rememberToRemove.Contains(entity))
+			{
+				rememberToRemove.Remove(entity);
 				return;
+			}
+
+			if (WasEntityAlreadyAddedBefore(entity))
+				throw new EntityAlreadyAdded();
 
 			rememberToAdd.Add(entity);
 		}
 
+		public class EntityAlreadyAdded : Exception {}
+
+		private bool WasEntityAlreadyAddedBefore(Entity entity)
+		{
+			if (entitiesWithoutHandlers.Contains(entity) || rememberToAdd.Contains(entity))
+				return true;
+
+			return
+				entity.activeHandlers.Any(
+					handler => FindHandlerWithEntities(handler).entities.Contains(entity));
+		}
+
 		private readonly List<Entity> rememberToAdd = new List<Entity>();
 
-		public void Remove(Entity entity)
+		internal void Remove(Entity entity)
 		{
-			entity.IsActive = false;
 			if (rememberToAdd.Contains(entity))
 				rememberToAdd.Remove(entity);
 			else
 				rememberToRemove.Add(entity);
 		}
 
-		private readonly List<Entity> rememberToRemove = new List<Entity>();
-
-		private bool WasEntityAlreadyAddedBefore(Entity entity)
+		public void Clear()
 		{
-			if (entitiesWithoutHandlers.Contains(entity))
-				return true;
+			rememberToAdd.Clear();
+			foreach (var entity in entitiesWithoutHandlers)
+				rememberToRemove.Add(entity);
 
-			foreach (var handler in entity.activeHandlers)
-				if (FindHandlerWithEntities(handler).entities.Contains(entity))
-					return true;
-
-			return false;
+			foreach (var pair in handlersWithAffectedEntities)
+				foreach (var entity in pair.entities)
+					rememberToRemove.Add(entity);
 		}
+
+		private readonly List<Entity> rememberToRemove = new List<Entity>();
 
 		private HandlerWithEntities FindHandlerWithEntities(EntityHandler searchHandler)
 		{
@@ -115,7 +148,7 @@ namespace DeltaEngine.Entities
 			handlersWithAffectedEntities.Add(entities);
 		}
 
-		public T GetHandler<T>() where T : class, EntityHandler
+		public T GetHandler<T>() where T : EntityHandler
 		{
 			return GetHandler(typeof(T)) as T;
 		}
@@ -143,9 +176,13 @@ namespace DeltaEngine.Entities
 
 		private void SearchEntitiesWithTag(IEnumerable<Entity> entities, string searchTag)
 		{
-			foreach (var entity in entities.Where(entity => entity.Tag == searchTag))
-				if (!foundEntities.Contains(entity))
-					foundEntities.Add(entity);
+			foundEntities.AddRange(entities.Where(entity => entity.Tag == searchTag));
+		}
+
+		public List<Entity> GetEntitiesByHandler(EntityHandler entityHandler)
+		{
+			HandlerWithEntities handlerWithEntities = FindHandlerWithEntities(entityHandler);
+			return handlerWithEntities == null ? new List<Entity>() : handlerWithEntities.entities;
 		}
 
 		public int NumberOfEntities
@@ -153,10 +190,8 @@ namespace DeltaEngine.Entities
 			get
 			{
 				var total = new List<Entity>(entitiesWithoutHandlers);
-				foreach (var handler in handlersWithAffectedEntities)
-					foreach (var entity in handler.entities)
-						if (!total.Contains(entity))
-							total.Add(entity);
+				total.AddRange(
+					handlersWithAffectedEntities.SelectMany(handler => handler.entities).Distinct());
 				total.AddRange(rememberToAdd);
 				foreach (var entity in rememberToRemove)
 					total.Remove(entity);
@@ -175,9 +210,13 @@ namespace DeltaEngine.Entities
 
 		private void AddRememberedEntities()
 		{
-			foreach (var entity in rememberToAdd)
-				AddRememberedEntity(entity);
-			rememberToAdd.Clear();
+			//TODO: this makes no sense, but it crashes when calling from server code
+			lock (rememberToAdd)
+			{
+				foreach (var entity in rememberToAdd)
+					AddRememberedEntity(entity);
+				rememberToAdd.Clear();
+			}
 		}
 
 		private void AddRememberedEntity(Entity entity)
@@ -191,9 +230,12 @@ namespace DeltaEngine.Entities
 
 		private void RemoveRememberedEntities()
 		{
-			foreach (var entity in rememberToRemove)
-				RemoveRememberedEntity(entity);
-			rememberToRemove.Clear();
+			lock (rememberToRemove)
+			{
+				foreach (var entity in rememberToRemove)
+					RemoveRememberedEntity(entity);
+				rememberToRemove.Clear();
+			}
 		}
 
 		private void RemoveRememberedEntity(Entity entity)

@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ContentMetaData Name="DeltaEngine.Blocks.Tests" Type="Scene" LastTimeUpdated="2013-04-22 17:00:00" ContentDeviceName="Delta">
+  <ContentMetaData Name="Block1" Type="Image" LastTimeUpdated="2012-10-18 14:04:49" PlatformFileId="20383" FileSize="5230" LocalFilePath="Block1.png" PixelSize="128, 128"></ContentMetaData>
+  <ContentMetaData Name="DeltaEngineLogo" Type="Image" LastTimeUpdated="2012-10-18 14:04:49" PlatformFileId="20383" FileSize="5230" LocalFilePath="DeltaEngineLogo.png" PixelSize="128, 128"></ContentMetaData>
+  <ContentMetaData Name="Mod1_DeltaEngineLogo" Type="Image" LastTimeUpdated="2012-10-18 14:04:49" PlatformFileId="20383" FileSize="5230" LocalFilePath="Mod1_DeltaEngineLogo.png" PixelSize="128, 128"></ContentMetaData>
+  <ContentMetaData Name="Mod2_DeltaEngineLogo" Type="Image" LastTimeUpdated="2012-10-18 14:04:49" PlatformFileId="20383" FileSize="5230" LocalFilePath="Mod2_DeltaEngineLogo.png" PixelSize="128, 128"></ContentMetaData>
+  <ContentMetaData Name="VectorText" Type="Xml" LastTimeUpdated="2012-10-18 14:04:49" PlatformFileId="20383" FileSize="5230" LocalFilePath="VectorText.xml"></ContentMetaData>
+</ContentMetaData>

@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
 using DeltaEngine.Core;
 
@@ -39,6 +40,7 @@ namespace DeltaEngine.Datatypes
 		public static readonly Point Half = new Point(0.5f, 0.5f);
 		public static readonly Point UnitX = new Point(1, 0);
 		public static readonly Point UnitY = new Point(0, 1);
+		public static readonly Point Unused = new Point(-1, -1);
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Point));
 
 		public static Point operator +(Point p1, Point p2)
@@ -106,6 +108,7 @@ namespace DeltaEngine.Datatypes
 			return "(" + X.ToInvariantString() + ", " + Y.ToInvariantString() + ")";
 		}
 
+		[Pure]
 		public float DistanceTo(Point other)
 		{
 			float distanceX = X - other.X;
@@ -157,11 +160,12 @@ namespace DeltaEngine.Datatypes
 			Y = center.Y + translatedPoint.X * rotationSin + translatedPoint.Y * rotationCos;
 		}
 
-		public void Normalize()
+		public Point Normalize()
 		{
 			var length = (float)Math.Sqrt(X * X + Y * Y);
 			X /= length;
 			Y /= length;
+			return this;
 		}
 
 		public float DotProduct(Point point)
@@ -172,6 +176,13 @@ namespace DeltaEngine.Datatypes
 		public float DistanceFromProjectAxisPoint(Point axis)
 		{
 			return (X * axis.X + Y * axis.Y) / (axis.X * axis.X + axis.Y * axis.Y) * axis.X;
+		}
+
+		[Pure]
+		public float RotationTo(Point target)
+		{
+			var normal = (this - target).Normalize();
+			return MathExtensions.Atan2(normal.Y, normal.X);
 		}
 	}
 }

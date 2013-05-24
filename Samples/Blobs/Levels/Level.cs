@@ -4,9 +4,8 @@ using Blobs.Creatures;
 using DeltaEngine.Content;
 using DeltaEngine.Core.Xml;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Input;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 
 namespace Blobs.Levels
 {
@@ -15,10 +14,8 @@ namespace Blobs.Levels
 	/// </summary>
 	public abstract class Level : IDisposable
 	{
-		protected Level(EntitySystem entitySystem, ScreenSpace screen, InputCommands input,
-			ContentLoader content)
+		protected Level(ScreenSpace screen, InputCommands input, ContentLoader content)
 		{
-			this.entitySystem = entitySystem;
 			this.screen = screen;
 			camera = (Camera2DControlledQuadraticScreenSpace)screen;
 			this.input = input;
@@ -26,7 +23,6 @@ namespace Blobs.Levels
 			Blobs = new List<Blob>();
 		}
 
-		private readonly EntitySystem entitySystem;
 		private readonly ScreenSpace screen;
 		protected readonly Camera2DControlledQuadraticScreenSpace camera;
 		protected readonly InputCommands input;
@@ -49,9 +45,8 @@ namespace Blobs.Levels
 
 		private void CreatePlayer()
 		{
-			Player = new Player(entitySystem, screen, input) { Radius = 0.05f, Color = Color.Blue };
+			Player = new Player(screen, input) { Radius = 0.05f, Color = Color.Blue };
 			Blobs.Add(Player);
-			entitySystem.Add(Player);
 		}
 
 		protected Player Player { get; private set; }
@@ -65,7 +60,7 @@ namespace Blobs.Levels
 
 		protected void AddPlatform(Rectangle rectangle, float rotation, Color color)
 		{
-			var platform = new Platform(entitySystem, rectangle, rotation) { Color = color };
+			var platform = new Platform(rectangle, rotation) { Color = color };
 			platforms.Add(platform);
 		}
 
@@ -73,10 +68,9 @@ namespace Blobs.Levels
 
 		protected void AddEnemy(Point center, float radius)
 		{
-			var enemy = new Blob(entitySystem, screen, input) { Center = center, Radius = radius };
+			var enemy = new Blob(screen, input) { Center = center, Radius = radius };
 			enemy.UpdateColor(Player.Radius);
 			Blobs.Add(enemy);
-			entitySystem.Add(enemy);
 		}
 
 		public virtual void Run()

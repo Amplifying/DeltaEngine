@@ -1,12 +1,11 @@
+using System;
+using System.Diagnostics;
 using System.IO;
 using DeltaEngine.Core;
-using DeltaEngine.Entities;
 using DeltaEngine.Multimedia.AviVideo;
 using DeltaEngine.Multimedia.OpenTK.Helpers;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 using DeltaEngine.Rendering.Sprites;
-using System.Diagnostics;
-using System;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
 using DeltaEngine.Logging;
@@ -15,20 +14,19 @@ namespace DeltaEngine.Multimedia.OpenTK
 {
 	public class OpenTKVideo : Video
 	{
-		public OpenTKVideo(string filename, SoundDevice device, Drawing drawing, EntitySystem 
-			entitySystem, ScreenSpace screen, Logger log) : base(filename, device)
+		public OpenTKVideo(string filename, SoundDevice device, Drawing drawing, ScreenSpace screen, 
+			Logger log) : base(filename, device)
 		{
-			this.entitySystem = entitySystem;
 			this.screen = screen;
+			this.log = log;
 			openAL = new OpenTKOpenAL();
 			channelHandle = openAL.CreateChannel();
 			buffers = openAL.CreateBuffers(NumberOfBuffers);
-			image = new VideoImage(drawing);
+			image = new VideoImage();
 		}
 
 		private readonly Logger log;
 		private readonly VideoImage image;
-		private EntitySystem entitySystem;
 		private ScreenSpace screen;
 		private OpenTKOpenAL openAL;
 		private int channelHandle;
@@ -98,6 +96,17 @@ namespace DeltaEngine.Multimedia.OpenTK
 			return true;
 		}
 
+		protected override void StopNativeVideo()
+		{
+			if (surface != null)
+				surface.IsActive = false;
+
+			surface = null;
+			openAL.Stop(channelHandle);
+			EmptyBuffers();
+			video.GetFrameClose();
+		}
+
 		private void EmptyBuffers()
 		{
 			int queued = openAL.GetNumberOfBuffersQueued(channelHandle);
@@ -155,23 +164,11 @@ namespace DeltaEngine.Multimedia.OpenTK
 			openAL.SetVolume(channelHandle, volume);
 			elapsedSeconds = 0f;
 			surface = new Sprite(image, screen.Viewport, Color.White);
-			entitySystem.Add(surface);
 		}
 
 		private void ExecuteLogger(Exception ex)
 		{
 			log.Error(ex);
-		}
-
-		protected override void StopNativeVideo()
-		{
-			if (surface != null)
-				entitySystem.Remove(surface);
-
-			surface = null;
-			openAL.Stop(channelHandle);
-			EmptyBuffers();
-			video.GetFrameClose();
 		}
 
 		private void UpdateVideoTexture()

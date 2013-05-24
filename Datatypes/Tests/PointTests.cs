@@ -183,6 +183,18 @@ namespace DeltaEngine.Datatypes.Tests
 		}
 
 		[Test]
+		public void RotationTo()
+		{
+			var point = Point.UnitX;
+			var rotation = point.RotationTo(Point.Zero);
+			Assert.AreEqual(0, rotation);
+			point.RotateAround(Point.Zero, 90.0f);
+			Assert.AreEqual(Point.UnitY, point);
+			rotation = point.RotationTo(Point.Zero);
+			Assert.AreEqual(90, rotation);
+		}
+
+		[Test]
 		public void Normalize()
 		{
 			var point = new Point(0.3f, -0.4f);

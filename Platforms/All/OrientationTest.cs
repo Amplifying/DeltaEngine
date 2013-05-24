@@ -1,9 +1,8 @@
 using System;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Input;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 using DeltaEngine.Rendering.Shapes;
 using NUnit.Framework;
 
@@ -14,8 +13,7 @@ namespace DeltaEngine.Platforms.All
 		[IntegrationTest]
 		public void TestDrawAreaWhenChangingOrientationToPortrait(Type type)
 		{
-			var ellipse = new Ellipse(new Rectangle(0.7f, 0.7f, 0.1f, 0.1f), Color.Red);
-			Start(type, (EntitySystem entitySystem) => entitySystem.Add(ellipse),
+			Start(type, () => { new Ellipse(new Rectangle(0.7f, 0.7f, 0.1f, 0.1f), Color.Red); },
 				(Window testWindow, ScreenSpace screen) =>
 				{
 					testWindow.TotalPixelSize = new Size(480, 800);
@@ -34,8 +32,7 @@ namespace DeltaEngine.Platforms.All
 		[IntegrationTest]
 		public void TestDrawAreaWhenChangingOrientationToLandscape(Type type)
 		{
-			var ellipse = new Ellipse(new Rectangle(0.7f, 0.7f, 0.1f, 0.1f), Color.Red);
-			Start(type, (EntitySystem entitySystem) => entitySystem.Add(ellipse),
+			Start(type, () => { new Ellipse(new Rectangle(0.7f, 0.7f, 0.1f, 0.1f), Color.Red); },
 				(Window testWindow, ScreenSpace screen) =>
 				{
 					testWindow.TotalPixelSize = new Size(800, 480);
@@ -50,21 +47,22 @@ namespace DeltaEngine.Platforms.All
 				});
 		}
 
-		
 		[VisualTest]
 		public void ChangeOrientaion(Type type)
 		{
-			var line = new Line2D(Point.Zero, Point.One, Color.Green);
-			Start(type, (EntitySystem entitySystem, Window window, InputCommands inputCommands) =>
+			Line2D line = null;
+			Start(type, (Window window, InputCommands inputCommands) =>
 			{
 				window.BackgroundColor = Color.Blue;
-				entitySystem.Add(line);
+				line = new Line2D(Point.Zero, Point.One, Color.Green);
 				inputCommands.Add(Key.A, () =>
-				{ //ncrunch: no coverage
+				{
+					//ncrunch: no coverage
 					window.TotalPixelSize = new Size(800, 480); //ncrunch: no coverage
 				});
 				inputCommands.Add(Key.B, () =>
-				{ //ncrunch: no coverage
+				{
+					//ncrunch: no coverage
 					window.TotalPixelSize = new Size(480, 800); //ncrunch: no coverage
 				});
 			}, (ScreenSpace screen, Window window) =>

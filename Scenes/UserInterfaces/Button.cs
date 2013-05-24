@@ -1,138 +1,142 @@
+using System;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
-using DeltaEngine.Rendering;
+using DeltaEngine.Input;
 using DeltaEngine.Rendering.Sprites;
 
 namespace DeltaEngine.Scenes.UserInterfaces
 {
 	/// <summary>
-	/// A simple UI button to which events can be attached when being pressed and released.
-	/// Can also change color and/or image on mouseover and press.
+	/// A simple UI button which changes image and color on mouseover and press, and raises a 
+	/// Clicked event on clicking.
 	/// </summary>
-	public class Button : InteractiveControl
+	public class Button : Sprite, Interact.Clickable
 	{
-		public Button(Image image, Rectangle initialDrawArea)
+		public Button(Image image)
+			: this(image, Rectangle.Zero) {}
+
+		public Button(Image image, Rectangle drawArea)
+			: this(image, drawArea, Color.White) { }
+
+		public Button(Image image, Rectangle drawArea, Color color)
+			: base(image, drawArea)
 		{
-			Sprite = new Sprite(image, initialDrawArea);
-			pressedImage = image;
-			normalImage = image;
-			mouseoverImage = image;
+			Color = color;
+			Add(new Interact.State());
+			Add(new Interact.Images(image));
+			Add(new Interact.Colors(color));
+			Add<Interact, Interact.RaiseClickEvent, UpdateImageAndColor>();
 		}
 
-		public Sprite Sprite { get; private set; }
-		private readonly Image pressedImage;
-		private readonly Image normalImage;
-		private readonly Image mouseoverImage;
-
-		private Button() {}
-
-		internal override bool Contains(Point point)
+		public Point RelativePointerPosition
 		{
-			return Sprite.DrawArea.Contains(point);
+			get { return Get<Interact.State>().RelativePointerPosition; }
 		}
 
-		public override void Press()
+		public void InvokeClickEvent()
 		{
-			base.Press();
-			SetImageAndColor();
+			if (Clicked != null)
+				Clicked();
 		}
 
-		private void SetImageAndColor()
-		{
-			if (IsInside && IsPressed)
-				SetPressedImageAndColor();
-			else if (IsInside)
-				SetMouseoverImageAndColor();
-			else
-				SetNormalImageAndColor();
-		}
+		public event Action Clicked;
 
-		private void SetPressedImageAndColor()
+		public class UpdateImageAndColor : EntityListener
 		{
-			Sprite.Image = pressedImage;
-			Sprite.Color = PressedColor;
-		}
-
-		public Color PressedColor
-		{
-			get { return pressedColor; }
-			set
+			public override void ReceiveMessage(Entity entity, object message)
 			{
-				pressedColor = value;
-				SetImageAndColor();
+				var state = entity.Get<Interact.State>();
+				if (state.IsInside && state.IsPressed)
+					SetPressedImageAndColor(entity);
+				else if (state.IsInside)
+					SetMouseoverImageAndColor(entity);
+				else
+					SetNormalImageAndColor(entity);
 			}
-		}
 
-		private Color pressedColor = Color.White;
-
-		private void SetMouseoverImageAndColor()
-		{
-			Sprite.Image = mouseoverImage;
-			Sprite.Color = MouseoverColor;
-		}
-
-		public Color MouseoverColor
-		{
-			get { return mouseoverColor; }
-			set
+			private static void SetPressedImageAndColor(Entity entity)
 			{
-				mouseoverColor = value;
-				SetImageAndColor();
+				if (entity.Contains<Image, Interact.Images>())
+					entity.Set(entity.Get<Interact.Images>().Pressed);
+
+				if (entity.Contains<Color, Interact.Colors>())
+					entity.Set(entity.Get<Interact.Colors>().Pressed);
 			}
-		}
 
-		private Color mouseoverColor = Color.White;
+			private static void SetMouseoverImageAndColor(Entity entity)
+			{
+				if (entity.Contains<Image, Interact.Images>())
+					entity.Set(entity.Get<Interact.Images>().Mouseover);
 
-		private void SetNormalImageAndColor()
-		{
-			Sprite.Image = normalImage;
-			Sprite.Color = NormalColor;
+				if (entity.Contains<Color, Interact.Colors>())
+					entity.Set(entity.Get<Interact.Colors>().Mouseover);
+			}
+
+			private static void SetNormalImageAndColor(Entity entity)
+			{
+				if (entity.Contains<Image, Interact.Images>())
+					entity.Set(entity.Get<Interact.Images>().Normal);
+
+				if (entity.Contains<Color, Interact.Colors>())
+					entity.Set(entity.Get<Interact.Colors>().Normal);
+			}
+
+			public override EntityHandlerPriority Priority
+			{
+				get { return EntityHandlerPriority.High; }
+			}
 		}
 
 		public Color NormalColor
 		{
-			get { return normalColor; }
-			set
-			{
-				normalColor = value;
-				SetImageAndColor();
-			}
+			get { return Get<Interact.Colors>().Normal; }
+			set { Get<Interact.Colors>().Normal = value; }
 		}
 
-		private Color normalColor = Color.White;
-
-		public override void Release()
+		public Color PressedColor
 		{
-			base.Release();
-			SetImageAndColor();
+			get { return Get<Interact.Colors>().Pressed; }
+			set { Get<Interact.Colors>().Pressed = value; }
 		}
 
-		public override void Enter()
+		public Color MouseoverColor
 		{
-			base.Enter();
-			SetImageAndColor();
+			get { return Get<Interact.Colors>().Mouseover; }
+			set { Get<Interact.Colors>().Mouseover = value; }
 		}
 
-		public override void Exit()
+		public Image NormalImage
 		{
-			base.Exit();
-			SetImageAndColor();
+			get { return Get<Interact.Images>().Normal; }
+			set { Get<Interact.Images>().Normal = value; }
 		}
 
-		internal override void Show()
+		public Image PressedImage
 		{
-			Sprite.Visibility = Visibility.Show;
+			get { return Get<Interact.Images>().Pressed; }
+			set { Get<Interact.Images>().Pressed = value; }
 		}
 
-		internal override void Hide()
+		public Image MouseoverImage
 		{
-			Sprite.Visibility = Visibility.Hide;
+			get { return Get<Interact.Images>().Mouseover; }
+			set { Get<Interact.Images>().Mouseover = value; }
 		}
 
-		public override void Dispose()
+		public bool IsHovering
 		{
-			Sprite.IsActive = false;
+			get { return Get<Interact.State>().IsHovering; }
+		}
+
+		public bool IsInside
+		{
+			get { return Get<Interact.State>().IsInside; }
+		}
+
+		public bool IsPressed
+		{
+			get { return Get<Interact.State>().IsPressed; }
 		}
 	}
 }

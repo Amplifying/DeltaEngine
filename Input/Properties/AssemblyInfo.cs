@@ -11,6 +11,6 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
 [assembly: Guid("d0142397-7855-4bcd-a0db-a541b8194251")]
-[assembly: AssemblyVersion("0.9.7.6")]
-[assembly: AssemblyFileVersion("0.9.7.6")]
+[assembly: AssemblyVersion("0.9.8.0")]
+[assembly: AssemblyFileVersion("0.9.8.0")]
 [assembly: InternalsVisibleTo("DeltaEngine.Input.Tests")]

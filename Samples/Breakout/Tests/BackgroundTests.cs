@@ -12,7 +12,7 @@ namespace Breakout.Tests
 		[VisualTest]
 		public void Draw(Type type)
 		{
-			Start(type, (EntitySystem entitySystem, Background background, ContentLoader content) =>
+			Start(type, (Background background, ContentLoader content) =>
 			{
 				//var b = new Background(content);
 				//entitySystem.Add(b);

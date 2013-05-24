@@ -3,6 +3,7 @@ using System.Linq;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 
 namespace DeltaEngine.Physics2D
 {
@@ -15,7 +16,7 @@ namespace DeltaEngine.Physics2D
 			this.screen = screen;
 		}
 
-		public void Handle(List<Entity> entities)
+		public override void Handle(List<Entity> entities)
 		{
 			foreach (var entity in entities.OfType<Entity2D>())
 			{
@@ -33,7 +34,7 @@ namespace DeltaEngine.Physics2D
 			entity.Rotation = physicsBody.Rotation;
 		}
 
-		public EntityHandlerPriority Priority
+		public override EntityHandlerPriority Priority
 		{
 			get { return EntityHandlerPriority.First; }
 		}

@@ -12,9 +12,11 @@ namespace DeltaEngine.Physics2D
 		float Restitution { get; set; }
 		float Friction { get; set; }
 		float Rotation { get; set; }
+		Point LinearVelocity { get; set; }
 		void ApplyLinearImpulse(Point impulse);
 		void ApplyAngularImpulse(float impulse);
 		void ApplyTorque(float torque);
 		Point[] LineVertices { get; }
+		void Dispose();
 	}
 }

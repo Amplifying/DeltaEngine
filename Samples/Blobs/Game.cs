@@ -1,9 +1,8 @@
 using Blobs.Levels;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
-using DeltaEngine.Entities;
 using DeltaEngine.Input;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 
 namespace Blobs
 {
@@ -12,10 +11,8 @@ namespace Blobs
 	/// </summary>
 	public class Game : Runner
 	{
-		public Game(EntitySystem entitySystem, ScreenSpace screen, InputCommands input,
-			ContentLoader content)
+		public Game(ScreenSpace screen, InputCommands input, ContentLoader content)
 		{
-			this.entitySystem = entitySystem;
 			this.screen = screen;
 			this.input = input;
 			this.content = content;
@@ -23,7 +20,6 @@ namespace Blobs
 			SwitchScene(intro);
 		}
 
-		private readonly EntitySystem entitySystem;
 		private readonly ScreenSpace screen;
 		private readonly InputCommands input;
 		private readonly ContentLoader content;
@@ -37,7 +33,7 @@ namespace Blobs
 
 		private void CreateIntro()
 		{
-			intro = new Intro(entitySystem, screen, input, content);
+			intro = new Intro(screen, input, content);
 			intro.Passed += () => SwitchScene(level1);
 		}
 
@@ -45,7 +41,7 @@ namespace Blobs
 
 		private void CreateLevel1()
 		{
-			level1 = new Level1(entitySystem, screen, input, content);
+			level1 = new Level1(screen, input, content);
 			level1.Passed += () => SwitchScene(level2);
 			level1.Failed += () => SwitchScene(intro);
 		}
@@ -54,7 +50,7 @@ namespace Blobs
 
 		private void CreateLevel2()
 		{
-			level2 = new Level2(entitySystem, screen, input, content);
+			level2 = new Level2(screen, input, content);
 			level2.Passed += () => SwitchScene(intro);
 			level2.Failed += () => SwitchScene(intro);
 		}

@@ -22,6 +22,8 @@ namespace DeltaEngine.Networking.Tests
 		public void Connect(string serverAddress, int serverPort)
 		{
 			server.ClientConnectedToServer(this);
+			if (Connected != null)
+				Connected();
 		}
 
 		public string TargetAddress

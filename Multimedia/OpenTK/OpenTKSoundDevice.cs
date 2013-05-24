@@ -16,6 +16,7 @@ namespace DeltaEngine.Multimedia.OpenTK
 
 		public override void Dispose()
 		{
+			base.Dispose();
 			ReleaseDeviceAndContext();
 		}
 

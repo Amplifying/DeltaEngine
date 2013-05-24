@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Platforms.All;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 using NUnit.Framework;
 
 namespace Snake.Tests
@@ -14,20 +14,18 @@ namespace Snake.Tests
 		{
 			gridSize = 10;
 			blockSize = 1.0f / gridSize;
-			chunk = new Chunk(gridSize, blockSize);
 		}
 
 		private int gridSize;
 		private float blockSize;
-		private Chunk chunk;
 
 		[IntegrationTest]
 		public void CreateFirstChunk(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem) =>
+			Start(resolver, () =>
 			{
-				entitySystem.Add(chunk);
-				Assert.AreEqual(1, entitySystem.NumberOfEntities);
+				var chunk = new Chunk(gridSize, blockSize);
+				Assert.AreEqual(1, EntitySystem.Current.NumberOfEntities);
 				Assert.AreEqual(blockSize, chunk.Size.Width);
 				Assert.AreEqual(blockSize, chunk.Size.Height);
 				Assert.AreEqual(Color.Purple, chunk.Color);
@@ -39,31 +37,24 @@ namespace Snake.Tests
 		}
 
 		[VisualTest]
-		public void DrawChunk(Type resolver)
-		{
-			Start(resolver, (EntitySystem entitySystem) => { entitySystem.Add(chunk); });
-		}
-
-		[VisualTest]
 		public void DrawChunkAtRandomLocation(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem, ScreenSpace screenSpace) =>
+			Start(resolver, (ScreenSpace screenSpace) =>
 			{
 				screenSpace.Window.TotalPixelSize = new Size(200, 200);
-				entitySystem.Add(chunk);
-				chunk.SpawnAtRandomLocation();
+				var smallChunk = new Chunk(gridSize, blockSize);
+				smallChunk.SpawnAtRandomLocation();
 			});
 		}
 
 		[IntegrationTest]
 		public void CheckChunkSpawnWithinSnakeBody(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem, ScreenSpace screenSpace) =>
+			Start(resolver, (ScreenSpace screenSpace) =>
 			{
 				screenSpace.Window.TotalPixelSize = new Size(200, 200);
-				var snake = new Snake(entitySystem, gridSize);
-				entitySystem.Add(snake);
-				entitySystem.Add(chunk);
+				var snake = new Snake(gridSize);
+				var chunk = new Chunk(gridSize, blockSize);
 				Assert.IsTrue(chunk.IsCollidingWithSnake(snake.Get<Snake.Body>().BodyParts));
 			});
 		}

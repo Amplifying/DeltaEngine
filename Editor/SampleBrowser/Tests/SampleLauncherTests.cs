@@ -34,7 +34,7 @@ namespace DeltaEngine.Editor.SampleBrowser.Tests
 
 		private static string GetPathToTestAssembly()
 		{
-			return Path.GetFullPath(Path.Combine("..", "..", "Assemblies", "TestAssembly.dll"));
+			return Path.GetFullPath(Path.Combine("Content", "TestAssembly.dll"));
 		}
 
 		[Test, Ignore]

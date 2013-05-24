@@ -1,7 +1,6 @@
 using System;
 using Blobs.Creatures;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Rendering.Shapes;
 
 namespace Blobs
@@ -11,27 +10,22 @@ namespace Blobs
 	/// </summary>
 	public class Platform : IDisposable
 	{
-		public Platform(EntitySystem entitySystem, Rectangle rectangle, float rotation = 0.0f)
+		public Platform(Rectangle rectangle, float rotation = 0.0f)
 		{
-			this.entitySystem = entitySystem;
 			this.rectangle = rectangle;
 			this.rotation = rotation;
 			UpdateRendering();
 		}
 
-		private readonly EntitySystem entitySystem;
 		public Color Color;
 		private readonly float rotation;
 		private Rectangle rectangle;
 
 		private void UpdateRendering()
 		{
-			leftCircle.Remove<RenderPolygonOutline>();
-			entitySystem.Add(leftCircle);
-			rightCircle.Remove<RenderPolygonOutline>();
-			entitySystem.Add(rightCircle);
-			middle.Remove<RenderPolygonOutline>();
-			entitySystem.Add(middle);
+			leftCircle.Remove<Polygon.RenderOutline>();
+			rightCircle.Remove<Polygon.RenderOutline>();
+			middle.Remove<Polygon.RenderOutline>();
 		}
 
 		private readonly Ellipse leftCircle = new Ellipse(Rectangle.Zero, Color.White)

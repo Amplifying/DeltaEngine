@@ -24,7 +24,8 @@ namespace DeltaEngine.Editor.SampleBrowser
 			SamplesPath =
 				Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Samples"));
 			DeltaEngineRootPath =
-				Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", ""));
+				Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "..",
+					"DeltaEngine"));
 			FallbackPath =
 				Path.GetFullPath(Environment.ExpandEnvironmentVariables("%DeltaEnginePath%\\"));
 		}
@@ -129,6 +130,7 @@ namespace DeltaEngine.Editor.SampleBrowser
 		{
 			if (!fileSystem.Directory.Exists(FallbackPath))
 				return;
+
 			string[] files = fileSystem.Directory.GetFiles(FallbackPath);
 			foreach (string file in files)
 			{
@@ -142,6 +144,9 @@ namespace DeltaEngine.Editor.SampleBrowser
 
 		private void GetSamplesFromDeltaEngine(string directory)
 		{
+			if (!fileSystem.Directory.Exists(directory))
+				return;
+
 			string[] directories = fileSystem.Directory.GetDirectories(directory);
 			foreach (string projectDirectory in directories)
 			{

@@ -1,7 +1,7 @@
 using System;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 using SysPoint = System.Drawing.Point;
 
 namespace DeltaEngine.Input.Windows

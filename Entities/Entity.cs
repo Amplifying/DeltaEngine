@@ -11,6 +11,95 @@ namespace DeltaEngine.Entities
 	/// </summary>
 	public abstract class Entity
 	{
+		/// <summary>
+		/// Entities now start out active and manually adding and removing from EntitySystem is not 
+		/// necessary or even possible. Instead activate and deactivate to add and remove. 
+		/// To disable just one handler use RemoveHandler.
+		/// </summary>
+		protected Entity()
+		{
+			IsActive = true;
+		}
+
+		public bool IsActive
+		{
+			get { return isActive; }
+			set
+			{
+				if (isActive != value)
+					ActivateOrInactivate(this, value);
+
+				foreach (Entity component in components.OfType<Entity>())
+					component.IsActive = value;
+			}
+		}
+
+		private bool isActive;
+
+		private void ActivateOrInactivate(Entity entity, bool state)
+		{
+			isActive = state;
+			isActiveChanged = true;
+			if (EntitySystem.HasCurrent)
+				if (isActive)
+					EntitySystem.Current.Add(entity);
+				else
+					EntitySystem.Current.Remove(entity);
+		}
+
+		internal bool isActiveChanged;
+
+		public T Get<T>()
+		{
+			foreach (T component in components.OfType<T>())
+				return component;
+
+			throw new ComponentNotFound(typeof(T));
+		}
+
+		public T GetOrCreate<T>() where T : new()
+		{
+			if (Contains<T>())
+				return Get<T>();
+
+			var newT = new T();
+			Add(newT);
+			return newT;
+		}
+
+		public bool Contains<T>()
+		{
+			return components.OfType<T>().Any();
+		}
+
+		public bool Contains<T1, T2>()
+		{
+			return Contains<T1>() && Contains<T2>();
+		}
+
+		public bool Contains<T1, T2, T3>()
+		{
+			return Contains<T1>() && Contains<T2>() && Contains<T3>();
+		}
+
+		public void Set<T>(T component)
+		{
+			for (int index = 0; index < components.Count; index++)
+				if (components[index] is T)
+				{
+					components[index] = component;
+					return;
+				}
+
+			throw new ComponentNotFound(typeof(T));
+		}
+
+		public class ComponentNotFound : Exception
+		{
+			public ComponentNotFound(Type component)
+				: base(component.ToString()) {}
+		}
+
 		public Entity Add(object component)
 		{
 			if (component is EntityHandler)
@@ -20,9 +109,19 @@ namespace DeltaEngine.Entities
 			return this;
 		}
 
-		public class InstantiatedEntityHandlerAddedToEntity : Exception { }
+		public class InstantiatedEntityHandlerAddedToEntity : Exception {}
 
 		internal readonly List<object> components = new List<object>();
+
+		public Entity AddOrOverwrite<T>(T component)
+		{
+			if (Contains<T>())
+				Set(component);
+			else
+				Add(component);
+
+			return this;
+		}
 
 		public Entity Add<T>() where T : EntityHandler
 		{
@@ -34,18 +133,14 @@ namespace DeltaEngine.Entities
 
 		internal readonly List<Type> handlerTypesToAdd = new List<Type>();
 
-		public Entity Add<T1, T2>()
-			where T1 : EntityHandler
-			where T2 : EntityHandler
+		public Entity Add<T1, T2>() where T1 : EntityHandler where T2 : EntityHandler
 		{
 			Add<T1>();
 			Add<T2>();
 			return this;
 		}
 
-		public Entity Add<T1, T2, T3>()
-			where T1 : EntityHandler
-			where T2 : EntityHandler
+		public Entity Add<T1, T2, T3>() where T1 : EntityHandler where T2 : EntityHandler
 			where T3 : EntityHandler
 		{
 			Add<T1>();
@@ -68,6 +163,7 @@ namespace DeltaEngine.Entities
 			{
 				if (activeHandlers[index].Priority <= handler.Priority)
 					continue;
+
 				activeHandlers.Insert(index, handler);
 				return;
 			}
@@ -99,44 +195,20 @@ namespace DeltaEngine.Entities
 			get { return components.Count; }
 		}
 
-		public bool Contains<T>()
+		public Entity AddTrigger(Trigger trigger)
 		{
-			return components.OfType<T>().Any();
+			Add<CheckTriggers>();
+			var triggers = GetOrCreate<List<Trigger>>();
+			triggers.Add(trigger);
+			return this;
 		}
 
-		public bool Contains<T1, T2>()
+		public Entity RemoveTrigger(Trigger trigger)
 		{
-			return Contains<T1>() && Contains<T2>();
-		}
+			if (Contains<List<Trigger>>())
+				Get<List<Trigger>>().Remove(trigger);
 
-		public bool Contains<T1, T2, T3>()
-		{
-			return Contains<T1>() && Contains<T2>() && Contains<T3>();
-		}
-
-		public T Get<T>()
-		{
-			foreach (T component in components.OfType<T>())
-				return component;
-
-			throw new ComponentNotFound(typeof(T));
-		}
-
-		public void Set<T>(T component)
-		{
-			for (int index = 0; index < components.Count; index++)
-				if (components[index] is T)
-				{
-					components[index] = component;
-					return;
-				}
-			throw new ComponentNotFound(typeof(T));
-		}
-
-		public class ComponentNotFound : Exception
-		{
-			public ComponentNotFound(Type component)
-				: base(component.ToString()) { }
+			return this;
 		}
 
 		public void MessageAllListeners(object message)
@@ -155,31 +227,9 @@ namespace DeltaEngine.Entities
 		/// </summary>
 		public string Tag { get; set; }
 
-		/// <summary>
-		/// Entities start out inactive until added to the EntitySystem. Entities can be activated or
-		/// deactivated at any time to not be processed. To disable just one handler use RemoveHandler.
-		/// </summary>
-		public bool IsActive
-		{
-			get { return isActive; }
-			set
-			{
-				if (isActive != value)
-					isActiveChanged = true;
-
-				isActive = value;
-			}
-		}
-
-		private bool isActive;
-		internal bool isActiveChanged;
-
 		public bool HandlersChanged
 		{
-			get
-			{
-				return handlerTypesToAdd.Count > 0 || handlerTypesToRemove.Count > 0 || isActiveChanged;
-			}
+			get { return handlerTypesToAdd.Count > 0 || handlerTypesToRemove.Count > 0 || isActiveChanged; }
 		}
 
 		public override string ToString()

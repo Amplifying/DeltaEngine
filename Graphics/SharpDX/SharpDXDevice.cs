@@ -1,16 +1,11 @@
-using System.IO;
-using System.Runtime.InteropServices;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 using SharpDX;
 using SharpDX.DXGI;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
-using D2dFactory = SharpDX.Direct2D1.Factory;
 using DxDevice = SharpDX.Direct3D11.Device;
 using DxSwapChain = SharpDX.DXGI.SwapChain;
-using CreationFlags = SharpDX.Direct3D11.DeviceCreationFlags;
-using DeltaRect = DeltaEngine.Datatypes.Rectangle;
 using MapFlags = SharpDX.Direct3D11.MapFlags;
 using Resource = SharpDX.Direct3D11.Resource;
 
@@ -143,18 +138,6 @@ namespace DeltaEngine.Graphics.SharpDX
 			Context.MapSubresource(buffer, MapMode.WriteDiscard, MapFlags.None, out dataStream);
 			dataStream.WriteRange(data, 0, count);
 			Context.UnmapSubresource(buffer, 0);
-		}
-
-		public void SetData<T>(CircularBuffer buffer, T[] data, int count = 0) where T : struct
-		{
-			count = count == 0 ? data.Length : count;
-			int sizeOfTypeT = Marshal.SizeOf(data[0]);
-			int offset = sizeOfTypeT * count * buffer.CurrentChunk;
-			DataStream dataStream;
-			Context.MapSubresource(buffer.Handle, MapMode.WriteDiscard, MapFlags.None, out dataStream);
-			dataStream.Seek(offset, SeekOrigin.Begin);
-			dataStream.WriteRange(data, 0, count);
-			Context.UnmapSubresource(buffer.Handle, 0);
 		}
 	}
 }

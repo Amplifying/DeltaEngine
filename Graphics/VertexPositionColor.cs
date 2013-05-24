@@ -15,8 +15,8 @@ namespace DeltaEngine.Graphics
 			Color = color;
 		}
 
-		public readonly Vector Position;
-		public readonly Color Color;
+		public Vector Position;
+		public Color Color;
 
 		public VertexPositionColor(Point position, Color color)
 			: this(new Vector(position.X, position.Y, 0.0f), color) {}

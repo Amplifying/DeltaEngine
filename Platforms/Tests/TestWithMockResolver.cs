@@ -1,4 +1,5 @@
 using System;
+using DeltaEngine.Core;
 using NUnit.Framework;
 
 namespace DeltaEngine.Platforms.Tests
@@ -33,11 +34,27 @@ namespace DeltaEngine.Platforms.Tests
 
 		protected MockResolver mockResolver;
 
-		protected void Start<FirstClass>(Type resolverType, Action<FirstClass> initCode,
-			Action runCode = null)
+		protected void Start(Type resolverType, Action initCode, Action runCode = null)
 		{
 			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
-				return;
+				return; //ncrunch: no coverage
+
+			using (var resolver = CreateResolver(resolverType))
+			{
+				// If we don't resolve anything at all pre-start, no delta engine classes end up 
+				// getting registered - which means when, later, EntitySystem tries to resolve a handler 
+				// it fails as unregistered
+				resolver.Resolve<PseudoRandom>();
+				resolver.Start(initCode, AddApprovalCheckToRunCode(resolver, runCode));
+			}
+
+			CheckApprovalTestResult();
+		}
+
+		protected void Start<First>(Type resolverType, Action<First> initCode, Action runCode = null)
+		{
+			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
+				return; //ncrunch: no coverage
 
 			using (var resolver = CreateResolver(resolverType))
 				resolver.Start(initCode, AddApprovalCheckToRunCode(resolver, runCode));
@@ -49,7 +66,7 @@ namespace DeltaEngine.Platforms.Tests
 			Action<Second> runCode)
 		{
 			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
-				return;
+				return; //ncrunch: no coverage
 
 			//// ReSharper disable AccessToDisposedClosure
 			using (var resolver = CreateResolver(resolverType))
@@ -65,7 +82,7 @@ namespace DeltaEngine.Platforms.Tests
 			Action runCode = null)
 		{
 			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
-				return;
+				return; //ncrunch: no coverage
 
 			using (var resolver = CreateResolver(resolverType))
 				resolver.Start(initCode, AddApprovalCheckToRunCode(resolver, runCode));
@@ -77,7 +94,7 @@ namespace DeltaEngine.Platforms.Tests
 			Action<First, Second, Third> initCode, Action runCode = null)
 		{
 			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
-				return;
+				return; //ncrunch: no coverage
 
 			using (var resolver = CreateResolver(resolverType))
 				resolver.Start(initCode, AddApprovalCheckToRunCode(resolver, runCode));
@@ -109,11 +126,42 @@ namespace DeltaEngine.Platforms.Tests
 			CheckApprovalTestResult();
 		}
 
+		protected void Start<First>(Type resolverType, Action initCode, Action<First> runCode)
+		{
+			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
+				return; //ncrunch: no coverage
+
+			using (var resolver = CreateResolver(resolverType))
+			{
+				resolver.RegisterSingleton<First>();
+				resolver.Start(initCode,
+					AddApprovalCheckToRunCode(resolver, () => runCode(resolver.Resolve<First>())));
+			}
+			CheckApprovalTestResult();
+		}
+
+		protected void Start<First, Second>(Type resolverType, Action initCode,
+			Action<First, Second> runCode)
+		{
+			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
+				return; //ncrunch: no coverage
+
+			using (var resolver = CreateResolver(resolverType))
+			{
+				resolver.RegisterSingleton<First>();
+				resolver.RegisterSingleton<Second>();
+				resolver.Start(initCode,
+					AddApprovalCheckToRunCode(resolver,
+						() => runCode(resolver.Resolve<First>(), resolver.Resolve<Second>())));
+			}
+			CheckApprovalTestResult();
+		}
+
 		protected void Start<First, Second, Third>(Type resolverType, Action<First, Second> initCode,
 			Action<Third> runCode)
 		{
 			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
-				return;
+				return; //ncrunch: no coverage
 
 			using (var resolver = CreateResolver(resolverType))
 			{
@@ -128,7 +176,7 @@ namespace DeltaEngine.Platforms.Tests
 			Action<Second, Third> runCode)
 		{
 			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
-				return;
+				return; //ncrunch: no coverage
 
 			using (var resolver = CreateResolver(resolverType))
 			{
@@ -196,7 +244,7 @@ namespace DeltaEngine.Platforms.Tests
 			Action<First, Second, Third> initCode, Action<Forth, Fifth> runCode)
 		{
 			if (IgnoreSlowTestIfStartedViaNCrunchOrNunitConsole(resolverType))
-				return;
+				return; //ncrunch: no coverage
 
 			using (var resolver = CreateResolver(resolverType))
 			{

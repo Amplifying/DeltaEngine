@@ -1,10 +1,6 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor", "DeltaEngine.Editor.csproj", "{4C0891C0-CE79-4A2D-919E-6F706B62C8EA}"
-	ProjectSection(ProjectDependencies) = postProject
-		{F65A7A3C-81E9-4A61-9D64-BBDC7C66345F} = {F65A7A3C-81E9-4A61-9D64-BBDC7C66345F}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.ProjectCreator", "ProjectCreator\DeltaEngine.Editor.ProjectCreator.csproj", "{369DC159-36A7-4523-80FD-81D8BEA37547}"
 EndProject
@@ -15,13 +11,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.SampleBrowser.Tests", "SampleBrowser\Tests\DeltaEngine.Editor.SampleBrowser.Tests.csproj", "{CC24AD66-5052-42EA-BC76-D42E0E38E20D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Core", "..\Core\DeltaEngine.Core.csproj", "{A8D386EA-D376-46EA-A721-2BA51426A721}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{61B3E41E-9DB2-434E-BAE5-A48DFDF9F6D3}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\nuget.exe = .nuget\nuget.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.ContentManager.Tests", "ContentManager\Tests\DeltaEngine.Editor.ContentManager.Tests.csproj", "{4165E9EB-BEB3-4D02-A275-99F38D32F50D}"
 EndProject
@@ -48,6 +37,37 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Networking.Sockets", "..\Networking\Sockets\DeltaEngine.Networking.Sockets.csproj", "{9E085AB9-B4DE-4815-BD90-D975C75DFE94}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Logging", "..\Logging\DeltaEngine.Logging.csproj", "{E4440567-3D5D-4670-AB49-8163B18E302E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.Builder", "Builder\DeltaEngine.Editor.Builder.csproj", "{C10F83F9-B20B-4362-8953-9B916B5894BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.Builder.Tests", "Builder\Tests\DeltaEngine.Editor.Builder.Tests.csproj", "{3872F86E-927B-44A3-A4F1-BD177681AF87}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.Launcher", "Launcher\DeltaEngine.Editor.Launcher.csproj", "{24DFE369-4362-49AE-8123-063419D157F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.Launcher.Tests", "Launcher\Tests\DeltaEngine.Editor.Launcher.Tests.csproj", "{1560F12F-B189-4FA8-9519-2C8E6DF95D50}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.UIEditor", "UIEditor\DeltaEngine.Editor.UIEditor.csproj", "{A37F367D-B41F-4A95-AD8B-0723759B3E77}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.UIEditor.Tests", "UIEditor\Tests\DeltaEngine.Editor.UIEditor.Tests.csproj", "{3525FEA1-76A9-458E-B028-2466AE1465B3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.Common.Tests", "Common\Tests\DeltaEngine.Editor.Common.Tests.csproj", "{03C5E352-81BC-4F20-85F7-5439707AFFD0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Entities", "..\Entities\DeltaEngine.Entities.csproj", "{C6BA144D-59B0-41B1-8682-B092B4EFBBB1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Graphics", "..\Graphics\DeltaEngine.Graphics.csproj", "{8F701B0D-48B6-45CF-85E0-286BD53328BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Rendering", "..\Rendering\DeltaEngine.Rendering.csproj", "{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Content.Disk", "..\Content\Disk\DeltaEngine.Content.Disk.csproj", "{3B3B8BE3-A213-4383-BA7B-1AFE5F779108}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Platforms", "..\Platforms\DeltaEngine.Platforms.csproj", "{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{948C7EAA-CF03-48C3-B4AC-3ADFBAA44D14}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\nuget.exe = .nuget\nuget.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -131,8 +151,58 @@ Global
 		{E4440567-3D5D-4670-AB49-8163B18E302E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4440567-3D5D-4670-AB49-8163B18E302E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4440567-3D5D-4670-AB49-8163B18E302E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C10F83F9-B20B-4362-8953-9B916B5894BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C10F83F9-B20B-4362-8953-9B916B5894BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C10F83F9-B20B-4362-8953-9B916B5894BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C10F83F9-B20B-4362-8953-9B916B5894BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3872F86E-927B-44A3-A4F1-BD177681AF87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3872F86E-927B-44A3-A4F1-BD177681AF87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3872F86E-927B-44A3-A4F1-BD177681AF87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3872F86E-927B-44A3-A4F1-BD177681AF87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24DFE369-4362-49AE-8123-063419D157F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24DFE369-4362-49AE-8123-063419D157F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24DFE369-4362-49AE-8123-063419D157F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24DFE369-4362-49AE-8123-063419D157F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1560F12F-B189-4FA8-9519-2C8E6DF95D50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1560F12F-B189-4FA8-9519-2C8E6DF95D50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1560F12F-B189-4FA8-9519-2C8E6DF95D50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1560F12F-B189-4FA8-9519-2C8E6DF95D50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A37F367D-B41F-4A95-AD8B-0723759B3E77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A37F367D-B41F-4A95-AD8B-0723759B3E77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A37F367D-B41F-4A95-AD8B-0723759B3E77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A37F367D-B41F-4A95-AD8B-0723759B3E77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3525FEA1-76A9-458E-B028-2466AE1465B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3525FEA1-76A9-458E-B028-2466AE1465B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3525FEA1-76A9-458E-B028-2466AE1465B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3525FEA1-76A9-458E-B028-2466AE1465B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03C5E352-81BC-4F20-85F7-5439707AFFD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03C5E352-81BC-4F20-85F7-5439707AFFD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03C5E352-81BC-4F20-85F7-5439707AFFD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03C5E352-81BC-4F20-85F7-5439707AFFD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6BA144D-59B0-41B1-8682-B092B4EFBBB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6BA144D-59B0-41B1-8682-B092B4EFBBB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6BA144D-59B0-41B1-8682-B092B4EFBBB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6BA144D-59B0-41B1-8682-B092B4EFBBB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F701B0D-48B6-45CF-85E0-286BD53328BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F701B0D-48B6-45CF-85E0-286BD53328BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F701B0D-48B6-45CF-85E0-286BD53328BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F701B0D-48B6-45CF-85E0-286BD53328BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B3B8BE3-A213-4383-BA7B-1AFE5F779108}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B3B8BE3-A213-4383-BA7B-1AFE5F779108}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B3B8BE3-A213-4383-BA7B-1AFE5F779108}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B3B8BE3-A213-4383-BA7B-1AFE5F779108}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 EndGlobal

@@ -1,7 +1,6 @@
 using System;
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
 using DeltaEngine.Multimedia;
 using DeltaEngine.Rendering;
@@ -14,13 +13,12 @@ namespace Breakout
 	/// </summary>
 	public class Level : IDisposable
 	{
-		public Level(EntitySystem entitySystem, ContentLoader content, Score score)
+		public Level(ContentLoader content, Score score)
 		{
 			brickImage = content.Load<Image>("Brick");
 			explosionImage = content.Load<Image>("Explosion");
 			explosionSound = content.Load<Sound>("BrickExplosion");
 			lostBallSound = content.Load<Sound>("LostBall");
-			this.entitySystem = entitySystem;
 			this.score = score;
 			Initialize();
 		}
@@ -29,7 +27,6 @@ namespace Breakout
 		private readonly Image explosionImage;
 		private readonly Sound explosionSound;
 		private readonly Sound lostBallSound;
-		private readonly EntitySystem entitySystem;
 		private readonly Score score;
 
 		private void Initialize()
@@ -52,14 +49,7 @@ namespace Breakout
 		{
 			for (int x = 0; x < rows; x++)
 				for (int y = 0; y < columns; y++)
-					bricks[x, y] = CreateBrick(x, y);
-		}
-
-		private Sprite CreateBrick(int x, int y)
-		{
-			var brick = new Sprite(brickImage, GetBounds(x, y), GetBrickColor(x, y));
-			entitySystem.Add(brick);
-			return brick;
+					bricks[x, y] = new Sprite(brickImage, GetBounds(x, y), GetBrickColor(x, y));
 		}
 
 		private Rectangle GetBounds(int x, int y)

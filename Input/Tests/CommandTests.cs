@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Platforms.All;
 using DeltaEngine.Rendering.Shapes;
 using NUnit.Framework;
@@ -27,10 +26,7 @@ namespace DeltaEngine.Input.Tests
 		[IntegrationTest]
 		public void SimulateMouseClick(Type resolver)
 		{
-			Start(resolver, (InputCommands input) =>
-			{
-				SimulateKeyOrMousePress(input, false);
-			});
+			Start(resolver, (InputCommands input) => { SimulateKeyOrMousePress(input, false); });
 		}
 
 		[IntegrationTest]
@@ -127,7 +123,7 @@ namespace DeltaEngine.Input.Tests
 
 		private static void CheckTriggers(Command command, bool key)
 		{
-			if(key)
+			if (key)
 				foreach (var keyTrigger in command.GetTriggers().Cast<KeyTrigger>())
 				{
 					Assert.AreEqual(Key.A, keyTrigger.Key);
@@ -168,10 +164,9 @@ namespace DeltaEngine.Input.Tests
 		{
 			Ellipse ellipse = null;
 			var currentPosition = new Point(0.1f, 0.1f);
-			Start(resolver, (EntitySystem entitySystem, InputCommands input) =>
+			Start(resolver, (InputCommands input) =>
 			{
 				ellipse = new Ellipse(new Rectangle(Point.Zero, new Size(0.1f, 0.1f)), Color.Red);
-				entitySystem.Add(ellipse);
 				input.Add(Key.A, State.Pressing, () => currentPosition = new Point(0.6f, 0.5f));
 				input.Add(Key.A, State.Released, () => currentPosition = new Point(0.1f, 0.1f));
 			}, () => ellipse.Center = currentPosition);

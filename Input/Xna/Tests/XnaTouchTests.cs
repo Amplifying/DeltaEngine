@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using DeltaEngine.Platforms.Tests;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input.Touch;
 using NUnit.Framework;

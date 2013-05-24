@@ -249,12 +249,21 @@ namespace DeltaEngine.Core.Xml.Tests
 		}
 
 		[Test]
-		public void GetValue()
+		public void GetAttributeValue()
 		{
 			var root = new XmlData("root");
 			root.AddAttribute("attribute", "value");
-			Assert.AreEqual("value", root.GetValue("attribute"));
-			Assert.AreEqual("", root.GetValue("attribute2"));
+			Assert.AreEqual("value", root.GetAttributeValue("attribute"));
+			Assert.AreEqual("", root.GetAttributeValue("attribute2"));
+		}
+
+		[Test]
+		public void GetAttributeValueAsInteger()
+		{
+			var root = new XmlData("root");
+			root.AddAttribute("number", "123");
+			Assert.AreEqual(123, root.GetAttributeValue("number", 0));
+			Assert.AreEqual("", root.GetAttributeValue("nonexistant", ""));
 		}
 
 		[Test]

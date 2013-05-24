@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-	<PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform' == '' ">AnyCPU</Platform>
     <ProjectGuid>{CC24AD66-5052-42EA-BC76-D42E0E38E20D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -12,7 +12,7 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <RestorePackages>true</RestorePackages>
-	</PropertyGroup>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -22,7 +22,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-    <DocumentationFile>bin\Debug\DeltaEngine.Editor.SampleBrowser.Tests.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,65 +31,69 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-    <DocumentationFile>bin\Release\DeltaEngine.Editor.SampleBrowser.Tests.XML</DocumentationFile>
   </PropertyGroup>
-	<ItemGroup>
-		<Reference Include="ApprovalTests" >
-		<HintPath>..\..\packages\ApprovalTests.2.2\lib\ApprovalTests.dll</HintPath>
-	</Reference>
-		<Reference Include="ApprovalUtilities" >
-		<HintPath>..\..\packages\ApprovalTests.2.2\lib\ApprovalUtilities.dll</HintPath>
-	</Reference>
-		<Reference Include="GalaSoft.MvvmLight.Extras.WPF4" >
-		<HintPath>..\..\packages\MvvmLightLibs.4.1.27.0\lib\net40\GalaSoft.MvvmLight.Extras.WPF4.dll</HintPath>
-	</Reference>
-		<Reference Include="GalaSoft.MvvmLight.WPF4" >
-		<HintPath>..\..\packages\MvvmLightLibs.4.1.27.0\lib\net40\GalaSoft.MvvmLight.WPF4.dll</HintPath>
-	</Reference>
-		<Reference Include="Microsoft.Practices.ServiceLocation" >
-		<HintPath>..\..\packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
-	</Reference>
-		<Reference Include="nunit.framework" >
-		<HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
-	</Reference>
-		<Reference Include="PresentationCore" />
-		<Reference Include="PresentationFramework" />
-		<Reference Include="System" />
-		<Reference Include="System.Core" />
-		<Reference Include="System.IO.Abstractions" >
-		<HintPath>..\..\packages\System.IO.Abstractions.1.4.0.64\lib\net35\System.IO.Abstractions.dll</HintPath>
-	</Reference>
-		<Reference Include="System.IO.Abstractions.TestingHelpers" >
-		<HintPath>..\..\packages\System.IO.Abstractions.TestingHelpers.1.4.0.64\lib\net35\System.IO.Abstractions.TestingHelpers.dll</HintPath>
-	</Reference>
-		<Reference Include="System.Windows.Interactivity" >
-		<HintPath>..\..\packages\MvvmLightLibs.4.1.27.0\lib\net40\System.Windows.Interactivity.dll</HintPath>
-	</Reference>
-		<Reference Include="System.Xaml" />
-		<Reference Include="WindowsBase" />
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\..\Common\DeltaEngine.Editor.Common.csproj">
-			<Project>{CEB1CE50-754A-44EE-90B8-2BBD483F180B}</Project>
-			<Name>DeltaEngine.Editor.Common</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\DeltaEngine.Editor.SampleBrowser.csproj">
-			<Project>{37D4D5F0-65D1-4045-80C6-91C55AA5AC9D}</Project>
-			<Name>DeltaEngine.Editor.SampleBrowser</Name>
-		</ProjectReference>
-	</ItemGroup>
-	<ItemGroup>
-	<None Include="packages.config" />
-	</ItemGroup>
-	<ItemGroup>
-		<Compile Include="Properties\AssemblyInfo.cs" />
-		<Compile Include="SampleBrowserViewModelTests.cs" />
-		<Compile Include="SampleBrowserViewTests.cs" />
-		<Compile Include="SampleCreatorTests.cs" />
-		<Compile Include="SampleItemViewTests.cs" />
-		<Compile Include="SampleLauncherTests.cs" />
-		<Compile Include="SampleTests.cs" />
-	</ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Reference Include="ApprovalTests">
+      <HintPath>..\..\packages\ApprovalTests.2.2\lib\ApprovalTests.dll</HintPath>
+    </Reference>
+    <Reference Include="ApprovalUtilities">
+      <HintPath>..\..\packages\ApprovalTests.2.2\lib\ApprovalUtilities.dll</HintPath>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight.Extras.WPF4">
+      <HintPath>..\..\packages\MvvmLightLibs.4.1.27.0\lib\net40\GalaSoft.MvvmLight.Extras.WPF4.dll</HintPath>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight.WPF4">
+      <HintPath>..\..\packages\MvvmLightLibs.4.1.27.0\lib\net40\GalaSoft.MvvmLight.WPF4.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation">
+      <HintPath>..\..\packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO.Abstractions">
+      <HintPath>..\..\packages\System.IO.Abstractions.1.4.0.64\lib\net35\System.IO.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Abstractions.TestingHelpers">
+      <HintPath>..\..\packages\System.IO.Abstractions.TestingHelpers.1.4.0.64\lib\net35\System.IO.Abstractions.TestingHelpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Interactivity">
+      <HintPath>..\..\packages\MvvmLightLibs.4.1.27.0\lib\net40\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\DeltaEngine.Editor.Common.csproj">
+      <Project>{FC0E9FDC-68E0-405E-BFC7-1F3523BD3EA7}</Project>
+      <Name>DeltaEngine.Editor.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DeltaEngine.Editor.SampleBrowser.csproj">
+      <Project>{37D4D5F0-65D1-4045-80C6-91C55AA5AC9D}</Project>
+      <Name>DeltaEngine.Editor.SampleBrowser</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\TestAssembly.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SampleBrowserViewModelTests.cs" />
+    <Compile Include="SampleBrowserViewTests.cs" />
+    <Compile Include="SampleCreatorTests.cs" />
+    <Compile Include="SampleItemViewTests.cs" />
+    <Compile Include="SampleLauncherTests.cs" />
+    <Compile Include="SampleTests.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>

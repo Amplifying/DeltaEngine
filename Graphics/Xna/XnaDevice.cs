@@ -47,8 +47,7 @@ namespace DeltaEngine.Graphics.Xna
 		}
 
 		private GraphicsDeviceManager deviceManager;
-
-
+		
 		public GraphicsDevice NativeDevice
 		{
 			get { return deviceManager.GraphicsDevice; }

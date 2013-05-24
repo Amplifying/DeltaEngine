@@ -7,12 +7,12 @@ using System.Windows.Controls;
 using DeltaEngine.Core;
 using DeltaEngine.Editor.Common;
 
-namespace DeltaEngine.Editor
+namespace DeltaEngine.Editor.Helpers
 {
 	public class EditorPluginLoader
 	{
 		public EditorPluginLoader()
-			: this("..\\..") {}
+			: this(Path.Combine("..", "..")) {}
 
 		public EditorPluginLoader(string pluginBaseDirectory)
 		{

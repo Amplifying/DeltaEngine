@@ -20,8 +20,11 @@ namespace DeltaEngine.Editor.ContentManager
 			RaisePropertyChanged("Projects");
 			Messenger.Default.Register<string>(this, "DeletingImage", DeleteImageFromList);
 			Messenger.Default.Register<IDataObject>(this, "AddImage", DropContent);
+			Messenger.Default.Register<Size>(this, "ChangeImageSize", ChangeImageSize);
 			Messenger.Default.Register<string>(this, "AddProject", AddNewProject);
 			Images = new ObservableCollection<string>();
+			ImageWidth = 357;
+			ImageHeight = 361;
 		}
 
 		private readonly ContentService content;
@@ -33,7 +36,12 @@ namespace DeltaEngine.Editor.ContentManager
 				return;
 
 			var files = (string[])dropObject.GetData(DataFormats.FileDrop);
-			var imageFilePath = files[0];
+			foreach (var file in files)
+				AddImage(file);
+		}
+
+		private void AddImage(string imageFilePath)
+		{
 			using (Stream stream = File.OpenRead(imageFilePath))
 			{
 				content.AddContent(SelectedProject, Path.GetFileName(imageFilePath), stream);
@@ -120,5 +128,16 @@ namespace DeltaEngine.Editor.ContentManager
 		}
 
 		public string NewProjectName { get; set; }
+
+		public void ChangeImageSize(Size size)
+		{
+			ImageWidth = size.Width;
+			ImageHeight = size.Height;
+			RaisePropertyChanged("ImageWidth");
+			RaisePropertyChanged("ImageHeight");
+		}
+
+		public double ImageWidth { get; set; }
+		public double ImageHeight { get; set; }
 	}
 }

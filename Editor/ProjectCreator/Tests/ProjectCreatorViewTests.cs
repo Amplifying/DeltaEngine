@@ -24,7 +24,7 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 
 		private static Window CreateVerifiableWindowFromViewModel(ProjectCreatorViewModel viewModel)
 		{
-			return new Window { Content = new ProjectCreatorView(viewModel), Width = 400, Height = 300 };
+			return new Window { Content = new ProjectCreatorView(viewModel), Width = 600, Height = 300 };
 		}
 
 		[Test]

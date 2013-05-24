@@ -25,7 +25,14 @@ namespace DeltaEngine.Platforms.Tests
 		[Test]
 		public void TestExceptionLoggingInInitialization()
 		{
-			app.Start<MockEntryRunnerThatThrowsExceptionInConstructor, FirstClass>();
+			try
+			{
+				app.Start<MockEntryRunnerThatThrowsExceptionInConstructor, FirstClass>();
+			} //ncrunch: no coverage
+			catch (Exception ex)
+			{
+				Assert.AreEqual("Test Exception", ex.InnerException.Message);
+			}
 			var logger = app.Resolve<Logger>();
 			var lastMessage = logger.LastMessage;
 			Assert.NotNull(lastMessage);
@@ -36,7 +43,8 @@ namespace DeltaEngine.Platforms.Tests
 		[Test]
 		public void TestExceptionLoggingInRun()
 		{
-			app.Start<MockEntryRunnerThatThrowsExceptionInRun, FirstClass>();
+			Assert.Throws<Exception>(
+				() => app.Start<MockEntryRunnerThatThrowsExceptionInRun, FirstClass>());
 			var logger = app.Resolve<Logger>();
 			var lastMessage = logger.LastMessage;
 			Assert.NotNull(lastMessage);

@@ -9,7 +9,7 @@ namespace DeltaEngine.Graphics.SlimDX
 	{
 		public SlimDXShader(SlimDXDevice device, string shadersSourceCode)
 		{
-			this.device = device.Device;
+			this.device = device.NativeDevice;
 			CreateVertexShader(shadersSourceCode);
 			CreatePixelShader(shadersSourceCode);	
 		}

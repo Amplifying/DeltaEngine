@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using DeltaEngine.Core;
-using DeltaEngine.Entities;
 
 namespace DeltaEngine.Platforms
 {
@@ -12,11 +11,14 @@ namespace DeltaEngine.Platforms
 	/// </summary>
 	public abstract class Resolver : IDisposable
 	{
-		protected virtual void RegisterInstanceAsRunnerOrPresenterIfPossible(object instance)
+		protected void RegisterInstanceAsRunnerOrPresenterIfPossible(object instance)
 		{
 			var runner = instance as Runner;
 			if (runner != null)
 			{
+				if (priorityRunners.Contains(runner) || runners.Contains(runner))
+					throw new RunnerWasAlreadyAdded(runner);
+
 				if (runner is PriorityRunner)
 					priorityRunners.Add(runner);
 				else
@@ -28,10 +30,12 @@ namespace DeltaEngine.Platforms
 			var presenter = instance as Presenter;
 			if (presenter != null)
 				presenters.Add(presenter);
+		}
 
-			var entity = instance as Entity;
-			if (entity != null)
-				Resolve<EntitySystem>().Add(entity);
+		private class RunnerWasAlreadyAdded : Exception
+		{
+			public RunnerWasAlreadyAdded(Runner runner)
+				: base(runner.ToString()) {}
 		}
 
 		protected void AddGenericRunnerIfPossible(object instance)
@@ -77,19 +81,36 @@ namespace DeltaEngine.Platforms
 
 		public void RunAllRunners()
 		{
-			foreach (Runner runner in priorityRunners)
-				runner.Run();
+			RunPriorityRunners();
+			RunRunners();
+			RunGenericRunners();
+		}
 
-			foreach (Runner runner in runners)
+		private void RunPriorityRunners()
+		{
+			var copyOfPriorityRunners = new List<Runner>(priorityRunners);
+			foreach (Runner runner in copyOfPriorityRunners)
 				runner.Run();
+		}
 
-			foreach (RunnerArguments runner in genericRunners)
+		private void RunRunners()
+		{
+			var copyOfRunners = new List<Runner>(runners);
+			foreach (Runner runner in copyOfRunners)
+				runner.Run();
+		}
+
+		private void RunGenericRunners()
+		{
+			var copyOfGenericRunners = new List<RunnerArguments>(genericRunners);
+			foreach (RunnerArguments runner in copyOfGenericRunners)
 				runner.Invoke();
 		}
 
 		public void RunAllPresenters()
 		{
-			foreach (Presenter presenter in presenters)
+			var copyOfPresenters = new List<Presenter>(presenters);
+			foreach (Presenter presenter in copyOfPresenters)
 				presenter.Present();
 		}
 

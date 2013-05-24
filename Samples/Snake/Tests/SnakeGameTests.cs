@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Platforms.All;
 using DeltaEngine.Platforms.Tests;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 using NUnit.Framework;
 
 namespace Snake.Tests
@@ -15,12 +14,14 @@ namespace Snake.Tests
 		{
 			gridSize = 25;
 			blockSize = 1.0f / gridSize;
-			startPosition = blockSize * (gridSize / 2);
+			startPosition = blockSize * (float)Math.Floor(gridSize / 2.0f);
+			moveSpeed = 0.15f;
 		}
 
 		private float blockSize;
 		private int gridSize;
 		private float startPosition;
+		private float moveSpeed;
 
 		[VisualTest]
 		public void StartGame(Type resolver)
@@ -34,13 +35,11 @@ namespace Snake.Tests
 			Start(typeof(MockResolver), (SnakeGame game, ScreenSpace screen) =>
 			{
 				game.MoveLeft();
-				mockResolver.AdvanceTimeAndExecuteRunners(MoveSpeed);
+				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				Assert.AreEqual(new Point(startPosition - blockSize, startPosition),
 					game.Snake.Get<Snake.Body>().BodyParts[0].TopLeft);
 			});
 		}
-
-		private const float MoveSpeed = 0.15f;
 
 		[Test]
 		public void MoveSnakeRight()
@@ -48,7 +47,7 @@ namespace Snake.Tests
 			Start(typeof(MockResolver), (SnakeGame game, ScreenSpace screen) =>
 			{
 				game.MoveRight();
-				mockResolver.AdvanceTimeAndExecuteRunners(MoveSpeed);
+				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				Assert.AreEqual(new Point(startPosition + blockSize, startPosition),
 					game.Snake.Get<Snake.Body>().BodyParts[0].TopLeft);
 			});
@@ -60,9 +59,9 @@ namespace Snake.Tests
 			Start(typeof(MockResolver), (SnakeGame game, ScreenSpace screen) =>
 			{
 				game.MoveLeft();
-				mockResolver.AdvanceTimeAndExecuteRunners(MoveSpeed);
+				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				game.MoveDown();
-				mockResolver.AdvanceTimeAndExecuteRunners(MoveSpeed);
+				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				Assert.AreEqual(new Point(startPosition - blockSize, startPosition + blockSize),
 					game.Snake.Get<Snake.Body>().BodyParts[0].TopLeft);
 			});
@@ -74,7 +73,7 @@ namespace Snake.Tests
 			Start(typeof(MockResolver), (SnakeGame game, ScreenSpace screen) =>
 			{
 				game.MoveUp();
-				mockResolver.AdvanceTimeAndExecuteRunners(MoveSpeed);
+				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				Assert.AreEqual(new Point(startPosition, startPosition - blockSize),
 					game.Snake.Get<Snake.Body>().BodyParts[0].TopLeft);
 			});
@@ -86,7 +85,7 @@ namespace Snake.Tests
 			Start(typeof(MockResolver), (SnakeGame game, ScreenSpace screen) =>
 			{
 				game.MoveDown();
-				mockResolver.AdvanceTimeAndExecuteRunners(MoveSpeed);
+				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				Assert.AreEqual(new Point(startPosition, startPosition - blockSize),
 					game.Snake.Get<Snake.Body>().BodyParts[0].TopLeft);
 			});
@@ -100,7 +99,7 @@ namespace Snake.Tests
 				game.MoveLeft();
 				game.MoveDown();
 				game.MoveUp();
-				mockResolver.AdvanceTimeAndExecuteRunners(MoveSpeed);
+				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				Assert.AreEqual(new Point(startPosition, startPosition - blockSize),
 					game.Snake.Get<Snake.Body>().BodyParts[0].TopLeft);
 			});
@@ -112,9 +111,9 @@ namespace Snake.Tests
 			Start(typeof(MockResolver), (SnakeGame game, ScreenSpace screen) =>
 			{
 				game.MoveRight();
-				mockResolver.AdvanceTimeAndExecuteRunners(MoveSpeed);
+				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				game.MoveLeft();
-				mockResolver.AdvanceTimeAndExecuteRunners(MoveSpeed);
+				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				Assert.AreEqual(new Point(startPosition + blockSize * 2, startPosition),
 					game.Snake.Get<Snake.Body>().BodyParts[0].TopLeft);
 			});
@@ -126,9 +125,9 @@ namespace Snake.Tests
 			Start(typeof(MockResolver), (SnakeGame game, ScreenSpace screen) =>
 			{
 				game.MoveLeft();
-				mockResolver.AdvanceTimeAndExecuteRunners(MoveSpeed);
+				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				game.MoveRight();
-				mockResolver.AdvanceTimeAndExecuteRunners(MoveSpeed);
+				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				Assert.AreEqual(new Point(startPosition - blockSize * 2, startPosition),
 					game.Snake.Get<Snake.Body>().BodyParts[0].TopLeft);
 			});
@@ -140,11 +139,11 @@ namespace Snake.Tests
 			Start(typeof(MockResolver), (SnakeGame game, ScreenSpace screen) =>
 			{
 				game.MoveLeft();
-				mockResolver.AdvanceTimeAndExecuteRunners(MoveSpeed);
+				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				game.MoveDown();
-				mockResolver.AdvanceTimeAndExecuteRunners(MoveSpeed);
+				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				game.MoveUp();
-				mockResolver.AdvanceTimeAndExecuteRunners(MoveSpeed);
+				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				Assert.AreEqual(new Point(startPosition - blockSize, startPosition + blockSize * 2),
 					game.Snake.Get<Snake.Body>().BodyParts[0].TopLeft);
 			});
@@ -153,7 +152,7 @@ namespace Snake.Tests
 		[IntegrationTest]
 		public void RespawnChunkIfCollidingWithSnake(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem, SnakeGame snakeGame) =>
+			Start(resolver, (SnakeGame snakeGame) =>
 			{
 				snakeGame.Chunk.DrawArea = snakeGame.Snake.Get<Snake.Body>().BodyParts[0].DrawArea;
 				Assert.IsTrue(
@@ -178,7 +177,7 @@ namespace Snake.Tests
 					new Rectangle(new Point(snakeHead.Left + direction.X, snakeHead.Top + direction.Y),
 						new Size(blockSize));
 				game.MoveUp();
-				mockResolver.AdvanceTimeAndExecuteRunners(MoveSpeed);
+				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				Assert.AreEqual(3, game.Snake.Get<Snake.Body>().BodyParts.Count);
 				var newTailTopLeftCorner = snakeBodyParts[snakeBodyParts.Count - 1].DrawArea.TopLeft;
 				Assert.AreEqual(oldTailTopLeftCorner, newTailTopLeftCorner);

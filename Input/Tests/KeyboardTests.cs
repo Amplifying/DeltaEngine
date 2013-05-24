@@ -1,6 +1,5 @@
 using System;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Platforms.All;
 using DeltaEngine.Rendering.Shapes;
 using NUnit.Framework;
@@ -27,11 +26,10 @@ namespace DeltaEngine.Input.Tests
 			Ellipse ellipse = null;
 			Keyboard remKeyboard = null;
 
-			Start(resolver, (EntitySystem entitySystem, Keyboard keyboard) =>
+			Start(resolver, (Keyboard keyboard) =>
 			{
 				remKeyboard = keyboard;
 				ellipse = new Ellipse(new Rectangle(0.1f, 0.1f, 0.1f, 0.1f), Color.GetRandomBrightColor());
-				entitySystem.Add(ellipse);
 			}, delegate
 			{
 				var position = remKeyboard.GetKeyState(Key.A) == State.Pressed ? Point.Half : Point.Zero;

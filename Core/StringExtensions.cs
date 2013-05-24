@@ -27,16 +27,31 @@ namespace DeltaEngine.Core
 				return TryConvertInvariantString(value, defaultValue);
 			}
 			catch (FormatException)
-		{
+			{
 				return defaultValue;
 			}
 		}
 
 		private static T TryConvertInvariantString<T>(string value, T defaultValue)
 		{
+			if (defaultValue is string)
+				return (T)(Convert.ToString(value) as object);
+			
+			if (defaultValue is int)
+				return (T)(Convert.ToInt32(value) as object);
+			
+			if (defaultValue is double)
+				return (T)(Convert.ToDouble(value, CultureInfo.InvariantCulture) as object);
+
 			if (defaultValue is float)
 				return (T)(Convert.ToSingle(value, CultureInfo.InvariantCulture) as object);
 
+			if (defaultValue is bool)
+				return (T)(Convert.ToBoolean(value) as object);
+			
+			if (defaultValue is char)
+				return (T)(Convert.ToChar(value) as object);
+			
 			return defaultValue;
 		}
 
@@ -120,6 +135,23 @@ namespace DeltaEngine.Core
 		{
 			return value != null &&
 				value.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0;
+		}
+
+		public static bool IsFirstCharacterInLowerCase(this string word)
+		{
+			if (String.IsNullOrEmpty(word))
+				return true;
+
+			char firstChar = word[0];
+			return firstChar < 'A' || firstChar > 'Z';
+		}
+
+		public static string ConvertFirstCharactertoUpperCase(this string word)
+		{
+			if (String.IsNullOrEmpty(word) || !word.IsFirstCharacterInLowerCase())
+				return word;
+
+			return (char)(word[0] - 32) + word.Substring(1);
 		}
 
 		public static byte[] ToByteArray(string text)

@@ -92,5 +92,22 @@ namespace DeltaEngine.Editor.ContentManager.Tests
 			contentManager.AddNewProject("test2");
 			Assert.AreEqual(2, contentManager.Projects.Count);
 		}
+
+		[Test, Category("Slow")]
+		public void TryToCreateNewProjectWithEmptyTextbox()
+		{
+			contentManager.NewProjectName = "";
+			contentManager.AddNewProject("test2");
+			Assert.AreEqual(2, contentManager.Projects.Count);
+		}
+
+		[Test, Category("Slow")]
+		public void ChangeSizeOfImage()
+		{
+			var size = new Size(500, 500);
+			contentManager.ChangeImageSize(size);
+			Assert.AreEqual(500, contentManager.ImageWidth);
+			Assert.AreEqual(500, contentManager.ImageHeight);
+		}
 	}
 }

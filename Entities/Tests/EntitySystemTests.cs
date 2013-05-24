@@ -1,195 +1,212 @@
 using System;
 using System.Collections.Generic;
+using DeltaEngine.Platforms.All;
 using NUnit.Framework;
 
 namespace DeltaEngine.Entities.Tests
 {
-	public class EntitySystemTests
+	public class EntitySystemTests : TestWithAllFrameworks
 	{
 		[SetUp]
 		public void CreateSystem()
 		{
-			entitySystem = new TestEntitySystem<CountEntities>();
-		}
-
-		private EntitySystem entitySystem;
-
-		[Test]
-		public void AddToEntitySystemActivatesEntity()
-		{
-			var entity = new EntityTests.EmptyEntity();
-			Assert.IsFalse(entity.IsActive);
-			entitySystem.Add(entity);
-			Assert.IsTrue(entity.IsActive);
+			EntitySystem.Use(new TestEntitySystem<CountEntities, EmptyHandler>());
 		}
 
 		[Test]
-		public void AddAndRemoveFromEntitySystem()
+		public void EntityIsCreatedActiveAndAutomaticallyAddedToEntitySystem()
 		{
-			var entity = new EntityTests.EmptyEntity();
-			entity.Add<CountEntities>();
-			entitySystem.Add(entity);
+			var entity = new EmptyEntity();
 			Assert.IsTrue(entity.IsActive);
-			entitySystem.Remove(entity);
+			Assert.AreEqual(1, EntitySystem.Current.NumberOfEntities);
+		}
+
+		[Test]
+		public void InactivateAndReactivateEntity()
+		{
+			var entity = new EmptyEntity { IsActive = false };
 			Assert.IsFalse(entity.IsActive);
+			Assert.AreEqual(0, EntitySystem.Current.NumberOfEntities);
+			entity.IsActive = true;
+			Assert.AreEqual(1, EntitySystem.Current.NumberOfEntities);
+		}
+
+		[Test]
+		public void ClearEntities()
+		{
+			new EmptyEntity();
+			new EmptyEntity().Add<CountEntities>();
+			EntitySystem.Current.Run();
+			Assert.AreEqual(2, EntitySystem.Current.NumberOfEntities);
+			EntitySystem.Current.Clear();
+			Assert.AreEqual(0, EntitySystem.Current.NumberOfEntities);
 		}
 
 		[Test]
 		public void CallingGetHandlerAgainReturnsACachedCopy()
 		{
-			var counter = entitySystem.GetHandler<CountEntities>();
-			Assert.AreEqual(counter, entitySystem.GetHandler<CountEntities>());
+			var counter = EntitySystem.Current.GetHandler<CountEntities>();
+			Assert.AreEqual(counter, EntitySystem.Current.GetHandler<CountEntities>());
 		}
 
 		public class CountEntities : EntityHandler
 		{
-			public void Handle(List<Entity> activeEntities)
+			public override void Handle(List<Entity> activeEntities)
 			{
 				NumberOfEntitiesCounted = activeEntities.Count;
 			}
 
 			public int NumberOfEntitiesCounted { get; private set; }
-
-			public EntityHandlerPriority Priority
-			{
-				get { return EntityHandlerPriority.First; }
-			}
 		}
 
 		[Test]
 		public void CanCheckEntityHandlersInformation()
 		{
-			var counter = entitySystem.GetHandler<CountEntities>();
+			var counter = EntitySystem.Current.GetHandler<CountEntities>();
 			Assert.AreEqual(0, counter.NumberOfEntitiesCounted);
-			Assert.AreEqual(EntityHandlerPriority.First, counter.Priority);
+			Assert.AreEqual(EntityHandlerPriority.Normal, counter.Priority);
 		}
 
 		[Test]
 		public void CallingGetUnresolvableHandlerFails()
 		{
 			Assert.Throws<EntitySystem.UnableToResolveEntityHandler>(
-				() => entitySystem.GetHandler<EntityHandler>());
+				() => EntitySystem.Current.GetHandler<EntityHandler>());
 		}
 
 		[Test]
-		public void AddingTheSameEntityWithoutHandlerTwiceToTheEntitySystemIsOk()
+		public void AddingTheSameEntityTwiceIsNotOk()
 		{
-			var entity = new EntityTests.EmptyEntity();
-			entitySystem.Add(entity);
-			Assert.DoesNotThrow(() => entitySystem.Add(entity));
-		}
-
-		[Test]
-		public void AddingTheSameEntityWithHandlerTwiceToTheEntitySystemIsOk()
-		{
-			var entity = new EntityTests.EmptyEntity();
-			entity.Add<CountEntities>();
-			entitySystem.Add(entity);
-			Assert.DoesNotThrow(() => entitySystem.Add(entity));
+			var entity1 = new EmptyEntity();
+			var entity2 = new EmptyEntity().Add<CountEntities>();
+			EntitySystem.Current.Run();
+			Assert.Throws<EntitySystem.EntityAlreadyAdded>(() => EntitySystem.Current.Add(entity1));
+			Assert.Throws<EntitySystem.EntityAlreadyAdded>(() => EntitySystem.Current.Add(entity2));
+			var entity3 = new EmptyEntity();
+			Assert.Throws<EntitySystem.EntityAlreadyAdded>(() => EntitySystem.Current.Add(entity3));
 		}
 
 		[Test]
 		public void AddHandler()
 		{
-			entitySystem.Add(new EntityTests.EmptyEntity().Add<CountEntities>());
-			entitySystem.Add(new EntityTests.EmptyEntity().Add<CountEntities>());
-			entitySystem.Add(new EntityTests.EmptyEntity());
-			entitySystem.Run();
-			Assert.AreEqual(2, entitySystem.GetHandler<CountEntities>().NumberOfEntitiesCounted);
+			new EmptyEntity().Add<CountEntities>();
+			new EmptyEntity().Add<CountEntities>();
+			new EmptyEntity();
+			EntitySystem.Current.Run();
+			Assert.AreEqual(2, EntitySystem.Current.GetHandler<CountEntities>().NumberOfEntitiesCounted);
+		}
+
+		[Test]
+		public void AddingHandlerTwiceIsIgnored()
+		{
+			var entity = new EmptyEntity().Add<CountEntities>();
+			EntitySystem.Current.Run();
+			entity.Add<CountEntities>();
+			EntitySystem.Current.Run();
+			Assert.AreEqual(1, EntitySystem.Current.GetHandler<CountEntities>().NumberOfEntitiesCounted);
+			Assert.AreEqual(1,
+				EntitySystem.Current.GetEntitiesByHandler(EntitySystem.Current.GetHandler<CountEntities>()).
+										Count);
 		}
 
 		[Test]
 		public void AddEntityAndAttachHandlerLater()
 		{
-			var entity = new EntityTests.EmptyEntity();
-			entitySystem.Add(entity);
-			entitySystem.Run();
-			var counter = entitySystem.GetHandler<CountEntities>();
+			var entity = new EmptyEntity();
+			EntitySystem.Current.Run();
+			var counter = EntitySystem.Current.GetHandler<CountEntities>();
 			Assert.AreEqual(0, counter.NumberOfEntitiesCounted);
 			entity.Add<CountEntities>();
-			entitySystem.Run();
+			EntitySystem.Current.Run();
 			Assert.AreEqual(1, counter.NumberOfEntitiesCounted);
 			entity.Remove<CountEntities>();
-			entitySystem.Run();
+			EntitySystem.Current.Run();
 			Assert.AreEqual(0, counter.NumberOfEntitiesCounted);
-		}
-
-		[Test]
-		public void AddingTheSameHandlerTwiceDoesNothing()
-		{
-			var entity = new EntityTests.EmptyEntity();
-			entity.Add<CountEntities>();
-			entity.Add<CountEntities>();
-			entitySystem.Add(entity);
-			entitySystem.Run();
-			Assert.AreEqual(1, entitySystem.GetHandler<CountEntities>().NumberOfEntitiesCounted);
 		}
 
 		[Test]
 		public void AddingTwoHandlersInOneCall()
 		{
-			var entity = new EntityTests.EmptyEntity();
-			entity.Add<CountEntities, CountEntities>();
-			entitySystem.Add(entity);
-			entitySystem.Run();
-			Assert.AreEqual(1, entitySystem.GetHandler<CountEntities>().NumberOfEntitiesCounted);
+			var entity = new EmptyEntity();
+			entity.Add<CountEntities, EmptyHandler>();
+			EntitySystem.Current.Run();
+			Assert.AreEqual(1, EntitySystem.Current.GetHandler<CountEntities>().NumberOfEntitiesCounted);
 		}
 
 		[Test]
 		public void AddingThreeHandlersInOneCall()
 		{
-			var entity = new EntityTests.EmptyEntity().Add<CountEntities, CountEntities, CountEntities>();
-			entitySystem.Add(entity);
-			entitySystem.Run();
-			Assert.AreEqual(1, entitySystem.GetHandler<CountEntities>().NumberOfEntitiesCounted);
+			new EmptyEntity().Add<CountEntities, CountEntities, EmptyHandler>();
+			EntitySystem.Current.Run();
+			Assert.AreEqual(1, EntitySystem.Current.GetHandler<CountEntities>().NumberOfEntitiesCounted);
 		}
 
 		[Test]
 		public void AddingAndRemovingTheSameHandlerDoesNothing()
 		{
-			var entity = new EntityTests.EmptyEntity();
+			var entity = new EmptyEntity();
 			entity.Add<CountEntities>();
 			entity.Remove<CountEntities>();
-			entitySystem.Add(entity);
-			entitySystem.Run();
-			Assert.AreEqual(0, entitySystem.GetHandler<CountEntities>().NumberOfEntitiesCounted);
+			EntitySystem.Current.Run();
+			Assert.AreEqual(0, EntitySystem.Current.GetHandler<CountEntities>().NumberOfEntitiesCounted);
 		}
 
 		[Test]
 		public void DisabledEntityDoesntDoAnything()
 		{
-			var entity = new EntityTests.EmptyEntity().Add<CountEntities>();
-			entitySystem.Add(entity);
-			entitySystem.Run();
-			var counter = entitySystem.GetHandler<CountEntities>();
+			var entity = new EmptyEntity().Add<CountEntities>();
+			EntitySystem.Current.Run();
+			var counter = EntitySystem.Current.GetHandler<CountEntities>();
 			Assert.AreEqual(1, counter.NumberOfEntitiesCounted);
 			entity.IsActive = false;
-			entitySystem.Run();
+			EntitySystem.Current.Run();
 			Assert.AreEqual(0, counter.NumberOfEntitiesCounted);
 		}
 
 		[Test]
 		public void GetAllEntitiesWithCertainTag()
 		{
-			entitySystem.Add(new EntityTests.EmptyEntity { Tag = "test1" });
-			entitySystem.Add(new EntityTests.EmptyEntity { Tag = "test1" });
-			Assert.AreEqual(0, entitySystem.GetEntitiesWithTag("abc").Count);
-			Assert.AreEqual(2, entitySystem.GetEntitiesWithTag("test1").Count);
+			new EmptyEntity { Tag = "test1" };
+			new EmptyEntity { Tag = "test1" };
+			Assert.AreEqual(0, EntitySystem.Current.GetEntitiesWithTag("abc").Count);
+			Assert.AreEqual(2, EntitySystem.Current.GetEntitiesWithTag("test1").Count);
 		}
 
 		[Test]
 		public void GetAllEntitiesWithHandlersThatHaveATag()
 		{
-			entitySystem.Add(new EntityTests.EmptyEntity { Tag = "abc" }.Add<CountEntities>());
-			entitySystem.Add(new EntityTests.EmptyEntity { Tag = "abc" }.Add<CountEntities>());
-			Assert.AreEqual(2, entitySystem.GetEntitiesWithTag("abc").Count);
+			new EmptyEntity { Tag = "abc" }.Add<CountEntities>();
+			new EmptyEntity { Tag = "abc" }.Add<CountEntities>();
+			Assert.AreEqual(2, EntitySystem.Current.GetEntitiesWithTag("abc").Count);
+		}
+
+		[Test]
+		public void GetEntitiesByHandlerReturnsEmptyListIfHandlerNeverInstantiated()
+		{
+			new EmptyEntity();
+			EntitySystem.Current.Run();
+			Assert.AreEqual(new List<Entity>(),
+				EntitySystem.Current.GetEntitiesByHandler(new CountEntities()));
+		}
+
+		[Test]
+		public void GetEntitiesByHandlerReturnsHandlersEntities()
+		{
+			new EmptyEntity().Add<CountEntities>();
+			var entity = new EmptyEntity().Add<CountEntities>();
+			new EmptyEntity().Add<EmptyHandler>();
+			EntitySystem.Current.Run();
+			EntityHandler handler = EntitySystem.Current.GetHandler<CountEntities>();
+			List<Entity> entities = EntitySystem.Current.GetEntitiesByHandler(handler);
+			Assert.AreEqual(2, entities.Count);
+			Assert.AreEqual(entity, entities[1]);
 		}
 
 		[Test]
 		public void CreateAndRemoveEntitiesInEntityHandler()
 		{
 			var system = new TestEntityCreatorSystem();
-			system.Add(new EntityTests.EmptyEntity().Add<EntityCreator>());
+			system.Add(new EmptyEntity().Add<EntityCreator>());
 			Assert.AreEqual(1, system.NumberOfEntities);
 			system.Run();
 			Assert.AreEqual(2, system.NumberOfEntities);
@@ -208,22 +225,17 @@ namespace DeltaEngine.Entities.Tests
 
 			private readonly EntitySystem entitySystem;
 
-			public void Handle(List<Entity> activeEntities)
+			public override void Handle(List<Entity> activeEntities)
 			{
 				if (entitySystem.NumberOfEntities < 3)
-					entitySystem.Add(new EntityTests.EmptyEntity().Add<CountEntities>());
+					entitySystem.Add(new EmptyEntity().Add<CountEntities>());
 				else
 					foreach (var entity in activeEntities)
 						entitySystem.Remove(entity);
 			}
-
-			public EntityHandlerPriority Priority
-			{
-				get { return EntityHandlerPriority.Low; }
-			}
 		}
 
-		public class TestEntityCreatorSystem : EntitySystem
+		private class TestEntityCreatorSystem : EntitySystem
 		{
 			public TestEntityCreatorSystem()
 				: base(new TestHandlerResolver())
@@ -239,9 +251,25 @@ namespace DeltaEngine.Entities.Tests
 				{
 					if (handlerType == typeof(CountEntities))
 						return new CountEntities();
+
 					return new EntityCreator(remEntitySystem);
 				}
 			}
 		}
+
+		[Test]
+		public void ResolvesCorrectEntityHandler()
+		{
+			new EmptyEntity().Add<EmptyHandler>();
+			var handler = EntitySystem.Current.GetHandler<EmptyHandler>();
+			Assert.IsTrue(handler.GetType() == typeof(EmptyHandler));
+		}
+
+		public class EmptyHandler : EntityHandler
+		{
+			public override void Handle(List<Entity> entities) {}
+		}
+
+		public class DerivedHandler : EmptyHandler {}
 	}
 }

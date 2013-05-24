@@ -18,12 +18,13 @@ namespace DeltaEngine.Multimedia.SharpDX
 
 		public override void Run()
 		{
-            base.Run();
+			base.Run();
 			XAudio2.CommitChanges(XAudio2.CommitAll);
 		}
 
 		public override void Dispose()
 		{
+			base.Dispose();
 			DisposeXAudio();
 			DisposeMasteringVoice();
 		}

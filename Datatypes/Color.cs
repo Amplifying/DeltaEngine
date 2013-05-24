@@ -106,6 +106,7 @@ namespace DeltaEngine.Datatypes
 
 		public static readonly Color Black = new Color(0, 0, 0);
 		public static readonly Color White = new Color(255, 255, 255);
+		public static readonly Color TransparentBlack = Transparent(Black);
 		public static readonly Color TransparentWhite = Transparent(White);
 		public static readonly Color Blue = new Color(0, 0, 255);
 		public static readonly Color Cyan = new Color(0, 255, 255);
@@ -122,7 +123,6 @@ namespace DeltaEngine.Datatypes
 		public static readonly Color LightGray = new Color(165, 165, 165);
 		public static readonly Color DarkGray = new Color(89, 89, 89);
 		public static readonly Color DarkGreen = new Color(0, 100, 0);
-		public static readonly Color DarkRed = new Color(100, 0, 0);
 		public static readonly Color Gold = new Color(255, 215, 0);
 		public static readonly Color PaleGreen = new Color(152, 251, 152);
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Color));

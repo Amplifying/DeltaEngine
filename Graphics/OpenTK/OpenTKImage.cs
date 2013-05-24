@@ -14,15 +14,36 @@ namespace DeltaEngine.Graphics.OpenTK
 {
 	public class OpenTKImage : Image
 	{
-		public OpenTKImage(string contentName, Drawing drawing, Logger logger) : base(contentName, 
-			drawing)
+		public OpenTKImage(string contentName, OpenTKDevice device, Logger logger) : base(contentName)
 		{
+			if (device.Context == null)
+				throw new UnableToLoadImageWithoutValidGraphicsDevice();
+
 			this.logger = logger;
 		}
 
 		private readonly Logger logger;
+
+		public override bool HasAlpha
+		{
+			get
+			{
+				return hasImageAlpha;
+			}
+		}
+
+		private bool hasImageAlpha;
 		private const int InvalidHandle = -1;
 		private int glHandle = InvalidHandle;
+
+		public int Handle
+		{
+			get
+			{
+				return glHandle;
+			}
+		}
+
 		private Size size;
 
 		public override Size PixelSize
@@ -61,18 +82,7 @@ namespace DeltaEngine.Graphics.OpenTK
 		protected override void LoadData(Stream fileData)
 		{
 			InitializeTextureHandle();
-			using (var bitmap = new Bitmap(fileData))
-			{
-				LoadBitmapDataIntoTextureHandle(bitmap);
-				size = new Size(bitmap.Width, bitmap.Height);
-			}
-			SetSamplerState();
-		}
-
-		private void LoadImageAndSetState(string file)
-		{
-			InitializeTextureHandle();
-			TryLoadBitmapFile(file);
+			TryLoadBitmap(fileData);
 			SetSamplerState();
 		}
 
@@ -87,13 +97,30 @@ namespace DeltaEngine.Graphics.OpenTK
 			logger.Error(ex);
 		}
 
-		protected override void DisposeData()
+		private void TryLoadBitmap(Stream fileData)
 		{
-			if (glHandle == InvalidHandle)
-				return;
+			try
+			{
+				LoadBitmap(fileData);
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				if (!Debugger.IsAttached)
+					CreateDefaultTexture();
+				else
+					throw;
+			}
+		}
 
-			GL.DeleteTexture(glHandle);
-			glHandle = InvalidHandle;
+		private void LoadBitmap(Stream fileData)
+		{
+			using (var bitmap = new Bitmap(fileData))
+			{
+				LoadBitmapDataIntoTextureHandle(bitmap);
+				size = new Size(bitmap.Width, bitmap.Height);
+				hasImageAlpha = IsUsingAlphaChannel(bitmap);
+			}
 		}
 
 		private void LoadBitmapDataIntoTextureHandle(Bitmap bitmap)
@@ -106,6 +133,16 @@ namespace DeltaEngine.Graphics.OpenTK
 			bitmap.UnlockBits(data);
 		}
 
+		private static bool IsUsingAlphaChannel(Bitmap bitmap)
+		{
+			for (int y = 0; y < bitmap.Height; y++)
+				for (int x = 0; x < bitmap.Width; x++)
+					if (bitmap.GetPixel(x, y).A != 255)
+						return true;
+
+			return false;
+		}
+
 		private void CreateDefaultTexture()
 		{
 			GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, 
@@ -114,6 +151,7 @@ namespace DeltaEngine.Graphics.OpenTK
 						BinaryDataExtensions.GetBytesFromArray(checkerMapColors));
 			size = DefaultTextureSize;
 			DisableLinearFiltering = true;
+			hasImageAlpha = false;
 		}
 
 		private void SetSamplerState()
@@ -131,11 +169,16 @@ namespace DeltaEngine.Graphics.OpenTK
 			GL.TexParameter(TextureTarget.Texture2D, name, (int)value);
 		}
 
-		public override void Draw(VertexPositionColorTextured[] vertices)
+		protected override void DisposeData()
 		{
-			GL.Enable(EnableCap.Texture2D);
-			GL.BindTexture(TextureTarget.Texture2D, glHandle);
-			base.Draw(vertices);
+			if (glHandle == InvalidHandle)
+				return;
+
+			GL.DeleteTexture(glHandle);
+			glHandle = InvalidHandle;
+		}
+		private class UnableToLoadImageWithoutValidGraphicsDevice : Exception
+		{
 		}
 	}
 }

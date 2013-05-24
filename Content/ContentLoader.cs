@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using DeltaEngine.Core;
 
 namespace DeltaEngine.Content
 {
@@ -13,13 +15,20 @@ namespace DeltaEngine.Content
 		protected ContentLoader(ContentDataResolver resolver)
 		{
 			this.resolver = resolver;
+			LoadingQueueLocked = false;
 		}
 
 		protected readonly ContentDataResolver resolver;
-		
+
 		public Content Load<Content>(string contentName) where Content : ContentData
 		{
 			return Load(typeof(Content), contentName) as Content;
+		}
+
+		public virtual List<Content> LoadRecursively<Content>(string parentName)
+			where Content : ContentData
+		{
+			return new List<Content>();
 		}
 
 		internal ContentData Load(Type contentType, string contentName)
@@ -46,14 +55,40 @@ namespace DeltaEngine.Content
 		protected ContentData LoadAndCacheContent(Type contentType, string contentName)
 		{
 			var contentData = resolver.Resolve(contentType, contentName);
-			LoadContent(contentName, contentData);
+			LoadContent(contentData);
 			resources.Add(contentName, contentData);
 			return contentData;
 		}
 
-		private void LoadContent(string contentName, ContentData contentData)
+		private void LoadContent(ContentData contentData)
 		{
-			contentData.InternalLoad(contentName, GetContentDataStream);
+			contentData.InternalLoad(GetContentDataStream);
+			//AddContentToThreadedLoadingQueue(contentData);
+			//ThreadExtensions.Start(ThreadedLoading);
+		}
+
+		private void AddContentToThreadedLoadingQueue(ContentData contentData)
+		{
+			if (!LoadingQueueLocked)
+			{
+				ContentForThreadedLoading.Enqueue(contentData);
+				contentAddedToQueue.Set();
+			}
+		}
+
+		private readonly AutoResetEvent contentAddedToQueue = new AutoResetEvent(false);
+
+		protected readonly Queue<ContentData> ContentForThreadedLoading = new Queue<ContentData>();
+		private bool LoadingQueueLocked;
+
+		protected void ThreadedLoading()
+		{
+			while (ContentForThreadedLoading.Count > 0)
+			{
+				var contentToLoad = ContentForThreadedLoading.Dequeue();
+				contentToLoad.InternalLoad(GetContentDataStream);
+			}
+			contentAddedToQueue.WaitOne();
 		}
 
 		protected abstract Stream GetContentDataStream(string contentName);
@@ -61,7 +96,7 @@ namespace DeltaEngine.Content
 		public void ReloadContent(string contentName)
 		{
 			var content = resources[contentName];
-			LoadContent(contentName, content);
+			LoadContent(content);
 			content.FireContentChangedEvent();
 		}
 

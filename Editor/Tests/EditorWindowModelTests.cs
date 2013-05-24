@@ -1,6 +1,7 @@
 using System;
 using System.Windows;
 using DeltaEngine.Editor.Common;
+using DeltaEngine.Editor.Helpers;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.Tests
@@ -15,7 +16,9 @@ namespace DeltaEngine.Editor.Tests
 			model.OnApiKeyChanged.Execute("invalid");
 			model.OnLoginButtonClicked.Execute(null);
 			Assert.IsFalse(model.IsLoggedIn);
-			Assert.AreEqual("Please obtain your API Key", model.Error);
+			Assert.AreEqual(
+				"You are not connected to DeltaEngine.net, please check your internet connection!",
+				model.Error);
 		}
 
 		private static EditorWindowModel CreateModelAndTryToLoginWithEmptyApiKey()
@@ -71,6 +74,7 @@ namespace DeltaEngine.Editor.Tests
 			var model = CreateModelAndTryToLoginWithEmptyApiKey();
 			model.OnGetApiKeyClicked.Execute(null);
 		}
+
 		//ncrunch: no coverage end
 
 		[Test, Category("Slow"), Ignore]

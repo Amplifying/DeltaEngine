@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using DeltaEngine.Core;
 
 namespace DeltaEngine.Multimedia
@@ -8,16 +9,38 @@ namespace DeltaEngine.Multimedia
 	/// </summary>
 	public abstract class SoundDevice : PriorityRunner, IDisposable
 	{
+		protected SoundDevice()
+		{
+
+			runThread = ThreadExtensions.Start(ThreadRun);
+		}
+
+		private readonly Thread runThread;
+
+		private void ThreadRun()
+		{
+			isRunning = true;
+			while (isRunning)
+			{
+				Thread.Sleep(1);
+				if (currentPlayingMusic != null)
+					currentPlayingMusic.Run();
+			}
+		}
+
+		private bool isRunning;
+
 		public virtual void Run()
 		{
-			if (currentPlayingMusic != null)
-				currentPlayingMusic.Run();
-
 			if (currentPlayingVideo != null)
 				currentPlayingVideo.Run();
 		}
 
-		public abstract void Dispose();
+		public virtual void Dispose()
+		{
+			isRunning = false;
+			runThread.Abort();
+		}
 
 		internal void RegisterCurrentMusic(Music music)
 		{

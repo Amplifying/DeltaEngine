@@ -4,92 +4,115 @@ using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
 using DeltaEngine.Input;
+using DeltaEngine.Platforms;
 using DeltaEngine.Platforms.All;
 using DeltaEngine.Scenes.UserInterfaces;
 using NUnit.Framework;
 
 namespace DeltaEngine.Scenes.Tests.UserInterfaces
 {
-	internal class ButtonTests : TestWithAllFrameworks
+	public class ButtonTests : TestWithAllFrameworks
 	{
-		[VisualTest]
-		public void Draw(Type resolver)
-		{
-			Start(resolver, (EntitySystem entitySystem, ContentLoader content, InputCommands input) =>
-			{
-				var button = new Button(content.Load<Image>("DeltaEngineLogo"), Small)
-				{
-					NormalColor = Color.Green,
-					MouseoverColor = Color.Blue,
-					PressedColor = Color.Red,
-					Sprite = { Rotation = 45 },
-				};
-				button.Hovered += () => button.Sprite.DrawArea = Big;
-				button.StoppedHover += () => button.Sprite.DrawArea = Small;
-				var scene = new Scene();
-				scene.Add(button);
-				scene.Show(entitySystem, content, input);
-			});
-		}
-
-		private static readonly Rectangle Small = new Rectangle(0.45f, 0.45f, 0.1f, 0.1f);
-		private static readonly Rectangle Big = new Rectangle(0.4f, 0.4f, 0.2f, 0.2f);
-
 		[IntegrationTest]
-		public void BeginClickInside(Type resolver)
+		public void SetColors(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem, ContentLoader content, InputCommands input) =>
+			Start(resolver, (Scene s, ContentLoader content, InputCommands input) =>
 			{
-				var button = CreateSceneWithButton(entitySystem, content, input);
-				bool pressed = false;
-				button.Pressed += () => pressed = true;
-				SetMouseState(State.Pressing, Point.Half);
-				Assert.IsTrue(pressed);
-				Assert.AreEqual(PressedColor, button.Sprite.Color);
+				var button = CreateButton(content);
+				Assert.AreEqual(NormalColor, button.NormalColor);
+				Assert.AreEqual(MouseoverColor, button.MouseoverColor);
+				Assert.AreEqual(PressedColor, button.PressedColor);
 			});
 		}
 
-		private static Button CreateSceneWithButton(EntitySystem entitySystem, ContentLoader content,
-			InputCommands input)
+		private static Button CreateButton(ContentLoader content)
 		{
-			var button = new Button(content.Load<Image>("DeltaEngineLogo"), Small)
+			return new Button(content.Load<Image>("DeltaEngineLogo"), ScreenCenter)
 			{
 				NormalColor = NormalColor,
 				MouseoverColor = MouseoverColor,
 				PressedColor = PressedColor
 			};
+		}
 
+		private static readonly Rectangle ScreenCenter = Rectangle.FromCenter(Point.Half,
+			new Size(0.3f, 0.1f));
+		private static readonly Color NormalColor = Color.Green;
+		private static readonly Color MouseoverColor = Color.Blue;
+		private static readonly Color PressedColor = Color.Red;
+
+		[IntegrationTest]
+		public void SetImages(Type resolver)
+		{
+			Start(resolver, (Scene s, ContentLoader content, InputCommands input) =>
+			{
+				var image = content.Load<Image>("DeltaEngineLogo");
+				var button = new Button(image, ScreenCenter);
+				button.NormalImage = image;
+				Assert.AreEqual(image, button.NormalImage);
+				button.MouseoverImage = image;
+				Assert.AreEqual(image, button.MouseoverImage);
+				button.PressedImage = image;
+				Assert.AreEqual(image, button.PressedImage);
+			});
+		}
+
+		[IntegrationTest]
+		public void BeginClickInside(Type resolver)
+		{
+			Start(resolver, (Scene s, ContentLoader content) =>
+			{
+				var button = CreateSceneWithButton(content);
+				bool pressed = false;
+				button.Messaged += message =>
+				{
+					if (message is Interact.ControlPressed)
+						pressed = true;
+				};
+				InitializeMouse();
+				SetMouseState(State.Pressing, Point.Half);
+				Assert.IsTrue(pressed);
+				Assert.AreEqual(PressedColor, button.Color);
+			});
+		}
+
+		private static Button CreateSceneWithButton(ContentLoader content)
+		{
+			var button = CreateButton(content);
+			EntitySystem.Current.Run();
 			var scene = new Scene();
 			scene.Add(button);
-			scene.Show(entitySystem, content, input);
+			scene.Show();
 			return button;
 		}
 
-		private static readonly Color NormalColor = Color.Red;
-		private static readonly Color MouseoverColor = Color.Green;
-		private static readonly Color PressedColor = Color.Blue;
+		private void InitializeMouse()
+		{
+			mockResolver.input.SetMousePosition(Point.Zero);
+			mockResolver.AdvanceTimeAndExecuteRunners();
+		}
 
 		private void SetMouseState(State state, Point position, float duration = 0.02f)
 		{
-			mockResolver.input.SetMousePosition(position + Offset);
-			mockResolver.input.SetMouseButtonState(MouseButton.Left, state);
-			mockResolver.AdvanceTimeAndExecuteRunners(0.02f);
 			mockResolver.input.SetMousePosition(position);
 			mockResolver.input.SetMouseButtonState(MouseButton.Left, state);
 			mockResolver.AdvanceTimeAndExecuteRunners(duration);
 		}
 
-		private static readonly Point Offset = new Point(0.001f, 0.001f);
-
 		[IntegrationTest]
 		public void BeginClickOutside(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem, ContentLoader content, InputCommands input) =>
+			Start(resolver, (Scene s, ContentLoader content) =>
 			{
-				var button = CreateSceneWithButton(entitySystem, content, input);
+				var button = CreateSceneWithButton(content);
 				bool pressed = false;
-				button.Pressed += () => pressed = true;
-				SetMouseState(State.Pressing, Point.Zero);
+				button.Messaged += message =>
+				{
+					if (message is Interact.ControlPressed)
+						pressed = true;
+				};
+				InitializeMouse();
+				SetMouseState(State.Pressing, Point.One);
 				Assert.IsFalse(pressed);
 				Assert.IsFalse(button.IsPressed);
 			});
@@ -98,29 +121,34 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces
 		[IntegrationTest]
 		public void BeginAndEndClickInside(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem, ContentLoader content, InputCommands input) =>
+			Start(resolver, (Scene s, ContentLoader content) =>
 			{
-				var button = CreateSceneWithButton(entitySystem, content, input);
-				bool tapped = false;
-				button.Tapped += position => tapped = true;
-				SetMouseState(State.Pressing, Point.Half);
-				SetMouseState(State.Releasing, Point.Half);
-				Assert.IsTrue(tapped);
-				Assert.AreEqual(MouseoverColor, button.Sprite.Color);
+				var button = CreateSceneWithButton(content);
+				Point tapped = Point.One;
+				button.Clicked += () => tapped = button.RelativePointerPosition;
+				PressAndReleaseMouse(new Point(0.53f, 0.52f), new Point(0.53f, 0.52f));
+				Assert.AreEqual(new Point(0.6f, 0.7f), tapped);
+				Assert.AreEqual(MouseoverColor, button.Color);
 				Assert.IsFalse(button.IsPressed);
 			});
+		}
+
+		private void PressAndReleaseMouse(Point pressPosition, Point releasePosition)
+		{
+			InitializeMouse();
+			SetMouseState(State.Pressing, pressPosition);
+			SetMouseState(State.Releasing, releasePosition);
 		}
 
 		[IntegrationTest]
 		public void BeginClickInsideAndEndOutside(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem, ContentLoader content, InputCommands input) =>
+			Start(resolver, (Scene s, ContentLoader content) =>
 			{
-				var button = CreateSceneWithButton(entitySystem, content, input);
+				var button = CreateSceneWithButton(content);
 				bool tapped = false;
-				button.Tapped += position => tapped = true;
-				SetMouseState(State.Pressing, Point.Half);
-				SetMouseState(State.Releasing, Point.Zero);
+				button.Clicked += () => tapped = true;
+				PressAndReleaseMouse(Point.Half, Point.Zero);
 				Assert.IsFalse(tapped);
 				Assert.IsFalse(button.IsPressed);
 			});
@@ -129,13 +157,12 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces
 		[IntegrationTest]
 		public void BeginClickOutsideAndEndInside(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem, ContentLoader content, InputCommands input) =>
+			Start(resolver, (Scene s, ContentLoader content) =>
 			{
-				var button = CreateSceneWithButton(entitySystem, content, input);
+				var button = CreateSceneWithButton(content);
 				bool tapped = false;
-				button.Tapped += position => tapped = true;
-				SetMouseState(State.Pressing, Point.Zero);
-				SetMouseState(State.Releasing, Point.Half);
+				button.Clicked += () => tapped = true;
+				PressAndReleaseMouse(Point.Zero, Point.Half);
 				Assert.IsFalse(tapped);
 				Assert.IsFalse(button.IsPressed);
 			});
@@ -144,13 +171,14 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces
 		[IntegrationTest]
 		public void Enter(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem, ContentLoader content, InputCommands input) =>
+			Start(resolver, (Scene s, ContentLoader content) =>
 			{
-				var button = CreateSceneWithButton(entitySystem, content, input);
+				var button = CreateSceneWithButton(content);
 				bool entered = false;
-				button.Entered += () =>
+				button.Messaged += message =>
 				{
-					entered = true;
+					if (message is Interact.ControlEntered)
+						entered = true;
 				};
 				SetMouseState(State.Released, Point.Zero);
 				Assert.IsFalse(entered);
@@ -163,55 +191,99 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces
 		[IntegrationTest]
 		public void Exit(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem, ContentLoader content, InputCommands input) =>
+			Start(resolver, (Scene s, ContentLoader content) =>
 			{
-				var button = CreateSceneWithButton(entitySystem, content, input);
+				var button = CreateSceneWithButton(content);
 				bool exited = false;
-				button.Exited += () =>
+				button.Messaged += message =>
 				{
-					exited = true;
+					if (message is Interact.ControlExited)
+						exited = true;
 				};
-				SetMouseState(State.Released, Point.Half);
-				SetMouseState(State.Released, Point.Zero);
+				MoveMouse();
 				Assert.IsTrue(exited);
 				Assert.IsFalse(button.IsInside);
 			});
 		}
 
-		[IntegrationTest]
-		public void Hover(Type resolver)
+		private void MoveMouse()
 		{
-			Start(resolver, (EntitySystem entitySystem, ContentLoader content, InputCommands input) =>
+			InitializeMouse();
+			SetMouseState(State.Released, Point.Half);
+			SetMouseState(State.Released, Point.Zero);
+		}
+
+		[IntegrationTest]
+		public void ShortDelayDoesntTriggerHover(Type resolver)
+		{
+			Start(resolver, (Scene s, ContentLoader content) =>
 			{
-				var button = CreateSceneWithButton(entitySystem, content, input);
+				var button = CreateSceneWithButton(content);
 				bool hovered = false;
-				button.Hovered += () =>
+				button.Messaged += message =>
 				{
-					hovered = true;
+					if (message is Interact.ControlHoveringStarted)
+						hovered = true;
 				};
+				InitializeMouse();
 				SetMouseState(State.Released, Point.Half, 1.0f);
 				Assert.IsFalse(hovered);
+				Assert.IsFalse(button.IsHovering);
+			});
+		}
+
+		[IntegrationTest]
+		public void LongDelayTriggersHover(Type resolver)
+		{
+			Start(resolver, (Scene s, ContentLoader content) =>
+			{
+				var button = CreateSceneWithButton(content);
+				bool hovered = false;
+				button.Messaged += message =>
+				{
+					if (message is Interact.ControlHoveringStarted)
+						hovered = true;
+				};
+				InitializeMouse();
 				SetMouseState(State.Released, Point.Half, 2.0f);
 				Assert.IsTrue(hovered);
+				Assert.IsTrue(button.IsHovering);
 			});
 		}
 
 		[IntegrationTest]
 		public void StopHover(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem, ContentLoader content, InputCommands input) =>
+			Start(resolver, (Scene s, ContentLoader content) =>
 			{
-				var button = CreateSceneWithButton(entitySystem, content, input);
+				var button = CreateSceneWithButton(content);
 				bool stoppedHover = false;
-				button.StoppedHover += () =>
+				button.Messaged += message =>
 				{
-					stoppedHover = true;
+					if (message is Interact.ControlHoveringStopped)
+						stoppedHover = true;
 				};
-				SetMouseState(State.Released, Point.Half, 2.0f);
-				Assert.IsFalse(stoppedHover);
-				SetMouseState(State.Released, Point.Zero);
+				HoverThenMoveMouse();
 				Assert.IsTrue(stoppedHover);
+				Assert.IsFalse(button.IsHovering);
 			});
+		}
+
+		private void HoverThenMoveMouse()
+		{
+			InitializeMouse();
+			SetMouseState(State.Released, Point.Half, 2.0f);
+			SetMouseState(State.Released, Point.Zero);
+		}
+
+		[VisualTest]
+		public void WritePointerRelativePosition(Type resolver)
+		{
+			Button button = null;
+			Start(resolver,
+				(Scene s, ContentLoader content) => { button = CreateSceneWithButton(content); },
+				(Window window) =>
+				{ window.Title = "Relative Pointer Position: " + button.RelativePointerPosition; });
 		}
 	}
 }

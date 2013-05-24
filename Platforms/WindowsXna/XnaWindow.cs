@@ -144,6 +144,8 @@ namespace DeltaEngine.Platforms
 			return result == DialogResult.Ignore ? MessageBoxButton.Ignore : MessageBoxButton.Cancel;
 		}
 
+		public event Action WindowClosing;
+
 		public void Run()
 		{
 			FrameworkDispatcher.Update();

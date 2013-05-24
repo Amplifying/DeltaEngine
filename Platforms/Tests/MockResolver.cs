@@ -1,5 +1,4 @@
 using System;
-using DeltaEngine.Entities;
 using DeltaEngine.Platforms.Tests.ModuleMocks;
 
 namespace DeltaEngine.Platforms.Tests
@@ -21,16 +20,12 @@ namespace DeltaEngine.Platforms.Tests
 			new PhysicsMock(resolver);
 		}
 
-		internal readonly AutofacStarterForMockResolver resolver = new AutofacStarterForMockResolver();
+		internal readonly AutofacStarterForMockResolver resolver =
+			new AutofacStarterForMockResolver();
 		public readonly RenderingMocks rendering;
 		public readonly InputMocks input;
 		public readonly MultimediaMocks multimedia;
 		public readonly LoggingMocks log;
-
-		public EntitySystem EntitySystem
-		{
-			get { return resolver.Resolve<EntitySystem>(); }
-		}
 
 		public void Dispose()
 		{

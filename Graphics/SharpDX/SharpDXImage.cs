@@ -13,8 +13,8 @@ namespace DeltaEngine.Graphics.SharpDX
 {
 	public class SharpDXImage : Image
 	{
-		public SharpDXImage(string filename, SharpDXDrawing drawing, SharpDXDevice device, Logger log)
-			: base(filename, drawing)
+		public SharpDXImage(string filename, SharpDXDevice device, Logger log)
+			: base(filename)
 		{
 			this.device = device;
 			this.log = log;
@@ -43,6 +43,7 @@ namespace DeltaEngine.Graphics.SharpDX
 			{
 				NativeTexture = LoadTexture(filename);
 				pixelSize = new Size(NativeTexture.Description.Width, NativeTexture.Description.Height);
+				hasImageAlpha = true;//TODO: find out from meta data
 			}
 			catch (Exception ex)
 			{
@@ -62,6 +63,11 @@ namespace DeltaEngine.Graphics.SharpDX
 		{
 			get { return pixelSize; }
 		}
+		public override bool HasAlpha
+		{
+			get { return hasImageAlpha; }
+		}
+		private bool hasImageAlpha;
 		public ShaderResourceView NativeResourceView { get; protected set; }
 
 		public Texture2D LoadTexture(string filename)
@@ -119,30 +125,6 @@ namespace DeltaEngine.Graphics.SharpDX
 			};
 		}
 
-		public override void Draw(VertexPositionColorTextured[] vertices)
-		{
-			var usedSampler = DisableLinearFiltering ? GetPointSamplerLazy() : GetLinearSamplerLazy();
-			device.Context.PixelShader.SetShaderResource(0, NativeResourceView);
-			device.Context.PixelShader.SetSampler(0, usedSampler);
-			base.Draw(vertices);
-		}
-
-		public SamplerState GetLinearSamplerLazy()
-		{
-			return linearSampler ??
-				(linearSampler = new SharpDXSampler(device.NativeDevice, Filter.MinMagMipLinear));
-		}
-
-		private SamplerState linearSampler;
-
-		public SamplerState GetPointSamplerLazy()
-		{
-			return pointSampler ??
-				(pointSampler = new SharpDXSampler(device.NativeDevice, Filter.MinMagMipPoint));
-		}
-
-		private SamplerState pointSampler;
-
 		private void CreateDefaultTexture()
 		{
 			Utilities.Pin(checkerMapColors,
@@ -163,6 +145,7 @@ namespace DeltaEngine.Graphics.SharpDX
 				});
 			pixelSize = DefaultTextureSize;
 			DisableLinearFiltering = true;
+			hasImageAlpha = false;
 		}
 	}
 }

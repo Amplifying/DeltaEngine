@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-	<PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform' == '' ">AnyCPU</Platform>
     <ProjectGuid>{732E8F5E-0633-40FE-9AD3-FFE4E9971696}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -12,7 +12,7 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <RestorePackages>true</RestorePackages>
-	</PropertyGroup>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -22,7 +22,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-    <DocumentationFile>bin\Debug\DeltaEngine.Physics2D.Farseer.Tests.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,51 +31,50 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-    <DocumentationFile>bin\Release\DeltaEngine.Physics2D.Farseer.Tests.XML</DocumentationFile>
   </PropertyGroup>
-	<ItemGroup>
-		<Reference Include="nunit.framework" >
-		<HintPath>..\..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
-	</Reference>
-		<Reference Include="System" />
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\..\..\Datatypes\DeltaEngine.Datatypes.csproj">
-			<Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
-			<Name>DeltaEngine.Datatypes</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\Core\DeltaEngine.Core.csproj">
-			<Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
-			<Name>DeltaEngine.Core</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\Platforms\Tests\DeltaEngine.Platforms.Tests.csproj">
-			<Project>{D0AAD622-ED82-40E5-88A9-980EAFC12C16}</Project>
-			<Name>DeltaEngine.Platforms.Tests</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\Rendering\DeltaEngine.Rendering.csproj">
-			<Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
-			<Name>DeltaEngine.Rendering</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\DeltaEngine.Physics2D.csproj">
-			<Project>{dc3aa434-09b9-43ad-8f43-431811fa054d}</Project>
-			<Name>DeltaEngine.Physics2D</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\DeltaEngine.Physics2D.Farseer.csproj">
-			<Project>{c983d137-8b7f-47be-996e-894a3596dd06}</Project>
-			<Name>DeltaEngine.Physics2D.Farseer</Name>
-		</ProjectReference>
-	</ItemGroup>
-	<ItemGroup>
-		<None Include="packages.config">
-			<SubType>Designer</SubType>
-		</None>
-	</ItemGroup>
-	<ItemGroup>
-		<Compile Include="Properties\AssemblyInfo.cs" />
-		<Compile Include="PhysicsTests.cs" />
-		<Compile Include="JointTests.cs" />
-		<Compile Include="BodyTests.cs" />
-	</ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Datatypes\DeltaEngine.Datatypes.csproj">
+      <Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
+      <Name>DeltaEngine.Datatypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Core\DeltaEngine.Core.csproj">
+      <Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
+      <Name>DeltaEngine.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Platforms\Tests\DeltaEngine.Platforms.Tests.csproj">
+      <Project>{D0AAD622-ED82-40E5-88A9-980EAFC12C16}</Project>
+      <Name>DeltaEngine.Platforms.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Rendering\DeltaEngine.Rendering.csproj">
+      <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
+      <Name>DeltaEngine.Rendering</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DeltaEngine.Physics2D.csproj">
+      <Project>{dc3aa434-09b9-43ad-8f43-431811fa054d}</Project>
+      <Name>DeltaEngine.Physics2D</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DeltaEngine.Physics2D.Farseer.csproj">
+      <Project>{c983d137-8b7f-47be-996e-894a3596dd06}</Project>
+      <Name>DeltaEngine.Physics2D.Farseer</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PhysicsTests.cs" />
+    <Compile Include="JointTests.cs" />
+    <Compile Include="BodyTests.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>

@@ -71,8 +71,8 @@ namespace DeltaEngine.Rendering.Tests
 			Assert.AreEqual(Color.Green, entity.Get<Color>());
 			entity.Set(Rectangle.One);
 			Assert.AreEqual(Rectangle.One, entity.Get<Rectangle>());
-			entity.Set(new Rotation(5.0f));
-			Assert.AreEqual(5.0f, entity.Get<Rotation>().Value);
+			entity.Set(5.0f);
+			Assert.AreEqual(5.0f, entity.Get<float>());
 			entity.RenderLayer = -10;
 			Assert.AreEqual(-10, entity.RenderLayer);
 		}
@@ -83,12 +83,11 @@ namespace DeltaEngine.Rendering.Tests
 			var entity = new Entity2D(Rectangle.Zero);
 			var data = entity.SaveToMemoryStream();
 			byte[] savedBytes = data.ToArray();
-			Assert.AreEqual(84, savedBytes.Length);
+			Assert.AreEqual(82, savedBytes.Length);
 			var loadedEntity = data.CreateFromMemoryStream() as Entity2D;
 			Assert.AreEqual(entity.Tag, loadedEntity.Tag);
-			Assert.AreEqual(1, entity.handlerTypesToAdd.Count);
 			Assert.AreEqual(3, loadedEntity.NumberOfComponents);
-			Assert.AreEqual(false, loadedEntity.IsActive);
+			Assert.IsTrue(loadedEntity.IsActive);
 		}
 	}
 }

@@ -1,9 +1,8 @@
 using System;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Input;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 
 namespace Blobs.Creatures
 {
@@ -12,9 +11,8 @@ namespace Blobs.Creatures
 	/// </summary>
 	public class Blob : RubberBall, IDisposable
 	{
-		public Blob(EntitySystem entitySystem, ScreenSpace screen, InputCommands input)
+		public Blob(ScreenSpace screen, InputCommands input)
 		{
-			this.entitySystem = entitySystem;
 			this.screen = screen;
 			this.input = input;
 			camera = screen as Camera2DControlledQuadraticScreenSpace;
@@ -23,7 +21,6 @@ namespace Blobs.Creatures
 			RespondToMouseMovement();
 		}
 
-		protected readonly EntitySystem entitySystem;
 		private readonly ScreenSpace screen;
 		protected readonly InputCommands input;
 		protected readonly Camera2DControlledQuadraticScreenSpace camera;
@@ -31,10 +28,10 @@ namespace Blobs.Creatures
 		private void CreateFacialElements()
 		{
 			Mood = new Mood();
-			LeftEye = new Eye(entitySystem, screen, input, Mood);
-			RightEye = new Eye(entitySystem, screen, input, Mood);
-			entitySystem.Add(LeftEyebrow = new LeftEyebrow(LeftEye, Mood));
-			entitySystem.Add(RightEyebrow = new RightEyebrow(RightEye, Mood));
+			LeftEye = new Eye(screen, input, Mood);
+			RightEye = new Eye(screen, input, Mood);
+			LeftEyebrow = new LeftEyebrow(LeftEye, Mood);
+			RightEyebrow = new RightEyebrow(RightEye, Mood);
 		}
 
 		private Mood Mood { get; set; }

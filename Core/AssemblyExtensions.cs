@@ -19,6 +19,12 @@ namespace DeltaEngine.Core
 			return StackTraceExtensions.GetEntryName();
 		}
 
+		public static bool IsAllowed(this AssemblyName assembly)
+		{
+			assemblyName = assembly.Name;
+			return !(IsMicrosoftAssembly() || IsIdeHelperTool() || IsThirdPartyLibrary());
+		}
+		
 		public static bool IsAllowed(this Assembly assembly)
 		{
 			assemblyName = assembly.GetName().Name;

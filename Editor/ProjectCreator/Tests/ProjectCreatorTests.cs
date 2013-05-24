@@ -4,6 +4,7 @@ using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
 using NUnit.Framework;
+using SharpCompress.Archive;
 using SharpCompress.Archive.Zip;
 
 namespace DeltaEngine.Editor.ProjectCreator.Tests
@@ -21,6 +22,7 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 		}
 
 		private ProjectCreator valid;
+		private ProjectCreator invalid;
 
 		private static ProjectCreator CreateWithValidFileSystemMock()
 		{
@@ -53,30 +55,27 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 			Assert.IsTrue(ZipArchive.IsZipFile(pathToTemplate));
 			var archive = ZipArchive.Open(pathToTemplate);
 			foreach (var entry in archive.Entries.Where(x => !x.FilePath.Contains("vstemplate")))
-				using (var stream = entry.OpenEntryStream())
-				using (var memoryStream = new MemoryStream())
-				{
-					stream.CopyTo(memoryStream);
-					using (var byteStream = new MemoryStream(memoryStream.ToArray()))
-					using (var reader = new StreamReader(byteStream))
-						files.Add(reader.ReadToEnd());
-				}
+				AddZippedFileAsStringToList(entry, files);
 			return files;
 		}
 
-		private ProjectCreator invalid;
+		private static void AddZippedFileAsStringToList(IArchiveEntry entry,
+			ICollection<string> files)
+		{
+			using (var stream = entry.OpenEntryStream())
+			using (var memoryStream = new MemoryStream())
+			{
+				stream.CopyTo(memoryStream);
+				using (var byteStream = new MemoryStream(memoryStream.ToArray()))
+				using (var reader = new StreamReader(byteStream))
+					files.Add(reader.ReadToEnd());
+			}
+		}
 
 		private static ProjectCreator CreateWithCorruptFileSystemMock()
 		{
 			var template = VsTemplate.GetEmptyGame();
 			return new ProjectCreator(new CsProject(), template, CreateCorruptFileSystemMock(template));
-		}
-
-		[Test]
-		public void CheckAvailabilityOfTheTemplateFiles()
-		{
-			Assert.IsTrue(valid.AreAllTemplateFilesAvailable());
-			Assert.IsFalse(invalid.AreAllTemplateFilesAvailable());
 		}
 
 		private static IFileSystem CreateCorruptFileSystemMock(VsTemplate template)
@@ -89,6 +88,13 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 					{ "C:\\Bar\\DeltaEngine\\", new MockFileData(";") },
 					{ template.SourceCodeFiles[1], new MockFileData("") }
 				});
+		}
+
+		[Test]
+		public void CheckAvailabilityOfTheTemplateFiles()
+		{
+			Assert.IsTrue(valid.AreAllTemplateFilesAvailable());
+			Assert.IsFalse(invalid.AreAllTemplateFilesAvailable());
 		}
 
 		[Test]
@@ -146,8 +152,7 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 
 		private static MockFileData GetMockFileData(string pathToFile)
 		{
-			var fs = new FileSystem();
-			return new MockFileData(fs.File.ReadAllText(pathToFile));
+			return new MockFileData(new FileSystem().File.ReadAllText(pathToFile));
 		}
 
 		private static bool CompareFileSystems(IFileSystem fs1, IFileSystem fs2, string path)
@@ -156,15 +161,11 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 			{
 				"Properties\\AssemblyInfo.cs",
 				"NewDeltaEngineProject.csproj",
-				//"NewDeltaEngineProjectIcon.ico",
 				"Program.cs",
 				"Game.cs"
 			};
 
-			foreach (var file in filesToCheck)
-				if (!CompareFileInFileSystem(fs1, fs2, path + file))
-					return false;
-			return true;
+			return filesToCheck.All(file => CompareFileInFileSystem(fs1, fs2, path + file));
 		}
 
 		private static bool CompareFileInFileSystem(IFileSystem fs1, IFileSystem fs2, string file)
@@ -174,14 +175,8 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 
 		private static bool FileEquals(IList<string> file1, IList<string> file2)
 		{
-			if (file1.Count == file2.Count)
-			{
-				for (int i = 0; i < file1.Count; i++)
-					if (file1[i] != file2[i] && !file2[i].Contains("Guid"))
-						return false;
-				return true;
-			}
-			return false;
+			return file1.Count == file2.Count &&
+				!file1.Where((t, i) => t != file2[i] && !file2[i].Contains("Guid")).Any();
 		}
 	}
 }

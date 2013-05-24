@@ -61,6 +61,12 @@ namespace DeltaEngine.Physics2D.Farseer
 			set { Body.Rotation = value.DegreesToRadians(); }
 		}
 
+		public Point LinearVelocity
+		{
+			get { return new Point(Body.LinearVelocity.X, Body.LinearVelocity.Y); }
+			set { Body.LinearVelocity = new Vector2(value.X, value.Y); }
+		}
+
 		public void ApplyLinearImpulse(Point impulse)
 		{
 			Vector2 fImpulse = UnitConverter.Convert(impulse);
@@ -165,6 +171,11 @@ namespace DeltaEngine.Physics2D.Farseer
 				theta += Increment;
 			}
 			return vertices.ToArray();
+		}
+
+		public void Dispose()
+		{
+			Body.Dispose();
 		}
 	}
 }

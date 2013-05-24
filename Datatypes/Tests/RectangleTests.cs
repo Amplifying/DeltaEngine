@@ -167,6 +167,13 @@ namespace DeltaEngine.Datatypes.Tests
 		}
 
 		[Test]
+		public void Increase()
+		{
+			var rect = new Rectangle(1, 1, 2, 2);
+			Assert.AreEqual(new Rectangle(0.9f, 0.9f, 2.2f, 2.2f), rect.Increase(new Size(0.2f)));
+		}
+
+		[Test]
 		public void Reduce()
 		{
 			var rect = new Rectangle(1, 1, 2, 2);
@@ -182,6 +189,15 @@ namespace DeltaEngine.Datatypes.Tests
 				rect.GetInnerRectangle(new Rectangle(0.0f, 0.0f, 0.5f, 0.5f)));
 			Assert.AreEqual(new Rectangle(2.0f, 2.0f, 1.0f, 1.0f),
 				rect.GetInnerRectangle(new Rectangle(0.5f, 0.5f, 0.5f, 0.5f)));
+		}
+
+		[Test]
+		public void GetRelativePoint()
+		{
+			var rect = new Rectangle(1, 2, 3, 4);
+			Assert.AreEqual(Point.Zero, rect.GetRelativePoint(new Point(1, 2)));
+			Assert.AreEqual(Point.One, rect.GetRelativePoint(new Point(4, 6)));
+			Assert.AreEqual(new Point(-1, -2), rect.GetRelativePoint(new Point(-2, -6)));
 		}
 
 		[Test]
@@ -244,10 +260,10 @@ namespace DeltaEngine.Datatypes.Tests
 			var screenRect = Rectangle.One;
 			var insideRect = new Rectangle(0.1f, 0.1f, 2.9f, 0.3f);
 			var outsideRect = new Rectangle(2.4f, 0.35f, 0.1f, 0.1f);
-			Assert.IsTrue(insideRect.IsColliding(screenRect));
-			Assert.IsFalse(outsideRect.IsColliding(screenRect));
-			Assert.IsTrue(outsideRect.IsColliding(insideRect));
-			Assert.IsFalse(outsideRect.IsColliding(insideRect, 0, 70));
+			Assert.IsTrue(insideRect.IsColliding(0, screenRect, 0));
+			Assert.IsFalse(outsideRect.IsColliding(0, screenRect, 0));
+			Assert.IsTrue(outsideRect.IsColliding(0, insideRect, 0));
+			Assert.IsFalse(outsideRect.IsColliding(0, insideRect, 70));
 		}
 
 		[Test]
@@ -255,8 +271,8 @@ namespace DeltaEngine.Datatypes.Tests
 		{
 			var insideRect = new Rectangle(0.3f, 0.3f, 0.1f, 0.1f);
 			var outsideRect = new Rectangle(0.2f, 0.2f, 0.3f, 0.3f);
-			Assert.IsTrue(outsideRect.IsColliding(insideRect));
-			Assert.IsTrue(outsideRect.IsColliding(insideRect, 0, 70));
+			Assert.IsTrue(outsideRect.IsColliding(0, insideRect, 0));
+			Assert.IsTrue(outsideRect.IsColliding(0, insideRect, 70));
 		}
 	}
 }

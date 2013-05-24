@@ -1,8 +1,7 @@
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Input;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 
 namespace Blobs.Levels
 {
@@ -11,8 +10,8 @@ namespace Blobs.Levels
 	/// </summary>
 	public class Level2 : WalledLevel
 	{
-		public Level2(EntitySystem entitySystem, ScreenSpace screen, InputCommands input, ContentLoader content)
-			: base(entitySystem, screen, input, content)
+		public Level2(ScreenSpace screen, InputCommands input, ContentLoader content)
+			: base(screen, input, content)
 		{
 			Color = Color.LightBlue;
 		}

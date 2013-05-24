@@ -5,6 +5,6 @@ namespace DeltaEngine.Input
 	/// </summary>
 	public abstract class Trigger
 	{
-		public abstract bool ConditionMatched(InputCommands inputCommands);
+		public abstract bool ConditionMatched(InputCommands input);
 	}
 }

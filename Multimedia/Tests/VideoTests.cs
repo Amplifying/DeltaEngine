@@ -34,16 +34,16 @@ namespace DeltaEngine.Multimedia.Tests
 		[IntegrationTest]
 		public void PlayAndStopWithEntitySystem(Type resolver)
 		{
-			Start(resolver, (ContentLoader content, EntitySystem entitySystem) =>
+			Start(resolver, (ContentLoader content) =>
 			{
 				var video = content.Load<Video>("DefaultVideo");
-				Assert.AreEqual(0, entitySystem.NumberOfEntities);
+				Assert.AreEqual(0, EntitySystem.Current.NumberOfEntities);
 				video.Stop();
-				Assert.AreEqual(0, entitySystem.NumberOfEntities);
+				Assert.AreEqual(0, EntitySystem.Current.NumberOfEntities);
 				video.Play();
-				Assert.AreEqual(1, entitySystem.NumberOfEntities);
+				Assert.AreEqual(1, EntitySystem.Current.NumberOfEntities);
 				video.Stop();
-				Assert.AreEqual(0, entitySystem.NumberOfEntities);
+				Assert.AreEqual(0, EntitySystem.Current.NumberOfEntities);
 			});
 		}
 

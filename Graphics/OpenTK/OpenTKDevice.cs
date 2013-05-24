@@ -23,7 +23,13 @@ namespace DeltaEngine.Graphics.OpenTK
 		}
 
 		private IWindowInfo windowInfo;
-		private GraphicsContext context;
+
+		public GraphicsContext Context
+		{
+			get;
+			private set;
+		}
+
 		private const int BitsPerPixel = 32;
 		private readonly Window window;
 
@@ -37,9 +43,9 @@ namespace DeltaEngine.Graphics.OpenTK
 
 		private void CreateContext()
 		{
-			context = new GraphicsContext(GraphicsMode.Default, windowInfo);
-			context.MakeCurrent(windowInfo);
-			context.LoadAll();
+			Context = new GraphicsContext(GraphicsMode.Default, windowInfo);
+			Context.MakeCurrent(windowInfo);
+			Context.LoadAll();
 		}
 
 		private void InitializeModelViewMatrix()
@@ -78,8 +84,8 @@ namespace DeltaEngine.Graphics.OpenTK
 
 		public void Present()
 		{
-			if (window.Visibility && context != null)
-				context.SwapBuffers();
+			if (window.Visibility && Context != null)
+				Context.SwapBuffers();
 		}
 
 		public void Dispose()
@@ -87,10 +93,10 @@ namespace DeltaEngine.Graphics.OpenTK
 			if (windowInfo != null)
 				windowInfo.Dispose();
 
-			if (context != null)
-				context.Dispose();
+			if (Context != null)
+				Context.Dispose();
 
-			context = null;
+			Context = null;
 		}
 
 		private static void OnFullscreenChanged(Size displaySize, bool b)

@@ -69,6 +69,9 @@ namespace DeltaEngine.Core.Xml
 
 		public XmlData AddChild(XmlData child)
 		{
+			if (child == null)
+				return this;
+
 			child.Parent = this;
 			Children.Add(child);
 			return this;
@@ -94,13 +97,20 @@ namespace DeltaEngine.Core.Xml
 			Attributes.Add(new XmlAttribute(attribute, value));
 		}
 
-		public string GetValue(string attributeName)
+		public string GetAttributeValue(string attributeName)
 		{
-			foreach (XmlAttribute attribute in Attributes)
-				if (attribute.Name == attributeName)
-					return attribute.Value;
+			foreach (XmlAttribute attribute in Attributes.Where(a => a.Name == attributeName))
+				return attribute.Value;
 
 			return "";
+		}
+
+		public T GetAttributeValue<T>(string attributeName, T defaultValue)
+		{
+			foreach (XmlAttribute attribute in Attributes.Where(a => a.Name == attributeName))
+				return attribute.Value.FromInvariantString(defaultValue);
+
+			return defaultValue;
 		}
 
 		public string GetDescendantValue(string attributeName)
@@ -166,7 +176,7 @@ namespace DeltaEngine.Core.Xml
 			foreach (XmlData child in Children)
 			{
 				if ((anyDescendant || child.Name.Compare(childName)) &&
-					child.GetValue(attribute.Name) == attribute.Value)
+					child.GetAttributeValue(attribute.Name) == attribute.Value)
 					return child;
 
 				XmlData childOfChild = child.GetDescendant(attribute, childName);
@@ -198,7 +208,7 @@ namespace DeltaEngine.Core.Xml
 		{
 			bool matches = true;
 			foreach (var attribute in attributes)
-				if (GetValue(attribute.Name) != attribute.Value)
+				if (GetAttributeValue(attribute.Name) != attribute.Value)
 					matches = false;
 
 			return matches;

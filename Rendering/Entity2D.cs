@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 
@@ -15,8 +17,8 @@ namespace DeltaEngine.Rendering
 		{
 			Add(drawArea);
 			Add(color);
-			Add(new Rotation(rotation));
-			Add<SortAndRenderEntity2D>();
+			Add(rotation);
+			Add<SortAndRender>();
 		}
 
 		private Entity2D()
@@ -76,8 +78,8 @@ namespace DeltaEngine.Rendering
 
 		public float Rotation
 		{
-			get { return Get<Rotation>().Value; }
-			set { Set(new Rotation(value)); }
+			get { return Get<float>(); }
+			set { Set(value); }
 		}
 
 		public int RenderLayer
@@ -94,116 +96,37 @@ namespace DeltaEngine.Rendering
 
 		public const int DefaultRenderLayer = 0;
 
-		/*
-			//Add(new Transition());//TODO: remove here
-			//Add<PerformTransition>();//TODO: remove here
-		public Color TransitionColor
+		public bool RotatedDrawAreaContains(Point point)
 		{
-			set
+			var center = Contains<RotationCenter>() ? Get<RotationCenter>().Value : DrawArea.Center;
+			point.RotateAround(center, -Rotation);
+			return DrawArea.Contains(point);
+		}
+
+		/// <summary>
+		/// Sorts all Entities into RenderLayer order; Then, for each, messages any listeners attached 
+		/// that it's time to render it.
+		/// </summary>
+		public class SortAndRender : EntityHandler
+		{
+			public override void Handle(List<Entity> entities)
 			{
-				if (Contains<TransitionColor>())
-					Get<TransitionColor>().End = value;
-				else
-					Add(new TransitionColor { End = value });
+				var sortedEntities =
+					entities.OfType<Entity2D>().Where(entity => entity.Visibility == Visibility.Show).OrderBy(
+						entity => entity.RenderLayer);
+				foreach (var entity in sortedEntities)
+					entity.MessageAllListeners(new TimeToRender());
+				NumberOfActiveRenderableObjects = sortedEntities.Count();
+			}
+
+			public class TimeToRender {}
+
+			public int NumberOfActiveRenderableObjects { get; private set; }
+
+			public override EntityHandlerPriority Priority
+			{
+				get { return EntityHandlerPriority.High; }
 			}
 		}
-
-		public Color TransitionOutlineColor
-		{
-			set
-			{
-				if (Contains<TransitionOutlineColor>())
-					Get<TransitionOutlineColor>().End = value;
-				else
-					Add(new TransitionOutlineColor { End = value });
-			}
-		}
-
-		public Point TransitionPosition
-		{
-			set
-			{
-				if (Contains<TransitionPosition>())
-					Get<TransitionPosition>().End = value;
-				else
-					Add(new TransitionPosition { End = value });
-			}
-		}
-
-		public Size TransitionSize
-		{
-			set
-			{
-				if (Contains<TransitionSize>())
-					Get<TransitionSize>().End = value;
-				else
-					Add(new TransitionSize { End = value });
-			}
-		}
-
-		public float TransitionRotation
-		{
-			set
-			{
-				if (Contains<TransitionRotation>())
-					Get<TransitionRotation>().End = value;
-				else
-					Add(new TransitionRotation { End = value });
-			}
-		}
-
-		public float TransitionDuration
-		{
-			get { return Get<Transition>().Duration; }
-			set
-			{
-				var transition = Get<Transition>();
-				transition.Duration = value;
-				transition.Elapsed = value;
-			}
-		}
-
-		public void BeginTransitionThenRemove()
-		{
-			BeginTransition(true);
-		}
-
-		private void BeginTransition(bool isEntityToBeRemovedWhenFinished)
-		{
-			SetStartColorsIfRequired();
-			SetStartPositionAndSizeIfRequired();
-			SetStartRotationIfRequired();
-			Get<Transition>().Elapsed = 0;
-			Get<Transition>().IsEntityToBeRemovedWhenFinished = isEntityToBeRemovedWhenFinished;
-		}
-
-		private void SetStartColorsIfRequired()
-		{
-			if (Contains<TransitionColor>())
-				Get<TransitionColor>().Start = Color;
-
-			if (Contains<OutlineColor>() && Contains<TransitionOutlineColor>())
-				Get<TransitionOutlineColor>().Start = Get<OutlineColor>().Value;
-		}
-
-		private void SetStartPositionAndSizeIfRequired()
-		{
-			if (Contains<TransitionPosition>())
-				Get<TransitionPosition>().Start = TopLeft;
-
-			if (Contains<TransitionSize>())
-				Get<TransitionSize>().Start = Size;
-		}
-
-		private void SetStartRotationIfRequired()
-		{
-			if (Contains<TransitionRotation>())
-				Get<TransitionRotation>().Start = Rotation;
-		}
-
-		public void BeginTransition()
-		{
-			BeginTransition(false);
-		}*/
 	}
 }

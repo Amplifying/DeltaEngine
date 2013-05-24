@@ -11,6 +11,7 @@ namespace NewDeltaEngineProject
 			FadePercentage += Time.Current.Delta;
 			if (FadePercentage >= 1.0f)
 				SwitchToNextRandomColor();
+
 			window.BackgroundColor = Color.Lerp(CurrentColor, NextColor, FadePercentage);
 		}
 

@@ -6,15 +6,8 @@ namespace DeltaEngine.Rendering.Triggers
 {
 	internal class CollisionTrigger : Trigger2D
 	{
-		public CollisionTrigger(EntitySystem system)
-		{
-			this.system = system;
-		}
-
-		private readonly EntitySystem system;
-
 		public override void Update(Entity entity)
-		{			
+		{
 			var data = entity.Get<CollisionTriggerData>();
 			var foundEntities = GetEntitiesFromSearchTags(data);
 			foreach (var otherEntity in foundEntities)
@@ -23,20 +16,21 @@ namespace DeltaEngine.Rendering.Triggers
 						? data.TriggeredColor : data.DefaultColor);
 		}
 
-		private IEnumerable<Entity> GetEntitiesFromSearchTags(CollisionTriggerData data)
+		private static IEnumerable<Entity> GetEntitiesFromSearchTags(CollisionTriggerData data)
 		{
-			List<Entity> foundEntities = new List<Entity>();
+			var foundEntities = new List<Entity>();
 			foreach (var tag in data.SearchTags)
-				foreach (var foundEntity in system.GetEntitiesWithTag(tag))
+				foreach (var foundEntity in EntitySystem.Current.GetEntitiesWithTag(tag))
 					foundEntities.Add(foundEntity);
+
 			return foundEntities;
 		}
 
 		private static bool IsEntityRectCollidingWithOtherEntityRect(Entity entity,
 			Entity otherEntity)
 		{
-			return entity.Get<Rectangle>().IsColliding(otherEntity.Get<Rectangle>(),
-				entity.Get<Rotation>().Value, otherEntity.Get<Rotation>().Value);
+			return entity.Get<Rectangle>().IsColliding(entity.Get<float>(), otherEntity.Get<Rectangle>(),
+				otherEntity.Get<float>());
 		}
 	}
 }

@@ -11,17 +11,10 @@ namespace DeltaEngine.Entities.Tests
 		{
 			Assert.AreEqual("Empty", emptyEntity.Tag);
 			Assert.AreEqual(0, emptyEntity.NumberOfComponents);
-			Assert.IsFalse(emptyEntity.IsActive);
+			Assert.IsTrue(emptyEntity.IsActive);
 		}
 
 		private readonly Entity emptyEntity = new EmptyEntity { Tag = "Empty" };
-
-		public class EmptyEntity : Entity
-		{
-			//// ReSharper disable EmptyConstructor
-			public EmptyEntity() {}
-			//// ReSharper restore EmptyConstructor
-		}
 
 		[Test]
 		public void AddAndRemoveComponent()
@@ -49,19 +42,18 @@ namespace DeltaEngine.Entities.Tests
 		[Test]
 		public new void ToString()
 		{
-			Assert.AreEqual("<Inactive> EmptyEntity Tag=Empty", emptyEntity.ToString());
-			var activeEntity = new EmptyEntity { IsActive = true };
-			Assert.AreEqual("EmptyEntity", activeEntity.ToString());
+			Assert.AreEqual("EmptyEntity Tag=Empty", emptyEntity.ToString());
+			var activeEntity = new EmptyEntity { IsActive = false };
+			Assert.AreEqual("<Inactive> EmptyEntity", activeEntity.ToString());
 			var entityWithComponent = new EmptyEntity().Add(new object()).Add(new Point());
-			Assert.AreEqual("<Inactive> EmptyEntity: Object, Point", entityWithComponent.ToString());
+			Assert.AreEqual("EmptyEntity: Object, Point", entityWithComponent.ToString());
 			var entityWithList = new EmptyEntity().Add(new List<Color>());
-			Assert.AreEqual("<Inactive> EmptyEntity: List<Color>", entityWithList.ToString());
+			Assert.AreEqual("EmptyEntity: List<Color>", entityWithList.ToString());
 			var entityWithArray = new EmptyEntity().Add(new Point[2]);
-			Assert.AreEqual("<Inactive> EmptyEntity: Point[]", entityWithArray.ToString());
+			Assert.AreEqual("EmptyEntity: Point[]", entityWithArray.ToString());
 			var entityWithRunner =
 				new EmptyEntity().Add<EntitySystemTests.CountEntities>().Add<ComponentTests.Rotate>();
-			Assert.AreEqual("<Inactive> EmptyEntity [CountEntities, Rotate]",
-				entityWithRunner.ToString());
+			Assert.AreEqual("EmptyEntity [CountEntities, Rotate]", entityWithRunner.ToString());
 		}
 
 		[Test]
@@ -76,7 +68,7 @@ namespace DeltaEngine.Entities.Tests
 			var loadedEntity = data.CreateFromMemoryStream() as Entity;
 			Assert.AreEqual(entity.Tag, loadedEntity.Tag);
 			Assert.AreEqual(0, loadedEntity.NumberOfComponents);
-			Assert.AreEqual(false, loadedEntity.IsActive);
+			Assert.IsTrue(loadedEntity.IsActive);
 		}
 
 		private static int GetShortNameLength(string text)
@@ -104,7 +96,7 @@ namespace DeltaEngine.Entities.Tests
 			Assert.AreEqual(0, loadedEntity.NumberOfComponents);
 			Assert.AreEqual(1, entity.handlerTypesToAdd.Count);
 			Assert.AreEqual(typeof(EntitySystemTests.CountEntities), entity.handlerTypesToAdd[0]);
-			Assert.AreEqual(false, loadedEntity.IsActive);
+			Assert.IsTrue(loadedEntity.IsActive);
 		}
 
 		[Test]
@@ -121,7 +113,7 @@ namespace DeltaEngine.Entities.Tests
 			Assert.AreEqual(0, entity.handlerTypesToAdd.Count);
 			Assert.AreEqual(1, entity.components[0]);
 			Assert.AreEqual(0.1f, entity.components[1]);
-			Assert.AreEqual(false, loadedEntity.IsActive);
+			Assert.IsTrue(loadedEntity.IsActive);
 		}
 
 		[Test]
@@ -131,7 +123,14 @@ namespace DeltaEngine.Entities.Tests
 			entity.Add(Color.Green);
 			Assert.AreEqual(Color.Green, entity.Get<Color>());
 			entity.Set(Color.Red);
-			Assert.AreEqual(Color.Red, entity.Get<Color>());
+			Assert.AreEqual(Color.Red, entity.GetOrCreate<Color>());
+		}
+
+		[Test]
+		public void CreateComponentViaGetOrCreate()
+		{
+			var entity = new EmptyEntity();
+			Assert.AreEqual(new Color(), entity.GetOrCreate<Color>());
 		}
 
 		[Test]
@@ -151,6 +150,56 @@ namespace DeltaEngine.Entities.Tests
 		{
 			Assert.Throws<Entity.InstantiatedEntityHandlerAddedToEntity>(
 				() => new EmptyEntity().Add(new EntitySystemTests.CountEntities()));
+		}
+
+		[Test]
+		public void AddingTriggerAddsComponentAndHandler()
+		{
+			var trigger = CreateTrigger();
+			var entity = new EmptyEntity().AddTrigger(trigger);
+			Assert.AreEqual(trigger, entity.Get<List<Trigger>>()[0]);
+			Assert.IsTrue(entity.handlerTypesToAdd[0] == typeof(CheckTriggers));
+		}
+
+		private static Trigger CreateTrigger()
+		{
+			var trigger = new Trigger(entity => entity.Contains<Color>());
+			trigger.Fired += entity => entity.Set(Color.Red);
+			return trigger;
+		}
+
+		[Test]
+		public void RemovingTriggerRemovesItFromComponentList()
+		{
+			var trigger = CreateTrigger();
+			var entity = new EmptyEntity().AddTrigger(trigger).RemoveTrigger(trigger);
+			Assert.AreEqual(0, entity.Get<List<Trigger>>().Count);
+		}
+
+		[Test]
+		public void RemovingNonExistentTriggerIsOk()
+		{
+			new EmptyEntity().RemoveTrigger(CreateTrigger());
+		}
+
+		[Test]
+		public void AddingTriggerTwiceIsOk()
+		{
+			var trigger = CreateTrigger();
+			new EmptyEntity().AddTrigger(trigger).AddTrigger(trigger);
+		}
+
+		[Test]
+		public void ActivationTransfersToComponentsIfComponentsAreEntities()
+		{
+			var grandchild = new EmptyEntity();
+			var child = new EmptyEntity().Add(grandchild);
+			var parent = new EmptyEntity().Add(child);
+			Assert.IsTrue(grandchild.IsActive);
+			parent.IsActive = false;
+			Assert.IsFalse(grandchild.IsActive);
+			parent.IsActive = true;
+			Assert.IsTrue(grandchild.IsActive);
 		}
 	}
 }

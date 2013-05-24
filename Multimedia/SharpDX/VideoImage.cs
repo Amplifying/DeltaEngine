@@ -1,7 +1,5 @@
 using System;
 using System.IO;
-using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
 using DeltaEngine.Graphics.SharpDX;
 using DeltaEngine.Logging;
 using DeltaEngine.Multimedia.AviVideo;
@@ -15,8 +13,8 @@ namespace DeltaEngine.Multimedia.SharpDX
 	[IgnoreForResolver]
 	public class VideoImage : SharpDXImage
 	{
-		public VideoImage(SharpDXDrawing drawing, SharpDXDevice device, Logger log)
-			: base("<VideoTexture>", drawing, device, log)
+		public VideoImage(SharpDXDevice device, Logger log)
+			: base("<VideoTexture>", device, log)
 		{
 			this.device = device;
 		}
@@ -25,21 +23,14 @@ namespace DeltaEngine.Multimedia.SharpDX
 
 		protected override void LoadData(Stream fileData) {}
 
-		public override void Draw(VertexPositionColorTextured[] vertices)
-		{
-			vertices[0] = new VertexPositionColorTextured(vertices[0].Position, vertices[0].Color,
-				Point.UnitY);
-			vertices[1] = new VertexPositionColorTextured(vertices[1].Position, vertices[1].Color,
-				Point.One);
-			vertices[2] = new VertexPositionColorTextured(vertices[2].Position, vertices[2].Color,
-				Point.UnitX);
-			vertices[3] = new VertexPositionColorTextured(vertices[3].Position, vertices[3].Color,
-				Point.Zero);
-			base.Draw(vertices);
-		}
-
 		public unsafe void UpdateTexture(VideoStream stream, int frameIndex)
 		{
+			/*TODO:
+			vertices[0].TextureCoordinate = Point.UnitY;
+			vertices[1].TextureCoordinate = Point.One;
+			vertices[2].TextureCoordinate = Point.UnitX;
+			vertices[3].TextureCoordinate = Point.Zero;
+			 */
 			AviInterop.BitmapInfoHeader bitmapHeader;
 			byte[] pixelData = stream.GetStreamData(frameIndex, out bitmapHeader);
 			pixelData = ConvertToRgba(pixelData);

@@ -35,7 +35,6 @@ namespace DeltaEngine.Content.Tests
 			Assert.AreEqual("Test.xml", contentLoader.GetFilenameFromContentName("Test"));
 			Assert.AreEqual("DeltaEngineLogo.png",
 				contentLoader.GetFilenameFromContentName("DeltaEngineLogo"));
-
 			Assert.Throws<ContentLoader.ContentNotFound>(
 				() => contentLoader.GetFilenameFromContentName("abc"));
 		}

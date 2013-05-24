@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-	<PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform' == '' ">AnyCPU</Platform>
     <ProjectGuid>{226310B7-29DB-410A-891A-ADFD5170881B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -12,7 +12,7 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <RestorePackages>true</RestorePackages>
-	</PropertyGroup>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -22,7 +22,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-    <DocumentationFile>bin\Debug\DeltaEngine.Editor.Mocks.Tests.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,45 +31,44 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-    <DocumentationFile>bin\Release\DeltaEngine.Editor.Mocks.Tests.XML</DocumentationFile>
   </PropertyGroup>
-	<ItemGroup>
-		<Reference Include="nunit.framework" >
-		<HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
-	</Reference>
-		<Reference Include="System" />
-		<Reference Include="System.Core" />
-		<Reference Include="System.IO.Abstractions" >
-		<HintPath>..\..\packages\System.IO.Abstractions.1.4.0.64\lib\net35\System.IO.Abstractions.dll</HintPath>
-	</Reference>
-		<Reference Include="System.IO.Abstractions.TestingHelpers" >
-		<HintPath>..\..\packages\System.IO.Abstractions.TestingHelpers.1.4.0.64\lib\net35\System.IO.Abstractions.TestingHelpers.dll</HintPath>
-	</Reference>
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\..\Common\DeltaEngine.Editor.Common.csproj">
-			<Project>{FC0E9FDC-68E0-405E-BFC7-1F3523BD3EA7}</Project>
-			<Name>DeltaEngine.Editor.Common</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\DeltaEngine.Editor.Mocks.csproj">
-			<Project>{2A38417D-2378-41F8-BCC6-A65E1894835A}</Project>
-			<Name>DeltaEngine.Editor.Mocks</Name>
-		</ProjectReference>
-	</ItemGroup>
-	<ItemGroup>
-		<Content Include="Content\DeltaEngineLogo.png">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
-	<ItemGroup>
-		<None Include="packages.config">
-			<SubType>Designer</SubType>
-		</None>
-	</ItemGroup>
-	<ItemGroup>
-		<Compile Include="Properties\AssemblyInfo.cs" />
-		<Compile Include="ContentServiceFilesTests.cs" />
-	</ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO.Abstractions">
+      <HintPath>..\..\packages\System.IO.Abstractions.1.4.0.64\lib\net35\System.IO.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Abstractions.TestingHelpers">
+      <HintPath>..\..\packages\System.IO.Abstractions.TestingHelpers.1.4.0.64\lib\net35\System.IO.Abstractions.TestingHelpers.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\DeltaEngine.Editor.Common.csproj">
+      <Project>{FC0E9FDC-68E0-405E-BFC7-1F3523BD3EA7}</Project>
+      <Name>DeltaEngine.Editor.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DeltaEngine.Editor.Mocks.csproj">
+      <Project>{2A38417D-2378-41F8-BCC6-A65E1894835A}</Project>
+      <Name>DeltaEngine.Editor.Mocks</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\DeltaEngineLogo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ContentServiceFilesTests.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>

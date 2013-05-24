@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 using Microsoft.Xna.Framework.Input.Touch;
 
 namespace DeltaEngine.Input.Xna

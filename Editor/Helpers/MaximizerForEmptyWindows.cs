@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 
 namespace DeltaEngine.Editor.Helpers
 {
-	class MaximizerForEmptyWindows
+	internal class MaximizerForEmptyWindows
 	{
 		public MaximizerForEmptyWindows(Window window)
 		{

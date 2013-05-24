@@ -24,17 +24,23 @@ namespace DeltaEngine.Multimedia.SharpDX
 			if (stream == null)
 				return false;
 
-			int size = stream.Read(byteBuffer, BufferSize);
-			bool dataAvailable = size > 0;
-			if (dataAvailable)
+			try
 			{
+				int size = stream.Read(byteBuffer, BufferSize);
+				if (size <= 0)
+					return false;
+
 				XAudioBuffer.AudioDataPointer = GetBufferHandle();
 				XAudioBuffer.AudioBytes = size;
 				int blockAlign = stream.Channels * 2;
 				XAudioBuffer.PlayLength = size / blockAlign;
 			}
+			catch (Exception)
+			{
+				return false;
+			}
 
-			return dataAvailable;
+			return true;
 		}
 
 		private unsafe IntPtr GetBufferHandle()

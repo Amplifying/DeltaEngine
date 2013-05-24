@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DeltaEngine.Core;
+using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Input
 {
@@ -72,6 +73,27 @@ namespace DeltaEngine.Input
 			var command = new Command();
 			command.Callback += trigger => mouseHoverCallback(Mouse);
 			command.Add(new MouseHoverTrigger());
+			Add(command);
+			return command;
+		}
+
+		public Command AddMouseHold(Rectangle holdArea, float holdTime, MouseButton button,
+			Action<Mouse> mouseHoldCallback)
+		{
+			var command = new Command();
+			command.Callback += trigger => mouseHoldCallback(Mouse);
+			command.Add(new MouseHoldTrigger(holdArea, holdTime, button));
+			Add(command);
+			return command;
+		}
+
+		public Command AddMouseDragDrop(Rectangle startArea, MouseButton button,
+			Action<Point, Point, State> callback)
+		{
+			var command = new Command();
+			command.Callback += trigger => callback((trigger as MouseDragDropTrigger).StartDragPosition,
+				Mouse.Position, Mouse.GetButtonState(button));
+			command.Add(new MouseDragDropTrigger(startArea, button));
 			Add(command);
 			return command;
 		}

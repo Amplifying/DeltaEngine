@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
@@ -7,18 +7,22 @@ using DeltaEngine.Rendering.Shapes;
 
 namespace Snake
 {
+	/// <summary>
+	/// This class holds data about the snake body and checks for snake collisions with either 
+	/// itself or with the borders and whether the snake must grow in size.
+	/// </summary>
 	public class Snake : Entity
 	{
-		public Snake(EntitySystem entitySystem, int gridSize)
+		public Snake(int gridSize)
 		{
-			Add(new Body(entitySystem, gridSize));
+			Add(new Body(gridSize));
 			Add<SnakeHandler>();
 		}
 
-		public void Dispose(EntitySystem entitySystem)
+		public void Dispose()
 		{
 			foreach (var bodyPart in Get<Body>().BodyParts)
-				entitySystem.Remove(bodyPart);
+				bodyPart.IsActive = false;
 
 			Get<Body>().BodyParts.Clear();
 			Remove<Body>();
@@ -27,15 +31,13 @@ namespace Snake
 
 		public class Body
 		{
-			public Body(EntitySystem entitySystem, int gridSize)
+			public Body(int gridSize)
 			{
-				this.entitySystem = entitySystem;
 				this.gridSize = gridSize;
 				blockSize = 1.0f / gridSize;
 				SpawnSnake();
 			}
 
-			private readonly EntitySystem entitySystem;
 			private readonly int gridSize;
 			private readonly float blockSize;
 
@@ -52,10 +54,9 @@ namespace Snake
 
 			private void PlaceSnakeHead()
 			{
-				var startPosition = blockSize * (gridSize / 2);
+				var startPosition = blockSize * (float)Math.Floor(gridSize / 2.0f);
 				var firstPart = new Rect(CalculateHeadDrawArea(startPosition), Color.Teal);
 				BodyParts.Add(firstPart);
-				entitySystem.Add(firstPart);
 			}
 
 			private Rectangle CalculateHeadDrawArea(float startPosition)
@@ -68,7 +69,6 @@ namespace Snake
 				var snakeHead = BodyParts[BodyParts.Count - 1].DrawArea;
 				var newTail = new Rect(CalculateBodyDrawArea(snakeHead), Color.Teal);
 				BodyParts.Add(newTail);
-				entitySystem.Add(newTail);
 			}
 
 			private Rectangle CalculateBodyDrawArea(Rectangle snakeHead)
@@ -148,7 +148,7 @@ namespace Snake
 
 		internal class SnakeHandler : EntityHandler
 		{
-			public void Handle(List<Entity> entities)
+			public override void Handle(List<Entity> entities)
 			{
 				foreach (var entity in entities)
 					if (Time.Current.CheckEvery(0.15f))
@@ -159,7 +159,7 @@ namespace Snake
 					}
 			}
 
-			public EntityHandlerPriority Priority
+			public override EntityHandlerPriority Priority
 			{
 				get { return EntityHandlerPriority.Normal; }
 			}

@@ -1,39 +1,58 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
+using DeltaEngine.Graphics;
 using DeltaEngine.Platforms.All;
 using DeltaEngine.Platforms.Tests;
 using DeltaEngine.Rendering.Shapes;
+using DeltaEngine.Rendering.Sprites;
 using NUnit.Framework;
 
 namespace DeltaEngine.Rendering.Tests.Shapes
 {
 	public class Line2DTests : TestWithAllFrameworks
 	{
-		[VisualTest]
-		public void RenderManyRotatingLines(Type resolver)
+		[VisualTest, ApproveFirstFrameScreenshot]
+		public void RenderRedLine(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem) =>
+			Start(resolver, () => new Line2D(Point.UnitX, Point.UnitY, Color.Red));
+		}
+
+		[VisualTest]
+		public void RenderLineAndSprite(Type resolver)
+		{
+			Start(resolver, (ContentLoader content) =>
 			{
-				for (int num = 0; num < 100; num++)
-					AddRotatingLine(num, entitySystem);
+				new Line2D(Point.Zero, Point.One, Color.Red);
+				new Sprite(content.Load<Image>("DeltaEngineLogo"),
+					Rectangle.FromCenter(Point.Half, new Size(0.1f)));
 			});
 		}
 
-		private static void AddRotatingLine(int num, EntitySystem entitySystem)
+		[VisualTest]
+		public void RenderManyRotatingLines(Type resolver)
+		{
+			Start(resolver, () =>
+			{
+				for (int num = 0; num < 100; num++)
+					AddRotatingLine(num);
+			});
+		}
+
+		private static void AddRotatingLine(int num)
 		{
 			var line = new Line2D(Point.Half, new Point(0.5f, 0.0f), Color.Orange);
 			line.Rotation = num * 360 / 100.0f;
 			line.Add<Rotate>();
-			entitySystem.Add(line);
 		}
 
 		public class Rotate : EntityHandler
 		{
-			public void Handle(List<Entity> entities)
+			public override void Handle(List<Entity> entities)
 			{
 				foreach (var entity in entities.OfType<Entity2D>())
 					RotateLine(entity);
@@ -47,7 +66,7 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 					line.End = Point.Half + new Point(0.5f, 0).RotateAround(Point.Zero, entity.Rotation);
 			}
 
-			public EntityHandlerPriority Priority
+			public override EntityHandlerPriority Priority
 			{
 				get { return EntityHandlerPriority.First; }
 			}
@@ -87,11 +106,12 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 		[Test]
 		public void AddLineToEntitySystem()
 		{
-			var resolver = new MockResolver();
-			var line = new Line2D(Point.Zero, Point.One, Color.Red);
-			resolver.EntitySystem.Add(line);
-			resolver.EntitySystem.Run();
-			Assert.AreEqual(2, resolver.rendering.NumberOfVerticesDrawn);
+			Start(typeof(MockResolver), () =>
+			{
+				new Line2D(Point.Zero, Point.One, Color.Red);
+				EntitySystem.Current.Run();
+				Assert.AreEqual(2, mockResolver.rendering.NumberOfVerticesDrawn);
+			});
 		}
 
 		[Test]
@@ -102,31 +122,22 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 			Assert.AreEqual(Color.Green, line.Get<Color>());
 		}
 
-		[VisualTest, ApproveFirstFrameScreenshot]
-		public void RenderRedLine(Type resolver)
-		{
-			Start(resolver,
-				(EntitySystem entitySystem) =>
-					entitySystem.Add(new Line2D(Point.UnitX, Point.UnitY, Color.Red)));
-		}
-
 		[VisualTest]
 		public void RenderRedSquareViaAddingLines(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem) =>
+			Start(resolver, () =>
 			{
 				var line = new Line2D(new Point(0.4f, 0.4f), new Point(0.6f, 0.4f), Color.Red);
 				line.AddLine(new Point(0.6f, 0.4f), new Point(0.6f, 0.6f));
 				line.AddLine(new Point(0.6f, 0.6f), new Point(0.4f, 0.6f));
 				line.AddLine(new Point(0.4f, 0.6f), new Point(0.4f, 0.4f));
-				entitySystem.Add(line);
 			});
 		}
 
 		[VisualTest]
 		public void RenderRedSquareViaExtendingLine(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem) => entitySystem.Add(CreateRedBox()));
+			Start(resolver, () => CreateRedBox());
 		}
 
 		private static Line2D CreateRedBox()
@@ -141,13 +152,12 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 		[VisualTest]
 		public void RenderRedSquareWithMissingTop(Type resolver)
 		{
-			Start(resolver, (EntitySystem entitySystem) =>
+			Start(resolver, () =>
 			{
 				var line = CreateRedBox();
 				var points = line.Points;
 				points.RemoveAt(0);
 				points.RemoveAt(0);
-				entitySystem.Add(line);
 			});
 		}
 	}

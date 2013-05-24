@@ -25,8 +25,8 @@ namespace DeltaEngine.Platforms.Tests
 
 		private class DummyRunner : Runner, IDisposable
 		{
-			public void Run() { }
-			public void Dispose() { }
+			public void Run() {}
+			public void Dispose() {}
 		}
 
 		private class DummyPresenter : Presenter
@@ -37,8 +37,8 @@ namespace DeltaEngine.Platforms.Tests
 				Present();
 			}
 
-			public void Run() { }
-			public void Present() { }
+			public void Run() {}
+			public void Present() {}
 		}
 
 		[TestCase(typeof(MockResolver))]
@@ -92,22 +92,19 @@ namespace DeltaEngine.Platforms.Tests
 		[TestCase(typeof(MockResolver))]
 		public void StartWithThreeAndOneClasses(Type resolver)
 		{
-			Start(resolver, (First first, Second second, Third third) => { },
-				(Forth forth) => { });
+			Start(resolver, (First first, Second second, Third third) => { }, (Forth forth) => { });
 		}
 
 		[TestCase(typeof(MockResolver))]
 		public void StartWithTwoAndTwoClasses(Type resolver)
 		{
-			Start(resolver, (First first, Second second) => { },
-				(Third third, Forth forth) => { });
+			Start(resolver, (First first, Second second) => { }, (Third third, Forth forth) => { });
 		}
 
 		[TestCase(typeof(MockResolver))]
 		public void StartWithOneAndThreeClasses(Type resolver)
 		{
-			Start(resolver, (First first) => { },
-				(Second second, Third third, Forth forth) => { });
+			Start(resolver, (First first) => { }, (Second second, Third third, Forth forth) => { });
 		}
 
 		[TestCase(typeof(MockResolver))]
@@ -124,15 +121,15 @@ namespace DeltaEngine.Platforms.Tests
 				(Third third, Forth forth, Fifth fifth) => { });
 		}
 
-		private class First { }
+		private class First {}
 
-		private class Second { }
+		private class Second {}
 
-		private class Third { }
+		private class Third {}
 
-		private class Forth { }
+		private class Forth {}
 
-		private class Fifth { }
+		private class Fifth {}
 
 		[Test]
 		public void CreateUnusedClasses()
@@ -169,7 +166,7 @@ namespace DeltaEngine.Platforms.Tests
 
 		private class ClassWithInnerClass
 		{
-			internal class UnknownInnerClass { }
+			internal class UnknownInnerClass {}
 
 			internal ClassWithInnerClass(UnknownInnerClass inner)
 			{
@@ -206,7 +203,7 @@ namespace DeltaEngine.Platforms.Tests
 				Assert.IsNotNullOrEmpty(name);
 			}
 
-			public void Run() { }
+			public void Run() {}
 		}
 
 		[Test]
@@ -236,16 +233,6 @@ namespace DeltaEngine.Platforms.Tests
 			Assert.AreEqual("Root", testXml.Data.Name);
 			Assert.AreEqual(1, testXml.Data.Children.Count);
 			Assert.AreEqual("Hi", testXml.Data.Children[0].Name);
-		}
-
-		[Test]
-		public void TestLoadVectorText()
-		{
-			var resolver = new MockResolver();
-			var content = resolver.resolver.Resolve<ContentLoader>();
-			var vectorText = content.Load<XmlContent>("VectorText");
-			Assert.AreEqual("VectorText", vectorText.Data.Name);
-			Assert.AreEqual(37, vectorText.Data.Children.Count);
 		}
 
 		[TestCase(typeof(MockResolver))]

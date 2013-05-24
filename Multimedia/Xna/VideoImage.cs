@@ -9,7 +9,7 @@ namespace DeltaEngine.Multimedia.Xna
 	public class VideoImage : XnaImage
 	{
 		public VideoImage(VideoRenderingDependencies rendering, VideoPlayer player)
-			: base(rendering.Drawing, rendering.GraphicsDevice, player.GetTexture())
+			: base(rendering.GraphicsDevice, player.GetTexture())
 		{
 			this.player = player;
 		}

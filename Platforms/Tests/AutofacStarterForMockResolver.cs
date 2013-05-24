@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using DeltaEngine.Content;
+using DeltaEngine.Content.Tests;
 using DeltaEngine.Core;
-using DeltaEngine.Core.Xml;
 using Moq;
 using NUnit.Framework;
 
@@ -20,27 +18,7 @@ namespace DeltaEngine.Platforms.Tests
 
 			RegisterInstance(new MockContentLoader(new AutofacContentDataResolver(this)));
 			base.MakeSureContainerIsInitialized();
-			foreach (var instance in registeredMocks)
-				RegisterInstanceAsRunnerOrPresenterIfPossible(instance);
-
 			testElapsedMs = GetTimeInMsForSlowTests();
-		}
-
-		private class MockContentLoader : ContentLoader
-		{
-			public MockContentLoader(ContentDataResolver resolver)
-				: base(resolver)
-			{
-				contentFilenames.Add("Test", "Test.xml");
-				contentFilenames.Add("DeltaEngineLogo", "DeltaEngineLogo.png");
-			}
-
-			protected override Stream GetContentDataStream(string contentName)
-			{
-				if (contentName == "Test")
-					return new XmlFile(new XmlData("Root").AddChild(new XmlData("Hi"))).ToMemoryStream();
-				return null;
-			}
 		}
 
 		private readonly List<object> registeredMocks = new List<object>();
@@ -76,8 +54,6 @@ namespace DeltaEngine.Platforms.Tests
 			registeredMocks.Add(instance);
 			alreadyRegisteredTypes.AddRange(instanceType.GetInterfaces());
 			RegisterInstance(instance);
-			if (instance is Time)
-				RegisterInstanceAsRunnerOrPresenterIfPossible(instance);
 			return instance;
 		}
 

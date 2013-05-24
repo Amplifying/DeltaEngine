@@ -4,28 +4,16 @@ using DeltaEngine.Datatypes;
 namespace DeltaEngine.Graphics
 {
 	/// <summary>
-	/// Provides a way to load images and display them using graphics device.
+	/// Provides a way to load images. Use Drawing to show them on the screen.
 	/// </summary>
 	public abstract class Image : ContentData
 	{
-		protected Image(string contentName, Drawing drawing)
-			: base(contentName)
-		{
-			this.drawing = drawing;
-		}
-
-		protected readonly Drawing drawing;
+		protected Image(string contentName)
+			: base(contentName) {}
 
 		public abstract Size PixelSize { get; }
-		protected bool DisableLinearFiltering { get; set; }
-
-		public virtual void Draw(VertexPositionColorTextured[] vertices)
-		{
-			drawing.SetIndices(QuadIndices, QuadIndices.Length);
-			drawing.DrawVertices(VerticesMode.Triangles, vertices);
-		}
-
-		private static readonly short[] QuadIndices = { 0, 1, 2, 0, 2, 3 };
+		public bool DisableLinearFiltering { get; set; }
+		public abstract bool HasAlpha { get; }
 
 		protected readonly Color[] checkerMapColors =
 		{

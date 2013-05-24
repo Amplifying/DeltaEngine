@@ -1,7 +1,7 @@
 using System;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using MouseState = Microsoft.Xna.Framework.Input.MouseState;
 using NativeMouse = Microsoft.Xna.Framework.Input.Mouse;

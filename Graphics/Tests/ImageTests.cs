@@ -22,20 +22,17 @@ namespace DeltaEngine.Graphics.Tests
 		public void DrawImage(Type resolver)
 		{
 			Image image = null;
-			Start(resolver, (ContentLoader content, Window window, Drawing drawing) =>
+			Start(resolver, (ContentLoader content, Window window) =>
 			{
 				window.BackgroundColor = Color.CornflowerBlue;
 				image = content.Load<Image>("DeltaEngineLogo");
-			}, () =>
+			}, (Drawing drawing) => drawing.DrawQuad(image, new[]
 			{
-				image.Draw(new[]
-				{
-					new VertexPositionColorTextured(new Point(175, 25), Color.Yellow, Point.Zero),
-					new VertexPositionColorTextured(new Point(475, 25), Color.Red, Point.UnitX),
-					new VertexPositionColorTextured(new Point(475, 325), Color.Blue, Point.One),
-					new VertexPositionColorTextured(new Point(175, 325), Color.Teal, Point.UnitY)
-				});
-			});
+				new VertexPositionColorTextured(new Point(175, 25), Color.Yellow, Point.Zero),
+				new VertexPositionColorTextured(new Point(475, 25), Color.Red, Point.UnitX),
+				new VertexPositionColorTextured(new Point(475, 325), Color.Blue, Point.One),
+				new VertexPositionColorTextured(new Point(175, 325), Color.Teal, Point.UnitY)
+			}));
 		}
 
 		[VisualTest]
@@ -71,8 +68,7 @@ namespace DeltaEngine.Graphics.Tests
 				image = content.Load<Image>("DeltaEngineLogo");
 			}, (Drawing drawing, Window window) =>
 			{
-				// Currently required to make sure the texture is set
-				image.Draw(new VertexPositionColorTextured[4]);
+				drawing.EnableTexturing(image);
 				// Draw 50 times to reach 1 million polygons per frame
 				drawing.SetIndices(indices, indices.Length);
 				for (int num = 0; num < 50; num++)

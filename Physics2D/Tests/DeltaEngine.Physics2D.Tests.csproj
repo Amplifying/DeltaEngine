@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-	<PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform' == '' ">AnyCPU</Platform>
     <ProjectGuid>{7DF79C3C-85F2-4068-97D8-B25C9173CD14}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -12,7 +12,7 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <RestorePackages>true</RestorePackages>
-	</PropertyGroup>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -22,7 +22,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-    <DocumentationFile>bin\Debug\DeltaEngine.Physics2D.Tests.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,65 +31,69 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-    <DocumentationFile>bin\Release\DeltaEngine.Physics2D.Tests.XML</DocumentationFile>
   </PropertyGroup>
-	<ItemGroup>
-		<Reference Include="nunit.framework" >
-		<HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
-	</Reference>
-		<Reference Include="System" />
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
-			<Project>{A8D386EA-D376-46EA-A721-2BA51426A721}</Project>
-			<Name>DeltaEngine.Core</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\Datatypes\DeltaEngine.Datatypes.csproj">
-			<Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
-			<Name>DeltaEngine.Datatypes</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\Entities\DeltaEngine.Entities.csproj">
-			<Project>{C6BA144D-59B0-41B1-8682-B092B4EFBBB1}</Project>
-			<Name>DeltaEngine.Entities</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\Graphics\DeltaEngine.Graphics.csproj">
-			<Project>{8f701b0d-48b6-45cf-85e0-286bd53328ba}</Project>
-			<Name>DeltaEngine.Graphics</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\Graphics\Tests\DeltaEngine.Graphics.Tests.csproj">
-			<Project>{B7E2C5AF-3EE2-4820-B2AE-62BC8D0FB7AC}</Project>
-			<Name>DeltaEngine.Graphics.Tests</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\Platforms\All\DeltaEngine.Platforms.All.csproj">
-			<Project>{CC714F92-36AA-44E1-AA01-495D9A6588D2}</Project>
-			<Name>DeltaEngine.Platforms.All</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\Platforms\Tests\DeltaEngine.Platforms.Tests.csproj">
-			<Project>{D0AAD622-ED82-40E5-88A9-980EAFC12C16}</Project>
-			<Name>DeltaEngine.Platforms.Tests</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
-			<Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
-			<Name>DeltaEngine.Rendering</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\DeltaEngine.Physics2D.csproj">
-			<Project>{dc3aa434-09b9-43ad-8f43-431811fa054d}</Project>
-			<Name>DeltaEngine.Physics2D</Name>
-		</ProjectReference>
-	</ItemGroup>
-	<ItemGroup>
-	<None Include="packages.config" />
-	</ItemGroup>
-	<ItemGroup>
-		<Compile Include="Properties\AssemblyInfo.cs" />
-		<Compile Include="BodyTests.cs" />
-		<Compile Include="JointTests.cs" />
-		<Compile Include="MockPhysics.cs" />
-		<Compile Include="MockPhysicsBody.cs" />
-		<Compile Include="MockPhysicsJoint.cs" />
-		<Compile Include="Physics2DHandlerTests.cs" />
-		<Compile Include="PhysicsTests.cs" />
-	</ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Content\DeltaEngine.Content.csproj">
+      <Project>{f1b6345b-6f28-482f-9230-8f1d8674c28a}</Project>
+      <Name>DeltaEngine.Content</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
+      <Project>{A8D386EA-D376-46EA-A721-2BA51426A721}</Project>
+      <Name>DeltaEngine.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Datatypes\DeltaEngine.Datatypes.csproj">
+      <Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
+      <Name>DeltaEngine.Datatypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Entities\DeltaEngine.Entities.csproj">
+      <Project>{C6BA144D-59B0-41B1-8682-B092B4EFBBB1}</Project>
+      <Name>DeltaEngine.Entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Graphics\DeltaEngine.Graphics.csproj">
+      <Project>{8f701b0d-48b6-45cf-85e0-286bd53328ba}</Project>
+      <Name>DeltaEngine.Graphics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Graphics\Tests\DeltaEngine.Graphics.Tests.csproj">
+      <Project>{B7E2C5AF-3EE2-4820-B2AE-62BC8D0FB7AC}</Project>
+      <Name>DeltaEngine.Graphics.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Platforms\All\DeltaEngine.Platforms.All.csproj">
+      <Project>{CC714F92-36AA-44E1-AA01-495D9A6588D2}</Project>
+      <Name>DeltaEngine.Platforms.All</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Platforms\Tests\DeltaEngine.Platforms.Tests.csproj">
+      <Project>{D0AAD622-ED82-40E5-88A9-980EAFC12C16}</Project>
+      <Name>DeltaEngine.Platforms.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
+      <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
+      <Name>DeltaEngine.Rendering</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DeltaEngine.Physics2D.csproj">
+      <Project>{dc3aa434-09b9-43ad-8f43-431811fa054d}</Project>
+      <Name>DeltaEngine.Physics2D</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="BodyTests.cs" />
+    <Compile Include="JointTests.cs" />
+    <Compile Include="MockPhysics.cs" />
+    <Compile Include="MockPhysicsBody.cs" />
+    <Compile Include="MockPhysicsJoint.cs" />
+    <Compile Include="Physics2DHandlerTests.cs" />
+    <Compile Include="EntityPhysicsTests.cs" />
+    <Compile Include="PhysicsTests.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>

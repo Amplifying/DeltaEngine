@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -10,7 +11,9 @@ using DeltaEngine.Core;
 namespace DeltaEngine.Content.Disk
 {
 	/// <summary>
-	/// Implementation of the ContentLoader that loads and caches files directly from disk.
+	/// Implementation of the ContentLoader that loads and caches files directly from disk,
+	/// using an xml-file stored inside the Content's directory, created earlier by ContentManager,
+	/// to get types and properties of Content.
 	/// </summary>
 	public class DiskContentLoader : ContentLoader
 	{
@@ -21,6 +24,25 @@ namespace DeltaEngine.Content.Disk
 			MakeSureContentPathExists();
 			TryCreateMetaDataIfNonExistant();
 			LoadMetaData();
+		}
+
+		public override List<Content> LoadRecursively<Content>(string parentName)
+		{
+			var loadedElements = new List<Content>();
+			var xml = XDocument.Load(ContentMetaDataFilePath);
+			var parentNode =
+				(from el in xml.Root.Elements() where (string)el.Attribute("Name") == parentName select el).
+					FirstOrDefault();
+			if (parentNode == null)
+				throw new ParentEntryForRecursiveLoadingNotExistant(parentName);
+			foreach (var contentNode in parentNode.Elements())
+				loadedElements.Add(Load<Content>(contentNode.Attribute("Name").Value));
+			return loadedElements;
+		}
+
+		public class ParentEntryForRecursiveLoadingNotExistant : Exception
+		{
+			public ParentEntryForRecursiveLoadingNotExistant(string parentName) :base(parentName){}
 		}
 
 		private void MakeSureContentPathExists()
@@ -104,7 +126,12 @@ namespace DeltaEngine.Content.Disk
 		{
 			writer.WriteStartElement("ContentMetaData");
 			WriteAttribute(writer, "Name", Path.GetFileNameWithoutExtension(filePath));
-			WriteAttribute(writer, "Type", ExtensionToType(Path.GetExtension(filePath)).ToString());
+			var contentType = ExtensionToType(Path.GetExtension(filePath));
+			WriteAttribute(writer, "Type", contentType.ToString());
+			if (contentType == ContentType.Image)
+			{
+				
+			}
 			var info = new FileInfo(filePath);
 			WriteAttribute(writer, "LastTimeUpdated", info.LastWriteTime.ToString("u"));
 			WriteAttribute(writer, "PlatformFileId", "-" + (++generatedContentCounter));
@@ -135,30 +162,34 @@ namespace DeltaEngine.Content.Disk
 			throw new UnsupportedContentFileFoundCannotParseType(extension);
 		}
 
-		private int generatedContentCounter;
-
 		private class UnsupportedContentFileFoundCannotParseType : Exception
 		{
 			public UnsupportedContentFileFoundCannotParseType(string extension)
-				: base(extension) {}
+				: base(extension) { }
 		}
+
+		internal void readPngHeader()
+		{
+			
+		}
+
+		private int generatedContentCounter;
 
 		private void LoadMetaData()
 		{
 			var xml = XDocument.Load(ContentMetaDataFilePath);
 			if (xml.Nodes().OfType<XComment>().Any())
-			{
 				WriteMetaDataDocument();
-				xml = XDocument.Load(ContentMetaDataFilePath);
-			}
+			xml = XDocument.Load(ContentMetaDataFilePath);
 			ParseXmlNode(xml.Root);
 		}
 
 		private void ParseXmlNode(XElement parent)
 		{
 			if (parent.Attributes("Name").Any() && parent.Attributes("LocalFilePath").Any())
-				contentFilenames.Add(parent.Attribute("Name").Value,
-					parent.Attribute("LocalFilePath").Value);
+				if (!contentFilenames.ContainsKey(parent.Attribute("Name").Value))
+					contentFilenames.Add(parent.Attribute("Name").Value,
+						parent.Attribute("LocalFilePath").Value);
 
 			foreach (var node in parent.Elements())
 				ParseXmlNode(node);
@@ -187,5 +218,6 @@ namespace DeltaEngine.Content.Disk
 			public ContentFileDoesNotExistOrIsInaccessible(string filePath, Exception innerException)
 				: base(filePath, innerException) {}
 		}
+
 	}
 }

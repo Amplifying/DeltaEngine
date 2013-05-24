@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
 using DeltaEngine.Core;
 
@@ -111,6 +112,7 @@ namespace DeltaEngine.Datatypes
 			return new Rectangle(new Point(center.X - size.Width / 2, center.Y - size.Height / 2), size);
 		}
 
+		[Pure]
 		public bool Contains(Point position)
 		{
 			return position.X >= Left && position.X < Right && position.Y >= Top && position.Y < Bottom;
@@ -121,17 +123,30 @@ namespace DeltaEngine.Datatypes
 			get { return Width / Height; }
 		}
 
+		public Rectangle Increase(Size size)
+		{
+			return new Rectangle(Left - size.Width / 2, Top - size.Height / 2, Width + size.Width,
+				Height + size.Height);
+		}
+
 		public Rectangle Reduce(Size size)
 		{
 			return new Rectangle(Left + size.Width / 2, Top + size.Height / 2, Width - size.Width,
 				Height - size.Height);
 		}
 
+		[Pure]
 		public Rectangle GetInnerRectangle(Rectangle relativeRectangle)
 		{
 			return new Rectangle(Left + Width * relativeRectangle.Left,
 				Top + Height * relativeRectangle.Top, Width * relativeRectangle.Width,
 				Height * relativeRectangle.Height);
+		}
+
+		[Pure]
+		public Point GetRelativePoint(Point point)
+		{
+			return new Point((point.X - Left) / Width, (point.Y - Top) / Height);
 		}
 
 		public Rectangle Move(Point translation)
@@ -176,11 +191,11 @@ namespace DeltaEngine.Datatypes
 			return new[]
 			{
 				TopLeft.RotateAround(center, rotation), TopRight.RotateAround(center, rotation),
-				BottomRight.RotateAround(center, rotation), BottomLeft.RotateAround(center, rotation) 
+				BottomRight.RotateAround(center, rotation), BottomLeft.RotateAround(center, rotation)
 			};
 		}
 
-		public bool IsColliding(Rectangle otherRect, float rotation = 0, float otherRotation = 0)
+		public bool IsColliding(float rotation, Rectangle otherRect, float otherRotation)
 		{
 			var rotatedRect = GetRotatedRectangleCorners(Center, rotation);
 			var rotatedOtherRect = otherRect.GetRotatedRectangleCorners(otherRect.Center, otherRotation);
@@ -226,6 +241,17 @@ namespace DeltaEngine.Datatypes
 				if (projectedValue > max)
 					max = projectedValue;
 			}
+		}
+
+		/// <summary>
+		/// Build UV rectangle for a given uv pixel rect and imagePixelSize. Used for FontData.
+		/// </summary>
+		public static Rectangle BuildUVRectangle(Rectangle uvInPixels, Size imagePixelSize)
+		{
+			return new Rectangle(uvInPixels.Left / imagePixelSize.Width,
+				uvInPixels.Top / imagePixelSize.Height,
+				Math.Min(1.0f, uvInPixels.Width / imagePixelSize.Width),
+				Math.Min(1.0f, uvInPixels.Height / imagePixelSize.Height));
 		}
 	}
 }

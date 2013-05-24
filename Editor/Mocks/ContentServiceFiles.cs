@@ -33,7 +33,7 @@ namespace DeltaEngine.Editor.Mocks
 			string newProject = Path.Combine(ContentPath, projectName);
 			if (fileSystem.Directory.Exists(newProject))
 				return;
-		
+
 			fileSystem.Directory.CreateDirectory(newProject);
 		}
 

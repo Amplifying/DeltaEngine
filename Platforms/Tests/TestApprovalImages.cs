@@ -24,7 +24,6 @@ namespace DeltaEngine.Platforms.Tests
 				foreach (var frame in stackFrames)
 					IsFrameInVisualTestCase(frame);
 
-			StackTraceExtensions.StartedFromNCrunch = IsStartedFromNCrunch();
 			if (resolverType == typeof(MockResolver) || NCrunchAllowIntegrationTests)
 				return false;
 
@@ -54,18 +53,7 @@ namespace DeltaEngine.Platforms.Tests
 		{
 			get { return false; }
 		}
-
-		private static bool IsStartedFromNCrunch()
-		{
-			var stackFrames = new StackTrace().GetFrames();
-			if (stackFrames != null)
-				foreach (var frame in stackFrames)
-					if (frame.GetMethod().ReflectedType.FullName.StartsWith("nCrunch.TestExecution."))
-						return true;
-
-			return false; //ncrunch: no coverage
-		}
-
+		
 		private static bool IsStartedFromNunit()
 		{
 			string currentDomainName = AppDomain.CurrentDomain.FriendlyName;

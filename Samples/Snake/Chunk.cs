@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
@@ -7,11 +7,16 @@ using DeltaEngine.Rendering.Shapes;
 
 namespace Snake
 {
+	/// <summary>
+	/// This class holds the data for the chunk and moves the chunk to random locations after 
+	/// being consumed.
+	/// </summary>
 	public class Chunk : Rect
 	{
 		public Chunk(int gridSize, float blockSize)
-			: base(new Rectangle(new Point(blockSize * (gridSize / 2), blockSize * (gridSize / 2)),
-				new Size(blockSize)), Color.Purple)
+			: base(
+				new Rectangle(new Point(blockSize * (gridSize / 2), blockSize * (gridSize / 2)),
+					new Size(blockSize)), Color.Purple)
 		{
 			this.gridSize = gridSize;
 			this.blockSize = blockSize;
@@ -38,7 +43,8 @@ namespace Snake
 
 		private bool IsBodyColliding(Entity2D body)
 		{
-			return body.DrawArea.IsColliding(DrawArea.Reduce(new Size(0.01f)));
+			var otherRect = DrawArea.Reduce(new Size(0.01f));
+			return body.DrawArea.IsColliding(body.Rotation, otherRect, 0.0f);
 		}
 	}
 }

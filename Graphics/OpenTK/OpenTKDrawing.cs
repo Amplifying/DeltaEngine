@@ -1,31 +1,25 @@
 using System;
-using System.Runtime.InteropServices;
 using OpenTK.Graphics.OpenGL;
 
 namespace DeltaEngine.Graphics.OpenTK
 {
-	public class OpenTKDrawing : Drawing
+	public sealed class OpenTKDrawing : Drawing
 	{
 		public OpenTKDrawing(Device device) : base(device)
 		{
-			InitializeBuffers();
-			SetBlending();
+			InitializeVertexBuffers();
+			SetBlending(BlendMode.Normal);
 		}
 
-		private CircularBuffer positionColorBuffer;
-		private const int NumberOfVertexBufferChunks = 4;
-		private CircularBuffer positionColorUvBuffer;
-		private int indexBufferID = InvalidHandle;
+		private const int VertexBufferSize = 1024;
+		private BlendMode lastBlendMode = BlendMode.Opaque;
+		private OpenTKCircularBuffer positionColorBuffer;
+		private OpenTKCircularBuffer positionColorUvBuffer;
 		private const int InvalidHandle = -1;
+		private int indexBufferID = InvalidHandle;
 		private const int InitialIndexBufferSize = 12288;
 		private int lastIndicesCount = InvalidHandle;
 		private const int InitialVertexBufferSize = 8192;
-
-		private void InitializeBuffers()
-		{
-			positionColorBuffer = new CircularBuffer(InvalidHandle, NumberOfVertexBufferChunks);
-			positionColorUvBuffer = new CircularBuffer(InvalidHandle, NumberOfVertexBufferChunks);
-		}
 
 		public override void Dispose()
 		{
@@ -36,44 +30,89 @@ namespace DeltaEngine.Graphics.OpenTK
 			if (indexBufferID == InvalidHandle)
 				indexBufferID = CreateIndexBuffer(InitialIndexBufferSize * sizeof(short));
 
-			BindBufferAndAddData(indices);
+			BindIndexBufferAndAddData(indices);
 			lastIndicesCount = usedIndicesCount;
 		}
 
 		public override void DrawVertices(VerticesMode mode, VertexPositionColor[] vertices)
 		{
-			if (positionColorBuffer.Handle == InvalidHandle)
-				positionColorBuffer.Handle = CreateVertexBuffer(positionColorBuffer, 
-					InitialVertexBufferSize * VertexPositionColor.SizeInBytes);
+			if (!positionColorBuffer.IsCreated)
+				positionColorBuffer.Create();
 
-			SetVertexData(vertices, positionColorBuffer);
+			positionColorBuffer.SetVertexData(vertices);
 			SetBaseClientStates();
 			SetBaseVertexDeclaration(VertexPositionColor.SizeInBytes);
 			DecideKindOfDraw(mode, vertices.Length);
 			lastIndicesCount = InvalidHandle;
-			positionColorBuffer.SelectNextChunk();
 		}
 
 		public override void DrawVertices(VerticesMode mode, VertexPositionColorTextured[] vertices)
 		{
-			if (positionColorUvBuffer.Handle == InvalidHandle)
-				positionColorUvBuffer.Handle = CreateVertexBuffer(positionColorUvBuffer, 
-					InitialVertexBufferSize * VertexPositionColorTextured.SizeInBytes);
+			if (!positionColorUvBuffer.IsCreated)
+				positionColorUvBuffer.Create();
 
-			SetVertexData(vertices, positionColorUvBuffer);
+			positionColorUvBuffer.SetVertexData(vertices);
 			SetBaseClientStates();
 			EnableTextureCoordArray();
 			SetBaseVertexDeclaration(VertexPositionColorTextured.SizeInBytes);
 			SetTextureCoordDeclaration();
 			DecideKindOfDraw(mode, vertices.Length);
 			lastIndicesCount = InvalidHandle;
-			positionColorUvBuffer.SelectNextChunk();
 		}
 
-		private static void SetBlending()
+		private void InitializeVertexBuffers()
 		{
-			GL.Enable(EnableCap.Blend);
-			GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+			positionColorBuffer = new OpenTKCircularBuffer(VertexBufferSize);
+			positionColorUvBuffer = new OpenTKCircularBuffer(VertexBufferSize);
+		}
+
+		public override void DisableIndices()
+		{
+			indexBufferID = InvalidHandle;
+		}
+
+		public override void SetBlending(BlendMode blendMode)
+		{
+			if (lastBlendMode == blendMode)
+				return;
+
+			lastBlendMode = blendMode;
+			switch (blendMode)
+			{
+				case BlendMode.Normal:
+					GL.Enable(EnableCap.Blend);
+					GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+					GL.BlendEquation(BlendEquationMode.FuncAdd);
+					break;
+				case BlendMode.Opaque:
+					GL.Disable(EnableCap.Blend);
+					break;
+				case BlendMode.AlphaTest:
+					GL.Disable(EnableCap.Blend);
+					GL.Enable(EnableCap.AlphaTest);
+					break;
+				case BlendMode.Additive:
+					GL.Enable(EnableCap.Blend);
+					GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.One);
+					GL.BlendEquation(BlendEquationMode.FuncAdd);
+					break;
+				case BlendMode.Subtractive:
+					GL.Enable(EnableCap.Blend);
+					GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.One);
+					GL.BlendEquation(BlendEquationMode.FuncReverseSubtract);
+					break;
+				case BlendMode.LightEffect:
+					GL.Enable(EnableCap.Blend);
+					GL.BlendFunc(BlendingFactorSrc.DstColor, BlendingFactorDest.One);
+					GL.BlendEquation(BlendEquationMode.FuncAdd);
+					break;
+			}
+		}
+
+		public override void EnableTexturing(Image image)
+		{
+			GL.Enable(EnableCap.Texture2D);
+			GL.BindTexture(TextureTarget.Texture2D, (image as OpenTKImage).Handle);
 		}
 
 		public override void DisableTexturing()
@@ -91,31 +130,11 @@ namespace DeltaEngine.Graphics.OpenTK
 			return bufferID;
 		}
 
-		private int CreateVertexBuffer(CircularBuffer buffer, int totalSize)
-		{
-			int bufferID;
-			GL.GenBuffers(1, out bufferID);
-			GL.BindBuffer(BufferTarget.ArrayBuffer, bufferID);
-			GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(totalSize * buffer.NumberOfChunks), 
-				IntPtr.Zero, BufferUsageHint.StaticDraw);
-			return bufferID;
-		}
-
-		private void BindBufferAndAddData(short[] indices)
+		private void BindIndexBufferAndAddData(short[] indices)
 		{
 			GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferID);
 			GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(indices.Length * 2), indices, 
 				BufferUsageHint.StreamDraw);
-		}
-
-		private void SetVertexData<T>(T[] vertices, CircularBuffer buffer) where T : struct
-		{
-			int sizeInBytes = vertices.Length * Marshal.SizeOf(typeof(T));
-			int offset = sizeInBytes * buffer.CurrentChunk;
-			GL.BindBufferRange(BufferTarget.ArrayBuffer, 0, buffer.Handle, (IntPtr)offset, 
-				(IntPtr)sizeInBytes);
-			GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)sizeInBytes, vertices, 
-				BufferUsageHint.DynamicDraw);
 		}
 
 		private void SetBaseClientStates()

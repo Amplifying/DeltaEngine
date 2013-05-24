@@ -11,15 +11,15 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 		{
 			var polygon = new Polygon();
 			Assert.AreEqual(Color.White, polygon.Color);
-			Assert.AreEqual(Color.White, polygon.OutlineColor);
 			Assert.AreEqual(Rectangle.Zero, polygon.DrawArea);
 		}
 
 		[Test]
 		public void ChangeOutlineColor()
 		{
-			var polygon = new Polygon(Color.Red) { OutlineColor = Color.Blue };
-			Assert.AreEqual(Color.Blue, polygon.OutlineColor);
+			var polygon =
+				new Polygon(Color.Red).Add(new OutlineColor(Color.Blue)).Add<Polygon.RenderOutline>();
+			Assert.AreEqual(Color.Blue, polygon.Get<OutlineColor>().Value);
 		}
 	}
 }

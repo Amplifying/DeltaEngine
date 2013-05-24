@@ -6,6 +6,7 @@ using DeltaEngine.Graphics;
 using DeltaEngine.Input;
 using DeltaEngine.Multimedia;
 using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 using DeltaEngine.Rendering.Sprites;
 
 namespace Breakout

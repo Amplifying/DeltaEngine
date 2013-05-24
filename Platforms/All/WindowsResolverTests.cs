@@ -61,8 +61,12 @@ namespace DeltaEngine.Platforms.All
 			
 			//ncrunch: no coverage start
 			public override void Dispose() {}
+			public override void EnableTexturing(Image image) {}
 			public override void DisableTexturing() {}
+			public override void SetBlending(BlendMode blendMode) {}
 			public override void SetIndices(short[] indices, int usedIndicesCount) {}
+			public override void DisableIndices() {}
+
 			public override void DrawVertices(VerticesMode mode, VertexPositionColorTextured[] vertices)
 			{}
 			public override void DrawVertices(VerticesMode mode, VertexPositionColor[] vertices) {}

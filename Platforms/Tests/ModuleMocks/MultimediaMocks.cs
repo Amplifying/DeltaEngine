@@ -1,11 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
-using DeltaEngine.Content;
-using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Multimedia;
-using DeltaEngine.Rendering;
-using DeltaEngine.Rendering.Sprites;
 
 namespace DeltaEngine.Platforms.Tests.ModuleMocks
 {
@@ -63,10 +59,12 @@ namespace DeltaEngine.Platforms.Tests.ModuleMocks
 				: base(filename, device) {}
 
 			protected override void LoadData(Stream fileData) {}
+
 			protected override void PlayNativeMusic(float volume)
 			{
 				MusicStopCalled = false;
 			}
+
 			protected internal override void Run() {}
 
 			protected override void StopNativeMusic()
@@ -102,20 +100,15 @@ namespace DeltaEngine.Platforms.Tests.ModuleMocks
 
 		public class MockVideo : Video
 		{
-			public MockVideo(string filename, SoundDevice device, EntitySystem entitySystem)
-				: base(filename, device)
-			{
-				this.entitySystem = entitySystem;
-			}
-
-			private readonly EntitySystem entitySystem;
+			public MockVideo(string filename, SoundDevice device)
+				: base(filename, device) {}
 
 			protected override void LoadData(Stream fileData) {}
+
 			protected override void PlayNativeVideo(float volume)
 			{
 				VideoStopCalled = false;
 				surface = new MockVideoSurface();
-				entitySystem.Add(surface);
 			}
 
 			private MockVideoSurface surface;
@@ -126,7 +119,8 @@ namespace DeltaEngine.Platforms.Tests.ModuleMocks
 			{
 				VideoStopCalled = true;
 				if (surface != null)
-					entitySystem.Remove(surface);
+					surface.IsActive = false;
+
 				surface = null;
 			}
 

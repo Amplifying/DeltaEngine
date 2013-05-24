@@ -1,6 +1,5 @@
 using System;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Platforms.All;
 
 namespace Blobs.Tests
@@ -12,16 +11,13 @@ namespace Blobs.Tests
 		{
 			Platform platform = null;
 
-			Start(resolver, (EntitySystem entitySystem) =>
-			{
-				platform = new Platform(entitySystem, new Rectangle(0.3f, 0.3f, 0.3f, 0.2f))
+			Start(resolver,
+				() =>
+				{ platform = new Platform(new Rectangle(0.3f, 0.3f, 0.3f, 0.2f)) { Color = Color.Gold }; },
+				() =>
 				{
-					Color = Color.Gold
-				};
-			}, () =>
-			{
-				//platform.Rotation += 45 * Time.Current.Delta;
-			});
+					//platform.Rotation += 45 * Time.Current.Delta;
+				});
 		}
 	}
 }

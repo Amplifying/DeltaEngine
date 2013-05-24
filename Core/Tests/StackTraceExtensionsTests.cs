@@ -119,11 +119,5 @@ namespace DeltaEngine.Core.Tests
 			var stackFrame = new StackFrame();
 			Assert.IsTrue(stackFrame.HasAttribute("NUnit.Framework.IgnoreAttribute"));
 		}
-
-		[Test, Ignore]
-		public void UnharmfulSideEffectSetStartedFromNCrunch()
-		{
-			StackTraceExtensions.StartedFromNCrunch = true;
-		}
 	}
 }

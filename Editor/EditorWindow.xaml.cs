@@ -13,7 +13,7 @@ namespace DeltaEngine.Editor
 	/// </summary>
 	public partial class EditorWindow
 	{
-		public EditorWindow()
+	public EditorWindow()
 			: this(new EditorWindowModel()) {}
 
 		public EditorWindow(EditorWindowModel viewModel)
@@ -57,15 +57,6 @@ namespace DeltaEngine.Editor
 			else if (e.ChangedButton == MouseButton.Left && !maximizer.isMaximized)
 				DragMove();
 		}
-
-		//private List<UserControl> GetActiveEditorPluginsAsUserControls()
-		//{
-		//	var controls = new List<UserControl>();
-		//	foreach (var pane in PluginGroup.Children.OfType<LayoutAnchorable>())
-		//			if (anchorable.IsVisible)
-		//				controls.Add(anchorable.Content as UserControl);
-		//	return controls;
-		//}
 
 		private void OnEditorPluginSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{

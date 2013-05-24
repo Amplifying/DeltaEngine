@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-	<PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform' == '' ">AnyCPU</Platform>
     <ProjectGuid>{DBA0B46A-C6C3-4BA7-A0D1-10F07ACF6259}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -12,7 +12,7 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <RestorePackages>true</RestorePackages>
-	</PropertyGroup>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -22,7 +22,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-    <DocumentationFile>bin\Debug\DeltaEngine.Networking.Sockets.Tests.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,38 +31,37 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-    <DocumentationFile>bin\Release\DeltaEngine.Networking.Sockets.Tests.XML</DocumentationFile>
   </PropertyGroup>
-	<ItemGroup>
-		<Reference Include="nunit.framework" >
-		<HintPath>..\..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
-	</Reference>
-		<Reference Include="System" />
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\..\..\Datatypes\DeltaEngine.Datatypes.csproj">
-			<Project>{460983FF-AA91-4E10-B70E-10D0BDA15A58}</Project>
-			<Name>DeltaEngine.Datatypes</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\DeltaEngine.Networking.csproj">
-			<Project>{5231706e-2955-43bf-9c06-291e12af5c5c}</Project>
-			<Name>DeltaEngine.Networking</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\DeltaEngine.Networking.Sockets.csproj">
-			<Project>{9e085ab9-b4de-4815-bd90-d975c75dfe94}</Project>
-			<Name>DeltaEngine.Networking.Sockets</Name>
-		</ProjectReference>
-	</ItemGroup>
-	<ItemGroup>
-	<None Include="packages.config" />
-	</ItemGroup>
-	<ItemGroup>
-		<Compile Include="Properties\AssemblyInfo.cs" />
-		<Compile Include="DataContainerTests.cs" />
-		<Compile Include="NetworkExtensionsTests.cs" />
-		<Compile Include="SocketTests.cs" />
-		<Compile Include="TcpNetworkingServerTests.cs" />
-	</ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Datatypes\DeltaEngine.Datatypes.csproj">
+      <Project>{460983FF-AA91-4E10-B70E-10D0BDA15A58}</Project>
+      <Name>DeltaEngine.Datatypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DeltaEngine.Networking.csproj">
+      <Project>{5231706e-2955-43bf-9c06-291e12af5c5c}</Project>
+      <Name>DeltaEngine.Networking</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DeltaEngine.Networking.Sockets.csproj">
+      <Project>{9e085ab9-b4de-4815-bd90-d975c75dfe94}</Project>
+      <Name>DeltaEngine.Networking.Sockets</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DataContainerTests.cs" />
+    <Compile Include="NetworkExtensionsTests.cs" />
+    <Compile Include="SocketTests.cs" />
+    <Compile Include="TcpNetworkingServerTests.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>

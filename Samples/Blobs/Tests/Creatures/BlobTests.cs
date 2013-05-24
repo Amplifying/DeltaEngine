@@ -2,10 +2,9 @@ using System;
 using Blobs.Creatures;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Platforms;
 using DeltaEngine.Platforms.All;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 
 namespace Blobs.Tests.Creatures
 {
@@ -70,10 +69,7 @@ namespace Blobs.Tests.Creatures
 		public void DrawSinkingRotatingBlob(Type resolver)
 		{
 			Blob blob = null;
-			Start(resolver, (Blob b) =>
-			{
-				blob = SetupBlob(b);
-			}, () =>
+			Start(resolver, (Blob b) => { blob = SetupBlob(b); }, () =>
 			{
 				blob.Velocity = Point.Zero;
 				blob.Rotation += 45 * Time.Current.Delta;
@@ -86,26 +82,21 @@ namespace Blobs.Tests.Creatures
 			Blob blob = null;
 			Platform platform = null;
 			Camera2DControlledQuadraticScreenSpace camera = null;
-			Start(resolver,
-				(EntitySystem entitySystem, Camera2DControlledQuadraticScreenSpace c, Blob b) =>
-				{
-					blob = SetupBlob(b);
-					camera = c;
-					platform = AddPlatform(entitySystem);
-				}, () =>
-				{
-					camera.Zoom = MathExtensions.Max(camera.Zoom - Time.Current.Delta / 10f, 0.0f);
-					platform.CheckForCollision(blob);
-				});
+			Start(resolver, (Camera2DControlledQuadraticScreenSpace c, Blob b) =>
+			{
+				blob = SetupBlob(b);
+				camera = c;
+				platform = AddPlatform();
+			}, () =>
+			{
+				camera.Zoom = MathExtensions.Max(camera.Zoom - Time.Current.Delta / 10f, 0.0f);
+				platform.CheckForCollision(blob);
+			});
 		}
 
-		private static Platform AddPlatform(EntitySystem entitySystem)
+		private static Platform AddPlatform()
 		{
-			var platform = new Platform(entitySystem, new Rectangle(0.2f, 0.8f, 0.6f, 0.19f))
-			{
-				Color = Color.Green
-			};
-			//entitySystem.Add(platform);
+			var platform = new Platform(new Rectangle(0.2f, 0.8f, 0.6f, 0.19f)) { Color = Color.Green };
 			return platform;
 		}
 	}

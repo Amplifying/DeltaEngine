@@ -1,5 +1,6 @@
 using System;
 using System.IO.Abstractions;
+using System.Windows;
 using DeltaEngine.Editor.Common;
 using DeltaEngine.Editor.Mocks;
 using DeltaEngine.Networking;
@@ -20,6 +21,7 @@ namespace DeltaEngine.Editor
 		private const string ServerAddress = "DeltaEngine.net";//"localhost";//
 		private const int ServerListeningPort = 800;
 		public ContentService Content { get; private set; }
+		public Window PluginHostWindow { get; private set; }
 
 		private void OnDataReceived(object message)
 		{

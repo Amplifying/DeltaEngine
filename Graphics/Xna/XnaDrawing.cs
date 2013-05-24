@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,31 +13,33 @@ namespace DeltaEngine.Graphics.Xna
 		{
 			this.device = device;
 			this.window = window;
-			window.ViewportSizeChanged += Reset;
-			InitializeBuffers();
+			InitializeVertexBuffers();
+			InitializeBasicEffect();
 		}
 
 		private new readonly XnaDevice device;
 		private readonly Window window;
 
-		private void Reset(Size obj)
+		private void InitializeVertexBuffers()
 		{
-			lastTexture = null;
-			lastIndices = null;
+			positionColorVertexBuffer = new XnaCircularBuffer(VertexBufferSize,
+				typeof(XnaGraphics.VertexPositionColor), device);
+			positionColorUvVertexBuffer = new XnaCircularBuffer(VertexBufferSize,
+				typeof(VertexPositionColorTexture), device);
 		}
 
-		private Texture lastTexture;
-		private short[] lastIndices;
+		private XnaCircularBuffer positionColorVertexBuffer;
+		private XnaCircularBuffer positionColorUvVertexBuffer;
+		private const int VertexBufferSize = 1024;
 
-		private void InitializeBuffers()
+		private void InitializeBasicEffect()
 		{
-			positionColorVertexBuffer = new CircularBuffer(NumberOfVertexBufferChunks);
-			positionColorUvVertexBuffer = new CircularBuffer(NumberOfVertexBufferChunks);
+			basicEffect = new BasicEffect(device.NativeDevice);
+			UpdateProjectionMatrix(window.ViewportPixelSize);
+			window.ViewportSizeChanged += UpdateProjectionMatrix;
+			basicEffect.View = Matrix.CreateTranslation(-0.5f, -0.5f, 0.0f);
+			device.NativeDevice.BlendState = BlendState.NonPremultiplied;
 		}
-
-		private CircularBuffer positionColorVertexBuffer;
-		private const int NumberOfVertexBufferChunks = 4;
-		private CircularBuffer positionColorUvVertexBuffer;
 
 		public override void Dispose()
 		{
@@ -48,148 +49,119 @@ namespace DeltaEngine.Graphics.Xna
 
 		private BasicEffect basicEffect;
 
-		public override void DisableTexturing()
+		public override void EnableTexturing(Image image)
 		{
-			lastTexture = null;
-		}
-
-		public override void DrawVertices(VerticesMode mode, VertexPositionColorTextured[] vertices)
-		{
-			CheckCreatePositionColorTextureBuffer();
-			SetVerticesData(positionColorUvVertexBuffer, vertices);
-			BindVertexBuffer(positionColorUvVertexBuffer.Handle);
-			if (lastTexture != device.NativeDevice.Textures[0])
-				ApplyEffectAndSetLastTexture();
-
-			DecideKindOfDrawAndSelectNextChunk(positionColorUvVertexBuffer, mode, vertices.Length);
-		}
-
-		private void CheckCreatePositionColorTextureBuffer(int vertexCount = 8192)
-		{
-			if (positionColorUvVertexBuffer.Handle != null)
-				return;
-
-			positionColorUvVertexBuffer.Handle = new DynamicVertexBuffer(device.NativeDevice,
-				typeof(VertexPositionColorTexture),
-				vertexCount * positionColorUvVertexBuffer.NumberOfChunks, BufferUsage.WriteOnly);
-		}
-
-		private static void SetVerticesData(CircularBuffer buffer,
-			VertexPositionColorTextured[] vertices)
-		{
-			int vertexSize = Marshal.SizeOf(vertices[0]);
-			int count = vertices.Length;
-			buffer.Handle.SetData(vertexSize * count * buffer.CurrentChunk, vertices, 0, count,
-				vertexSize, SetDataOptions.Discard);
-		}
-
-		private void BindVertexBuffer(VertexBuffer vertexBuffer)
-		{
-			device.NativeDevice.SetVertexBuffer(vertexBuffer);
-		}
-
-		private void ApplyEffectAndSetLastTexture()
-		{
-			ApplyEffect(true);
-			lastTexture = device.NativeDevice.Textures[0];
-		}
-
-		private void ApplyEffect(bool vertexColorEnabled)
-		{
-			InitializeBasicEffectIfRequired();
-			basicEffect.VertexColorEnabled = vertexColorEnabled;
-			CheckEnableEffectTexture();
-			basicEffect.CurrentTechnique.Passes[0].Apply();
-		}
-
-		private void InitializeBasicEffectIfRequired()
-		{
-			if (basicEffect != null)
-				return;
-
-			basicEffect = new BasicEffect(device.NativeDevice);
-			UpdateProjectionMatrix(window.ViewportPixelSize);
-			window.ViewportSizeChanged += UpdateProjectionMatrix;
-			FixHalfPixelOffset();
-			device.NativeDevice.BlendState = BlendState.NonPremultiplied;
-		}
-
-		private void CheckEnableEffectTexture()
-		{
-			if (device.NativeDevice.Textures[0] == null)
-				basicEffect.TextureEnabled = false;
-			else
-				SetTextureEnabled();
-		}
-
-		private void SetTextureEnabled()
-		{
+			device.NativeDevice.Textures[0] = (image as XnaImage).NativeTexture;
+			device.NativeDevice.SamplerStates[0] = image.DisableLinearFiltering
+				? SamplerState.PointClamp : SamplerState.LinearClamp;
 			basicEffect.TextureEnabled = true;
 			basicEffect.Texture = device.NativeDevice.Textures[0] as Texture2D;
 		}
 
-		private void DecideKindOfDrawAndSelectNextChunk(CircularBuffer buffer, VerticesMode mode,
-			int length)
+		public override void DisableTexturing()
 		{
-			if (lastIndicesCount == -1)
-				DoDraw(mode, length, buffer);
-			else
-				DoDrawIndexed(mode, length, lastIndicesCount, buffer);
+			basicEffect.TextureEnabled = false;
+		}
 
-			buffer.SelectNextChunk();
+		public override void SetBlending(BlendMode blendMode)
+		{
+			device.NativeDevice.BlendState = GetXnaBlendState(blendMode);
+		}
+
+		private static BlendState GetXnaBlendState(BlendMode blendMode)
+		{
+			if (blendMode == BlendMode.Additive)
+				return BlendState.Additive;
+
+			if (blendMode == BlendMode.Opaque)
+				return BlendState.Opaque;
+
+			return BlendState.AlphaBlend;
+		}
+
+		public override void DrawVertices(VerticesMode mode, VertexPositionColorTextured[] vertices)
+		{
+			if (!positionColorUvVertexBuffer.IsCreated)
+				positionColorUvVertexBuffer.Create();
+
+			positionColorUvVertexBuffer.SetVertexData(vertices);
+			device.NativeDevice.SetVertexBuffer(positionColorUvVertexBuffer.NativeBuffer);
+			Draw(positionColorUvVertexBuffer, mode, vertices.Length);
+		}
+
+		private void ApplyEffect()
+		{
+			basicEffect.VertexColorEnabled = true;
+			basicEffect.TextureEnabled = device.NativeDevice.Textures[0] != null;
+			if (basicEffect.TextureEnabled)
+				basicEffect.Texture = device.NativeDevice.Textures[0] as Texture2D;
+
+			basicEffect.CurrentTechnique.Passes[0].Apply();
+		}
+
+		private void Draw(XnaCircularBuffer buffer, VerticesMode mode, int length)
+		{
+			ApplyEffect();
+			var primitiveMode = Convert(mode);
+			var primitiveCount =
+				GetPrimitiveCount(lastIndicesCount == -1 ? length : lastIndicesCount, primitiveMode);
+			if (lastIndicesCount == -1)
+				DrawPrimitives(buffer, primitiveMode, primitiveCount);
+			else
+				DrawIndexedPrimitives(buffer, primitiveMode, length, primitiveCount);
 		}
 
 		private int lastIndicesCount = -1;
 
-		private void DoDraw(VerticesMode mode, int verticesCount, CircularBuffer vertexBuffer)
+		private void DrawPrimitives(XnaCircularBuffer buffer, PrimitiveType primitiveType,
+			int primitiveCount)
 		{
-			var primitiveMode = Convert(mode);
-			var primitiveCount = GetPrimitiveCount(verticesCount, primitiveMode);
-			var verticesPerPrimitive = mode == VerticesMode.Triangles ? 3 : 2;
-			device.NativeDevice.DrawPrimitives(primitiveMode,
-				verticesPerPrimitive * primitiveCount * vertexBuffer.CurrentChunk, primitiveCount);
+			device.NativeDevice.DrawPrimitives(primitiveType, buffer.Offset / buffer.VertexSize,
+				primitiveCount);
 		}
 
-		private void DoDrawIndexed(VerticesMode mode, int verticesCount, int indicesCount,
-			CircularBuffer vertexBuffer)
+		private void DrawIndexedPrimitives(XnaCircularBuffer buffer, PrimitiveType primitiveType,
+			int length, int primitiveCount)
 		{
-			var primitiveMode = Convert(mode);
-			var primitiveCount = GetPrimitiveCount(indicesCount, primitiveMode);
-			device.NativeDevice.DrawIndexedPrimitives(primitiveMode,
-				verticesCount * vertexBuffer.CurrentChunk, 0, verticesCount, 0, primitiveCount);
+			device.NativeDevice.DrawIndexedPrimitives(primitiveType, buffer.Offset / buffer.VertexSize,
+				0, length, 0, primitiveCount);
+		}
+
+		private static PrimitiveType Convert(VerticesMode mode)
+		{
+			return mode == VerticesMode.Triangles ? PrimitiveType.TriangleList : PrimitiveType.LineList;
+		}
+
+		private static int GetPrimitiveCount(int numVerticesOrIndices, PrimitiveType primitiveType)
+		{
+			return primitiveType == PrimitiveType.LineList
+				? numVerticesOrIndices / 2 : numVerticesOrIndices / 3;
 		}
 
 		public override void DrawVertices(VerticesMode mode, VertexPositionColor[] vertices)
 		{
-			CheckCreatePositionColorBuffer();
-			device.NativeDevice.SetVertexBuffers(null);
-			SetVerticesData(positionColorVertexBuffer, vertices);
-			BindVertexBuffer(positionColorVertexBuffer.Handle);
-			ApplyEffect(true);
-			DecideKindOfDrawAndSelectNextChunk(positionColorVertexBuffer, mode, vertices.Length);
-		}
+			if (!positionColorVertexBuffer.IsCreated)
+				positionColorVertexBuffer.Create();
 
-		private static void SetVerticesData(CircularBuffer buffer, VertexPositionColor[] vertices)
-		{
-			int vertexSize = Marshal.SizeOf(vertices[0]);
-			int count = vertices.Length;
-			buffer.Handle.SetData(vertexSize * count * buffer.CurrentChunk, vertices, 0, count,
-				vertexSize, SetDataOptions.Discard);
+			positionColorVertexBuffer.SetVertexData(vertices);
+			device.NativeDevice.SetVertexBuffer(positionColorVertexBuffer.NativeBuffer);
+			Draw(positionColorVertexBuffer, mode, vertices.Length);
 		}
 
 		public override void SetIndices(short[] indices, int usedIndicesCount)
 		{
-			CheckCreateIndexBuffer();
-			if (lastIndices == indices)
-				return;
+			if (indexBuffer == null)
+				CreateIndexBuffer();
 
-			if (device.NativeDevice.Indices == indexBuffer)
-				device.NativeDevice.Indices = null;
-
+			device.NativeDevice.Indices = null;
 			indexBuffer.SetData(indices);
 			device.NativeDevice.Indices = indexBuffer;
-			lastIndices = indices;
 			lastIndicesCount = usedIndicesCount;
+		}
+
+		public override void DisableIndices()
+		{
+			lastIndicesCount = -1;
 		}
 
 		private DynamicIndexBuffer indexBuffer;
@@ -200,50 +172,10 @@ namespace DeltaEngine.Graphics.Xna
 				newViewportSize.Height, 0, 0, 1);
 		}
 
-		private void FixHalfPixelOffset()
+		private void CreateIndexBuffer(int indexCount = 600)
 		{
-			basicEffect.View = Matrix.CreateTranslation(-0.5f, -0.5f, 0.0f);
-		}
-		
-		private void CheckCreatePositionColorBuffer(int vertexCount = 400)
-		{
-			if (positionColorVertexBuffer.Handle != null)
-				return;
-
-			positionColorVertexBuffer.Handle = new DynamicVertexBuffer(device.NativeDevice,
-				typeof(XnaGraphics.VertexPositionColor),
-				vertexCount * positionColorVertexBuffer.NumberOfChunks, BufferUsage.WriteOnly);
-		}
-
-		private void CheckCreateIndexBuffer(int indexCount = 600)
-		{
-			if (indexBuffer != null)
-				return;
-
 			indexBuffer = new DynamicIndexBuffer(device.NativeDevice, IndexElementSize.SixteenBits,
 				indexCount, BufferUsage.WriteOnly);
-		}
-
-		private static PrimitiveType Convert(VerticesMode mode)
-		{
-			switch (mode)
-			{
-				case VerticesMode.Lines:
-					return PrimitiveType.LineList;
-				default:
-					return PrimitiveType.TriangleList;
-			}
-		}
-
-		private static int GetPrimitiveCount(int numVerticesOrIndices, PrimitiveType primitiveType)
-		{
-			switch (primitiveType)
-			{
-				case PrimitiveType.LineList:
-					return numVerticesOrIndices / 2;
-				default:
-					return numVerticesOrIndices / 3;
-			}
 		}
 	}
 }

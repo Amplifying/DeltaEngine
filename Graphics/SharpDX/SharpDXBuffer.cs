@@ -10,8 +10,7 @@ namespace DeltaEngine.Graphics.SharpDX
 	public class SharpDXBuffer : Buffer
 	{
 		public SharpDXBuffer(DxDevice nativeDevice, int sizeInBytes, BindFlags flags)
-			: base(
-				nativeDevice, sizeInBytes, ResourceUsage.Dynamic, flags, CpuAccessFlags.Write,
+			: base(nativeDevice, sizeInBytes, ResourceUsage.Dynamic, flags, CpuAccessFlags.Write,
 				ResourceOptionFlags.None, 0) {}
 	}
 }

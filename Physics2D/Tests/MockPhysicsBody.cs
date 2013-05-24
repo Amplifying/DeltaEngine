@@ -11,24 +11,19 @@ namespace DeltaEngine.Physics2D.Tests
 			Friction = DefaultFriction;
 		}
 
-		public MockPhysicsBody(bool wantNullVertices)
-			: this()
-		{
-			this.wantNullVertices = wantNullVertices;
-		}
-		private readonly bool wantNullVertices;
-
 		public Point Position { get; set; }
 		public bool IsStatic { get; set; }
 		public float Restitution { get; set; }
 		public float Friction { get; set; }
 		public float Rotation { get; set; }
+		public Point LinearVelocity { get; set; }
 		public void ApplyLinearImpulse(Point impulse) { }
 		public void ApplyAngularImpulse(float impulse) { }
 		public void ApplyTorque(float torque) { }
 		public Point[] LineVertices
 		{
-			get { return wantNullVertices ? null : new Point[0]; }
+			get { return new Point[0]; }
 		}
+		public void Dispose() {}
 	}
 }

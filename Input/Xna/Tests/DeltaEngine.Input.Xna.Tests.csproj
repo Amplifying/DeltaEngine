@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-	<PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform' == '' ">AnyCPU</Platform>
     <ProjectGuid>{1CF6EC3F-26C6-45E8-A3D1-8804C298BBCD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -11,7 +11,7 @@
     <AssemblyName>DeltaEngine.Input.Xna.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-	</PropertyGroup>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -21,7 +21,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-    <DocumentationFile>bin\Debug\DeltaEngine.Input.Xna.Tests.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,51 +30,54 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-    <DocumentationFile>bin\Release\DeltaEngine.Input.Xna.Tests.XML</DocumentationFile>
   </PropertyGroup>
-	<ItemGroup>
-		<Reference Include="nunit.framework" >
-		<HintPath>..\..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
-	</Reference>
-		<Reference Include="System" />
-		<Reference Include="System.Core" />
-		<Reference Include="Microsoft.Xna.Framework" />
-		<Reference Include="Microsoft.Xna.Framework.Input.Touch" />
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\..\..\Core\DeltaEngine.Core.csproj">
-			<Project>{A8D386EA-D376-46EA-A721-2BA51426A721}</Project>
-			<Name>DeltaEngine.Core</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\Datatypes\DeltaEngine.Datatypes.csproj">
-			<Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
-			<Name>DeltaEngine.Datatypes</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\Platforms\DeltaEngine.Platforms.csproj">
-			<Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
-			<Name>DeltaEngine.Platforms</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\Platforms\Tests\DeltaEngine.Platforms.Tests.csproj">
-			<Project>{d0aad622-ed82-40e5-88a9-980eafc12c16}</Project>
-			<Name>DeltaEngine.Platforms.Tests</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\..\Rendering\DeltaEngine.Rendering.csproj">
-			<Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
-			<Name>DeltaEngine.Rendering</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\..\DeltaEngine.Input.csproj">
-			<Project>{cc65e69e-fafd-4c2b-85eb-5e57fd3af847}</Project>
-			<Name>DeltaEngine.Input</Name>
-		</ProjectReference>
-		<ProjectReference Include="..\DeltaEngine.Input.Xna.csproj">
-			<Project>{5D28C1B5-43AD-4E69-840D-B068C3844589}</Project>
-			<Name>DeltaEngine.Input.Xna</Name>
-		</ProjectReference>
-	</ItemGroup>
-	<ItemGroup>
-		<Compile Include="Properties\AssemblyInfo.cs" />
-		<Compile Include="XnaMockTouch.cs" />
-		<Compile Include="XnaTouchTests.cs" />
-	</ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.Xna.Framework" />
+    <Reference Include="Microsoft.Xna.Framework.Input.Touch" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Core\DeltaEngine.Core.csproj">
+      <Project>{A8D386EA-D376-46EA-A721-2BA51426A721}</Project>
+      <Name>DeltaEngine.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Datatypes\DeltaEngine.Datatypes.csproj">
+      <Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
+      <Name>DeltaEngine.Datatypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Entities\DeltaEngine.Entities.csproj">
+      <Project>{c6ba144d-59b0-41b1-8682-b092b4efbbb1}</Project>
+      <Name>DeltaEngine.Entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Platforms\DeltaEngine.Platforms.csproj">
+      <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
+      <Name>DeltaEngine.Platforms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Platforms\Tests\DeltaEngine.Platforms.Tests.csproj">
+      <Project>{d0aad622-ed82-40e5-88a9-980eafc12c16}</Project>
+      <Name>DeltaEngine.Platforms.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Rendering\DeltaEngine.Rendering.csproj">
+      <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
+      <Name>DeltaEngine.Rendering</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DeltaEngine.Input.csproj">
+      <Project>{cc65e69e-fafd-4c2b-85eb-5e57fd3af847}</Project>
+      <Name>DeltaEngine.Input</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DeltaEngine.Input.Xna.csproj">
+      <Project>{5D28C1B5-43AD-4E69-840D-B068C3844589}</Project>
+      <Name>DeltaEngine.Input.Xna</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XnaMockTouch.cs" />
+    <Compile Include="XnaTouchTests.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

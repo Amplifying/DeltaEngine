@@ -1,8 +1,7 @@
 using System.IO;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
-using DeltaEngine.Logging;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.ScreenSpaces;
 using Moq;
 
 namespace DeltaEngine.Platforms.Tests.ModuleMocks
@@ -93,14 +92,18 @@ namespace DeltaEngine.Platforms.Tests.ModuleMocks
 
 		public class MockImage : Image
 		{
-			public MockImage(string contentName, Drawing drawing)
-				: base(contentName, drawing) {}
+			public MockImage(string contentName)
+				: base(contentName) {}
 
 			protected override void LoadData(Stream fileData) {}
 			protected override void DisposeData() {}
 			public override Size PixelSize
 			{
 				get { return new Size(128); }
+			}
+			public override bool HasAlpha
+			{
+				get { return false; }
 			}
 		}
 
