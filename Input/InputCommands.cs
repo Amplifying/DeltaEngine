@@ -31,15 +31,15 @@ namespace DeltaEngine.Input
 			get { return pointerDevices.touch; }
 		}
 
-		public Command Add(Key key, Action callback)
+		public Command Add(Key key, Action<Key> callback)
 		{
 			return Add(key, State.Releasing, callback);
 		}
 
-		public Command Add(Key key, State keyState, Action callback)
+		public Command Add(Key key, State keyState, Action<Key> callback)
 		{
 			var command = new Command();
-			command.Callback += trigger => callback();
+			command.Callback += trigger => callback(key);
 			command.Add(new KeyTrigger(key, keyState));
 			Add(command);
 			return command;
@@ -91,8 +91,10 @@ namespace DeltaEngine.Input
 			Action<Point, Point, State> callback)
 		{
 			var command = new Command();
-			command.Callback += trigger => callback((trigger as MouseDragDropTrigger).StartDragPosition,
-				Mouse.Position, Mouse.GetButtonState(button));
+			command.Callback +=
+				trigger =>
+					callback((trigger as MouseDragDropTrigger).StartDragPosition, Mouse.Position,
+						Mouse.GetButtonState(button));
 			command.Add(new MouseDragDropTrigger(startArea, button));
 			Add(command);
 			return command;

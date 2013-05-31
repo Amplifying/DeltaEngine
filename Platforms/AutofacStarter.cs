@@ -218,7 +218,7 @@ namespace DeltaEngine.Platforms
 		public void Start<AppEntryRunner, FirstClassToRegisterAndResolve>(int instancesToCreate = 1)
 		{
 			RegisterEntryRunner<AppEntryRunner>(instancesToCreate);
-			Register<FirstClassToRegisterAndResolve>();
+			RegisterSingleton<FirstClassToRegisterAndResolve>();
 			CreateEntitySystemAndAddAsRunner();
 			Resolve<FirstClassToRegisterAndResolve>();
 			Initialize<AppEntryRunner>(instancesToCreate);
@@ -230,8 +230,8 @@ namespace DeltaEngine.Platforms
 			int instancesToCreate = 1)
 		{
 			RegisterEntryRunner<AppEntryRunner>(instancesToCreate);
-			Register<FirstClassToRegisterAndResolve>();
-			Register<SecondClassToRegisterAndResolve>();
+			RegisterSingleton<FirstClassToRegisterAndResolve>();
+			RegisterSingleton<SecondClassToRegisterAndResolve>();
 			CreateEntitySystemAndAddAsRunner();
 			Resolve<FirstClassToRegisterAndResolve>();
 			Resolve<SecondClassToRegisterAndResolve>();
@@ -255,7 +255,7 @@ namespace DeltaEngine.Platforms
 			RegisterEntryRunner<AppEntryRunner>(instancesToCreate);
 			CreateEntitySystemAndAddAsRunner();
 			foreach (Type type in typesToRegisterAndResolve)
-				Register(type);
+				RegisterSingleton(type);
 		}
 
 		private void ResolveAllTypesToResolve(IEnumerable<Type> typesToRegisterAndResolve)

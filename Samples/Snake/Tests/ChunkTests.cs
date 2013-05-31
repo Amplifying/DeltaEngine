@@ -41,7 +41,7 @@ namespace Snake.Tests
 		{
 			Start(resolver, (ScreenSpace screenSpace) =>
 			{
-				screenSpace.Window.TotalPixelSize = new Size(200, 200);
+				screenSpace.Window.TotalPixelSize = new Size(800, 600);
 				var smallChunk = new Chunk(gridSize, blockSize);
 				smallChunk.SpawnAtRandomLocation();
 			});

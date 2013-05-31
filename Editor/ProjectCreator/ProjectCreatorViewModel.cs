@@ -92,13 +92,15 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		private void CreateProject()
 		{
-			var projectCreator = new ProjectCreator(Project, VsTemplate.GetEmptyGame(), new FileSystem());
+			var projectCreator = new ProjectCreator(Project, VsTemplate.GetEmptyGame(new FileSystem()),
+				new FileSystem());
 			projectCreator.CreateProject();
 			if (projectCreator.HaveTemplateFilesBeenCopiedToLocation())
 				MessageBox.Show("Project has successfully been created.", "Project created");
 			else
 				MessageBox.Show(
-					"Project has not been created. Please make sure the specified location is available.",
+					"Project has not been created." +
+						"Please make sure the specified location and the VisualStudioTemplates are available.",
 					"Error");
 		}
 

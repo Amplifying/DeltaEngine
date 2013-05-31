@@ -37,7 +37,7 @@ namespace Breakout
 			if (brick == null)
 				return;
 
-			Level.Explode(brick);
+			Level.Explode(brick, Position);
 			ReflectVelocity(collisionSide);
 		}
 

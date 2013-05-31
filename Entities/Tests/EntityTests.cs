@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using DeltaEngine.Datatypes;
 using NUnit.Framework;
@@ -25,6 +26,7 @@ namespace DeltaEngine.Entities.Tests
 			entity.Remove<object>();
 			Assert.AreEqual(0, entity.NumberOfComponents);
 			Assert.IsFalse(entity.Contains<object>());
+			Assert.Throws<ArgumentNullException>(() => new EmptyEntity().Add<object>(null));
 		}
 
 		[Test]
@@ -120,23 +122,19 @@ namespace DeltaEngine.Entities.Tests
 		public void GetAndSetComponent()
 		{
 			var entity = new EmptyEntity();
-			entity.Add(Color.Green);
+			entity.AddOrSet(Color.Red);
+			Assert.AreEqual(Color.Red, entity.Get<Color>());
+			entity.AddOrSet(Color.Green);
 			Assert.AreEqual(Color.Green, entity.Get<Color>());
-			entity.Set(Color.Red);
-			Assert.AreEqual(Color.Red, entity.GetOrCreate<Color>());
 		}
 
 		[Test]
-		public void CreateComponentViaGetOrCreate()
+		public void CreateAndGetComponent()
 		{
 			var entity = new EmptyEntity();
 			Assert.AreEqual(new Color(), entity.GetOrCreate<Color>());
-		}
-
-		[Test]
-		public void SettingComponentThatDoesNotExistFails()
-		{
-			Assert.Throws<Entity.ComponentNotFound>(() => emptyEntity.Set(new Point(5, 5)));
+			entity.Set(Color.Red);
+			Assert.AreEqual(Color.Red, entity.GetOrCreate<Color>());
 		}
 
 		[Test]
@@ -146,10 +144,25 @@ namespace DeltaEngine.Entities.Tests
 		}
 
 		[Test]
+		public void SettingComponentThatDoesNotExistFails()
+		{
+			Assert.Throws<Entity.ComponentNotFound>(() => emptyEntity.Set(new Point(5, 5)));
+		}
+
+		[Test]
 		public void AddingInstantiatedHandlerThrowsException()
 		{
 			Assert.Throws<Entity.InstantiatedEntityHandlerAddedToEntity>(
 				() => new EmptyEntity().Add(new EntitySystemTests.CountEntities()));
+		}
+
+		[Test]
+		public void AddingComponentOfTheSameTypeTwiceErrors()
+		{
+			var entity = new EmptyEntity().Add(Size.Zero);
+			Assert.Throws<Entity.ComponentOfTheSameTypeAddedMoreThanOnce>(() => entity.Add(Size.One));
+			entity.Remove<Size>();
+			entity.Add(Size.One);
 		}
 
 		[Test]

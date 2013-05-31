@@ -7,7 +7,6 @@ using DeltaEngine.Core.Xml;
 using DeltaEngine.Datatypes;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
-using Microsoft.Win32;
 
 namespace DeltaEngine.Editor.UIEditor
 {
@@ -16,6 +15,7 @@ namespace DeltaEngine.Editor.UIEditor
 		public UIEditorViewModel(IFileSystem fileSystem)
 		{
 			this.fileSystem = fileSystem;
+			imageProcessor = new ImageProcessor(this);
 			CreateNewLists();
 			string[] projects = fileSystem.Directory.GetDirectories(ContentPath);
 			foreach (var project in projects)
@@ -26,6 +26,7 @@ namespace DeltaEngine.Editor.UIEditor
 		}
 
 		public IFileSystem fileSystem;
+		private readonly ImageProcessor imageProcessor;
 		public const string ContentPath = "Content";
 
 		private void CreateNewLists()
@@ -60,37 +61,9 @@ namespace DeltaEngine.Editor.UIEditor
 			if (string.IsNullOrEmpty(SelectedImageInList))
 				return;
 
-			AddNewImageToList();
+			imageProcessor.AddNewImageToList();
 			RaisePropertyChanged("UIImages");
 			RaisePropertyChanged("ImageInGridList");
-		}
-
-		private void AddNewImageToList()
-		{
-			var image = new BitmapImage();
-			var fullFilename = Path.Combine(ContentPath, projectName, SelectedImageInList);
-			if (!fileSystem.File.Exists(fullFilename))
-				throw new FileNotFoundException(fullFilename);
-
-			CreateImageForGrid(fullFilename, image);
-			UIImages.Add(new UIImage(0, 0, (float)image.Width, (float)image.Height, image,
-				SelectedImageInList, projectName));
-			ImageInGridList.Add(SelectedImageInList);
-		}
-
-		private void CreateImageForGrid(string fullFilename, BitmapImage image)
-		{
-			Stream stream = fileSystem.File.OpenRead(fullFilename);
-			if (stream.GetType() == typeof(MemoryStream))
-				stream = ConvertMemoryStreamToFileStream(stream);
-
-			using (var contentStream = stream)
-			{
-				image.BeginInit();
-				image.CacheOption = BitmapCacheOption.OnLoad;
-				image.StreamSource = contentStream;
-				image.EndInit();
-			}
 		}
 
 		public void LeftMouseDown(Point pos)
@@ -99,38 +72,22 @@ namespace DeltaEngine.Editor.UIEditor
 			foreach (var image in UIImages)
 				if (pos.X > image.X && pos.X < image.X + image.Width && pos.Y > image.Y &&
 					pos.Y < image.Y + image.Height)
-					SetNewPosition(pos, image);
+					imageProcessor.CalculateDistance(pos, image);
 		}
 
 		public bool LeftMouseButtonDown { get; set; }
-
-		private void SetNewPosition(Point pos, UIImage image)
-		{
-			SelectedImage = image;
-			distance.X = (int)(pos.X - image.X);
-			distance.Y = (int)(pos.Y - image.Y);
-			imageBeginPos.X = (int)image.X;
-			imageBeginPos.Y = (int)image.Y;
-		}
-
-		public UIImage SelectedImage { get; set; }
-		private Point imageBeginPos;
-		private Point distance;
 
 		public void MouseMove(Point pos)
 		{
 			if (!LeftMouseButtonDown)
 				return;
 
-			float posx = (pos.X - distance.X);
-			float posy = (pos.Y - distance.Y);
-			var gridSpaceX = (int)(posx / PixelSnapgrid);
-			var gridSpaceY = (int)(posy / PixelSnapgrid);
-			SelectedImage.X = gridSpaceX * PixelSnapgrid;
-			SelectedImage.Y = gridSpaceY * PixelSnapgrid;
+			imageProcessor.EditImagePosition(pos);
 			RaisePropertyChanged("UIImages");
 			RaisePropertyChanged("SelectedImage");
 		}
+
+		public UIImage SelectedImage { get; set; }
 
 		public void LeftMouseUp(Point obj)
 		{
@@ -205,22 +162,10 @@ namespace DeltaEngine.Editor.UIEditor
 		private void UpdateLayers()
 		{
 			var tempImageLis = new List<UIImage>();
-			SortImagesAccordingToLayer(tempImageLis);
-			string tempFileName = SelectedImageInList;
-			SelectedImageInList = tempFileName;
+			imageProcessor.SortImagesAccordingToLayer(tempImageLis);
 			RaisePropertyChanged("UIImages");
 			RaisePropertyChanged("ImageInGridList");
 			RaisePropertyChanged("SelectedImageInList");
-		}
-
-		private void SortImagesAccordingToLayer(List<UIImage> tempImageLis)
-		{
-			foreach (var uiImage in UIImages)
-				tempImageLis.Add(uiImage);
-			tempImageLis.Sort((l, r) => l.Layer.CompareTo(r.Layer));
-			UIImages.Clear();
-			foreach (var uiImage in tempImageLis)
-				UIImages.Add(uiImage);
 		}
 
 		public void ChangeVisualLayer(string obj)
@@ -302,27 +247,7 @@ namespace DeltaEngine.Editor.UIEditor
 
 		public ObservableCollection<string> ImageInGridList
 		{
-			get { return GetNamesOfImagesInGrid(); }
-		}
-
-		private ObservableCollection<string> GetNamesOfImagesInGrid()
-		{
-			var namelist = new ObservableCollection<string>();
-			foreach (var image in UIImages)
-				namelist.Add(image.FileName);
-			return namelist;
-		}
-
-		private static Stream ConvertMemoryStreamToFileStream(Stream stream)
-		{
-			var file = new FileStream("test.png", FileMode.Create, FileAccess.Write);
-			var bytes = new byte[stream.Length];
-			stream.Read(bytes, 0, (int)stream.Length);
-			file.Write(bytes, 0, bytes.Length);
-			file.Close();
-			stream.Close();
-			stream = file;
-			return stream;
+			get { return imageProcessor.GetNamesOfImagesInGrid(); }
 		}
 
 		public string SelectedImageInList { get; set; }
@@ -363,22 +288,9 @@ namespace DeltaEngine.Editor.UIEditor
 
 		private void SetSaveAndLoadMessengers()
 		{
-			Messenger.Default.Register<string>(this, "SaveUI", SaveUI);
-			Messenger.Default.Register<string>(this, "LoadUI", LoadUI);
+			Messenger.Default.Register<string>(this, "SaveUI", SaveUIToXml);
+			Messenger.Default.Register<string>(this, "LoadUI", LoadUiFromXml);
 		}
-
-		//ncrunch: no coverage start
-		public void SaveUI(string obj)
-		{
-			var dlg = new SaveFileDialog();
-			dlg.FileName = "Document";
-			dlg.DefaultExt = ".xml";
-			dlg.Filter = "xml documents (.xml)|*.xml";
-			bool? result = dlg.ShowDialog();
-			if (result == true)
-				SaveUIToXml(dlg.FileName);
-		}
-		//ncrunch: no coverage end
 
 		public void SaveUIToXml(string filename)
 		{
@@ -389,20 +301,6 @@ namespace DeltaEngine.Editor.UIEditor
 			string xmlDataString = file.Root.ToXmlString();
 			fileSystem.File.WriteAllText(filename, xmlDataString);
 		}
-
-		//ncrunch: no coverage start
-		public void LoadUI(string obj)
-		{
-			var dlg = new OpenFileDialog();
-			dlg.InitialDirectory = "c:\\";
-			dlg.Filter = "xml documents (.xml)|*.xml";
-			dlg.FilterIndex = 2;
-			dlg.RestoreDirectory = true;
-			bool? result = dlg.ShowDialog();
-			if (result == true)
-				LoadUiFromXml(dlg.FileName);
-		}
-		//ncrunch: no coverage end
 
 		public void LoadUiFromXml(string fileName)
 		{

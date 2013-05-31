@@ -18,6 +18,7 @@ namespace DeltaEngine.Platforms.Tests
 			log = new LoggingMocks(resolver);
 			new ContentMocks(resolver);
 			new PhysicsMock(resolver);
+			new PlatformsMocks(resolver);
 		}
 
 		internal readonly AutofacStarterForMockResolver resolver =

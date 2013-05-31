@@ -11,21 +11,21 @@ namespace DeltaEngine.Graphics.Xna
 		public XnaDrawing(XnaDevice device, Window window)
 			: base(device)
 		{
-			this.device = device;
+			nativeDevice = device.NativeDevice;
 			this.window = window;
 			InitializeVertexBuffers();
 			InitializeBasicEffect();
 		}
 
-		private new readonly XnaDevice device;
+		private readonly GraphicsDevice nativeDevice;
 		private readonly Window window;
 
 		private void InitializeVertexBuffers()
 		{
 			positionColorVertexBuffer = new XnaCircularBuffer(VertexBufferSize,
-				typeof(XnaGraphics.VertexPositionColor), device);
+				typeof(XnaGraphics.VertexPositionColor), (XnaDevice)device);
 			positionColorUvVertexBuffer = new XnaCircularBuffer(VertexBufferSize,
-				typeof(VertexPositionColorTexture), device);
+				typeof(VertexPositionColorTexture), (XnaDevice)device);
 		}
 
 		private XnaCircularBuffer positionColorVertexBuffer;
@@ -34,11 +34,11 @@ namespace DeltaEngine.Graphics.Xna
 
 		private void InitializeBasicEffect()
 		{
-			basicEffect = new BasicEffect(device.NativeDevice);
+			basicEffect = new BasicEffect(nativeDevice);
 			UpdateProjectionMatrix(window.ViewportPixelSize);
 			window.ViewportSizeChanged += UpdateProjectionMatrix;
 			basicEffect.View = Matrix.CreateTranslation(-0.5f, -0.5f, 0.0f);
-			device.NativeDevice.BlendState = BlendState.NonPremultiplied;
+			nativeDevice.BlendState = BlendState.NonPremultiplied;
 		}
 
 		public override void Dispose()
@@ -51,11 +51,11 @@ namespace DeltaEngine.Graphics.Xna
 
 		public override void EnableTexturing(Image image)
 		{
-			device.NativeDevice.Textures[0] = (image as XnaImage).NativeTexture;
-			device.NativeDevice.SamplerStates[0] = image.DisableLinearFiltering
+			nativeDevice.Textures[0] = (image as XnaImage).NativeTexture;
+			nativeDevice.SamplerStates[0] = image.DisableLinearFiltering
 				? SamplerState.PointClamp : SamplerState.LinearClamp;
 			basicEffect.TextureEnabled = true;
-			basicEffect.Texture = device.NativeDevice.Textures[0] as Texture2D;
+			basicEffect.Texture = nativeDevice.Textures[0] as Texture2D;
 		}
 
 		public override void DisableTexturing()
@@ -65,8 +65,14 @@ namespace DeltaEngine.Graphics.Xna
 
 		public override void SetBlending(BlendMode blendMode)
 		{
-			device.NativeDevice.BlendState = GetXnaBlendState(blendMode);
+			if (currentBlendMode == blendMode)
+				return;
+
+			nativeDevice.BlendState = GetXnaBlendState(blendMode);
+			currentBlendMode = blendMode;
 		}
+
+		private BlendMode currentBlendMode = BlendMode.Opaque;
 
 		private static BlendState GetXnaBlendState(BlendMode blendMode)
 		{
@@ -85,16 +91,16 @@ namespace DeltaEngine.Graphics.Xna
 				positionColorUvVertexBuffer.Create();
 
 			positionColorUvVertexBuffer.SetVertexData(vertices);
-			device.NativeDevice.SetVertexBuffer(positionColorUvVertexBuffer.NativeBuffer);
+			nativeDevice.SetVertexBuffer(positionColorUvVertexBuffer.NativeBuffer);
 			Draw(positionColorUvVertexBuffer, mode, vertices.Length);
 		}
 
 		private void ApplyEffect()
 		{
 			basicEffect.VertexColorEnabled = true;
-			basicEffect.TextureEnabled = device.NativeDevice.Textures[0] != null;
+			basicEffect.TextureEnabled = nativeDevice.Textures[0] != null;
 			if (basicEffect.TextureEnabled)
-				basicEffect.Texture = device.NativeDevice.Textures[0] as Texture2D;
+				basicEffect.Texture = nativeDevice.Textures[0] as Texture2D;
 
 			basicEffect.CurrentTechnique.Passes[0].Apply();
 		}
@@ -116,14 +122,14 @@ namespace DeltaEngine.Graphics.Xna
 		private void DrawPrimitives(XnaCircularBuffer buffer, PrimitiveType primitiveType,
 			int primitiveCount)
 		{
-			device.NativeDevice.DrawPrimitives(primitiveType, buffer.Offset / buffer.VertexSize,
+			nativeDevice.DrawPrimitives(primitiveType, buffer.Offset / buffer.VertexSize,
 				primitiveCount);
 		}
 
 		private void DrawIndexedPrimitives(XnaCircularBuffer buffer, PrimitiveType primitiveType,
 			int length, int primitiveCount)
 		{
-			device.NativeDevice.DrawIndexedPrimitives(primitiveType, buffer.Offset / buffer.VertexSize,
+			nativeDevice.DrawIndexedPrimitives(primitiveType, buffer.Offset / buffer.VertexSize,
 				0, length, 0, primitiveCount);
 		}
 
@@ -144,7 +150,7 @@ namespace DeltaEngine.Graphics.Xna
 				positionColorVertexBuffer.Create();
 
 			positionColorVertexBuffer.SetVertexData(vertices);
-			device.NativeDevice.SetVertexBuffer(positionColorVertexBuffer.NativeBuffer);
+			nativeDevice.SetVertexBuffer(positionColorVertexBuffer.NativeBuffer);
 			Draw(positionColorVertexBuffer, mode, vertices.Length);
 		}
 
@@ -153,9 +159,9 @@ namespace DeltaEngine.Graphics.Xna
 			if (indexBuffer == null)
 				CreateIndexBuffer();
 
-			device.NativeDevice.Indices = null;
+			nativeDevice.Indices = null;
 			indexBuffer.SetData(indices);
-			device.NativeDevice.Indices = indexBuffer;
+			nativeDevice.Indices = indexBuffer;
 			lastIndicesCount = usedIndicesCount;
 		}
 
@@ -174,7 +180,7 @@ namespace DeltaEngine.Graphics.Xna
 
 		private void CreateIndexBuffer(int indexCount = 600)
 		{
-			indexBuffer = new DynamicIndexBuffer(device.NativeDevice, IndexElementSize.SixteenBits,
+			indexBuffer = new DynamicIndexBuffer(nativeDevice, IndexElementSize.SixteenBits,
 				indexCount, BufferUsage.WriteOnly);
 		}
 	}

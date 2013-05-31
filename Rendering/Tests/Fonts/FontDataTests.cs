@@ -39,6 +39,14 @@ namespace DeltaEngine.Rendering.Tests.Fonts
 		}
 
 		[Test]
+		public void LoadFromInvalidXmlDataThrows()
+		{
+			Assert.Throws<FontData.UnableToLoadFontDataWithoutValidXmlData>(() => new FontData(null));
+			Assert.Throws<FontData.UnableToLoadFontDataWithoutValidXmlData>(
+				() => new FontData(new XmlData("invalid")));
+		}
+
+		[Test]
 		public void ParseTextLines()
 		{
 			var fontData = new FontData(new XmlFile(Path.Combine("Content", "Verdana12.xml")).Root);
@@ -69,9 +77,9 @@ namespace DeltaEngine.Rendering.Tests.Fonts
 			drawSize = Size.Zero;
 			glyphs = fontData.GetGlyphDrawAreaAndUVs("A", 1.0f, Alignment, false, ref drawSize);
 			Assert.AreEqual(1, glyphs.Length);
-			GlyphDrawAreaAndUV glyphA = glyphs[0];
+			GlyphDrawData glyphA = glyphs[0];
 			Assert.AreEqual(glyphA.UV,
-				Rectangle.BuildUVRectangle(new Rectangle(67, 32, 9, 16), new Size(128, 128)));
+				Rectangle.BuildUvRectangle(new Rectangle(67, 32, 9, 16), new Size(128, 128)));
 			Assert.AreEqual(new Rectangle(0, 0, 9, 16), glyphA.DrawArea);
 		}
 

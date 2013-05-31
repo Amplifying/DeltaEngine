@@ -12,7 +12,7 @@ namespace DeltaEngine.Graphics.OpenTK
 		}
 
 		private const int VertexBufferSize = 1024;
-		private BlendMode lastBlendMode = BlendMode.Opaque;
+		private BlendMode currentBlendMode = BlendMode.Opaque;
 		private OpenTKCircularBuffer positionColorBuffer;
 		private OpenTKCircularBuffer positionColorUvBuffer;
 		private const int InvalidHandle = -1;
@@ -73,10 +73,10 @@ namespace DeltaEngine.Graphics.OpenTK
 
 		public override void SetBlending(BlendMode blendMode)
 		{
-			if (lastBlendMode == blendMode)
+			if (currentBlendMode == blendMode)
 				return;
 
-			lastBlendMode = blendMode;
+			currentBlendMode = blendMode;
 			switch (blendMode)
 			{
 				case BlendMode.Normal:

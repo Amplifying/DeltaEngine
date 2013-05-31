@@ -7,55 +7,59 @@
              mc:Ignorable="d">
 	<Grid>
 		<ComboBox ItemsSource="{Binding Path=ProjectList}" Width="225" Height="32"
-		          HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0"
+		          HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,9,0"
 		          SelectedItem="{Binding Path=ProjectName}" />
-		<ListBox Width="110" Height="140" HorizontalAlignment="Left"
-		         VerticalAlignment="Top" Margin="10,47,0,0" ItemsSource="{Binding Path=IuImagesInList}"
+		<ListBox Width="110" Height="140" HorizontalAlignment="Right"
+		         VerticalAlignment="Top" Margin="0,47,124,0" ItemsSource="{Binding Path=IuImagesInList}"
 		         SelectedItem="{Binding Path=SelectedImageInList}" />
-		<ListBox Width="110" Height="140" HorizontalAlignment="Left"
-		         VerticalAlignment="Top" Margin="125,47,0,0" ItemsSource="{Binding Path=ImageInGridList}"
+		<ListBox Width="110" Height="140" HorizontalAlignment="Right"
+		         VerticalAlignment="Top" Margin="0,47,9,0" ItemsSource="{Binding Path=ImageInGridList}"
 		         SelectedIndex="{Binding Path=SelectedImageInGridIndex}" SelectionChanged="SelectImageInGridList" />
-		<Label Content="Button" Margin="11,225,221,99" RenderTransformOrigin="0.509,-0.962"></Label>
-		<CheckBox Name="IsButtonCheckBox" IsEnabled="False" Checked="ChangeIfButtonStateTrue"
-		          Unchecked="ChangeIfButtonStateFalse" IsChecked="{Binding Path=CheckBoxButton}" Margin="58,232,272,173" />
-		<Label Content="Layer" Margin="15,252,217,72"></Label>
-		<TextBox Margin="58,256,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="67"
-		         SelectionChanged="LayerChanged" Name="LayerTextBox" Text="{Binding Path=CheckLayer}" />
-		<Label Content="Rotation" Margin="15,278,272,99"></Label>
-		<Slider Margin="73,283,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="110"
+		<Label Content="Button" Margin="0,230,128,0" RenderTransformOrigin="0.509,-0.962" HorizontalAlignment="Right" VerticalAlignment="Top"></Label>
+		<CheckBox Name="IsButtonCheckBox" IsEnabled="False" Checked="ChangeIfButtonState" Unchecked="ChangeIfButtonState"
+		          IsChecked="{Binding Path=CheckBoxButton}" Margin="232,237,98,168" x:FieldModifier="public" RenderTransformOrigin="7.188,0.533"
+							HorizontalAlignment="Right" VerticalAlignment="Top"/>
+		<Label Content="Layer" Margin="0,255,131,0" HorizontalAlignment="Right" VerticalAlignment="Top"></Label>
+		<TextBox Margin="0,260,47,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="67"
+		         SelectionChanged="LayerChanged" Name="LayerTextBox" Text="{Binding Path=CheckLayer}"
+		         IsEnabled="False" />
+		<Label Content="Rotation" Margin="163,278,124,99" HorizontalAlignment="Right" VerticalAlignment="Top"></Label>
+		<Slider Margin="0,283,9,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="110"
 		        Minimum="-180" Maximum="180" Value="{Binding Path=Rotate}"
-		        ValueChanged="RotateSliderChanged" Name="RotateSlider" />
-		<Label Content="Scale" Margin="15,302,284,79"></Label>
-		<Slider Margin="73,306,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="110"
+		        ValueChanged="RotateSliderChanged" Name="RotateSlider" IsEnabled="False" />
+		<Label Content="Scale" Margin="169,301,130,80" HorizontalAlignment="Right" VerticalAlignment="Top"></Label>
+		<Slider Margin="0,306,9,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="110"
 		        Minimum="0" Maximum="2" Value="{Binding Path=Scale}"
-		        ValueChanged="ScaleSliderChanged" Name="ScaleSlider" />
+		        ValueChanged="ScaleSliderChanged" Name="ScaleSlider" IsEnabled="False" />
 		<Button Content="AddImage" Width="110" Height="28"
-		        HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,192,0,0" Click="AddImage" />
-		<Grid Margin="240,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
-			<ScrollViewer Name="ScrollViewer" VerticalScrollBarVisibility="Visible"
-			              HorizontalScrollBarVisibility="Visible" x:FieldModifier="public">
-				<uiEditor2:ImageGridView x:Name="ImageGrid" 
-				                            Width="{Binding Path=GridWidth}"
-				                            Height="{Binding Path=GridHeight}" SnapsToDevicePixels="True" />
-			</ScrollViewer>
-		</Grid>
-		<Label Content="Grid width" Margin="11,330,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"></Label>
-		<TextBox Margin="10,356,0,-34" Text="{Binding Path=GridWidth}" Name="GridWidthTextbox"
-		         Width="110" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top"
+		        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,192,65,0" Click="AddImage" />
+
+		<Label Content="Grid width" Margin="0,330,147,0" HorizontalAlignment="Right" VerticalAlignment="Top"></Label>
+		<TextBox Margin="0,356,124,0" Text="{Binding Path=GridWidth}" Name="GridWidthTextbox"
+		         Width="110" Height="28" HorizontalAlignment="Right" VerticalAlignment="Top"
 		         SelectionChanged="ChangeGridWidth" />
-		<Label Content="Grid height" Margin="125,330,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" ></Label>
-		<TextBox Margin="125,356,0,0" Text="{Binding Path=GridHeight}" Name="GridHeightTextbox"
-		         Width="110" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top"
+		<Label Content="Grid height" Margin="0,329,28,0" HorizontalAlignment="Right" VerticalAlignment="Top"></Label>
+		<TextBox Margin="0,356,9,0" Text="{Binding Path=GridHeight}" Name="GridHeightTextbox"
+		         Width="110" Height="28" HorizontalAlignment="Right" VerticalAlignment="Top"
 		         SelectionChanged="ChangeGridHeight" />
-		<Label Content="Grid snapping size" Margin="10,384,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"></Label>
-		<TextBox Margin="10,409,0,-17" Text="{Binding Path=PixelSnapgrid}"
-		         Width="110" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top"
+		<Label Content="Grid snapping size" Margin="0,384,9,0" HorizontalAlignment="Right" VerticalAlignment="Top"></Label>
+		<TextBox Margin="0,409,9,-17" Text="{Binding Path=PixelSnapgrid}"
+		         Width="110" Height="28" HorizontalAlignment="Right" VerticalAlignment="Top"
 		         SelectionChanged="ChangeGridSnapping" Name="GridSpacing" />
 		<Button Content="Save" Width="110" Height="28"
-		        HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,443,0,-121" Click="Save"/>
+		        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,443,124,-51" Click="Save" />
 		<Button Content="Load" Width="110" Height="28"
-		        HorizontalAlignment="Left" VerticalAlignment="Top" Margin="125,443,0,-121" Click="Load"/>
-		<Border BorderBrush="CadetBlue" BorderThickness="1" Margin="11,225,0,0"
-						HorizontalAlignment="Left" VerticalAlignment="Top" Height="105" Width="222"></Border>
+		        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,442,9,-50" Click="Load" />
+		<Border BorderBrush="CadetBlue" BorderThickness="1" Margin="0,225,9,0"
+		        HorizontalAlignment="Right" VerticalAlignment="Top" Height="105" Width="216">
+		</Border>
+		<Grid Margin="0,10,239,0" HorizontalAlignment="Right" VerticalAlignment="Top">
+			<ScrollViewer Name="ScrollViewer" VerticalScrollBarVisibility="Visible"
+			              HorizontalScrollBarVisibility="Visible" x:FieldModifier="public">
+				<uiEditor2:ImageGridView x:Name="ImageGrid"
+				                         Width="{Binding Path=GridWidth}"
+				                         Height="{Binding Path=GridHeight}" SnapsToDevicePixels="True" />
+			</ScrollViewer>
+		</Grid>
 	</Grid>
 </UserControl>

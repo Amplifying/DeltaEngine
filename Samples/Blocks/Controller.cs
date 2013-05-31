@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
+using DeltaEngine.Platforms;
 
 namespace Blocks
 {
@@ -11,7 +12,7 @@ namespace Blocks
 	/// </summary>
 	public class Controller : Entity
 	{
-		public Controller(Constants.DisplayMode displayMode, BlocksContent content)
+		public Controller(Orientation displayMode, BlocksContent content)
 		{
 			this.content = content;
 			this.displayMode = displayMode;
@@ -21,7 +22,7 @@ namespace Blocks
 		}
 
 		public readonly BlocksContent content;
-		public readonly Constants.DisplayMode displayMode;
+		public readonly Orientation displayMode;
 
 		internal Grid Grid
 		{

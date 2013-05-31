@@ -54,24 +54,10 @@ namespace DeltaEngine.Editor.UIEditor
 
 		private void CreateImageOutOfXmlData(XmlData xmlData, ObservableCollection<UIImage> uiImages)
 		{
-			var position = GetPosition(xmlData);
-			int rotationAngle = Convert.ToInt32(xmlData.GetAttributeValue("RotationAngle"));
-			float scale = Convert.ToSingle(xmlData.GetAttributeValue("Scale"));
-			int layer = Convert.ToInt32(xmlData.GetAttributeValue("Layer"));
 			string selectedProject = xmlData.GetAttributeValue("SelectedProject");
-			bool isButton = Convert.ToBoolean(xmlData.GetAttributeValue("IsButton"));
 			string fileName = xmlData.GetAttributeValue("FileName");
 			var image = CreateLoadedImage(selectedProject, fileName);
-			uiImages.Add(new UIImage(position, (float)image.Width, (float)image.Height,
-				image, fileName, selectedProject, rotationAngle, scale, layer, isButton));
-		}
-
-		private static Point GetPosition(XmlData xmlData)
-		{
-			int posX = Convert.ToInt32(xmlData.GetAttributeValue("PositionX"));
-			int posY = Convert.ToInt32(xmlData.GetAttributeValue("PositionY"));
-			var position = new Point(posX, posY);
-			return position;
+			uiImages.Add(new UIImage(xmlData, image));
 		}
 
 		private BitmapImage CreateLoadedImage(string selectedProject, string fileName)

@@ -15,5 +15,6 @@ namespace DeltaEngine.Editor.Common
 		void AddContent(string projectName, string contentName, Stream data);
 		void DeleteContent(string projectName, string contentName);
 		Stream LoadContent(string projectName, string contentName);
+		void SaveImagesAsAnimation(List<string> itemList, string animationName, string projectName);
 	}
 }

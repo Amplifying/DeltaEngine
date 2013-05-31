@@ -11,6 +11,6 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
 [assembly: Guid("629b72b7-0afe-4912-8342-cbd4423593da")]
-[assembly: AssemblyVersion("0.9.8.0")]
-[assembly: AssemblyFileVersion("0.9.8.0")]
+[assembly: AssemblyVersion("0.9.8.1")]
+[assembly: AssemblyFileVersion("0.9.8.1")]
 [assembly: InternalsVisibleTo("DeltaEngine.Platforms.All")]

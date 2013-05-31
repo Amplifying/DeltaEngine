@@ -14,19 +14,11 @@ namespace Blobs
 		{
 			this.rectangle = rectangle;
 			this.rotation = rotation;
-			UpdateRendering();
 		}
 
-		public Color Color;
 		private readonly float rotation;
 		private Rectangle rectangle;
-
-		private void UpdateRendering()
-		{
-			leftCircle.Remove<Polygon.RenderOutline>();
-			rightCircle.Remove<Polygon.RenderOutline>();
-			middle.Remove<Polygon.RenderOutline>();
-		}
+		public Color Color;
 
 		private readonly Ellipse leftCircle = new Ellipse(Rectangle.Zero, Color.White)
 		{

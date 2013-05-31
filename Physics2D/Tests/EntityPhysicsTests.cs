@@ -62,9 +62,9 @@ namespace DeltaEngine.Physics2D.Tests
 			Start(resolver, (ContentLoader content) => { CreateFallingSprite(content); });
 		}
 
-		private static Sprite CreateFallingSprite(ContentLoader content)
+		private Sprite CreateFallingSprite(ContentLoader content)
 		{
-			var sprite = new Sprite(content.Load<Image>("DeltaEngineLogo"), ScreenCenter);
+			var sprite = new Sprite(content.Load<Image>("DeltaEngineLogo"), screenCenter);
 			sprite.Add(new SimplePhysics.Data
 			{
 				Velocity = new Point(0.0f, -0.3f),
@@ -75,7 +75,7 @@ namespace DeltaEngine.Physics2D.Tests
 			return sprite;
 		}
 
-		private static readonly Rectangle ScreenCenter = Rectangle.FromCenter(Point.Half,
+		private readonly Rectangle screenCenter = Rectangle.FromCenter(Point.Half,
 			new Size(0.2f, 0.2f));
 
 		[VisualTest]
@@ -94,6 +94,10 @@ namespace DeltaEngine.Physics2D.Tests
 				};
 				trigger.Fired += entity => entity.Set(Color.GetRandomBrightColor());
 				CreateFallingSprite(content).AddTrigger(trigger);
+				if (resolver == typeof(MockResolver))
+				{
+					mockResolver.AdvanceTimeAndExecuteRunners(8);
+				}
 			});
 		}
 
@@ -109,6 +113,21 @@ namespace DeltaEngine.Physics2D.Tests
 					Gravity = new Point(0.0f, 0.1f)
 				});
 				ellipse.Add<SimplePhysics.Fall>();
+			});
+		}
+
+		[VisualTest]
+		public void RenderEllipsemovingInScreenSpace(Type resolver)
+		{
+			Start(resolver, () =>
+			{
+				var ellipse = new Ellipse(Point.Half, 0.1f, 0.06f, Color.Green);
+				ellipse.Add(new SimplePhysics.Data
+				{
+					Velocity = new Point(0.4f, -0.4f),
+					Gravity = new Point(0.0f, 0.0f)
+				});
+				ellipse.Add<SimplePhysics.BounceOffScreenEdges>();
 			});
 		}
 	}

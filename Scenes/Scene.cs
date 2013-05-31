@@ -22,7 +22,7 @@ namespace DeltaEngine.Scenes
 		private readonly List<Entity> controls = new List<Entity>();
 		private bool isShown;
 
-		internal List<Entity> Controls
+		public List<Entity> Controls
 		{
 			get { return controls; }
 		}

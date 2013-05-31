@@ -4,6 +4,7 @@ using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
 using DeltaEngine.Platforms;
 using DeltaEngine.Platforms.All;
+using DeltaEngine.Rendering.Fonts;
 using DeltaEngine.Rendering.Sprites;
 using DeltaEngine.Scenes.UserInterfaces;
 using NUnit.Framework;
@@ -17,7 +18,7 @@ namespace DeltaEngine.Scenes.Tests
 		{
 			Start(resolver, (Scene s, ContentLoader content) =>
 			{
-				var menu = new Menu(content, Size.Half);
+				var menu = new Menu(Size.Half);
 				Assert.AreEqual(Size.Half, menu.ButtonSize);
 			});
 		}
@@ -27,7 +28,7 @@ namespace DeltaEngine.Scenes.Tests
 		{
 			Start(resolver, (Scene s, ContentLoader content) =>
 			{
-				var menu = new Menu(content, Size.Half) { ButtonSize = Size.One };
+				var menu = new Menu(Size.Half) { ButtonSize = Size.One };
 				Assert.AreEqual(Size.One, menu.ButtonSize);
 			});
 		}
@@ -37,25 +38,23 @@ namespace DeltaEngine.Scenes.Tests
 		{
 			Start(resolver, (Scene s, ContentLoader content) =>
 			{
-				var menu = new Menu(content, Size.Half);
-				var logo = content.Load<Image>("DeltaEngineLogo");
-				menu.AddMenuOption(logo, () => { });
+				var menu = new Menu(Size.Half);
+				menu.AddMenuOption(CreateTheme(content), () => { });
 				Assert.AreEqual(1, menu.Controls.Count);
-				Assert.AreEqual(logo, ((Button)menu.Controls[0]).Image);
+				Assert.AreEqual("DeltaEngineLogo", ((Button)menu.Controls[0]).Image.Name);
 			});
 		}
 
-		[VisualTest]
-		public void ShowMenuWithOneButton(Type resolver)
+		private static Theme CreateTheme(ContentLoader content)
 		{
-			Start(resolver, (Scene s, ContentLoader content, Window window) =>
+			var appearance = new Theme.Appearance(content.Load<Image>("DeltaEngineLogo"));
+			return new Theme
 			{
-				var menu = new Menu(content, new Size(0.3f, 0.1f));
-				menu.SetBackground(content.Load<Image>("SimpleSubMenuBackground"));
-				var logo = content.Load<Image>("DeltaEngineLogo");
-				menu.AddMenuOption(logo, () => { window.Title = "Clicked Button"; });
-				menu.Show();
-			});
+				Button = appearance,
+				ButtonMouseover = appearance,
+				ButtonPressed = appearance,
+				Font = new Font(content, "Verdana12")
+			};
 		}
 
 		[VisualTest]
@@ -63,11 +62,11 @@ namespace DeltaEngine.Scenes.Tests
 		{
 			Start(resolver, (Scene s, ContentLoader content, Window window) =>
 			{
-				var menu = new Menu(content, new Size(0.3f, 0.1f));
+				var menu = new Menu(new Size(0.3f, 0.1f));
 				menu.SetBackground(content.Load<Image>("SimpleSubMenuBackground"));
-				var logo = content.Load<Image>("DeltaEngineLogo");
-				menu.AddMenuOption(logo, () => { window.Title = "Clicked Top Button"; });
-				menu.AddMenuOption(logo, () => { window.Title = "Clicked Bottom Button"; });
+				var theme = CreateTheme(content);
+				menu.AddMenuOption(theme, () => { window.Title = "Clicked Top Button"; });
+				menu.AddMenuOption(theme, () => { window.Title = "Clicked Bottom Button"; });
 				menu.Show();
 			});
 		}
@@ -77,29 +76,44 @@ namespace DeltaEngine.Scenes.Tests
 		{
 			Start(resolver, (Scene s, ContentLoader content, Window window) =>
 			{
-				var menu = new Menu(content, new Size(0.3f, 0.1f));
+				var menu = new Menu(new Size(0.3f, 0.1f));
 				menu.SetBackground(content.Load<Image>("SimpleSubMenuBackground"));
-				var logo = content.Load<Image>("DeltaEngineLogo");
-				menu.AddMenuOption(logo, () => { window.Title = "Clicked Top Button"; });
-				menu.AddMenuOption(logo, () => { window.Title = "Clicked Middle Button"; });
-				menu.AddMenuOption(logo, () => { window.Title = "Clicked Bottom Button"; });
+				var theme = CreateTheme(content);
+				menu.AddMenuOption(theme, () => { window.Title = "Clicked Top Button"; });
+				menu.AddMenuOption(theme, () => { window.Title = "Clicked Middle Button"; });
+				menu.AddMenuOption(theme, () => { window.Title = "Clicked Bottom Button"; });
 				menu.Show();
 			});
 		}
 
 		[VisualTest]
-		public void ShowMenuWithThreeButtonsAndText(Type resolver)
+		public void ShowMenuWithThreeTextButtons(Type resolver)
 		{
 			Start(resolver, (Scene s, ContentLoader content, Window window) =>
 			{
-				var menu = new Menu(content, new Size(0.3f, 0.1f));
+				var menu = new Menu(new Size(0.3f, 0.1f));
 				menu.SetBackground(content.Load<Image>("SimpleSubMenuBackground"));
-				var logo = content.Load<Image>("DefaultButtonBackground");
-				menu.AddMenuOption(logo, () => { window.Title = "Clicked Top Button"; }, "Top Button");
-				menu.AddMenuOption(logo, () => { window.Title = "Clicked Middle Button"; }, "Middle Button");
-				menu.AddMenuOption(logo, () => { window.Title = "Clicked Bottom Button"; }, "Bottom Button");
+				var theme = CreateTextTheme(content);
+				menu.AddMenuOption(theme, () => { window.Title = "Clicked Top Button"; }, "Top Button");
+				menu.AddMenuOption(theme, () => { window.Title = "Clicked Middle Button"; },
+					"Middle Button");
+				menu.AddMenuOption(theme, () => { window.Title = "Clicked Bottom Button"; },
+					"Bottom Button");
 				menu.Show();
 			});
+		}
+
+		private static Theme CreateTextTheme(ContentLoader content)
+		{
+			return new Theme
+			{
+				Button =
+					new Theme.Appearance(content.Load<Image>("DefaultSliderBackground"), Color.LightGray),
+				ButtonMouseover = new Theme.Appearance(content.Load<Image>("DefaultSliderBackground")),
+				ButtonPressed =
+					new Theme.Appearance(content.Load<Image>("DefaultSliderBackground"), Color.Red),
+				Font = new Font(content, "Verdana12")
+			};
 		}
 
 		[IntegrationTest]
@@ -107,9 +121,9 @@ namespace DeltaEngine.Scenes.Tests
 		{
 			Start(resolver, (Scene s, ContentLoader content) =>
 			{
-				var menu = new Menu(content, Size.Half);
-				var logo = content.Load<Image>("DefaultButtonBackground");
-				menu.AddMenuOption(logo, () => { });
+				var menu = new Menu(Size.Half);
+				var theme = CreateTheme(content);
+				menu.AddMenuOption(theme, () => { });
 				Assert.AreEqual(1, menu.Buttons.Count);
 				menu.Clear();
 				Assert.AreEqual(0, menu.Buttons.Count);
@@ -121,10 +135,11 @@ namespace DeltaEngine.Scenes.Tests
 		{
 			Start(resolver, (Scene s, ContentLoader content) =>
 			{
-				var menu = new Menu(content, Size.Half);
-				var logo = content.Load<Image>("DefaultButtonBackground");
-				menu.Add(new Sprite(logo,Rectangle.One));
-				menu.AddMenuOption(logo, () => { });
+				var menu = new Menu(Size.Half);
+				var logo = content.Load<Image>("DeltaEngineLogo");
+				menu.Add(new Sprite(logo, Rectangle.One));
+				var theme = CreateTheme(content);
+				menu.AddMenuOption(theme, () => { });
 				Assert.AreEqual(1, menu.Buttons.Count);
 				Assert.AreEqual(2, menu.Controls.Count);
 				menu.ClearMenuOptions();

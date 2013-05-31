@@ -93,5 +93,13 @@ namespace DeltaEngine.Editor.Mocks.Tests
 			service.AddProject("TestProject");
 			Assert.AreEqual(1, service.GetContentNames("BreakOut").Count);
 		}
+
+		[Test, Category("Slow")]
+		public void SaveImagesAsAnimation()
+		{
+			var itemLis = new List<string>();
+			itemLis.Add("DeltaEngineLogo.png");
+			service.SaveImagesAsAnimation(itemLis, "testAnimation", "BreakOut");
+		}
 	}
 }

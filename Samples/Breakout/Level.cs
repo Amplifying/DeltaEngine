@@ -144,12 +144,24 @@ namespace Breakout
 			return bricks[brickIndexX, brickIndexY];
 		}
 
-		public void Explode(Sprite brick)
+		public void Explode(Sprite brick, Point collision)
 		{
 			score.IncreasePoints();
 			brick.Visibility = Visibility.Hide;
+			CreateExplosion(collision);
 			explosionSound.Play();
 		}
+
+		private void CreateExplosion(Point collision)
+		{
+			var explosion = new Sprite(explosionImage, Rectangle.FromCenter(collision, ExplosionSize));
+			explosion.Add(new Transition.Size(ExplosionSize, 2 * ExplosionSize));
+			explosion.Add(new Transition.FadingColor(Color.White));
+			explosion.Add(new Transition.Duration());
+			explosion.Add<FinalTransition>();
+		}
+
+		private static readonly Size ExplosionSize = new Size(0.1f, 0.1f);
 
 		public void LifeLost(Point ballLostPosition)
 		{

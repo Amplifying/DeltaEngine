@@ -34,7 +34,7 @@ namespace DeltaEngine.Rendering.Tests
 			Start(resolver, (ContentLoader content) =>
 			{
 				var sprite = new Sprite(content.Load<Image>("DeltaEngineLogo"), screenCenter);
-				sprite.Add<Transition>().Add(new Transition.FadingColor(Color.White));
+				sprite.Add<Transition>().Add(new Transition.FadingColor());
 				sprite.Add(new Transition.Duration(5.0f));
 			});
 		}

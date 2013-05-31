@@ -40,7 +40,7 @@ namespace Breakout
 
 		private void RegisterFireBallCommand(InputCommands inputCommands)
 		{
-			inputCommands.Add(Key.Space, State.Pressing, FireBallFromPaddle);
+			inputCommands.Add(Key.Space, State.Pressing, key => FireBallFromPaddle());
 			inputCommands.Add(MouseButton.Left, State.Pressing, mouse => FireBallFromPaddle());
 			inputCommands.Add(touch => FireBallFromPaddle());
 			inputCommands.Add(GamePadButton.A, State.Pressing, FireBallFromPaddle);

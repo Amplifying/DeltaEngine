@@ -15,7 +15,8 @@ namespace Snake
 	{
 		public Chunk(int gridSize, float blockSize)
 			: base(
-				new Rectangle(new Point(blockSize * (gridSize / 2), blockSize * (gridSize / 2)),
+				new Rectangle(
+					new Point(blockSize * (int)(gridSize / 2.0f), blockSize * (int)(gridSize / 2.0f)),
 					new Size(blockSize)), Color.Purple)
 		{
 			this.gridSize = gridSize;

@@ -52,7 +52,7 @@ namespace DeltaEngine.Rendering
 					transitionOutlineColor.End, percentage)));
 		}
 
-		private static void UpdateEntityPosition(Entity2D entity, float percentage)
+		protected virtual void UpdateEntityPosition(Entity2D entity, float percentage)
 		{
 			if (!entity.Contains<Position>())
 				return;
@@ -153,6 +153,9 @@ namespace DeltaEngine.Rendering
 
 		public class FadingColor : Color
 		{
+			public FadingColor()
+				: this(Datatypes.Color.White) {}
+
 			public FadingColor(Datatypes.Color startColor)
 				: base(startColor, Datatypes.Color.Transparent(startColor)) {}
 		}

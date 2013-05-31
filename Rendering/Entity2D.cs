@@ -10,6 +10,9 @@ namespace DeltaEngine.Rendering
 	/// </summary>
 	public class Entity2D : Entity
 	{
+		public Entity2D()
+			: this(Rectangle.Zero) { }
+
 		public Entity2D(Rectangle drawArea)
 			: this(drawArea, Color.White) {}
 
@@ -20,9 +23,6 @@ namespace DeltaEngine.Rendering
 			Add(rotation);
 			Add<SortAndRender>();
 		}
-
-		private Entity2D()
-			: this(Rectangle.Zero, Color.White) {}
 
 		public Visibility Visibility
 		{

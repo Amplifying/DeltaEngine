@@ -86,6 +86,7 @@ namespace DeltaEngine.Rendering.Shapes
 				for (int num = 0; num < points.Count; num++)
 					vertices[num] = new VertexPositionColor(screen.ToPixelSpaceRounded(points[num]), color);
 
+				draw.DisableTexturing();
 				draw.DrawVertices(VerticesMode.Lines, vertices);
 			}
 

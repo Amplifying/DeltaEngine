@@ -13,7 +13,7 @@ namespace DeltaEngine.Editor
 	/// </summary>
 	public partial class EditorWindow
 	{
-	public EditorWindow()
+		public EditorWindow()
 			: this(new EditorWindowModel()) {}
 
 		public EditorWindow(EditorWindowModel viewModel)
@@ -82,7 +82,8 @@ namespace DeltaEngine.Editor
 				Title = plugin.GetType().Name.Replace("View", "")
 			};
 			LayoutDocumentPane pane;
-			if (PluginGroup.Children.Count < 1) //2): currently disabled, all plugins go to the same group
+			if (PluginGroup.Children.Count < 1)
+				//2): currently disabled, all plugins go to the same group
 			{
 				pane = new LayoutDocumentPane();
 				PluginGroup.Children.Add(pane);

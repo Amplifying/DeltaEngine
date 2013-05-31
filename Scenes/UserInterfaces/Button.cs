@@ -1,40 +1,26 @@
 using System;
+using System.Collections.Generic;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
-using DeltaEngine.Graphics;
 using DeltaEngine.Input;
-using DeltaEngine.Rendering.Sprites;
 
 namespace DeltaEngine.Scenes.UserInterfaces
 {
 	/// <summary>
-	/// A simple UI button which changes image and color on mouseover and press, and raises a 
-	/// Clicked event on clicking.
+	/// A simple UI button which can change image and color, and exposes a Clicked event
 	/// </summary>
-	public class Button : Sprite, Interact.Clickable
+	public class Button : Label, Interact.Clickable
 	{
-		public Button(Image image)
-			: this(image, Rectangle.Zero) {}
-
-		public Button(Image image, Rectangle drawArea)
-			: this(image, drawArea, Color.White) { }
-
-		public Button(Image image, Rectangle drawArea, Color color)
-			: base(image, drawArea)
+		public Button(Theme theme, Rectangle drawArea, string text = "")
+			: base(theme.Button, theme.Font, drawArea)
 		{
-			Color = color;
+			Text = text;
+			Add(theme);
 			Add(new Interact.State());
-			Add(new Interact.Images(image));
-			Add(new Interact.Colors(color));
-			Add<Interact, Interact.RaiseClickEvent, UpdateImageAndColor>();
+			Add<Interact, Interact.Clicking, UpdateAppearance>();
 		}
 
-		public Point RelativePointerPosition
-		{
-			get { return Get<Interact.State>().RelativePointerPosition; }
-		}
-
-		public void InvokeClickEvent()
+		public void Clicking()
 		{
 			if (Clicked != null)
 				Clicked();
@@ -42,101 +28,30 @@ namespace DeltaEngine.Scenes.UserInterfaces
 
 		public event Action Clicked;
 
-		public class UpdateImageAndColor : EntityListener
+		public class UpdateAppearance : EntityListener
 		{
 			public override void ReceiveMessage(Entity entity, object message)
 			{
-				var state = entity.Get<Interact.State>();
-				if (state.IsInside && state.IsPressed)
-					SetPressedImageAndColor(entity);
-				else if (state.IsInside)
-					SetMouseoverImageAndColor(entity);
+				if (!interactions.Contains(message.GetType()))
+					return;
+
+				var isInside = entity.Get<Interact.State>().IsInside;
+				var isPressed = entity.Get<Interact.State>().IsPressed;
+				if (isInside && isPressed)
+					SetAppearance(entity, entity.Get<Theme>().ButtonPressed);
+				else if (isInside)
+					SetAppearance(entity, entity.Get<Theme>().ButtonMouseover);
 				else
-					SetNormalImageAndColor(entity);
+					SetAppearance(entity, entity.Get<Theme>().Button);
 			}
 
-			private static void SetPressedImageAndColor(Entity entity)
+			private readonly List<Type> interactions = new List<Type>(typeof(Interact).GetNestedTypes());
+
+			private static void SetAppearance(Entity entity, Theme.Appearance appearance)
 			{
-				if (entity.Contains<Image, Interact.Images>())
-					entity.Set(entity.Get<Interact.Images>().Pressed);
-
-				if (entity.Contains<Color, Interact.Colors>())
-					entity.Set(entity.Get<Interact.Colors>().Pressed);
+				entity.Set(appearance.Image);
+				entity.Set(appearance.Color);
 			}
-
-			private static void SetMouseoverImageAndColor(Entity entity)
-			{
-				if (entity.Contains<Image, Interact.Images>())
-					entity.Set(entity.Get<Interact.Images>().Mouseover);
-
-				if (entity.Contains<Color, Interact.Colors>())
-					entity.Set(entity.Get<Interact.Colors>().Mouseover);
-			}
-
-			private static void SetNormalImageAndColor(Entity entity)
-			{
-				if (entity.Contains<Image, Interact.Images>())
-					entity.Set(entity.Get<Interact.Images>().Normal);
-
-				if (entity.Contains<Color, Interact.Colors>())
-					entity.Set(entity.Get<Interact.Colors>().Normal);
-			}
-
-			public override EntityHandlerPriority Priority
-			{
-				get { return EntityHandlerPriority.High; }
-			}
-		}
-
-		public Color NormalColor
-		{
-			get { return Get<Interact.Colors>().Normal; }
-			set { Get<Interact.Colors>().Normal = value; }
-		}
-
-		public Color PressedColor
-		{
-			get { return Get<Interact.Colors>().Pressed; }
-			set { Get<Interact.Colors>().Pressed = value; }
-		}
-
-		public Color MouseoverColor
-		{
-			get { return Get<Interact.Colors>().Mouseover; }
-			set { Get<Interact.Colors>().Mouseover = value; }
-		}
-
-		public Image NormalImage
-		{
-			get { return Get<Interact.Images>().Normal; }
-			set { Get<Interact.Images>().Normal = value; }
-		}
-
-		public Image PressedImage
-		{
-			get { return Get<Interact.Images>().Pressed; }
-			set { Get<Interact.Images>().Pressed = value; }
-		}
-
-		public Image MouseoverImage
-		{
-			get { return Get<Interact.Images>().Mouseover; }
-			set { Get<Interact.Images>().Mouseover = value; }
-		}
-
-		public bool IsHovering
-		{
-			get { return Get<Interact.State>().IsHovering; }
-		}
-
-		public bool IsInside
-		{
-			get { return Get<Interact.State>().IsInside; }
-		}
-
-		public bool IsPressed
-		{
-			get { return Get<Interact.State>().IsPressed; }
 		}
 	}
 }

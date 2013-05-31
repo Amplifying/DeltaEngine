@@ -2,8 +2,8 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform' == '' ">AnyCPU</Platform>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -74,8 +74,13 @@
     <Compile Include="Fonts\FontData.cs" />
     <Compile Include="Fonts\FontText.cs" />
     <Compile Include="Fonts\Glyph.cs" />
-    <Compile Include="Fonts\GlyphDrawAreaAndUV.cs" />
+    <Compile Include="Fonts\GlyphDrawData.cs" />
     <Compile Include="Fonts\HorizontalAlignment.cs" />
+    <Compile Include="Particels\CreateParticles.cs" />
+    <Compile Include="Particels\ParticleEmitter.cs" />
+    <Compile Include="Particels\ParticleEmitterData.cs" />
+    <Compile Include="Particels\ParticlePreset.cs" />
+    <Compile Include="Particels\ParticleUpdater.cs" />
     <Compile Include="Shapes\Rect.cs" />
     <Compile Include="Sprites\Animation.cs" />
     <Compile Include="ScreenSpaces\Camera2DControlledQuadraticScreenSpace.cs" />

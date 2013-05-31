@@ -2,8 +2,8 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform' == '' ">AnyCPU</Platform>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{BD8A80E2-A313-437E-B0EF-FC0B066280A7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -66,19 +66,19 @@
       <Name>DeltaEngine.Input</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Logging\Basic\DeltaEngine.Logging.Basic.csproj">
-      <Project>{03C2EB6A-826D-4D24-BE10-244B20CCD1D8}</Project>
+      <Project>{03c2eb6a-826d-4d24-be10-244b20ccd1d8}</Project>
       <Name>DeltaEngine.Logging.Basic</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Logging\DeltaEngine.Logging.csproj">
-      <Project>{E4440567-3D5D-4670-AB49-8163B18E302E}</Project>
+      <Project>{e4440567-3d5d-4670-ab49-8163b18e302e}</Project>
       <Name>DeltaEngine.Logging</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Networking\DeltaEngine.Networking.csproj">
-      <Project>{5231706E-2955-43BF-9C06-291E12AF5C5C}</Project>
+      <Project>{5231706e-2955-43bf-9c06-291e12af5c5c}</Project>
       <Name>DeltaEngine.Networking</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Networking\Sockets\DeltaEngine.Networking.Sockets.csproj">
-      <Project>{9E085AB9-B4DE-4815-BD90-D975C75DFE94}</Project>
+      <Project>{9e085ab9-b4de-4815-bd90-d975c75dfe94}</Project>
       <Name>DeltaEngine.Networking.Sockets</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Physics2D\DeltaEngine.Physics2D.csproj">

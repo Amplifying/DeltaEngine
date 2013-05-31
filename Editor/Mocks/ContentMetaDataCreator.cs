@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using DeltaEngine.Core;
 using DeltaEngine.Core.Xml;
 
@@ -20,9 +20,9 @@ namespace DeltaEngine.Editor.Mocks
 
 		public void SaveImagesToXml(string selectedProject)
 		{
-			var root = CreateMainContentMetaData(selectedProject);
+			var root = CreateMainContentMetaData(selectedProject, "ContentMetaData");
 			foreach (var image in content.ImageList)
-				AddChild(root, image, selectedProject);
+				AddChild(root, image, selectedProject, "ContentMetaData");
 			var file = new XmlFile(root);
 			string path = Path.Combine(ContentServiceFiles.ContentPath, selectedProject,
 				MetaDataFilename);
@@ -32,10 +32,10 @@ namespace DeltaEngine.Editor.Mocks
 
 		private const string MetaDataFilename = "ContentMetaData.xml";
 		
-		private XmlData CreateMainContentMetaData(string selectedProject)
+		private static XmlData CreateMainContentMetaData(string selectedProject, string name)
 		{
 			var root = new XmlData(selectedProject);
-			root.Name = "ContentMetaData";
+			root.Name = name;
 			root.AddAttribute("Name", "DeltaEngine.Editor.ContentManager");
 			root.AddAttribute("Type", "Scene");
 			root.AddAttribute("LastTimeUpdated", DateTime.Now.GetIsoDateTime());
@@ -43,16 +43,14 @@ namespace DeltaEngine.Editor.Mocks
 			return root;
 		}
 
-		private void AddChild(XmlData root, string image, string selectedProject)
+		private void AddChild(XmlData root, string image, string selectedProject, string name)
 		{
 			if (image.Contains("ContentMetaData.xml"))
 				return;
 
-
-
 			string fileName = Path.GetFileNameWithoutExtension(image);
 			string fileType = Path.GetExtension(image);
-			var child1 = new XmlData("ContentMetaData");
+			var child1 = new XmlData(name);
 			AddAttributesToChild(image, selectedProject, child1, fileName, fileType);
 			root.AddChild(child1);
 		}
@@ -72,6 +70,18 @@ namespace DeltaEngine.Editor.Mocks
 		public void SetContent(ContentServiceFiles newContent)
 		{
 			content = newContent;
+		}
+
+		public void SaveImagesAsAnimation(List<string> itemList, string animationName, string selectedProject)
+		{
+			var root = CreateMainContentMetaData(selectedProject, animationName);
+			foreach (var item in itemList)
+				AddChild(root, item, selectedProject, animationName);
+			var file = new XmlFile(root);
+			string path = Path.Combine(ContentServiceFiles.ContentPath, selectedProject,
+				animationName + ".xml");
+			string xmlDataString = file.Root.ToXmlString();
+			content.fileSystem.File.WriteAllText(path, xmlDataString);
 		}
 	}
 }

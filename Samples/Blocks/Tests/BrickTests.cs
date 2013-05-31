@@ -19,11 +19,11 @@ namespace Blocks.Tests
 				ContentLoader contentLoader)
 		{
 			displayMode = screen.Viewport.Aspect >= 1.0f
-				? Blocks.Constants.DisplayMode.LandScape : Blocks.Constants.DisplayMode.Portrait;
+				? Orientation.Landscape : Orientation.Portrait;
 			content = new JewelBlocksContent(contentLoader);
 		}
 
-		private Constants.DisplayMode displayMode;
+		private Orientation displayMode;
 		private JewelBlocksContent content;
 
 		[IntegrationTest]
@@ -92,7 +92,7 @@ namespace Blocks.Tests
 			Start(resolver, (ScreenSpace screen, ContentLoader contentLoader) =>
 			{
 				Initialize(screen, contentLoader);
-				var image = content.Load<Image>("DeltaEngineLogo");
+				var image = content.Load<Image>("Block1");
 				var brick = new Brick(image, new Point(5, 5), displayMode);
 				brick.UpdateDrawArea();
 			});
@@ -105,7 +105,7 @@ namespace Blocks.Tests
 			{
 				Initialize(screen, contentLoader);
 				screen.Window.TotalPixelSize = new Size(600, 800);
-				var image = content.Load<Image>("DeltaEngineLogo");
+				var image = content.Load<Image>("Block1");
 				var brick = new Brick(image, new Point(5, 5), displayMode);
 				brick.UpdateDrawArea();
 			});

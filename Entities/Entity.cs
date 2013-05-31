@@ -12,9 +12,8 @@ namespace DeltaEngine.Entities
 	public abstract class Entity
 	{
 		/// <summary>
-		/// Entities now start out active and manually adding and removing from EntitySystem is not 
-		/// necessary or even possible. Instead activate and deactivate to add and remove. 
-		/// To disable just one handler use RemoveHandler.
+		/// Entities start out active and are automatically added to the EntitySystem. Call IsActive to
+		/// activate or deactivate one. To disable one handler or component use <see cref="Remove{T}"/>.
 		/// </summary>
 		protected Entity()
 		{
@@ -40,11 +39,13 @@ namespace DeltaEngine.Entities
 		{
 			isActive = state;
 			isActiveChanged = true;
-			if (EntitySystem.HasCurrent)
-				if (isActive)
-					EntitySystem.Current.Add(entity);
-				else
-					EntitySystem.Current.Remove(entity);
+			if (!EntitySystem.HasCurrent)
+				return;
+
+			if (isActive)
+				EntitySystem.Current.Add(entity);
+			else
+				EntitySystem.Current.Remove(entity);
 		}
 
 		internal bool isActiveChanged;
@@ -100,10 +101,18 @@ namespace DeltaEngine.Entities
 				: base(component.ToString()) {}
 		}
 
-		public Entity Add(object component)
+		public Entity Add<T>(T component)
 		{
+			// ReSharper disable CompareNonConstrainedGenericWithNull
+			if (component == null)
+				throw new ArgumentNullException();
+			// ReSharper restore CompareNonConstrainedGenericWithNull
+
 			if (component is EntityHandler)
 				throw new InstantiatedEntityHandlerAddedToEntity();
+
+			if (Contains<T>())
+				throw new ComponentOfTheSameTypeAddedMoreThanOnce();
 
 			components.Add(component);
 			return this;
@@ -111,9 +120,11 @@ namespace DeltaEngine.Entities
 
 		public class InstantiatedEntityHandlerAddedToEntity : Exception {}
 
+		public class ComponentOfTheSameTypeAddedMoreThanOnce : Exception { }
+
 		internal readonly List<object> components = new List<object>();
 
-		public Entity AddOrOverwrite<T>(T component)
+		public Entity AddOrSet<T>(T component)
 		{
 			if (Contains<T>())
 				Set(component);
@@ -198,8 +209,7 @@ namespace DeltaEngine.Entities
 		public Entity AddTrigger(Trigger trigger)
 		{
 			Add<CheckTriggers>();
-			var triggers = GetOrCreate<List<Trigger>>();
-			triggers.Add(trigger);
+			GetOrCreate<List<Trigger>>().Add(trigger);
 			return this;
 		}
 

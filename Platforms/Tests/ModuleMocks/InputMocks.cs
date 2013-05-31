@@ -19,7 +19,7 @@ namespace DeltaEngine.Platforms.Tests.ModuleMocks
 
 		private void AllocateStates()
 		{
-			KeyboardStates = new State[(int)Key.NumberOfKeys];
+			KeyboardStates = new State[(int)Key.NumberOfKeys + 1];
 			TouchStates = new State[MaxNumberOfTouchIndices];
 			GamePadButtonStates = new State[GamePadButton.A.GetCount()];
 		}

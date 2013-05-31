@@ -13,7 +13,6 @@ namespace DeltaEngine.Graphics.SlimDX
 			this.window = window;
 			d3D = new Direct3D();
 			InitializeDevice();
-			SetAlphaBlending();
 			window.ViewportSizeChanged += OnViewportSizeChanged;
 			window.FullscreenChanged += OnFullscreenChanged;
 		}
@@ -38,13 +37,6 @@ namespace DeltaEngine.Graphics.SlimDX
 			NativeDevice = new SlimD3D9.Device(d3D, 0, DeviceType.Hardware, window.Handle,
 				CreateFlags.HardwareVertexProcessing, presentParameters);
 		}
-		
-		private void SetAlphaBlending()
-		{
-			NativeDevice.SetRenderState(RenderState.AlphaBlendEnable, true);
-			NativeDevice.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-			NativeDevice.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
-		}
 
 		private void OnViewportSizeChanged(Size displaySize)
 		{
@@ -66,18 +58,24 @@ namespace DeltaEngine.Graphics.SlimDX
 			if (deviceMustBeReset)
 				ResetDevice();
 
-			var slimDxColor = new Color4(window.BackgroundColor.AlphaValue,
-				window.BackgroundColor.RedValue, window.BackgroundColor.GreenValue,
-				window.BackgroundColor.BlueValue);
-			NativeDevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, slimDxColor, 1.0f, 0);
-			NativeDevice.BeginScene();
+			ClearScreenAndBeginScene();
 			runExecuted = true;
 		}
 
 		private bool runExecuted;
 
+		private void ClearScreenAndBeginScene()
+		{
+			var slimDxColor = new Color4(window.BackgroundColor.AlphaValue,
+				window.BackgroundColor.RedValue, window.BackgroundColor.GreenValue,
+				window.BackgroundColor.BlueValue);
+			NativeDevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, slimDxColor, 1.0f, 0);
+			NativeDevice.BeginScene();
+		}
+
 		private void ResetDevice()
 		{
+			//TODO
 			var presentParameters = new PresentParameters
 			{
 				Windowed = !window.IsFullscreen,

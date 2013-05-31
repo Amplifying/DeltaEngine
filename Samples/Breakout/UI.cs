@@ -15,8 +15,8 @@ namespace Breakout
 		{
 			this.window = window;
 			this.window.WindowClosing += ()=>soundDevice.Dispose();
-			inputCommands.Add(Key.Escape, window.Dispose);
-			inputCommands.Add(Key.F, () => window.SetFullscreen(new Size(1920, 1080)));
+			inputCommands.Add(Key.Escape, key=>window.Dispose());
+			inputCommands.Add(Key.F, key => window.SetFullscreen(new Size(1920, 1080)));
 			this.game = game;
 		}
 

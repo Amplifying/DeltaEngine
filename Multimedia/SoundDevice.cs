@@ -11,7 +11,6 @@ namespace DeltaEngine.Multimedia
 	{
 		protected SoundDevice()
 		{
-
 			runThread = ThreadExtensions.Start(ThreadRun);
 		}
 

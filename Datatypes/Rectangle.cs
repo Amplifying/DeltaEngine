@@ -246,7 +246,7 @@ namespace DeltaEngine.Datatypes
 		/// <summary>
 		/// Build UV rectangle for a given uv pixel rect and imagePixelSize. Used for FontData.
 		/// </summary>
-		public static Rectangle BuildUVRectangle(Rectangle uvInPixels, Size imagePixelSize)
+		public static Rectangle BuildUvRectangle(Rectangle uvInPixels, Size imagePixelSize)
 		{
 			return new Rectangle(uvInPixels.Left / imagePixelSize.Width,
 				uvInPixels.Top / imagePixelSize.Height,

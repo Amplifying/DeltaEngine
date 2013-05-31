@@ -57,5 +57,10 @@ namespace DeltaEngine.Editor.Mocks
 
 			return File.OpenRead(fullFilename);
 		}
+
+		public void SaveImagesAsAnimation(List<string> itemList, string animationName, string projectName)
+		{
+		
+		}
 	}
 }

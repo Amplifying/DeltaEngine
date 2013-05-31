@@ -4,8 +4,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	mc:Ignorable="d"
-	d:DesignHeight="450" d:DesignWidth="800">
+	mc:Ignorable="d">
 	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="791*" />
@@ -29,11 +28,11 @@
 
 		<Grid Margin="434,0,0,0" Background="Black" AllowDrop="True" Drop="OnImageViewDrop" SizeChanged="ChangedSize"
 		      Grid.Row="3">
-			<Slider Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Left" Minimum="1" 
-			     Name="Slider" Value="{Binding Path=SliderValue}" Margin="0,0,0,35" />
-			<ScrollViewer Name="ScrollViewer" Grid.Column="1"  VerticalScrollBarVisibility="Visible"
+			<Slider Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Left" Minimum="1"
+			        Name="Slider" Value="{Binding Path=SliderValue}" Margin="0,0,0,35" />
+			<ScrollViewer Name="ScrollViewer" Grid.Column="1" VerticalScrollBarVisibility="Visible"
 			              HorizontalScrollBarVisibility="Visible" Width="{Binding Path=ScrollViewerWidth}"
-										Height="{Binding Path=ScrollViewerHeight}" x:FieldModifier="public">
+			              Height="{Binding Path=ScrollViewerHeight}" x:FieldModifier="public">
 				<Grid Name="Grid" Width="400" Height="400" RenderTransformOrigin="0.5,0.5">
 					<Grid.LayoutTransform>
 						<TransformGroup>
@@ -51,21 +50,26 @@
 
 		<ListBox Margin="10,0,0,0"
 		         ItemsSource="{Binding Path=Projects}" SelectedItem="{Binding Path=SelectedProject}" Background="#FFFDFDFD"
-		         Grid.Row="3" HorizontalAlignment="Left" Width="200" />
+		         Grid.Row="3" HorizontalAlignment="Left" Width="200" VerticalAlignment="Top" Height="379"  />
 		<ListBox Margin="215,0,0,0"
 		         ItemsSource="{Binding Path=Images}" Name="ImageList"
 		         SelectedItem="{Binding Path=SelectedContent}" Background="WhiteSmoke" Grid.Row="3"
-		         HorizontalAlignment="Left" Width="200">
+		         HorizontalAlignment="Left" VerticalAlignment="Top"  Width="200" SelectionMode="Extended" Height="379">
 			<ListBox.ContextMenu>
 				<ContextMenu>
 					<MenuItem Header="Delete" Click="DeleteSelectedImage"></MenuItem>
 				</ContextMenu>
 			</ListBox.ContextMenu>
 		</ListBox>
-		<TextBox Margin="10,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"
-		         Width="200" Height="30" Text="{Binding Path=NewProjectName}" Grid.Row="5" />
-		<Button Margin="215,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"
-		        Content="Add new project" Click="AddProject" Width="200" Height="30" Grid.Row="5" />
+		<TextBox Margin="10,384,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"
+		         Width="200" Height="30" Text="{Binding Path=NewProjectName}" Grid.Row="3" />
+		<Button Margin="215,384,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"
+		        Content="Add new project" Click="AddProject" Width="200" Height="30" Grid.Row="3" />
+		<Button Margin="215,1,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"
+		        Content="Create animation from selected items" FontSize="11" Click="CreateAnimation"
+		        Width="200" Height="30" Grid.Row="5" Grid.RowSpan="2" />
+		<TextBox Margin="10,1,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"
+		         Width="200" Height="30" Text="{Binding Path=AnimationName}" Grid.Row="5" Grid.RowSpan="2"/>
 		<Label Content="Projects" HorizontalAlignment="Left" Margin="10,0,0,0" Grid.Row="1" FontSize="14" FontFamily="Arial"
 		       FontWeight="Bold" Background="#FFAEAEAE" Foreground="White" />
 		<Label Content="Content Files" HorizontalAlignment="Left" Margin="215,0,0,0" Grid.Row="1" FontSize="14"

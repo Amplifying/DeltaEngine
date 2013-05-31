@@ -32,7 +32,7 @@ namespace DeltaEngine.Rendering.Fonts
 		/// <summary>
 		/// Contains the amount of extra distances offsets between this character to any other one.
 		/// </summary>
-		public Dictionary<char, int> Kernings = new Dictionary<char, int>();
+		public readonly Dictionary<char, int> Kernings = new Dictionary<char, int>();
 
 		/// <summary>
 		/// Not stored in the Xml font file because we can easily generate them at load time (UV/size).

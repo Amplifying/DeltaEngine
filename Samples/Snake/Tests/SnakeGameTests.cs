@@ -183,5 +183,11 @@ namespace Snake.Tests
 				Assert.AreEqual(oldTailTopLeftCorner, newTailTopLeftCorner);
 			});
 		}
+
+		[VisualTest]
+		public void DisplayGameOver(Type resolver)
+		{
+			Start(resolver, (SnakeGame game) => { game.Reset(); });
+		}
 	}
 }

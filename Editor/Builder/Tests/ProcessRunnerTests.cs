@@ -8,14 +8,14 @@ namespace DeltaEngine.Editor.Builder.Tests
 		[Test]
 		public void DefaultWorkingDirectory()
 		{
-			var processRunner = new ProcessRunner("dir");
+			var processRunner = new ProcessRunner("cmd.exe", "/c dir");
 			Assert.AreEqual(Environment.CurrentDirectory, processRunner.WorkingDirectory);
 		}
 
 		[Test]
 		public void ChangingWorkingDirectory()
 		{
-			var processRunner = new ProcessRunner("dir");
+			var processRunner = new ProcessRunner("cmd.exe", "/c dir");
 			processRunner.Start();
 			var outputWithDefaultWorkingDirectory = processRunner.Output;
 			processRunner.WorkingDirectory = @"C:\";

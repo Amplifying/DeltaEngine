@@ -9,6 +9,7 @@ using DeltaEngine.Entities.Tests;
 using DeltaEngine.Graphics;
 using DeltaEngine.Input;
 using DeltaEngine.Platforms.All;
+using DeltaEngine.Rendering.Fonts;
 using DeltaEngine.Rendering.Sprites;
 using DeltaEngine.Scenes.UserInterfaces;
 using NUnit.Framework;
@@ -156,7 +157,7 @@ namespace DeltaEngine.Scenes.Tests
 			});
 		}
 
-		private static readonly Color NormalColor = Color.Green;
+		private static readonly Color NormalColor = Color.LightGray;
 
 		private static Button CreateHiddenSceneWithButton(ContentLoader content)
 		{
@@ -170,13 +171,19 @@ namespace DeltaEngine.Scenes.Tests
 
 		private static Button CreateButton(ContentLoader content)
 		{
-			return new Button(content.Load<Image>("DeltaEngineLogo"), Small, NormalColor)
+			var logo = content.Load<Image>("DeltaEngineLogo");
+			var theme = new Theme
 			{
-				NormalColor = Color.LightGray,
-				MouseoverColor = Color.White,
-				PressedColor = Color.Red
+				Button = new Theme.Appearance(logo, NormalColor),
+				ButtonMouseover = new Theme.Appearance(logo, MouseoverColor),
+				ButtonPressed = new Theme.Appearance(logo, PressedColor),
+				Font = new Font(content, "Verdana12")
 			};
+			return new Button(theme, Small);
 		}
+
+		private static readonly Color MouseoverColor = Color.White;
+		private static readonly Color PressedColor = Color.Red;
 
 		private void SetMouseState(State state, Point position)
 		{

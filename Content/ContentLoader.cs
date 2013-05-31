@@ -15,7 +15,7 @@ namespace DeltaEngine.Content
 		protected ContentLoader(ContentDataResolver resolver)
 		{
 			this.resolver = resolver;
-			LoadingQueueLocked = false;
+			ContentLoadedInThread += data => AddLoadedContentToRessources(data);
 		}
 
 		protected readonly ContentDataResolver resolver;
@@ -40,12 +40,29 @@ namespace DeltaEngine.Content
 				if (resources[contentName].IsDisposed)
 					resources.Remove(contentName);
 				else
-					return resources[contentName];
+					return GetCachedResource(contentType, contentName);
 
 			return LoadAndCacheContent(contentType, contentName);
 		}
 
 		public class ContentNameShouldNotHaveExtension : Exception {}
+
+		private ContentData GetCachedResource(Type contentType, string contentName)
+		{
+			var cachedResource = resources[contentName];
+			if (contentType.IsInstanceOfType(cachedResource))
+				return cachedResource;
+
+			throw new CachedResourceExistsButIsOfTheWrongType("Content '" + contentName + "' of type '" +
+				contentType + "' requested - but type '" + cachedResource.GetType() +
+				"' found in cache\n '" + contentName + "' must be in meta data files twice with different suffixes!");
+		}
+
+		public class CachedResourceExistsButIsOfTheWrongType : Exception
+		{
+			public CachedResourceExistsButIsOfTheWrongType(string message)
+				: base(message) {}
+		}
 
 		protected readonly Dictionary<string, ContentData> resources =
 			new Dictionary<string, ContentData>();
@@ -69,26 +86,36 @@ namespace DeltaEngine.Content
 
 		private void AddContentToThreadedLoadingQueue(ContentData contentData)
 		{
-			if (!LoadingQueueLocked)
+			lock (ContentForThreadedLoading)
 			{
-				ContentForThreadedLoading.Enqueue(contentData);
-				contentAddedToQueue.Set();
+				ContentForThreadedLoading.Enqueue(contentData);	
 			}
+			contentAddedToQueue.Set();
 		}
 
 		private readonly AutoResetEvent contentAddedToQueue = new AutoResetEvent(false);
 
 		protected readonly Queue<ContentData> ContentForThreadedLoading = new Queue<ContentData>();
-		private bool LoadingQueueLocked;
 
 		protected void ThreadedLoading()
 		{
-			while (ContentForThreadedLoading.Count > 0)
+			lock (ContentForThreadedLoading)
 			{
-				var contentToLoad = ContentForThreadedLoading.Dequeue();
-				contentToLoad.InternalLoad(GetContentDataStream);
+				while (ContentForThreadedLoading.Count > 0)
+				{
+					var contentToLoad = ContentForThreadedLoading.Dequeue();
+					contentToLoad.InternalLoad(GetContentDataStream);
+					ContentLoadedInThread.Invoke(contentToLoad);
+				}
 			}
 			contentAddedToQueue.WaitOne();
+		}
+
+		protected event Action<ContentData> ContentLoadedInThread;
+
+		protected void AddLoadedContentToRessources(ContentData loadedContent)
+		{
+			resources.Add(loadedContent.Name, loadedContent);
 		}
 
 		protected abstract Stream GetContentDataStream(string contentName);

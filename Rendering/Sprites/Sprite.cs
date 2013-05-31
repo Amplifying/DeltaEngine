@@ -14,17 +14,24 @@ namespace DeltaEngine.Rendering.Sprites
 		//ncrunch: no coverage start
 		private Sprite()
 			: base(Rectangle.Zero, Color.White) {}
+
 		//ncrunch: no coverage end
+
+		public Sprite(Image image)
+			: this(image, Rectangle.Zero) {}
 
 		public Sprite(Image image, Rectangle drawArea)
 			: this(image, drawArea, Color.White) {}
+
+		public Sprite(Image image, Color color)
+			: this(image, Rectangle.Zero, color) {}
 
 		public Sprite(Image image, Rectangle drawArea, Color color)
 			: base(drawArea, color)
 		{
 			if (image == null)
 				throw new NullReferenceException("image");
-				
+
 			Add(image);
 			Add(image.HasAlpha ? BlendMode.Normal : BlendMode.Opaque);
 			Add<Render>();

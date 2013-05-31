@@ -1,35 +1,21 @@
 using System;
 using System.Collections.Generic;
-using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
-using DeltaEngine.Graphics;
-using DeltaEngine.Input;
-using DeltaEngine.Rendering;
 using DeltaEngine.Scenes.UserInterfaces;
 
 namespace DeltaEngine.Scenes
 {
 	/// <summary>
-	/// A simple menu system. Moving the mouse over a menu option will change its size and color.
-	/// Just set the size of a menu button and it will auto-arrange all button positions.
+	/// A simple menu system where all buttons are the same size and auto-arrange on screen.
 	/// </summary>
 	public class Menu : Scene
 	{
-		public Menu(ContentLoader content, Size buttonSize)
-			: this(content)
+		public Menu(Size buttonSize)
 		{
 			this.buttonSize = buttonSize;
 		}
 
 		private Size buttonSize;
-
-		public Menu(ContentLoader content)
-		{
-			this.content = content;
-		}
-
-		private readonly ContentLoader content;
 
 		public Size ButtonSize
 		{
@@ -49,9 +35,9 @@ namespace DeltaEngine.Scenes
 					ButtonSize.Height);
 		}
 
-		private readonly List<TextButton> buttons = new List<TextButton>();
+		private readonly List<ActiveButton> buttons = new List<ActiveButton>();
 
-		internal List<TextButton> Buttons
+		internal List<ActiveButton> Buttons
 		{
 			get { return buttons; }
 		}
@@ -72,83 +58,24 @@ namespace DeltaEngine.Scenes
 
 		public void ClearMenuOptions()
 		{
-			foreach (TextButton button in buttons)
+			foreach (ActiveButton button in buttons)
 				Remove(button);
 
 			buttons.Clear();
 		}
 
-		public void AddMenuOption(Image image, Action clicked, string text = "")
+		public void AddMenuOption(Theme theme, Action clicked, string text = "")
 		{
-			AddButton(image, clicked, text);
+			AddButton(theme, clicked, text);
 			ArrangeButtons();
 		}
 
-		private void AddButton(Image image, Action clicked, string text)
+		private void AddButton(Theme theme, Action clicked, string text)
 		{
-			var button = new TextButton(image, content)
-			{
-				NormalColor = Color.LightGray,
-				MouseoverColor = Color.White,
-				Text = text
-			};
+			var button = new ActiveButton(theme, new Rectangle(Point.Zero, ButtonSize), text);
 			button.Clicked += clicked;
-			button.Add<ChangeSizeDynamically>();
 			buttons.Add(button);
 			Add(button);
-		}
-
-		public class ChangeSizeDynamically : EntityListener
-		{
-			public override void ReceiveMessage(Entity entity, object message)
-			{
-				var control = entity as Entity2D;
-				var state = control.Get<Interact.State>();
-				Rectangle drawArea = control.DrawArea;
-				if (IsControlEnteredForTheFirstTime(message, state) ||
-					IsClickCompletedInsideControl(message, state))
-					MakeControlBigger(control, drawArea);
-				else if (IsClickBegunOnControl(message) || IsControlLeftWithoutBeingClicked(message, state))
-					MakeControlSmaller(control, drawArea);
-			}
-
-			private static bool IsControlEnteredForTheFirstTime(object message, Interact.State state)
-			{
-				return (!state.IsPressed && message is Interact.ControlEntered);
-			}
-
-			private static bool IsClickCompletedInsideControl(object message, Interact.State state)
-			{
-				return (state.IsInside &&
-					(message is Interact.ControlReleased || message is Interact.ControlClicked));
-			}
-
-			private static void MakeControlBigger(Entity2D control, Rectangle drawArea)
-			{
-				control.DrawArea = Rectangle.FromCenter(drawArea.Center, drawArea.Size * Growth);
-			}
-
-			private const float Growth = 1.05f;
-
-			private static bool IsControlLeftWithoutBeingClicked(object message, Interact.State state)
-			{
-				return (!state.IsPressed && message is Interact.ControlExited);
-			}
-
-			private static bool IsClickBegunOnControl(object message)
-			{
-				return message is Interact.ControlPressed;
-			}
-
-			private static void MakeControlSmaller(Entity2D control, Rectangle drawArea)
-			{
-				control.DrawArea = Rectangle.FromCenter(drawArea.Center, drawArea.Size / Growth);
-			}
-
-			public override EntityHandlerPriority Priority
-			{
-				get { return EntityHandlerPriority.Low; }
-			}
 		}
 	}
 }

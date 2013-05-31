@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using DeltaEngine.Editor.Common;
 using GalaSoft.MvvmLight.Messaging;
+using Microsoft.Win32;
 
 namespace DeltaEngine.Editor.UIEditor
 {
@@ -15,11 +16,14 @@ namespace DeltaEngine.Editor.UIEditor
 		public UIEditorView(IFileSystem fileSystem)
 		{
 			InitializeComponent();
-			DataContext = new UIEditorViewModel(fileSystem);
+			uiEditorViewModel = new UIEditorViewModel(fileSystem);
+			DataContext = uiEditorViewModel;
 		}
 
+		public UIEditorViewModel uiEditorViewModel;
+
 		public UIEditorView(Service service)
-			: this(new FileSystem()) { }
+			: this(new FileSystem()) {}
 
 		public string ShortName
 		{
@@ -41,14 +45,14 @@ namespace DeltaEngine.Editor.UIEditor
 			get { return 1; }
 		}
 
-		private void AddImage(object sender, System.Windows.RoutedEventArgs e)
+		public void AddImage(object sender, RoutedEventArgs e)
 		{
 			Messenger.Default.Send("AddImage", "AddImage");
 		}
 
-		private void SelectImageInGridList(object sender, SelectionChangedEventArgs e)
+		public void SelectImageInGridList(object sender, SelectionChangedEventArgs e)
 		{
-			IsButtonCheckBox.IsEnabled = e.AddedItems != null;
+			EnableImageEditing(e);
 			if (e.AddedItems == null)
 				return;
 
@@ -58,17 +62,24 @@ namespace DeltaEngine.Editor.UIEditor
 			Messenger.Default.Send("ChangeVisualScaleSlider", "ChangeVisualScaleSlider");
 		}
 
-		private void ChangeIfButtonStateTrue(object sender, RoutedEventArgs e)
+		private void EnableImageEditing(SelectionChangedEventArgs e)
 		{
-			Messenger.Default.Send(true, "ChangeIsButton");
+			IsButtonCheckBox.IsEnabled = e.AddedItems != null;
+			LayerTextBox.IsEnabled = e.AddedItems != null;
+			RotateSlider.IsEnabled = e.AddedItems != null;
+			ScaleSlider.IsEnabled = e.AddedItems != null;
 		}
 
-		private void ChangeIfButtonStateFalse(object sender, RoutedEventArgs e)
+		public void ChangeIfButtonState(object sender,
+			RoutedEventArgs routedEventArgs)
 		{
-			Messenger.Default.Send(false, "ChangeIsButton");
+			if ((bool)IsButtonCheckBox.IsChecked)
+				Messenger.Default.Send(true, "ChangeIsButton");
+			else
+				Messenger.Default.Send(false, "ChangeIsButton");
 		}
 
-		private void ChangeGridSnapping(object sender, RoutedEventArgs e)
+		public void ChangeGridSnapping(object sender, RoutedEventArgs e)
 		{
 			if (string.IsNullOrEmpty(GridSpacing.Text))
 				return;
@@ -78,21 +89,21 @@ namespace DeltaEngine.Editor.UIEditor
 			Messenger.Default.Send(Convert.ToInt32(GridSpacing.Text), "ChangeGridSpacing");
 		}
 
-		private void ChangeGridWidth(object sender, RoutedEventArgs e)
+		public void ChangeGridWidth(object sender, RoutedEventArgs e)
 		{
 			if (string.IsNullOrEmpty(GridWidthTextbox.Text))
 				return;
 			Messenger.Default.Send(Convert.ToInt32(GridWidthTextbox.Text), "ChangeGridWidth");
 		}
 
-		private void ChangeGridHeight(object sender, RoutedEventArgs e)
+		public void ChangeGridHeight(object sender, RoutedEventArgs e)
 		{
 			if (string.IsNullOrEmpty(GridHeightTextbox.Text))
 				return;
 			Messenger.Default.Send(Convert.ToInt32(GridHeightTextbox.Text), "ChangeGridHeight");
 		}
 
-		private void LayerChanged(object sender, RoutedEventArgs e)
+		public void LayerChanged(object sender, RoutedEventArgs e)
 		{
 			if (string.IsNullOrEmpty(LayerTextBox.Text) || Convert.ToInt32(LayerTextBox.Text) == 0)
 				return;
@@ -100,24 +111,37 @@ namespace DeltaEngine.Editor.UIEditor
 			Messenger.Default.Send(Convert.ToInt32(LayerTextBox.Text), "ChangeLayer");
 		}
 
-		private void RotateSliderChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+		public void RotateSliderChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
 		{
 			Messenger.Default.Send((int)RotateSlider.Value, "ChangeRotate");
 		}
 
-		private void ScaleSliderChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+		public void ScaleSliderChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
 		{
 			Messenger.Default.Send((float)ScaleSlider.Value, "ChangeScale");
 		}
 
-		private void Save(object sender, RoutedEventArgs e)
+		public void Save(object sender, RoutedEventArgs e)
 		{
-			Messenger.Default.Send("SaveUI", "SaveUI");
+			var dlg = new SaveFileDialog();
+			dlg.FileName = "Document";
+			dlg.DefaultExt = ".xml";
+			dlg.Filter = "xml documents (.xml)|*.xml";
+			bool? result = dlg.ShowDialog();
+			if (result == true)
+				Messenger.Default.Send(dlg.FileName, "SaveUI");
 		}
 
-		private void Load(object sender, RoutedEventArgs e)
+		public void Load(object sender, RoutedEventArgs e)
 		{
-			Messenger.Default.Send("LoadUI", "LoadUI");
+			var dlg = new OpenFileDialog();
+			dlg.InitialDirectory = "c:\\";
+			dlg.Filter = "xml documents (.xml)|*.xml";
+			dlg.FilterIndex = 2;
+			dlg.RestoreDirectory = true;
+			bool? result = dlg.ShowDialog();
+			if (result == true)
+				Messenger.Default.Send(dlg.FileName, "LoadUI");
 		}
 	}
 }

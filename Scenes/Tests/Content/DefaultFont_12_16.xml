@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Font Family="[Font: Name=Verdana, Size=9, Units=3, GdiCharSet=1, GdiVerticalFont=False]" Size="9" Style="AddOutline" LineHeight="15" LeftOffset="1" TopOffset="1" Version="0.9.4" TotalCharacterWidth="1492" CreationDate="2012-12-14 20:06" Tool="Delta.ContentPlugins.Font.FontGenerator">
-  <Bitmap Name="DefaultFont_12_16" Width="256" Height="108" />
+  <Bitmap Name="DefaultFont_12_16Font" Width="256" Height="108" />
   <Glyphs>
     <Glyph Character=" " UV="0 0 2 17" AdvanceWidth="4" LeftBearing="0" RightBearing="3" />
     <Glyph Character="!" UV="3 0 3 17" AdvanceWidth="5" LeftBearing="1" RightBearing="2" />

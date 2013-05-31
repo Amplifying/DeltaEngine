@@ -10,17 +10,14 @@ namespace Snake.Tests
 {
 	public class SnakeTests : TestWithAllFrameworks
 	{
-		// ReSharper disable PossibleLossOfFraction
 		[SetUp]
 		public void Init()
 		{
 			gridSize = 25;
 			blockSize = 1.0f / gridSize;
-			startPosition = blockSize * (gridSize / 2);
+			startPosition = blockSize * (int)(gridSize / 2.0f);
 			moveSpeed = 0.15f;
 		}
-
-		// ReSharper restore PossibleLossOfFraction
 
 		private int gridSize;
 		private float blockSize;

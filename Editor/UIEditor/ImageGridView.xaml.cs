@@ -17,7 +17,7 @@ namespace DeltaEngine.Editor.UIEditor
 			InitializeComponent();
 		}
 
-		private void UIElement_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+		private void OnLeftMouseButtonDown(object sender, MouseButtonEventArgs e)
 		{
 			var point = new Point();
 			point.X = (float)e.GetPosition(this).X;
@@ -25,7 +25,7 @@ namespace DeltaEngine.Editor.UIEditor
 			Messenger.Default.Send(point, "LeftMouseDown");
 		}
 
-		private void UIElement_OnMouseMove(object sender, MouseEventArgs e)
+		private void OnMouseMove(object sender, MouseEventArgs e)
 		{
 			var point = new Point();
 			point.X = (float)e.GetPosition(this).X;
@@ -33,7 +33,7 @@ namespace DeltaEngine.Editor.UIEditor
 			Messenger.Default.Send(point, "MouseMove");
 		}
 
-		private void UIElement_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+		private void OnLeftMouseButtonUp(object sender, MouseButtonEventArgs e)
 		{
 			var point = new Point();
 			point.X = (float)e.GetPosition(this).X;
@@ -66,18 +66,19 @@ namespace DeltaEngine.Editor.UIEditor
 
 		private void DrawLine(int spacing, int i, float gridnumber, bool isHorizontal)
 		{
-			var myLine = new Line();
-			myLine.Stroke = Brushes.LightSteelBlue;
-			if(isHorizontal)
-				SetPointsInXDirection(spacing, i, gridnumber, myLine);
+			var gridLine = new Line();
+			gridLine.Stroke = Brushes.LightSteelBlue;
+			if (isHorizontal)
+				SetPointsInXDirection(spacing, i, gridnumber, gridLine);
 			else
-				SetPointsInYDirection(spacing, i, gridnumber, myLine);
-			myLine.HorizontalAlignment = 0;
-			myLine.VerticalAlignment = 0;
-			myLine.StrokeThickness = 1;
-			SnappingGrid.Children.Add(myLine);
-			lineList.Add(myLine);
+				SetPointsInYDirection(spacing, i, gridnumber, gridLine);
+			gridLine.HorizontalAlignment = 0;
+			gridLine.VerticalAlignment = 0;
+			gridLine.StrokeThickness = 1;
+			SnappingGrid.Children.Add(gridLine);
+			lineList.Add(gridLine);
 		}
+
 		private static void SetPointsInXDirection(int spacing, int i, float gridnumber, Line myLine)
 		{
 			myLine.X1 = 0;

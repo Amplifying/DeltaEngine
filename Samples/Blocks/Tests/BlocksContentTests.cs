@@ -62,6 +62,7 @@ namespace Blocks.Tests
 		{
 			Start(resolver, (JewelBlocksContent content) =>
 			{
+				content.Prefix = "";
 				var image = content.Load<Image>("DeltaEngineLogo");
 				Assert.AreEqual(new Size(128), image.PixelSize);
 				new Sprite(image, new Rectangle(0.45f, 0.45f, 0.1f, 0.1f));

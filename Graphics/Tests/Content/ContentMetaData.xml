@@ -1,4 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ContentMetaData Name="DeltaEngine.Graphics.Tests" Type="Scene" LastTimeUpdated="2013-04-22 17:00:00" ContentDeviceName="Delta">
-  <ContentMetaData Name="DeltaEngineLogo" Type="Image" LastTimeUpdated="2012-10-18 14:04:49" PlatformFileId="20383" FileSize="5230" LocalFilePath="DeltaEngineLogo.png" PixelSize="128, 128"></ContentMetaData>
+<ContentMetaData Name="BlendModes" Type="Scene" LastTimeUpdated="2013-05-27 12:47:09Z" ContentDeviceName="Delta">
+  <ContentMetaData Name="DeltaEngineLogo" Type="Image" LastTimeUpdated="2013-04-11 09:41:02Z" PlatformFileId="-1" FileSize="7272" LocalFilePath="DeltaEngineLogo.png" />
+  <ContentMetaData Name="DeltaEngineLogoAlpha" Type="Image" LastTimeUpdated="2013-02-21 15:47:46Z" PlatformFileId="-2" FileSize="8153" LocalFilePath="DeltaEngineLogoAlpha.png" />
 </ContentMetaData>

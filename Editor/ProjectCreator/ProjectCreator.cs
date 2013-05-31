@@ -38,7 +38,7 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		public void CreateProject()
 		{
-			if (!IsTargetDirectoryAvailable())
+			if (!IsTargetDirectoryAvailable() || !IsSourceFileAvailable())
 				return;
 
 			CreateTargetDirectoryHierarchy();
@@ -49,6 +49,15 @@ namespace DeltaEngine.Editor.ProjectCreator
 		public bool IsTargetDirectoryAvailable()
 		{
 			return DoesDirectoryExist(Project.Location);
+		}
+
+		public bool IsSourceFileAvailable()
+		{
+			if (FileSystem.GetType() == typeof(FileSystem))
+				return Template.PathToZip != string.Empty && ZipArchive.IsZipFile(Template.PathToZip);
+
+			return Template.PathToZip != string.Empty &&
+				FileSystem.Path.GetExtension(Template.PathToZip) == ".zip";
 		}
 
 		private bool DoesDirectoryExist(string path)
@@ -69,9 +78,23 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		private void CopyTemplateFilesToLocation()
 		{
-			var archive = ZipArchive.Open(Template.PathToZip);
-			foreach (var entry in archive.Entries.Where(x => !x.FilePath.Contains("vstemplate")))
-				CopyFileInZipToLocation(entry);
+			if (FileSystem.GetType() == typeof(FileSystem))
+			{
+				var archive = ZipArchive.Open(Template.PathToZip);
+				foreach (var entry in archive.Entries.Where(x => !x.FilePath.Contains("vstemplate")))
+					CopyFileInZipToLocation(entry);
+			}
+			else
+			{
+				CopyFile(Template.AssemblyInfo,
+					Project.Location + Project.Name + "\\Properties\\" + AssemblyInfo);
+				CopyFile(Template.Csproj,
+					Project.Location + Project.Name + "\\" + Project.Name + CsprojExtension);
+				CopyFile(Template.Ico,
+					Project.Location + Project.Name + "\\" + Project.Name + IcoSuffixAndExtension);
+				foreach (var file in Template.SourceCodeFiles)
+					CopyFile(file, Project.Location + Project.Name + "\\" + GetFileName(file));
+			}
 		}
 
 		private void CopyFileInZipToLocation(IArchiveEntry entry)
@@ -89,6 +112,11 @@ namespace DeltaEngine.Editor.ProjectCreator
 			var target = Path.Combine(Project.Location, entry.FilePath).Replace('/', '\\');
 			return target.Replace(FileSystem.Path.GetFileNameWithoutExtension(Template.PathToZip),
 				Project.Name);
+		}
+
+		private void CopyFile(string sourceFileName, string destinationFileName)
+		{
+			FileSystem.File.Copy(sourceFileName, destinationFileName, true);
 		}
 
 		private void ReplacePlaceholdersWithUserInput()
@@ -144,7 +172,8 @@ namespace DeltaEngine.Editor.ProjectCreator
 			var replacements = new List<Replacement>();
 			replacements.Add(new Replacement("$guid1$", ""));
 			replacements.Add(new Replacement("$safeprojectname$", Project.Name));
-			replacements.Add(new Replacement(Template.Ico, Project.Name + IcoSuffixAndExtension));
+			replacements.Add(new Replacement(GetFileName(Template.Ico),
+				Project.Name + IcoSuffixAndExtension));
 			replacements.Add(GetReplacementDependingOnFramework());
 			var newFile = ReplaceFile(oldFile, replacements);
 			WriteAllText(Project.Location + Project.Name + "\\" + Project.Name + CsprojExtension,

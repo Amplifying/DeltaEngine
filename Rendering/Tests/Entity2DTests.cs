@@ -27,7 +27,7 @@ namespace DeltaEngine.Rendering.Tests
 			Assert.AreEqual(Rectangle.Zero, entity.DrawArea);
 			Assert.AreEqual(Color.White, entity.Color);
 			Assert.AreEqual(3, entity.NumberOfComponents);
-			entity.Add(new object());
+			entity.Add(Size.Zero);
 			Assert.AreEqual(4, entity.NumberOfComponents);
 		}
 

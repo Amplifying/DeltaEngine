@@ -48,10 +48,10 @@ namespace Snake
 
 		private void SetInput()
 		{
-			input.Add(Key.CursorLeft, State.Pressing, MoveLeft);
-			input.Add(Key.CursorRight, State.Pressing, MoveRight);
-			input.Add(Key.CursorUp, State.Pressing, MoveUp);
-			input.Add(Key.CursorDown, State.Pressing, MoveDown);
+			input.Add(Key.CursorLeft, State.Pressing, key => MoveLeft());
+			input.Add(Key.CursorRight, State.Pressing, key => MoveRight());
+			input.Add(Key.CursorUp, State.Pressing, key => MoveUp());
+			input.Add(Key.CursorDown, State.Pressing, key => MoveDown());
 		}
 
 		public void MoveLeft()
@@ -147,8 +147,8 @@ namespace Snake
 			restartMsg = new FontText(fontReplayText, "Do you want to continue (Y/N)",
 				new Point(0.5f, 0.7f)) { Color = Color.Yellow };
 
-			yesCommand = input.Add(Key.Y, State.Pressed, RestartGame);
-			noCommand = input.Add(Key.N, State.Pressed, CloseGame);
+			yesCommand = input.Add(Key.Y, State.Pressed, key => RestartGame());
+			noCommand = input.Add(Key.N, State.Pressed, key => CloseGame());
 		}
 
 		private Command yesCommand;

@@ -5,6 +5,7 @@ using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
 using DeltaEngine.Physics2D;
+using DeltaEngine.Platforms;
 
 namespace Blocks
 {
@@ -13,7 +14,7 @@ namespace Blocks
 	/// </summary>
 	public class Block : Entity
 	{
-		public Block(Constants.DisplayMode displayMode, BlocksContent content, Point topLeft)
+		public Block(Orientation displayMode, BlocksContent content, Point topLeft)
 		{
 			this.content = content;
 			CreateBricks();
@@ -112,7 +113,7 @@ namespace Blocks
 			}
 		}
 
-		private readonly Constants.DisplayMode displayMode;
+		private readonly Orientation displayMode;
 
 		public void RotateClockwise()
 		{

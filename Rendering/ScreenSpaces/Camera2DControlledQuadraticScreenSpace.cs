@@ -1,4 +1,3 @@
-using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 
@@ -12,20 +11,16 @@ namespace DeltaEngine.Rendering.ScreenSpaces
 		public Camera2DControlledQuadraticScreenSpace(Window window)
 			: base(window) {}
 
-		public override Point ToPixelSpace(Point currentScreenSpacePos)
+		public override Point ToPixelSpace(Point quadraticPos)
 		{
-			return base.ToPixelSpace(Transform(currentScreenSpacePos));
+			return base.ToPixelSpace(Transform(quadraticPos));
 		}
 
 		public Point Transform(Point position)
 		{
 			var point = (position - LookAt) * Zoom + Point.Half;
 			if (Rotation != 0.0f)
-			{
-				point -= RotationCenter;
-				point = Rotate(point, Rotation);
-				point += RotationCenter;
-			}
+				point.RotateAround(RotationCenter, Rotation);
 
 			return point;
 		}
@@ -47,16 +42,9 @@ namespace DeltaEngine.Rendering.ScreenSpaces
 		private float zoom = 1.0f;
 		private float inverseZoom = 1.0f;
 
-		private static Point Rotate(Point point, float angle)
+		public override Size ToPixelSpace(Size quadraticSize)
 		{
-			var sin = MathExtensions.Sin(angle);
-			var cos = MathExtensions.Cos(angle);
-			return new Point(point.X * cos - point.Y * sin, point.X * sin + point.Y * cos);
-		}
-
-		public override Size ToPixelSpace(Size currentScreenSpaceSize)
-		{
-			return base.ToPixelSpace(currentScreenSpaceSize) * Zoom;
+			return base.ToPixelSpace(quadraticSize) * Zoom;
 		}
 
 		public override Point FromPixelSpace(Point pixelPosition)

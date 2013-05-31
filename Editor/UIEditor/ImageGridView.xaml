@@ -6,33 +6,34 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
 	<Grid Name="SnappingGrid">
-	<ItemsControl ItemsSource="{Binding UIImages}" Background="MediumSpringGreen" ClipToBounds="True">
-		<ItemsControl.ItemTemplate>
-			<DataTemplate>
-				<Image HorizontalAlignment="Left">
-					<Image.Style>
-						<Style TargetType="{x:Type Image}">
-							<Setter Property="Source" Value="{Binding Path=BitmapSource}" />
-						</Style>
-					</Image.Style>
-				</Image>
-			</DataTemplate>
-		</ItemsControl.ItemTemplate>
+		<ItemsControl ItemsSource="{Binding Path=UIImages}" Background="MediumSpringGreen" 
+									ClipToBounds="True">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<Image HorizontalAlignment="Left">
+						<Image.Style>
+							<Style TargetType="{x:Type Image}">
+								<Setter Property="Source" Value="{Binding Path=BitmapSource}" />
+							</Style>
+						</Image.Style>
+					</Image>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
 
-		<ItemsControl.ItemsPanel>
-			<ItemsPanelTemplate>
-				<Canvas MouseLeftButtonDown="UIElement_OnMouseLeftButtonDown"
-				        MouseMove="UIElement_OnMouseMove" MouseLeftButtonUp="UIElement_OnMouseLeftButtonUp"/>
-			</ItemsPanelTemplate>
-		</ItemsControl.ItemsPanel>
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<Canvas MouseLeftButtonDown="OnLeftMouseButtonDown"
+					        MouseMove="OnMouseMove" MouseLeftButtonUp="OnLeftMouseButtonUp"/>
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
 
-		<ItemsControl.ItemContainerStyle>
-			<Style TargetType="ContentPresenter">
-				<Setter Property="Canvas.Left" Value="{Binding Path=X}" />
-				<Setter Property="Canvas.Top" Value="{Binding Path=Y}" />
+			<ItemsControl.ItemContainerStyle>
+				<Style TargetType="ContentPresenter">
+					<Setter Property="Canvas.Left" Value="{Binding Path=X}" />
+					<Setter Property="Canvas.Top" Value="{Binding Path=Y}" />
 					<Setter Property="RenderTransform" Value="{Binding Path=Transform}"></Setter>
-			</Style>
-		</ItemsControl.ItemContainerStyle>
-	</ItemsControl>
+				</Style>
+			</ItemsControl.ItemContainerStyle>
+		</ItemsControl>
 	</Grid>
 </UserControl>

@@ -43,41 +43,6 @@ namespace DeltaEngine.Physics2D
 		}
 
 		/// <summary>
-		/// Moves an Entity2D within a rectangle
-		/// </summary>
-		public class MoveWithinRectangle : EntityHandler
-		{
-			public MoveWithinRectangle(ScreenSpace screen)
-			{
-				this.screen = screen;
-			}
-
-			private readonly ScreenSpace screen;
-
-			public override void Handle(List<Entity> entities)
-			{
-				foreach (Entity2D entity in entities.OfType<Entity2D>().Where(e => e.Contains<Data>()))
-					Move(entity);
-			}
-
-			private void Move(Entity2D entity)
-			{
-				var physics = entity.Get<Data>();
-				entity.DrawArea =
-					new Rectangle(entity.DrawArea.TopLeft + physics.Velocity * Time.Current.Delta,
-						entity.DrawArea.Size);
-				Point velocity = physics.Velocity;
-				velocity.ReflectIfHittingBorder(entity.DrawArea, screen.Viewport);
-				physics.Velocity = velocity;
-			}
-
-			public override EntityHandlerPriority Priority
-			{
-				get { return EntityHandlerPriority.First; }
-			}
-		}
-
-		/// <summary>
 		/// Bounces an Entity2D off the edges of the screen
 		/// </summary>
 		public class BounceOffScreenEdges : EntityHandler

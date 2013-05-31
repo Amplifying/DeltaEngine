@@ -14,7 +14,7 @@ namespace DeltaEngine.Input.Tests
 			Start(resolver, (InputCommands input) =>
 			{
 				Assert.AreEqual(0, input.Count);
-				input.Add(Key.Space, () => { });
+				input.Add(Key.Space, key => { });
 				Assert.AreEqual(1, input.Count);
 			});
 		}
@@ -32,7 +32,7 @@ namespace DeltaEngine.Input.Tests
 				Assert.AreEqual(3, input.Count);
 				input.Remove(command);
 				Assert.AreEqual(2, input.Count);
-				input.Add(MouseButton.Middle, delegate(Mouse mouse) { });
+				input.Add(MouseButton.Middle, delegate { });
 				Assert.AreEqual(3, input.Count);
 			});
 		}
@@ -42,10 +42,10 @@ namespace DeltaEngine.Input.Tests
 		{
 			Start(resolver, (InputCommands input) =>
 			{
-				input.Add(Key.Space, State.Pressing, () => { });
-				input.Add(Key.Escape, () => { });
+				input.Add(Key.Space, State.Pressing, key => { });
+				input.Add(Key.Escape, key => { });
 				input.Add(MouseButton.Left, State.Pressing, mouse => { });
-				input.Add(MouseButton.Middle, delegate(Mouse mouse) { });
+				input.Add(MouseButton.Middle, delegate { });
 				input.AddMouseMovement(mouse => { });
 				input.AddMouseHover(mouse => { });
 				input.Add(touch => { });
@@ -71,8 +71,8 @@ namespace DeltaEngine.Input.Tests
 		{
 			return new List<Command>
 			{
-				input.Add(Key.A, () => { }),
-				input.Add(Key.A, State.Released, () => { }),
+				input.Add(Key.A, key => { }),
+				input.Add(Key.A, State.Released, key => { }),
 				input.Add(MouseButton.Left, mouse => { }),
 				input.Add(MouseButton.Left, State.Pressing, mouse => { }),
 				input.AddMouseMovement(mouse => { }),
@@ -96,8 +96,8 @@ namespace DeltaEngine.Input.Tests
 		{
 			Start(resolver, (InputCommands input) =>
 			{
-				input.Add(Key.Space, State.Pressing, () => { });
-				input.Add(Key.Escape, () => { });
+				input.Add(Key.Space, State.Pressing, key => { });
+				input.Add(Key.Escape, key => { });
 				input.Add(MouseButton.Left, State.Pressing, mouse => { });
 				input.Clear();
 				Assert.AreEqual(0, input.Count);
@@ -108,7 +108,7 @@ namespace DeltaEngine.Input.Tests
 		public void QuitWithEscape(Type resolver)
 		{
 			Start(resolver,
-				(InputCommands input, Window window) => input.Add(Key.Escape, window.Dispose));
+				(InputCommands input, Window window) => input.Add(Key.Escape, key => window.Dispose()));
 		}
 	}
 }

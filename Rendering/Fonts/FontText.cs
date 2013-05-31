@@ -8,16 +8,16 @@ namespace DeltaEngine.Rendering.Fonts
 {
 	public class FontText : Entity2D
 	{
-		public FontText(Font font, string text, Point position, float lineSpacingMultiplier = 1.0f,
+		public FontText(Font font, string text, Point position,
 			HorizontalAlignment horizontal = HorizontalAlignment.Centered,
-			VerticalAlignment vertical = VerticalAlignment.Centered, bool wordWrap = true)
+			VerticalAlignment vertical = VerticalAlignment.Centered)
 			: base(Rectangle.FromCenter(position, Size.One))
 		{
 			this.text = text;
 			Add(font.Image);
 			var drawSize = Size.Zero;
 			data = font.Data;
-			Add(data.GetGlyphDrawAreaAndUVs(text, lineSpacingMultiplier, horizontal, wordWrap,
+			Add(data.GetGlyphDrawAreaAndUVs(text, lineSpacingMultiplier, horizontal, isWordWrap,
 				ref drawSize));
 			Add(drawSize);
 			Add<Render>();
@@ -25,18 +25,43 @@ namespace DeltaEngine.Rendering.Fonts
 
 		private string text;
 		private readonly FontData data;
+		private float lineSpacingMultiplier = 1.0f;
+		private bool isWordWrap = true;
 
 		public string Text
 		{
 			get { return text; }
 			set
 			{
-				Remove<GlyphDrawAreaAndUV[]>();
 				text = value;
-				Size drawSize = Size.Zero;
-				Add(data.GetGlyphDrawAreaAndUVs(text, 1, HorizontalAlignment.Centered, true, ref drawSize));
-				Set(drawSize);
+				UpdateText();
 			}
+		}
+
+		private void UpdateText()
+		{
+			Remove<GlyphDrawData[]>();
+			Size drawSize = Size.Zero;
+			Add(data.GetGlyphDrawAreaAndUVs(text, lineSpacingMultiplier, HorizontalAlignment.Centered,
+				true, ref drawSize));
+			Set(drawSize);
+		}
+
+		public void SetPosition(Point position)
+		{
+			Set(Rectangle.FromCenter(position, Size.One));
+		}
+
+		public void SetLineSpacing(float multiplier)
+		{
+			lineSpacingMultiplier = multiplier;
+			UpdateText();
+		}
+
+		public void SetWordWrap(bool wordWrap)
+		{
+			isWordWrap = wordWrap;
+			UpdateText();
 		}
 
 		public class Render : EntityListener
@@ -59,38 +84,62 @@ namespace DeltaEngine.Rendering.Fonts
 			private void RenderText(Entity entity)
 			{
 				var text = entity as Entity2D;
-				var image = text.Get<Image>();
-				var glyphs = text.Get<GlyphDrawAreaAndUV[]>();
 				var size = text.Get<Size>();
 				var position = screen.ToPixelSpaceRounded(text.DrawArea.Center) -
 					new Point((float)Math.Round(size.Width / 2), (float)Math.Round(size.Height / 2));
-				var color = text.Color;
-				var vertices = new VertexPositionColorTextured[glyphs.Length * 4];
-				var indices = new short[glyphs.Length * 6];
-				int vertexIndex = 0;
-				int indicesIndex = 0;
+				AddVerticesAndIndices(text.Get<GlyphDrawData[]>(), position, text.Color);
+				RenderGraphics(text.Get<Image>());
+			}
+
+			private void AddVerticesAndIndices(GlyphDrawData[] glyphs, Point position, Color color)
+			{
+				verticesIndex = 0;
+				vertices = new VertexPositionColorTextured[glyphs.Length * 4];
+				indicesIndex = 0;
+				indices = new short[glyphs.Length * 6];
 				foreach (var glyph in glyphs)
-				{
-					vertices[vertexIndex + 0] =
-						new VertexPositionColorTextured(position + glyph.DrawArea.TopLeft, color,
-							glyph.UV.TopLeft);
-					vertices[vertexIndex + 1] =
-						new VertexPositionColorTextured(position + glyph.DrawArea.TopRight, color,
-							glyph.UV.TopRight);
-					vertices[vertexIndex + 2] =
-						new VertexPositionColorTextured(position + glyph.DrawArea.BottomRight, color,
-							glyph.UV.BottomRight);
-					vertices[vertexIndex + 3] =
-						new VertexPositionColorTextured(position + glyph.DrawArea.BottomLeft, color,
-							glyph.UV.BottomLeft);
-					indices[indicesIndex++] = (short)vertexIndex;
-					indices[indicesIndex++] = (short)(vertexIndex + 1);
-					indices[indicesIndex++] = (short)(vertexIndex + 2);
-					indices[indicesIndex++] = (short)vertexIndex;
-					indices[indicesIndex++] = (short)(vertexIndex + 2);
-					indices[indicesIndex++] = (short)(vertexIndex + 3);
-					vertexIndex += 4;
-				}
+					AddVerticesAndIndicesForGlyph(glyph, position, color);
+			}
+
+			private int verticesIndex;
+			private VertexPositionColorTextured[] vertices;
+			private int indicesIndex;
+			private short[] indices;
+
+			private void AddVerticesAndIndicesForGlyph(GlyphDrawData glyph, Point position, Color color)
+			{
+				AddVerticesForGlyph(glyph, position, color);
+				AddIndicesForGlyph();
+			}
+
+			private void AddVerticesForGlyph(GlyphDrawData glyph, Point position, Color color)
+			{
+				vertices[verticesIndex + 0] =
+					new VertexPositionColorTextured(position + glyph.DrawArea.TopLeft, color, glyph.UV.TopLeft);
+				vertices[verticesIndex + 1] =
+					new VertexPositionColorTextured(position + glyph.DrawArea.TopRight, color,
+						glyph.UV.TopRight);
+				vertices[verticesIndex + 2] =
+					new VertexPositionColorTextured(position + glyph.DrawArea.BottomRight, color,
+						glyph.UV.BottomRight);
+				vertices[verticesIndex + 3] =
+					new VertexPositionColorTextured(position + glyph.DrawArea.BottomLeft, color,
+						glyph.UV.BottomLeft);
+			}
+
+			private void AddIndicesForGlyph()
+			{
+				indices[indicesIndex++] = (short)verticesIndex;
+				indices[indicesIndex++] = (short)(verticesIndex + 1);
+				indices[indicesIndex++] = (short)(verticesIndex + 2);
+				indices[indicesIndex++] = (short)verticesIndex;
+				indices[indicesIndex++] = (short)(verticesIndex + 2);
+				indices[indicesIndex++] = (short)(verticesIndex + 3);
+				verticesIndex += 4;
+			}
+
+			private void RenderGraphics(Image image)
+			{
 				drawing.EnableTexturing(image);
 				drawing.SetIndices(indices, indices.Length);
 				drawing.DrawVertices(VerticesMode.Triangles, vertices);

@@ -1,6 +1,7 @@
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 using SlimDX.Direct3D9;
+using NativeDevice = SlimDX.Direct3D9.Device;
 
 namespace DeltaEngine.Graphics.SlimDX
 {
@@ -9,19 +10,21 @@ namespace DeltaEngine.Graphics.SlimDX
 		public SlimDXDrawing(SlimDXDevice device, Window window)
 			: base(device)
 		{
-			this.device = device;
+			nativeDevice = device.NativeDevice;
 			CreateShaders();
 			SetupWorldViewProjectionMatrix(window.ViewportPixelSize);
 			window.ViewportSizeChanged += SetupWorldViewProjectionMatrix;
 			CreateBuffers();
+			SetDefaultBlendMode();
 		}
 
-		private new readonly SlimDXDevice device;
+		private readonly NativeDevice nativeDevice;
 
 		private void CreateShaders()
 		{
-			positionColorShader = new SlimDXShader(device, SlimDXShadersSourceCode.PositionColor);
-			positionColorTextureShader = new SlimDXShader(device,
+			positionColorShader = new SlimDXShader((SlimDXDevice)device,
+				SlimDXShadersSourceCode.PositionColor);
+			positionColorTextureShader = new SlimDXShader((SlimDXDevice)device,
 				SlimDXShadersSourceCode.PositionColorTexture);
 		}
 
@@ -53,7 +56,7 @@ namespace DeltaEngine.Graphics.SlimDX
 
 		private void CreatePositionColorBuffer()
 		{
-			positionColorBuffer = new SlimDXCircularBuffer(VertexBufferSize, device);
+			positionColorBuffer = new SlimDXCircularBuffer(VertexBufferSize, (SlimDXDevice)device);
 			positionColorBuffer.Create();
 			SetVertexBufferPositionColorDeclaration();
 		}
@@ -73,14 +76,14 @@ namespace DeltaEngine.Graphics.SlimDX
 				VertexElement.VertexDeclarationEnd
 			};
 
-			positionColorVertexDeclaration = new VertexDeclaration(device.NativeDevice, vertexElems);
+			positionColorVertexDeclaration = new VertexDeclaration(nativeDevice, vertexElems);
 		}
 
 		private VertexDeclaration positionColorVertexDeclaration;
 
 		private void CreatePositionColorUvBuffer()
 		{
-			positionColorTextureBuffer = new SlimDXCircularBuffer(VertexBufferSize, device);
+			positionColorTextureBuffer = new SlimDXCircularBuffer(VertexBufferSize, (SlimDXDevice)device);
 			positionColorTextureBuffer.Create();
 			SetVertexBufferPositionColorTextureDeclaration();
 		}
@@ -102,17 +105,22 @@ namespace DeltaEngine.Graphics.SlimDX
 			};
 
 			positionColorTextureVertexDeclaration =
-				new VertexDeclaration(device.NativeDevice, vertexElems);
+				new VertexDeclaration(nativeDevice, vertexElems);
 		}
 
 		private VertexDeclaration positionColorTextureVertexDeclaration;
+
+		private void SetDefaultBlendMode()
+		{
+			SetBlending(BlendMode.Normal);
+		}
 
 		private void CreateIndexBuffer()
 		{
 			if (indexBuffer != null)
 				indexBuffer.Dispose();
 
-			indexBuffer = new IndexBuffer(device.NativeDevice, IndexBufferSize, Usage.Dynamic,
+			indexBuffer = new IndexBuffer(nativeDevice, IndexBufferSize, Usage.Dynamic,
 				Pool.Default, true);
 		}
 
@@ -122,25 +130,67 @@ namespace DeltaEngine.Graphics.SlimDX
 
 		public override void EnableTexturing(Image image)
 		{
-			device.NativeDevice.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.None);
-			device.NativeDevice.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Anisotropic);
-			device.NativeDevice.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Anisotropic);
-			device.NativeDevice.SetTexture(0, (image as SlimDXImage).NativeTexture);
+			nativeDevice.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.None);
+			nativeDevice.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Anisotropic);
+			nativeDevice.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Anisotropic);
+			nativeDevice.SetTexture(0, (image as SlimDXImage).NativeTexture);
 		}
 
 		public override void DisableTexturing()
 		{
-			device.NativeDevice.SetTexture(0, null);
+			nativeDevice.SetTexture(0, null);
 		}
 
 		public override void SetBlending(BlendMode blendMode)
 		{
-			device.NativeDevice.SetRenderState(RenderState.AlphaBlendEnable, true);
-			device.NativeDevice.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-			device.NativeDevice.SetRenderState(RenderState.AlphaFunc, Compare.GreaterEqual);
-			device.NativeDevice.SetRenderState(RenderState.AlphaRef, 1);
-			device.NativeDevice.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-			device.NativeDevice.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
+			if (currentBlendMode == blendMode)
+				return;
+
+			SetupBlendRenderState(blendMode);
+			currentBlendMode = blendMode;
+		}
+
+		private BlendMode currentBlendMode = BlendMode.Opaque;
+
+		private void SetupBlendRenderState(BlendMode blendMode)
+		{
+			nativeDevice.SetRenderState(RenderState.AlphaRef, 1);
+			switch (blendMode)
+			{
+				case BlendMode.Normal:
+					nativeDevice.SetRenderState(RenderState.AlphaBlendEnable, true);
+					nativeDevice.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+					nativeDevice.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
+					nativeDevice.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
+					break;
+				case BlendMode.Opaque:
+					nativeDevice.SetRenderState(RenderState.AlphaBlendEnable, false);
+					break;
+				case BlendMode.AlphaTest:
+					nativeDevice.SetRenderState(RenderState.AlphaBlendEnable, false);
+					nativeDevice.SetRenderState(RenderState.AlphaTestEnable, true);
+					nativeDevice.SetRenderState(RenderState.AlphaFunc, Compare.GreaterEqual);
+					break;
+				case BlendMode.Additive:
+					nativeDevice.SetRenderState(RenderState.AlphaBlendEnable, true);
+					nativeDevice.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+					nativeDevice.SetRenderState(RenderState.DestinationBlend, Blend.One);
+					nativeDevice.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
+					break;
+				case BlendMode.Subtractive:
+					nativeDevice.SetRenderState(RenderState.AlphaBlendEnable, true);
+					nativeDevice.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+					nativeDevice.SetRenderState(RenderState.DestinationBlend, Blend.One);
+					nativeDevice.SetRenderState(RenderState.BlendOperation,
+						BlendOperation.ReverseSubtract);
+					break;
+				case BlendMode.LightEffect:
+					nativeDevice.SetRenderState(RenderState.AlphaBlendEnable, true);
+					nativeDevice.SetRenderState(RenderState.SourceBlend, Blend.DestinationColor);
+					nativeDevice.SetRenderState(RenderState.DestinationBlend, Blend.One);
+					nativeDevice.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
+					break;
+			}			
 		}
 
 		public override void SetIndices(short[] indices, int usedIndicesCount)
@@ -159,8 +209,8 @@ namespace DeltaEngine.Graphics.SlimDX
 		public override void DrawVertices(VerticesMode mode, VertexPositionColor[] vertices)
 		{
 			positionColorBuffer.SetVertexData(vertices);
-			device.NativeDevice.VertexDeclaration = positionColorVertexDeclaration;
-			device.NativeDevice.SetStreamSource(0, positionColorBuffer.NativeBuffer,
+			nativeDevice.VertexDeclaration = positionColorVertexDeclaration;
+			nativeDevice.SetStreamSource(0, positionColorBuffer.NativeBuffer,
 				positionColorBuffer.Offset, VertexPositionColorSize);
 			positionColorShader.Apply();
 			DrawPrimitives(mode, vertices.Length);
@@ -168,16 +218,16 @@ namespace DeltaEngine.Graphics.SlimDX
 
 		private void DrawPrimitives(VerticesMode mode, int verticesCount)
 		{
-			device.NativeDevice.Indices = indexBuffer;
+			nativeDevice.Indices = indexBuffer;
 			var primitiveType = mode == VerticesMode.Triangles
 				? PrimitiveType.TriangleList : PrimitiveType.LineList;
 			var verticesPerPrimitive = mode == VerticesMode.Triangles
 				? VerticesPerTriangle : VerticesPerLine;
 			if (indicesCount > 0)
-				device.NativeDevice.DrawIndexedPrimitives(primitiveType, 0, 0, verticesCount, 0,
+				nativeDevice.DrawIndexedPrimitives(primitiveType, 0, 0, verticesCount, 0,
 					indicesCount / verticesPerPrimitive);
 			else
-				device.NativeDevice.DrawPrimitives(primitiveType, 0, verticesCount / verticesPerPrimitive);
+				nativeDevice.DrawPrimitives(primitiveType, 0, verticesCount / verticesPerPrimitive);
 		}
 
 		private const int VerticesPerLine = 2;
@@ -186,8 +236,8 @@ namespace DeltaEngine.Graphics.SlimDX
 		public override void DrawVertices(VerticesMode mode, VertexPositionColorTextured[] vertices)
 		{
 			positionColorTextureBuffer.SetVertexData(vertices);
-			device.NativeDevice.VertexDeclaration = positionColorTextureVertexDeclaration;
-			device.NativeDevice.SetStreamSource(0, positionColorTextureBuffer.NativeBuffer,
+			nativeDevice.VertexDeclaration = positionColorTextureVertexDeclaration;
+			nativeDevice.SetStreamSource(0, positionColorTextureBuffer.NativeBuffer,
 				positionColorTextureBuffer.Offset, VertexPositionColorUvSize);
 			positionColorTextureShader.Apply();
 			DrawPrimitives(mode, vertices.Length);

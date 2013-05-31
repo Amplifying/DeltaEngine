@@ -8,9 +8,7 @@ namespace DeltaEngine.Graphics.Tests
 		public void CreateBuffer()
 		{
 			var buffer = new CircularBufferTest(BufferSize);
-			Assert.IsFalse(buffer.IsCreated);
-			buffer.Create();
-			Assert.IsTrue(buffer.IsCreated);
+			CreateAndCheck(buffer);
 		}
 
 		private const int BufferSize = 1024;
@@ -33,13 +31,18 @@ namespace DeltaEngine.Graphics.Tests
 			protected override void SetNativeVertexData<T>(T[] vertices, int dataSizeInBytes) {}
 		}
 
+		private static void CreateAndCheck(CircularBuffer buffer)
+		{
+			Assert.IsFalse(buffer.IsCreated);
+			buffer.Create();
+			Assert.IsTrue(buffer.IsCreated);
+		}
+
 		[Test]
 		public void CreateAndDisposeBuffer()
 		{
 			var buffer = new CircularBufferTest(BufferSize);
-			Assert.IsFalse(buffer.IsCreated);
-			buffer.Create();
-			Assert.IsTrue(buffer.IsCreated);
+			CreateAndCheck(buffer);
 			buffer.Dispose();
 			Assert.IsFalse(buffer.IsCreated);
 		}

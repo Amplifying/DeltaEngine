@@ -2,13 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
-using DeltaEngine.Graphics;
 using DeltaEngine.Rendering;
 
 namespace DeltaEngine.Input
 {
 	/// <summary>
-	/// Allows an Entity to respond to Input such as Mouse or Touch
+	/// Allows an Entity to respond to pointer input (mouse or touch)
 	/// </summary>
 	public class Interact : EntityHandler
 	{
@@ -69,6 +68,8 @@ namespace DeltaEngine.Input
 			public bool IsInside { get; set; }
 			public bool IsPressed { get; set; }
 			public Point RelativePointerPosition { get; set; }
+			public bool CanHaveFocus { get; set; }
+			public bool HasFocus { get; set; }
 		}
 
 		public class ControlHoveringStopped {}
@@ -119,74 +120,54 @@ namespace DeltaEngine.Input
 			var entities = EntitySystem.Current.GetEntitiesByHandler(this);
 			var interactiveControls =
 				new List<Entity2D>(entities.OfType<Entity2D>().Where(e => e.Contains<State>()));
+			foreach (Entity2D interactiveControl in interactiveControls)
+				interactiveControl.Get<State>().HasFocus = false;
+
 			foreach (Entity2D control in
 				interactiveControls.Where(control => control.Get<State>().IsPressed))
-				TapOrReleaseControl(control, position);
+				ClickOrReleaseControl(control, position);
 		}
 
-		private static void TapOrReleaseControl(Entity2D control, Point position)
+		private void ClickOrReleaseControl(Entity2D control, Point position)
 		{
-			control.Get<State>().IsPressed = false;
-			control.Get<State>().RelativePointerPosition = control.DrawArea.GetRelativePoint(position);
+			state = control.Get<State>();
+			state.IsPressed = false;
+			state.RelativePointerPosition = control.DrawArea.GetRelativePoint(position);
 			if (control.DrawArea.Contains(position))
-				control.MessageAllListeners(new ControlClicked());
+				SetFocusAndClickControl(control);
 			else
 				control.MessageAllListeners(new ControlReleased());
+		}
+
+		private State state;
+
+		private void SetFocusAndClickControl(Entity control)
+		{
+			if (state.CanHaveFocus)
+				state.HasFocus = true;
+
+			control.MessageAllListeners(new ControlClicked());
 		}
 
 		public class ControlClicked {}
 
 		public class ControlReleased {}
 
-		public class Images
-		{
-			public Images(Image image)
-				: this(image, image, image) {}
-
-			public Images(Image normal, Image pressed, Image mouseover)
-			{
-				Normal = normal;
-				Pressed = pressed;
-				Mouseover = mouseover;
-			}
-
-			public Image Normal { get; set; }
-			public Image Pressed { get; set; }
-			public Image Mouseover { get; set; }
-		}
-
-		public class Colors
-		{
-			public Colors(Color color)
-				: this(color, color, color) {}
-
-			public Colors(Color normal, Color pressed, Color mouseover)
-			{
-				Normal = normal;
-				Pressed = pressed;
-				Mouseover = mouseover;
-			}
-
-			public Color Normal { get; set; }
-			public Color Pressed { get; set; }
-			public Color Mouseover { get; set; }
-		}
-
 		public override void Handle(List<Entity> entities) {}
 
 		public interface Clickable
 		{
-			void InvokeClickEvent();
+			void Clicking();
 		}
 
-		public class RaiseClickEvent : EntityListener
+		public class Clicking : EntityListener
 		{
 			public override void ReceiveMessage(Entity entity, object message)
 			{
 				var clickable = entity as Clickable;
 				var clicked = message as ControlClicked;
 				if (clickable != null && clicked != null)
-					clickable.InvokeClickEvent();
+					clickable.Clicking();
 			}
 		}
 	}

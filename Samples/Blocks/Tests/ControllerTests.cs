@@ -2,6 +2,7 @@ using System;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Platforms;
 using DeltaEngine.Platforms.All;
 using DeltaEngine.Platforms.Tests;
 using DeltaEngine.Rendering.ScreenSpaces;
@@ -18,14 +19,14 @@ namespace Blocks.Tests
 		public void Initialize(ScreenSpace screen, ContentLoader contentLoader)
 		{
 			displayMode = screen.Viewport.Aspect >= 1.0f
-				? Constants.DisplayMode.LandScape : Constants.DisplayMode.Portrait;
+				? Orientation.Landscape : Orientation.Portrait;
 			content = new JewelBlocksContent(contentLoader);
 			controller = new Controller(displayMode, content);
 			sounds = controller.Get<Soundbank>();
 			grid = controller.Get<Grid>();
 		}
 
-		private Constants.DisplayMode displayMode;
+		private Orientation displayMode;
 		private IDisposable fixedRandomScope;
 		private Controller controller;
 		private JewelBlocksContent content;

@@ -18,12 +18,28 @@ namespace DeltaEngine.Rendering.Tests.Sprites
 			Animation animation = null;
 			Start(resolver,
 				(ContentLoader content) =>
-				{ animation = new Animation(CreateImages(content), Center, 1.5f); }, () =>
+				{
+					animation = new Animation("ImageAnimation", content,
+						Rectangle.FromCenter(Point.Half, new Size(0.2f)), 3);
+				}, () =>
 				{
 					float elapsed = animation.Get<Animation.Data>().Elapsed;
-					var currentFrame = (int)((2 * (elapsed % 1.5f)));
+					var currentFrame = (int)elapsed % 3.0f;
 					Assert.AreEqual(currentFrame, animation.CurrentFrame);
 				});
+		}
+
+		[Test]
+		public void CreateAnimatedSprite()
+		{
+			Start(typeof(MockResolver), (ContentLoader content) =>
+			{
+				var images = CreateImages(content);
+				var animation = new Animation("ImageAnimation", content, center, 3);
+				Assert.AreEqual(images, animation.Images);
+				Assert.AreEqual(images[0], animation.Image);
+				Assert.AreEqual(3, animation.Duration);
+			});
 		}
 
 		private static List<Image> CreateImages(ContentLoader content)
@@ -37,21 +53,7 @@ namespace DeltaEngine.Rendering.Tests.Sprites
 			return images;
 		}
 
-		[Test]
-		public void CreateAnimatedSprite()
-		{
-			Start(typeof(MockResolver), (ContentLoader content) =>
-			{
-				var images = CreateImages(content);
-				var animation = new Animation(images, Center, 3);
-				Assert.AreEqual(images, animation.Images);
-				Assert.AreEqual(images[0], animation.Image);
-				Assert.AreEqual(3, animation.Duration);
-			});
-		}
-
-		private static readonly Rectangle Center = Rectangle.FromCenter(Point.Half,
-			new Size(0.2f, 0.2f));
+		private readonly Rectangle center = Rectangle.FromCenter(Point.Half, new Size(0.2f, 0.2f));
 
 		[Test]
 		public void ChangeImages()
@@ -60,7 +62,7 @@ namespace DeltaEngine.Rendering.Tests.Sprites
 			{
 				var images1 = new List<Image> { content.Load<Image>("ImageAnimation01") };
 				var images2 = CreateImages(content);
-				var animation = new Animation(images1, Center, 3) { Images = images2 };
+				var animation = new Animation(images1, center, 3) { Images = images2 };
 				Assert.AreEqual(images2, animation.Images);
 			});
 		}
@@ -70,7 +72,7 @@ namespace DeltaEngine.Rendering.Tests.Sprites
 		{
 			Start(typeof(MockResolver), (ContentLoader content) =>
 			{
-				var animation = new Animation(CreateImages(content), Center, 1) { Duration = 2 };
+				var animation = new Animation("ImageAnimation", content, center, 3) { Duration = 2 };
 				Assert.AreEqual(2, animation.Duration);
 			});
 		}
@@ -81,7 +83,7 @@ namespace DeltaEngine.Rendering.Tests.Sprites
 			Start(typeof(MockResolver), (ContentLoader content) =>
 			{
 				var images = new List<Image> { content.Load<Image>("ImageAnimation01") };
-				var animation = new Animation(images, Center, 1);
+				var animation = new Animation(images, center, 1);
 				VerifyImageCountAndAnimationDuration(animation, 1, 1);
 				animation.AddImageWithoutIncreasingDuration(content.Load<Image>("ImageAnimation02"));
 				VerifyImageCountAndAnimationDuration(animation, 2, 1);
@@ -101,7 +103,7 @@ namespace DeltaEngine.Rendering.Tests.Sprites
 			Start(typeof(MockResolver), (ContentLoader content) =>
 			{
 				var images = new List<Image> { content.Load<Image>("ImageAnimation01") };
-				var animation = new Animation(images, Center, 1);
+				var animation = new Animation(images, center, 1);
 				VerifyImageCountAndAnimationDuration(animation, 1, 1);
 				animation.AddImageIncreasingDuration(content.Load<Image>("ImageAnimation02"));
 				VerifyImageCountAndAnimationDuration(animation, 2, 2);
@@ -115,8 +117,8 @@ namespace DeltaEngine.Rendering.Tests.Sprites
 		{
 			Animation animation = null;
 			Start(typeof(MockResolver),
-				(ContentLoader content) => { animation = new Animation(CreateImages(content), Center, 3); },
-				() =>
+				(ContentLoader content) =>
+				{ animation = new Animation("ImageAnimation", content, center, 3); }, () =>
 				{
 					animation.Reset();
 					Assert.AreEqual(0, animation.CurrentFrame);
@@ -129,8 +131,8 @@ namespace DeltaEngine.Rendering.Tests.Sprites
 		{
 			Animation animation = null;
 			Start(resolver,
-				(ContentLoader content) => { animation = new Animation(CreateImages(content), Center, 3); },
-				() =>
+				(ContentLoader content) =>
+				{ animation = new Animation("ImageAnimation", content, center, 3); }, () =>
 				{
 					if (animation.Get<Animation.Data>().CurrentFrame != 2)
 						return;
@@ -138,29 +140,6 @@ namespace DeltaEngine.Rendering.Tests.Sprites
 					animation.Reset();
 					Assert.AreEqual(0, animation.CurrentFrame);
 					Assert.AreEqual(0, animation.Get<Animation.Data>().Elapsed);
-				});
-		}
-
-
-		[Test]
-		public void LoadAnimationByNameMock() 
-		{
-			Start(typeof(MockResolver),
-				(ContentLoader content) =>
-				{
-					var animation = new Animation("ImageAnimation", content,
-						Rectangle.FromCenter(Point.Half, new Size(0.2f)), 3);
-				});
-		}
-
-		[VisualTest]
-		public void LoadAnimationByNameRealContent(Type resolverType)
-		{
-			Start(resolverType,
-				(ContentLoader content) =>
-				{
-					var animation = new Animation("ImageAnimation", content,
-						Rectangle.FromCenter(Point.Half, new Size(0.2f)), 3);
 				});
 		}
 	}

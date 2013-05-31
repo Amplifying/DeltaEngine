@@ -1,12 +1,12 @@
 using System.Linq;
-using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Platforms.All;
 using DeltaEngine.Platforms.Tests;
 using NUnit.Framework;
 
 namespace DeltaEngine.Physics2D.Tests
 {
-	public class PhysicsTests
+	public class PhysicsTests : TestWithAllFrameworks
 	{
 		[Test]
 		public void IsNotPausedOnStartup()
@@ -60,6 +60,19 @@ namespace DeltaEngine.Physics2D.Tests
 			var physics = new MockPhysics();
 			Assert.IsNotNull(
 				physics.CreatePolygon(new[] { Point.Zero, Point.One, Point.Half, Point.UnitX, Point.UnitY }));
+		}
+
+		[Test]
+		public void SimulateMocKPhysics()
+		{
+			Start(typeof(MockResolver), (MockPhysics physics) =>
+			{
+				var body = physics.CreateRectangle(new Size(1));
+				body.Position = Point.Zero;
+				body.LinearVelocity = Point.One;
+				mockResolver.AdvanceTimeAndExecuteRunners();
+				Assert.AreEqual(Point.Zero, body.Position);
+			});
 		}
 	}
 }

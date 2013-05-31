@@ -2,8 +2,8 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform' == '' ">AnyCPU</Platform>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{CC65E69E-FAFD-4C2B-85EB-5E57FD3AF847}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -68,6 +68,7 @@
     <Compile Include="GamePad.cs" />
     <Compile Include="InputCommands.cs" />
     <Compile Include="Interact.cs" />
+    <Compile Include="InteractWithKeyboard.cs" />
     <Compile Include="MouseDragDropTrigger.cs" />
     <Compile Include="MouseHoldTrigger.cs" />
     <Compile Include="MouseMovementTrigger.cs" />

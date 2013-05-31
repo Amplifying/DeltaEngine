@@ -109,5 +109,13 @@ namespace DeltaEngine.Editor.ContentManager.Tests
 			Assert.AreEqual(500, contentManager.ImageWidth);
 			Assert.AreEqual(500, contentManager.ImageHeight);
 		}
+
+		[Test, Category("Slow")]
+		public void SaveImagesAsAnimation()
+		{
+			var itemList = new List<string>();
+			itemList.Add("DeltaEngineLogo.png");
+			contentManager.SaveImagesAsAnimation(itemList);
+		}
 	}
 }

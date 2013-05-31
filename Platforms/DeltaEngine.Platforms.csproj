@@ -2,8 +2,8 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform' == '' ">AnyCPU</Platform>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -60,7 +60,7 @@
       <Name>DeltaEngine.Entities</Name>
     </ProjectReference>
     <ProjectReference Include="..\Logging\DeltaEngine.Logging.csproj">
-      <Project>{E4440567-3D5D-4670-AB49-8163B18E302E}</Project>
+      <Project>{e4440567-3d5d-4670-ab49-8163b18e302e}</Project>
       <Name>DeltaEngine.Logging</Name>
     </ProjectReference>
   </ItemGroup>
@@ -72,8 +72,10 @@
     <Compile Include="AutofacResolver.cs" />
     <Compile Include="AutofacStarter.cs" />
     <Compile Include="IgnoreForResolverAttribute.cs" />
+    <Compile Include="InAppPurchase.cs" />
     <Compile Include="MessageBoxButton.cs" />
     <Compile Include="Orientation.cs" />
+    <Compile Include="ProductData.cs" />
     <Compile Include="Resolver.cs" />
     <Compile Include="Window.cs" />
   </ItemGroup>

@@ -2,6 +2,7 @@ using System;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Platforms;
 using DeltaEngine.Platforms.All;
 using DeltaEngine.Platforms.Tests;
 using DeltaEngine.Rendering.ScreenSpaces;
@@ -19,11 +20,11 @@ namespace Blocks.Tests
 			ContentLoader contentLoader)
 		{
 			displayMode = screen.Viewport.Aspect >= 1.0f
-				? Constants.DisplayMode.LandScape : Constants.DisplayMode.Portrait;
+				? Orientation.Landscape : Orientation.Portrait;
 			content = new JewelBlocksContent(contentLoader);
 		}
 
-		private Constants.DisplayMode displayMode;
+		private Orientation displayMode;
 		private JewelBlocksContent content;
 
 		[Test]

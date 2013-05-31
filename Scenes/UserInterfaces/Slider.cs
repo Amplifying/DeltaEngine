@@ -1,11 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
-using DeltaEngine.Graphics;
 using DeltaEngine.Input;
-using DeltaEngine.Rendering;
 using DeltaEngine.Rendering.Sprites;
 
 namespace DeltaEngine.Scenes.UserInterfaces
@@ -15,14 +14,24 @@ namespace DeltaEngine.Scenes.UserInterfaces
 	/// </summary>
 	public class Slider : Sprite
 	{
-		public Slider(Image background, Image pointer, Rectangle drawArea)
-			: base(background, drawArea)
+		public Slider(Theme theme, Rectangle drawArea)
+			: base(theme.Slider.Image, drawArea, theme.Slider.Color)
 		{
-			var pointerSize = new Size(pointer.PixelSize.AspectRatio * drawArea.Height, drawArea.Height);
-			Add(new Sprite(pointer, new Rectangle(Point.Zero, pointerSize)));
+			Add(new Pointer(theme));
 			Add(new Values { MinValue = 0, Value = 100, MaxValue = 100 });
 			Add(new Interact.State());
 			Add<Interact, UpdateSlider>();
+		}
+
+		public class Pointer : Sprite
+		{
+			public Pointer(Theme theme)
+				: base(theme.SliderPointer.Image, theme.SliderPointer.Color)
+			{
+				Add(new Interact.State());
+				Add(theme);
+				Add<Interact, UpdateAppearance>();
+			}
 		}
 
 		public class Values
@@ -55,32 +64,46 @@ namespace DeltaEngine.Scenes.UserInterfaces
 			public override void Handle(List<Entity> entities)
 			{
 				foreach (Slider slider in entities.OfType<Slider>())
-					UpdateSliderAndPointer(slider, slider.Get<Sprite>());
+					UpdateSliderAndPointer(slider, slider.Get<Pointer>());
 			}
 
-			private static void UpdateSliderAndPointer(Slider slider, Entity2D pointer)
+			private static void UpdateSliderAndPointer(Slider slider, Sprite pointer)
 			{
+				UpdatePointerState(slider, pointer);
 				UpdateSliderValue(slider, pointer);
 				UpdatePointerDrawArea(slider, pointer);
+				pointer.RenderLayer = slider.RenderLayer + 1;
 			}
 
-			private static void UpdateSliderValue(Slider slider, Entity2D pointer)
+			private static void UpdatePointerState(Entity slider, Entity pointer)
+			{
+				var sliderState = slider.Get<Interact.State>();
+				if (!sliderState.IsInside || !sliderState.IsPressed)
+					return;
+
+				var pointerState = pointer.Get<Interact.State>();
+				pointerState.IsInside = true;
+				pointerState.IsPressed = true;
+				pointer.MessageAllListeners(new Interact.ControlPressed());
+			}
+
+			private static void UpdateSliderValue(Slider slider, Sprite pointer)
 			{
 				var state = slider.Get<Interact.State>();
 				if (!state.IsPressed)
 					return;
 
 				var percentage = state.RelativePointerPosition.X.Clamp(0.0f, 1.0f);
-				var unusable = pointer.DrawArea.Aspect / slider.DrawArea.Aspect;
+				var unusable = pointer.Image.PixelSize.AspectRatio / slider.DrawArea.Aspect;
 				var expandedPercentage = ((percentage - 0.5f) * (1.0f + unusable) + 0.5f).Clamp(0.0f, 1.0f);
 				slider.Value =
 					(int)(slider.MinValue + expandedPercentage * (slider.MaxValue - slider.MinValue));
 			}
 
-			private static void UpdatePointerDrawArea(Slider slider, Entity2D pointer)
+			private static void UpdatePointerDrawArea(Slider slider, Sprite pointer)
 			{
 				var drawArea = slider.DrawArea;
-				var size = new Size(pointer.DrawArea.Aspect * drawArea.Height, drawArea.Height);
+				var size = new Size(pointer.Image.PixelSize.AspectRatio * drawArea.Height, drawArea.Height);
 				var percentage = (slider.Value - slider.MinValue) /
 					(float)(slider.MaxValue - slider.MinValue);
 				var pos = MathExtensions.Lerp(drawArea.Left + size.Width / 2,
@@ -91,10 +114,33 @@ namespace DeltaEngine.Scenes.UserInterfaces
 
 			public override EntityHandlerPriority Priority
 			{
-				get
-				{
-					return EntityHandlerPriority.First;
-				}
+				get { return EntityHandlerPriority.First; }
+			}
+		}
+
+		public class UpdateAppearance : EntityListener
+		{
+			public override void ReceiveMessage(Entity entity, object message)
+			{
+				if (!interactions.Contains(message.GetType()))
+					return;
+
+				var state = entity.Get<Interact.State>();
+				var theme = entity.Get<Theme>();
+				SetAppearance(entity, state.IsInside ? theme.SliderPointerMouseover : theme.SliderPointer);
+			}
+
+			private readonly List<Type> interactions = new List<Type>(typeof(Interact).GetNestedTypes());
+
+			private static void SetAppearance(Entity entity, Theme.Appearance appearance)
+			{
+				entity.Set(appearance.Image);
+				entity.Set(appearance.Color);
+			}
+
+			public override EntityHandlerPriority Priority
+			{
+				get { return EntityHandlerPriority.High; }
 			}
 		}
 	}

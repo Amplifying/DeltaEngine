@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -170,6 +171,15 @@ namespace DeltaEngine.Editor.ContentManager
 		public int Priority
 		{
 			get { return 1; }
+		}
+
+		private void CreateAnimation(object sender, RoutedEventArgs e)
+		{
+			var selectedItems = ImageList.SelectedItems;
+			List<string> itemList = new List<string>();
+			foreach (var item in selectedItems)
+				itemList.Add(item.ToString());
+			Messenger.Default.Send(itemList, "SaveImagesAsAnimation");
 		}
 	}
 }

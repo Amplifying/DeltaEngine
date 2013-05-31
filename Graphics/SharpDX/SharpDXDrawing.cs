@@ -3,6 +3,7 @@ using DeltaEngine.Platforms;
 using SharpDX.DXGI;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
+using NativeDevice = SharpDX.Direct3D11.Device;
 using Buffer = SharpDX.Direct3D11.Buffer;
 using Matrix = SharpDX.Matrix;
 
@@ -17,7 +18,8 @@ namespace DeltaEngine.Graphics.SharpDX
 		public SharpDXDrawing(SharpDXDevice device, Window window)
 			: base(device)
 		{
-			this.device = device;
+			context = device.Context;
+			nativeDevice = device.NativeDevice;
 			positionColorShader = new SharpDXPositionColorShader(device);
 			positionColorTextureShader = new SharpDXPositionColorTextureShader(device);
 			Reset(window.ViewportPixelSize);
@@ -26,14 +28,17 @@ namespace DeltaEngine.Graphics.SharpDX
 			InitializeVertexBuffers();
 		}
 
-		private new readonly SharpDXDevice device;
+		private readonly DeviceContext context;
+		private readonly NativeDevice nativeDevice;
 		private readonly SharpDXPositionColorShader positionColorShader;
 		private readonly SharpDXPositionColorTextureShader positionColorTextureShader;
 
 		private void InitializeVertexBuffers()
 		{
-			positionColorVertexBuffer = new SharpDXCircularBuffer(VertexBufferSize, device);
-			positionColorUvVertexBuffer = new SharpDXCircularBuffer(VertexBufferSize, device);
+			positionColorVertexBuffer = new SharpDXCircularBuffer(VertexBufferSize,
+				(SharpDXDevice)device);
+			positionColorUvVertexBuffer = new SharpDXCircularBuffer(VertexBufferSize,
+				(SharpDXDevice)device);
 		}
 
 		private SharpDXCircularBuffer positionColorVertexBuffer;
@@ -61,15 +66,15 @@ namespace DeltaEngine.Graphics.SharpDX
 
 		public override void EnableTexturing(Image image)
 		{
-			device.Context.PixelShader.SetShaderResource(0, (image as SharpDXImage).NativeResourceView);
+			context.PixelShader.SetShaderResource(0, (image as SharpDXImage).NativeResourceView);
 			var sampler = image.DisableLinearFiltering ? GetPointSamplerLazy() : GetLinearSamplerLazy();
-			device.Context.PixelShader.SetSampler(0, sampler);
+			context.PixelShader.SetSampler(0, sampler);
 		}
 
 		public SamplerState GetLinearSamplerLazy()
 		{
 			return linearSampler ??
-				(linearSampler = new SharpDXSampler(device.NativeDevice, Filter.MinMagMipLinear));
+				(linearSampler = new SharpDXSampler(nativeDevice, Filter.MinMagMipLinear));
 		}
 
 		private SamplerState linearSampler;
@@ -77,123 +82,144 @@ namespace DeltaEngine.Graphics.SharpDX
 		public SamplerState GetPointSamplerLazy()
 		{
 			return pointSampler ??
-				(pointSampler = new SharpDXSampler(device.NativeDevice, Filter.MinMagMipPoint));
+				(pointSampler = new SharpDXSampler(nativeDevice, Filter.MinMagMipPoint));
 		}
 
 		private SamplerState pointSampler;
 
 		public override void DisableTexturing()
 		{
-			device.Context.PixelShader.SetShaderResource(0, null);
+			context.PixelShader.SetShaderResource(0, null);
 		}
 
 		public override void SetBlending(BlendMode blendMode)
 		{
-			var blendState = new BlendState(device.NativeDevice, GetBlendingDescription());
-			device.Context.OutputMerger.SetBlendState(blendState);
+			if (currentBlendMode == blendMode)
+				return;
+
+			var description = new BlendStateDescription();
+			description.RenderTarget[0] = GetRenderTargetBlendDescription(blendMode);
+			var blendState = new BlendState(nativeDevice, description);
+			context.OutputMerger.SetBlendState(blendState);
+			currentBlendMode = blendMode;
 		}
 
-		private static BlendStateDescription GetBlendingDescription()
+		private BlendMode currentBlendMode = BlendMode.Normal;
+
+		private static RenderTargetBlendDescription GetRenderTargetBlendDescription(BlendMode blendMode)
+		{
+			var targetDescription = GetDefaultRenderTargetBlendDescription();
+			SetupRenderTargetBlendDescriptionAccordingToTheMode(blendMode, ref targetDescription);
+			return targetDescription;
+		}
+
+		private static RenderTargetBlendDescription GetDefaultRenderTargetBlendDescription()
 		{
 			var targetDescription = new RenderTargetBlendDescription();
+			targetDescription.IsBlendEnabled = true;
 			targetDescription.SourceAlphaBlend = BlendOption.One;
 			targetDescription.DestinationAlphaBlend = BlendOption.Zero;
-			targetDescription.SourceBlend = BlendOption.One;
-			targetDescription.DestinationBlend = BlendOption.Zero;
-			var description = new BlendStateDescription();
-			description.AlphaToCoverageEnable = false;
-			description.IndependentBlendEnable = false;
-			description.RenderTarget[0] = targetDescription;
-			return description;
+			targetDescription.AlphaBlendOperation = BlendOperation.Add;
+			targetDescription.RenderTargetWriteMask = ColorWriteMaskFlags.All;
+			targetDescription.SourceBlend = BlendOption.SourceAlpha;
+			targetDescription.DestinationBlend = BlendOption.One;
+			targetDescription.BlendOperation = BlendOperation.Add;
+			return targetDescription;
+		}
+
+		private static void SetupRenderTargetBlendDescriptionAccordingToTheMode(BlendMode blendMode,
+			ref RenderTargetBlendDescription targetDescription)
+		{
+			switch (blendMode)
+			{
+				case BlendMode.Normal:
+					targetDescription.DestinationBlend = BlendOption.InverseSourceAlpha;
+					break;
+				case BlendMode.Additive:
+					break;
+				case BlendMode.Subtractive:
+					targetDescription.BlendOperation = BlendOperation.ReverseSubtract;
+					break;
+				case BlendMode.LightEffect:
+					targetDescription.SourceBlend = BlendOption.DestinationColor;
+					targetDescription.BlendOperation = BlendOperation.Add;
+					break;
+				default:
+					targetDescription.IsBlendEnabled = false;
+					break;
+			}			
 		}
 
 		public override void DrawVertices(VerticesMode mode, VertexPositionColor[] vertices)
 		{
-			CheckCreatePositionColorBuffer();
+			CheckCreateVertexBuffer(positionColorVertexBuffer);
 			positionColorVertexBuffer.SetVertexData(vertices);
 			positionColorShader.Apply();
 			BindVertexBuffer(positionColorVertexBuffer, VertexPositionColor.SizeInBytes);
-			if (lastIndicesCount == -1)
-				DoDraw(mode, vertices.Length);
-			else
-				DoDrawIndexed(mode, lastIndicesCount);
-
-			AfterDraw();
+			DecideKindOfDraw(mode, vertices.Length);
 		}
 
-		private void CheckCreatePositionColorBuffer()
+		private static void CheckCreateVertexBuffer(SharpDXCircularBuffer buffer)
 		{
-			if (!positionColorVertexBuffer.IsCreated)
-				positionColorVertexBuffer.Create();
+			if (!buffer.IsCreated)
+				buffer.Create();
 		}
+
+		private void BindVertexBuffer(SharpDXCircularBuffer vertexBuffer, int stride)
+		{
+			context.InputAssembler.SetVertexBuffers(0,
+				new VertexBufferBinding(vertexBuffer.NativeBuffer, stride, vertexBuffer.Offset));
+		}
+
+		private void DecideKindOfDraw(VerticesMode mode, int verticesCount)
+		{
+			context.InputAssembler.PrimitiveTopology = Convert(mode);
+			if (lastIndicesCount == -1)
+				DoDraw(verticesCount);
+			else
+				DoDrawIndexed(lastIndicesCount);
+		}
+
+		private int lastIndicesCount = -1;
 
 		public override void DisableIndices() {}
 
 		public override void DrawVertices(VerticesMode mode, VertexPositionColorTextured[] vertices)
 		{
-			CheckCreatePositionColorTextureBuffer();
+			CheckCreateVertexBuffer(positionColorUvVertexBuffer);
 			positionColorUvVertexBuffer.SetVertexData(vertices);
 			positionColorTextureShader.Apply();
 			BindVertexBuffer(positionColorUvVertexBuffer, VertexPositionColorTextured.SizeInBytes);
-			if (lastIndicesCount == -1)
-				DoDraw(mode, vertices.Length);
-			else
-				DoDrawIndexed(mode, lastIndicesCount);
-
-			AfterDraw();
-		}
-
-		private void CheckCreatePositionColorTextureBuffer()
-		{
-			if (!positionColorUvVertexBuffer.IsCreated)
-				positionColorUvVertexBuffer.Create();
+			DecideKindOfDraw(mode, vertices.Length);
 		}
 
 		public override void SetIndices(short[] indices, int usedIndicesCount)
 		{
 			CheckCreateIndexBuffer();
-			device.SetData(indexBuffer, indices, usedIndicesCount);
+			((SharpDXDevice)device).SetData(indexBuffer, indices, usedIndicesCount);
 			lastIndicesCount = usedIndicesCount;
 		}
-
-		private int lastIndicesCount = -1;
 
 		private void CheckCreateIndexBuffer(int indexCount = 600)
 		{
 			if (indexBuffer != null)
 				return;
 
-			indexBuffer = new SharpDXBuffer(device.NativeDevice, indexCount * sizeof(ushort),
+			indexBuffer = new SharpDXBuffer(nativeDevice, indexCount * sizeof(ushort),
 				BindFlags.IndexBuffer);
 		}
 
 		private Buffer indexBuffer;
 
-		private void BindVertexBuffer(SharpDXCircularBuffer vertexBuffer, int stride)
+		private void DoDraw(int vertexCount)
 		{
-			device.Context.InputAssembler.SetVertexBuffers(0,
-				new VertexBufferBinding(vertexBuffer.NativeBuffer, stride, vertexBuffer.Offset));
-		}
-
-		private void DoDraw(VerticesMode mode, int vertexCount)
-		{
-			var primitiveMode = Convert(mode);
-			var context = device.Context;
-			context.InputAssembler.PrimitiveTopology = primitiveMode;
 			context.Draw(vertexCount, 0);
 		}
 
-		private void DoDrawIndexed(VerticesMode mode, int indexCount)
+		private void DoDrawIndexed(int indexCount)
 		{
-			var primitiveMode = Convert(mode);
-			var context = device.Context;
-			context.InputAssembler.PrimitiveTopology = primitiveMode;
-			device.Context.InputAssembler.SetIndexBuffer(indexBuffer, Format.R16_UInt, 0);
+			context.InputAssembler.SetIndexBuffer(indexBuffer, Format.R16_UInt, 0);
 			context.DrawIndexed(indexCount, 0, 0);
-		}
-
-		private void AfterDraw()
-		{
 			lastIndicesCount = -1;
 		}
 

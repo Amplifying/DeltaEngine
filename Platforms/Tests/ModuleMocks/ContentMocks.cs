@@ -1,11 +1,6 @@
 using System.IO;
-using DeltaEngine.Content;
 using DeltaEngine.Core.Xml;
-using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
-using DeltaEngine.Scenes;
 using DeltaEngine.Logging;
-using DeltaEngine.Scenes.UserInterfaces;
 
 namespace DeltaEngine.Platforms.Tests.ModuleMocks
 {

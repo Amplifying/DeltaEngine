@@ -117,6 +117,6 @@ namespace DeltaEngine.Input
 		CloseBrackets,
 		Quotes,
 		Backslash = 226,
-		NumberOfKeys,
+		NumberOfKeys = 227
 	}
 }

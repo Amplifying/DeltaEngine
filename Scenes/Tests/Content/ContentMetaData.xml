@@ -19,11 +19,15 @@
     <ContentMetaData Name="LineShader3D" Type="Shader" LastTimeUpdated="2012-10-18 14:03:44" PlatformFileId="20382" FileSize="225" LocalFilePath="LineShader3D.DeltaShader" ShaderFlags="NoTexturing"></ContentMetaData>
     <ContentMetaData Name="DefaultFont" Type="Font" LastTimeUpdated="2012-12-14 20:06:32" FontFamilyName="Verdana" FontSize="12" FontStyle="AddOutline" FontTracking="0" ExtraMetaData="Characters|!-ÿ">
       <ContentMetaData Name="DefaultFont_12_16" Type="Font" LastTimeUpdated="2012-12-14 20:06:32" PlatformFileId="21202" FileSize="21078" LocalFilePath="DefaultFont_12_16.xml" FontFamilyName="Verdana" FontSize="12" FontStyle="AddOutline" FontTracking="0"></ContentMetaData>
-      <ContentMetaData Name="DefaultFont_12_16" Type="Image" LastTimeUpdated="2012-12-14 20:06:32" PlatformFileId="21203" FileSize="11551" LocalFilePath="DefaultFont_12_16.png" PixelSize="256, 108" UseFiltering="False"></ContentMetaData>
+      <ContentMetaData Name="DefaultFont_12_16Font" Type="Image" LastTimeUpdated="2012-12-14 20:06:32" PlatformFileId="21203" FileSize="11551" LocalFilePath="DefaultFont_12_16Font.png" PixelSize="256, 108" UseFiltering="False"></ContentMetaData>
     </ContentMetaData>
     <ContentMetaData Name="Verdana" Type="Font" LastTimeUpdated="2012-12-14 20:06:32" FontFamilyName="Verdana" FontSize="12" FontStyle="AddOutline" FontTracking="0" ExtraMetaData="Characters|!-ÿ">
-      <ContentMetaData Name="Verdana12" Type="Font" LastTimeUpdated="2012-12-14 20:06:32" PlatformFileId="21202" FileSize="21078" LocalFilePath="DefaultFont_12_16.xml" FontFamilyName="Verdana" FontSize="12" FontStyle="AddOutline" FontTracking="0"></ContentMetaData>
-      <ContentMetaData Name="Verdana12Font" Type="Image" LastTimeUpdated="2012-12-14 20:06:32" PlatformFileId="21203" FileSize="11551" LocalFilePath="DefaultFont_12_16.png" PixelSize="256, 108" UseFiltering="False"></ContentMetaData>
+      <ContentMetaData Name="Verdana12" Type="Font" LastTimeUpdated="2012-12-14 20:06:32" PlatformFileId="21202" FileSize="21078" LocalFilePath="Verdana12.xml" FontFamilyName="Verdana" FontSize="12" FontStyle="AddOutline" FontTracking="0"></ContentMetaData>
+      <ContentMetaData Name="Verdana12Font" Type="Image" LastTimeUpdated="2012-12-14 20:06:32" PlatformFileId="21203" FileSize="11551" LocalFilePath="Verdana12Font.png" PixelSize="256, 108" UseFiltering="False"></ContentMetaData>
+    </ContentMetaData>
+    <ContentMetaData Name="Tahoma" Type="Font" LastTimeUpdated="2012-12-14 20:06:32" FontFamilyName="Tahoma" FontSize="12" FontStyle="AddOutline" FontTracking="0" ExtraMetaData="Characters|!-ÿ">
+      <ContentMetaData Name="Tahoma30" Type="Font" LastTimeUpdated="2012-12-14 20:06:32" PlatformFileId="21202" FileSize="21078" LocalFilePath="Tahoma30.xml" FontFamilyName="Tahoma" FontSize="12" FontStyle="AddOutline" FontTracking="0"></ContentMetaData>
+      <ContentMetaData Name="Tahoma30Font" Type="Image" LastTimeUpdated="2012-12-14 20:06:32" PlatformFileId="21203" FileSize="11551" LocalFilePath="Tahoma30Font.png" PixelSize="256, 108" UseFiltering="False"></ContentMetaData>
     </ContentMetaData>
     <ContentMetaData Name="DeltaEngineLogo" Type="Image" LastTimeUpdated="2012-10-18 14:04:49" PlatformFileId="20383" FileSize="5230" LocalFilePath="DeltaEngineLogo.png" PixelSize="128, 43"></ContentMetaData>
   </ContentMetaData>

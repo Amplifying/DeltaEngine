@@ -206,13 +206,9 @@ namespace DeltaEngine.Platforms.Windows
 		{
 			if (closeAfterOneFrameIfInIntegrationTest)
 				form.Close();
-
 			if (IsClosing)
-			{
 				if (WindowClosing != null)
 					WindowClosing();
-			}
-				
 		}
 
 		public event Action WindowClosing;

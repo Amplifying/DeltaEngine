@@ -1,5 +1,6 @@
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
+using DeltaEngine.Platforms;
 using DeltaEngine.Rendering.Sprites;
 
 namespace Blocks
@@ -9,7 +10,7 @@ namespace Blocks
 	/// </summary>
 	public class Brick : Sprite
 	{
-		public Brick(Image image, Point offset, Constants.DisplayMode displayMode)
+		public Brick(Image image, Point offset, Orientation displayMode)
 			: base(image, Rectangle.Zero)
 		{
 			Offset = offset;
@@ -18,16 +19,26 @@ namespace Blocks
 		}
 
 		public Point Offset;
-		private readonly Constants.DisplayMode displayMode;
+		private readonly Orientation displayMode;
 
 		public void UpdateDrawArea()
 		{
-			if (displayMode == Constants.DisplayMode.LandScape)
-				DrawArea = new Rectangle(OffsetLandscape + (Position - Point.UnitY) * ZoomLandscape,
-					SizeLandscape);
+			Point newPoint;
+			if (displayMode == Orientation.Landscape)
+			{
+				newPoint = OffsetLandscape + (Position - Point.UnitY) * ZoomLandscape;
+				DrawArea = NewDrawArea(newPoint, SizeLandscape);
+			}
 			else
-				DrawArea = new Rectangle(OffsetPortrait + (Position - Point.UnitY) * ZoomPortrait,
-					SizePortrait); 
+			{
+				newPoint = OffsetPortrait + (Position - Point.UnitY) * ZoomPortrait;
+				DrawArea = new Rectangle(newPoint, SizePortrait);
+			}
+		}
+
+		private static Rectangle NewDrawArea(Point point, Size size)
+		{
+			return new Rectangle(point, size);
 		}
 
 		public Point Position

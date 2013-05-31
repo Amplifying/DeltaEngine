@@ -79,6 +79,42 @@ namespace DeltaEngine.Graphics.Tests
 			});
 		}
 
+		[VisualTest]
+		public void BlendModes(Type resolver)
+		{
+			Image image = null;
+			Start(resolver, (ContentLoader content, Window window) =>
+			{
+				image = content.Load<Image>("DeltaEngineLogoAlpha");
+				window.Title = "Blend modes: Opaque, Normal, Additive";
+			}, (Drawing drawing) =>
+			{
+				drawing.SetBlending(BlendMode.Opaque);
+				DrawAlphaImageTwice(image, drawing, new Point(25, 80));
+				drawing.SetBlending(BlendMode.Normal);
+				DrawAlphaImageTwice(image, drawing, new Point(225, 80));
+				drawing.SetBlending(BlendMode.Additive);
+				DrawAlphaImageTwice(image, drawing, new Point(425, 80));
+			});
+		}
+
+		private static void DrawAlphaImageTwice(Image image, Drawing drawing, Point startPoint)
+		{
+			int x = (int)startPoint.X;
+			int y = (int)startPoint.Y;
+			const int Size = 120;
+			for (int i = 1; i <= 2; i++)
+			{
+				drawing.DrawQuad(image, new[] {
+					new VertexPositionColorTextured(new Point(x, y), Color.White, Point.Zero),
+					new VertexPositionColorTextured(new Point(x + Size, y), Color.White, Point.UnitX),
+					new VertexPositionColorTextured(new Point(x + Size, y + Size), Color.White, Point.One),
+					new VertexPositionColorTextured(new Point(x, y + Size), Color.White, Point.UnitY)});
+				x += Size / 2;
+				y += Size / 2;
+			}
+		}
+
 		[IntegrationTest]
 		public void LoadExistingImage(Type resolver)
 		{

@@ -1,4 +1,5 @@
 using DeltaEngine.Datatypes;
+using DeltaEngine.Platforms.All;
 using NUnit.Framework;
 
 namespace DeltaEngine.Physics2D.Tests
@@ -101,6 +102,22 @@ namespace DeltaEngine.Physics2D.Tests
 			var body = physics.CreateRectangle(new Size(45.0f, 45.0f));
 			Assert.IsNotNull(body);
 			body.ApplyTorque(10.0f);
+		}
+
+		[Test]
+		public void DisposeBody()
+		{
+			var physics = new MockPhysics();
+			var body = physics.CreateRectangle(new Size(1));
+			body.Dispose();
+		}
+
+		[Test]
+		public void GetVerticesOfMockBody()
+		{
+			var physics = new MockPhysics();
+			var body = physics.CreateRectangle(new Size(1));
+			Assert.AreEqual(new Point[0], body.LineVertices);
 		}
 	}
 }

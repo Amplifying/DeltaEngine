@@ -49,6 +49,9 @@ namespace DeltaEngine.Entities
 			rememberToAdd.Add(entity);
 		}
 
+		private readonly List<Entity> rememberToRemove = new List<Entity>();
+		private readonly List<Entity> rememberToAdd = new List<Entity>();
+
 		public class EntityAlreadyAdded : Exception {}
 
 		private bool WasEntityAlreadyAddedBefore(Entity entity)
@@ -61,7 +64,12 @@ namespace DeltaEngine.Entities
 					handler => FindHandlerWithEntities(handler).entities.Contains(entity));
 		}
 
-		private readonly List<Entity> rememberToAdd = new List<Entity>();
+		private readonly List<Entity> entitiesWithoutHandlers = new List<Entity>();
+
+		private HandlerWithEntities FindHandlerWithEntities(EntityHandler searchHandler)
+		{
+			return handlersWithAffectedEntities.FirstOrDefault(h => h.handler == searchHandler);
+		}
 
 		internal void Remove(Entity entity)
 		{
@@ -82,13 +90,6 @@ namespace DeltaEngine.Entities
 					rememberToRemove.Add(entity);
 		}
 
-		private readonly List<Entity> rememberToRemove = new List<Entity>();
-
-		private HandlerWithEntities FindHandlerWithEntities(EntityHandler searchHandler)
-		{
-			return handlersWithAffectedEntities.FirstOrDefault(h => h.handler == searchHandler);
-		}
-
 		private readonly List<HandlerWithEntities> handlersWithAffectedEntities =
 			new List<HandlerWithEntities>();
 
@@ -102,64 +103,6 @@ namespace DeltaEngine.Entities
 			public readonly EntityHandler handler;
 			public readonly List<Entity> entities = new List<Entity>();
 		}
-
-		private void RemoveAndAddUnresolvedEntityHandlers(Entity entity)
-		{
-			foreach (Type handlerType in entity.handlerTypesToRemove)
-				entity.activeHandlers.Remove(GetHandler(handlerType));
-
-			foreach (Type handlerType in entity.handlerTypesToAdd)
-				entity.AddHandler(GetHandler(handlerType));
-
-			entity.handlerTypesToAdd.Clear();
-			entity.handlerTypesToRemove.Clear();
-			entity.isActiveChanged = false;
-		}
-
-		private EntityHandler GetHandler(Type handlerType)
-		{
-			foreach (var handler in handlersWithAffectedEntities)
-				if (handler.handler.GetType() == handlerType)
-					return handler.handler;
-
-			var newHandler = handlerResolver.Resolve(handlerType);
-			if (newHandler == null)
-				throw new UnableToResolveEntityHandler(handlerType);
-
-			AddHandlerSortedByPriority(new HandlerWithEntities(newHandler));
-			return newHandler;
-		}
-
-		public class UnableToResolveEntityHandler : Exception
-		{
-			public UnableToResolveEntityHandler(Type handlerType)
-				: base(handlerType.ToString()) {}
-		}
-
-		private void AddHandlerSortedByPriority(HandlerWithEntities entities)
-		{
-			for (int index = 0; index < handlersWithAffectedEntities.Count; index++)
-			{
-				if (handlersWithAffectedEntities[index].handler.Priority <= entities.handler.Priority)
-					continue;
-				handlersWithAffectedEntities.Insert(index, entities);
-				return;
-			}
-			handlersWithAffectedEntities.Add(entities);
-		}
-
-		public T GetHandler<T>() where T : EntityHandler
-		{
-			return GetHandler(typeof(T)) as T;
-		}
-
-		private void AddToAllAttachedHandlers(Entity entity)
-		{
-			foreach (var handler in entity.activeHandlers)
-				FindHandlerWithEntities(handler).entities.Add(entity);
-		}
-
-		private readonly List<Entity> entitiesWithoutHandlers = new List<Entity>();
 
 		public List<Entity> GetEntitiesWithTag(string searchTag)
 		{
@@ -215,6 +158,7 @@ namespace DeltaEngine.Entities
 			{
 				foreach (var entity in rememberToAdd)
 					AddRememberedEntity(entity);
+
 				rememberToAdd.Clear();
 			}
 		}
@@ -228,12 +172,69 @@ namespace DeltaEngine.Entities
 				entitiesWithoutHandlers.Add(entity);
 		}
 
+		private void RemoveAndAddUnresolvedEntityHandlers(Entity entity)
+		{
+			foreach (Type handlerType in entity.handlerTypesToRemove)
+				entity.activeHandlers.Remove(GetHandler(handlerType));
+
+			foreach (Type handlerType in entity.handlerTypesToAdd)
+				entity.AddHandler(GetHandler(handlerType));
+
+			entity.handlerTypesToAdd.Clear();
+			entity.handlerTypesToRemove.Clear();
+			entity.isActiveChanged = false;
+		}
+
+		public T GetHandler<T>() where T : EntityHandler
+		{
+			return GetHandler(typeof(T)) as T;
+		}
+
+		private EntityHandler GetHandler(Type handlerType)
+		{
+			foreach (var handler in handlersWithAffectedEntities)
+				if (handler.handler.GetType() == handlerType)
+					return handler.handler;
+
+			var newHandler = handlerResolver.Resolve(handlerType);
+			if (newHandler == null)
+				throw new UnableToResolveEntityHandler(handlerType);
+
+			AddHandlerSortedByPriority(new HandlerWithEntities(newHandler));
+			return newHandler;
+		}
+
+		public class UnableToResolveEntityHandler : Exception
+		{
+			public UnableToResolveEntityHandler(Type handlerType)
+				: base(handlerType.ToString()) { }
+		}
+
+		private void AddHandlerSortedByPriority(HandlerWithEntities entities)
+		{
+			for (int index = 0; index < handlersWithAffectedEntities.Count; index++)
+			{
+				if (handlersWithAffectedEntities[index].handler.Priority <= entities.handler.Priority)
+					continue;
+				handlersWithAffectedEntities.Insert(index, entities);
+				return;
+			}
+			handlersWithAffectedEntities.Add(entities);
+		}
+
+		private void AddToAllAttachedHandlers(Entity entity)
+		{
+			foreach (var handler in entity.activeHandlers)
+				FindHandlerWithEntities(handler).entities.Add(entity);
+		}
+
 		private void RemoveRememberedEntities()
 		{
 			lock (rememberToRemove)
 			{
 				foreach (var entity in rememberToRemove)
 					RemoveRememberedEntity(entity);
+
 				rememberToRemove.Clear();
 			}
 		}

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
@@ -18,16 +19,22 @@ namespace DeltaEngine.Editor.ContentManager
 			this.content = content;
 			content.GetProjects();
 			RaisePropertyChanged("Projects");
-			Messenger.Default.Register<string>(this, "DeletingImage", DeleteImageFromList);
-			Messenger.Default.Register<IDataObject>(this, "AddImage", DropContent);
-			Messenger.Default.Register<Size>(this, "ChangeImageSize", ChangeImageSize);
-			Messenger.Default.Register<string>(this, "AddProject", AddNewProject);
+			SetMessenger();
 			Images = new ObservableCollection<string>();
 			ImageWidth = 357;
 			ImageHeight = 361;
 		}
 
-		private readonly ContentService content;
+		private void SetMessenger()
+		{
+			Messenger.Default.Register<string>(this, "DeletingImage", DeleteImageFromList);
+			Messenger.Default.Register<IDataObject>(this, "AddImage", DropContent);
+			Messenger.Default.Register<Size>(this, "ChangeImageSize", ChangeImageSize);
+			Messenger.Default.Register<string>(this, "AddProject", AddNewProject);
+			Messenger.Default.Register<List<string>>(this, "SaveImagesAsAnimation", SaveImagesAsAnimation);
+		}
+
+		private ContentService content;
 		public ObservableCollection<string> Images { get; set; }
 
 		public void DropContent(IDataObject dropObject)
@@ -139,5 +146,14 @@ namespace DeltaEngine.Editor.ContentManager
 
 		public double ImageWidth { get; set; }
 		public double ImageHeight { get; set; }
+
+		public void SaveImagesAsAnimation(List<string> itemlist)
+		{
+			if (string.IsNullOrEmpty(AnimationName) || string.IsNullOrEmpty(selectedProject))
+			itemlist.Sort();
+			content.SaveImagesAsAnimation(itemlist, AnimationName, selectedProject);
+		}
+
+		public string AnimationName { get; set; }
 	}
 }

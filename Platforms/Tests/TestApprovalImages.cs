@@ -5,7 +5,6 @@ using System.Drawing.Imaging;
 using System.IO;
 using DeltaEngine.Core;
 using DeltaEngine.Graphics;
-using DeltaEngine.Logging;
 using NUnit.Framework;
 
 namespace DeltaEngine.Platforms.Tests

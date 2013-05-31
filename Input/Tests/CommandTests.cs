@@ -167,8 +167,8 @@ namespace DeltaEngine.Input.Tests
 			Start(resolver, (InputCommands input) =>
 			{
 				ellipse = new Ellipse(new Rectangle(Point.Zero, new Size(0.1f, 0.1f)), Color.Red);
-				input.Add(Key.A, State.Pressing, () => currentPosition = new Point(0.6f, 0.5f));
-				input.Add(Key.A, State.Released, () => currentPosition = new Point(0.1f, 0.1f));
+				input.Add(Key.A, State.Pressing, key => currentPosition = new Point(0.6f, 0.5f));
+				input.Add(Key.A, State.Released, key => currentPosition = new Point(0.1f, 0.1f));
 			}, () => ellipse.Center = currentPosition);
 		}
 	}

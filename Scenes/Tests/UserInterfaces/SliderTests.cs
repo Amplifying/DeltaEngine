@@ -8,7 +8,6 @@ using DeltaEngine.Graphics;
 using DeltaEngine.Input;
 using DeltaEngine.Platforms;
 using DeltaEngine.Platforms.All;
-using DeltaEngine.Rendering.Sprites;
 using DeltaEngine.Scenes.UserInterfaces;
 using NUnit.Framework;
 
@@ -30,14 +29,18 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces
 
 		private static Slider CreateSlider(ContentLoader content)
 		{
-			var background = content.Load<Image>("DefaultButtonBackground");
-			var pointer = content.Load<Image>("DefaultSlider");
-			var slider = new Slider(background, pointer, ScreenCenter);
+			var theme = new Theme
+			{
+				Slider = new Theme.Appearance(content.Load<Image>("DefaultButtonBackground")),
+				SliderPointer = new Theme.Appearance(content.Load<Image>("DefaultSlider")),
+				SliderPointerMouseover = new Theme.Appearance(content.Load<Image>("DefaultSliderHover"))
+			};
+			var slider = new Slider(theme, Center);
 			EntitySystem.Current.Run();
 			return slider;
 		}
 
-		private static readonly Rectangle ScreenCenter = Rectangle.FromCenter(0.5f, 0.5f, 0.5f, 0.1f);
+		private static readonly Rectangle Center = Rectangle.FromCenter(0.5f, 0.5f, 0.5f, 0.1f);
 
 		[IntegrationTest]
 		public void UpdateValues(Type resolver)
@@ -63,7 +66,7 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces
 				var pointer = content.Load<Image>("DefaultSlider");
 				var width = pointer.PixelSize.AspectRatio * 0.1f;
 				var pointerSize = new Size(width, 0.1f);
-				Assert.AreEqual(pointerSize, slider.Get<Sprite>().DrawArea.Size);
+				Assert.AreEqual(pointerSize, slider.Get<Slider.Pointer>().DrawArea.Size);
 			});
 		}
 
@@ -75,7 +78,7 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces
 				var slider = CreateSlider(content);
 				var position = new Point(0.42f, 0.52f);
 				DragMouse(position);
-				Assert.AreEqual(new Point(0.42f, 0.5f), slider.Get<Sprite>().DrawArea.Center);
+				Assert.AreEqual(new Point(0.42f, 0.5f), slider.Get<Slider.Pointer>().DrawArea.Center);
 			});
 		}
 
@@ -112,7 +115,7 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces
 		}
 
 		[VisualTest]
-		public void RenderMovingGrowingSlider(Type resolver)
+		public void RenderGrowingSlider(Type resolver)
 		{
 			Slider slider = null;
 			Start(resolver, (Scene s, ContentLoader content) => { slider = CreateSlider(content); },

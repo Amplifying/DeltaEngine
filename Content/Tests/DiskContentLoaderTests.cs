@@ -74,5 +74,13 @@ namespace DeltaEngine.Content.Tests
 		}
 
 		//ncrunch: no coverage end
+
+		[Test]
+		public void LoadingCachedContentOfTheWrongTypeThrowsException()
+		{
+			Assert.DoesNotThrow(() => contentLoader.Load<TestImage>("DeltaEngineLogo"));
+			Assert.Throws<ContentLoader.CachedResourceExistsButIsOfTheWrongType>(
+				() => contentLoader.Load<TestSound>("DeltaEngineLogo"));
+		}
 	}
 }

@@ -55,12 +55,12 @@ namespace DeltaEngine.Platforms.All
 			{
 				window.BackgroundColor = Color.Blue;
 				line = new Line2D(Point.Zero, Point.One, Color.Green);
-				inputCommands.Add(Key.A, () =>
+				inputCommands.Add(Key.A, key =>
 				{
 					//ncrunch: no coverage
 					window.TotalPixelSize = new Size(800, 480); //ncrunch: no coverage
 				});
-				inputCommands.Add(Key.B, () =>
+				inputCommands.Add(Key.B, key =>
 				{
 					//ncrunch: no coverage
 					window.TotalPixelSize = new Size(480, 800); //ncrunch: no coverage

@@ -5,6 +5,7 @@ using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
+using DeltaEngine.Platforms;
 using DeltaEngine.Platforms.All;
 using DeltaEngine.Rendering.ScreenSpaces;
 using NUnit.Framework;
@@ -20,14 +21,14 @@ namespace Blocks.Tests
 		public void Initialize(ScreenSpace screen, ContentLoader contentLoader)
 		{
 			displayMode = screen.Viewport.Aspect >= 1.0f
-				? Constants.DisplayMode.LandScape : Constants.DisplayMode.Portrait;
+				? Orientation.Landscape : Orientation.Portrait;
 			content = new JewelBlocksContent(contentLoader);
 			var controller = new Controller(displayMode, content);
 			grid = controller.Get<Grid>();
 			fixedRandomScope = Randomizer.Use(new FixedRandom());
 		}
 
-		private Constants.DisplayMode displayMode;
+		private Orientation displayMode;
 		private IDisposable fixedRandomScope;
 		private JewelBlocksContent content;
 		private Grid grid;
@@ -54,9 +55,9 @@ namespace Blocks.Tests
 		private static readonly float[] IBlock = new[]
 		{ 0.0f, 0.0f, 0.9f, 0.9f, 0.9f, 0.9f, 0.9f, 0.9f };
 
-		private int AffixBlocks(Grid grid, IEnumerable<Point> points)
+		private int AffixBlocks(Grid gameGrid, IEnumerable<Point> points)
 		{
-			return points.Sum(point => grid.AffixBlock(new Block(displayMode, content, point)));
+			return points.Sum(point => gameGrid.AffixBlock(new Block(displayMode, content, point)));
 		}
 
 		[IntegrationTest]

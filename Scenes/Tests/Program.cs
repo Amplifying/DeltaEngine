@@ -1,4 +1,5 @@
 using DeltaEngine.Platforms.All;
+using DeltaEngine.Scenes.Tests.UserInterfaces;
 
 namespace DeltaEngine.Scenes.Tests
 {
@@ -6,8 +7,7 @@ namespace DeltaEngine.Scenes.Tests
 	{
 		public static void Main()
 		{
-			new SceneTests().DrawButtonWhichChangesColorAndSizeAndSpinsOnHover(
-				TestWithAllFrameworks.OpenGL);
+			new MenuTests().ShowMenuWithTwoButtons(TestWithAllFrameworks.OpenGL);
 		}
 	}
 }

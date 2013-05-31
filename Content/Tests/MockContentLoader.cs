@@ -14,6 +14,9 @@ namespace DeltaEngine.Content.Tests
 			contentFilenames.Add("DefaultFont_12_16", "DefaultFont_12_16.xml");
 			contentFilenames.Add("Verdana12", "Verdana12.xml");
 			contentFilenames.Add("Tahoma30", "Tahoma30.xml");
+			contentFilenames.Add("ImageAnimation01", "ImageAnimation01.png");
+			contentFilenames.Add("ImageAnimation02", "ImageAnimation02.png");
+			contentFilenames.Add("ImageAnimation03", "ImageAnimation03.png");
 		}
 
 		protected override Stream GetContentDataStream(string contentName)
@@ -25,9 +28,13 @@ namespace DeltaEngine.Content.Tests
 
 		public override List<Content> LoadRecursively<Content>(string parentName)
 		{
-			var firstImage = Load<Content>("DeltaEngineLogo");
 			var loadedElements = new List<Content>();
-			loadedElements.Add(firstImage);
+			if (parentName == "ImageAnimation")
+			{
+				loadedElements.Add(Load<Content>("ImageAnimation01"));
+				loadedElements.Add(Load<Content>("ImageAnimation02"));
+				loadedElements.Add(Load<Content>("ImageAnimation03"));
+			}
 			return loadedElements;
 		}
 	}

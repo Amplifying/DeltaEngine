@@ -128,10 +128,6 @@ namespace DeltaEngine.Content.Disk
 			WriteAttribute(writer, "Name", Path.GetFileNameWithoutExtension(filePath));
 			var contentType = ExtensionToType(Path.GetExtension(filePath));
 			WriteAttribute(writer, "Type", contentType.ToString());
-			if (contentType == ContentType.Image)
-			{
-				
-			}
 			var info = new FileInfo(filePath);
 			WriteAttribute(writer, "LastTimeUpdated", info.LastWriteTime.ToString("u"));
 			WriteAttribute(writer, "PlatformFileId", "-" + (++generatedContentCounter));
@@ -166,11 +162,6 @@ namespace DeltaEngine.Content.Disk
 		{
 			public UnsupportedContentFileFoundCannotParseType(string extension)
 				: base(extension) { }
-		}
-
-		internal void readPngHeader()
-		{
-			
 		}
 
 		private int generatedContentCounter;

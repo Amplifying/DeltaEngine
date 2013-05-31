@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.IO;
+using System.IO.Abstractions.TestingHelpers;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.ProjectCreator.Tests
@@ -10,28 +13,44 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 		[Test]
 		public void CreateWithEmptyGameTemplate()
 		{
-			var template = VsTemplate.GetEmptyGame();
-			Assert.AreEqual(TemplateZip, template.PathToZip);
-			Assert.AreEqual(AssemblyInfo, template.AssemblyInfo);
-			Assert.AreEqual(Csproj, template.Csproj);
-			Assert.AreEqual(Ico, template.Ico);
+			var template = VsTemplate.GetEmptyGame(CreateFileSystemMock());
+			Assert.AreEqual(templateZipMockPath, template.PathToZip);
+			Assert.AreEqual(assemblyInfo, template.AssemblyInfo);
+			Assert.AreEqual(csproj, template.Csproj);
+			Assert.AreEqual(ico, template.Ico);
 			Assert.AreEqual(2, template.SourceCodeFiles.Count);
-			Assert.AreEqual(Program, template.SourceCodeFiles[0]);
-			Assert.AreEqual(Game, template.SourceCodeFiles[1]);
+			Assert.AreEqual(program, template.SourceCodeFiles[0]);
+			Assert.AreEqual(game, template.SourceCodeFiles[1]);
 		}
 
-		private const string TemplateZip =
-			"C:\\Code\\DeltaEngine\\VisualStudioTemplates\\Delta Engine\\EmptyGame.zip";
-		private const string AssemblyInfo = "Properties/AssemblyInfo.cs";
-		private const string Csproj = "EmptyGame.csproj";
-		private const string Ico = "EmptyGameIcon.ico";
-		private const string Program = "Program.cs";
-		private const string Game = "Game.cs";
+		private MockFileSystem CreateFileSystemMock()
+		{
+			var fileSystem =
+				new MockFileSystem(new Dictionary<string, MockFileData>
+				{
+					{
+						templateZipMockPath,
+						new MockFileData(File.ReadAllText(Path.Combine("Content", "EmptyGame.zip")))
+					}
+				});
+			fileSystem.Directory.SetCurrentDirectory(templateZipMockPath);
+			return fileSystem;
+		}
+
+		private static readonly string BasePath =
+			Path.GetFullPath(Path.Combine("D" + Path.VolumeSeparatorChar + Path.DirectorySeparatorChar,
+				"Development", "DeltaEngine", "VisualStudioTemplates", "Delta Engine"));
+		private readonly string templateZipMockPath = Path.Combine(BasePath, "EmptyGame.zip");
+		private readonly string assemblyInfo = Path.Combine(BasePath, "Properties", "AssemblyInfo.cs");
+		private readonly string csproj = Path.Combine(BasePath, "EmptyGame.csproj");
+		private readonly string ico = Path.Combine(BasePath, "EmptyGameIcon.ico");
+		private readonly string program = Path.Combine(BasePath, "Program.cs");
+		private readonly string game = Path.Combine(BasePath, "Game.cs");
 
 		[Test]
 		public void CheckTotalNumberOfFilesFromEmptyGameTemplate()
 		{
-			var template = VsTemplate.GetEmptyGame();
+			var template = VsTemplate.GetEmptyGame(CreateFileSystemMock());
 			var list = template.GetAllFilePathsAsList();
 			Assert.AreEqual(5, list.Count);
 		}

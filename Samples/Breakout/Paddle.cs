@@ -21,9 +21,9 @@ namespace Breakout
 		private void RegisterInputCommands(InputCommands inputCommands)
 		{
 			inputCommands.Add(Key.CursorLeft, State.Pressed,
-				() => xPosition -= PaddleMovementSpeed * Time.Current.Delta);
+				key => xPosition -= PaddleMovementSpeed * Time.Current.Delta);
 			inputCommands.Add(Key.CursorRight, State.Pressed,
-				() => xPosition += PaddleMovementSpeed * Time.Current.Delta);
+				key => xPosition += PaddleMovementSpeed * Time.Current.Delta);
 			inputCommands.Add(MouseButton.Left, State.Pressed,
 				mouse => xPosition += mouse.Position.X - Position.X);
 			inputCommands.Add(State.Pressed, touch => xPosition += touch.GetPosition(0).X - Position.X);

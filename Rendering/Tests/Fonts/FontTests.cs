@@ -43,7 +43,7 @@ namespace DeltaEngine.Rendering.Tests.Fonts
 			});
 		}
 
-		[VisualTest] //, ApproveFirstFrameScreenshot]
+		[VisualTest, ApproveFirstFrameScreenshot]
 		public void DrawFontAndLines(Type resolver)
 		{
 			Start(resolver, (ContentLoader content) =>

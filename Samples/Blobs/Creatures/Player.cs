@@ -30,7 +30,7 @@ namespace Blobs.Creatures
 		private void StoreMousePosition(Mouse mouse)
 		{
 			if (aim != null)
-				AlterAim(Center, camera.InverseTransform(mouse.Position));
+				AlterAim(Center, mouse.Position);
 		}
 
 		private Line2D aim;
