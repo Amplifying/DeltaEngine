@@ -1,6 +1,7 @@
 using System;
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Physics2D;
 using DeltaEngine.Platforms.All;
 using DeltaEngine.Platforms.Tests;
 using DeltaEngine.Rendering.ScreenSpaces;
@@ -52,7 +53,7 @@ namespace Asteroids.Tests
 				InitPlayerShip(contentLoader);
 				bool firedRocket = false;
 				playerShip.ProjectileFired += projectile => { firedRocket = true; };
-				playerShip.IsFireing = true;
+				playerShip.IsFiring = true;
 				mockResolver.AdvanceTimeAndExecuteRunners(1 / 0.003f);
 				Assert.IsTrue(firedRocket);
 			});
@@ -95,7 +96,7 @@ namespace Asteroids.Tests
 			Start(resolver, (ContentLoader contentLoader, ScreenSpace screenspace) =>
 			{
 				playerShip = new PlayerShip(contentLoader);
-				playerShip.IsFireing = true;
+				playerShip.IsFiring = true;
 			});
 		}
 	}

@@ -84,6 +84,8 @@
     <Compile Include="UserInterfaces\RadioDialog.cs" />
     <Compile Include="UserInterfaces\Slider.cs" />
     <Compile Include="UserInterfaces\TextBox.cs" />
+    <Compile Include="UserInterfaces\Tile.cs" />
+    <Compile Include="UserInterfaces\Tilemap.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

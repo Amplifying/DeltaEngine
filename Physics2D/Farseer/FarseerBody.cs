@@ -91,25 +91,25 @@ namespace DeltaEngine.Physics2D.Farseer
 				Body.GetTransform(out xf);
 				var vertices = new List<Point>();
 				foreach (var fixture in Body.FixtureList)
-				{
-					var shape = fixture.Shape;
-
-					switch (shape.ShapeType)
-					{
-					case ShapeType.Polygon:
-						vertices.AddRange(GetPolygonShapeVertices(shape as PolygonShape, xf));
-						break;
-					case ShapeType.Edge:
-						vertices.AddRange(GetEdgeShapeVertices(shape as EdgeShape, xf));
-						break;
-					case ShapeType.Circle:
-						vertices.AddRange(GetCircleShapeVertices(shape as CircleShape, xf));
-						break;
-					}
-				}
-
+					vertices.AddRange(GetShapeVerticesFromFixture(fixture, xf));
 				return vertices.ToArray();
 			}
+		}
+
+		private IEnumerable<Point> GetShapeVerticesFromFixture(Fixture fixture, Transform xf)
+		{
+			var shape = fixture.Shape;
+			switch (shape.ShapeType)
+			{
+			case ShapeType.Polygon:
+				return GetPolygonShapeVertices(shape as PolygonShape, xf);
+			case ShapeType.Edge:
+				return GetEdgeShapeVertices(shape as EdgeShape, xf);
+			case ShapeType.Circle:
+				return GetCircleShapeVertices(shape as CircleShape, xf);
+			}
+			//This will never be reached, PhysicsBody internally will not allow it.
+			return new List<Point>(); //ncrunch: no coverage
 		}
 
 		private IEnumerable<Point> GetPolygonShapeVertices(PolygonShape polygon, Transform xf)
@@ -151,26 +151,59 @@ namespace DeltaEngine.Physics2D.Farseer
 
 		private IEnumerable<Point> GetCircleShapeVertices(CircleShape circle, Transform xf)
 		{
-			Vector2 center = MathUtils.Mul(ref xf, circle.Position);
-			var radius = circle.Radius;
-			const int CircleSegments = 32;
-			const double Increment = Math.PI * 2.0 / CircleSegments;
-			double theta = 0.0;
+			CircleData circleData = CreateCircleData(circle, xf);
+			return CreateCircleVertexArray(circleData);
+		}
 
+		private static CircleData CreateCircleData(CircleShape circle, Transform xf)
+		{
+			var circleData = new CircleData();
+			circleData.center = MathUtils.Mul(ref xf, circle.Position);
+			circleData.radius = circle.Radius;
+			circleData.circleSegments = 32;
+			circleData.increment = Math.PI * 2.0 / circleData.circleSegments;
+			circleData.theta = 0.0;
+			return circleData;
+		}
+
+		private struct CircleData
+		{
+			internal Vector2 center;
+			internal float radius;
+			internal int circleSegments;
+			internal double increment;
+			internal double theta;
+		}
+
+		private Point[] CreateCircleVertexArray(CircleData circleData)
+		{
 			var vertices = new List<Point>();
-			for (int i = 0; i < CircleSegments; i++)
+			for (int i = 0; i < circleData.circleSegments; i++)
 			{
-				Vector2 v1 = center + radius * new Vector2((float)Math.Cos(theta), (float)Math.Sin(theta));
-				Vector2 v2 = center +
-					radius *
-						new Vector2((float)Math.Cos(theta + Increment), (float)Math.Sin(theta + Increment));
+				Vector2 v1 = CreateCircleVertexVectorV1(circleData);
+				Vector2 v2 = CreateCircleVertexVectorV2(circleData);
 
 				vertices.Add(UnitConverter.Convert(UnitConverter.ToDisplayUnits(v1)));
 				vertices.Add(UnitConverter.Convert(UnitConverter.ToDisplayUnits(v2)));
 
-				theta += Increment;
+				circleData.theta += circleData.increment;
 			}
 			return vertices.ToArray();
+		}
+
+		private static Vector2 CreateCircleVertexVectorV1(CircleData circleData)
+		{
+			return circleData.center +
+				circleData.radius *
+					new Vector2((float)Math.Cos(circleData.theta), (float)Math.Sin(circleData.theta));
+		}
+
+		private static Vector2 CreateCircleVertexVectorV2(CircleData circleData)
+		{
+			return circleData.center +
+				circleData.radius *
+					new Vector2((float)Math.Cos(circleData.theta + circleData.increment),
+						(float)Math.Sin(circleData.theta + circleData.increment));
 		}
 
 		public void Dispose()

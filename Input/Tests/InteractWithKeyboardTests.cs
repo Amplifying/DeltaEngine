@@ -15,15 +15,15 @@ namespace DeltaEngine.Input.Tests
 				var entity = new EmptyEntity().Add<InteractWithKeyboard>();
 				var keypress = Key.None;
 				entity.Messaged += key => keypress = ((InteractWithKeyboard.KeyPress)key).Key;
-				PressKey(Key.A);
+				PressKey(Key.A, State.Releasing);
 				Assert.AreEqual(Key.A, keypress);
 			});
 		}
 
-		private void PressKey(Key key)
+		private void PressKey(Key key, State state)
 		{
 			mockResolver.AdvanceTimeAndExecuteRunners();
-			mockResolver.input.SetKeyboardState(key, State.Releasing);
+			mockResolver.input.SetKeyboardState(key, state);
 			mockResolver.AdvanceTimeAndExecuteRunners();
 		}
 
@@ -46,6 +46,19 @@ namespace DeltaEngine.Input.Tests
 			mockResolver.input.SetKeyboardState(Key.A, State.Releasing);
 			mockResolver.input.SetKeyboardState(Key.B, State.Releasing);
 			mockResolver.AdvanceTimeAndExecuteRunners();
+		}
+
+		[IntegrationTest]
+		public void HoldKey(Type resolver)
+		{
+			Start(resolver, () =>
+			{
+				var entity = new EmptyEntity().Add<InteractWithKeyboard>();
+				var keypress = Key.None;
+				entity.Messaged += key => keypress = ((InteractWithKeyboard.KeyHeld)key).Key;
+				PressKey(Key.A, State.Pressed);
+				Assert.AreEqual(Key.A, keypress);
+			});
 		}
 	}
 }

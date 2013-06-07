@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 
@@ -22,6 +24,7 @@ namespace DeltaEngine.Rendering
 			Add(color);
 			Add(rotation);
 			Add<SortAndRender>();
+			Add(Visibility.Show);
 		}
 
 		public Visibility Visibility
@@ -109,14 +112,15 @@ namespace DeltaEngine.Rendering
 		/// </summary>
 		public class SortAndRender : EntityHandler
 		{
-			public override void Handle(List<Entity> entities)
+			public SortAndRender()
 			{
-				var sortedEntities =
-					entities.OfType<Entity2D>().Where(entity => entity.Visibility == Visibility.Show).OrderBy(
-						entity => entity.RenderLayer);
-				foreach (var entity in sortedEntities)
-					entity.MessageAllListeners(new TimeToRender());
-				NumberOfActiveRenderableObjects = sortedEntities.Count();
+				Filter = entity => ((Entity2D)entity).Visibility == Visibility.Show;
+				Order = entity => ((Entity2D)entity).RenderLayer;
+			}
+
+			public override void Handle(Entity entity)
+			{
+				entity.MessageAllListeners(new TimeToRender());
 			}
 
 			public class TimeToRender {}

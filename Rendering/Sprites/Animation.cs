@@ -20,7 +20,8 @@ namespace DeltaEngine.Rendering.Sprites
 			Add<Update>();
 		}
 
-		public Animation(string animationName, ContentLoader contentLoader, Rectangle initialDrawArea, float animationLength) :
+		public Animation(string animationName, ContentLoader contentLoader, Rectangle initialDrawArea,
+			float animationLength) :
 			base(contentLoader.LoadRecursively<Image>(animationName)[0], initialDrawArea)
 		{
 			var images = contentLoader.LoadRecursively<Image>(animationName);
@@ -82,13 +83,7 @@ namespace DeltaEngine.Rendering.Sprites
 		/// </summary>
 		public class Update : EntityHandler
 		{
-			public override void Handle(List<Entity> entities)
-			{
-				foreach (Entity entity in entities.Where(e => e.Contains<Image, Data>()))
-					UpdateCurrentFrame(entity);
-			}
-
-			private static void UpdateCurrentFrame(Entity entity)
+			public override void Handle(Entity entity)
 			{
 				var animationData = entity.Get<Data>();
 				animationData.Elapsed += Time.Current.Delta;

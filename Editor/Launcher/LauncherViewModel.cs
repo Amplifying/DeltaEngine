@@ -105,7 +105,7 @@ namespace DeltaEngine.Editor.Launcher
 
 		private bool IsUserDeviceSelected()
 		{
-			return SelectedDevice != null;
+			return SelectedDevice != null && !(SelectedDevice is NullDevice);
 		}
 
 		public Device SelectedDevice
@@ -143,6 +143,15 @@ namespace DeltaEngine.Editor.Launcher
 
 		private string selectedPackageFilePath;
 
+		public void RefreshAvailableDevices()
+		{
+			AvailableDevices = GetAvailableDevicesByPackageExtension();
+			if (AvailableDevices.Length == 0)
+				AvailableDevices = new Device[] { new NullDevice(), };
+
+			SelectedDevice = AvailableDevices[0];
+		}
+
 		private Device[] GetAvailableDevicesByPackageExtension()
 		{
 			string packageExtension = GetFileExtensionOfSelectedPackage();
@@ -172,15 +181,6 @@ namespace DeltaEngine.Editor.Launcher
 		private static AndroidDevice[] GetAvailableAndroidDevices()
 		{
 			return new AndroidDeviceFinder().GetAvailableDevices();
-		}
-
-		public void RefreshAvailableDevices()
-		{
-			AvailableDevices = GetAvailableDevicesByPackageExtension();
-			if (AvailableDevices.Length > 0)
-				SelectedDevice = AvailableDevices[0];
-			else
-				SelectedDevice = null;
 		}
 	}
 }

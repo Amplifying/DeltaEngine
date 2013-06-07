@@ -6,9 +6,9 @@ namespace DeltaEngine.Graphics.Tests
 	{
 		public static void Main()
 		{
-			new DrawingTests().ShowRedLine(TestWithAllFrameworks.OpenGL);
+			//new DrawingTests().ShowRedLine(TestWithAllFrameworks.OpenGL);
 			//new DrawingTests().DrawVertices(TestStarterWithAllFrameworks.Xna);
-			//new ImageTests().DrawImage(TestWithAllFrameworks.DirectX9);
+			new ImageTests().DrawImage(TestWithAllFrameworks.DirectX9);
 		}
 	}
 }

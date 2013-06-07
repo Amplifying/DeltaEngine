@@ -1,5 +1,4 @@
 using System.Threading;
-using DeltaEngine.Networking;
 using DeltaEngine.Networking.Sockets;
 
 namespace DeltaEngine.Editor.Builder.Tests
@@ -14,8 +13,7 @@ namespace DeltaEngine.Editor.Builder.Tests
 			WaitForServerResponse();
 		}
 
-		//private const string ServerAddress = "WIN7-VM";
-		private const string ServerAddress = "JudgeWork-PC";
+		private const string ServerAddress = "WIN7-VM";
 		private new const int ServerListeningPort = 800;
 
 		public bool IsLoggedIn { get; set; }

@@ -4,9 +4,9 @@ using DeltaEngine.Entities;
 
 namespace DeltaEngine.Rendering.Triggers
 {
-	internal class CollisionTrigger : Trigger2D
+	internal class CollisionTrigger : EntityHandler
 	{
-		public override void Update(Entity entity)
+		public override void Handle(Entity entity)
 		{
 			var data = entity.Get<CollisionTriggerData>();
 			var foundEntities = GetEntitiesFromSearchTags(data);
@@ -31,6 +31,11 @@ namespace DeltaEngine.Rendering.Triggers
 		{
 			return entity.Get<Rectangle>().IsColliding(entity.Get<float>(), otherEntity.Get<Rectangle>(),
 				otherEntity.Get<float>());
+		}
+
+		public override EntityHandlerPriority Priority
+		{
+			get { return EntityHandlerPriority.High; }
 		}
 	}
 }

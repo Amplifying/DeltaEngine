@@ -54,8 +54,8 @@ namespace DeltaEngine.Entities.Tests
 			var entityWithArray = new EmptyEntity().Add(new Point[2]);
 			Assert.AreEqual("EmptyEntity: Point[]", entityWithArray.ToString());
 			var entityWithRunner =
-				new EmptyEntity().Add<EntitySystemTests.CountEntities>().Add<ComponentTests.Rotate>();
-			Assert.AreEqual("EmptyEntity [CountEntities, Rotate]", entityWithRunner.ToString());
+				new EmptyEntity().Add<EntitySystemTests.IncrementCounter>().Add<ComponentTests.Rotate>();
+			Assert.AreEqual("EmptyEntity [IncrementCounter, Rotate]", entityWithRunner.ToString());
 		}
 
 		[Test]
@@ -88,7 +88,7 @@ namespace DeltaEngine.Entities.Tests
 		[Test]
 		public void SaveAndLoadEntityWithOneHandlerFromMemoryStream()
 		{
-			var entity = new EmptyEntity().Add<EntitySystemTests.CountEntities>();
+			var entity = new EmptyEntity().Add<EntitySystemTests.IncrementCounter>();
 			entity.Tag = "ABC";
 			var data = entity.SaveToMemoryStream();
 			byte[] savedBytes = data.ToArray();
@@ -97,7 +97,7 @@ namespace DeltaEngine.Entities.Tests
 			Assert.AreEqual(entity.Tag, loadedEntity.Tag);
 			Assert.AreEqual(0, loadedEntity.NumberOfComponents);
 			Assert.AreEqual(1, entity.handlerTypesToAdd.Count);
-			Assert.AreEqual(typeof(EntitySystemTests.CountEntities), entity.handlerTypesToAdd[0]);
+			Assert.AreEqual(typeof(EntitySystemTests.IncrementCounter), entity.handlerTypesToAdd[0]);
 			Assert.IsTrue(loadedEntity.IsActive);
 		}
 
@@ -153,7 +153,7 @@ namespace DeltaEngine.Entities.Tests
 		public void AddingInstantiatedHandlerThrowsException()
 		{
 			Assert.Throws<Entity.InstantiatedEntityHandlerAddedToEntity>(
-				() => new EmptyEntity().Add(new EntitySystemTests.CountEntities()));
+				() => new EmptyEntity().Add(new EntitySystemTests.IncrementCounter()));
 		}
 
 		[Test]

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
@@ -41,19 +39,21 @@ namespace Asteroids
 
 			private readonly ScreenSpace screen;
 
-			public override void Handle(List<Entity> entities)
+			public override void Handle(Entity entity)
 			{
-				foreach (Projectile projectile in entities.OfType<Projectile>())
-				{
-					projectile.DrawArea =
-						new Rectangle(
-							projectile.DrawArea.TopLeft +
-								projectile.Get<SimplePhysics.Data>().Velocity * Time.Current.Delta,
-							projectile.DrawArea.Size);
+				var projectile = entity as Projectile;
+				projectile.DrawArea = CalculateFutureDrawArea(projectile);
+				if (ObjectHasCrossedScreenBorder(projectile.DrawArea))
+					projectile.IsActive = false;
+			}
 
-					if (ObjectHasCrossedScreenBorder(projectile.DrawArea))
-						projectile.IsActive = false;
-				}
+			private static Rectangle CalculateFutureDrawArea(Projectile projectile)
+			{
+				return
+					new Rectangle(
+						projectile.DrawArea.TopLeft +
+							projectile.Get<SimplePhysics.Data>().Velocity * Time.Current.Delta,
+						projectile.DrawArea.Size);
 			}
 
 			private bool ObjectHasCrossedScreenBorder(Rectangle objectArea)

@@ -118,6 +118,7 @@ namespace DeltaEngine.Platforms
 			game.Window.BeginScreenDeviceChange(IsFullscreen);
 			if (FullscreenChanged != null)
 				FullscreenChanged(displaySize, IsFullscreen);
+
 			game.Window.EndScreenDeviceChange(game.Window.ScreenDeviceName);
 		}
 

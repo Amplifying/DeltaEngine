@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
+using DeltaEngine.Rendering;
 
 namespace Asteroids
 {
@@ -63,14 +63,12 @@ namespace Asteroids
 				timeLastNewAsteroid = 0;
 			}
 
-			public override void Handle(List<Entity> entities)
+			public override void Handle(Entity entity)
 			{
-				foreach (GameLogic gameEntity in entities.OfType<GameLogic>())
-				{
-					DoRemoveAndAddObjects(gameEntity);
-					CheckAsteroidCollisions(gameEntity);
-					CreateNewAsteroidIfNecessary(gameEntity);
-				}
+				var gameEntity = entity as GameLogic;
+				DoRemoveAndAddObjects(gameEntity);
+				CheckAsteroidCollisions(gameEntity);
+				CreateNewAsteroidIfNecessary(gameEntity);
 			}
 
 			private void DoRemoveAndAddObjects(GameLogic gameEntity)
@@ -93,20 +91,34 @@ namespace Asteroids
 				foreach (var asteroid in gameEntity.ExistantAsteroids)
 				{
 					foreach (var projectile in gameEntity.ExistantProjectiles)
-						if (projectile.DrawArea.Center.DistanceTo(asteroid.DrawArea.Center) <
-							0.1f / asteroid.sizeModifier)
+						if (ObjectsInHitRadius(projectile, asteroid, 0.1f / asteroid.sizeModifier))
 						{
-							projectilesToRemove.Add(projectile);
-							projectile.IsActive = false;
-							asteroid.Fracture();
-							asteroidsToRemove.Add(asteroid);
+							PrepareProjectileDisposal(projectile);
+							PrepareAsteroidDisposal(asteroid);
 						}
 
-					if (gameEntity.Player.DrawArea.Center.DistanceTo(asteroid.DrawArea.Center) <
-						0.06f / asteroid.sizeModifier)
+					if (ObjectsInHitRadius(gameEntity.Player, asteroid, 0.06f / asteroid.sizeModifier))
 						if (gameEntity.GameOver != null)
 							gameEntity.GameOver();
 				}
+			}
+
+			private static bool ObjectsInHitRadius(Entity2D entityAlpha, Entity2D entitytBeta,
+				float radius)
+			{
+				return entityAlpha.DrawArea.Center.DistanceTo(entitytBeta.DrawArea.Center) < radius;
+			}
+
+			private void PrepareProjectileDisposal(Projectile projectileToDestroy)
+			{
+				projectilesToRemove.Add(projectileToDestroy);
+				projectileToDestroy.IsActive = false;
+			}
+
+			private void PrepareAsteroidDisposal(Asteroid asteroidToDestroy)
+			{
+				asteroidToDestroy.Fracture();
+				asteroidsToRemove.Add(asteroidToDestroy);
 			}
 
 			private void CreateNewAsteroidIfNecessary(GameLogic gameEntity)

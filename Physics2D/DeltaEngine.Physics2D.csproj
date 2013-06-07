@@ -67,6 +67,7 @@
     <Compile Include="Physics2D.cs" />
     <Compile Include="PhysicsBody.cs" />
     <Compile Include="PhysicsJoint.cs" />
+    <Compile Include="Velocity2D.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

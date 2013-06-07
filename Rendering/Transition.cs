@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
@@ -11,25 +9,20 @@ namespace DeltaEngine.Rendering
 	/// </summary>
 	public class Transition : EntityHandler
 	{
-		public override void Handle(List<Entity> entities)
+		public override void Handle(Entity entity)
 		{
-			foreach (Entity2D entity in entities.OfType<Entity2D>())
-				TransitionEntity(entity);
-		}
-
-		private void TransitionEntity(Entity2D entity)
-		{
-			var duration = entity.GetOrCreate<Duration>();
+			var entity2D = entity as Entity2D;
+			var duration = entity2D.GetOrCreate<Duration>();
 			if (duration.Elapsed >= duration.Value)
 				return;
 
 			var percentage = duration.Elapsed / duration.Value;
-			UpdateEntityColor(entity, percentage);
-			UpdateEntityOutlineColor(entity, percentage);
-			UpdateEntityPosition(entity, percentage);
-			UpdateEntitySize(entity, percentage);
-			UpdateEntityRotation(entity, percentage);
-			CheckForEndOfTransition(entity, duration);
+			UpdateEntityColor(entity2D, percentage);
+			UpdateEntityOutlineColor(entity2D, percentage);
+			UpdateEntityPosition(entity2D, percentage);
+			UpdateEntitySize(entity2D, percentage);
+			UpdateEntityRotation(entity2D, percentage);
+			CheckForEndOfTransition(entity2D, duration);
 		}
 
 		private static void UpdateEntityColor(Entity2D entity, float percentage)

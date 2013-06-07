@@ -20,15 +20,9 @@ namespace DeltaEngine.Scenes.UserInterfaces
 			Add<UpdateAppearance, UpdateText>();
 		}
 
-		public class UpdateAppearance : EntityHandler
+		private class UpdateAppearance : EntityHandler
 		{
-			public override void Handle(List<Entity> entities)
-			{
-				foreach (Entity entity in entities)
-					UpdateEntityAppearance(entity);
-			}
-
-			private static void UpdateEntityAppearance(Entity entity)
+			public override void Handle(Entity entity)
 			{
 				var theme = entity.Get<Theme>();
 				var hasFocus = entity.Get<Interact.State>().HasFocus;

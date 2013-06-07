@@ -92,15 +92,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="AdbPathProvider.cs" />
     <Compile Include="AndroidDebugBridgeRunner.cs" />
     <Compile Include="AndroidDevice.cs" />
     <Compile Include="AndroidDeviceFinder.cs" />
+    <Compile Include="NullDevice.cs" />
     <Compile Include="Device.cs" />
     <Compile Include="DeviceTarget.cs" />
     <Compile Include="LauncherViewModel.cs" />
     <Compile Include="WP7DeviceFinder.cs" />
     <Compile Include="Windows8StorePackageCreator.cs" />
-    <Compile Include="Windows8StorePackageDeployer.cs" />
     <Compile Include="WP7Device.cs" />
     <Compile Include="LauncherView.xaml.cs">
       <DependentUpon>LauncherView.xaml</DependentUpon>

@@ -116,7 +116,6 @@ namespace DeltaEngine.Multimedia.OpenTK
 			}
 		}
 
-		[Obsolete("TODO: This code is kind of stupid, why not just call File.Open")]
 		protected byte[] ReadStream(Stream fileData)
 		{
 			const int InitialBufferLength = 32768;

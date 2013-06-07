@@ -27,17 +27,52 @@ namespace DeltaEngine.Input
 			var interactiveControls =
 				new List<Entity2D>(entities.OfType<Entity2D>().Where(e => e.Contains<State>()));
 			foreach (Entity2D control in interactiveControls)
-				ProcessMouseMovement(mouse, control);
+				ProcessMouseMovement(control, mouse);
 		}
 
-		private static void ProcessMouseMovement(Mouse mouse, Entity2D control)
+		private static void ProcessMouseMovement(Entity2D control, Mouse mouse)
 		{
 			var state = control.Get<State>();
 			state.RelativePointerPosition = control.DrawArea.GetRelativePoint(mouse.Position);
 			if (state.IsHovering)
 				StopHoveringOverControl(control);
 
-			bool isInside = control.RotatedDrawAreaContains(mouse.Position);
+			ProcessDragging(control, mouse.Position, state);
+			ProcessEntryAndExit(control, mouse.Position, state);
+		}
+
+		private static void ProcessDragging(Entity control, Point position, State state)
+		{
+			CheckForStartingDragging(control, position, state);
+			if (!state.IsDragging || position == state.DragPosition)
+				return;
+
+			UpdateDragging(control, position, state);
+		}
+
+		private static void CheckForStartingDragging(Entity control, Point position, State state)
+		{
+			if (state.IsDragging || !state.IsPressed || position == state.DragPosition)
+				return;
+
+			control.MessageAllListeners(new ControlDragStarted());
+			state.IsDragging = true;
+		}
+
+		public class ControlDragStarted { }
+
+		private static void UpdateDragging(Entity control, Point position, State state)
+		{
+			control.MessageAllListeners(new ControlDragged());
+			state.DragDelta = position - state.DragPosition;
+			state.DragPosition = position;
+		}
+
+		public class ControlDragged {}
+
+		private static void ProcessEntryAndExit(Entity2D control, Point position, State state)
+		{
+			bool isInside = control.RotatedDrawAreaContains(position);
 			if (!state.IsInside && isInside)
 				EnterControl(control);
 			else if (state.IsInside && !isInside)
@@ -70,6 +105,9 @@ namespace DeltaEngine.Input
 			public Point RelativePointerPosition { get; set; }
 			public bool CanHaveFocus { get; set; }
 			public bool HasFocus { get; set; }
+			public bool IsDragging { get; set; }
+			public Point DragPosition { get; set; }
+			public Point DragDelta { get; set; }
 		}
 
 		public class ControlHoveringStopped {}
@@ -103,13 +141,14 @@ namespace DeltaEngine.Input
 				new List<Entity2D>(entities.OfType<Entity2D>().Where(e => e.Contains<State>()));
 			foreach (Entity2D control in
 				interactiveControls.Where(control => control.Get<State>().IsInside))
-				PressControl(control, position);
+				PressControl(control, position, control.Get<State>());
 		}
 
-		private static void PressControl(Entity2D control, Point position)
+		private static void PressControl(Entity2D control, Point position, State state)
 		{
-			control.Get<State>().IsPressed = true;
-			control.Get<State>().RelativePointerPosition = control.DrawArea.GetRelativePoint(position);
+			state.IsPressed = true;
+			state.DragPosition = position;
+			state.RelativePointerPosition = control.DrawArea.GetRelativePoint(position);
 			control.MessageAllListeners(new ControlPressed());
 		}
 
@@ -125,23 +164,31 @@ namespace DeltaEngine.Input
 
 			foreach (Entity2D control in
 				interactiveControls.Where(control => control.Get<State>().IsPressed))
-				ClickOrReleaseControl(control, position);
+				ClickOrReleaseControl(control, position, control.Get<State>());
 		}
 
-		private void ClickOrReleaseControl(Entity2D control, Point position)
+		private static void ClickOrReleaseControl(Entity2D control, Point position, State state)
 		{
-			state = control.Get<State>();
 			state.IsPressed = false;
+			if (state.IsDragging)
+				StopDragging(control, state);
+
 			state.RelativePointerPosition = control.DrawArea.GetRelativePoint(position);
 			if (control.DrawArea.Contains(position))
-				SetFocusAndClickControl(control);
+				SetFocusAndClickControl(control, state);
 			else
 				control.MessageAllListeners(new ControlReleased());
 		}
 
-		private State state;
+		private static void StopDragging(Entity control, State state)
+		{
+			control.MessageAllListeners(new ControlDragFinished());
+			state.IsDragging = false;
+		}
 
-		private void SetFocusAndClickControl(Entity control)
+		public class ControlDragFinished { }
+
+		private static void SetFocusAndClickControl(Entity control, State state)
 		{
 			if (state.CanHaveFocus)
 				state.HasFocus = true;
@@ -153,7 +200,7 @@ namespace DeltaEngine.Input
 
 		public class ControlReleased {}
 
-		public override void Handle(List<Entity> entities) {}
+		public override void Handle(Entity entity) {}
 
 		public interface Clickable
 		{

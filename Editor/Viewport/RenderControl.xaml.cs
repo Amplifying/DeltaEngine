@@ -1,6 +1,8 @@
 using System;
-using System.Windows.Forms;
-using System.Windows.Media;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Windows;
 using DeltaEngine.Editor.Common;
 using FormsPanel = System.Windows.Forms.Panel;
 using DrawingColors = System.Drawing.Color;
@@ -15,12 +17,6 @@ namespace DeltaEngine.Editor.Viewport
 		public RenderControl(Service service)
 		{
 			InitializeComponent();
-			ViewportHoster.Background = new SolidColorBrush(Colors.Aqua);
-			var panel = new FormsPanel { Name = "Hi", BackColor = DrawingColors.Blue };
-			ViewportHoster.Child = panel;
-			var button = new Button { Text = "Hello" };
-			button.Click += delegate { MessageBox.Show("Button clicked"); };
-			panel.Controls.Add(button);
 		}
 
 		public string ShortName
@@ -39,5 +35,7 @@ namespace DeltaEngine.Editor.Viewport
 		{
 			get { return 1; }
 		}
+
+		private void ChangeSize(object sender, SizeChangedEventArgs e) {}
 	}
 }

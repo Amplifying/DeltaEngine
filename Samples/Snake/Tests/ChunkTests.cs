@@ -55,7 +55,7 @@ namespace Snake.Tests
 				screenSpace.Window.TotalPixelSize = new Size(200, 200);
 				var snake = new Snake(gridSize);
 				var chunk = new Chunk(gridSize, blockSize);
-				Assert.IsTrue(chunk.IsCollidingWithSnake(snake.Get<Snake.Body>().BodyParts));
+				Assert.IsTrue(chunk.IsCollidingWithSnake(snake.Get<Body>().BodyParts));
 			});
 		}
 	}

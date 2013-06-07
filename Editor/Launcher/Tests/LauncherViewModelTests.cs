@@ -10,8 +10,8 @@ namespace DeltaEngine.Editor.Launcher.Tests
 		public void CheckAvailableDevicesForNoSelectedPackage()
 		{
 			LauncherViewModel viewModel = GetLauncherViewModel();
-			Assert.IsEmpty(viewModel.AvailableDevices);
-			Assert.IsNull(viewModel.SelectedDevice);
+			Assert.AreEqual(1, viewModel.AvailableDevices.Length);
+			Assert.IsTrue(viewModel.SelectedDevice is NullDevice);
 		}
 
 		[Test]
@@ -36,8 +36,8 @@ namespace DeltaEngine.Editor.Launcher.Tests
 		public void CheckAvailableDevicesForUnknownPlatformPackage()
 		{
 			LauncherViewModel viewModel = GetLauncherViewModel("MyPackage.abc");
-			Assert.IsEmpty(viewModel.AvailableDevices);
-			Assert.IsNull(viewModel.SelectedDevice);
+			Assert.AreEqual(1, viewModel.AvailableDevices.Length);
+			Assert.IsTrue(viewModel.SelectedDevice is NullDevice);
 		}
 
 		private static LauncherViewModel GetLauncherViewModel(string selectedPackageFilePath = null)
@@ -52,9 +52,15 @@ namespace DeltaEngine.Editor.Launcher.Tests
 		public void LaunchPackageOnWP7Emulator()
 		{
 			var viewModel = GetLauncherViewModelWithPreSelectedApp("LogoApp.xap");
-			viewModel.SelectedDevice = GetEmulatorDevice(viewModel.AvailableDevices);
-			Assert.IsTrue(viewModel.LaunchPressed.CanExecute(null));
-			viewModel.LaunchPressed.Execute(null);
+			try
+			{
+				viewModel.SelectedDevice = GetEmulatorDevice(viewModel.AvailableDevices);
+				Assert.IsTrue(viewModel.LaunchPressed.CanExecute(null));
+				viewModel.LaunchPressed.Execute(null);
+			}
+			catch (NoEmulatorDeviceAvailable)
+			{
+			}
 		}
 
 		internal static LauncherViewModel GetLauncherViewModelWithPreSelectedApp(string appFileName)
@@ -69,16 +75,24 @@ namespace DeltaEngine.Editor.Launcher.Tests
 				if (device.IsEmulator)
 					return device;
 
-			throw new WP7DeviceTests.NoEmulatorDeviceAvailable();
+			throw new NoEmulatorDeviceAvailable();
 		}
+
+		public class NoEmulatorDeviceAvailable : Exception { }
 
 		[Test, Category("Slow")]
 		public void LaunchPackageOnAndroidEmulator()
 		{
 			var viewModel = GetLauncherViewModelWithPreSelectedApp("LogoApp.apk");
-			viewModel.SelectedDevice = GetEmulatorDevice(viewModel.AvailableDevices);
-			Assert.IsTrue(viewModel.LaunchPressed.CanExecute(null));
-			viewModel.LaunchPressed.Execute(null);
+			try
+			{
+				viewModel.SelectedDevice = GetEmulatorDevice(viewModel.AvailableDevices);
+				Assert.IsTrue(viewModel.LaunchPressed.CanExecute(null));
+				viewModel.LaunchPressed.Execute(null);
+			}
+			catch (NoEmulatorDeviceAvailable)
+			{
+			}
 		}
 
 		[Test, Category("Slow")]
@@ -86,6 +100,9 @@ namespace DeltaEngine.Editor.Launcher.Tests
 		{
 			var viewModel = GetLauncherViewModelWithPreSelectedApp("LogoApp");
 			viewModel.SelectedDevice = GetConnectedDevice(viewModel.AvailableDevices);
+			if (viewModel.SelectedDevice is NullDevice)
+				return;
+
 			Assert.IsTrue(viewModel.LaunchPressed.CanExecute(null));
 			viewModel.LaunchPressed.Execute(null);
 		}

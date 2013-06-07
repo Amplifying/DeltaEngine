@@ -1,3 +1,4 @@
+using System;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 using SlimDX;
@@ -75,18 +76,31 @@ namespace DeltaEngine.Graphics.SlimDX
 
 		private void ResetDevice()
 		{
-			//TODO
+			DisposeResources();
 			var presentParameters = new PresentParameters
 			{
 				Windowed = !window.IsFullscreen,
 				DeviceWindowHandle = window.Handle,
 				SwapEffect = SwapEffect.Discard,
 				PresentationInterval = PresentInterval.Immediate,
+				BackBufferCount = 1,
+				BackBufferFormat = Format.A8R8G8B8,
 				BackBufferWidth = (int)window.ViewportPixelSize.Width,
 				BackBufferHeight = (int)window.ViewportPixelSize.Height
 			};
 
+			NativeDevice.Reset(presentParameters);
 			deviceMustBeReset = false;
+			if (OnDeviceReset != null)
+				OnDeviceReset();
+		}
+
+		private void DisposeResources()
+		{
+			if (OnLostDevice != null)
+				OnLostDevice();
+
+			NativeDevice.GetRenderTarget(0).Dispose();
 		}
 
 		public void Present()
@@ -100,8 +114,12 @@ namespace DeltaEngine.Graphics.SlimDX
 
 		public void Dispose()
 		{
+			NativeDevice.GetRenderTarget(0).Dispose();
 			NativeDevice.Dispose();
 			d3D.Dispose();
 		}
+
+		public event Action OnLostDevice;
+		public event Action OnDeviceReset;
 	}
 }

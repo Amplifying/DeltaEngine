@@ -38,7 +38,5 @@ namespace DeltaEngine.Platforms
 		{
 			resolver.RegisterSingleton<T>();
 		}
-
-		public event Action ApplicationExit;
 	}
 }

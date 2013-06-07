@@ -26,7 +26,7 @@ namespace DeltaEngine.Graphics.SlimDX
 		{
 			try
 			{
-				NativeTexture = Texture.FromFile(device.NativeDevice, filename);
+				NativeTexture = Texture.FromFile(device.NativeDevice, filename, Usage.None, Pool.Managed);
 				pixelSize = new Size(NativeTexture.GetLevelDescription(0).Width,
 					NativeTexture.GetLevelDescription(0).Height);
 			}
@@ -43,17 +43,16 @@ namespace DeltaEngine.Graphics.SlimDX
 		private void CreateDefaultTexture()
 		{
 			NativeTexture = new Texture(device.NativeDevice, (int)DefaultTextureSize.Width,
-				(int)DefaultTextureSize.Height, 0, Usage.None, Format.A8B8G8R8, Pool.Default);
+				(int)DefaultTextureSize.Height, 0, Usage.None, Format.A8B8G8R8, Pool.Managed);
 			pixelSize = DefaultTextureSize;
 		}
 
 		public void Draw(VertexPositionColorTextured[] vertices)
 		{
 			device.NativeDevice.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.None);
-			device.NativeDevice.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Anisotropic);
-			device.NativeDevice.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Anisotropic);
+			device.NativeDevice.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Linear);
+			device.NativeDevice.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Linear);
 			device.NativeDevice.SetTexture(0, NativeTexture);
-			//TODO: base.Draw(vertices);
 		}
 
 		public override Size PixelSize

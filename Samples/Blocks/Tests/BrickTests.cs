@@ -14,7 +14,6 @@ namespace Blocks.Tests
 	/// </summary>
 	public class BrickTests : TestWithAllFrameworks
 	{
-
 		public void Initialize(ScreenSpace screen,
 				ContentLoader contentLoader)
 		{

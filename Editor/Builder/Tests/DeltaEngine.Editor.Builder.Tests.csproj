@@ -104,7 +104,6 @@
     <Compile Include="ProcessRunnerTests.cs" />
     <Compile Include="StringMessageExtensions.cs" />
     <Compile Include="TestsExtensions.cs" />
-    <Compile Include="BuildServiceUserTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

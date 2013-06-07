@@ -13,9 +13,11 @@ namespace DeltaEngine.Scenes
 		public Menu(Size buttonSize)
 		{
 			this.buttonSize = buttonSize;
+			center = Point.Half;
 		}
 
 		private Size buttonSize;
+		private Point center;
 
 		public Size ButtonSize
 		{
@@ -29,7 +31,7 @@ namespace DeltaEngine.Scenes
 
 		private void ArrangeButtons()
 		{
-			var left = 0.5f - ButtonSize.Width / 2;
+			var left = Center.X - ButtonSize.Width / 2;
 			for (int i = 0; i < buttons.Count; i++)
 				buttons[i].DrawArea = new Rectangle(left, GetButtonTop(i), ButtonSize.Width,
 					ButtonSize.Height);
@@ -46,8 +48,18 @@ namespace DeltaEngine.Scenes
 		{
 			float gapHeight = ButtonSize.Height / 2;
 			float totalHeight = buttons.Count * ButtonSize.Height + (buttons.Count - 1) * gapHeight;
-			float top = 0.5f - totalHeight / 2;
+			float top = Center.Y - totalHeight / 2;
 			return top + button * (ButtonSize.Height + gapHeight);
+		}
+
+		public Point Center
+		{
+			get { return center; }
+			set
+			{
+				center = value;
+				ArrangeButtons();
+			}
 		}
 
 		public override void Clear()

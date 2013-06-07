@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 
@@ -25,27 +24,13 @@ namespace DeltaEngine.Rendering.Shapes
 		/// </summary>
 		public class UpdateCorners : EntityHandler
 		{
-			public override void Handle(List<Entity> entities)
+			public override void Handle(Entity entity)
 			{
-				foreach (Entity2D entity in
-					entities.OfType<Entity2D>().Where(e => e.Contains<List<Point>>() && HasChanged(e)))
-					UpdateRectCorners(entity);
-			}
-
-			private static bool HasChanged(Entity2D entity)
-			{
-				return true;
-			}
-
-			private static void UpdateRectCorners(Entity2D entity)
-			{
-				var points = entity.Get<List<Point>>();
-				points.Clear();
-				Rectangle drawArea = entity.DrawArea;
-				points.Add(drawArea.TopLeft);
-				points.Add(drawArea.TopRight);
-				points.Add(drawArea.BottomRight);
-				points.Add(drawArea.BottomLeft);
+				var drawArea = entity.Get<Rectangle>();
+				var existingPoints = entity.Get<List<Point>>();
+				existingPoints.Clear();
+				var rotation = entity.Get<float>();
+				existingPoints.AddRange(drawArea.GetRotatedRectangleCorners(drawArea.Center, rotation));
 			}
 
 			public override EntityHandlerPriority Priority

@@ -94,6 +94,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GamePadTests.cs" />
+    <Compile Include="InteractTests.cs" />
     <Compile Include="InteractWithKeyboardTests.cs" />
     <Compile Include="MouseMovementTriggerTests.cs" />
     <Compile Include="MouseHoverTriggerTests.cs" />

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace DeltaEngine.Entities
 {
 	/// <summary>
@@ -7,7 +5,7 @@ namespace DeltaEngine.Entities
 	/// </summary>
 	public abstract class EntityListener : EntityHandler
 	{
-		public override void Handle(List<Entity> entities) {}
+		public override void Handle(Entity entity) {}
 
 		public abstract void ReceiveMessage(Entity entity, object message);
 	}

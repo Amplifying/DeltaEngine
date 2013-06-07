@@ -148,6 +148,7 @@ namespace Breakout
 		{
 			score.IncreasePoints();
 			brick.Visibility = Visibility.Hide;
+			//brick.IsActive = false;
 			CreateExplosion(collision);
 			explosionSound.Play();
 		}

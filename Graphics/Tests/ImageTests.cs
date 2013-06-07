@@ -1,14 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
+using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 using DeltaEngine.Platforms.All;
 using DeltaEngine.Platforms.Tests;
 using NUnit.Framework;
-using Color = DeltaEngine.Datatypes.Color;
-using Point = DeltaEngine.Datatypes.Point;
-using Size = DeltaEngine.Datatypes.Size;
 
 namespace DeltaEngine.Graphics.Tests
 {
@@ -26,13 +25,16 @@ namespace DeltaEngine.Graphics.Tests
 			{
 				window.BackgroundColor = Color.CornflowerBlue;
 				image = content.Load<Image>("DeltaEngineLogo");
-			}, (Drawing drawing) => drawing.DrawQuad(image, new[]
-			{
-				new VertexPositionColorTextured(new Point(175, 25), Color.Yellow, Point.Zero),
-				new VertexPositionColorTextured(new Point(475, 25), Color.Red, Point.UnitX),
-				new VertexPositionColorTextured(new Point(475, 325), Color.Blue, Point.One),
-				new VertexPositionColorTextured(new Point(175, 325), Color.Teal, Point.UnitY)
-			}));
+			},
+				(Drawing drawing) =>
+					drawing.DrawQuad(image,
+						new List<VertexPositionColorTextured>
+						{
+							new VertexPositionColorTextured(new Point(175, 25), Color.Yellow, Point.Zero),
+							new VertexPositionColorTextured(new Point(475, 25), Color.Red, Point.UnitX),
+							new VertexPositionColorTextured(new Point(475, 325), Color.Blue, Point.One),
+							new VertexPositionColorTextured(new Point(175, 325), Color.Teal, Point.UnitY)
+						}, new List<short> { 0, 1, 2, 0, 2, 3 }));
 		}
 
 		[VisualTest]
@@ -63,20 +65,19 @@ namespace DeltaEngine.Graphics.Tests
 					indices[indicesIndex++] = (short)(quadIndex + 3);
 				}
 
-			Start(resolver, (ContentLoader content) =>
-			{
-				image = content.Load<Image>("DeltaEngineLogo");
-			}, (Drawing drawing, Window window) =>
-			{
-				drawing.EnableTexturing(image);
-				// Draw 50 times to reach 1 million polygons per frame
-				drawing.SetIndices(indices, indices.Length);
-				for (int num = 0; num < 50; num++)
-					drawing.DrawVertices(VerticesMode.Triangles, vertices);
+			Start(resolver,
+				(ContentLoader content) => { image = content.Load<Image>("DeltaEngineLogo"); },
+				(Drawing drawing, Window window) =>
+				{
+					drawing.EnableTexturing(image);
+					// Draw 50 times to reach 1 million polygons per frame
+					drawing.SetIndices(indices, indices.Length);
+					for (int num = 0; num < 50; num++)
+						drawing.DrawVerticesForSprite(VerticesMode.Triangles, vertices);
 
-				if (Time.Current.CheckEvery(1))
-					window.Title = "Fps: " + Time.Current.Fps;
-			});
+					if (Time.Current.CheckEvery(1))
+						window.Title = "Fps: " + Time.Current.Fps;
+				});
 		}
 
 		[VisualTest]
@@ -100,16 +101,19 @@ namespace DeltaEngine.Graphics.Tests
 
 		private static void DrawAlphaImageTwice(Image image, Drawing drawing, Point startPoint)
 		{
-			int x = (int)startPoint.X;
-			int y = (int)startPoint.Y;
+			var x = (int)startPoint.X;
+			var y = (int)startPoint.Y;
 			const int Size = 120;
 			for (int i = 1; i <= 2; i++)
 			{
-				drawing.DrawQuad(image, new[] {
-					new VertexPositionColorTextured(new Point(x, y), Color.White, Point.Zero),
-					new VertexPositionColorTextured(new Point(x + Size, y), Color.White, Point.UnitX),
-					new VertexPositionColorTextured(new Point(x + Size, y + Size), Color.White, Point.One),
-					new VertexPositionColorTextured(new Point(x, y + Size), Color.White, Point.UnitY)});
+				drawing.DrawQuad(image,
+					new List<VertexPositionColorTextured>
+					{
+						new VertexPositionColorTextured(new Point(x, y), Color.White, Point.Zero),
+						new VertexPositionColorTextured(new Point(x + Size, y), Color.White, Point.UnitX),
+						new VertexPositionColorTextured(new Point(x + Size, y + Size), Color.White, Point.One),
+						new VertexPositionColorTextured(new Point(x, y + Size), Color.White, Point.UnitY)
+					}, new List<short> { 0, 1, 2, 0, 2, 3 });
 				x += Size / 2;
 				y += Size / 2;
 			}

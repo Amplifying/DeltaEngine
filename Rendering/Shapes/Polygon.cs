@@ -36,16 +36,24 @@ namespace DeltaEngine.Rendering.Shapes
 			{
 				this.draw = draw;
 				this.screen = screen;
+				vertices = new List<VertexPositionColor>();
 			}
 
 			private readonly Drawing draw;
 			private readonly ScreenSpace screen;
+			private readonly List<VertexPositionColor> vertices;
 
-			public override void ReceiveMessage(Entity entity, object message)
+			public override void Handle(Entity entity)
 			{
-				if (message is SortAndRender.TimeToRender)
-					RenderPolygon(entity);
+				if (entity.Get<Visibility>() == Visibility.Hide)
+					return;
+
+				vertices.Clear();
+				RenderPolygon(entity);
+				SetIndices();
 			}
+
+			public override void ReceiveMessage(Entity entity, object message) {}
 
 			private void RenderPolygon(Entity entity)
 			{
@@ -70,24 +78,43 @@ namespace DeltaEngine.Rendering.Shapes
 
 			private void CreateAndDrawTriangle(Point point, Point center, Color color)
 			{
-				DrawTriangle(new Triangle2D(center, point, lastPoint), color);
+				SetTrianglePoints(new Triangle2D(center, point, lastPoint), color);
 				lastPoint = point;
 			}
 
-			private void DrawTriangle(Triangle2D triangle, Color color)
+			private void SetTrianglePoints(Triangle2D triangle, Color color)
 			{
-				draw.DisableTexturing();
-				draw.SetIndices(TriangleIndices, TriangleIndices.Length);
-				var vertices = new[]
-				{
-					new VertexPositionColor(screen.ToPixelSpaceRounded(triangle.Corner1), color),
-					new VertexPositionColor(screen.ToPixelSpaceRounded(triangle.Corner2), color),
-					new VertexPositionColor(screen.ToPixelSpaceRounded(triangle.Corner3), color)
-				};
-				draw.DrawVertices(VerticesMode.Triangles, vertices);
+				vertices.Add(new VertexPositionColor(screen.ToPixelSpaceRounded(triangle.Corner1), color));
+				vertices.Add(new VertexPositionColor(screen.ToPixelSpaceRounded(triangle.Corner2), color));
+				vertices.Add(new VertexPositionColor(screen.ToPixelSpaceRounded(triangle.Corner3), color));
 			}
 
-			private static readonly short[] TriangleIndices = { 0, 1, 2 };
+			private static short[] triangleIndices = { 0, 1, 2 };
+
+			private void SetIndices()
+			{
+				var newVertices = new VertexPositionColor[vertices.Count + 1];
+				var newIndices = new short[vertices.Count + 1];
+				for (int posInList = 0; posInList < vertices.Count; ++posInList)
+					NumberOfVertex(newVertices, posInList, newIndices);
+
+				triangleIndices = newIndices;
+				DrawPolygon(newVertices);
+			}
+
+			private void DrawPolygon(VertexPositionColor[] newVertices)
+			{
+				draw.DisableTexturing();
+				draw.SetIndices(triangleIndices, triangleIndices.Length);
+				draw.DrawVertices(VerticesMode.Triangles, newVertices);
+			}
+
+			private void NumberOfVertex(VertexPositionColor[] newVertices, int posInList,
+				short[] newIndices)
+			{
+				newVertices[posInList] = vertices[posInList];
+				newIndices[posInList] = (short)posInList;
+			}
 		}
 
 		/// <summary>
@@ -99,16 +126,21 @@ namespace DeltaEngine.Rendering.Shapes
 			{
 				this.draw = draw;
 				this.screen = screen;
+				vertices = new List<VertexPositionColor>();
 			}
 
 			private readonly Drawing draw;
 			private readonly ScreenSpace screen;
+			private readonly List<VertexPositionColor> vertices;
 
-			public override void ReceiveMessage(Entity entity, object message)
+			public override void Handle(Entity entity)
 			{
-				if (message is SortAndRender.TimeToRender)
-					RenderPolygonOutline(entity);
+				vertices.Clear();
+				RenderPolygonOutline(entity);
+				draw.DrawVertices(VerticesMode.Lines, vertices.ToArray());
 			}
+
+			public override void ReceiveMessage(Entity entity, object message) {}
 
 			private void RenderPolygonOutline(Entity entity)
 			{
@@ -118,15 +150,11 @@ namespace DeltaEngine.Rendering.Shapes
 					return;
 
 				lastPoint = points[points.Count - 1];
-				vertices = new List<VertexPositionColor>();
 				foreach (Point point in points)
 					AddLine(point, color);
-
-				draw.DrawVertices(VerticesMode.Lines, vertices.ToArray());
 			}
 
 			private Point lastPoint;
-			private List<VertexPositionColor> vertices;
 
 			private void AddLine(Point point, Color color)
 			{

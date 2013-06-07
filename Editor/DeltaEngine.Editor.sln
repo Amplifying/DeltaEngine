@@ -1,5 +1,12 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{948C7EAA-CF03-48C3-B4AC-3ADFBAA44D14}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\nuget.exe = .nuget\nuget.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor", "DeltaEngine.Editor.csproj", "{4C0891C0-CE79-4A2D-919E-6F706B62C8EA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.ProjectCreator", "ProjectCreator\DeltaEngine.Editor.ProjectCreator.csproj", "{369DC159-36A7-4523-80FD-81D8BEA37547}"
@@ -52,12 +59,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.Common.T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.Viewport", "Viewport\DeltaEngine.Editor.Viewport.csproj", "{F24C3242-AA60-4DDB-B4E0-D9583913DAAD}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{948C7EAA-CF03-48C3-B4AC-3ADFBAA44D14}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\nuget.exe = .nuget\nuget.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.ParticleEditor", "ParticleEditor\DeltaEngine.Editor.ParticleEditor.csproj", "{92D60F6B-3EC2-46C3-9C3D-BDDFB8B135A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "ParticleEditor\Tests\DeltaEngine.Editor.ParticleEditor.Tests.csproj", "{1E930C27-4A4B-4B8A-B79B-DF59DA4A1017}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -169,10 +173,19 @@ Global
 		{F24C3242-AA60-4DDB-B4E0-D9583913DAAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F24C3242-AA60-4DDB-B4E0-D9583913DAAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F24C3242-AA60-4DDB-B4E0-D9583913DAAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92D60F6B-3EC2-46C3-9C3D-BDDFB8B135A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92D60F6B-3EC2-46C3-9C3D-BDDFB8B135A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92D60F6B-3EC2-46C3-9C3D-BDDFB8B135A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92D60F6B-3EC2-46C3-9C3D-BDDFB8B135A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E930C27-4A4B-4B8A-B79B-DF59DA4A1017}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E930C27-4A4B-4B8A-B79B-DF59DA4A1017}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E930C27-4A4B-4B8A-B79B-DF59DA4A1017}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E930C27-4A4B-4B8A-B79B-DF59DA4A1017}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
+	GlobalSection(NDepend) = preSolution
+		Project = ".\DeltaEngine1.ndproj"
 	EndGlobalSection
 EndGlobal

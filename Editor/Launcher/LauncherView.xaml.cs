@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Windows;
 using DeltaEngine.Editor.Builder;
-using DeltaEngine.Editor.Builder.Tests;
 using DeltaEngine.Editor.Common;
 using Microsoft.Win32;
 
@@ -29,22 +28,14 @@ namespace DeltaEngine.Editor.Launcher
 		private void OnErrorOccurred(Exception exception)
 		{
 			string errorMessage = GetErrorDialogText(exception);
-			// TODO: Fix providing the host window via the Editor
-			//MessageBox.Show(viewModel.Service.PluginHostWindow, errorMessage);
-			Window ownerWindow = viewModel.Service.PluginHostWindow;
-			if (ownerWindow == null)
-				ownerWindow = Application.Current.MainWindow;
-			//if (ownerWindow != null)
-			//	MessageBox.Show(ownerWindow, errorMessage);
-			//else
-			//	MessageBox.Show(errorMessage);
+			Window ownerWindow = viewModel.Service.PluginHostWindow ?? Application.Current.MainWindow;
 			MessageBox.Show(ownerWindow, errorMessage);
 		}
 
 		private static string GetErrorDialogText(Exception exception)
 		{
 			if (exception is WP7Device.ZuneNotLaunchedException)
-				return "You need to launch Zune for your Windows Phone 7 first.";
+				return "You need to launch Zune and make sure that your Windows Phone 7 is connected.";
 			if (exception is WP7Device.ScreenLockedException)
 				return "You need to unlock the of your Windows Phone 7 first.";
 
@@ -78,8 +69,7 @@ namespace DeltaEngine.Editor.Launcher
 
 		private void OnSelectAppToBuildButtonClicked(object sender, RoutedEventArgs e)
 		{
-			//var builderViewModel = new BuilderViewModel(viewModel.Service);
-			var builderViewModel = new BuilderViewModel(new BuildServiceConnectionViaLAN());
+			var builderViewModel = new BuilderViewModel(viewModel.Service);
 			var window = new Window
 			{
 				Content = new BuilderView(builderViewModel),

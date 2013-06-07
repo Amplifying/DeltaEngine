@@ -22,21 +22,17 @@ namespace Asteroids.Tests
 		}
 
 		[VisualTest]
-		public void ShowAstroids(Type resolver)
-		{
-			Start(resolver,
-				(ContentLoader contentLoader, PseudoRandom randomizer, GameLogic gameLogic) =>
-				{ new Asteroid(contentLoader, randomizer, gameLogic); });
-		}
-
-		[VisualTest]
-		public void ShowfracturedAstroids(Type resolver)
+		public void ShowAsteroidsOfSeveralSizemodsAndFracture(Type resolver)
 		{
 			Start(resolver,
 				(ContentLoader contentLoader, PseudoRandom randomizer, GameLogic gameLogic) =>
 				{
-					var asteroid = new Asteroid(contentLoader, randomizer, gameLogic);
-					asteroid.Fracture();
+					var largeAsteroid = new Asteroid(contentLoader, randomizer, gameLogic);
+					var mediumAsteroid = new Asteroid(contentLoader, randomizer, gameLogic,2);
+					var smallAsteroid = new Asteroid(contentLoader, randomizer, gameLogic, 3);
+
+					largeAsteroid.Fracture();
+					Assert.IsFalse(largeAsteroid.IsActive);
 				});
 		}
 	}

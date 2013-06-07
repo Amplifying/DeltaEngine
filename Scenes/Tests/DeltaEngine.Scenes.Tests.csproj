@@ -245,8 +245,10 @@
     <Compile Include="UserInterfaces\LabelTests.cs" />
     <Compile Include="UserInterfaces\RadioButtonTests.cs" />
     <Compile Include="UserInterfaces\RadioDialogTests.cs" />
+    <Compile Include="UserInterfaces\ColoredLogoTilemap.cs" />
     <Compile Include="UserInterfaces\SliderTests.cs" />
     <Compile Include="UserInterfaces\TextBoxTests.cs" />
+    <Compile Include="UserInterfaces\TilemapTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

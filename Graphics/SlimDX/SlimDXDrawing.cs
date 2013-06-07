@@ -11,14 +11,23 @@ namespace DeltaEngine.Graphics.SlimDX
 			: base(device)
 		{
 			nativeDevice = device.NativeDevice;
+			this.window = window;
+			CreateResources();
+			device.OnLostDevice += Dispose;
+			device.OnDeviceReset += CreateResources;
+			window.ViewportSizeChanged += SetupWorldViewProjectionMatrix;
+		}
+
+		private readonly Window window;
+		private readonly NativeDevice nativeDevice;
+
+		private void CreateResources()
+		{
 			CreateShaders();
 			SetupWorldViewProjectionMatrix(window.ViewportPixelSize);
-			window.ViewportSizeChanged += SetupWorldViewProjectionMatrix;
 			CreateBuffers();
 			SetDefaultBlendMode();
 		}
-
-		private readonly NativeDevice nativeDevice;
 
 		private void CreateShaders()
 		{
@@ -131,8 +140,8 @@ namespace DeltaEngine.Graphics.SlimDX
 		public override void EnableTexturing(Image image)
 		{
 			nativeDevice.SetSamplerState(0, SamplerState.MipFilter, TextureFilter.None);
-			nativeDevice.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Anisotropic);
-			nativeDevice.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Anisotropic);
+			nativeDevice.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Linear);
+			nativeDevice.SetSamplerState(0, SamplerState.MagFilter, TextureFilter.Linear);
 			nativeDevice.SetTexture(0, (image as SlimDXImage).NativeTexture);
 		}
 
@@ -143,54 +152,72 @@ namespace DeltaEngine.Graphics.SlimDX
 
 		public override void SetBlending(BlendMode blendMode)
 		{
-			if (currentBlendMode == blendMode)
-				return;
-
-			SetupBlendRenderState(blendMode);
-			currentBlendMode = blendMode;
-		}
-
-		private BlendMode currentBlendMode = BlendMode.Opaque;
-
-		private void SetupBlendRenderState(BlendMode blendMode)
-		{
 			nativeDevice.SetRenderState(RenderState.AlphaRef, 1);
 			switch (blendMode)
 			{
 				case BlendMode.Normal:
-					nativeDevice.SetRenderState(RenderState.AlphaBlendEnable, true);
-					nativeDevice.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-					nativeDevice.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
-					nativeDevice.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
+					SetupBlendRenderStateModeNormal();
 					break;
 				case BlendMode.Opaque:
-					nativeDevice.SetRenderState(RenderState.AlphaBlendEnable, false);
+					SetupBlendRenderStateModeOpaque();
 					break;
 				case BlendMode.AlphaTest:
-					nativeDevice.SetRenderState(RenderState.AlphaBlendEnable, false);
-					nativeDevice.SetRenderState(RenderState.AlphaTestEnable, true);
-					nativeDevice.SetRenderState(RenderState.AlphaFunc, Compare.GreaterEqual);
+					SetupBlendRenderStateModeAlphaTest();
 					break;
 				case BlendMode.Additive:
-					nativeDevice.SetRenderState(RenderState.AlphaBlendEnable, true);
-					nativeDevice.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-					nativeDevice.SetRenderState(RenderState.DestinationBlend, Blend.One);
-					nativeDevice.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
+					SetupBlendRenderStateModeAdditive();
 					break;
 				case BlendMode.Subtractive:
-					nativeDevice.SetRenderState(RenderState.AlphaBlendEnable, true);
-					nativeDevice.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
-					nativeDevice.SetRenderState(RenderState.DestinationBlend, Blend.One);
-					nativeDevice.SetRenderState(RenderState.BlendOperation,
-						BlendOperation.ReverseSubtract);
+					SetupBlendRenderStateModeSubtractive();
 					break;
 				case BlendMode.LightEffect:
-					nativeDevice.SetRenderState(RenderState.AlphaBlendEnable, true);
-					nativeDevice.SetRenderState(RenderState.SourceBlend, Blend.DestinationColor);
-					nativeDevice.SetRenderState(RenderState.DestinationBlend, Blend.One);
-					nativeDevice.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
+					SetupBlendRenderStateModeLightEffect();
 					break;
-			}			
+			}	
+		}
+
+		private void SetupBlendRenderStateModeNormal()
+		{
+			nativeDevice.SetRenderState(RenderState.AlphaBlendEnable, true);
+			nativeDevice.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+			nativeDevice.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
+			nativeDevice.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);			
+		}
+
+		private void SetupBlendRenderStateModeOpaque()
+		{
+			nativeDevice.SetRenderState(RenderState.AlphaBlendEnable, false);
+		}
+
+		private void SetupBlendRenderStateModeAlphaTest()
+		{
+			nativeDevice.SetRenderState(RenderState.AlphaBlendEnable, false);
+			nativeDevice.SetRenderState(RenderState.AlphaTestEnable, true);
+			nativeDevice.SetRenderState(RenderState.AlphaFunc, Compare.GreaterEqual);
+		}
+
+		private void SetupBlendRenderStateModeAdditive()
+		{
+			nativeDevice.SetRenderState(RenderState.AlphaBlendEnable, true);
+			nativeDevice.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+			nativeDevice.SetRenderState(RenderState.DestinationBlend, Blend.One);
+			nativeDevice.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
+		}
+
+		private void SetupBlendRenderStateModeSubtractive()
+		{
+			nativeDevice.SetRenderState(RenderState.AlphaBlendEnable, true);
+			nativeDevice.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+			nativeDevice.SetRenderState(RenderState.DestinationBlend, Blend.One);
+			nativeDevice.SetRenderState(RenderState.BlendOperation, BlendOperation.ReverseSubtract);
+		}
+
+		private void SetupBlendRenderStateModeLightEffect()
+		{
+			nativeDevice.SetRenderState(RenderState.AlphaBlendEnable, true);
+			nativeDevice.SetRenderState(RenderState.SourceBlend, Blend.DestinationColor);
+			nativeDevice.SetRenderState(RenderState.DestinationBlend, Blend.One);
+			nativeDevice.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);			
 		}
 
 		public override void SetIndices(short[] indices, int usedIndicesCount)
@@ -233,7 +260,7 @@ namespace DeltaEngine.Graphics.SlimDX
 		private const int VerticesPerLine = 2;
 		private const int VerticesPerTriangle = 3;
 
-		public override void DrawVertices(VerticesMode mode, VertexPositionColorTextured[] vertices)
+		public override void DrawVerticesForSprite(VerticesMode mode, VertexPositionColorTextured[] vertices)
 		{
 			positionColorTextureBuffer.SetVertexData(vertices);
 			nativeDevice.VertexDeclaration = positionColorTextureVertexDeclaration;

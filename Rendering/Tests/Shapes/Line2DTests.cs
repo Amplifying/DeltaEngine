@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
@@ -52,18 +51,12 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 
 		public class Rotate : EntityHandler
 		{
-			public override void Handle(List<Entity> entities)
+			public override void Handle(Entity entity)
 			{
-				foreach (var entity in entities.OfType<Entity2D>())
-					RotateLine(entity);
-			}
-
-			private static void RotateLine(Entity2D entity)
-			{
-				entity.Rotation += 10 * Time.Current.Delta;
+				entity.Set(entity.Get<float>() + 10 * Time.Current.Delta);
 				var line = entity as Line2D;
 				if (line != null)
-					line.End = Point.Half + new Point(0.5f, 0).RotateAround(Point.Zero, entity.Rotation);
+					line.End = Point.Half + new Point(0.5f, 0).RotateAround(Point.Zero, line.Rotation);
 			}
 
 			public override EntityHandlerPriority Priority
@@ -110,7 +103,7 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 			{
 				new Line2D(Point.Zero, Point.One, Color.Red);
 				EntitySystem.Current.Run();
-				Assert.AreEqual(2, mockResolver.rendering.NumberOfVerticesDrawn);
+				Assert.AreEqual(3, mockResolver.rendering.NumberOfVerticesDrawn);
 			});
 		}
 

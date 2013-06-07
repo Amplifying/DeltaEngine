@@ -26,7 +26,6 @@ namespace Blocks.Tests
 					Initialize(screenSpace);
 					window.TotalPixelSize = new Size(600, 800);
 					EntitySystem.Current.Run();
-					//Assert.AreEqual(3, entitySystem.GetHandler<SortRenderLayer>().NumberOfActiveRenderableObjects);
 				});
 		}
 

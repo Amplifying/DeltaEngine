@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using DeltaEngine.Core;
 using DeltaEngine.Editor.Builder;
 
@@ -8,46 +7,54 @@ namespace DeltaEngine.Editor.Launcher
 {
 	/// <summary>
 	/// Runs the ADB tool (which is provided by the Android SDK) via command line.
-	/// </summary>
 	/// <see cref="http://developer.android.com/tools/help/adb.html"/>
+	/// </summary>
 	public class AndroidDebugBridgeRunner
 	{
+		public AndroidDebugBridgeRunner()
+		{
+			adbProvider = new AdbPathProvider();
+		}
+
+		private readonly AdbPathProvider adbProvider;
+
 		public string[] GetInfosOfAvailableDevices()
 		{
 			var androidDevicesNames = new List<string>();
-			try
+			var processRunner = CreateAdbProcess("devices");
+			processRunner.StandardOutputEvent += outputMessage =>
 			{
-				var processRunner = new ProcessRunner(GetAdbPath(), "devices");
-				processRunner.StandardOutputEvent += outputMessage =>
-				{
-					if (IsDeviceName(outputMessage))
-						androidDevicesNames.Add(outputMessage);
-				};
-				processRunner.Start();
-			}
-			catch (ProcessRunner.ProcessTerminatedWithError)
-			{
-				Console.WriteLine("The adb tool has returned with an error");
-			}
+				if (IsDeviceName(outputMessage))
+					androidDevicesNames.Add(outputMessage);
+			};
+			TryRunAdbProcess(processRunner);
 
 			return androidDevicesNames.ToArray();
 		}
 
-		private static string GetAdbPath()
+		private ProcessRunner CreateAdbProcess(string arguments)
 		{
-			string programFilesDirectory =
-				Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
-			Console.WriteLine("programFilesDirectory: " + programFilesDirectory);
-			Console.WriteLine("GetAdbPath: " + Path.Combine(programFilesDirectory, "Google",
-				"adt-bundle-windows-x86_64", "sdk", "platform-tools", "adb.exe"));
-			return Path.Combine(programFilesDirectory, "Google", "adt-bundle-windows-x86_64", "sdk",
-				"platform-tools", "adb.exe");
+			return new ProcessRunner(adbProvider.GetAdbPath(), arguments);
 		}
 
 		private static bool IsDeviceName(string devicesRequestMessage)
 		{
 			return !(devicesRequestMessage.StartsWith("list", StringComparison.OrdinalIgnoreCase) ||
 				String.IsNullOrWhiteSpace(devicesRequestMessage));
+		}
+
+		private static void TryRunAdbProcess(ProcessRunner adbProcess)
+		{
+			try
+			{
+				adbProcess.Start();
+			}
+			catch (ProcessRunner.ProcessTerminatedWithError)
+			{
+				Console.WriteLine("Output:" + adbProcess.Output);
+				Console.WriteLine("Error:" + adbProcess.Errors);
+				throw;
+			}
 		}
 
 		public void InstallPackage(AndroidDevice device, string apkFilePath)
@@ -62,20 +69,10 @@ namespace DeltaEngine.Editor.Launcher
 			}
 		}
 
-		private static void TryRunAdbProcess(string arguments)
+		private void TryRunAdbProcess(string arguments)
 		{
-			ProcessRunner processRunner = null;
-			try
-			{
-				processRunner = new ProcessRunner(GetAdbPath(), arguments);
-				processRunner.Start();
-			}
-			catch (ProcessRunner.ProcessTerminatedWithError)
-			{
-				Console.WriteLine("Output:" + processRunner.Output);
-				Console.WriteLine("Error:" + processRunner.Errors);
-				throw;
-			}
+			ProcessRunner adbProcess = CreateAdbProcess(arguments);
+			TryRunAdbProcess(adbProcess);
 		}
 
 		public class InstallationFailedOnDevice : Exception
@@ -102,10 +99,10 @@ namespace DeltaEngine.Editor.Launcher
 
 		public bool IsAppInstalled(AndroidDevice device, string packageName)
 		{
-			var processRunner =
-				new ProcessRunner(GetAdbPath(), "-s " + device.AdbId + " shell pm list packages");
-			processRunner.Start();
-			return processRunner.Output.Contains(packageName);
+			ProcessRunner adbProcess = CreateAdbProcess("-s " + device.AdbId + " shell pm list packages");
+			TryRunAdbProcess(adbProcess);
+
+			return adbProcess.Output.Contains(packageName);
 		}
 
 		public void StartApplication(AndroidDevice device, string appName)
@@ -146,25 +143,26 @@ namespace DeltaEngine.Editor.Launcher
 			}
 		}
 
-		private static string GetDeviceManufacturerName(string adbDeviceId)
+		private string GetDeviceManufacturerName(string adbDeviceId)
 		{
 			string manufacturerName = GetGrepInfo(adbDeviceId, "ro.product.manufacturer");
 			return manufacturerName.IsFirstCharacterInLowerCase()
 				? manufacturerName.ConvertFirstCharactertoUpperCase() : manufacturerName;
 		}
 
-		private static string GetDeviceModelName(string adbDeviceId)
+		private string GetDeviceModelName(string adbDeviceId)
 		{
 			string modelName = GetGrepInfo(adbDeviceId, "ro.product.model");
 			return modelName;
 		}
 
-		private static string GetGrepInfo(string adbDeviceId, string grepParameter)
+		private string GetGrepInfo(string adbDeviceId, string grepParameter)
 		{
-			var processRunner = new ProcessRunner(GetAdbPath(),
-				"-s " + adbDeviceId + " shell cat /system/build.prop | grep \"" + grepParameter + "\"");
-			processRunner.Start();
-			return processRunner.Output.Replace(grepParameter + "=", "");
+			ProcessRunner adbProcess = CreateAdbProcess("-s " + adbDeviceId +
+				" shell cat /system/build.prop | grep \"" + grepParameter + "\"");
+			TryRunAdbProcess(adbProcess);
+
+			return adbProcess.Output.Replace(grepParameter + "=", "");
 		}
 
 		public class DeterminationDeviceNameFailed : Exception

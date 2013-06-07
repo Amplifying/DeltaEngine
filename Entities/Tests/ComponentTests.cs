@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace DeltaEngine.Entities.Tests
@@ -17,10 +16,9 @@ namespace DeltaEngine.Entities.Tests
 
 		public class Rotate : EntityHandler
 		{
-			public override void Handle(List<Entity> entities)
+			public override void Handle(Entity entity)
 			{
-				foreach (var entity in entities)
-					entity.Set(entity.Get<float>() + 0.1f);
+				entity.Set(entity.Get<float>() + 0.1f);
 			}
 
 			public override EntityHandlerPriority Priority

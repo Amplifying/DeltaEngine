@@ -67,7 +67,7 @@ namespace DeltaEngine.Platforms.All
 			public override void SetIndices(short[] indices, int usedIndicesCount) {}
 			public override void DisableIndices() {}
 
-			public override void DrawVertices(VerticesMode mode, VertexPositionColorTextured[] vertices)
+			public override void DrawVerticesForSprite(VerticesMode mode, VertexPositionColorTextured[] vertices)
 			{}
 			public override void DrawVertices(VerticesMode mode, VertexPositionColor[] vertices) {}
 		}

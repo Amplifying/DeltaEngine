@@ -33,9 +33,6 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="OpenTK">
-      <HintPath>..\..\packages\OpenTK.1.1.1160.61462\lib\NET40\OpenTK.dll</HintPath>
-    </Reference>
     <Reference Include="SlimDX">
       <HintPath>..\..\packages\SlimDX.4.0.13.43\lib\NET40\SlimDX.dll</HintPath>
     </Reference>

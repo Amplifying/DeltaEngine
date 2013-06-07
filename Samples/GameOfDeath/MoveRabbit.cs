@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
@@ -11,20 +9,14 @@ namespace GameOfDeath
 	/// </summary>
 	public class MoveRabbit : EntityHandler
 	{
-		public override void Handle(List<Entity> entities)
+		public override void Handle(Entity entity)
 		{
-			foreach (Rabbit rabbit in entities.OfType<Rabbit>())
-				Move(rabbit);
-		}
-
-		private static void Move(Rabbit rabbit)
-		{
-			var sprite = rabbit.RabbitSprite;
+			var sprite = entity.Get<RabbitSprite>();
 			Point velocity = sprite.Velocity;
 			velocity.ReflectIfHittingBorder(sprite.DrawArea, sprite.BoundingBox);
 			sprite.Velocity = velocity;
 			sprite.Center += velocity * Time.Current.Delta;
-			rabbit.MessageAllListeners(new HasMoved());
+			entity.MessageAllListeners(new HasMoved());
 		}
 
 		public class HasMoved {}

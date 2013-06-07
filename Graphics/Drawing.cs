@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace DeltaEngine.Graphics
 {
@@ -19,16 +20,24 @@ namespace DeltaEngine.Graphics
 		public abstract void SetBlending(BlendMode blendMode);
 		public abstract void SetIndices(short[] indices, int usedIndicesCount);
 		public abstract void DisableIndices();
-		public abstract void DrawVertices(VerticesMode mode, VertexPositionColorTextured[] vertices);
+
+		public abstract void DrawVerticesForSprite(VerticesMode mode,
+			VertexPositionColorTextured[] vertices);
+
 		public abstract void DrawVertices(VerticesMode mode, VertexPositionColor[] vertices);
 
-		public void DrawQuad(Image image, VertexPositionColorTextured[] vertices)
+		public void DrawQuad(Image image, List<VertexPositionColorTextured> vertices,
+			List<short> indices)
 		{
+			var vertexArray = new VertexPositionColorTextured[vertices.Count + 1];
+			for (int i = 0; i < vertices.Count; ++i)
+				vertexArray[i] = vertices[i];
+			var indicesArray = new short[indices.Count + 1];
+			for (int i = 0; i < indices.Count; ++i)
+				indicesArray[i] = indices[i];
 			EnableTexturing(image);
-			SetIndices(QuadIndices, QuadIndices.Length);
-			DrawVertices(VerticesMode.Triangles, vertices);
+			SetIndices(indicesArray, indicesArray.Length);
+			DrawVerticesForSprite(VerticesMode.Triangles, vertexArray);
 		}
-
-		private static readonly short[] QuadIndices = { 0, 1, 2, 0, 2, 3 };
 	}
 }

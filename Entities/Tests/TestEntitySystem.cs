@@ -41,4 +41,31 @@ namespace DeltaEngine.Entities.Tests
 			}
 		}
 	}
+
+	public class TestEntitySystem<EntityHandlerType1, EntityHandlerType2, EntityHandlerType3> 
+		: EntitySystem
+		where EntityHandlerType1 : EntityHandler, new()
+		where EntityHandlerType2 : EntityHandler, new()
+		where EntityHandlerType3 : EntityHandler, new()
+	{
+		public TestEntitySystem()
+			: base(new TestHandlerResolver()) { }
+
+		private class TestHandlerResolver : EntityHandlerResolver
+		{
+			public EntityHandler Resolve(Type handlerType)
+			{
+				if (handlerType == typeof(EntityHandlerType1))
+					return new EntityHandlerType1();
+
+				if (handlerType == typeof(EntityHandlerType2))
+					return new EntityHandlerType2();
+
+				if (handlerType == typeof(EntityHandlerType3))
+					return new EntityHandlerType3();
+
+				return null; //ncrunch: no coverage
+			}
+		}
+	}
 }

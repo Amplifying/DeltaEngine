@@ -13,7 +13,6 @@ namespace DeltaEngine.Editor.Launcher.Tests
 			Console.WriteLine(availableDevices.Length + " devices available:");
 			foreach (AndroidDevice device in availableDevices)
 				Console.WriteLine("\t" + device);
-			Assert.IsNotEmpty(availableDevices);
 		}
 	}
 }

@@ -54,24 +54,26 @@ namespace DeltaEngine.Editor.UIEditor
 
 		private void DrawVisualGrid(int gridSize, int gridWidth, int gridHeight)
 		{
-			float numberOfHorizontalGrid = gridWidth / (float)gridSize;
+			float numberOfHorizontalGrid = gridHeight / (float)gridSize;
 			for (int i = 0; i < numberOfHorizontalGrid; i++)
-				DrawLine(gridWidth, i, numberOfHorizontalGrid, true);
-			float numberOfVerticalGrid = gridHeight / (float)gridSize;
+				DrawLine(gridHeight, gridWidth, i, numberOfHorizontalGrid, true);
+			float numberOfVerticalGrid = gridWidth / (float)gridSize;
 			for (int i = 0; i < numberOfVerticalGrid; i++)
-				DrawLine(gridHeight, i, numberOfVerticalGrid, false);
+				DrawLine(gridWidth, gridHeight, i, numberOfVerticalGrid, false);
 		}
 
 		private readonly List<Line> lineList = new List<Line>();
 
-		private void DrawLine(int spacing, int i, float gridnumber, bool isHorizontal)
+		private void DrawLine(int gridWidth, int gridHeight, int i, float gridnumber,
+			bool isHorizontal)
 		{
 			var gridLine = new Line();
-			gridLine.Stroke = Brushes.LightSteelBlue;
+			Brush brush = Brushes.LightSteelBlue;
+			gridLine.Stroke = brush;
 			if (isHorizontal)
-				SetPointsInXDirection(spacing, i, gridnumber, gridLine);
+				SetPointsInXDirection(gridWidth, i, gridnumber, gridLine, gridHeight);
 			else
-				SetPointsInYDirection(spacing, i, gridnumber, gridLine);
+				SetPointsInYDirection(gridWidth, i, gridnumber, gridLine, gridHeight);
 			gridLine.HorizontalAlignment = 0;
 			gridLine.VerticalAlignment = 0;
 			gridLine.StrokeThickness = 1;
@@ -79,21 +81,22 @@ namespace DeltaEngine.Editor.UIEditor
 			lineList.Add(gridLine);
 		}
 
-		private static void SetPointsInXDirection(int spacing, int i, float gridnumber, Line myLine)
+		private static void SetPointsInXDirection(int spacing, int i, float gridnumber, Line gridLine,
+			int gridHeight)
 		{
-			myLine.X1 = 0;
-			myLine.X2 = spacing;
-			myLine.Y1 = i * (spacing / gridnumber);
-			myLine.Y2 = i * (spacing / gridnumber);
+			gridLine.X1 = 0;
+			gridLine.X2 = gridHeight;
+			gridLine.Y1 = i * (spacing / gridnumber);
+			gridLine.Y2 = i * (spacing / gridnumber);
 		}
 
-		private static void SetPointsInYDirection(int gridHeight, int i, float numberOfVerticalGrid,
-			Line myLine)
+		private static void SetPointsInYDirection(int spacing, int i, float gridNumber, Line gridLine,
+			int gridHeight)
 		{
-			myLine.X1 = i * (gridHeight / numberOfVerticalGrid);
-			myLine.X2 = i * (gridHeight / numberOfVerticalGrid);
-			myLine.Y1 = 0;
-			myLine.Y2 = gridHeight;
+			gridLine.X1 = i * (spacing / gridNumber);
+			gridLine.X2 = i * (spacing / gridNumber);
+			gridLine.Y1 = 0;
+			gridLine.Y2 = gridHeight;
 		}
 	}
 }

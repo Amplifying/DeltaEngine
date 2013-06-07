@@ -15,6 +15,13 @@ namespace DeltaEngine.Rendering.Tests.Sprites
 		[VisualTest, ApproveFirstFrameScreenshot]
 		public void RenderAnimatedSprite(Type resolver)
 		{
+			Start(resolver, (ContentLoader content) =>
+			{ new Animation("ImageAnimation", content, new Rectangle(0.4f, 0.4f, 0.2f, 0.2f), 1); });
+		}
+
+		[VisualTest]
+		public void CheckAnimatedTime(Type resolver)
+		{
 			Animation animation = null;
 			Start(resolver,
 				(ContentLoader content) =>

@@ -63,10 +63,6 @@
       <Project>{cc65e69e-fafd-4c2b-85eb-5e57fd3af847}</Project>
       <Name>DeltaEngine.Input</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Multimedia\BaseOpenAL\DeltaEngine.Multimedia.BaseOpenAL.csproj">
-      <Project>{5fcf8fb8-975f-43b2-a364-29ec3d6ceac0}</Project>
-      <Name>DeltaEngine.Multimedia.BaseOpenAL</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Multimedia\DeltaEngine.Multimedia.csproj">
       <Project>{6016abb8-05f5-4a07-8fba-16576277dde7}</Project>
       <Name>DeltaEngine.Multimedia</Name>

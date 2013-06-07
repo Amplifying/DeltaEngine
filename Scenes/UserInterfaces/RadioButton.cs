@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Input;
@@ -21,27 +19,12 @@ namespace DeltaEngine.Scenes.UserInterfaces
 			: base(theme.RadioButtonBackground, theme.Font, drawArea)
 		{
 			Text = text;
+			Add(new Data());
 			Add(theme);
 			Add(new Interact.State());
 			Add<Interact, Interact.Clicking>();
-			Add(new Data());
 			Add(new Sprite(theme.RadioButtonNotSelected.Image, theme.RadioButtonNotSelected.Color));
 			Add<UpdateAppearance>();
-		}
-
-		public void Clicking()
-		{
-			IsSelected = true;
-			if (Clicked != null)
-				Clicked();
-		}
-
-		public event Action Clicked;
-
-		public bool IsSelected
-		{
-			get { return Get<Data>().IsSelected; }
-			set { Get<Data>().IsSelected = value; }
 		}
 
 		public class Data
@@ -49,16 +32,12 @@ namespace DeltaEngine.Scenes.UserInterfaces
 			public bool IsSelected { get; set; }
 		}
 
-		public class UpdateAppearance : EntityHandler
+		private class UpdateAppearance : EntityHandler
 		{
-			public override void Handle(List<Entity> entities)
+			public override void Handle(Entity entity)
 			{
-				foreach (RadioButton button in entities.OfType<RadioButton>())
-					UpdateSelectorGraphics(button, button.Get<Sprite>());
-			}
-
-			private static void UpdateSelectorGraphics(RadioButton button, Sprite selector)
-			{
+				var button = entity as RadioButton;
+				var selector = entity.Get<Sprite>();
 				UpdateSelectorDrawArea(button, selector);
 				UpdateSelectorAppearance(button, selector);
 			}
@@ -90,6 +69,21 @@ namespace DeltaEngine.Scenes.UserInterfaces
 				entity.Set(appearance.Image);
 				entity.Set(appearance.Color);
 			}
+		}
+
+		public void Clicking()
+		{
+			IsSelected = true;
+			if (Clicked != null)
+				Clicked();
+		}
+
+		public event Action Clicked;
+
+		public bool IsSelected
+		{
+			get { return Get<Data>().IsSelected; }
+			set { Get<Data>().IsSelected = value; }
 		}
 	}
 }

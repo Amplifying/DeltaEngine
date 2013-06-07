@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
@@ -209,13 +208,9 @@ namespace DeltaEngine.Scenes.Tests
 
 		private class SpinIfHovering : EntityHandler
 		{
-			public override void Handle(List<Entity> entities)
+			public override void Handle(Entity entity)
 			{
-				foreach (Entity entity in
-					entities.Where(
-						e =>
-							e.Contains<float>() && e.Contains<Interact.State>() &&
-								e.Get<Interact.State>().IsHovering))
+				if (entity.Get<Interact.State>().IsHovering)
 					entity.Set(entity.Get<float>() + Time.Current.Delta * SpinRate);
 			}
 

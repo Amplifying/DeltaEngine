@@ -18,11 +18,16 @@ namespace Asteroids
 			controls = new GameControls(this, input);
 			score = 0;
 			SetUpBackground();
-			GameLogic = new GameLogic(content);
-			GameLogic.GameOver += () => { GameOver(); };
 			GameState = GameState.Playing;
+			GameLogic = new GameLogic(content);
+			SetUpEvents();
 			controls.SetControlsToState(GameState);
 			hudInterface = new HudInterface(content, screenSpace);
+		}
+
+		private void SetUpEvents()
+		{
+			GameLogic.GameOver += () => { GameOver(); };
 			GameLogic.IncreaseScore += increase =>
 			{
 				score += increase;

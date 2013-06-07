@@ -1,21 +1,26 @@
 using System;
-using System.Collections.Generic;
 using DeltaEngine.Entities;
 
 namespace DeltaEngine.Input
 {
 	/// <summary>
-	/// Allows entities to respond to keyboard input by sending them a message on a key release
+	/// Allows entities to respond to keyboard input by sending them a message on a key press or hold
 	/// </summary>
 	public class InteractWithKeyboard : EntityHandler
 	{
 		public InteractWithKeyboard(InputCommands input)
 		{
 			foreach (Key key in Enum.GetValues(typeof(Key)))
-				input.Add(key, KeyPressed);
+				AddEventsForKey(input, key);
 		}
 
-		private void KeyPressed(Key key)
+		private void AddEventsForKey(InputCommands input, Key key)
+		{
+			input.Add(key, PressKey);
+			input.Add(key, State.Pressed, HoldKey);
+		}
+
+		private void PressKey(Key key)
 		{
 			var entities = EntitySystem.Current.GetEntitiesByHandler(this);
 			foreach (var entity in entities)
@@ -32,6 +37,23 @@ namespace DeltaEngine.Input
 			public Key Key { get; private set; }
 		}
 
-		public override void Handle(List<Entity> entities) {}
+		private void HoldKey(Key key)
+		{
+			var entities = EntitySystem.Current.GetEntitiesByHandler(this);
+			foreach (var entity in entities)
+				entity.MessageAllListeners(new KeyHeld(key));
+		}
+
+		public class KeyHeld
+		{
+			public KeyHeld(Key key)
+			{
+				Key = key;
+			}
+
+			public Key Key { get; private set; }
+		}
+
+		public override void Handle(Entity entity) {}
 	}
 }

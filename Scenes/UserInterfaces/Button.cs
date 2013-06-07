@@ -20,15 +20,7 @@ namespace DeltaEngine.Scenes.UserInterfaces
 			Add<Interact, Interact.Clicking, UpdateAppearance>();
 		}
 
-		public void Clicking()
-		{
-			if (Clicked != null)
-				Clicked();
-		}
-
-		public event Action Clicked;
-
-		public class UpdateAppearance : EntityListener
+		private class UpdateAppearance : EntityListener
 		{
 			public override void ReceiveMessage(Entity entity, object message)
 			{
@@ -53,5 +45,13 @@ namespace DeltaEngine.Scenes.UserInterfaces
 				entity.Set(appearance.Color);
 			}
 		}
+
+		public void Clicking()
+		{
+			if (Clicked != null)
+				Clicked();
+		}
+
+		public event Action Clicked;
 	}
 }

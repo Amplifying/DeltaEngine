@@ -4,17 +4,29 @@ using DeltaEngine.Editor.Builder;
 
 namespace DeltaEngine.Editor.Launcher
 {
+	/// <summary>
+	/// Represents a Android device (emulator or real connected one) that provides the functionality
+	/// to install, uninstall and launch applications on it.
+	/// </summary>
 	public class AndroidDevice : Device
 	{
-		public AndroidDevice(string adbDeviceId, string deviceState, string deviceName)
+		public AndroidDevice(AndroidDebugBridgeRunner adbRunner, string adbDeviceId, string deviceState)
 		{
+			this.adbRunner = adbRunner;
 			AdbId = adbDeviceId;
 			state = deviceState;
-			Name = deviceName;
+			DetermineDeviceName();
 		}
 
+		private readonly AndroidDebugBridgeRunner adbRunner;
 		internal string AdbId { get; private set; }
 		private readonly string state;
+
+		private void DetermineDeviceName()
+		{
+			Name = adbRunner.GetDeviceName(AdbId);
+		}
+
 		public string Name { get; private set; }
 
 		public bool IsEmulator
@@ -27,8 +39,8 @@ namespace DeltaEngine.Editor.Launcher
 			get { return state == ConnectedState; }
 		}
 
+		// The value for the disconnected state is "offline"
 		private const string ConnectedState = "device";
-		private const string DisconnectedState = "offline";
 
 		public bool IsAppInstalled(AppPackage app)
 		{
@@ -38,7 +50,6 @@ namespace DeltaEngine.Editor.Launcher
 		public void Install(AppPackage app)
 		{
 			SavePackage(app);
-			var adbRunner = new AndroidDebugBridgeRunner();
 			adbRunner.InstallPackage(this, GetPackageSaveFilePath(app));
 		}
 
@@ -67,7 +78,6 @@ namespace DeltaEngine.Editor.Launcher
 
 		public void Launch(AppPackage app)
 		{
-			var adbRunner = new AndroidDebugBridgeRunner();
 			adbRunner.StartApplication(this, app.AppName);
 		}
 

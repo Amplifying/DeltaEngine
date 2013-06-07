@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
@@ -52,22 +53,31 @@ namespace DeltaEngine.Rendering.Sprites
 		/// <summary>
 		/// Responsible for rendering sprites
 		/// </summary>
-		public class Render : EntityListener
+		private class Render : EntityListener
 		{
 			public Render(ScreenSpace screen, Drawing drawing)
 			{
 				this.screen = screen;
 				this.drawing = drawing;
+				drawingSprites = new Dictionary<Image, SpriteInfo>();
 			}
 
 			private readonly ScreenSpace screen;
 			private readonly Drawing drawing;
+			private readonly Dictionary<Image, SpriteInfo> drawingSprites;
 
-			public override void ReceiveMessage(Entity entity, object message)
+			public override void Handle(Entity entity)
 			{
-				if (message is SortAndRender.TimeToRender)
-					RenderSprite(entity);
+				if (entity.Get<Visibility>() == Visibility.Hide)
+					return;
+
+				drawingSprites.Clear();
+				RenderSprite(entity);
+				foreach (var sprite in drawingSprites)
+					drawing.DrawQuad(sprite.Key, sprite.Value.vertices, sprite.Value.indices);
 			}
+
+			public override void ReceiveMessage(Entity entity, object message) {}
 
 			private void RenderSprite(Entity entity)
 			{
@@ -77,7 +87,7 @@ namespace DeltaEngine.Rendering.Sprites
 				var rotationCenter = entity.Contains<RotationCenter>()
 					? entity.Get<RotationCenter>().Value : center;
 
-				var vertices = new[]
+				var newVertices = new List<VertexPositionColorTextured>
 				{
 					GetVertex(drawArea.TopLeft.RotateAround(rotationCenter, rotation), Point.Zero, entity),
 					GetVertex(drawArea.TopRight.RotateAround(rotationCenter, rotation), Point.UnitX, entity),
@@ -85,13 +95,47 @@ namespace DeltaEngine.Rendering.Sprites
 					GetVertex(drawArea.BottomLeft.RotateAround(rotationCenter, rotation), Point.UnitY, entity)
 				};
 				var image = entity.Get<Image>();
-				drawing.DrawQuad(image, vertices);
+				CheckIfNewImage(image, newVertices);
+			}
+
+			private void CheckIfNewImage(Image image, List<VertexPositionColorTextured> newVertices)
+			{
+				if (!drawingSprites.ContainsKey(image))
+					drawingSprites.Add(image,
+						new SpriteInfo { vertices = newVertices, indices = new List<short> { 0, 1, 2, 0, 2, 3 } });
+				else
+					AddNewVerticesToList(image, newVertices);
+			}
+
+			private void AddNewVerticesToList(Image image, List<VertexPositionColorTextured> newVertices)
+			{
+				SpriteInfo spriteInfo;
+				drawingSprites.TryGetValue(image, out spriteInfo);
+				SetIndicesOfNewVertices(spriteInfo);
+				foreach (var vertice in newVertices)
+					spriteInfo.vertices.Add(vertice);
+			}
+
+			private static void SetIndicesOfNewVertices(SpriteInfo spriteInfo)
+			{
+				spriteInfo.indices.Add((short)spriteInfo.vertices.Count);
+				spriteInfo.indices.Add((short)(spriteInfo.vertices.Count + 1));
+				spriteInfo.indices.Add((short)(spriteInfo.vertices.Count + 2));
+				spriteInfo.indices.Add((short)spriteInfo.vertices.Count);
+				spriteInfo.indices.Add((short)(spriteInfo.vertices.Count + 2));
+				spriteInfo.indices.Add((short)(spriteInfo.vertices.Count + 3));
 			}
 
 			private VertexPositionColorTextured GetVertex(Point position, Point uv, Entity entity)
 			{
 				return new VertexPositionColorTextured(screen.ToPixelSpaceRounded(position),
 					entity.Get<Color>(), uv);
+			}
+
+			private struct SpriteInfo
+			{
+				public List<VertexPositionColorTextured> vertices;
+				public List<short> indices;
 			}
 		}
 	}

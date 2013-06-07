@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Font Family="Verdana" Size="12" Style="AddOutline" LineHeight="16" Version="0.9.7" CreationDate="2013-05-07 21:46" Tool="DeltaEngine.Editor.FontGenerator">
+  <Bitmap Name="Verdana12Font" Width="128" Height="128"/>
+  <Glyphs>
+    <Glyph Character=" " UV="0 0 1 16" AdvanceWidth="7.34875" LeftBearing="0" RightBearing="4.21875"/>
+    <Glyph Character="!" UV="2 0 6 16" AdvanceWidth="4.852656" LeftBearing="1.705078" RightBearing="1.705078"/>
+    <Glyph Character="&quot;" UV="9 0 7 16" AdvanceWidth="5.637813" LeftBearing="0.984375" RightBearing="0.984375"/>
+    <Glyph Character="#" UV="17 0 11 16" AdvanceWidth="9.950313" LeftBearing="1.142578" RightBearing="1.142578"/>
+    <Glyph Character="$" UV="29 0 9 16" AdvanceWidth="7.758906" LeftBearing="0.9082031" RightBearing="0.8320313"/>
+    <Glyph Character="%" UV="39 0 14 16" AdvanceWidth="13.04406" LeftBearing="0.8730469" RightBearing="0.8730469"/>
+    <Glyph Character="&amp;" UV="54 0 10 16" AdvanceWidth="8.84875" LeftBearing="0.6738281" RightBearing="-0.3925781"/>
+    <Glyph Character="&apos;" UV="65 0 4 16" AdvanceWidth="3.352656" LeftBearing="0.9609375" RightBearing="0.9609375"/>
+    <Glyph Character="(" UV="70 0 7 16" AdvanceWidth="5.579219" LeftBearing="1.060547" RightBearing="0.8613281"/>
+    <Glyph Character=")" UV="78 0 7 16" AdvanceWidth="5.579219" LeftBearing="0.8613281" RightBearing="1.060547"/>
+    <Glyph Character="*" UV="86 0 9 16" AdvanceWidth="7.758906" LeftBearing="0.9785156" RightBearing="0.9667969"/>
+    <Glyph Character="+" UV="96 0 11 16" AdvanceWidth="9.950313" LeftBearing="1.230469" RightBearing="1.230469"/>
+    <Glyph Character="," UV="108 0 6 16" AdvanceWidth="4.495234" LeftBearing="0.8613281" RightBearing="0.9960938"/>
+    <Glyph Character="-" UV="115 0 7 16" AdvanceWidth="5.579219" LeftBearing="0.8964844" RightBearing="0.8964844"/>
+    <Glyph Character="." UV="0 16 6 16" AdvanceWidth="4.495234" LeftBearing="1.482422" RightBearing="1.482422"/>
+    <Glyph Character="/" UV="7 16 7 16" AdvanceWidth="5.579219" LeftBearing="-0.1757813" RightBearing="0.4101563"/>
+    <Glyph Character="0" UV="15 16 9 16" AdvanceWidth="7.758906" LeftBearing="0.8027344" RightBearing="0.7910156"/>
+    <Glyph Character="1" UV="25 16 9 16" AdvanceWidth="7.758906" LeftBearing="1.628906" RightBearing="1.277344"/>
+    <Glyph Character="2" UV="35 16 9 16" AdvanceWidth="7.758906" LeftBearing="0.9433594" RightBearing="0.7792969"/>
+    <Glyph Character="3" UV="45 16 9 16" AdvanceWidth="7.758906" LeftBearing="0.9785156" RightBearing="0.9023438"/>
+    <Glyph Character="4" UV="55 16 9 16" AdvanceWidth="7.758906" LeftBearing="0.4511719" RightBearing="0.5800781"/>
+    <Glyph Character="5" UV="65 16 9 16" AdvanceWidth="7.758906" LeftBearing="1.095703" RightBearing="0.8496094"/>
+    <Glyph Character="6" UV="75 16 9 16" AdvanceWidth="7.758906" LeftBearing="0.8027344" RightBearing="0.6503906"/>
+    <Glyph Character="7" UV="85 16 9 16" AdvanceWidth="7.758906" LeftBearing="0.9023438" RightBearing="0.7558594"/>
+    <Glyph Character="8" UV="95 16 9 16" AdvanceWidth="7.758906" LeftBearing="0.7148438" RightBearing="0.7148438"/>
+    <Glyph Character="9" UV="105 16 9 16" AdvanceWidth="7.758906" LeftBearing="0.6621094" RightBearing="0.7910156"/>
+    <Glyph Character=":" UV="115 16 7 16" AdvanceWidth="5.579219" LeftBearing="2.027344" RightBearing="2.021484"/>
+    <Glyph Character=";" UV="0 32 7 16" AdvanceWidth="5.579219" LeftBearing="1.347656" RightBearing="1.59375"/>
+    <Glyph Character="&lt;" UV="8 32 11 16" AdvanceWidth="9.950313" LeftBearing="1.488281" RightBearing="1.570313"/>
+    <Glyph Character="=" UV="20 32 11 16" AdvanceWidth="9.950313" LeftBearing="1.435547" RightBearing="1.435547"/>
+    <Glyph Character="&gt;" UV="32 32 11 16" AdvanceWidth="9.950313" LeftBearing="1.570313" RightBearing="1.488281"/>
+    <Glyph Character="?" UV="44 32 8 16" AdvanceWidth="6.674922" LeftBearing="0.9375" RightBearing="0.65625"/>
+    <Glyph Character="@" UV="53 32 13 16" AdvanceWidth="12.13" LeftBearing="1.03125" RightBearing="1.042969"/>
+    <Glyph Character="A" UV="67 32 9 16" AdvanceWidth="8.333125" LeftBearing="0.1523438" RightBearing="0.1523438"/>
+    <Glyph Character="B" UV="77 32 9 16" AdvanceWidth="8.356563" LeftBearing="1.171875" RightBearing="0.4746094"/>
+    <Glyph Character="C" UV="87 32 10 16" AdvanceWidth="8.508906" LeftBearing="0.6738281" RightBearing="0.46875"/>
+    <Glyph Character="D" UV="98 32 10 16" AdvanceWidth="9.376094" LeftBearing="1.171875" RightBearing="0.703125"/>
+    <Glyph Character="E" UV="109 32 9 16" AdvanceWidth="7.717891" LeftBearing="1.171875" RightBearing="0.6679688"/>
+    <Glyph Character="F" UV="119 32 8 16" AdvanceWidth="7.026484" LeftBearing="1.171875" RightBearing="0.1523438"/>
+    <Glyph Character="G" UV="0 48 11 16" AdvanceWidth="9.434688" LeftBearing="0.6738281" RightBearing="0.8554688"/>
+    <Glyph Character="H" UV="12 48 10 16" AdvanceWidth="9.147578" LeftBearing="1.171875" RightBearing="1.171875"/>
+    <Glyph Character="I" UV="23 48 6 16" AdvanceWidth="5.180781" LeftBearing="0.8027344" RightBearing="0.8027344"/>
+    <Glyph Character="J" UV="30 48 7 16" AdvanceWidth="5.585078" LeftBearing="0.2578125" RightBearing="1.083984"/>
+    <Glyph Character="K" UV="38 48 10 16" AdvanceWidth="8.444453" LeftBearing="1.201172" RightBearing="0.1289063"/>
+    <Glyph Character="L" UV="49 48 8 16" AdvanceWidth="6.809688" LeftBearing="1.171875" RightBearing="-0.01171875"/>
+    <Glyph Character="M" UV="58 48 11 16" AdvanceWidth="10.24328" LeftBearing="1.171875" RightBearing="1.171875"/>
+    <Glyph Character="N" UV="70 48 10 16" AdvanceWidth="9.106563" LeftBearing="1.171875" RightBearing="1.148438"/>
+    <Glyph Character="O" UV="81 48 11 16" AdvanceWidth="9.575313" LeftBearing="0.6738281" RightBearing="0.6679688"/>
+    <Glyph Character="P" UV="93 48 8 16" AdvanceWidth="7.366328" LeftBearing="1.171875" RightBearing="0.3574219"/>
+    <Glyph Character="Q" UV="102 48 11 16" AdvanceWidth="9.575313" LeftBearing="0.6738281" RightBearing="0.4921875"/>
+    <Glyph Character="R" UV="114 48 10 16" AdvanceWidth="8.47375" LeftBearing="1.171875" RightBearing="-0.046875"/>
+    <Glyph Character="S" UV="0 64 9 16" AdvanceWidth="8.333125" LeftBearing="0.7851563" RightBearing="0.6914063"/>
+    <Glyph Character="T" UV="10 64 9 16" AdvanceWidth="7.524531" LeftBearing="0" RightBearing="0"/>
+    <Glyph Character="U" UV="20 64 10 16" AdvanceWidth="8.913203" LeftBearing="1.042969" RightBearing="1.042969"/>
+    <Glyph Character="V" UV="31 64 9 16" AdvanceWidth="8.333125" LeftBearing="0.1523438" RightBearing="0.1523438"/>
+    <Glyph Character="W" UV="41 64 13 16" AdvanceWidth="11.99523" LeftBearing="0.5390625" RightBearing="0.5390625"/>
+    <Glyph Character="X" UV="55 64 9 16" AdvanceWidth="8.350703" LeftBearing="0.3984375" RightBearing="0.3925781"/>
+    <Glyph Character="Y" UV="65 64 9 16" AdvanceWidth="7.512813" LeftBearing="0.03515625" RightBearing="0.03515625"/>
+    <Glyph Character="Z" UV="75 64 9 16" AdvanceWidth="8.350703" LeftBearing="0.7382813" RightBearing="0.6738281"/>
+    <Glyph Character="[" UV="85 64 7 16" AdvanceWidth="5.579219" LeftBearing="1.400391" RightBearing="1.001953"/>
+    <Glyph Character="\" UV="93 64 7 16" AdvanceWidth="5.579219" LeftBearing="0.4101563" RightBearing="-0.1757813"/>
+    <Glyph Character="]" UV="101 64 7 16" AdvanceWidth="5.579219" LeftBearing="1.001953" RightBearing="1.400391"/>
+    <Glyph Character="^" UV="109 64 11 16" AdvanceWidth="9.950313" LeftBearing="1.089844" RightBearing="1.089844"/>
+    <Glyph Character="_" UV="0 80 9 16" AdvanceWidth="7.758906" LeftBearing="-0.0234375" RightBearing="-0.0234375"/>
+    <Glyph Character="`" UV="10 80 9 16" AdvanceWidth="7.758906" LeftBearing="1.992188" RightBearing="3.164063"/>
+    <Glyph Character="a" UV="20 80 8 16" AdvanceWidth="7.337031" LeftBearing="0.609375" RightBearing="1.037109"/>
+    <Glyph Character="b" UV="29 80 9 16" AdvanceWidth="7.606563" LeftBearing="1.083984" RightBearing="0.6328125"/>
+    <Glyph Character="c" UV="39 80 7 16" AdvanceWidth="6.381953" LeftBearing="0.6152344" RightBearing="0.328125"/>
+    <Glyph Character="d" UV="47 80 9 16" AdvanceWidth="7.606563" LeftBearing="0.6328125" RightBearing="1.083984"/>
+    <Glyph Character="e" UV="57 80 8 16" AdvanceWidth="7.278438" LeftBearing="0.6210938" RightBearing="0.5859375"/>
+    <Glyph Character="f" UV="66 80 5 16" AdvanceWidth="4.34875" LeftBearing="0.3984375" RightBearing="-0.3867188"/>
+    <Glyph Character="g" UV="72 80 9 16" AdvanceWidth="7.606563" LeftBearing="0.6328125" RightBearing="1.083984"/>
+    <Glyph Character="h" UV="82 80 9 16" AdvanceWidth="7.72375" LeftBearing="1.083984" RightBearing="1.037109"/>
+    <Glyph Character="i" UV="92 80 4 16" AdvanceWidth="3.422969" LeftBearing="1.025391" RightBearing="1.025391"/>
+    <Glyph Character="j" UV="97 80 5 16" AdvanceWidth="4.260859" LeftBearing="-0.3632813" RightBearing="1.007813"/>
+    <Glyph Character="k" UV="103 80 8 16" AdvanceWidth="7.231563" LeftBearing="1.130859" RightBearing="0.07617188"/>
+    <Glyph Character="l" UV="112 80 4 16" AdvanceWidth="3.422969" LeftBearing="1.095703" RightBearing="1.095703"/>
+    <Glyph Character="m" UV="0 96 13 16" AdvanceWidth="11.80188" LeftBearing="1.083984" RightBearing="1.037109"/>
+    <Glyph Character="n" UV="14 96 9 16" AdvanceWidth="7.72375" LeftBearing="1.083984" RightBearing="1.037109"/>
+    <Glyph Character="o" UV="24 96 8 16" AdvanceWidth="7.413203" LeftBearing="0.6210938" RightBearing="0.6210938"/>
+    <Glyph Character="p" UV="33 96 9 16" AdvanceWidth="7.606563" LeftBearing="1.083984" RightBearing="0.6328125"/>
+    <Glyph Character="q" UV="43 96 9 16" AdvanceWidth="7.606563" LeftBearing="0.6328125" RightBearing="1.083984"/>
+    <Glyph Character="r" UV="53 96 6 16" AdvanceWidth="5.251094" LeftBearing="1.083984" RightBearing="-0.046875"/>
+    <Glyph Character="s" UV="60 96 7 16" AdvanceWidth="6.381953" LeftBearing="0.6445313" RightBearing="0.4921875"/>
+    <Glyph Character="t" UV="68 96 6 16" AdvanceWidth="4.858516" LeftBearing="0.3632813" RightBearing="0.2460938"/>
+    <Glyph Character="u" UV="75 96 9 16" AdvanceWidth="7.72375" LeftBearing="1.037109" RightBearing="1.083984"/>
+    <Glyph Character="v" UV="85 96 8 16" AdvanceWidth="7.231563" LeftBearing="0.3574219" RightBearing="0.3574219"/>
+    <Glyph Character="w" UV="94 96 11 16" AdvanceWidth="9.950313" LeftBearing="0.5039063" RightBearing="0.5039063"/>
+    <Glyph Character="x" UV="106 96 8 16" AdvanceWidth="7.231563" LeftBearing="0.3515625" RightBearing="0.3515625"/>
+    <Glyph Character="y" UV="115 96 8 16" AdvanceWidth="7.231563" LeftBearing="0.3574219" RightBearing="0.3574219"/>
+    <Glyph Character="z" UV="0 112 8 16" AdvanceWidth="6.434688" LeftBearing="0.5449219" RightBearing="0.4746094"/>
+    <Glyph Character="{" UV="9 112 9 16" AdvanceWidth="7.747188" LeftBearing="1.013672" RightBearing="1.095703"/>
+    <Glyph Character="|" UV="19 112 7 16" AdvanceWidth="5.579219" LeftBearing="2.214844" RightBearing="2.214844"/>
+    <Glyph Character="}" UV="27 112 9 16" AdvanceWidth="7.747188" LeftBearing="1.095703" RightBearing="1.013672"/>
+    <Glyph Character="~" UV="37 112 11 16" AdvanceWidth="9.950313" LeftBearing="1.095703" RightBearing="1.095703"/>
+  </Glyphs>
+  <Kernings>
+  </Kernings>
+</Font>

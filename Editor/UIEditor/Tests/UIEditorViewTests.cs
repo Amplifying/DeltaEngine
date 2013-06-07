@@ -89,28 +89,28 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 		public void ChangeGridSnapping()
 		{
 			uiEditorView.ChangeGridSnapping(null, routedEvent);
-			Assert.AreEqual(1, uiEditorView.uiEditorViewModel.PixelSnapgrid);
+			Assert.AreEqual(5, uiEditorView.uiEditorViewModel.PixelSnapgrid);
 		}
 
 		[Test, STAThread]
 		public void ChangeGridWidth()
 		{
 			uiEditorView.ChangeGridWidth(null, routedEvent);
-			Assert.AreEqual(50, uiEditorView.uiEditorViewModel.GridWidth);
+			Assert.AreEqual(640, uiEditorView.uiEditorViewModel.GridWidth);
 		}
 
 		[Test, STAThread]
 		public void ChangeGridHeight()
 		{
 			uiEditorView.ChangeGridHeight(null, routedEvent);
-			Assert.AreEqual(50, uiEditorView.uiEditorViewModel.GridHeight);
+			Assert.AreEqual(480, uiEditorView.uiEditorViewModel.GridHeight);
 		}
 
 		[Test, STAThread]
 		public void LayerChanged()
 		{
 			uiEditorView.LayerChanged(null, routedEvent);
-			Assert.AreEqual(50, uiEditorView.uiEditorViewModel.GridHeight);
+			Assert.AreEqual(480, uiEditorView.uiEditorViewModel.GridHeight);
 		}
 
 		[Test, STAThread, Category("slow")]

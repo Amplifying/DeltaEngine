@@ -71,6 +71,10 @@
       <Project>{cc65e69e-fafd-4c2b-85eb-5e57fd3af847}</Project>
       <Name>DeltaEngine.Input</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Input\Windows\DeltaEngine.Input.Windows.csproj">
+      <Project>{C0D2430E-714D-476C-80E7-5C80A7FA68EE}</Project>
+      <Name>DeltaEngine.Input.Windows</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Platforms\All\DeltaEngine.Platforms.All.csproj">
       <Project>{cc714f92-36aa-44e1-aa01-495d9a6588d2}</Project>
       <Name>DeltaEngine.Platforms.All</Name>
@@ -89,6 +93,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\ContentMetaData.xml">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\ImageAnimation01.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -98,11 +106,17 @@
     <Content Include="Content\ImageAnimation03.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\WalkingCharacter.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\Tahoma30Font.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Tahoma30.xml">
       <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\VectorText.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Verdana12Font.png">
@@ -123,8 +137,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Fonts\TextConverterTests.cs" />
+    <Compile Include="Fonts\TextParserTests.cs" />
+    <Compile Include="Fonts\TextWrapperTests.cs" />
+    <Compile Include="Fonts\VectorTextTests.cs" />
     <Compile Include="Fonts\FontTextTests.cs" />
-    <Compile Include="Particles\ParticelTests.cs" />
+    <Compile Include="Particles\ParticleTests.cs" />
+    <Compile Include="Particles\ParticleTutorials.cs" />
     <Compile Include="Sprites\AnimationTests.cs" />
     <Compile Include="Fonts\FontDataTests.cs" />
     <Compile Include="Fonts\FontTests.cs" />
@@ -140,6 +159,7 @@
     <Compile Include="Shapes\RenderPolygonOutlineTests.cs" />
     <Compile Include="Shapes\RenderPolygonTests.cs" />
     <Compile Include="RotationCenterTests.cs" />
+    <Compile Include="Sprites\SpriteSheetTests.cs" />
     <Compile Include="Sprites\SpriteTests.cs" />
     <Compile Include="TransitionTests.cs" />
     <Compile Include="Shapes\Triangle2DTests.cs" />

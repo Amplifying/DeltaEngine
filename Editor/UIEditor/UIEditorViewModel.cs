@@ -218,9 +218,9 @@ namespace DeltaEngine.Editor.UIEditor
 
 		private void SetDefaultGridParameters()
 		{
-			GridWidth = 50;
-			GridHeight = 50;
-			PixelSnapgrid = 1;
+			GridWidth = 640;
+			GridHeight = 480;
+			PixelSnapgrid = 5;
 		}
 
 		private void ChangeProject(string project)

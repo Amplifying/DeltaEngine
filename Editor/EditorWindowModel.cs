@@ -27,6 +27,7 @@ namespace DeltaEngine.Editor
 			EditorPlugins = new List<EditorPluginView>();
 		}
 
+		private readonly OnlineService service = new OnlineService(new TcpSocket());
 		private readonly EditorPluginLoader plugins;
 
 		private void RegisterCommands()
@@ -127,8 +128,6 @@ namespace DeltaEngine.Editor
 			else
 				service.Login(ApiKey, successfullyLoggedIn => IsLoggedIn = successfullyLoggedIn);
 		}
-
-		private readonly OnlineService service = new OnlineService(new TcpSocket());
 
 		public ICommand OnGetApiKeyClicked { get; private set; }
 		public ICommand OnLogoutButtonClicked { get; private set; }

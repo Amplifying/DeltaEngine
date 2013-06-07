@@ -46,7 +46,8 @@ namespace DeltaEngine.Graphics.OpenTK
 			lastIndicesCount = InvalidHandle;
 		}
 
-		public override void DrawVertices(VerticesMode mode, VertexPositionColorTextured[] vertices)
+		public override void DrawVerticesForSprite(VerticesMode mode, VertexPositionColorTextured[] 
+			vertices)
 		{
 			if (!positionColorUvBuffer.IsCreated)
 				positionColorUvBuffer.Create();

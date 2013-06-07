@@ -52,6 +52,7 @@ namespace Blocks
 		}
 
 		public Block UpcomingBlock { get; internal set; }
+
 		private void CreateUpcomingBlock()
 		{
 			UpcomingBlock = new Block(displayMode, content, Point.Zero);
@@ -59,10 +60,9 @@ namespace Blocks
 			UpcomingBlock.Top = upcomingBlockCenter.Y - UpcomingBlock.Center.Y;
 			UpcomingBlock.UpdateBrickDrawAreas(0.0f);
 		}
+
 		private readonly Point upcomingBlockCenter = new Point(9, -4);
 		public Block FallingBlock { get; internal set; }
-
-
 
 		private bool IsABrickOnTopRowOrIsNoRoomForNextBlock()
 		{
@@ -192,19 +192,16 @@ namespace Blocks
 
 		internal class InteractionHandler : EntityHandler
 		{
-			public override void Handle(List<Entity> entities)
+			public override void Handle(Entity entity)
 			{
-				foreach (Controller entity in entities)
-				{
-					if (entity.FallingBlock == null)
-						entity.GetNewFallingBlock();
+				var controller = entity as Controller;
+				if (controller.FallingBlock == null)
+					controller.GetNewFallingBlock();
 
-					entity.MoveFallingBlock();
-
-					entity.UpdateElapsed();
-					if (entity.elapsed >= BlockMoveInterval)
-						entity.MoveBlock();
-				}
+				controller.MoveFallingBlock();
+				controller.UpdateElapsed();
+				if (controller.elapsed >= BlockMoveInterval)
+					controller.MoveBlock();
 			}
 		}
 

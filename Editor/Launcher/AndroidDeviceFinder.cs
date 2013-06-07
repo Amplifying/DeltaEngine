@@ -31,7 +31,7 @@ namespace DeltaEngine.Editor.Launcher
 			string[] infoParts = deviceinfo.Split('\t');
 			string adbDeviceId = infoParts[0];
 			string deviceState = infoParts[1];
-			return new AndroidDevice(adbDeviceId, deviceState, adbRunner.GetDeviceName(adbDeviceId));
+			return new AndroidDevice(adbRunner, adbDeviceId, deviceState);
 		}
 	}
 }

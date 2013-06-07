@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace DeltaEngine.Entities.Tests
@@ -38,9 +37,9 @@ namespace DeltaEngine.Entities.Tests
 		/// </summary>
 		private class SendMessage : EntityHandler
 		{
-			public override void Handle(List<Entity> activeEntities)
+			public override void Handle(Entity entity)
 			{
-				activeEntities[0].MessageAllListeners(new Message());
+				entity.MessageAllListeners(new Message());
 			}
 
 			public override EntityHandlerPriority Priority

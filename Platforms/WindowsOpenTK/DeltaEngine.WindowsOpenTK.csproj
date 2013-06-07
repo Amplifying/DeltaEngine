@@ -43,10 +43,6 @@
       <Project>{A8D386EA-D376-46EA-A721-2BA51426A721}</Project>
       <Name>DeltaEngine.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Graphics\BaseOpenGL\DeltaEngine.Graphics.BaseOpenGL.csproj">
-      <Project>{E537BD64-3A78-4908-9DDD-7F7F2B06F7FC}</Project>
-      <Name>DeltaEngine.Graphics.BaseOpenGL</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Graphics\DeltaEngine.Graphics.csproj">
       <Project>{8F701B0D-48B6-45CF-85E0-286BD53328BA}</Project>
       <Name>DeltaEngine.Graphics</Name>
@@ -62,10 +58,6 @@
     <ProjectReference Include="..\..\Input\Windows\DeltaEngine.Input.Windows.csproj">
       <Project>{c0d2430e-714d-476c-80e7-5c80a7fa68ee}</Project>
       <Name>DeltaEngine.Input.Windows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Multimedia\BaseOpenAL\DeltaEngine.Multimedia.BaseOpenAL.csproj">
-      <Project>{5fcf8fb8-975f-43b2-a364-29ec3d6ceac0}</Project>
-      <Name>DeltaEngine.Multimedia.BaseOpenAL</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Multimedia\DeltaEngine.Multimedia.csproj">
       <Project>{6016ABB8-05F5-4A07-8FBA-16576277DDE7}</Project>

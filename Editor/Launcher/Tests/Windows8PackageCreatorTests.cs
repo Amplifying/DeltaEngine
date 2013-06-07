@@ -1,6 +1,7 @@
 using System.IO;
 using NCrunch.Framework;
 using NUnit.Framework;
+using Category = NUnit.Framework.CategoryAttribute; 
 
 namespace DeltaEngine.Editor.Launcher.Tests
 {
@@ -34,7 +35,7 @@ namespace DeltaEngine.Editor.Launcher.Tests
 				() => packageCreator.CreatePackage(GetTestDirOrFile("/"), outputPath));
 		}
 
-		[Test, NUnit.Framework.Category("Slow")]
+		[Test, Category("Slow")]
 		public void TestPackageCreation()
 		{
 			var packageCreator = new Windows8StorePackageCreator();
@@ -54,7 +55,7 @@ namespace DeltaEngine.Editor.Launcher.Tests
 				() => packageCreator.SignPackage(outputPath, @"X:\Key.pfx"));
 		}
 
-		[Test, NUnit.Framework.Category("Slow")]
+		[Test, Category("Slow")]
 		public void TestSignPackage()
 		{
 			var packageCreator = new Windows8StorePackageCreator();

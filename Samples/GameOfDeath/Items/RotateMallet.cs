@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using DeltaEngine.Core;
 using DeltaEngine.Entities;
 
@@ -10,17 +8,12 @@ namespace GameOfDeath.Items
 	/// </summary>
 	public class RotateMallet : EntityHandler
 	{
-		public override void Handle(List<Entity> entities)
+		public override void Handle(Entity entity)
 		{
-			foreach (Mallet mallet in entities.OfType<Mallet>())
-				UpdateRotation(mallet);
-		}
-
-		private static void UpdateRotation(Mallet mallet)
-		{
+			var rotation = entity.Get<float>();
 			var rotationAdjust = RotationSpeed * Time.Current.Delta;
-			if (mallet.Rotation < 0 - rotationAdjust)
-				mallet.Rotation += rotationAdjust;
+			if (rotation < 0 - rotationAdjust)
+				entity.Set(rotation + rotationAdjust);
 		}
 
 		private const float RotationSpeed = 300;

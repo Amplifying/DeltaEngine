@@ -13,8 +13,8 @@ namespace DeltaEngine.Editor.Launcher
 	// @see http://geekswithblogs.net/cwilliams/archive/2010/08/03/141171.aspx
 
 	/// <summary>
-	/// Represents a connected WP7 device that provides the functionality to install, uninstall and
-	/// launch applications on it.
+	/// Represents a WP7 device (emulator or real connected one) that provides the functionality to
+	/// install, uninstall and launch applications on it.
 	/// </summary>
 	public class WP7Device : Device
 	{

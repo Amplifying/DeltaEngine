@@ -95,9 +95,7 @@ namespace DeltaEngine.Physics2D.Tests
 				trigger.Fired += entity => entity.Set(Color.GetRandomBrightColor());
 				CreateFallingSprite(content).AddTrigger(trigger);
 				if (resolver == typeof(MockResolver))
-				{
 					mockResolver.AdvanceTimeAndExecuteRunners(8);
-				}
 			});
 		}
 
@@ -129,6 +127,18 @@ namespace DeltaEngine.Physics2D.Tests
 				});
 				ellipse.Add<SimplePhysics.BounceOffScreenEdges>();
 			});
+		}
+
+		[VisualTest]
+		public void RenderRotatingRect(Type resolver)
+		{
+			Start(resolver, () =>
+			{ 
+				var rect = new Rect(Rectangle.FromCenter(Point.Half, new Size(0.2f)), Color.Orange);
+				rect.Add(new SimplePhysics.Data { Gravity = Point.Zero, RotationSpeed = 5});
+				rect.Add<SimplePhysics.Rotate>();
+			});
+
 		}
 	}
 }

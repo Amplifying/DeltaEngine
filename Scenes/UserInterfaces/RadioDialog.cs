@@ -19,6 +19,24 @@ namespace DeltaEngine.Scenes.UserInterfaces
 			Add<ArrangeButtons>();
 		}
 
+		private class ArrangeButtons : EntityHandler
+		{
+			public override void Handle(Entity entity)
+			{
+				var dialog = entity as RadioDialog;
+				var buttons = entity.Get<List<RadioButton>>();
+				if (buttons.Count == 0)
+					return;
+
+				float height = dialog.DrawArea.Height / buttons.Count;
+				var background = dialog.Get<Theme>().RadioButtonBackground.Image;
+				float width = height * background.PixelSize.AspectRatio;
+				for (int i = 0; i < buttons.Count; i++)
+					buttons[i].DrawArea = new Rectangle(dialog.DrawArea.Left, dialog.DrawArea.Top + i * height,
+						width, height);
+			}
+		}
+
 		public void AddButton(string text)
 		{
 			var button = new RadioButton(Get<Theme>(), text);
@@ -34,29 +52,6 @@ namespace DeltaEngine.Scenes.UserInterfaces
 			var buttons = Get<List<RadioButton>>();
 			foreach (RadioButton button in buttons)
 				button.IsSelected = (button == clicked);
-		}
-
-		public class ArrangeButtons : EntityHandler
-		{
-			public override void Handle(List<Entity> entities)
-			{
-				foreach (Entity2D entity in entities.OfType<Entity2D>())
-					ArrangeEntityButtons(entity);
-			}
-
-			private static void ArrangeEntityButtons(Entity2D entity)
-			{
-				var buttons = entity.Get<List<RadioButton>>();
-				if (buttons.Count == 0)
-					return;
-
-				float height = entity.DrawArea.Height / buttons.Count;
-				var background = entity.Get<Theme>().RadioButtonBackground.Image;
-				float width = height * background.PixelSize.AspectRatio;
-				for (int i = 0; i < buttons.Count; i++)
-					buttons[i].DrawArea = new Rectangle(entity.DrawArea.Left, entity.DrawArea.Top + i * height,
-						width, height);
-			}
 		}
 
 		public RadioButton SelectedButton

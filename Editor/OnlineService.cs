@@ -7,7 +7,7 @@ using DeltaEngine.Networking;
 
 namespace DeltaEngine.Editor
 {
-	internal class OnlineService : Service
+	public class OnlineService : Service
 	{
 		public OnlineService(Client connection)
 		{
@@ -18,11 +18,12 @@ namespace DeltaEngine.Editor
 		}
 
 		public Client Connection { get; private set; }
-		private const string ServerAddress = "DeltaEngine.net";//"localhost";//
+		private const string ServerAddress = "deltaengine.net";//"DeltaEngine.net"
 		private const int ServerListeningPort = 800;
 		public ContentService Content { get; private set; }
 		public Window PluginHostWindow { get; private set; }
 
+		//TODO: this is duplicate, same as BuildServiceConnection
 		private void OnDataReceived(object message)
 		{
 			var user = message as BuildServiceUser;

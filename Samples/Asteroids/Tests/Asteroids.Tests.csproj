@@ -63,6 +63,10 @@
       <Project>{CC65E69E-FAFD-4C2B-85EB-5E57FD3AF847}</Project>
       <Name>DeltaEngine.Input</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Physics2D\DeltaEngine.Physics2D.csproj">
+      <Project>{DC3AA434-09B9-43AD-8F43-431811FA054D}</Project>
+      <Name>DeltaEngine.Physics2D</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Platforms\All\DeltaEngine.Platforms.All.csproj">
       <Project>{CC714F92-36AA-44E1-AA01-495D9A6588D2}</Project>
       <Name>DeltaEngine.Platforms.All</Name>
@@ -93,7 +97,6 @@
     <Compile Include="GameTests.cs" />
     <Compile Include="HudTests.cs" />
     <Compile Include="PlayerShipTests.cs" />
-    <Compile Include="Velocity2DTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

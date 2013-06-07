@@ -1,8 +1,5 @@
-using System.Collections.Generic;
-using System.Linq;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
-using DeltaEngine.Rendering;
 using DeltaEngine.Rendering.ScreenSpaces;
 
 namespace DeltaEngine.Physics2D
@@ -16,22 +13,12 @@ namespace DeltaEngine.Physics2D
 			this.screen = screen;
 		}
 
-		public override void Handle(List<Entity> entities)
+		public override void Handle(Entity entity)
 		{
-			foreach (var entity in entities.OfType<Entity2D>())
-			{
-				var physicsBody = entity.Get<PhysicsBody>();
-				if (physicsBody != null)
-					UpdatePositionAndRotation(entity, physicsBody);
-			}
-		}
-
-		private void UpdatePositionAndRotation(Entity2D entity, PhysicsBody physicsBody)
-		{
-			var drawArea = entity.DrawArea;
-			entity.DrawArea = Rectangle.FromCenter(screen.FromPixelSpace(physicsBody.Position),
-				drawArea.Size);
-			entity.Rotation = physicsBody.Rotation;
+			var physicsBody = entity.Get<PhysicsBody>();
+			var size = entity.Get<Rectangle>().Size;
+			entity.Set(Rectangle.FromCenter(screen.FromPixelSpace(physicsBody.Position), size));
+			entity.Set(physicsBody.Rotation);
 		}
 
 		public override EntityHandlerPriority Priority

@@ -14,12 +14,6 @@ namespace Asteroids
 			hudFont = new Font(contentLoader, "Tahoma30");
 			ScoreDisplay = new FontText(hudFont, "0",
 				new Point(screenSpace.Viewport.Left + 0.02f, screenSpace.Viewport.Top + 0.08f));
-			screenSpace.ViewportSizeChanged +=
-				() =>
-				{
-					ScoreDisplay.SetPosition(new Point(screenSpace.Viewport.Left + 0.02f,
-						screenSpace.Viewport.Top + 0.04f));
-				};
 		}
 
 		private readonly Font hudFont;

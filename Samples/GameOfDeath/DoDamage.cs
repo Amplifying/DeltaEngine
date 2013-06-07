@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using DeltaEngine.Core;
 using DeltaEngine.Entities;
 using DeltaEngine.Rendering;
@@ -12,11 +10,12 @@ namespace GameOfDeath
 	/// </summary>
 	public class DoDamage : EntityHandler
 	{
-		public override void Handle(List<Entity> entities)
+		public override void Handle(Entity entity)
 		{
-			foreach (var itemEffect in entities.OfType<ItemEffect>())
-				if (itemEffect.Visibility == Visibility.Show && Time.Current.CheckEvery(itemEffect.DamageInterval))
-					itemEffect.DoDamage();
+			var itemEffect = entity as ItemEffect;
+			if (itemEffect.Visibility == Visibility.Show &&
+				Time.Current.CheckEvery(itemEffect.DamageInterval))
+				itemEffect.DoDamage();
 		}
 
 		public override EntityHandlerPriority Priority

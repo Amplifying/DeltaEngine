@@ -54,6 +54,11 @@ namespace DeltaEngine.Datatypes
 			get { return Width / Height; }
 		}
 
+		public float Length
+		{
+			get { return (float)Math.Sqrt(Width*Width+Height*Height); }
+		}
+
 		public static bool operator ==(Size s1, Size s2)
 		{
 			return s1.Equals(s2);

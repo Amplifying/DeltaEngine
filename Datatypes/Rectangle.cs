@@ -199,27 +199,31 @@ namespace DeltaEngine.Datatypes
 		{
 			var rotatedRect = GetRotatedRectangleCorners(Center, rotation);
 			var rotatedOtherRect = otherRect.GetRotatedRectangleCorners(otherRect.Center, otherRotation);
-			foreach (var axis in GetAxes(otherRect))
+			foreach (var axis in GetAxes(rotatedRect, rotatedOtherRect))
 				if (IsProjectedAxisOutsideRectangles(axis, rotatedRect, rotatedOtherRect))
 					return false;
 			return true;
 		}
 
-		private IEnumerable<Point> GetAxes(Rectangle rectangle)
+		private IEnumerable<Point> GetAxes(Point[] rectangle, Point[] otherRect)
 		{
 			return new[]
 			{
-				new Point(TopRight.X - TopLeft.X, TopRight.Y - TopLeft.Y),
-				new Point(TopRight.X - BottomRight.X, TopRight.Y - BottomRight.Y),
-				new Point(rectangle.TopLeft.X - rectangle.BottomLeft.X,
-					rectangle.TopLeft.Y - rectangle.BottomLeft.Y),
-				new Point(rectangle.TopLeft.X - rectangle.TopRight.X,
-					rectangle.TopLeft.Y - rectangle.TopRight.Y)
+				new Point(rectangle[1].X - rectangle[0].X, rectangle[1].Y - rectangle[0].Y),
+				new Point(rectangle[1].X - rectangle[2].X, rectangle[1].Y - rectangle[2].Y),
+				new Point(otherRect[0].X - otherRect[3].X, otherRect[0].Y - otherRect[3].Y),
+				new Point(otherRect[0].X - otherRect[1].X, otherRect[0].Y - otherRect[1].Y)
 			};
 		}
 
 		private static bool IsProjectedAxisOutsideRectangles(Point axis, Point[] rotatedRect,
 			Point[] rotatedOtherRect)
+		{
+			var isProjectedOnX = ProjectOnAxis(axis, rotatedRect, rotatedOtherRect);
+			return isProjectedOnX ;//|| isProjectedOnY;
+		}
+
+		private static bool ProjectOnAxis(Point axis, Point[] rotatedRect, Point[] rotatedOtherRect)
 		{
 			var rectMin = float.MaxValue;
 			var rectMax = float.MinValue;
@@ -235,7 +239,9 @@ namespace DeltaEngine.Datatypes
 		{
 			foreach (var corner in cornerList)
 			{
-				float projectedValue = corner.DistanceFromProjectAxisPoint(axis) * axis.X + axis.Y;
+				float projectedValueX = corner.DistanceFromProjectAxisPointX(axis) * (axis.X);
+				float projectedValueY = corner.DistanceFromProjectAxisPointY(axis) * (axis.Y);
+				float projectedValue = projectedValueX + projectedValueY;
 				if (projectedValue < min)
 					min = projectedValue;
 				if (projectedValue > max)

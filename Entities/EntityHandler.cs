@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System;
 
 namespace DeltaEngine.Entities
 {
@@ -7,7 +7,11 @@ namespace DeltaEngine.Entities
 	/// </summary>
 	public abstract class EntityHandler
 	{
-		public abstract void Handle(List<Entity> entities);
+		public Func<Entity, bool> Filter { get; set; }
+
+		public Func<Entity, IComparable> Order { get; set; }
+
+		public abstract void Handle(Entity entity);
 
 		public virtual EntityHandlerPriority Priority
 		{

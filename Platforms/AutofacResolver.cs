@@ -210,7 +210,7 @@ namespace DeltaEngine.Platforms
 		private void RegisterAllTypesInAssembly(Assembly assembly, Assembly[] loadedAssemblies,
 			List<Assembly> dependencyAssemblies)
 		{
-			if (assembly.FullName.StartsWith("DeltaEngine."))
+			if (assembly.FullName.StartsWith("DeltaEngine.") && !assembly.FullName.Contains(".Scenes"))
 				return;
 
 			LoadDependentAssemblies(assembly, loadedAssemblies, dependencyAssemblies);

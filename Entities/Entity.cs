@@ -120,7 +120,7 @@ namespace DeltaEngine.Entities
 
 		public class InstantiatedEntityHandlerAddedToEntity : Exception {}
 
-		public class ComponentOfTheSameTypeAddedMoreThanOnce : Exception { }
+		public class ComponentOfTheSameTypeAddedMoreThanOnce : Exception {}
 
 		internal readonly List<object> components = new List<object>();
 
@@ -134,7 +134,7 @@ namespace DeltaEngine.Entities
 			return this;
 		}
 
-		public Entity Add<T>() where T : EntityHandler
+		public Entity Add<T>()
 		{
 			if (!handlerTypesToAdd.Contains(typeof(T)))
 				handlerTypesToAdd.Add(typeof(T));

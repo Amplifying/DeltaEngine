@@ -94,11 +94,11 @@ namespace Snake
 		private void InitializeSnake()
 		{
 			Snake = new Snake(gridSize);
-			snakeBody = Snake.Get<Snake.Body>();
+			snakeBody = Snake.Get<Body>();
 			AddEventListeners();
 		}
 
-		private Snake.Body snakeBody;
+		private Body snakeBody;
 		public Snake Snake { get; private set; }
 
 		private void AddEventListeners()

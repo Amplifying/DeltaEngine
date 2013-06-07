@@ -1,11 +1,8 @@
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
 using DeltaEngine.Input;
-using DeltaEngine.Rendering;
 using DeltaEngine.Rendering.Fonts;
 using DeltaEngine.Rendering.Sprites;
 
@@ -41,20 +38,15 @@ namespace DeltaEngine.Scenes.UserInterfaces
 			Add<PositionText>();
 		}
 
-		public class PositionText : EntityHandler
+		private class PositionText : EntityHandler
 		{
-			public override void Handle(List<Entity> entities)
+			public override void Handle(Entity entity)
 			{
-				foreach (Entity2D entity in entities.OfType<Entity2D>().Where(e => e.Contains<FontText>()))
-					PositionFontText(entity);
-			}
-
-			private static void PositionFontText(Entity2D entity)
-			{
-				Point center = entity.DrawArea.Center;
-				var size = entity.Get<FontText>().Get<Size>();
+				var label = entity as Label;
+				Point center = label.DrawArea.Center;
+				var size = label.Get<FontText>().Get<Size>();
 				entity.Get<FontText>().DrawArea = Rectangle.FromCenter(center, size);
-				entity.Get<FontText>().RenderLayer = entity.RenderLayer + 1;
+				entity.Get<FontText>().RenderLayer = label.RenderLayer + 1;
 			}
 
 			public override EntityHandlerPriority Priority
@@ -63,7 +55,7 @@ namespace DeltaEngine.Scenes.UserInterfaces
 			}
 		}
 
-		public class UpdateText : EntityListener
+		protected class UpdateText : EntityListener
 		{
 			public override void ReceiveMessage(Entity entity, object message)
 			{

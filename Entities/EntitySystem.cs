@@ -148,7 +148,7 @@ namespace DeltaEngine.Entities
 			RemoveRememberedEntities();
 			UpdateHandlersIfAnythingHasChanged();
 			foreach (var pair in handlersWithAffectedEntities)
-				pair.handler.Handle(pair.entities);
+				RunHandler(pair.handler, pair.entities);
 		}
 
 		private void AddRememberedEntities()
@@ -207,7 +207,7 @@ namespace DeltaEngine.Entities
 		public class UnableToResolveEntityHandler : Exception
 		{
 			public UnableToResolveEntityHandler(Type handlerType)
-				: base(handlerType.ToString()) { }
+				: base(handlerType.ToString()) {}
 		}
 
 		private void AddHandlerSortedByPriority(HandlerWithEntities entities)
@@ -280,6 +280,19 @@ namespace DeltaEngine.Entities
 			foreach (var pair in handlersWithAffectedEntities)
 				if (pair.entities.Contains(entity))
 					pair.entities.Remove(entity);
+		}
+
+		private static void RunHandler(EntityHandler handler, IEnumerable<Entity> entities)
+		{
+			if (handler.Filter != null && handler.Order != null)
+				entities = entities.Where(handler.Filter).OrderBy(handler.Order);
+			else if (handler.Filter != null)
+				entities = entities.Where(handler.Filter);
+			else if (handler.Order != null)
+				entities = entities.OrderBy(handler.Order);
+
+			foreach (Entity entity in entities)
+				handler.Handle(entity);
 		}
 	}
 }

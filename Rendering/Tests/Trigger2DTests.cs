@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
@@ -24,7 +23,7 @@ namespace DeltaEngine.Rendering.Tests
 				var image = content.Load<Image>("DeltaEngineLogo");
 				var trigger = new Sprite(image, new Rectangle(Point.Zero, (Size)Point.One), Color.Red);
 				trigger.Add(new TimeTriggerData(Color.Red, Color.Gray, 1));
-				trigger.Add<Trigger2D>();
+				trigger.Add<CollisionTrigger>().Add(new CollisionTriggerData(Color.White, Color.Red));
 				Assert.AreEqual(Point.Zero, trigger.Get<Rectangle>().TopLeft);
 				Assert.AreEqual(Point.One, trigger.Get<Rectangle>().BottomRight);
 			});
@@ -48,14 +47,11 @@ namespace DeltaEngine.Rendering.Tests
 
 		public class Rotate : EntityHandler
 		{
-			public override void Handle(List<Entity> entities)
+			public override void Handle(Entity entity)
 			{
-				foreach (var sprite in entities)
-				{
-					var angle = sprite.Get<float>();
-					angle = angle + 50 * Time.Current.Delta;
-					sprite.Set(angle);
-				}
+				var angle = entity.Get<float>();
+				angle = angle + 50 * Time.Current.Delta;
+				entity.Set(angle);
 			}
 
 			public override EntityHandlerPriority Priority

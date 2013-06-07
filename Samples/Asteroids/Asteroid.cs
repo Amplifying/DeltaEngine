@@ -37,10 +37,10 @@ namespace Asteroids
 
 		private static Rectangle CreateDrawArea(Randomizer randomizer, int sizeModifier)
 		{
-			return
-				new Rectangle(
-					new Point(randomizer.Get(-1, 1) > 0 ? 0.2f : 0.8f, randomizer.Get(-1, 1) > 0 ? 0.2f : 0.8f),
-					new Size(.1f / sizeModifier));
+			var randomPosition = new Point(randomizer.Get(-1, 1) > 0 ? 0.2f : 0.8f,
+				randomizer.Get(-1, 1) > 0 ? 0.2f : 0.8f);
+			var modifiedSize = new Size(.1f / sizeModifier);
+			return new Rectangle(randomPosition, modifiedSize);
 		}
 
 		public readonly int sizeModifier;

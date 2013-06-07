@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using DeltaEngine.Core.Xml;
 using DeltaEngine.Datatypes;
@@ -16,11 +15,12 @@ namespace DeltaEngine.Rendering.Tests.Fonts
 			Assert.AreEqual("Verdana", fontData.FontFamilyName);
 			Assert.AreEqual(12, fontData.SizeInPoints);
 			Assert.AreEqual("AddOutline", fontData.Style);
+			Assert.AreEqual(16, fontData.PixelLineHeight);
 			Assert.AreEqual("Verdana12Font", fontData.FontMapName);
 			Assert.AreEqual(new Size(128, 128), fontData.FontMapPixelSize);
-			Assert.AreEqual(95, fontData.glyphDictionary.Count);
-			Assert.AreEqual(new Rectangle(0, 0, 1, 16), fontData.glyphDictionary[' '].UV);
-			Assert.AreEqual(7.34875f, fontData.glyphDictionary[' '].AdvanceWidth);
+			Assert.AreEqual(95, fontData.GlyphDictionary.Count);
+			Assert.AreEqual(new Rectangle(0, 0, 1, 16), fontData.GlyphDictionary[' '].UV);
+			Assert.AreEqual(7.34875f, fontData.GlyphDictionary[' '].AdvanceWidth);
 		}
 
 		[Test]
@@ -33,9 +33,9 @@ namespace DeltaEngine.Rendering.Tests.Fonts
 			Assert.AreEqual(50, fontData.PixelLineHeight);
 			Assert.AreEqual("Tahoma30Font", fontData.FontMapName);
 			Assert.AreEqual(new Size(512, 512), fontData.FontMapPixelSize);
-			Assert.AreEqual(95, fontData.glyphDictionary.Count);
-			Assert.AreEqual(new Rectangle(0, 1, 4, 50), fontData.glyphDictionary[' '].UV);
-			Assert.AreEqual(20.1449f, fontData.glyphDictionary[' '].AdvanceWidth);
+			Assert.AreEqual(95, fontData.GlyphDictionary.Count);
+			Assert.AreEqual(new Rectangle(0, 1, 4, 50), fontData.GlyphDictionary[' '].UV);
+			Assert.AreEqual(20.1449f, fontData.GlyphDictionary[' '].AdvanceWidth);
 		}
 
 		[Test]
@@ -47,37 +47,16 @@ namespace DeltaEngine.Rendering.Tests.Fonts
 		}
 
 		[Test]
-		public void ParseTextLines()
-		{
-			var fontData = new FontData(new XmlFile(Path.Combine("Content", "Verdana12.xml")).Root);
-			var lines = fontData.ParseText("long loong looong loooong text");
-			Assert.NotNull(lines);
-			Assert.AreEqual(lines.Count, 1);
-			Assert.AreEqual(new string(lines[0].ToArray()), "long loong looong loooong text");
-
-			lines = fontData.ParseText("long loong looong looong text" + Environment.NewLine + "Newline");
-			Assert.NotNull(lines);
-			Assert.AreEqual(lines.Count, 2);
-			Assert.AreEqual(new string(lines[0].ToArray()), "long loong looong looong text");
-			Assert.AreEqual(new string(lines[1].ToArray()), "Newline");
-		}
-
-		[Test]
 		public void GetGlyphDrawAreaAndUVs()
 		{
 			var fontData = new FontData(new XmlFile(Path.Combine("Content", "Verdana12.xml")).Root);
-			const HorizontalAlignment Alignment = HorizontalAlignment.Left;
-			var drawSize = Size.Zero;
-			var glyphs = fontData.GetGlyphDrawAreaAndUVs("", 1.0f, Alignment, false, ref drawSize);
-			Assert.AreEqual(0, glyphs.Length);
-			drawSize = Size.Zero;
-			glyphs = fontData.GetGlyphDrawAreaAndUVs("\n", 1.0f, Alignment, false, ref drawSize);
-			Assert.AreEqual(0, glyphs.Length);
-
-			drawSize = Size.Zero;
-			glyphs = fontData.GetGlyphDrawAreaAndUVs("A", 1.0f, Alignment, false, ref drawSize);
-			Assert.AreEqual(1, glyphs.Length);
-			GlyphDrawData glyphA = glyphs[0];
+			fontData.Generate("");
+			Assert.AreEqual(0, fontData.Glyphs.Length);
+			fontData.Generate("\n");
+			Assert.AreEqual(0, fontData.Glyphs.Length);
+			fontData.Generate("A");
+			Assert.AreEqual(1, fontData.Glyphs.Length);
+			GlyphDrawData glyphA = fontData.Glyphs[0];
 			Assert.AreEqual(glyphA.UV,
 				Rectangle.BuildUvRectangle(new Rectangle(67, 32, 9, 16), new Size(128, 128)));
 			Assert.AreEqual(new Rectangle(0, 0, 9, 16), glyphA.DrawArea);
@@ -87,10 +66,27 @@ namespace DeltaEngine.Rendering.Tests.Fonts
 		public void GetGlyphsForMultilineText()
 		{
 			var fontData = new FontData(new XmlFile(Path.Combine("Content", "Verdana12.xml")).Root);
-			var drawSize = new Size(50, 100);
-			var glyphs = fontData.GetGlyphDrawAreaAndUVs("Abc\ndef\nbrabbel brabbel", 1.0f,
-				HorizontalAlignment.Left, true, ref drawSize);
-			Assert.AreEqual(21, glyphs.Length);
+			fontData.Generate("Abc\ndef\nbrabbel brabbel");
+			Assert.AreEqual(21, fontData.Glyphs.Length);
+		}
+
+		[Test]
+		public void CreationWithInvalidXmlDataShouldThrow()
+		{
+			var xmlFile = new XmlFile(Path.Combine("Content", "Tahoma30.xml")).Root;
+			foreach (var xmlData in xmlFile.GetChild("Kernings").GetChildren("Kerning"))
+				xmlData.RemoveAttribute("First");
+
+			Assert.Throws<InvalidDataException>(() => new FontData(xmlFile));
+		}
+
+		[Test]
+		public void ToStringTest()
+		{
+			var type = typeof(FontData);
+			var expected = type.Namespace + "." + type.Name + ", Font Family=Verdana, Font Size=12";
+			var fontData = new FontData(new XmlFile(Path.Combine("Content", "Verdana12.xml")).Root);
+			Assert.AreEqual(expected, fontData.ToString());
 		}
 	}
 }

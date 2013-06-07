@@ -67,27 +67,37 @@ namespace DeltaEngine.Rendering.Shapes
 			{
 				this.draw = draw;
 				this.screen = screen;
+				vertices = new List<VertexPositionColor>();
 			}
 
 			private readonly Drawing draw;
 			private readonly ScreenSpace screen;
+			private readonly List<VertexPositionColor> vertices;
 
-			public override void ReceiveMessage(Entity entity, object message)
+			public override void Handle(Entity entity)
 			{
-				if (message is SortAndRender.TimeToRender)
-					RenderLine(entity);
+				vertices.Clear();
+				AddLine(entity);
+				DrawLines();
 			}
 
-			private void RenderLine(Entity entity)
+			public override void ReceiveMessage(Entity entity, object message) {}
+
+			private void AddLine(Entity entity)
 			{
 				var color = entity.Get<Color>();
 				var points = entity.Get<List<Point>>();
-				var vertices = new VertexPositionColor[points.Count];
 				for (int num = 0; num < points.Count; num++)
-					vertices[num] = new VertexPositionColor(screen.ToPixelSpaceRounded(points[num]), color);
+					vertices.Add(new VertexPositionColor(screen.ToPixelSpaceRounded(points[num]), color));
+			}
 
+			private void DrawLines()
+			{
+				var vertexArray = new VertexPositionColor[vertices.Count + 1];
+				for (int i = 0; i < vertices.Count; ++i)
+					vertexArray[i] = vertices[i];
 				draw.DisableTexturing();
-				draw.DrawVertices(VerticesMode.Lines, vertices);
+				draw.DrawVertices(VerticesMode.Lines, vertexArray);
 			}
 
 			public override EntityHandlerPriority Priority

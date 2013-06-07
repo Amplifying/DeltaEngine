@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 using DeltaEngine.Core;
 
 namespace DeltaEngine.Logging.Basic
@@ -13,8 +12,9 @@ namespace DeltaEngine.Logging.Basic
 	{
 		public TextFileLogProvider()
 		{
-			var logFolder = Path.Combine(
-				Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Delta Engine");
+			var logFolder =
+				Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+					"Delta Engine");
 			if (!Directory.Exists(logFolder))
 				Directory.CreateDirectory(logFolder);
 			filePath = Path.Combine(logFolder, AssemblyExtensions.DetermineProjectName() + FileExtension);
@@ -23,12 +23,13 @@ namespace DeltaEngine.Logging.Basic
 		private readonly string filePath;
 		private const string FileExtension = ".txt";
 
-		private StreamWriter CreateLogFileIfNotDoneYet()
+		private StreamWriter OpenOrCreate()
 		{
 			if (writer != null)
 				return writer;
 
-			var logFile = File.Create(filePath);
+			var logFile = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write,
+				FileShare.ReadWrite);
 			writer = new StreamWriter(logFile);
 			writer.AutoFlush = true;
 			writer.WriteLine("Delta Engine Log");
@@ -39,7 +40,7 @@ namespace DeltaEngine.Logging.Basic
 
 		public void Log(Info info)
 		{
-			CreateLogFileIfNotDoneYet().WriteLine(TimeStamp + info.Text);
+			OpenOrCreate().WriteLine(TimeStamp + info.Text);
 		}
 
 		protected string TimeStamp
@@ -49,14 +50,14 @@ namespace DeltaEngine.Logging.Basic
 
 		public void Log(Warning warning)
 		{
-			CreateLogFileIfNotDoneYet().WriteLine(TimeStamp + "Warning: " + warning.Text);
+			OpenOrCreate().WriteLine(TimeStamp + "Warning: " + warning.Text);
 		}
 
 		public void Log(Error error)
 		{
-			CreateLogFileIfNotDoneYet().WriteLine(TimeStamp + "Error: " + error.Text);
+			OpenOrCreate().WriteLine(TimeStamp + "Error: " + error.Text);
 		}
-		
+
 		public void Dispose()
 		{
 			if (writer != null)

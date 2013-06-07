@@ -173,9 +173,14 @@ namespace DeltaEngine.Datatypes
 			return X * point.X + Y * point.Y;
 		}
 
-		public float DistanceFromProjectAxisPoint(Point axis)
+		public float DistanceFromProjectAxisPointX(Point axis)
 		{
 			return (X * axis.X + Y * axis.Y) / (axis.X * axis.X + axis.Y * axis.Y) * axis.X;
+		}
+
+		public float DistanceFromProjectAxisPointY(Point axis)
+		{
+			return (X * axis.X + Y * axis.Y) / (axis.X * axis.X + axis.Y * axis.Y) * axis.Y;
 		}
 
 		[Pure]

@@ -76,15 +76,28 @@ namespace Blocks.Tests
 			{
 				content.Prefix = "Mod1_";
 				var image = content.Load<Image>("DeltaEngineLogo");
-				if (resolver != typeof(MockResolver))
-					Assert.AreEqual(new Size(64), image.PixelSize); //ncrunch: no coverage
 				new Sprite(image, new Rectangle(0.3f, 0.45f, 0.1f, 0.1f));
 
 				content.Prefix = "Mod2_";
 				image = content.Load<Image>("DeltaEngineLogo");
-				if (resolver != typeof(MockResolver))
-					Assert.AreEqual(new Size(256), image.PixelSize); //ncrunch: no coverage
 				new Sprite(image, new Rectangle(0.6f, 0.45f, 0.1f, 0.1f));
+			});
+		}
+
+		[Test, Category("Slow")]
+		public void ContentWithPrefixSet(Type resolver)
+		{
+			Start(resolver, (JewelBlocksContent content) =>
+			{
+				content.Prefix = "Mod1_";
+				var image = content.Load<Image>("DeltaEngineLogo");
+				if (resolver != typeof(MockResolver))
+					Assert.AreEqual(new Size(64), image.PixelSize);
+
+				content.Prefix = "Mod2_";
+				image = content.Load<Image>("DeltaEngineLogo");
+				if (resolver != typeof(MockResolver))
+					Assert.AreEqual(new Size(256), image.PixelSize);
 			});
 		}
 	}

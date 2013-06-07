@@ -4,7 +4,6 @@ using DeltaEngine.Core;
 using DeltaEngine.Multimedia.OpenTK.Helpers;
 using ToyMp3;
 using System.Diagnostics;
-using ToyMp3;
 using DeltaEngine.Logging;
 
 namespace DeltaEngine.Multimedia.OpenTK

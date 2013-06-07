@@ -31,7 +31,7 @@ namespace Snake.Tests
 			{
 				var snake = new Snake(gridSize);
 				Assert.AreEqual(new Point(startPosition, startPosition),
-					snake.Get<Snake.Body>().BodyParts[0].TopLeft);
+					snake.Get<Body>().BodyParts[0].TopLeft);
 			});
 		}
 
@@ -40,14 +40,14 @@ namespace Snake.Tests
 		{
 			Start(resolver,
 				(SnakeGame game, ScreenSpace screen) =>
-					Assert.AreEqual(2, game.Snake.Get<Snake.Body>().BodyParts.Count));
+					Assert.AreEqual(2, game.Snake.Get<Body>().BodyParts.Count));
 		}
 
 		[IntegrationTest]
 		public void AddToSnake(Type resolver)
 		{
 			Start(resolver,
-				(SnakeGame game) => Assert.AreEqual(2, game.Snake.Get<Snake.Body>().BodyParts.Count));
+				(SnakeGame game) => Assert.AreEqual(2, game.Snake.Get<Body>().BodyParts.Count));
 		}
 
 		[Test]
@@ -57,7 +57,7 @@ namespace Snake.Tests
 			{
 				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				Assert.AreEqual(new Point(startPosition, startPosition - blockSize),
-					game.Snake.Get<Snake.Body>().BodyParts[0].TopLeft);
+					game.Snake.Get<Body>().BodyParts[0].TopLeft);
 			});
 		}
 
@@ -112,7 +112,7 @@ namespace Snake.Tests
 			Start(typeof(MockResolver), () =>
 			{
 				var snake = new Snake(gridSize);
-				Assert.AreEqual(new Point(0, blockSize), snake.Get<Snake.Body>().GetTrailingVector());
+				Assert.AreEqual(new Point(0, blockSize), snake.Get<Body>().GetTrailingVector());
 			});
 		}
 
@@ -121,9 +121,9 @@ namespace Snake.Tests
 		{
 			Start(typeof(MockResolver), (SnakeGame game) =>
 			{
-				game.Snake.Get<Snake.Body>().AddSnakeBody();
-				game.Snake.Get<Snake.Body>().AddSnakeBody();
-				game.Snake.Get<Snake.Body>().AddSnakeBody();
+				game.Snake.Get<Body>().AddSnakeBody();
+				game.Snake.Get<Body>().AddSnakeBody();
+				game.Snake.Get<Body>().AddSnakeBody();
 				game.MoveLeft();
 				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				game.MoveDown();
@@ -140,12 +140,12 @@ namespace Snake.Tests
 			Start(typeof(MockResolver), () =>
 			{
 				var snake = new Snake(gridSize) { IsActive = false };
-				Assert.AreEqual(2, snake.Get<Snake.Body>().BodyParts.Count);
+				Assert.AreEqual(2, snake.Get<Body>().BodyParts.Count);
 				snake.Dispose();
 				EntitySystem.Current.Run();
 				Assert.AreEqual(0, snake.NumberOfComponents);
 				Assert.AreEqual(0, EntitySystem.Current.NumberOfEntities);
-				Assert.Throws<Entity.ComponentNotFound>(() => snake.Get<Snake.Body>());
+				Assert.Throws<Entity.ComponentNotFound>(() => snake.Get<Body>());
 			});
 		}
 	}

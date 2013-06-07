@@ -59,18 +59,7 @@ namespace DeltaEngine.Rendering.Shapes
 		/// </summary>
 		public class UpdatePoints : EntityHandler
 		{
-			public override void Handle(List<Entity> entities)
-			{
-				foreach (var entity in entities.Where(HasChanged))
-					UpdateEllipsePoints(entity);
-			}
-
-			private static bool HasChanged(Entity entity)
-			{
-				return true;
-			}
-
-			private void UpdateEllipsePoints(Entity entity)
+			public override void Handle(Entity entity)
 			{
 				InitializeVariables(entity);
 				FormEllipsePoints(entity);

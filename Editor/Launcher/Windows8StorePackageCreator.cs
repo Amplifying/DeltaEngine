@@ -25,6 +25,7 @@ namespace DeltaEngine.Editor.Launcher
 				if (exception.Message.Contains("SignTool Error: WinVerifyTrust returned error"))
 					return false;
 			}
+
 			return true;
 		}
 

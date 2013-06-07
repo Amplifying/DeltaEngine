@@ -1,11 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
+using DeltaEngine.Physics2D;
 using DeltaEngine.Rendering.ScreenSpaces;
 using DeltaEngine.Rendering.Sprites;
 
@@ -19,8 +18,8 @@ namespace Asteroids
 	{
 		public PlayerShip(ContentLoader content)
 			: base(
-				content.Load<Image>(PlayerShipTextureName),
-				new Rectangle(Point.Half, PlayerShipSize), Color.White)
+				content.Load<Image>(PlayerShipTextureName), new Rectangle(Point.Half, PlayerShipSize),
+				Color.White)
 		{
 			Add(new Velocity2D(Point.Zero, MaximumPlayerVelocity));
 			Add<PlayerMovementHandler>();
@@ -33,8 +32,6 @@ namespace Asteroids
 		public static readonly Size PlayerShipSize = new Size(.05f);
 		private const float MaximumPlayerVelocity = .5f;
 		private readonly Image projectileTexture;
-		public event Action<Projectile> ProjectileFired;
-		public bool IsFireing { get; set; }
 		private const string ProjectileTextureName = "projectile";
 
 		public void ShipAccelerate()
@@ -65,17 +62,13 @@ namespace Asteroids
 
 			private readonly ScreenSpace screen;
 
-			public override void Handle(List<Entity> entities)
+			public override void Handle(Entity entity)
 			{
-				foreach (var entity in entities)
-				{
-					var nextRect = CalculateRectAfterMove(entity);
-					MoveEntity(entity, nextRect);
-					var velocity2D = entity.Get<Velocity2D>();
-					velocity2D.velocity -= velocity2D.velocity * PlayerDecelFactor *
-						Time.Current.Delta;
-					entity.Set(velocity2D);
-				}
+				var nextRect = CalculateRectAfterMove(entity);
+				MoveEntity(entity, nextRect);
+				var velocity2D = entity.Get<Velocity2D>();
+				velocity2D.velocity -= velocity2D.velocity * PlayerDecelFactor * Time.Current.Delta;
+				entity.Set(velocity2D);
 			}
 
 			private const float PlayerDecelFactor = 0.7f;
@@ -98,28 +91,48 @@ namespace Asteroids
 			{
 				var rect = entity.Get<Rectangle>();
 				var vel = entity.Get<Velocity2D>();
+				CheckStopRightBorder(rect, vel);
+				CheckStopLeftBorder(rect, vel);
+				CheckStopTopBorder(rect, vel);
+				CheckStopBottomBorder(rect, vel);
+				entity.Set(vel);
+				entity.Set(rect);
+			}
+
+			private void CheckStopLeftBorder(Rectangle rect, Velocity2D vel)
+			{
 				if (rect.Left < screen.Viewport.Left)
 				{
 					vel.velocity.X = 0.02f;
 					rect.Left = screen.Viewport.Left;
 				}
+			}
+
+			private void CheckStopRightBorder(Rectangle rect, Velocity2D vel)
+			{
 				if (rect.Right > screen.Viewport.Right)
 				{
 					vel.velocity.X = -0.02f;
 					rect.Right = screen.Viewport.Right;
 				}
+			}
+
+			private void CheckStopTopBorder(Rectangle rect, Velocity2D vel)
+			{
 				if (rect.Top < screen.Viewport.Top)
 				{
 					vel.velocity.Y = 0.02f;
 					rect.Top = screen.Viewport.Top;
 				}
+			}
+
+			private void CheckStopBottomBorder(Rectangle rect, Velocity2D vel)
+			{
 				if (rect.Bottom > screen.Viewport.Bottom)
 				{
 					vel.velocity.Y = -0.02f;
 					rect.Bottom = screen.Viewport.Bottom;
 				}
-				entity.Set(vel);
-				entity.Set(rect);
 			}
 		}
 
@@ -132,21 +145,23 @@ namespace Asteroids
 			}
 
 			private const float PlayerCadance = 0.003f;
-			public float CadenceShotsPerSec { get; private set; }
+			private float CadenceShotsPerSec { get; set; }
 			private float timeLastShot;
 
-			public override void Handle(List<Entity> entities)
+			public override void Handle(Entity entity)
 			{
-				foreach (PlayerShip entity in entities.OfType<PlayerShip>())
-					if (entity.IsFireing && Time.Current.Milliseconds - 1 / CadenceShotsPerSec > timeLastShot)
-					{
-						var projectile = new Projectile(entity.projectileTexture, entity.DrawArea.Center,
-							entity.Rotation);
-						timeLastShot = Time.Current.Milliseconds;
-						if (entity.ProjectileFired != null)
-							entity.ProjectileFired.Invoke(projectile);
-					}
+				var ship = entity as PlayerShip;
+				if (!ship.IsFiring || !(Time.Current.Milliseconds - 1 / CadenceShotsPerSec > timeLastShot))
+					return;
+
+				var projectile = new Projectile(ship.projectileTexture, ship.DrawArea.Center, ship.Rotation);
+				timeLastShot = Time.Current.Milliseconds;
+				if (ship.ProjectileFired != null)
+					ship.ProjectileFired.Invoke(projectile);
 			}
 		}
+
+		public bool IsFiring { get; set; }
+		public event Action<Projectile> ProjectileFired;
 	}
 }

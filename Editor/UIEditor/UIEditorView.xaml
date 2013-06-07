@@ -14,35 +14,45 @@
 		         SelectedItem="{Binding Path=SelectedImageInList}" />
 		<ListBox Width="110" Height="140" HorizontalAlignment="Right"
 		         VerticalAlignment="Top" Margin="0,47,9,0" ItemsSource="{Binding Path=ImageInGridList}"
-		         SelectedIndex="{Binding Path=SelectedImageInGridIndex}" SelectionChanged="SelectImageInGridList" />
-		<Label Content="Button" Margin="0,230,128,0" RenderTransformOrigin="0.509,-0.962" HorizontalAlignment="Right" VerticalAlignment="Top"></Label>
-		<CheckBox Name="IsButtonCheckBox" IsEnabled="False" Checked="ChangeIfButtonState" Unchecked="ChangeIfButtonState"
-		          IsChecked="{Binding Path=CheckBoxButton}" Margin="232,237,98,168" x:FieldModifier="public" RenderTransformOrigin="7.188,0.533"
-							HorizontalAlignment="Right" VerticalAlignment="Top"/>
-		<Label Content="Layer" Margin="0,255,131,0" HorizontalAlignment="Right" VerticalAlignment="Top"></Label>
+		         SelectedIndex="{Binding Path=SelectedImageInGridIndex}" 
+						 SelectionChanged="SelectImageInGridList" />
+		<Label Content="Button" Margin="0,230,128,0" RenderTransformOrigin="0.509,-0.962"
+					 HorizontalAlignment="Right" VerticalAlignment="Top">
+		</Label>
+		<CheckBox Name="IsButtonCheckBox" IsEnabled="False" Checked="ChangeIfButtonState"
+							Unchecked="ChangeIfButtonState" IsChecked="{Binding Path=CheckBoxButton}" 
+							Margin="232,237,98,168" x:FieldModifier="public" RenderTransformOrigin="7.188,0.533"
+		          HorizontalAlignment="Right" VerticalAlignment="Top" />
+		<Label Content="Layer" Margin="0,255,131,0" HorizontalAlignment="Right" 
+					 VerticalAlignment="Top"></Label>
 		<TextBox Margin="0,260,47,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="67"
 		         SelectionChanged="LayerChanged" Name="LayerTextBox" Text="{Binding Path=CheckLayer}"
 		         IsEnabled="False" />
-		<Label Content="Rotation" Margin="163,278,124,99" HorizontalAlignment="Right" VerticalAlignment="Top"></Label>
+		<Label Content="Rotation" Margin="163,278,124,99" HorizontalAlignment="Right" 
+					 VerticalAlignment="Top"></Label>
 		<Slider Margin="0,283,9,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="110"
 		        Minimum="-180" Maximum="180" Value="{Binding Path=Rotate}"
 		        ValueChanged="RotateSliderChanged" Name="RotateSlider" IsEnabled="False" />
-		<Label Content="Scale" Margin="169,301,130,80" HorizontalAlignment="Right" VerticalAlignment="Top"></Label>
+		<Label Content="Scale" Margin="169,301,130,80" HorizontalAlignment="Right" 
+					 VerticalAlignment="Top"></Label>
 		<Slider Margin="0,306,9,0" HorizontalAlignment="Right" VerticalAlignment="Top" Width="110"
 		        Minimum="0" Maximum="2" Value="{Binding Path=Scale}"
 		        ValueChanged="ScaleSliderChanged" Name="ScaleSlider" IsEnabled="False" />
 		<Button Content="AddImage" Width="110" Height="28"
 		        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,192,65,0" Click="AddImage" />
 
-		<Label Content="Grid width" Margin="0,330,147,0" HorizontalAlignment="Right" VerticalAlignment="Top"></Label>
+		<Label Content="Scene width" Margin="0,330,143,0" HorizontalAlignment="Right"
+					 VerticalAlignment="Top"></Label>
 		<TextBox Margin="0,356,124,0" Text="{Binding Path=GridWidth}" Name="GridWidthTextbox"
 		         Width="110" Height="28" HorizontalAlignment="Right" VerticalAlignment="Top"
 		         SelectionChanged="ChangeGridWidth" />
-		<Label Content="Grid height" Margin="0,329,28,0" HorizontalAlignment="Right" VerticalAlignment="Top"></Label>
+		<Label Content="Scene height" Margin="0,329,24,0" HorizontalAlignment="Right" 
+					 VerticalAlignment="Top"></Label>
 		<TextBox Margin="0,356,9,0" Text="{Binding Path=GridHeight}" Name="GridHeightTextbox"
 		         Width="110" Height="28" HorizontalAlignment="Right" VerticalAlignment="Top"
 		         SelectionChanged="ChangeGridHeight" />
-		<Label Content="Grid snapping size" Margin="0,384,9,0" HorizontalAlignment="Right" VerticalAlignment="Top"></Label>
+		<Label Content="Grid size" Margin="0,384,36,0" HorizontalAlignment="Right" 
+					 VerticalAlignment="Top"></Label>
 		<TextBox Margin="0,409,9,-17" Text="{Binding Path=PixelSnapgrid}"
 		         Width="110" Height="28" HorizontalAlignment="Right" VerticalAlignment="Top"
 		         SelectionChanged="ChangeGridSnapping" Name="GridSpacing" />

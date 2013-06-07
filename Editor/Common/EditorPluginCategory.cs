@@ -7,6 +7,7 @@ namespace DeltaEngine.Editor.Common
 		Content,
 		UI,
 		GameLogic,
-		Settings
+		Settings,
+		Particles
 	}
 }

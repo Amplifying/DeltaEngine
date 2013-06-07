@@ -30,50 +30,15 @@ namespace DeltaEngine.Rendering.Tests.Fonts
 		}
 
 		[VisualTest, ApproveFirstFrameScreenshot]
-		public void AlignTextCenter(Type resolver)
-		{
-			Start(resolver,
-				(ContentLoader content) =>
-				{
-					new FontText(new Font(content, "Tahoma30"), "Text\ncenter\naligned", Point.Half,
-						HorizontalAlignment.Centered);
-				});
-		}
-
-		[VisualTest, ApproveFirstFrameScreenshot]
-		public void AlignTextLeft(Type resolver)
-		{
-			Start(resolver,
-				(ContentLoader content) =>
-				{
-					new FontText(new Font(content, "Tahoma30"), "Text\nleft\naligned", Point.Half,
-						HorizontalAlignment.Left);
-				});
-		}
-
-		[VisualTest, ApproveFirstFrameScreenshot]
-		public void AlignTextRight(Type resolver)
-		{
-			Start(resolver,
-				(ContentLoader content) =>
-				{
-					new FontText(new Font(content, "Tahoma30"), "Text\nright\naligned", Point.Half,
-						HorizontalAlignment.Right);
-				});
-		}
-
-		[VisualTest, ApproveFirstFrameScreenshot]
-		public void LineSpacingMultiplier(Type resolver)
+		public void CentralAlignedText(Type resolver)
 		{
 			Start(resolver, (ContentLoader content) =>
 			{
 				var font = new Font(content, "Tahoma30");
-				var halfSpaced = new FontText(font, "Half\nline\nspacing", new Point(0.2f, 0.5f));
-				halfSpaced.SetLineSpacing(0.5f);
-				new FontText(font, "Full\nline\nspacing", new Point(0.5f, 0.5f));
-				var doubleSpaced = new FontText(font, "Double\nline\nspacing", new Point(0.8f, 0.5f));
-				doubleSpaced.SetLineSpacing(2.0f);
+				new FontText(font, "Text\ncenter\naligned", center);
 			});
 		}
+
+		private readonly Point center = new Point(0.5f, 0.5f);
 	}
 }

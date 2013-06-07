@@ -76,14 +76,38 @@ namespace DeltaEngine.Platforms.Tests.ModuleMocks
 		private void SetupDrawing()
 		{
 			var mockDrawing = new Mock<Drawing>(device);
-			mockDrawing.Setup(
-				d => d.DrawVertices(It.IsAny<VerticesMode>(), It.IsAny<VertexPositionColor[]>())).Callback(
-					(VerticesMode mode, VertexPositionColor[] vertices) =>
-						NumberOfVerticesDrawn += vertices.Length);
+			MockDrawingSetupShapes(mockDrawing);
+
+			MockDrawingSetupSprites(mockDrawing);
 			Drawing = resolver.RegisterMock(mockDrawing.Object);
 		}
 
+		private void MockDrawingSetupSprites(Mock<Drawing> mockDrawing)
+		{
+			mockDrawing.Setup(
+				d =>
+					d.DrawVerticesForSprite(It.IsAny<VerticesMode>(),
+						It.IsAny<VertexPositionColorTextured[]>())).Callback(
+							(VerticesMode mode, VertexPositionColorTextured[] vertices) =>
+							{
+								NumberOfVerticesDrawn += vertices.Length;
+								NumberOfTimesDrawn++;
+							});
+		}
+
+		private void MockDrawingSetupShapes(Mock<Drawing> mockDrawing)
+		{
+			mockDrawing.Setup(
+				d => d.DrawVertices(It.IsAny<VerticesMode>(), It.IsAny<VertexPositionColor[]>())).Callback
+				((VerticesMode mode, VertexPositionColor[] vertices) =>
+				{
+					NumberOfVerticesDrawn += vertices.Length;
+					NumberOfTimesDrawn++;
+				});
+		}
+
 		public int NumberOfVerticesDrawn { get; set; }
+		public int NumberOfTimesDrawn { get; set; }
 
 		private void SetupImage()
 		{

@@ -37,7 +37,7 @@ namespace Snake.Tests
 				game.MoveLeft();
 				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				Assert.AreEqual(new Point(startPosition - blockSize, startPosition),
-					game.Snake.Get<Snake.Body>().BodyParts[0].TopLeft);
+					game.Snake.Get<Body>().BodyParts[0].TopLeft);
 			});
 		}
 
@@ -49,7 +49,7 @@ namespace Snake.Tests
 				game.MoveRight();
 				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				Assert.AreEqual(new Point(startPosition + blockSize, startPosition),
-					game.Snake.Get<Snake.Body>().BodyParts[0].TopLeft);
+					game.Snake.Get<Body>().BodyParts[0].TopLeft);
 			});
 		}
 
@@ -63,7 +63,7 @@ namespace Snake.Tests
 				game.MoveDown();
 				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				Assert.AreEqual(new Point(startPosition - blockSize, startPosition + blockSize),
-					game.Snake.Get<Snake.Body>().BodyParts[0].TopLeft);
+					game.Snake.Get<Body>().BodyParts[0].TopLeft);
 			});
 		}
 
@@ -75,7 +75,7 @@ namespace Snake.Tests
 				game.MoveUp();
 				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				Assert.AreEqual(new Point(startPosition, startPosition - blockSize),
-					game.Snake.Get<Snake.Body>().BodyParts[0].TopLeft);
+					game.Snake.Get<Body>().BodyParts[0].TopLeft);
 			});
 		}
 
@@ -87,7 +87,7 @@ namespace Snake.Tests
 				game.MoveDown();
 				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				Assert.AreEqual(new Point(startPosition, startPosition - blockSize),
-					game.Snake.Get<Snake.Body>().BodyParts[0].TopLeft);
+					game.Snake.Get<Body>().BodyParts[0].TopLeft);
 			});
 		}
 
@@ -101,7 +101,7 @@ namespace Snake.Tests
 				game.MoveUp();
 				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				Assert.AreEqual(new Point(startPosition, startPosition - blockSize),
-					game.Snake.Get<Snake.Body>().BodyParts[0].TopLeft);
+					game.Snake.Get<Body>().BodyParts[0].TopLeft);
 			});
 		}
 
@@ -115,7 +115,7 @@ namespace Snake.Tests
 				game.MoveLeft();
 				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				Assert.AreEqual(new Point(startPosition + blockSize * 2, startPosition),
-					game.Snake.Get<Snake.Body>().BodyParts[0].TopLeft);
+					game.Snake.Get<Body>().BodyParts[0].TopLeft);
 			});
 		}
 
@@ -129,7 +129,7 @@ namespace Snake.Tests
 				game.MoveRight();
 				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				Assert.AreEqual(new Point(startPosition - blockSize * 2, startPosition),
-					game.Snake.Get<Snake.Body>().BodyParts[0].TopLeft);
+					game.Snake.Get<Body>().BodyParts[0].TopLeft);
 			});
 		}
 
@@ -145,7 +145,7 @@ namespace Snake.Tests
 				game.MoveUp();
 				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
 				Assert.AreEqual(new Point(startPosition - blockSize, startPosition + blockSize * 2),
-					game.Snake.Get<Snake.Body>().BodyParts[0].TopLeft);
+					game.Snake.Get<Body>().BodyParts[0].TopLeft);
 			});
 		}
 
@@ -154,12 +154,12 @@ namespace Snake.Tests
 		{
 			Start(resolver, (SnakeGame snakeGame) =>
 			{
-				snakeGame.Chunk.DrawArea = snakeGame.Snake.Get<Snake.Body>().BodyParts[0].DrawArea;
+				snakeGame.Chunk.DrawArea = snakeGame.Snake.Get<Body>().BodyParts[0].DrawArea;
 				Assert.IsTrue(
-					snakeGame.Chunk.IsCollidingWithSnake(snakeGame.Snake.Get<Snake.Body>().BodyParts));
+					snakeGame.Chunk.IsCollidingWithSnake(snakeGame.Snake.Get<Body>().BodyParts));
 				snakeGame.RespawnChunk();
 				Assert.IsFalse(
-					snakeGame.Chunk.IsCollidingWithSnake(snakeGame.Snake.Get<Snake.Body>().BodyParts));
+					snakeGame.Chunk.IsCollidingWithSnake(snakeGame.Snake.Get<Body>().BodyParts));
 			});
 		}
 
@@ -168,9 +168,9 @@ namespace Snake.Tests
 		{
 			Start(typeof(MockResolver), (SnakeGame game) =>
 			{
-				var snakeHead = game.Snake.Get<Snake.Body>().BodyParts[0].DrawArea;
-				var direction = game.Snake.Get<Snake.Body>().Direction;
-				var snakeBodyParts = game.Snake.Get<Snake.Body>().BodyParts;
+				var snakeHead = game.Snake.Get<Body>().BodyParts[0].DrawArea;
+				var direction = game.Snake.Get<Body>().Direction;
+				var snakeBodyParts = game.Snake.Get<Body>().BodyParts;
 				var oldTailTopLeftCorner = snakeBodyParts[snakeBodyParts.Count - 1].DrawArea.TopLeft;
 
 				game.Chunk.DrawArea =
@@ -178,7 +178,7 @@ namespace Snake.Tests
 						new Size(blockSize));
 				game.MoveUp();
 				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
-				Assert.AreEqual(3, game.Snake.Get<Snake.Body>().BodyParts.Count);
+				Assert.AreEqual(3, game.Snake.Get<Body>().BodyParts.Count);
 				var newTailTopLeftCorner = snakeBodyParts[snakeBodyParts.Count - 1].DrawArea.TopLeft;
 				Assert.AreEqual(oldTailTopLeftCorner, newTailTopLeftCorner);
 			});

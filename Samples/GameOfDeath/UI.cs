@@ -18,7 +18,7 @@ namespace GameOfDeath
 			{
 				RenderLayer = (int)GameCoordinator.RenderLayers.Background
 			};
-			screen.Window.WindowClosing += ()=>soundDevice.Dispose();
+			screen.Window.WindowClosing += soundDevice.Dispose;
 			AddUITop(content);
 			AddUIBottom(content);
 			AddUILeft(content);

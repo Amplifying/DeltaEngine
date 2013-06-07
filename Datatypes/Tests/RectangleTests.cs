@@ -267,6 +267,15 @@ namespace DeltaEngine.Datatypes.Tests
 		}
 
 		[Test]
+		public void IsCollidingTopBottom()
+		{
+			var topRect = new Rectangle(0.44f, 0.1f, 0.05f, 0.03f);
+			var bottomRect = new Rectangle(0.44f, 0.86f, 0.04f, 0.03f);
+			Assert.IsFalse(topRect.IsColliding(0, bottomRect, 0));
+			Assert.IsFalse(bottomRect.IsColliding(0, topRect, 0));
+		}
+
+		[Test]
 		public void IsOneRectangleCollidingWhenInsideAnother()
 		{
 			var insideRect = new Rectangle(0.3f, 0.3f, 0.1f, 0.1f);

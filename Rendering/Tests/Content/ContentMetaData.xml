@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ContentMetaData Name="DeltaEngine.Rendering.Tests" Type="Scene" LastTimeUpdated="2013-04-22 17:00:00" ContentDeviceName="Delta">
+  <ContentMetaData Name="DeltaEngineLogo" Type="Image" LastTimeUpdated="2012-10-18 14:04:49" PlatformFileId="20383" FileSize="5230" LocalFilePath="DeltaEngineLogo.png" PixelSize="128, 128" />
+  <ContentMetaData Name="ImageAnimation" Type="Animation">
+	<ContentMetaData Name="ImageAnimation01" Type="Image" LastTimeUpdated="2012-10-18 14:04:49" PlatformFileId="20384" FileSize="5230" LocalFilePath="ImageAnimation01.png" PixelSize="128, 128" />
+	<ContentMetaData Name="ImageAnimation02" Type="Image" LastTimeUpdated="2012-10-18 14:04:49" PlatformFileId="20385" FileSize="5230" LocalFilePath="ImageAnimation02.png" PixelSize="128, 128" />
+	<ContentMetaData Name="ImageAnimation03" Type="Image" LastTimeUpdated="2012-10-18 14:04:49" PlatformFileId="20386" FileSize="5230" LocalFilePath="ImageAnimation03.png" PixelSize="128, 128" />
+  </ContentMetaData>
+  <ContentMetaData Name="WalkingCharacter" Type="Image" LastTimeUpdated="2012-10-18 14:04:49" PlatformFileId="20387" FileSize="3810" LocalFilePath="WalkingCharacter.png" PixelSize="160, 128" />
+  <ContentMetaData Name="VectorText" Type="Xml" LastTimeUpdated="2012-10-18 14:04:49" PlatformFileId="20388" FileSize="5230" LocalFilePath="VectorText.xml" />
+  <ContentMetaData Name="Tahoma30" Type="Xml" LastTimeUpdated="2013-05-17 00:22:23Z" PlatformFileId="20389" FileSize="16326" LocalFilePath="Tahoma30.xml" />
+  <ContentMetaData Name="Tahoma30Font" Type="Image" LastTimeUpdated="2013-05-17 00:22:23Z" PlatformFileId="20390" FileSize="26363" LocalFilePath="Tahoma30Font.png" />
+  <ContentMetaData Name="Verdana12" Type="Xml" LastTimeUpdated="2013-05-17 00:22:23Z" PlatformFileId="20391" FileSize="11354" LocalFilePath="Verdana12.xml" />
+  <ContentMetaData Name="Verdana12Font" Type="Image" LastTimeUpdated="2013-05-17 00:22:23Z" PlatformFileId="20392" FileSize="3358" LocalFilePath="Verdana12Font.png" />
+</ContentMetaData>

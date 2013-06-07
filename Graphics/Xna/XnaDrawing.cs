@@ -85,7 +85,7 @@ namespace DeltaEngine.Graphics.Xna
 			return BlendState.AlphaBlend;
 		}
 
-		public override void DrawVertices(VerticesMode mode, VertexPositionColorTextured[] vertices)
+		public override void DrawVerticesForSprite(VerticesMode mode, VertexPositionColorTextured[] vertices)
 		{
 			if (!positionColorUvVertexBuffer.IsCreated)
 				positionColorUvVertexBuffer.Create();

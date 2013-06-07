@@ -70,22 +70,27 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Fonts\TextConverter.cs" />
+    <Compile Include="Fonts\TextParser.cs" />
+    <Compile Include="Fonts\TextWrapper.cs" />
+    <Compile Include="Fonts\VectorCharacterLines.cs" />
     <Compile Include="Fonts\Font.cs" />
     <Compile Include="Fonts\FontData.cs" />
     <Compile Include="Fonts\FontText.cs" />
     <Compile Include="Fonts\Glyph.cs" />
     <Compile Include="Fonts\GlyphDrawData.cs" />
-    <Compile Include="Fonts\HorizontalAlignment.cs" />
-    <Compile Include="Particels\CreateParticles.cs" />
-    <Compile Include="Particels\ParticleEmitter.cs" />
-    <Compile Include="Particels\ParticleEmitterData.cs" />
-    <Compile Include="Particels\ParticlePreset.cs" />
-    <Compile Include="Particels\ParticleUpdater.cs" />
+    <Compile Include="Fonts\VectorText.cs" />
+    <Compile Include="Particles\ParticleFactory.cs" />
+    <Compile Include="Particles\ParticleEmitter.cs" />
+    <Compile Include="Particles\ParticleEmitterData.cs" />
+    <Compile Include="Particles\ParticleInfo.cs" />
+    <Compile Include="Particles\ParticlePreset.cs" />
+    <Compile Include="Particles\ParticleUpdater.cs" />
     <Compile Include="Shapes\Rect.cs" />
     <Compile Include="Sprites\Animation.cs" />
     <Compile Include="ScreenSpaces\Camera2DControlledQuadraticScreenSpace.cs" />
     <Compile Include="FinalTransition.cs" />
-    <Compile Include="Triggers\CollisionTrigger.cs" />
+    <Compile Include="Sprites\SpriteSheet.cs" />
     <Compile Include="Entity2D.cs" />
     <Compile Include="Shapes\Line2D.cs" />
     <Compile Include="Shapes\Polygon.cs" />
@@ -94,6 +99,7 @@
     <Compile Include="RenderLayer.cs" />
     <Compile Include="RotationCenter.cs" />
     <Compile Include="Sprites\Sprite.cs" />
+    <Compile Include="Triggers\CollisionTrigger.cs" />
     <Compile Include="Triggers\TimeTrigger.cs" />
     <Compile Include="Triggers\TimeTriggerData.cs" />
     <Compile Include="Shapes\Triangle2D.cs" />
@@ -103,9 +109,7 @@
     <Compile Include="ScreenSpaces\RelativeScreenSpace.cs" />
     <Compile Include="ScreenSpaces\ScreenSpace.cs" />
     <Compile Include="ScreenSpaces\QuadraticScreenSpace.cs" />
-    <Compile Include="Triggers\Trigger2D.cs" />
     <Compile Include="Triggers\CollisionTriggerData.cs" />
-    <Compile Include="Fonts\VerticalAlignment.cs" />
     <Compile Include="Visibility.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

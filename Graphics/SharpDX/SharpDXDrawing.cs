@@ -184,7 +184,7 @@ namespace DeltaEngine.Graphics.SharpDX
 
 		public override void DisableIndices() {}
 
-		public override void DrawVertices(VerticesMode mode, VertexPositionColorTextured[] vertices)
+		public override void DrawVerticesForSprite(VerticesMode mode, VertexPositionColorTextured[] vertices)
 		{
 			CheckCreateVertexBuffer(positionColorUvVertexBuffer);
 			positionColorUvVertexBuffer.SetVertexData(vertices);

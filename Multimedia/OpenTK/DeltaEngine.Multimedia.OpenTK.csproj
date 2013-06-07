@@ -36,7 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="OpenTK">
-      <HintPath>..\..\packages\OpenTK.1.1.1160.61462\lib\NET40\OpenTK.dll</HintPath>
+      <HintPath>..\..\packages\OpenTKWithOpenAL.1.1.1160.61462\lib\NET40\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -60,10 +60,6 @@
     <ProjectReference Include="..\..\Entities\DeltaEngine.Entities.csproj">
       <Project>{c6ba144d-59b0-41b1-8682-b092b4efbbb1}</Project>
       <Name>DeltaEngine.Entities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Graphics\BaseOpenGL\DeltaEngine.Graphics.BaseOpenGL.csproj">
-      <Project>{e537bd64-3a78-4908-9ddd-7f7f2b06f7fc}</Project>
-      <Name>DeltaEngine.Graphics.BaseOpenGL</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Graphics\DeltaEngine.Graphics.csproj">
       <Project>{8f701b0d-48b6-45cf-85e0-286bd53328ba}</Project>

@@ -65,5 +65,15 @@ namespace DeltaEngine.Rendering.Tests.Fonts
 		}
 
 		private readonly Rectangle screenCenter = Rectangle.FromCenter(Point.Half, Size.Half);
+
+		[VisualTest, ApproveFirstFrameScreenshot]
+		public void Draw2DifferentFonts(Type resolver)
+		{
+			Start(resolver, (ContentLoader content) =>
+			{
+				new FontText(new Font(content, "Tahoma30"), "Delta Engine", new Point(0.5f, 0.4f));
+				new FontText(new Font(content, "Verdana12"), "Delta Engine", new Point(0.5f, 0.6f));
+			});
+		}
 	}
 }

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
@@ -30,10 +28,9 @@ namespace DeltaEngine.Physics2D
 		/// </summary>
 		public class Rotate : EntityHandler
 		{
-			public override void Handle(List<Entity> entities)
+			public override void Handle(Entity entity)
 			{
-				foreach (Entity2D entity in entities.OfType<Entity2D>().Where(e => e.Contains<Data>()))
-					entity.Set(entity.Get<float>() + entity.Get<Data>().RotationSpeed * Time.Current.Delta);
+				entity.Set(entity.Get<float>() + entity.Get<Data>().RotationSpeed * Time.Current.Delta);
 			}
 
 			public override EntityHandlerPriority Priority
@@ -54,20 +51,15 @@ namespace DeltaEngine.Physics2D
 
 			private readonly ScreenSpace screen;
 
-			public override void Handle(List<Entity> entities)
-			{
-				foreach (Entity2D entity in entities.OfType<Entity2D>().Where(e => e.Contains<Data>()))
-					Move(entity);
-			}
-
-			private void Move(Entity2D entity)
+			public override void Handle(Entity entity)
 			{
 				var physics = entity.Get<Data>();
-				entity.DrawArea =
-					new Rectangle(entity.DrawArea.TopLeft + physics.Velocity * Time.Current.Delta,
-						entity.DrawArea.Size);
+				var drawArea = entity.Get<Rectangle>();
+				drawArea = new Rectangle(drawArea.TopLeft + physics.Velocity * Time.Current.Delta,
+					drawArea.Size);
+				entity.Set(drawArea);
 				Point velocity = physics.Velocity;
-				velocity.ReflectIfHittingBorder(entity.DrawArea, screen.Viewport);
+				velocity.ReflectIfHittingBorder(drawArea, screen.Viewport);
 				physics.Velocity = velocity;
 			}
 
@@ -83,18 +75,13 @@ namespace DeltaEngine.Physics2D
 		/// </summary>
 		public class Fall : EntityHandler
 		{
-			public override void Handle(List<Entity> entities)
+			public override void Handle(Entity entity)
 			{
-				foreach (Entity2D entity in entities.OfType<Entity2D>().Where(e => e.Contains<Data>()))
-					MoveEntity(entity);
-			}
-
-			private static void MoveEntity(Entity2D entity)
-			{
-				var physics = entity.Get<Data>();
+				var entity2D = entity as Entity2D;
+				var physics = entity2D.Get<Data>();
 				physics.Velocity += physics.Gravity * Time.Current.Delta;
-				entity.Center += physics.Velocity * Time.Current.Delta;
-				entity.Rotation += physics.RotationSpeed * Time.Current.Delta;
+				entity2D.Center += physics.Velocity * Time.Current.Delta;
+				entity2D.Rotation += physics.RotationSpeed * Time.Current.Delta;
 				physics.Elapsed += Time.Current.Delta;
 				if (physics.Duration > 0.0f && physics.Elapsed >= physics.Duration)
 					entity.IsActive = false;

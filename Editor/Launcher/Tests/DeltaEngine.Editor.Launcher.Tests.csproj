@@ -43,7 +43,7 @@
       <HintPath>..\..\packages\MvvmLightLibs.4.1.27.0\lib\net40\GalaSoft.MvvmLight.WPF4.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Smartdevice.Connectivity">
-      <HintPath>..\..\packages\Microsoft.Smartdevice.Connectivity.10.1.40219.425\lib\net40\Microsoft.Smartdevice.Connectivity.dll</HintPath>
+      <HintPath>..\..\packages\Smartdevice.Connectivity.10.0.0.0\lib\NET40\Microsoft.Smartdevice.Connectivity.dll</HintPath>
     </Reference>
     <Reference Include="NCrunch.Framework">
       <HintPath>..\..\packages\NCrunch.Framework.1.45.0.11\lib\net35\NCrunch.Framework.dll</HintPath>
@@ -80,14 +80,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="AdbPathProviderTests.cs" />
     <Compile Include="AndroidDebugBridgeRunnerTests.cs" />
     <Compile Include="AndroidDeviceFinderTests.cs" />
     <Compile Include="LauncherViewTests.cs" />
     <Compile Include="AndroidDeviceTests.cs" />
     <Compile Include="LauncherViewModelTests.cs" />
     <Compile Include="MockLauncherService.cs" />
+    <Compile Include="NullDeviceTests.cs" />
     <Compile Include="WP7DeviceFinderTests.cs" />
-    <Compile Include="Windows8DeploymentTests.cs" />
     <Compile Include="Windows8PackageCreatorTests.cs" />
     <Compile Include="WP7DeviceTests.cs" />
   </ItemGroup>

@@ -14,22 +14,35 @@ namespace DeltaEngine.Scenes.Tests
 	public class MenuTests : TestWithAllFrameworks
 	{
 		[IntegrationTest]
-		public void CreatingSetsButtonSize(Type resolver)
+		public void CreatingSetsButtonSizeAndMenuCenter(Type resolver)
 		{
 			Start(resolver, (Scene s, ContentLoader content) =>
 			{
-				var menu = new Menu(Size.Half);
-				Assert.AreEqual(Size.Half, menu.ButtonSize);
+				var menu = new Menu(ButtonSize);
+				Assert.AreEqual(ButtonSize, menu.ButtonSize);
+				Assert.AreEqual(Point.Half, menu.Center);
 			});
 		}
+
+		private static readonly Size ButtonSize = new Size(0.3f, 0.1f);
 
 		[IntegrationTest]
 		public void ChangingButtonSize(Type resolver)
 		{
 			Start(resolver, (Scene s, ContentLoader content) =>
 			{
-				var menu = new Menu(Size.Half) { ButtonSize = Size.One };
-				Assert.AreEqual(Size.One, menu.ButtonSize);
+				var menu = new Menu(Size.Half) { ButtonSize = ButtonSize };
+				Assert.AreEqual(ButtonSize, menu.ButtonSize);
+			});
+		}
+
+		[IntegrationTest]
+		public void ChangingCenterForSetOfButtons(Type resolver)
+		{
+			Start(resolver, (Scene s, ContentLoader content) =>
+			{
+				var menu = new Menu(ButtonSize) { Center = Point.One };
+				Assert.AreEqual(Point.One, menu.Center);
 			});
 		}
 
@@ -38,10 +51,12 @@ namespace DeltaEngine.Scenes.Tests
 		{
 			Start(resolver, (Scene s, ContentLoader content) =>
 			{
-				var menu = new Menu(Size.Half);
+				var menu = new Menu(ButtonSize) { Center = new Point(0.6f, 0.6f) };
 				menu.AddMenuOption(CreateTheme(content), () => { });
 				Assert.AreEqual(1, menu.Controls.Count);
-				Assert.AreEqual("DeltaEngineLogo", ((Button)menu.Controls[0]).Image.Name);
+				var button = (Button)menu.Controls[0];
+				Assert.AreEqual("DeltaEngineLogo", button.Image.Name);
+				Assert.AreEqual(new Rectangle(0.45f, 0.55f, 0.3f, 0.1f), button.DrawArea);
 			});
 		}
 
@@ -62,7 +77,7 @@ namespace DeltaEngine.Scenes.Tests
 		{
 			Start(resolver, (Scene s, ContentLoader content, Window window) =>
 			{
-				var menu = new Menu(new Size(0.3f, 0.1f));
+				var menu = new Menu(ButtonSize);
 				menu.SetBackground(content.Load<Image>("SimpleSubMenuBackground"));
 				var theme = CreateTheme(content);
 				menu.AddMenuOption(theme, () => { window.Title = "Clicked Top Button"; });
@@ -76,7 +91,7 @@ namespace DeltaEngine.Scenes.Tests
 		{
 			Start(resolver, (Scene s, ContentLoader content, Window window) =>
 			{
-				var menu = new Menu(new Size(0.3f, 0.1f));
+				var menu = new Menu(ButtonSize);
 				menu.SetBackground(content.Load<Image>("SimpleSubMenuBackground"));
 				var theme = CreateTheme(content);
 				menu.AddMenuOption(theme, () => { window.Title = "Clicked Top Button"; });
@@ -91,7 +106,7 @@ namespace DeltaEngine.Scenes.Tests
 		{
 			Start(resolver, (Scene s, ContentLoader content, Window window) =>
 			{
-				var menu = new Menu(new Size(0.3f, 0.1f));
+				var menu = new Menu(ButtonSize);
 				menu.SetBackground(content.Load<Image>("SimpleSubMenuBackground"));
 				var theme = CreateTextTheme(content);
 				menu.AddMenuOption(theme, () => { window.Title = "Clicked Top Button"; }, "Top Button");
@@ -121,7 +136,7 @@ namespace DeltaEngine.Scenes.Tests
 		{
 			Start(resolver, (Scene s, ContentLoader content) =>
 			{
-				var menu = new Menu(Size.Half);
+				var menu = new Menu(ButtonSize);
 				var theme = CreateTheme(content);
 				menu.AddMenuOption(theme, () => { });
 				Assert.AreEqual(1, menu.Buttons.Count);
@@ -135,7 +150,7 @@ namespace DeltaEngine.Scenes.Tests
 		{
 			Start(resolver, (Scene s, ContentLoader content) =>
 			{
-				var menu = new Menu(Size.Half);
+				var menu = new Menu(ButtonSize);
 				var logo = content.Load<Image>("DeltaEngineLogo");
 				menu.Add(new Sprite(logo, Rectangle.One));
 				var theme = CreateTheme(content);

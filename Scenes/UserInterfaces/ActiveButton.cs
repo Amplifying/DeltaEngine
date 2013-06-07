@@ -18,13 +18,7 @@ namespace DeltaEngine.Scenes.UserInterfaces
 			Add<UpdateSize>();
 		}
 
-		public Size BaseSize
-		{
-			get { return Get<Size>(); }
-			set { Set(value); }
-		}
-
-		public class UpdateSize : EntityListener
+		private class UpdateSize : EntityListener
 		{
 			public override void ReceiveMessage(Entity entity, object message)
 			{
@@ -67,6 +61,12 @@ namespace DeltaEngine.Scenes.UserInterfaces
 			{
 				get { return EntityHandlerPriority.Low; }
 			}
+		}
+
+		public Size BaseSize
+		{
+			get { return Get<Size>(); }
+			set { Set(value); }
 		}
 	}
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
@@ -17,13 +16,20 @@ namespace DeltaEngine.Scenes.UserInterfaces
 		public Slider(Theme theme, Rectangle drawArea)
 			: base(theme.Slider.Image, drawArea, theme.Slider.Color)
 		{
-			Add(new Pointer(theme));
 			Add(new Values { MinValue = 0, Value = 100, MaxValue = 100 });
+			Add(new Pointer(theme));
 			Add(new Interact.State());
 			Add<Interact, UpdateSlider>();
 		}
 
-		public class Pointer : Sprite
+		private class Values
+		{
+			public int MinValue { get; set; }
+			public int Value { get; set; }
+			public int MaxValue { get; set; }
+		}
+
+		internal class Pointer : Sprite
 		{
 			public Pointer(Theme theme)
 				: base(theme.SliderPointer.Image, theme.SliderPointer.Color)
@@ -34,41 +40,38 @@ namespace DeltaEngine.Scenes.UserInterfaces
 			}
 		}
 
-		public class Values
+		private class UpdateAppearance : EntityListener
 		{
-			public int MinValue { get; set; }
-			public int Value { get; set; }
-			public int MaxValue { get; set; }
-		}
-
-		public int MinValue
-		{
-			get { return Get<Values>().MinValue; }
-			set { Get<Values>().MinValue = value; }
-		}
-
-		public int Value
-		{
-			get { return Get<Values>().Value; }
-			set { Get<Values>().Value = value; }
-		}
-
-		public int MaxValue
-		{
-			get { return Get<Values>().MaxValue; }
-			set { Get<Values>().MaxValue = value; }
-		}
-
-		public class UpdateSlider : EntityHandler
-		{
-			public override void Handle(List<Entity> entities)
+			public override void ReceiveMessage(Entity entity, object message)
 			{
-				foreach (Slider slider in entities.OfType<Slider>())
-					UpdateSliderAndPointer(slider, slider.Get<Pointer>());
+				if (!interactions.Contains(message.GetType()))
+					return;
+
+				var state = entity.Get<Interact.State>();
+				var theme = entity.Get<Theme>();
+				SetAppearance(entity, state.IsInside ? theme.SliderPointerMouseover : theme.SliderPointer);
 			}
 
-			private static void UpdateSliderAndPointer(Slider slider, Sprite pointer)
+			private readonly List<Type> interactions = new List<Type>(typeof(Interact).GetNestedTypes());
+
+			private static void SetAppearance(Entity entity, Theme.Appearance appearance)
 			{
+				entity.Set(appearance.Image);
+				entity.Set(appearance.Color);
+			}
+
+			public override EntityHandlerPriority Priority
+			{
+				get { return EntityHandlerPriority.High; }
+			}
+		}
+
+		private class UpdateSlider : EntityHandler
+		{
+			public override void Handle(Entity entity)
+			{
+				var slider = entity as Slider;
+				var pointer = entity.Get<Pointer>();
 				UpdatePointerState(slider, pointer);
 				UpdateSliderValue(slider, pointer);
 				UpdatePointerDrawArea(slider, pointer);
@@ -118,30 +121,22 @@ namespace DeltaEngine.Scenes.UserInterfaces
 			}
 		}
 
-		public class UpdateAppearance : EntityListener
+		public int MinValue
 		{
-			public override void ReceiveMessage(Entity entity, object message)
-			{
-				if (!interactions.Contains(message.GetType()))
-					return;
+			get { return Get<Values>().MinValue; }
+			set { Get<Values>().MinValue = value; }
+		}
 
-				var state = entity.Get<Interact.State>();
-				var theme = entity.Get<Theme>();
-				SetAppearance(entity, state.IsInside ? theme.SliderPointerMouseover : theme.SliderPointer);
-			}
+		public int Value
+		{
+			get { return Get<Values>().Value; }
+			set { Get<Values>().Value = value; }
+		}
 
-			private readonly List<Type> interactions = new List<Type>(typeof(Interact).GetNestedTypes());
-
-			private static void SetAppearance(Entity entity, Theme.Appearance appearance)
-			{
-				entity.Set(appearance.Image);
-				entity.Set(appearance.Color);
-			}
-
-			public override EntityHandlerPriority Priority
-			{
-				get { return EntityHandlerPriority.High; }
-			}
+		public int MaxValue
+		{
+			get { return Get<Values>().MaxValue; }
+			set { Get<Values>().MaxValue = value; }
 		}
 	}
 }

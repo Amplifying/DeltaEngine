@@ -54,6 +54,8 @@
     <Compile Include="ConsoleLogger.cs" />
     <Compile Include="ConsoleLogProvider.cs" />
     <Compile Include="NetworkClientLogProvider.cs" />
+    <Compile Include="OfflineLogger.cs" />
+    <Compile Include="TextFileLogger.cs" />
     <Compile Include="TextFileLogProvider.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

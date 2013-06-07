@@ -8,13 +8,7 @@ namespace DeltaEngine.Entities
 	/// </summary>
 	public class CheckTriggers : EntityHandler
 	{
-		public override void Handle(List<Entity> entities)
-		{
-			foreach (Entity entity in entities.Where(e => e.Contains<List<Trigger>>()))
-				CheckEntityTriggers(entity);
-		}
-
-		private static void CheckEntityTriggers(Entity entity)
+		public override void Handle(Entity entity)
 		{
 			var triggers = entity.Get<List<Trigger>>();
 			foreach (Trigger trigger in triggers.Where(t => t.Condition(entity)))
