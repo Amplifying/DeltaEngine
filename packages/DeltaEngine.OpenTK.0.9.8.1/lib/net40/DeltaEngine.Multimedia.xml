@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DeltaEngine.Multimedia</name>
+    </assembly>
+    <members>
+        <member name="T:DeltaEngine.Multimedia.Video">
+            <summary>
+            Provides a way to load and play a video file.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Multimedia.Music">
+            <summary>
+            Provides a way to load and play a music file.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Multimedia.SoundDevice">
+            <summary>
+            Holds the audio device and automatically disposes all finished playing sound instances.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Multimedia.Sound">
+            <summary>
+            Provides a way to load and play simple sound effects by creating a SoundInstance per play.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Multimedia.SoundInstance">
+            <summary>
+            Provides a way to play the same sound effect multiple times at once and keeping track of
+            the playing sounds in the Device. Instance can change its volume or panning and be replayed.
+            </summary>
+        </member>
+    </members>
+</doc>

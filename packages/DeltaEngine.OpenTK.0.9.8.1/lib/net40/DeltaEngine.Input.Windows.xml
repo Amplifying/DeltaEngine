@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DeltaEngine.Input.Windows</name>
+    </assembly>
+    <members>
+        <member name="T:DeltaEngine.Input.Windows.MouseDeviceCounter">
+            <summary>
+            Helper class to count the number of mouse devices connected to the computer.
+            This makes it possible to check the availability of Mouse support.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Input.Windows.WindowsGamePad">
+            <summary>
+            Native Windows implementation of the GamePad interface. Not implemented yet!
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Input.Windows.CursorPositionTranslater">
+            <summary>
+            Used to translate courser and touch from and to client coordinates. Also used for SharpDX.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Input.Windows.MouseHook">
+            <summary>
+            Native hook on the windows messaging pipeline to grab mouse input data.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Input.Windows.WindowsHook">
+            <summary>
+            This class is a wrapper around the Windows Message Hook pipeline, which is basically
+            the same as Application.DoEvents()
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Input.Windows.NativeTouchInput">
+            <summary>
+            Touch structure of the native windows touch events containing all state information.
+            http://msdn.microsoft.com/en-us/library/windows/desktop/dd317334(v=vs.85).aspx
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Input.Windows.TouchCollection">
+            <summary>
+            Helper class to keep track of all touches according to their id's.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Input.Windows.TouchHook">
+            <summary>
+            Native hook on the windows messaging pipeline to grab touch input data.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Input.Windows.WindowsKeyboard">
+            <summary>
+            Native keyboard implementation using a windows hook.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Input.Windows.WindowsMouse">
+            <summary>
+            Native mouse implementation using a windows hook and invokes.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Input.Windows.WindowsTouch">
+            <summary>
+            Native Windows implementation of the Touch interface.
+            </summary>
+        </member>
+    </members>
+</doc>

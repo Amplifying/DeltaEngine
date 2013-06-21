@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DeltaEngine.Physics2D.Farseer</name>
+    </assembly>
+    <members>
+        <member name="T:DeltaEngine.Physics2D.Farseer.UnitConverter">
+            <summary>
+            Convert between display and simulation units and between Farseer and Delta Engine datatypes 
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Physics2D.Farseer.FarseerBody">
+            <summary>
+            Implements the Farseer flavor of physics bodies
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Physics2D.Farseer.FarseerJoint">
+            <summary>
+            Implements the Farseer flavor of physics joints
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Physics2D.Farseer.FarseerPhysics">
+            <summary>
+            The Farseer physics implementation
+            </summary>
+        </member>
+    </members>
+</doc>

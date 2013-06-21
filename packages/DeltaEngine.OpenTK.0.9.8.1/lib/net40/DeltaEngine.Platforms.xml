@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DeltaEngine.Platforms</name>
+    </assembly>
+    <members>
+        <member name="T:DeltaEngine.Platforms.AutofacResolver">
+            <summary>
+            Each configuration needs to register concrete types (e.g. graphics). All types derived from
+            Runner or Presenter are automatically run in AppRunner.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Platforms.Resolver">
+            <summary>
+            Base resolver methods like Resolve and functionally to run runners and presenters.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Platforms.AutofacStarter">
+            <summary>
+            Starts an application on demand by registering, resolving and running it
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Platforms.InAppPurchase">
+            <summary>
+            This class provides abstract access to the native IAP (In App Purchases).
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Platforms.MessageBoxButton">
+            <summary>
+            ShowMessageBox shows a combination of Okay, Cancel and Ignore and returns the clicked result.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Platforms.Orientation">
+            <summary>
+            Indicates the current orientation of a screen
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Platforms.ProductData">
+            <summary>
+            Product information, received by a market product information request.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Platforms.Window">
+            <summary>
+            Window form the application is running in. In Windows this is done with Windows Forms or WPF.
+            </summary>
+        </member>
+    </members>
+</doc>

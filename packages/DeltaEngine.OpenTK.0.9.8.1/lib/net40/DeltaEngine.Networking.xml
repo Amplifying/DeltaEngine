@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DeltaEngine.Networking</name>
+    </assembly>
+    <members>
+        <member name="T:DeltaEngine.Networking.Client">
+            <summary>
+            Provides the networking client functionality to send and receive any data object.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Networking.Server">
+            <summary>
+            Servers listen on a specific port and accept multiple clients.
+            </summary>
+        </member>
+        <member name="M:DeltaEngine.Networking.TextMessage.#ctor">
+            <summary>
+            Need empty constructor for BinaryDataExtensions class reconstruction
+            </summary>
+        </member>
+        <member name="M:DeltaEngine.Networking.UnknownMessage.#ctor">
+            <summary>
+            Need empty constructor for BinaryDataExtensions class reconstruction
+            </summary>
+        </member>
+    </members>
+</doc>

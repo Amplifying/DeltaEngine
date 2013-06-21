@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DeltaEngine.Logging</name>
+    </assembly>
+    <members>
+        <member name="T:DeltaEngine.Logging.Error">
+            <summary>
+            In case of a fatal error the program will exit and this type of message is logged.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Logging.Warning">
+            <summary>
+            If something bad happened but we can continue this type of message is logged.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Logging.Info">
+            <summary>
+            Base class and lowest available log level.
+            Used for notifications like a successful operation or debug output.
+            </summary>
+        </member>
+        <member name="M:DeltaEngine.Logging.Info.#ctor">
+            <summary>
+            Need empty constructor for BinaryDataExtensions class reconstruction
+            </summary>
+        </member>
+        <member name="M:DeltaEngine.Logging.Warning.#ctor">
+            <summary>
+            Need empty constructor for BinaryDataExtensions class reconstruction
+            </summary>
+        </member>
+        <member name="M:DeltaEngine.Logging.Error.#ctor">
+            <summary>
+            Need empty constructor for BinaryDataExtensions class reconstruction
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Logging.Logger">
+            <summary>
+            Allows to use all the registered log provider for logging purposes.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Logging.LogProvider">
+            <summary>
+            Derived classes specify how logging is implemented.
+            </summary>
+        </member>
+    </members>
+</doc>

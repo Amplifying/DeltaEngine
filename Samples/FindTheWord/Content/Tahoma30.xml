@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Font Family="Tahoma" Size="30" Style="Bold" LineHeight="50" Version="0.9.7" CreationDate="2013-05-07 13:54" Tool="DeltaEngine.Editor.FontGenerator">
+  <Bitmap Name="Tahoma30Font" Width="512" Height="512" />
+  <Glyphs>
+    <Glyph Character=" " UV="0 1 4 50" AdvanceWidth="20.1449" LeftBearing="0" RightBearing="14.1449" />
+    <Glyph Character="!" UV="5 1 18 50" AdvanceWidth="16.54953" LeftBearing="3.583374" RightBearing="3.583374" />
+    <Glyph Character="&quot;" UV="24 1 24 50" AdvanceWidth="23.62198" LeftBearing="2.994003" RightBearing="3.017578" />
+    <Glyph Character="#" UV="49 1 37 50" AdvanceWidth="39.51141" LeftBearing="2.946854" RightBearing="2.946854" />
+    <Glyph Character="$" UV="87 1 29 50" AdvanceWidth="30.74158" LeftBearing="2.263184" RightBearing="1.838837" />
+    <Glyph Character="%" UV="117 1 52 50" AdvanceWidth="57.87621" LeftBearing="2.522507" RightBearing="2.569656" />
+    <Glyph Character="&amp;" UV="170 1 35 50" AdvanceWidth="37.71973" LeftBearing="2.00386" RightBearing="-1.36734" />
+    <Glyph Character="'" UV="206 1 15 50" AdvanceWidth="13.2962" LeftBearing="2.805405" RightBearing="2.805405" />
+    <Glyph Character="(" UV="222 1 22 50" AdvanceWidth="21.92459" LeftBearing="2.593231" RightBearing="1.885986" />
+    <Glyph Character=")" UV="245 1 22 50" AdvanceWidth="21.92459" LeftBearing="1.862411" RightBearing="2.616806" />
+    <Glyph Character="*" UV="268 1 29 50" AdvanceWidth="30.74158" LeftBearing="3.017578" RightBearing="4.031296" />
+    <Glyph Character="+" UV="298 1 37 50" AdvanceWidth="39.51141" LeftBearing="4.573517" RightBearing="4.573517" />
+    <Glyph Character="," UV="336 1 17 50" AdvanceWidth="15.08789" LeftBearing="-0.1178741" RightBearing="1.933136" />
+    <Glyph Character="-" UV="354 1 21 50" AdvanceWidth="20.81657" LeftBearing="2.593231" RightBearing="2.593231" />
+    <Glyph Character="." UV="376 1 17 50" AdvanceWidth="15.08789" LeftBearing="3.371201" RightBearing="3.371201" />
+    <Glyph Character="/" UV="394 1 27 50" AdvanceWidth="27.86545" LeftBearing="2.78183" RightBearing="4.337769" />
+    <Glyph Character="0" UV="422 1 29 50" AdvanceWidth="27.74158" LeftBearing="1.838837" RightBearing="1.838837" />
+    <Glyph Character="1" UV="452 1 29 50" AdvanceWidth="27.74158" LeftBearing="4.597092" RightBearing="2.946854" />
+    <Glyph Character="2" UV="482 1 29 50" AdvanceWidth="27.74158" LeftBearing="3.559799" RightBearing="1.390915" />
+    <Glyph Character="3" UV="0 51 29 50" AdvanceWidth="27.74158" LeftBearing="2.428207" RightBearing="2.263184" />
+    <Glyph Character="4" UV="30 51 29 50" AdvanceWidth="27.74158" LeftBearing="1.060867" RightBearing="0.9901428" />
+    <Glyph Character="5" UV="60 51 29 50" AdvanceWidth="27.74158" LeftBearing="2.828979" RightBearing="2.192459" />
+    <Glyph Character="6" UV="90 51 29 50" AdvanceWidth="27.74158" LeftBearing="2.310333" RightBearing="1.603088" />
+    <Glyph Character="7" UV="120 51 29 50" AdvanceWidth="27.74158" LeftBearing="2.758255" RightBearing="2.168884" />
+    <Glyph Character="8" UV="150 51 29 50" AdvanceWidth="27.74158" LeftBearing="1.485214" RightBearing="1.485214" />
+    <Glyph Character="9" UV="180 51 29 50" AdvanceWidth="27.74158" LeftBearing="1.603088" RightBearing="2.310333" />
+    <Glyph Character=":" UV="210 51 19 50" AdvanceWidth="17.53967" LeftBearing="4.597092" RightBearing="4.597092" />
+    <Glyph Character=";" UV="230 51 19 50" AdvanceWidth="17.53967" LeftBearing="1.108017" RightBearing="3.159027" />
+    <Glyph Character="&lt;" UV="250 51 37 50" AdvanceWidth="39.51141" LeftBearing="4.267044" RightBearing="4.974289" />
+    <Glyph Character="=" UV="288 51 37 50" AdvanceWidth="39.51141" LeftBearing="5.280762" RightBearing="5.280762" />
+    <Glyph Character="&gt;" UV="326 51 37 50" AdvanceWidth="39.51141" LeftBearing="4.974289" RightBearing="4.267044" />
+    <Glyph Character="?" UV="364 51 27 50" AdvanceWidth="27.3468" LeftBearing="2.616806" RightBearing="1.791687" />
+    <Glyph Character="@" UV="392 51 41 50" AdvanceWidth="44.41498" LeftBearing="2.78183" RightBearing="3.135452" />
+    <Glyph Character="A" UV="434 51 31 50" AdvanceWidth="33.05191" LeftBearing="-0.141449" RightBearing="-0.141449" />
+    <Glyph Character="B" UV="466 51 31 50" AdvanceWidth="33.12263" LeftBearing="3.630524" RightBearing="1.41449" />
+    <Glyph Character="C" UV="0 101 31 50" AdvanceWidth="32.22679" LeftBearing="1.579514" RightBearing="1.555939" />
+    <Glyph Character="D" UV="32 101 34 50" AdvanceWidth="36.56456" LeftBearing="3.630524" RightBearing="1.579514" />
+    <Glyph Character="E" UV="67 101 29 50" AdvanceWidth="29.70428" LeftBearing="3.630524" RightBearing="2.333908" />
+    <Glyph Character="F" UV="97 101 27 50" AdvanceWidth="28.05405" LeftBearing="3.630524" RightBearing="0.9194183" />
+    <Glyph Character="G" UV="125 101 34 50" AdvanceWidth="35.97519" LeftBearing="1.579514" RightBearing="3.017578" />
+    <Glyph Character="H" UV="160 101 35 50" AdvanceWidth="34.89461" LeftBearing="3.630524" RightBearing="3.630524" />
+    <Glyph Character="I" UV="196 101 23 50" AdvanceWidth="23.33908" LeftBearing="2.216034" RightBearing="2.216034" />
+    <Glyph Character="J" UV="220 101 24 50" AdvanceWidth="24.1642" LeftBearing="0.141449" RightBearing="3.182602" />
+    <Glyph Character="K" UV="245 101 32 50" AdvanceWidth="33.61771" LeftBearing="3.630524" RightBearing="-0.7779694" />
+    <Glyph Character="L" UV="278 101 27 50" AdvanceWidth="27.6297" LeftBearing="3.630524" RightBearing="0.5657959" />
+    <Glyph Character="M" UV="306 101 40 50" AdvanceWidth="43.11836" LeftBearing="3.630524" RightBearing="3.630524" />
+    <Glyph Character="N" UV="347 101 35 50" AdvanceWidth="37.20108" LeftBearing="3.630524" RightBearing="3.489075" />
+    <Glyph Character="O" UV="383 101 35 50" AdvanceWidth="37.17751" LeftBearing="1.579514" RightBearing="1.579514" />
+    <Glyph Character="P" UV="419 101 30 50" AdvanceWidth="31.73172" LeftBearing="3.630524" RightBearing="1.084442" />
+    <Glyph Character="Q" UV="450 101 35 50" AdvanceWidth="37.17751" LeftBearing="1.579514" RightBearing="1.579514" />
+    <Glyph Character="R" UV="0 151 33 50" AdvanceWidth="35.05577" LeftBearing="3.630524" RightBearing="-1.037292" />
+    <Glyph Character="S" UV="34 151 29 50" AdvanceWidth="30.57655" LeftBearing="1.720963" RightBearing="0.8722687" />
+    <Glyph Character="T" UV="64 151 28 50" AdvanceWidth="29.56284" LeftBearing="0" RightBearing="0" />
+    <Glyph Character="U" UV="93 151 34 50" AdvanceWidth="35.66872" LeftBearing="3.135452" RightBearing="3.135452" />
+    <Glyph Character="V" UV="128 151 31 50" AdvanceWidth="32.58041" LeftBearing="-0.3771973" RightBearing="-0.3771973" />
+    <Glyph Character="W" UV="160 151 45 50" AdvanceWidth="49.62502" LeftBearing="0.7072449" RightBearing="0.7072449" />
+    <Glyph Character="X" UV="206 151 31 50" AdvanceWidth="33.05191" LeftBearing="-0.2828979" RightBearing="-0.2828979" />
+    <Glyph Character="Y" UV="238 151 31 50" AdvanceWidth="32.36824" LeftBearing="-0.4479218" RightBearing="-0.4479218" />
+    <Glyph Character="Z" UV="270 151 29 50" AdvanceWidth="30.05791" LeftBearing="1.273041" RightBearing="0.9429932" />
+    <Glyph Character="[" UV="300 151 22 50" AdvanceWidth="21.92459" LeftBearing="3.913422" RightBearing="3.206177" />
+    <Glyph Character="\" UV="323 151 27 50" AdvanceWidth="27.86545" LeftBearing="4.573517" RightBearing="2.546082" />
+    <Glyph Character="]" UV="351 151 22 50" AdvanceWidth="21.92459" LeftBearing="3.182602" RightBearing="3.936996" />
+    <Glyph Character="^" UV="374 151 37 50" AdvanceWidth="39.51141" LeftBearing="4.078445" RightBearing="4.078445" />
+    <Glyph Character="_" UV="412 151 29 50" AdvanceWidth="30.74158" LeftBearing="-0.3771973" RightBearing="-0.3771973" />
+    <Glyph Character="`" UV="442 151 26 50" AdvanceWidth="26.35666" LeftBearing="6.365204" RightBearing="7.308197" />
+    <Glyph Character="a" UV="469 151 28 50" AdvanceWidth="28.90274" LeftBearing="1.178741" RightBearing="2.946854" />
+    <Glyph Character="b" UV="0 201 29 50" AdvanceWidth="30.50583" LeftBearing="3.159027" RightBearing="1.390915" />
+    <Glyph Character="c" UV="30 201 25 50" AdvanceWidth="25.46082" LeftBearing="1.225891" RightBearing="0.7543945" />
+    <Glyph Character="d" UV="56 201 29 50" AdvanceWidth="30.38795" LeftBearing="1.273041" RightBearing="3.159027" />
+    <Glyph Character="e" UV="86 201 28 50" AdvanceWidth="26.66699" LeftBearing="1.225891" RightBearing="1.084442" />
+    <Glyph Character="f" UV="115 201 19 50" AdvanceWidth="18.45909" LeftBearing="0.4950714" RightBearing="-1.626663" />
+    <Glyph Character="g" UV="135 201 29 50" AdvanceWidth="30.38795" LeftBearing="1.273041" RightBearing="3.159027" />
+    <Glyph Character="h" UV="165 201 30 50" AdvanceWidth="30.9066" LeftBearing="3.159027" RightBearing="2.946854" />
+    <Glyph Character="i" UV="196 201 16 50" AdvanceWidth="15.56924" LeftBearing="2.923279" RightBearing="2.923279" />
+    <Glyph Character="j" UV="213 201 19 50" AdvanceWidth="17.5161" LeftBearing="-1.980286" RightBearing="3.159027" />
+    <Glyph Character="k" UV="233 201 28 50" AdvanceWidth="29.09134" LeftBearing="3.159027" RightBearing="-0.5657959" />
+    <Glyph Character="l" UV="262 201 16 50" AdvanceWidth="15.56924" LeftBearing="3.159027" RightBearing="3.159027" />
+    <Glyph Character="m" UV="279 201 42 50" AdvanceWidth="46.04164" LeftBearing="3.159027" RightBearing="2.946854" />
+    <Glyph Character="n" UV="322 201 30 50" AdvanceWidth="30.9066" LeftBearing="3.159027" RightBearing="2.946854" />
+    <Glyph Character="o" UV="353 201 29 50" AdvanceWidth="25.79858" LeftBearing="1.225891" RightBearing="1.225891" />
+    <Glyph Character="p" UV="383 201 29 50" AdvanceWidth="30.38795" LeftBearing="3.159027" RightBearing="1.273041" />
+    <Glyph Character="q" UV="413 201 29 50" AdvanceWidth="30.38795" LeftBearing="1.273041" RightBearing="3.159027" />
+    <Glyph Character="r" UV="443 201 21 50" AdvanceWidth="21.93445" LeftBearing="3.159027" RightBearing="0" />
+    <Glyph Character="s" UV="465 201 25 50" AdvanceWidth="24.84787" LeftBearing="1.390915" RightBearing="0.7779694" />
+    <Glyph Character="t" UV="0 251 21 50" AdvanceWidth="20.06218" LeftBearing="0.4950714" RightBearing="0.2121735" />
+    <Glyph Character="u" UV="22 251 30 50" AdvanceWidth="28.9066" LeftBearing="2.946854" RightBearing="3.159027" />
+    <Glyph Character="v" UV="53 251 27 50" AdvanceWidth="27.93617" LeftBearing="0" RightBearing="0" />
+    <Glyph Character="w" UV="81 251 40 50" AdvanceWidth="42.95334" LeftBearing="0.3536224" RightBearing="0.3536224" />
+    <Glyph Character="x" UV="122 251 28 50" AdvanceWidth="27.18564" LeftBearing="-0.09429932" RightBearing="-0.09429932" />
+    <Glyph Character="y" UV="151 251 27 50" AdvanceWidth="27.79472" LeftBearing="-0.07072449" RightBearing="-0.07072449" />
+    <Glyph Character="z" UV="179 251 25 50" AdvanceWidth="25.39009" LeftBearing="1.131592" RightBearing="1.108017" />
+    <Glyph Character="{" UV="205 251 29 50" AdvanceWidth="30.08148" LeftBearing="1.32019" RightBearing="3.229752" />
+    <Glyph Character="|" UV="235 251 29 50" AdvanceWidth="30.74158" LeftBearing="12.04674" RightBearing="12.07031" />
+    <Glyph Character="}" UV="265 251 29 50" AdvanceWidth="30.08148" LeftBearing="3.229752" RightBearing="1.32019" />
+    <Glyph Character="~" UV="295 251 37 50" AdvanceWidth="39.51141" LeftBearing="3.182602" RightBearing="3.088303" />
+  </Glyphs>
+  <Kernings>
+    <Kerning First=" " Second="A" Distance="-3" />
+    <Kerning First=" " Second="T" Distance="-1" />
+    <Kerning First=" " Second="Y" Distance="-1" />
+    <Kerning First="1" Second="1" Distance="-4" />
+    <Kerning First="A" Second=" " Distance="-3" />
+    <Kerning First="A" Second="T" Distance="-4" />
+    <Kerning First="A" Second="V" Distance="-4" />
+    <Kerning First="A" Second="W" Distance="-2" />
+    <Kerning First="A" Second="Y" Distance="-4" />
+    <Kerning First="A" Second="v" Distance="-1" />
+    <Kerning First="A" Second="w" Distance="-1" />
+    <Kerning First="A" Second="y" Distance="-1" />
+    <Kerning First="F" Second="," Distance="-6" />
+    <Kerning First="F" Second="." Distance="-6" />
+    <Kerning First="F" Second="A" Distance="-3" />
+    <Kerning First="L" Second=" " Distance="-2" />
+    <Kerning First="L" Second="T" Distance="-4" />
+    <Kerning First="L" Second="V" Distance="-4" />
+    <Kerning First="L" Second="W" Distance="-4" />
+    <Kerning First="L" Second="Y" Distance="-4" />
+    <Kerning First="L" Second="y" Distance="-2" />
+    <Kerning First="P" Second=" " Distance="-1" />
+    <Kerning First="P" Second="," Distance="-8" />
+    <Kerning First="P" Second="." Distance="-8" />
+    <Kerning First="P" Second="A" Distance="-4" />
+    <Kerning First="R" Second="T" Distance="-1" />
+    <Kerning First="R" Second="V" Distance="-1" />
+    <Kerning First="R" Second="W" Distance="-1" />
+    <Kerning First="R" Second="Y" Distance="-1" />
+    <Kerning First="T" Second=" " Distance="-1" />
+    <Kerning First="T" Second="," Distance="-6" />
+    <Kerning First="T" Second="-" Distance="-3" />
+    <Kerning First="T" Second="." Distance="-6" />
+    <Kerning First="T" Second=":" Distance="-6" />
+    <Kerning First="T" Second="A" Distance="-4" />
+    <Kerning First="T" Second="O" Distance="-1" />
+    <Kerning First="T" Second="a" Distance="-6" />
+    <Kerning First="T" Second="c" Distance="-6" />
+    <Kerning First="T" Second="e" Distance="-6" />
+    <Kerning First="T" Second="i" Distance="-2" />
+    <Kerning First="T" Second="o" Distance="-6" />
+    <Kerning First="T" Second="r" Distance="-2" />
+    <Kerning First="T" Second="s" Distance="-6" />
+    <Kerning First="T" Second="u" Distance="-2" />
+    <Kerning First="T" Second="w" Distance="-3" />
+    <Kerning First="T" Second="y" Distance="-3" />
+    <Kerning First="V" Second="," Distance="-5" />
+    <Kerning First="V" Second="-" Distance="-3" />
+    <Kerning First="V" Second="." Distance="-5" />
+    <Kerning First="V" Second=":" Distance="-2" />
+    <Kerning First="V" Second="A" Distance="-4" />
+    <Kerning First="V" Second="a" Distance="-4" />
+    <Kerning First="V" Second="e" Distance="-3" />
+    <Kerning First="V" Second="i" Distance="-1" />
+    <Kerning First="V" Second="o" Distance="-3" />
+    <Kerning First="V" Second="r" Distance="-2" />
+    <Kerning First="V" Second="u" Distance="-2" />
+    <Kerning First="V" Second="y" Distance="-2" />
+    <Kerning First="W" Second="," Distance="-3" />
+    <Kerning First="W" Second="-" Distance="-1" />
+    <Kerning First="W" Second="." Distance="-3" />
+    <Kerning First="W" Second=":" Distance="-1" />
+    <Kerning First="W" Second="A" Distance="-2" />
+    <Kerning First="W" Second="a" Distance="-2" />
+    <Kerning First="W" Second="e" Distance="-1" />
+    <Kerning First="W" Second="o" Distance="-1" />
+    <Kerning First="W" Second="r" Distance="-1" />
+    <Kerning First="W" Second="u" Distance="-1" />
+    <Kerning First="W" Second="y" Distance="-1" />
+    <Kerning First="Y" Second=" " Distance="-1" />
+    <Kerning First="Y" Second="," Distance="-8" />
+    <Kerning First="Y" Second="-" Distance="-5" />
+    <Kerning First="Y" Second="." Distance="-8" />
+    <Kerning First="Y" Second=":" Distance="-3" />
+    <Kerning First="Y" Second="A" Distance="-4" />
+    <Kerning First="Y" Second="a" Distance="-4" />
+    <Kerning First="Y" Second="e" Distance="-5" />
+    <Kerning First="Y" Second="i" Distance="-2" />
+    <Kerning First="Y" Second="o" Distance="-5" />
+    <Kerning First="Y" Second="p" Distance="-4" />
+    <Kerning First="Y" Second="q" Distance="-5" />
+    <Kerning First="Y" Second="u" Distance="-3" />
+    <Kerning First="Y" Second="v" Distance="-3" />
+    <Kerning First="f" Second="f" Distance="-1" />
+    <Kerning First="r" Second="," Distance="-3" />
+    <Kerning First="r" Second="." Distance="-3" />
+    <Kerning First="v" Second="," Distance="-4" />
+    <Kerning First="v" Second="." Distance="-4" />
+    <Kerning First="w" Second="," Distance="-3" />
+    <Kerning First="w" Second="." Distance="-3" />
+    <Kerning First="y" Second="," Distance="-4" />
+    <Kerning First="y" Second="." Distance="-4" />
+  </Kernings>
+</Font>

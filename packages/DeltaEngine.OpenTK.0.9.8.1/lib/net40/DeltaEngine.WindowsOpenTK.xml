@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DeltaEngine.WindowsOpenTK</name>
+    </assembly>
+    <members>
+        <member name="T:DeltaEngine.Platforms.App">
+            <summary>
+            Provides the easily exchangeable App.Start function for OpenTK applications and visual tests.
+            </summary>
+        </member>
+    </members>
+</doc>

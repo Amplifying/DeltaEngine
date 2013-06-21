@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DeltaEngine.Core.Xml</name>
+    </assembly>
+    <members>
+        <member name="T:DeltaEngine.Core.Xml.XmlAttribute">
+            <summary>
+            Holds a name and value text pair
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Core.Xml.XmlContent">
+            <summary>
+            Loads Xml data via the Content system
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Core.Xml.XmlFile">
+            <summary>
+            Loads and saves XmlData to file
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Core.Xml.XmlMemoryStream">
+            <summary>
+            Loads and saves XmlData to a memory stream
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Core.Xml.XmlData">
+            <summary>
+            Simplified Xml handling
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Core.Xml.XmlSnippet">
+            <summary>
+            Creates XmlData from a string
+            </summary>
+        </member>
+    </members>
+</doc>

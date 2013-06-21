@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DeltaEngine.Multimedia.OpenTK</name>
+    </assembly>
+    <members>
+        <member name="T:DeltaEngine.Multimedia.OpenTK.Helpers.ChannelState">
+            <summary>
+            Possible states of the channels.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Multimedia.OpenTK.Helpers.IeeeFloatConverter">
+            <summary>
+            Audio data converter capable of converting IEEE floating point audio to pcm 16 bit.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Multimedia.OpenTK.Helpers.MsAdpcmConverter">
+            <summary>
+            Audio data converter capable of converting MS Adpcm audio to pcm 16 bit.
+            http://wiki.multimedia.cx/index.php?title=Microsoft_ADPCM
+            http://dslinux.gits.kiev.ua/trunk/lib/audiofile/src/libaudiofile/modules/msadpcm.c
+            http://netghost.narod.ru/gff/vendspec/micriff/ms_riff.txt
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Multimedia.OpenTK.Helpers.AudioFormat">
+            <summary>
+            Audio formats depending on the number of channels and the bit-depth.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Multimedia.OpenTK.Helpers.WaveFormat">
+            <summary>
+            All wave formats we're currently able to parse which is read from the fmt chunk.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Multimedia.OpenTK.Helpers.WaveSoundData">
+            <summary>
+            Helper class to parse the headers and chunks of a wave file and
+            calling the needed converter classes.
+            </summary>
+        </member>
+    </members>
+</doc>

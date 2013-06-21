@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DeltaEngine.Graphics</name>
+    </assembly>
+    <members>
+        <member name="T:DeltaEngine.Graphics.BlendMode">
+            <summary>
+            Blending mode to be used for drawing. Usually in Opaque mode or Normal transparency.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Graphics.BlendMode.Normal">
+            <summary>
+            Default blending mode is source alpha with inverted source alpha for the destination.
+            Usually used for images with alpha, otherwise Opaque is choosen.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Graphics.BlendMode.Opaque">
+            <summary>
+            Opaque is the fastest mode as it does not use any blending. Used for non alpha images.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Graphics.BlendMode.AlphaTest">
+            <summary>
+            Same as opaque, but use AlphaTest to discard any pixel below 0.66f in the alpha channel.
+            Rendering this is faster than Normal because we need no sorting and we can skip pixels.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Graphics.BlendMode.Additive">
+            <summary>
+            Used to accumulate the color we already got, all pixels are added to the destination.
+            Has the advantage that we do not need to sort, can be rendered in any order after Opaque.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Graphics.BlendMode.Subtractive">
+            <summary>
+            Opposite of additive blending. Instead of always adding more brightness to the target screen
+            pixels, this one subtracts brightness. Often used for fake shadowing effects (blob shadows).
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Graphics.BlendMode.LightEffect">
+            <summary>
+            Special blend mode of DestColor+One used for light effects (similar to lightmap shaders, but
+            just using a lightmap, no diffuse texture). Used for glow, light and flare effects.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Graphics.VertexPositionColorTextured">
+            <summary>
+            Vertex struct that describes 3D position, vertex color and texture coordinate.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Graphics.Drawing">
+            <summary>
+            Allows to draw shapes or images on screen. Needs a graphic device.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Graphics.Device">
+            <summary>
+            The graphics device clears everything (via Run) at the beginning of each frame and shows the
+            result of the render buffer on screen at the end of each frame (via Present).
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Graphics.Image">
+            <summary>
+            Provides a way to load images. Use Drawing to show them on the screen.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Graphics.VerticesMode">
+            <summary>
+            Vertices are either presented as triangles (3 vertices are one polygon) or as pairs of lines.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Graphics.VertexPositionColor">
+            <summary>
+            Simplest vertex format with just 3D positions and vertex colors (12 + 4 bytes).
+            </summary>
+        </member>
+    </members>
+</doc>

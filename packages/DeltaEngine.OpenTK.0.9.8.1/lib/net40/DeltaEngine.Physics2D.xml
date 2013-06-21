@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DeltaEngine.Physics2D</name>
+    </assembly>
+    <members>
+        <member name="T:DeltaEngine.Physics2D.SimplePhysics">
+            <summary>
+            Groups the various physics effects that can be applied to Entities
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Physics2D.SimplePhysics.Data">
+            <summary>
+            Holds physics related data
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Physics2D.SimplePhysics.Rotate">
+            <summary>
+            Rotates an Entity2D every frame
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Physics2D.SimplePhysics.BounceOffScreenEdges">
+            <summary>
+            Bounces an Entity2D off the edges of the screen
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Physics2D.SimplePhysics.Fall">
+            <summary>
+            Causes an Entity2D to move and fall under gravity.
+            When the duration is complete it removes the Entity from the Entity System
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Physics2D.Physics">
+            <summary>
+            Main physics class used for performing simulations and creating bodies and shapes.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Physics2D.PhysicsBody">
+            <summary>
+            Represents a body which responds to physics
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Physics2D.PhysicsJoint">
+            <summary>
+             Represents a joint that attaches two bodies together.
+            </summary>
+        </member>
+    </members>
+</doc>

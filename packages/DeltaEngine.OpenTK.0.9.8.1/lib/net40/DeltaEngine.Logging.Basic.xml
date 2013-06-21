@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DeltaEngine.Logging.Basic</name>
+    </assembly>
+    <members>
+        <member name="T:DeltaEngine.Logging.Basic.TextFileLogProvider">
+            <summary>
+            Writes into a log text file and opens it in a editor after execution.
+            </summary>
+        </member>
+    </members>
+</doc>

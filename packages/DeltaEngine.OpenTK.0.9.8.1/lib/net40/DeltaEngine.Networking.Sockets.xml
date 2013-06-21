@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DeltaEngine.Networking.Sockets</name>
+    </assembly>
+    <members>
+        <member name="T:DeltaEngine.Networking.Sockets.TcpServer">
+            <summary>
+            TCP server using raw sockets via TcpServerSocket and a list of TcpSockets for the clients
+            </summary>
+        </member>
+    </members>
+</doc>

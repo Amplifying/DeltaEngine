@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DeltaEngine.Platforms.Windows</name>
+    </assembly>
+    <members>
+        <member name="T:DeltaEngine.Platforms.Windows.FormsWindow">
+            <summary>
+            Implementation of the Windows Forms window for the Delta Engine to run game loops.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Platforms.Windows.WindowsResolver">
+            <summary>
+            Base resolver class for all windows framework implementations (OpenGL, DirectX or XNA).
+            </summary>
+        </member>
+    </members>
+</doc>

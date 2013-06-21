@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DeltaEngine.Datatypes</name>
+    </assembly>
+    <members>
+        <member name="T:DeltaEngine.Datatypes.BinaryDataExtensions">
+            <summary>
+            Allows to easily save and recreate binary data objects with the full type names like other
+            Serializers, but way faster (100x). Before reconstructing types load all needed assemblies.
+            </summary>
+        </member>
+        <member name="M:DeltaEngine.Datatypes.BinaryDataExtensions.Save(System.Object,System.IO.BinaryWriter)">
+            <summary>
+            Saves any object type information and the actual data contained in in, use Create to load.
+            </summary>
+        </member>
+        <member name="M:DeltaEngine.Datatypes.BinaryDataExtensions.Create(System.IO.BinaryReader,DeltaEngine.Content.ContentLoader)">
+            <summary>
+            Loads a binary data object and reconstructs the object based on the saved type information.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Datatypes.BinaryDataLoader">
+            <summary>
+            Loads saved binary data object and reconstructs them based on the saved type information.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Datatypes.Color">
+            <summary>
+            Color with a byte per component (red, green, blue, alpha), also provides float properties.
+            </summary>
+        </member>
+        <member name="P:DeltaEngine.Datatypes.Color.PackedRgba">
+            <summary>
+            Colors are stored as RGBA byte values and this gives back the usual RGBA format as an
+            optimized 32 bit value. R takes the first 8 bits, G the next 8 up to A for the last 8 bits.
+            </summary>
+        </member>
+        <member name="P:DeltaEngine.Datatypes.Color.PackedBgra">
+            <summary>
+            Similar to PackedRgba, but R and B are switched around, used for loading Windows bitmaps.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Datatypes.BinaryDataSaver">
+            <summary>
+            Easily save data objects with the full type names like other Serializers, but much faster.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Datatypes.Matrix">
+            <summary>
+            4x4 Matrix from 16 floats, access happens via indexer, optimizations done in BuildService.
+            </summary>
+        </member>
+        <member name="M:DeltaEngine.Datatypes.Matrix.CreateRotationZyx(System.Single,System.Single,System.Single)">
+            <summary>
+            THe multiplication order is first Z, then Y and finally X
+            </summary>
+        </member>
+        <member name="M:DeltaEngine.Datatypes.Matrix.GetDeterminant">
+            <summary>
+            More details how to calculate Matrix Determinants: http://en.wikipedia.org/wiki/Determinant
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Datatypes.Point">
+            <summary>
+            Represents a 2D vector, which is useful for screen positions (sprites, mouse, touch, etc.)
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Datatypes.Rectangle">
+            <summary>
+            Holds data for a rectangle by specifying its top left corner and the width and height.
+            </summary>
+        </member>
+        <member name="M:DeltaEngine.Datatypes.Rectangle.BuildUvRectangle(DeltaEngine.Datatypes.Rectangle,DeltaEngine.Datatypes.Size)">
+            <summary>
+            Build UV rectangle for a given uv pixel rect and imagePixelSize. Used for FontData.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Datatypes.Size">
+            <summary>
+            Holds the width and height of an object (e.g. a rectangle)
+            </summary>
+        </member>
+    </members>
+</doc>

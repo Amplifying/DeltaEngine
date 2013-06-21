@@ -1,0 +1,238 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DeltaEngine.Rendering</name>
+    </assembly>
+    <members>
+        <member name="M:DeltaEngine.Rendering.Fonts.FontData.ParseText(System.String)">
+            <summary>
+            Parses the given text by analyzing every character and building line by line results.
+            </summary>
+        </member>
+        <member name="M:DeltaEngine.Rendering.Fonts.FontData.GetTextLines(System.String,System.Single,DeltaEngine.Datatypes.Size,DeltaEngine.Rendering.Fonts.HorizontalAlignment,System.Boolean,System.Boolean,System.Collections.Generic.List{System.Single}@,System.Single@)">
+            <summary>
+            Gets the single text lines of multi line text by determining the line breaks.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Entity2D">
+            <summary>
+            2D entities are the basis of all 2D renderables like lines, sprites etc.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Entity2D.SortAndRender">
+            <summary>
+            Sorts all Entities into RenderLayer order; Then, for each, messages any listeners attached 
+            that it's time to render it.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Fonts.Glyph">
+            <summary>
+            Used in FontData to store all glyph character data from the font bitmap. For some help see:
+            http://blogs.msdn.com/garykac/articles/749188.aspx
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Rendering.Fonts.Glyph.UV">
+            <summary>
+            UV Rectangle (in Pixels) used for drawing this character.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Rendering.Fonts.Glyph.AdvanceWidth">
+            <summary>
+            How many pixels we have to advance to the right for this character (different from UV.Width)
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Rendering.Fonts.Glyph.LeftSideBearing">
+            <summary>
+            Left side bearing (in pixels) is used to offset the first character of a text to the left.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Rendering.Fonts.Glyph.RightSideBearing">
+            <summary>
+            Right side bearing (in pixels) is used to offset last character of a text to the right.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Rendering.Fonts.Glyph.Kernings">
+            <summary>
+            Contains the amount of extra distances offsets between this character to any other one.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Rendering.Fonts.Glyph.PrecomputedFontMapUV">
+            <summary>
+            Not stored in the Xml font file because we can easily generate them at load time (UV/size).
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Fonts.GlyphDrawData">
+            <summary>
+            Glyph draw info is used by FontData and for rendering glyphs on the screen.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Fonts.HorizontalAlignment">
+            <summary>
+            Available modes to align a text horizontally.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Particels.ParticlePreset">
+            <summary>
+            Defines starting values for a particle created by the ParticleEmitter
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Transition">
+            <summary>
+            Transitions the position, size, color and/or rotation of an Entity2D
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Transition.Duration">
+            <summary>
+            Duration, Color, FadingColor, OutlineColor, Position, Rotation, Size are all Components
+            that can be added to an Entity undergoing a Transition
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Shapes.Rect">
+            <summary>
+            A rectangle to be rendered
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Shapes.Polygon">
+            <summary>
+            A shape to be rendered defined by its border points, will be rendered with a filled color.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Shapes.Polygon.Render">
+            <summary>
+            Responsible for rendering filled 2D shapes defined by their border points
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Shapes.Polygon.RenderOutline">
+            <summary>
+            Responsible for rendering the outline of 2D shapes defined by their border points
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Shapes.Rect.UpdateCorners">
+            <summary>
+            Updates the corners of the Rect based on its DrawArea
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Sprites.Animation">
+            <summary>
+            An animated sprite
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Sprites.Sprite">
+            <summary>
+            2D sprite to be rendered, which is an image used as an Entity2D.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Sprites.Sprite.Render">
+            <summary>
+            Responsible for rendering sprites
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Sprites.Animation.Data">
+            <summary>
+            Holds the data used by AnimatedSprite
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Sprites.Animation.Update">
+            <summary>
+            Updates current frame for a sprite animation
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.ScreenSpaces.Camera2DControlledQuadraticScreenSpace">
+            <summary>
+            Behaves like QuadraticScreenSpace but can also pan and zoom
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.ScreenSpaces.QuadraticScreenSpace">
+            <summary>
+            Converts to and from quadratic space. https://deltaengine.fogbugz.com/default.asp?W101
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.ScreenSpaces.ScreenSpace">
+            <summary>
+            Converts to and from some kind of screen space like Quadratic, Pixel, etc.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Rendering.ScreenSpaces.ScreenSpace.Epsilon">
+            <summary>
+            Small value to make sure we always round up in ToPixelSpaceRounded for 0.5f or 0.499999f.
+            </summary>
+        </member>
+        <member name="M:DeltaEngine.Rendering.ScreenSpaces.ScreenSpace.ToPixelSpaceRounded(DeltaEngine.Datatypes.Point)">
+            <summary>
+            The rounded version of ToPixelSpace is used for lines, boxes and fonts where it matters to
+            actually render at exact pixel positions to get sharp lines, boxes or font rendering.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.FinalTransition">
+            <summary>
+            This is a transition which removes the Entity from the EntitySystem on completion
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Shapes.Line2D">
+            <summary>
+            Sets up an Entity that can be used in line rendering
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Shapes.Line2D.Render">
+            <summary>
+            Responsible for rendering all kinds of 2D lines (Line2D, Circle, etc)
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Shapes.Ellipse">
+            <summary>
+            Renders a filled 2D ellipse shape
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Shapes.Ellipse.UpdatePoints">
+            <summary>
+            This recalculates the points of an Ellipse if they change
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Shapes.OutlineColor">
+            <summary>
+            Stores the color of the outline to a shape
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.RenderLayer">
+            <summary>
+            Component holding the render layer for a rendered entity. If not used defaults to 0.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.RotationCenter">
+            <summary>
+            Component holding the center of rotation for a rendered entity. 
+            To make an entity always rotate around its own center do not have this component attached.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Shapes.Triangle2D">
+            <summary>
+            Holds the three corners that define a triangle in 2D space
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Sprites.FlipMode">
+            <summary>
+            Specifies a sprite be rendered flipped horizontally or vertically.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.ScreenSpaces.PixelScreenSpace">
+            <summary>
+            Converts to and from Pixel space. https://deltaengine.fogbugz.com/default.asp?W101
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.ScreenSpaces.RelativeScreenSpace">
+            <summary>
+            Converts to and from Relative space. https://deltaengine.fogbugz.com/default.asp?W101
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Fonts.VerticalAlignment">
+            <summary>
+            Available modes to align a text vertically.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Rendering.Visibility">
+            <summary>
+            Allows to specify the visibility state of an Entity2D, which is visible when this is not used
+            </summary>
+        </member>
+    </members>
+</doc>

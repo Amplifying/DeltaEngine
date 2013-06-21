@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DeltaEngine.Content</name>
+    </assembly>
+    <members>
+        <member name="T:DeltaEngine.Content.ContentData">
+            <summary>
+            Base class for all content classes. Content is loaded and cached by the ContentLoader.
+            Content can also be part of an entity as a component. Loading and saving content components
+            will however only store and retrieve the content name and type, but not any internal data.
+            </summary>
+        </member>
+        <member name="M:DeltaEngine.Content.ContentData.LoadData(System.IO.Stream)">
+            <summary>
+            This method needs to be implemented by derived classes to do the actual content loading.
+            </summary>
+        </member>
+        <member name="M:DeltaEngine.Content.ContentData.LoadFromContentName(System.String)">
+            <summary>
+            If loading content from a stream is not supported (e.g. with the XNA framework), then
+            CanLoadDataFromStream is false and this method will be called instead of LoadData.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Content.ContentLoader">
+            <summary>
+            Abstract factory to load types derived from ContentData (images, sounds, xml files, levels,
+            etc). Returns cached useable instances and provides quick and easy access to all cached data.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Content.ContentDataResolver">
+            <summary>
+            Abstract factory to provide access to create content data on demand via the active resolver
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Content.ContentType">
+            <summary>
+            Content type for ContentData, for details see http://old.deltaengine.net/Wiki.ContentFormats
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Content.ContentType.Scene">
+            <summary>
+            .DeltaScene binary file, created by the SceneEditor, loaded when opening scenes.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Content.ContentType.UIScreen">
+            <summary>
+            .DeltaUIScreen contains all the UI controls positions and values. Scenes have screens.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Content.ContentType.UITheme">
+            <summary>
+            .DeltaUITheme is always used for scenes and controls to set a style for all buttons, etc.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Content.ContentType.Level">
+            <summary>
+            .DeltaLevel is a collection of used meshes their world matrix and maybe some other content
+            like camera paths, animations, etc. (different level settings for each game).
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Content.ContentType.Image">
+            <summary>
+            Image content type, imported as .png bitmaps. Typically stored as compressed textures.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Content.ContentType.ImageAnimation">
+            <summary>
+            Parent type for images in a sequence, e.g. "Explosion" uses "Explosion01", "Explosion02",
+            etc. and some extra meta data for displaying this animation at certain speeds.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Content.ContentType.Shader">
+            <summary>
+            .DeltaShader, which contains platform specific shader data.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Content.ContentType.Material">
+            <summary>
+            Material, usually used for meshes and advanced rendering classes like Particle Effects.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Content.ContentType.Mesh">
+            <summary>
+            .DeltaMesh 3D content, either imported from an FBX file (or 3ds, obj, dxf, collada). The
+            mesh itself is stored just as binary data, use the MeshData class to access it.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Content.ContentType.MeshAnimation">
+            <summary>
+            Animation data for a mesh, e.g. an "Idle", a "Run" or an "Attack" animation of a character. 
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Content.ContentType.Model">
+            <summary>
+            3D Models contain no own content, but just links up a bunch of meshes with their used
+            materials and optionally their MeshAnimations into an easy to use form.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Content.ContentType.ParticleEffect">
+            <summary>
+            .DeltaParticleEffect represent the content of a particle effect system. Use the Particle
+            Effect Editor to edit particle effects.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Content.ContentType.Font">
+            <summary>
+            Font content, just a .xml file, which was generated from a true type font.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Content.ContentType.Camera">
+            <summary>
+            Camera content, stores the initial camera position, rotation and values plus optionally a
+            camera path this camera should follow.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Content.ContentType.Sound">
+            <summary>
+            Sound file for sound playback, just a .wav file on most platforms.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Content.ContentType.Music">
+            <summary>
+            Music file for playing in the background or even use streaming. .mp3 or .ogg file.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Content.ContentType.Video">
+            <summary>
+            Video file for multimedia. Supports .mp4 and other video formats.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Content.ContentType.PhysicsCollision">
+            <summary>
+            Helper content type for .DeltaCollision file types. Can be used for both 3D collision meshes
+            and for 2D collision meshes in Physics. 3D Collision meshes are usually imported from a low
+            polygon variation of a model. 2D Collisions are imported from images (detecting outlines).
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Content.ContentType.Xml">
+            <summary>
+            Xml files for game specific content or whatever else you need.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Content.ContentType.Trigger">
+            <summary>
+            You can store trigger data here directly and use it with Actors in Levels.
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Content.ContentType.Actor">
+            <summary>
+            You can store all actor properties dynamically here and reconstruct them when loading!
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Content.ContentType.JustStore">
+            <summary>
+            Just store the file entry, this can be used for any file (binary makes most sense). All the
+            logic to load and use this file has to be done by the application.
+            </summary>
+        </member>
+    </members>
+</doc>

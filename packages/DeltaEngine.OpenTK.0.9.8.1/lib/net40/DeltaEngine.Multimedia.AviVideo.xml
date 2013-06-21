@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DeltaEngine.Multimedia.AviVideo</name>
+    </assembly>
+    <members>
+        <member name="F:DeltaEngine.Multimedia.AviVideo.VideoStream.PaletteSize">
+            <summary>
+            RGBQUAD * 256 colours
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DeltaEngine.Platforms.All</name>
+    </assembly>
+    <members>
+        <member name="T:DeltaEngine.Platforms.All.AssemblyCheckerTests">
+            <summary>
+            AssemblyChecker.IsAllowed is used whenever we have to check all loaded assemblies for types.
+            Examples include BinaryDataExtensions and AutofacResolver.RegisterAllTypesFromAllAssemblies
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Platforms.All.TestWithAllFrameworks">
+            <summary>
+            Extends test classes to be able to run it with any resolver and graphic framework.
+            http://DeltaEngine.net/About/CodingStyle#Tests
+            </summary>
+        </member>
+        <member name="F:DeltaEngine.Platforms.All.TestWithAllFrameworks.AllResolvers">
+            <summary>
+            NCrunch will always execute all resolvers as it does not understand the Ignore, but only
+            TestResolver will be executed (rest is ignored by default). ReSharper will ignore all test
+            cases with Ignore (e.g. with F6), but you can still execute them manually if you like.
+            </summary>
+        </member>
+        <member name="P:DeltaEngine.Platforms.All.TestWithAllFrameworks.NCrunchAllowIntegrationTests">
+            <summary>
+            By default all slow integration tests (using a non test resolver) are excluded from NCrunch
+            runs. You can either temporary enable them all here or just selectivly in derived classes.
+            </summary>
+        </member>
+        <member name="P:DeltaEngine.Platforms.All.TestWithAllFrameworks.ForceAllVisualTestsToBehaveLikeIntegrationTests">
+            <summary>
+            Use this flag and comment out all .Ignore calls in the Resolvers list to test all Visual
+            and Integration tests with one frame. Used to test approval tests with all resolvers to
+            make sure everything is fully working (DX, XNA, GL). Warning, each test takes a few seconds.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Platforms.All.IntegrationTestAttribute">
+            <summary>
+            Integration tests always close the window automatically after 1 frame (OpenGL, SharpDX, XNA)
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Platforms.All.VisualTestAttribute">
+            <summary>
+            Simplifies visual tests, which just use the TestStarter.Resolvers (Test, OpenGL, SharpDX, XNA)
+            </summary>
+        </member>
+        <member name="M:DeltaEngine.Platforms.All.WindowTests.SetFullscreenMode(System.Type)">
+            <summary>
+            Use the DeviceTests.SetFullscreenResolution to see the real resolution switching
+            </summary>
+            <param name="resolver"></param>
+        </member>
+    </members>
+</doc>

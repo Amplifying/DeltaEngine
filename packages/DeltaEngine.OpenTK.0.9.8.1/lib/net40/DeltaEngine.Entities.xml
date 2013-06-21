@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DeltaEngine.Entities</name>
+    </assembly>
+    <members>
+        <member name="T:DeltaEngine.Entities.Entity">
+            <summary>
+            Each entity has a name, unique components for data and handlers for logic attached to them.
+            Entities are used for rendering, game objects, ui, physics, etc.
+            </summary>
+        </member>
+        <member name="M:DeltaEngine.Entities.Entity.#ctor">
+            <summary>
+            Entities start out active and are automatically added to the EntitySystem. Call IsActive to
+            activate or deactivate one. To disable one handler or component use <see cref="M:DeltaEngine.Entities.Entity.Remove``1"/>.
+            </summary>
+        </member>
+        <member name="P:DeltaEngine.Entities.Entity.Tag">
+            <summary>
+            Optional tag that can be set to identify entities, use EntitySystem.GetFromTag
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Entities.EntityHandler">
+            <summary>
+            Gets all affected entities injected each frame via Handle (Renderers, Updaters, etc.)
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Entities.EntityHandlerResolver">
+            <summary>
+            Abstract factory to provide access to create entity handlers on demand via the active resolver
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Entities.EntityListener">
+            <summary>
+            An EntityHandler that can be sent messages by other EntityHandlers
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Entities.EntitySystem">
+            <summary>
+            Keeps a list of all active entities and manages all entity handlers created via resolvers.
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Entities.EntityHandlerPriority">
+            <summary>
+            Provides 5 priority levels for entity handling: First, High, Normal, Low and Last
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Entities.CheckTriggers">
+            <summary>
+            Checks all triggers each frame
+            </summary>
+        </member>
+        <member name="T:DeltaEngine.Entities.Trigger">
+            <summary>
+            Can be attached to an Entity and represents a condition which will trigger an action.
+            eg. Making an Entity bounce when it reaches the edge of the screen.
+            </summary>
+        </member>
+    </members>
+</doc>

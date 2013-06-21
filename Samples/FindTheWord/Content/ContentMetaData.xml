@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Delta Engine Content Meta Data, auto-generated, will be refreshed at each start-->
+<ContentMetaData Name="FindTheWord" Type="Scene" LastTimeUpdated="2013-06-21 16:46:10Z" ContentDeviceName="Delta">
+  <ContentMetaData Name="CharBackground" Type="Image" LastTimeUpdated="2013-05-08 17:23:15Z" PlatformFileId="-1" FileSize="774" LocalFilePath="CharBackground.png" PixelSize="(70, 70)" BlendMode="Normal" />
+  <ContentMetaData Name="GameBackground" Type="Image" LastTimeUpdated="2013-05-10 14:29:14Z" PlatformFileId="-2" FileSize="10806" LocalFilePath="GameBackground.png" PixelSize="(1280, 800)" BlendMode="Normal" />
+  <ContentMetaData Name="Mouse1" Type="Image" LastTimeUpdated="2013-05-08 17:23:15Z" PlatformFileId="-3" FileSize="23518" LocalFilePath="Mouse1.png" PixelSize="(1024, 1024)" BlendMode="Normal" />
+  <ContentMetaData Name="Mouse2" Type="Image" LastTimeUpdated="2013-05-08 17:23:15Z" PlatformFileId="-4" FileSize="29956" LocalFilePath="Mouse2.png" PixelSize="(1024, 1024)" BlendMode="Normal" />
+  <ContentMetaData Name="Mouse3" Type="Image" LastTimeUpdated="2013-05-08 17:35:48Z" PlatformFileId="-5" FileSize="11499" LocalFilePath="Mouse3.png" PixelSize="(1024, 1024)" BlendMode="Normal" />
+  <ContentMetaData Name="NextLevel" Type="Image" LastTimeUpdated="2013-06-21 12:03:12Z" PlatformFileId="-6" FileSize="8241" LocalFilePath="NextLevel.png" PixelSize="(1280, 800)" BlendMode="Normal" />
+  <ContentMetaData Name="NextLevelButton" Type="Image" LastTimeUpdated="2013-06-21 12:03:05Z" PlatformFileId="-7" FileSize="3673" LocalFilePath="NextLevelButton.png" PixelSize="(251, 139)" BlendMode="Normal" />
+  <ContentMetaData Name="Sea1" Type="Image" LastTimeUpdated="2013-05-08 19:25:30Z" PlatformFileId="-8" FileSize="46492" LocalFilePath="Sea1.png" PixelSize="(1024, 1024)" BlendMode="Normal" />
+  <ContentMetaData Name="Sea2" Type="Image" LastTimeUpdated="2013-05-08 19:25:30Z" PlatformFileId="-9" FileSize="82782" LocalFilePath="Sea2.png" PixelSize="(1024, 1024)" BlendMode="Normal" />
+  <ContentMetaData Name="Sea3" Type="Image" LastTimeUpdated="2013-05-08 19:25:30Z" PlatformFileId="-10" FileSize="28487" LocalFilePath="Sea3.png" PixelSize="(1024, 1024)" BlendMode="Normal" />
+  <ContentMetaData Name="StartButton" Type="Image" LastTimeUpdated="2013-05-08 17:23:15Z" PlatformFileId="-11" FileSize="3098" LocalFilePath="StartButton.png" PixelSize="(268, 164)" BlendMode="Normal" />
+  <ContentMetaData Name="Startscreen" Type="Image" LastTimeUpdated="2013-05-08 17:23:15Z" PlatformFileId="-12" FileSize="18566" LocalFilePath="Startscreen.png" PixelSize="(1280, 800)" BlendMode="Normal" />
+  <ContentMetaData Name="Tahoma30" Type="Xml" LastTimeUpdated="2013-05-10 14:29:14Z" PlatformFileId="-13" FileSize="16326" LocalFilePath="Tahoma30.xml" />
+  <ContentMetaData Name="Tahoma30Font" Type="Image" LastTimeUpdated="2013-05-10 14:29:14Z" PlatformFileId="-14" FileSize="26363" LocalFilePath="Tahoma30Font.png" PixelSize="(512, 512)" BlendMode="Normal" />
+  <ContentMetaData Name="Wurm1" Type="Image" LastTimeUpdated="2013-05-08 13:38:18Z" PlatformFileId="-15" FileSize="52699" LocalFilePath="Wurm1.png" PixelSize="(800, 600)" BlendMode="Normal" />
+  <ContentMetaData Name="Wurm2" Type="Image" LastTimeUpdated="2013-05-08 13:38:18Z" PlatformFileId="-16" FileSize="52025" LocalFilePath="Wurm2.png" PixelSize="(1024, 1024)" BlendMode="Normal" />
+  <ContentMetaData Name="Wurm3" Type="Image" LastTimeUpdated="2013-05-08 13:38:18Z" PlatformFileId="-17" FileSize="39213" LocalFilePath="Wurm3.png" PixelSize="(1024, 1024)" BlendMode="Normal" />
+</ContentMetaData>

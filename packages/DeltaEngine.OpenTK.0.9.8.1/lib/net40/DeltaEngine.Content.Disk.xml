@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DeltaEngine.Content.Disk</name>
+    </assembly>
+    <members>
+        <member name="T:DeltaEngine.Content.Disk.DiskContentLoader">
+            <summary>
+            Implementation of the ContentLoader that loads and caches files directly from disk,
+            using an xml-file stored inside the Content's directory, created earlier by ContentManager,
+            to get types and properties of Content.
+            </summary>
+        </member>
+    </members>
+</doc>
