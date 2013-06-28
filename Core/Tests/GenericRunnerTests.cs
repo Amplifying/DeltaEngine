@@ -20,7 +20,6 @@ namespace DeltaEngine.Core.Tests
 				foreach (var interfaceType in runner.GetType().GetInterfaces())
 					InvokeGenericRun(interfaceType, runner);
 			Assert.IsTrue(exampleRunner.WasInvoked);
-			Assert.NotNull(new Injection());
 		}
 
 		private void AddRunner(object classToAdd)

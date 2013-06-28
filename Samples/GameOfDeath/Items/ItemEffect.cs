@@ -16,13 +16,13 @@ namespace GameOfDeath.Items
 		{
 			RenderLayer = 1;
 			Add(new Damage { Interval = 0.25f });
-			Add<DoDamage>();
+			Start<DoDamage>();
 			Fadeout(duration);
 		}
 
 		private void Fadeout(float duration)
 		{
-			Add<FinalTransition>().Add(new Transition.Duration(duration)).Add(
+			Start<FinalTransition>().Add(new Transition.Duration(duration)).Add(
 				new Transition.FadingColor(Color));
 		}
 

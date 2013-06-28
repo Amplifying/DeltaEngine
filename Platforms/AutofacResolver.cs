@@ -7,8 +7,9 @@ using Autofac.Builder;
 using Autofac.Core;
 using Autofac.Features.ResolveAnything;
 using DeltaEngine.Content;
+using DeltaEngine.Content.Json;
+using DeltaEngine.Content.Xml;
 using DeltaEngine.Core;
-using DeltaEngine.Core.Xml;
 using DeltaEngine.Entities;
 
 namespace DeltaEngine.Platforms
@@ -32,7 +33,8 @@ namespace DeltaEngine.Platforms
 			if (IsAlreadyInitialized)
 				throw new UnableToRegisterMoreTypesAppAlreadyStarted();
 
-			RegisterNonConcreteBaseTypes(typeToRegister, RegisterType(typeToRegister));
+			RegisterNonConcreteBaseTypes(typeToRegister,
+				RegisterType(typeToRegister).As(typeToRegister.BaseType));
 		}
 
 		protected readonly List<Type> alreadyRegisteredTypes = new List<Type>();
@@ -78,7 +80,7 @@ namespace DeltaEngine.Platforms
 
 		private ContainerBuilder builder = new ContainerBuilder();
 
-		protected void RegisterInstance(object instance)
+		public void RegisterInstance(object instance)
 		{
 			var registration =
 				builder.RegisterInstance(instance).SingleInstance().AsSelf().AsImplementedInterfaces();
@@ -134,24 +136,8 @@ namespace DeltaEngine.Platforms
 
 		internal override BaseType Resolve<BaseType>()
 		{
-			RegisterUnknownTypes<BaseType>();
 			MakeSureContainerIsInitialized();
 			return (BaseType)container.Resolve(typeof(BaseType));
-		}
-
-		private void RegisterUnknownTypes<FirstResolveType>()
-		{
-			if (IsAlreadyInitialized)
-				return;
-
-			ForceCoreXmlContentToBeLoaded();
-			Register<FirstResolveType>();
-			RegisterAllTypesFromAllAssemblies<ContentData, EntityHandler>();
-		}
-
-		private void ForceCoreXmlContentToBeLoaded()
-		{
-			Register<XmlContent>();
 		}
 
 		protected virtual void MakeSureContainerIsInitialized()
@@ -159,7 +145,20 @@ namespace DeltaEngine.Platforms
 			if (IsAlreadyInitialized)
 				return; //ncrunch: no coverage
 
+			RegisterUnknownTypes();
 			container = builder.Build();
+		}
+
+		private void RegisterUnknownTypes()
+		{
+			ForceXmlContentAndJsonContentToBeLoaded();
+			RegisterAllTypesFromAllAssemblies<ContentData, Handler>();
+		}
+
+		private void ForceXmlContentAndJsonContentToBeLoaded()
+		{
+			Register<XmlContent>();
+			Register<JsonContent>();
 		}
 
 		protected bool IsAlreadyInitialized
@@ -178,7 +177,7 @@ namespace DeltaEngine.Platforms
 
 			private readonly Resolver resolver;
 
-			public ContentData Resolve(Type contentType, string contentName)
+			public override ContentData Resolve(Type contentType, string contentName)
 			{
 				return resolver.Resolve(contentType, contentName) as ContentData;
 			}

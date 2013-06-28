@@ -1,46 +1,31 @@
-﻿using System;
-using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
-using DeltaEngine.Platforms.All;
-using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms;
 using NUnit.Framework;
 
 namespace FindTheWord.Tests
 {
-	public class ButtonTests : TestWithAllFrameworks
+	public class ButtonTests : TestWithMocksOrVisually
 	{
-		[VisualTest]
-		public void ShowHoverState(Type resolver)
+		[Test]
+		public void ShowHoverState()
 		{
-			Button button = null;
-			Start(resolver, (InputCommands input, ContentLoader content) =>
-			{
-				button = new Button(input, content, "Wurm1", new Rectangle(0, 0, 0.5f, 0.5f));
-			}, () =>
-			{
-				button.AlphaValue = button.IsHovered ? 0.5f : 1.0f;
-			});
+			var button = new Button(Resolve<InputCommands>(), "Wurm1", new Rectangle(0, 0, 0.5f, 0.5f));
+			RunCode = () => { button.AlphaValue = button.IsHovered ? 0.5f : 1.0f; };
 		}
 
-		[VisualTest]
-		public void ShowClickableButton(Type resolver)
+		[Test]
+		public void ShowClickableButton()
 		{
-			Start(resolver, (InputCommands input, ContentLoader content) =>
-			{
-				var button = new Button(input, content, "Wurm1", new Rectangle(0, 0, 0.5f, 0.5f));
-				button.Clicked += b => button.AlphaValue =  button.AlphaValue == 1.0f ? 0.5f : 1.0f;
-			});
+			var button = new Button(Resolve<InputCommands>(), "Wurm1", new Rectangle(0, 0, 0.5f, 0.5f));
+			button.Clicked += b => button.AlphaValue = button.AlphaValue == 1.0f ? 0.5f : 1.0f;
 		}
 
 		[Test]
 		public void CreateButton()
 		{
-			Start(typeof(MockResolver), (InputCommands input, ContentLoader content) =>
-			{
-				var button = new Button(input, content, "Wurm1", new Rectangle(0, 0, 0.5f, 0.5f));
-				Assert.IsNotNull(button);
-			});
+			var button = new Button(Resolve<InputCommands>(), "Wurm1", new Rectangle(0, 0, 0.5f, 0.5f));
+			Assert.IsNotNull(button);
 		}
 	}
 }

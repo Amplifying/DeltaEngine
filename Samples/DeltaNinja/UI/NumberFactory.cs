@@ -1,28 +1,26 @@
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
+using DeltaEngine.Scenes;
 using System.Globalization;
 
 namespace DeltaNinja
 {
    class NumberFactory
    {
-      public NumberFactory(ContentLoader content)
+      public NumberFactory()
       {
-         this.content = content;
-
          for (int digit = 0; digit < 10; digit++)
-            images[digit] = content.Load<Image>(digit.ToString(CultureInfo.InvariantCulture));
+            images[digit] = ContentLoader.Load<Image>(digit.ToString(CultureInfo.InvariantCulture));
 
-         images[10] = content.Load<Image>("Empty");
+         images[10] = ContentLoader.Load<Image>("Empty");
       }
 
-      private readonly ContentLoader content;
       private readonly Image[] images = new Image[11];
 
-      public Number CreateNumber(float left, float top, float height, Alignment align, int digitCount, GameRenderLayer layer = GameRenderLayer.Score, Color? color = null)
+      public Number CreateNumber(Scene scene, float left, float top, float height, Alignment align, int digitCount, GameRenderLayer layer = GameRenderLayer.Hud, Color? color = null)
       {
-         return new Number(images, left, top, height, align, digitCount, layer, color);
+         return new Number(scene, images, left, top, height, align, digitCount, layer, color);
       }
    }
 }

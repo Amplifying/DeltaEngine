@@ -12,26 +12,26 @@ namespace GameOfDeath
 	/// </summary>
 	public class UI
 	{
-		public UI(ContentLoader content, ScreenSpace screen, SoundDevice soundDevice)
+		public UI(ScreenSpace screen, SoundDevice soundDevice)
 		{
-			background = new Sprite(content.Load<Image>("GrassBackground"), screen.Viewport)
+			background = new Sprite(ContentLoader.Load<Image>("GrassBackground"), screen.Viewport)
 			{
 				RenderLayer = (int)GameCoordinator.RenderLayers.Background
 			};
 			screen.Window.WindowClosing += soundDevice.Dispose;
-			AddUITop(content);
-			AddUIBottom(content);
-			AddUILeft(content);
-			AddUIRight(content);
+			AddUITop();
+			AddUIBottom();
+			AddUILeft();
+			AddUIRight();
 			screen.ViewportSizeChanged += () => Update(screen);
 			Update(screen);
 		}
 
 		private readonly Sprite background;
 
-		private void AddUITop(ContentLoader content)
+		private void AddUITop()
 		{
-			var topImage = content.Load<Image>("UITop");
+			var topImage = ContentLoader.Load<Image>("UITop");
 			topHeight = topImage.PixelSize.Height / Scoreboard.QuadraticFullscreenSize.Height;
 			topBorder = new Sprite(topImage,
 				new Rectangle(viewport.Left, viewport.Top, viewport.Width, topHeight))
@@ -44,9 +44,9 @@ namespace GameOfDeath
 		private Sprite topBorder;
 		private Rectangle viewport;
 
-		private void AddUIBottom(ContentLoader content)
+		private void AddUIBottom()
 		{
-			var bottomImage = content.Load<Image>("UIBottom");
+			var bottomImage = ContentLoader.Load<Image>("UIBottom");
 			bottomHeight = bottomImage.PixelSize.Height / Scoreboard.QuadraticFullscreenSize.Height;
 			bottomBorder = new Sprite(bottomImage,
 				new Rectangle(viewport.Left, viewport.Bottom - bottomHeight, viewport.Width, bottomHeight))
@@ -58,9 +58,9 @@ namespace GameOfDeath
 		private float bottomHeight;
 		private Sprite bottomBorder;
 
-		private void AddUILeft(ContentLoader content)
+		private void AddUILeft()
 		{
-			var leftImage = content.Load<Image>("UILeft");
+			var leftImage = ContentLoader.Load<Image>("UILeft");
 			leftWidth = leftImage.PixelSize.Width / Scoreboard.QuadraticFullscreenSize.Width;
 			leftBorder = new Sprite(leftImage,
 				new Rectangle(viewport.Left, viewport.Top + topHeight, leftWidth,
@@ -73,9 +73,9 @@ namespace GameOfDeath
 		private float leftWidth;
 		private Sprite leftBorder;
 
-		private void AddUIRight(ContentLoader content)
+		private void AddUIRight()
 		{
-			var rightImage = content.Load<Image>("UIRight");
+			var rightImage = ContentLoader.Load<Image>("UIRight");
 			rightWidth = rightImage.PixelSize.Width / Scoreboard.QuadraticFullscreenSize.Width;
 			rightBorder = new Sprite(rightImage,
 				new Rectangle(viewport.Right - rightWidth, viewport.Top + topHeight, rightWidth,

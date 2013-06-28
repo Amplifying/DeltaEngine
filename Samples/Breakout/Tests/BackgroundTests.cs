@@ -1,23 +1,17 @@
 using System;
-using DeltaEngine.Content;
-using DeltaEngine.Entities;
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Platforms;
 using DeltaEngine.Rendering;
 using NUnit.Framework;
 
 namespace Breakout.Tests
 {
-	public class BackgroundTests : TestWithAllFrameworks
+	public class BackgroundTests : TestWithMocksOrVisually
 	{
-		[VisualTest]
-		public void Draw(Type type)
+		[Test]
+		public void Draw()
 		{
-			Start(type, (Background background, ContentLoader content) =>
-			{
-				//var b = new Background(content);
-				//entitySystem.Add(b);
-				Assert.IsTrue(background.Visibility == Visibility.Show);
-			});
+			var background = Resolve<Background>();
+			Assert.IsTrue(background.Visibility == Visibility.Show);
 		}
 	}
 }

@@ -9,8 +9,8 @@ namespace GameOfDeath.Items
 	/// </summary>
 	public class Fire : Item
 	{
-		public Fire(ContentLoader content)
-			: base(content.Load<Image>("Fire"), null, content.Load<Sound>("FireEffect")) {}
+		public Fire()
+			: base(ContentLoader.Load<Image>("Fire"), null, ContentLoader.Load<Sound>("FireEffect")) { }
 
 		protected override float ImpactSize
 		{

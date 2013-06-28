@@ -10,5 +10,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCopyright("https://deltaninja.codeplex.com/")]
 [assembly: ComVisible(false)]
 [assembly: Guid("f558574a-a277-47d0-80ab-5e4ba7f50730")]
-[assembly: AssemblyVersion("0.9.8.2")]
-[assembly: AssemblyFileVersion("0.9.8.2")]
+[assembly: AssemblyVersion("0.9.8.3")]
+[assembly: AssemblyFileVersion("0.9.8.3")]

@@ -8,22 +8,22 @@ namespace DeltaEngine.Entities.Tests
 		public void CreateEntityWithRotationComponent()
 		{
 			EntitySystem.Use(new TestEntitySystem<Rotate>());
-			var entity = new EmptyEntity().Add(0.5f).Add<Rotate>();
+			var entity = new EmptyEntity().Add(0.5f).Start<Rotate>();
 			Assert.AreEqual(0.5f, entity.Get<float>());
 			EntitySystem.Current.Run();
 			Assert.AreEqual(0.6f, entity.Get<float>());
 		}
 
-		public class Rotate : EntityHandler
+		public class Rotate : Behavior<Entity>
 		{
-			public override void Handle(Entity entity)
+			internal override void Handle(Entity entity)
 			{
 				entity.Set(entity.Get<float>() + 0.1f);
 			}
 
-			public override EntityHandlerPriority Priority
+			public override Priority Priority
 			{
-				get { return EntityHandlerPriority.First; }
+				get { return Priority.First; }
 			}
 		}
 
@@ -31,7 +31,7 @@ namespace DeltaEngine.Entities.Tests
 		public void CanCheckEntityHandlersPriority()
 		{
 			EntitySystem entitySystem = new TestEntitySystem<Rotate>();
-			Assert.AreEqual(EntityHandlerPriority.First, entitySystem.GetHandler<Rotate>().Priority);
+			Assert.AreEqual(Priority.First, entitySystem.GetHandler<Rotate>().Priority);
 		}
 	}
 }

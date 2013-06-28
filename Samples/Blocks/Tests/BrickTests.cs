@@ -1,9 +1,7 @@
 using System;
-using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.All;
 using DeltaEngine.Rendering.ScreenSpaces;
 using NUnit.Framework;
 
@@ -12,28 +10,23 @@ namespace Blocks.Tests
 	/// <summary>
 	/// Unit tests for Brick
 	/// </summary>
-	public class BrickTests : TestWithAllFrameworks
+	public class BrickTests : TestWithMocksOrVisually
 	{
-		public void Initialize(ScreenSpace screen,
-				ContentLoader contentLoader)
+		public void Initialize(ScreenSpace screen)
 		{
-			displayMode = screen.Viewport.Aspect >= 1.0f
-				? Orientation.Landscape : Orientation.Portrait;
-			content = new JewelBlocksContent(contentLoader);
+			displayMode = screen.Viewport.Aspect >= 1.0f ? Orientation.Landscape : Orientation.Portrait;
+			content = new JewelBlocksContent();
 		}
 
 		private Orientation displayMode;
 		private JewelBlocksContent content;
 
-		[IntegrationTest]
-		public void Constructor(Type resolver)
+		[Test]
+		public void Constructor()
 		{
-			Start(resolver, (ScreenSpace screen, ContentLoader contentLoader) =>
-			{
-				Initialize(screen, contentLoader);
-				var brick = new Brick(content.Load<Image>("Block1"), Point.Half, displayMode);
-				Assert.AreEqual(Point.Half, brick.Offset);
-			});
+			Initialize(Resolve<ScreenSpace>());
+			var brick = new Brick(content.Load<Image>("Block1"), Point.Half, displayMode);
+			Assert.AreEqual(Point.Half, brick.Offset);
 		}
 
 		[Test]
@@ -43,71 +36,57 @@ namespace Blocks.Tests
 			Assert.AreEqual(0.02f, Brick.ZoomLandscape);
 		}
 
-		[IntegrationTest]
+		[Test]
 		public void Offset(Type resolver)
 		{
-			Start(resolver, (ScreenSpace screen, ContentLoader contentLoader) =>
+			Initialize(Resolve<ScreenSpace>());
+			var brick = new Brick(content.Load<Image>("Block1"), Point.Zero, displayMode)
 			{
-				Initialize(screen, contentLoader);
-				var brick = new Brick(content.Load<Image>("Block1"), Point.Zero, displayMode)
-				{
-					Offset = Point.Half
-				};
-				Assert.AreEqual(Point.Half, brick.Offset);
-			});
+				Offset = Point.Half
+			};
+			Assert.AreEqual(Point.Half, brick.Offset);
 		}
 
-		[IntegrationTest]
+		[Test]
 		public void TopLeft(Type resolver)
 		{
-			Start(resolver, (ScreenSpace screen, ContentLoader contentLoader) =>
+			Initialize(Resolve<ScreenSpace>());
+			var brick = new Brick(content.Load<Image>("Block1"), Point.Zero, displayMode)
 			{
-				Initialize(screen, contentLoader);
-				var brick = new Brick(content.Load<Image>("Block1"), Point.Zero, displayMode)
-				{
-					TopLeftGridCoord = Point.Half
-				};
-				Assert.AreEqual(Point.Half, brick.TopLeftGridCoord);
-			});
+				TopLeftGridCoord = Point.Half
+			};
+			Assert.AreEqual(Point.Half, brick.TopLeftGridCoord);
 		}
 
-		[IntegrationTest]
+		[Test]
 		public void Position(Type resolver)
 		{
-			Start(resolver, (ScreenSpace screen, ContentLoader contentLoader) =>
+			Initialize(Resolve<ScreenSpace>());
+			var brick = new Brick(content.Load<Image>("Block1"), new Point(0.1f, 0.2f), displayMode)
 			{
-				Initialize(screen, contentLoader);
-				var brick = new Brick(content.Load<Image>("Block1"), new Point(0.1f, 0.2f), displayMode)
-				{
-					TopLeftGridCoord = new Point(0.4f, 0.8f)
-				};
-				Assert.AreEqual(new Point(0.5f, 1.0f), brick.Position);
-			});
+				TopLeftGridCoord = new Point(0.4f, 0.8f)
+			};
+			Assert.AreEqual(new Point(0.5f, 1.0f), brick.Position);
 		}
 
-		[VisualTest]
+		[Test]
 		public void RenderBrick(Type resolver)
 		{
-			Start(resolver, (ScreenSpace screen, ContentLoader contentLoader) =>
-			{
-				Initialize(screen, contentLoader);
-				var image = content.Load<Image>("Block1");
-				var brick = new Brick(image, new Point(5, 5), displayMode);
-				brick.UpdateDrawArea();
-			});
+			Initialize(Resolve<ScreenSpace>());
+			var image = content.Load<Image>("Block1");
+			var brick = new Brick(image, new Point(5, 5), displayMode);
+			brick.UpdateDrawArea();
 		}
 
-		[VisualTest]
+		[Test]
 		public void RenderBrickInPortrait(Type resolver)
 		{
-			Start(resolver, (ScreenSpace screen, ContentLoader contentLoader) =>
-			{
-				Initialize(screen, contentLoader);
-				screen.Window.TotalPixelSize = new Size(600, 800);
-				var image = content.Load<Image>("Block1");
-				var brick = new Brick(image, new Point(5, 5), displayMode);
-				brick.UpdateDrawArea();
-			});
+			var screen = Resolve<ScreenSpace>();
+			Initialize(screen);
+			screen.Window.ViewportPixelSize = new Size(600, 800);
+			var image = content.Load<Image>("Block1");
+			var brick = new Brick(image, new Point(5, 5), displayMode);
+			brick.UpdateDrawArea();
 		}
 	}
 }

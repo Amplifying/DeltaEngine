@@ -1,24 +1,25 @@
-using System;
 using System.Diagnostics;
+using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.All;
-using DeltaEngine.Platforms.Tests;
+using NUnit.Framework;
 
 namespace DeltaEngine.Graphics.Tests
 {
-	internal class ScreenshotTests : TestWithAllFrameworks
+	internal class ScreenshotTests : TestWithMocksOrVisually
 	{
-		[IntegrationTest]
-		public void MakeScreenshotofYelloyBackground(Type resolver)
+		[Test]
+		public void MakeScreenshotOfYellowBackground()
 		{
-			Start(resolver, (Device device, Window window) => { window.BackgroundColor = Color.Yellow; },
-				(ScreenshotCapturer capturer) =>
-				{
-					capturer.MakeScreenshot("Test.png");
-					if (resolver != typeof(MockResolver))
-						Process.Start("Test.png"); //ncrunch: no coverage
-				});
+			Window.BackgroundColor = Color.Yellow;
+			RunCode = () =>
+			{
+				Resolve<Device>().Present();
+				Resolve<ScreenshotCapturer>().MakeScreenshot("Test.png");
+				if (!StackTraceExtensions.StartedFromNCrunch)
+					Process.Start("Test.png"); //ncrunch: no coverage
+			};
+			Window.CloseAfterFrame();
 		}
 	}
 }

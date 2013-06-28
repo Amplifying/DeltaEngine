@@ -1,63 +1,87 @@
-using DeltaEngine.Datatypes;
-using DeltaEngine.Multimedia.OpenTK.Helpers;
 using System;
-using System.IO;
 using System.Diagnostics;
+using System.IO;
+using DeltaEngine.Datatypes;
 using DeltaEngine.Logging;
+using DeltaEngine.Multimedia.OpenTK.Helpers;
+using DeltaEngine.Platforms;
 
 namespace DeltaEngine.Multimedia.OpenTK
 {
+	/// <summary>
+	/// Base for OpenTK implementations for loading and playing sound effects.
+	/// </summary>
 	public class OpenTKSound : Sound
 	{
-		public OpenTKSound(string contentName, SoundDevice device, Logger log) : base(contentName, 
-			device)
+		public OpenTKSound(string filename, OpenTKSoundDevice openAL, Settings settings)
+			: base(filename, settings)
 		{
-			this.openAL = new OpenTKOpenAL();
-			this.log = log;
+			this.openAL = openAL;
 		}
 
-		private readonly Logger log;
-		private OpenTKOpenAL openAL;
-		private WaveSoundData soundData;
-		private float length;
-		private int bufferHandle;
-		private const int InvalidHandle = -1;
+		protected OpenTKSoundDevice openAL;
 
-		public override float LengthInSeconds
+		protected override void LoadData(Stream fileData)
 		{
-			get
+			try
 			{
-				return length;
+				LoadSound(fileData);
+			}
+			catch (Exception ex)
+			{
+				Logger.Current.Error(ex);
+				if (Debugger.IsAttached)
+					throw new SoundNotFoundOrAccessible(Name, ex);
 			}
 		}
 
-		private float GetLengthInSeconds()
+		protected void LoadSound(Stream fileData)
+		{
+			var streamReader = new BinaryReader(fileData);
+			soundData = new WaveSoundData(streamReader);
+			length = GetLengthInSeconds();
+			bufferHandle = CreateNativeBuffer();
+		}
+
+		protected WaveSoundData soundData;
+		protected float length;
+		protected int bufferHandle;
+
+		protected float GetLengthInSeconds()
 		{
 			float blockAlign = soundData.Channels * 2f;
 			return (soundData.BufferData.Length / blockAlign) / soundData.SampleRate;
 		}
 
-		private int CreateNativeBuffer()
+		protected int CreateNativeBuffer()
 		{
 			int newHandle = openAL.CreateBuffer();
 			openAL.BufferData(newHandle, soundData.Format, soundData.BufferData, 
 				soundData.BufferData.Length, soundData.SampleRate);
+
 			return newHandle;
 		}
 
 		protected override void DisposeData()
 		{
 			base.DisposeData();
-			if (bufferHandle != InvalidHandle)
+			if(bufferHandle != InvalidHandle)
 				openAL.DeleteBuffer(bufferHandle);
 
 			bufferHandle = InvalidHandle;
 		}
 
+		protected const int InvalidHandle = -1;
+
+		public override float LengthInSeconds
+		{
+			get { return length; }
+		}
+
 		public override void PlayInstance(SoundInstance instanceToPlay)
 		{
 			var channelHandle = (int)instanceToPlay.Handle;
-			if (channelHandle == InvalidHandle)
+			if(channelHandle == InvalidHandle)
 				return;
 
 			openAL.SetVolume(channelHandle, instanceToPlay.Volume);
@@ -69,7 +93,7 @@ namespace DeltaEngine.Multimedia.OpenTK
 		public override void StopInstance(SoundInstance instanceToStop)
 		{
 			var channelHandle = (int)instanceToStop.Handle;
-			if (channelHandle == InvalidHandle)
+			if(channelHandle == InvalidHandle)
 				return;
 
 			openAL.Stop(channelHandle);
@@ -85,7 +109,7 @@ namespace DeltaEngine.Multimedia.OpenTK
 		protected override void RemoveChannel(SoundInstance instanceToRemove)
 		{
 			var channelHandle = (int)instanceToRemove.Handle;
-			if (channelHandle != InvalidHandle)
+			if(channelHandle != InvalidHandle)
 				openAL.DeleteChannel(channelHandle);
 
 			instanceToRemove.Handle = InvalidHandle;
@@ -95,53 +119,6 @@ namespace DeltaEngine.Multimedia.OpenTK
 		{
 			var channelHandle = (int)instanceToCheck.Handle;
 			return channelHandle != InvalidHandle && openAL.IsPlaying(channelHandle);
-		}
-
-		protected override void LoadData(Stream fileData)
-		{
-			try
-			{
-				byte[] loadedData = ReadStream(fileData);
-				Stream loadedDataStream = new MemoryStream(loadedData);
-				var loadedStreamReader = new BinaryReader(loadedDataStream);
-				soundData = new WaveSoundData(loadedStreamReader);
-				length = GetLengthInSeconds();
-				bufferHandle = CreateNativeBuffer();
-			}
-			catch (Exception ex)
-			{
-				log.Error(ex);
-				if (Debugger.IsAttached)
-					throw new SoundNotFoundOrAccessible(Name, ex);
-			}
-		}
-
-		protected byte[] ReadStream(Stream fileData)
-		{
-			const int InitialBufferLength = 32768;
-			var readBuffer = new byte[InitialBufferLength];
-			int readOffset = 0;
-			int currentChunk;
-			while ((currentChunk = fileData.Read(readBuffer, readOffset, readBuffer.Length - 
-				readOffset)) > 0)
-			{
-				readOffset += currentChunk;
-				if (readOffset == readBuffer.Length)
-				{
-					int nextByte = fileData.ReadByte();
-					if (nextByte == -1)
-						return readBuffer;
-
-					var newBuffer = new byte[readBuffer.Length * 2];
-					Array.Copy(readBuffer, newBuffer, readBuffer.Length);
-					newBuffer [readOffset] = (byte)nextByte;
-					readBuffer = newBuffer;
-					readOffset++;
-				}
-			}
-			var returnBuffer = new byte[readOffset];
-			Array.Copy(readBuffer, returnBuffer, readOffset);
-			return returnBuffer;
 		}
 	}
 }

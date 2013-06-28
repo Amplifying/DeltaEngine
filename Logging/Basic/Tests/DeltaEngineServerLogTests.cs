@@ -1,20 +1,18 @@
 using System;
 using DeltaEngine.Networking;
-using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms;
 using NUnit.Framework;
 
 namespace DeltaEngine.Logging.Basic.Tests
 {
-	public class DeltaEngineServerLogTests : TestWithMockResolver
+	public class DeltaEngineServerLogTests : TestWithMocksOrVisually
 	{
 		[Test, Category("Slow")]
 		public void LogToRealLogServer()
 		{
-			Start(typeof(MockResolver), (Client client) =>
-			{
-				var logClient = new NetworkClientLogProvider(client, LogServerAddress, LogServerPort);
-				logClient.Log(new Info("Hello TestWorld from " + Environment.MachineName));
-			});
+			var logClient = new NetworkClientLogProvider(Resolve<Client>(), LogServerAddress,
+				LogServerPort);
+			logClient.Log(new Info("Hello TestWorld from " + Environment.MachineName));
 		}
 
 		private const string LogServerAddress = "deltaengine.net";

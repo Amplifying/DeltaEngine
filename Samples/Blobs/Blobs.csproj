@@ -50,10 +50,6 @@
       <Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
       <Name>DeltaEngine.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Core\Xml\DeltaEngine.Core.Xml.csproj">
-      <Project>{138a40b5-3d80-4ba3-bd84-d82c151ee7fe}</Project>
-      <Name>DeltaEngine.Core.Xml</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Datatypes\DeltaEngine.Datatypes.csproj">
       <Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
       <Name>DeltaEngine.Datatypes</Name>
@@ -70,9 +66,9 @@
       <Project>{bae8830e-5f62-48d6-b772-c4b1e8665fb3}</Project>
       <Name>DeltaEngine.Platforms</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Platforms\WindowsOpenTK\DeltaEngine.WindowsOpenTK.csproj">
-      <Project>{cc943ae0-a1cc-4788-ac9b-01db3a0ebcd6}</Project>
-      <Name>DeltaEngine.WindowsOpenTK</Name>
+    <ProjectReference Include="..\..\Platforms\WindowsGLFW\DeltaEngine.WindowsGLFW.csproj">
+      <Project>{157f559d-cf12-488b-ad0f-3f3477990b1f}</Project>
+      <Name>DeltaEngine.WindowsGLFW</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Platforms\Windows\DeltaEngine.Platforms.Windows.csproj">
       <Project>{bd8a80e2-a313-437e-b0ef-fc0b066280a7}</Project>
@@ -85,12 +81,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="BlobsIcon.ico" />
-    <Content Include="Content\ContentMetaData.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\VectorText.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />

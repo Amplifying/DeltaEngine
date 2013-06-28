@@ -11,9 +11,9 @@ namespace GameOfDeath.Items
 	/// </summary>
 	public class Icon : Sprite
 	{
-		public Icon(ContentLoader content, int iconIndex, ScreenSpace screen)
+		public Icon(int iconIndex, ScreenSpace screen)
 			: base(
-				content.Load<Image>(IconNames[iconIndex]), GetIconDrawArea(iconIndex, screen.Viewport))
+				ContentLoader.Load<Image>(IconNames[iconIndex]), GetIconDrawArea(iconIndex, screen.Viewport))
 		{
 			RenderLayer = (int)GameCoordinator.RenderLayers.Icons;
 			Color = Color.Gray;

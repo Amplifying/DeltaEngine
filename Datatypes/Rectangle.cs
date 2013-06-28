@@ -37,10 +37,10 @@ namespace DeltaEngine.Datatypes
 			if (componentStrings.Length != 4)
 				throw new InvalidNumberOfComponents();
 
-			Left = componentStrings[0].FromInvariantString(0.0f);
-			Top = componentStrings[1].FromInvariantString(0.0f);
-			Width = componentStrings[2].FromInvariantString(0.0f);
-			Height = componentStrings[3].FromInvariantString(0.0f);
+			Left = componentStrings[0].Convert<float>();
+			Top = componentStrings[1].Convert<float>();
+			Width = componentStrings[2].Convert<float>();
+			Height = componentStrings[3].Convert<float>();
 		}
 
 		public class InvalidNumberOfComponents : Exception {}
@@ -110,6 +110,11 @@ namespace DeltaEngine.Datatypes
 		public static Rectangle FromCenter(Point center, Size size)
 		{
 			return new Rectangle(new Point(center.X - size.Width / 2, center.Y - size.Height / 2), size);
+		}
+
+		public static Rectangle FromCorners(Point topLeft, Point bottomRight)
+		{
+			return new Rectangle(topLeft, new Size(bottomRight.X - topLeft.X, bottomRight.Y - topLeft.Y));
 		}
 
 		[Pure]
@@ -205,7 +210,7 @@ namespace DeltaEngine.Datatypes
 			return true;
 		}
 
-		private IEnumerable<Point> GetAxes(Point[] rectangle, Point[] otherRect)
+		private static IEnumerable<Point> GetAxes(Point[] rectangle, Point[] otherRect)
 		{
 			return new[]
 			{
@@ -216,14 +221,8 @@ namespace DeltaEngine.Datatypes
 			};
 		}
 
-		private static bool IsProjectedAxisOutsideRectangles(Point axis, Point[] rotatedRect,
-			Point[] rotatedOtherRect)
-		{
-			var isProjectedOnX = ProjectOnAxis(axis, rotatedRect, rotatedOtherRect);
-			return isProjectedOnX ;//|| isProjectedOnY;
-		}
-
-		private static bool ProjectOnAxis(Point axis, Point[] rotatedRect, Point[] rotatedOtherRect)
+		public static bool IsProjectedAxisOutsideRectangles(Point axis, IEnumerable<Point> rotatedRect,
+			IEnumerable<Point> rotatedOtherRect)
 		{
 			var rectMin = float.MaxValue;
 			var rectMax = float.MinValue;

@@ -1,7 +1,7 @@
 using System;
 using System.IO;
-using DeltaEngine.Datatypes;
 using DeltaEngine.Editor.Common;
+using DeltaEngine.Entities;
 
 namespace DeltaEngine.Editor.Builder.Tests
 {

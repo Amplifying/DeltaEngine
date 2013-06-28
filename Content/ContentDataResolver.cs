@@ -3,10 +3,16 @@ using System;
 namespace DeltaEngine.Content
 {
 	/// <summary>
-	/// Abstract factory to provide access to create content data on demand via the active resolver
+	/// Simple factory to provide access to create content data on demand without any resolver.
+	/// Only Platforms is allowed to derive from this class.
 	/// </summary>
-	public interface ContentDataResolver
+	public class ContentDataResolver
 	{
-		ContentData Resolve(Type contentType, string contentName);
+		internal ContentDataResolver() {}
+
+		public virtual ContentData Resolve(Type contentType, string contentName)
+		{
+			return Activator.CreateInstance(contentType, contentName) as ContentData;
+		}
 	}
 }

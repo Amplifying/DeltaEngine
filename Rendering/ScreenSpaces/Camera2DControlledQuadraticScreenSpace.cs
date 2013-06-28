@@ -20,7 +20,7 @@ namespace DeltaEngine.Rendering.ScreenSpaces
 		{
 			var point = (position - LookAt) * Zoom + Point.Half;
 			if (Rotation != 0.0f)
-				point.RotateAround(RotationCenter, Rotation);
+				point = point.RotateAround(RotationCenter, Rotation);
 
 			return point;
 		}

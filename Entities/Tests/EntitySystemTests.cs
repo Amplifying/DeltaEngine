@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Platforms;
 using NUnit.Framework;
 
 namespace DeltaEngine.Entities.Tests
 {
-	public class EntitySystemTests : TestWithAllFrameworks
+	public class EntitySystemTests : TestWithMocksOrVisually
 	{
 		[SetUp]
 		public void CreateSystem()
@@ -13,16 +13,26 @@ namespace DeltaEngine.Entities.Tests
 			EntitySystem.Use(new TestEntitySystem<EmptyHandler, IncrementCounter, DerivedHandler>());
 		}
 
-		public class EmptyHandler : EntityHandler
+		public class EmptyHandler : Behavior<Entity>
 		{
-			public override void Handle(Entity entity) {}
+			internal override void Handle(Entity entity) {}
 		}
 
-		public class IncrementCounter : EntityHandler
+		public class IncrementCounter : Behavior<Entity>
 		{
-			public override void Handle(Entity entity)
+			internal override void StartedHandling(Entity entity)
+			{
+				entity.Set("IncrementCounter Is Running");
+			}
+
+			internal override void Handle(Entity entity)
 			{
 				entity.Set(entity.Get<int>() + 1);
+			}
+
+			internal override void StoppedHandling(Entity entity)
+			{
+				entity.Set("IncrementCounter Is Not Running");
 			}
 		}
 
@@ -37,20 +47,33 @@ namespace DeltaEngine.Entities.Tests
 		}
 
 		[Test]
-		public void InactivateAndReactivateEntity()
+		public void InactivateEntity()
 		{
-			var entity = new EmptyEntity { IsActive = false };
+			var entity = new EmptyEntity();
+			bool isInactivated = false;
+			entity.Inactivated += () => isInactivated = true;
+			entity.IsActive = false;
 			Assert.IsFalse(entity.IsActive);
 			Assert.AreEqual(0, EntitySystem.Current.NumberOfEntities);
+			Assert.IsTrue(isInactivated);
+		}
+
+		[Test]
+		public void ActivateEntity()
+		{
+			var entity = new EmptyEntity { IsActive = false };
+			bool isActivated = false;
+			entity.Activated += () => isActivated = true;
 			entity.IsActive = true;
 			Assert.AreEqual(1, EntitySystem.Current.NumberOfEntities);
+			Assert.IsTrue(isActivated);
 		}
 
 		[Test]
 		public void ClearEntities()
 		{
 			new EmptyEntity();
-			new EmptyEntity().Add<EmptyHandler>();
+			new EmptyEntity().Start<EmptyHandler>();
 			EntitySystem.Current.Run();
 			Assert.AreEqual(2, EntitySystem.Current.NumberOfEntities);
 			EntitySystem.Current.Clear();
@@ -68,21 +91,21 @@ namespace DeltaEngine.Entities.Tests
 		public void CanCheckEntityHandlersInformation()
 		{
 			var handler = EntitySystem.Current.GetHandler<EmptyHandler>();
-			Assert.AreEqual(EntityHandlerPriority.Normal, handler.Priority);
+			Assert.AreEqual(Priority.Normal, handler.Priority);
 		}
 
 		[Test]
 		public void CallingGetUnresolvableHandlerFails()
 		{
 			Assert.Throws<EntitySystem.UnableToResolveEntityHandler>(
-				() => EntitySystem.Current.GetHandler<EntityHandler>());
+				() => EntitySystem.Current.GetHandler<Handler>());
 		}
 
 		[Test]
 		public void AddingTheSameEntityTwiceIsNotOk()
 		{
 			var entity1 = new EmptyEntity();
-			var entity2 = new EmptyEntity().Add<EmptyHandler>();
+			var entity2 = new EmptyEntity().Start<EmptyHandler>();
 			EntitySystem.Current.Run();
 			Assert.Throws<EntitySystem.EntityAlreadyAdded>(() => EntitySystem.Current.Add(entity1));
 			Assert.Throws<EntitySystem.EntityAlreadyAdded>(() => EntitySystem.Current.Add(entity2));
@@ -93,8 +116,8 @@ namespace DeltaEngine.Entities.Tests
 		[Test]
 		public void AddHandler()
 		{
-			new EmptyEntity().Add<EmptyHandler>();
-			new EmptyEntity().Add<EmptyHandler>();
+			new EmptyEntity().Start<EmptyHandler>();
+			new EmptyEntity().Start<EmptyHandler>();
 			new EmptyEntity();
 			EntitySystem.Current.Run();
 			var handler = EntitySystem.Current.GetHandler<EmptyHandler>();
@@ -104,10 +127,10 @@ namespace DeltaEngine.Entities.Tests
 		[Test]
 		public void AddingHandlerTwiceIsIgnored()
 		{
-			var entity = new EmptyEntity().Add<IncrementCounter>().Add(0);
+			var entity = new EmptyEntity().Start<IncrementCounter>().Add(0);
 			EntitySystem.Current.Run();
 			Assert.AreEqual(1, entity.Get<int>());
-			entity.Add<IncrementCounter>();
+			entity.Start<IncrementCounter>();
 			EntitySystem.Current.Run();
 			Assert.AreEqual(2, entity.Get<int>());
 			Assert.AreEqual(1,
@@ -121,10 +144,10 @@ namespace DeltaEngine.Entities.Tests
 			var entity = new EmptyEntity().Add(0);
 			EntitySystem.Current.Run();
 			Assert.AreEqual(0, entity.Get<int>());
-			entity.Add<IncrementCounter>();
+			entity.Start<IncrementCounter>();
 			EntitySystem.Current.Run();
 			Assert.AreEqual(1, entity.Get<int>());
-			entity.Remove<IncrementCounter>();
+			entity.Stop<IncrementCounter>();
 			EntitySystem.Current.Run();
 			Assert.AreEqual(1, entity.Get<int>());
 		}
@@ -133,7 +156,7 @@ namespace DeltaEngine.Entities.Tests
 		public void AddingTwoHandlersInOneCall()
 		{
 			var entity = new EmptyEntity().Add(0);
-			entity.Add<IncrementCounter, EmptyHandler>();
+			entity.Start<IncrementCounter, EmptyHandler>();
 			EntitySystem.Current.Run();
 			Assert.AreEqual(1, entity.Get<int>());
 		}
@@ -141,7 +164,7 @@ namespace DeltaEngine.Entities.Tests
 		[Test]
 		public void AddingThreeHandlersInOneCall()
 		{
-			var entity = new EmptyEntity().Add<IncrementCounter, DerivedHandler, EmptyHandler>().Add(0);
+			var entity = new EmptyEntity().Start<IncrementCounter, DerivedHandler, EmptyHandler>().Add(0);
 			EntitySystem.Current.Run();
 			Assert.AreEqual(1, entity.Get<int>());
 		}
@@ -150,8 +173,8 @@ namespace DeltaEngine.Entities.Tests
 		public void AddingAndRemovingTheSameHandlerDoesNothing()
 		{
 			var entity = new EmptyEntity().Add(0);
-			entity.Add<IncrementCounter>();
-			entity.Remove<IncrementCounter>();
+			entity.Start<IncrementCounter>();
+			entity.Stop<IncrementCounter>();
 			EntitySystem.Current.Run();
 			Assert.AreEqual(0, entity.Get<int>());
 		}
@@ -159,7 +182,7 @@ namespace DeltaEngine.Entities.Tests
 		[Test]
 		public void DisabledEntityDoesntDoAnything()
 		{
-			var entity = new EmptyEntity().Add<IncrementCounter>().Add(0);
+			var entity = new EmptyEntity().Start<IncrementCounter>().Add(0);
 			EntitySystem.Current.Run();
 			Assert.AreEqual(1, entity.Get<int>());
 			entity.IsActive = false;
@@ -170,8 +193,8 @@ namespace DeltaEngine.Entities.Tests
 		[Test]
 		public void GetAllEntitiesWithCertainTag()
 		{
-			new EmptyEntity { Tag = "test1" };
-			new EmptyEntity { Tag = "test1" };
+			new EmptyEntity().AddTag("test1");
+			new EmptyEntity().AddTag("test1"); 
 			Assert.AreEqual(0, EntitySystem.Current.GetEntitiesWithTag("abc").Count);
 			Assert.AreEqual(2, EntitySystem.Current.GetEntitiesWithTag("test1").Count);
 		}
@@ -179,9 +202,17 @@ namespace DeltaEngine.Entities.Tests
 		[Test]
 		public void GetAllEntitiesWithHandlersThatHaveATag()
 		{
-			new EmptyEntity { Tag = "abc" }.Add<IncrementCounter>();
-			new EmptyEntity { Tag = "abc" }.Add<IncrementCounter>();
+			new EmptyEntity().Start<IncrementCounter>().AddTag("abc");
+			new EmptyEntity().Start<IncrementCounter>().AddTag("abc");
 			Assert.AreEqual(2, EntitySystem.Current.GetEntitiesWithTag("abc").Count);
+		}
+
+		[Test]
+		public void GetAllEntitiesOfCertainType()
+		{
+			new EmptyEntity();
+			new EmptyEntity();
+			Assert.AreEqual(2, EntitySystem.Current.GetEntitiesOfType<EmptyEntity>().Count);
 		}
 
 		[Test]
@@ -196,11 +227,11 @@ namespace DeltaEngine.Entities.Tests
 		[Test]
 		public void GetEntitiesByHandlerReturnsHandlersEntities()
 		{
-			new EmptyEntity().Add<IncrementCounter>().Add(0);
-			var entity = new EmptyEntity().Add<IncrementCounter>().Add(0);
-			new EmptyEntity().Add<EmptyHandler>();
+			new EmptyEntity().Start<IncrementCounter>().Add(0);
+			var entity = new EmptyEntity().Start<IncrementCounter>().Add(0);
+			new EmptyEntity().Start<EmptyHandler>();
 			EntitySystem.Current.Run();
-			EntityHandler handler = EntitySystem.Current.GetHandler<IncrementCounter>();
+			Handler handler = EntitySystem.Current.GetHandler<IncrementCounter>();
 			List<Entity> entities = EntitySystem.Current.GetEntitiesByHandler(handler);
 			Assert.AreEqual(2, entities.Count);
 			Assert.AreEqual(entity, entities[1]);
@@ -210,7 +241,7 @@ namespace DeltaEngine.Entities.Tests
 		public void CreateAndRemoveEntitiesInEntityHandler()
 		{
 			var system = new TestEntityCreatorSystem();
-			system.Add(new EmptyEntity().Add<EntityCreator>());
+			system.Add(new EmptyEntity().Start<EntityCreator>());
 			Assert.AreEqual(1, system.NumberOfEntities);
 			system.Run();
 			Assert.AreEqual(2, system.NumberOfEntities);
@@ -220,7 +251,7 @@ namespace DeltaEngine.Entities.Tests
 			Assert.AreEqual(2, system.NumberOfEntities);
 		}
 
-		public class EntityCreator : EntityHandler
+		public class EntityCreator : Behavior<Entity>
 		{
 			public EntityCreator(EntitySystem entitySystem)
 			{
@@ -229,10 +260,10 @@ namespace DeltaEngine.Entities.Tests
 
 			private readonly EntitySystem entitySystem;
 
-			public override void Handle(Entity entity)
+			internal override void Handle(Entity entity)
 			{
 				if (entitySystem.NumberOfEntities < 3)
-					entitySystem.Add(new EmptyEntity().Add<IncrementCounter>().Add(0));
+					entitySystem.Add(new EmptyEntity().Start<IncrementCounter>().Add(0));
 				else
 					entitySystem.Remove(entity);
 			}
@@ -248,9 +279,9 @@ namespace DeltaEngine.Entities.Tests
 
 			private static EntitySystem remEntitySystem;
 
-			private class TestHandlerResolver : EntityHandlerResolver
+			private class TestHandlerResolver : HandlerResolver
 			{
-				public EntityHandler Resolve(Type handlerType)
+				public Handler Resolve(Type handlerType)
 				{
 					if (handlerType == typeof(IncrementCounter))
 						return new IncrementCounter();
@@ -263,7 +294,7 @@ namespace DeltaEngine.Entities.Tests
 		[Test]
 		public void ResolvesCorrectEntityHandler()
 		{
-			new EmptyEntity().Add<EmptyHandler>();
+			new EmptyEntity().Start<EmptyHandler>();
 			var handler = EntitySystem.Current.GetHandler<EmptyHandler>();
 			Assert.IsTrue(handler.GetType() == typeof(EmptyHandler));
 		}
@@ -272,95 +303,95 @@ namespace DeltaEngine.Entities.Tests
 		public void UnorderedEntityHandlerProcessesEntitiesInTheOrderAdded()
 		{
 			EntitySystem.Use(new TestEntitySystem<UnorderedHandler>());
-			var entity1 = new EmptyEntity().Add<UnorderedHandler>();
-			var entity2 = new EmptyEntity().Add<UnorderedHandler>();
-			var entity3 = new EmptyEntity().Add<UnorderedHandler>();
+			var entity1 = new EmptyEntity().Start<UnorderedHandler>();
+			var entity2 = new EmptyEntity().Start<UnorderedHandler>();
+			var entity3 = new EmptyEntity().Start<UnorderedHandler>();
 			EntitySystem.Current.Run();
-			Assert.AreEqual(1, entity1.Get<int>());
-			Assert.AreEqual(2, entity2.Get<int>());
-			Assert.AreEqual(3, entity3.Get<int>());
+			var start = entity1.Get<int>();
+			Assert.AreEqual(start + 1, entity2.Get<int>());
+			Assert.AreEqual(start + 2, entity3.Get<int>());
 		}
 
-		private class UnorderedHandler : EntityHandler
+		private class UnorderedHandler : BatchedBehavior<Entity>
 		{
-			public override void Handle(Entity entity)
+			internal override void Handle(IEnumerable<Entity> entities)
 			{
-				entity.Add(++position);
+				int position = 0;
+				foreach (Entity entity in entities)
+					entity.Add(++position);
 			}
-
-			private static int position;
 		}
 
 		[Test]
 		public void OrderedEntityHandlerProcessesEntitiesInTheRequiredSequence()
 		{
 			EntitySystem.Use(new TestEntitySystem<OrderedHandler>());
-			var entity1 = new EmptyEntity().Add<OrderedHandler>().Add(3.0f);
-			var entity2 = new EmptyEntity().Add<OrderedHandler>().Add(1.0f);
-			var entity3 = new EmptyEntity().Add<OrderedHandler>().Add(2.0f);
+			var entity1 = new EmptyEntity().Start<OrderedHandler>().Add(3.0f);
+			var entity2 = new EmptyEntity().Start<OrderedHandler>().Add(1.0f);
+			var entity3 = new EmptyEntity().Start<OrderedHandler>().Add(2.0f);
 			EntitySystem.Current.Run();
-			Assert.AreEqual(1, entity2.Get<int>());
-			Assert.AreEqual(2, entity3.Get<int>());
-			Assert.AreEqual(3, entity1.Get<int>());
+			var start = entity2.Get<int>();
+			Assert.AreEqual(start + 1, entity3.Get<int>());
+			Assert.AreEqual(start + 2, entity1.Get<int>());
 		}
 
-		private class OrderedHandler : EntityHandler
+		private class OrderedHandler : BatchedBehavior<Entity>
 		{
 			public OrderedHandler()
 			{
 				Order = entity => entity.Get<float>();
 			}
 
-			public override void Handle(Entity entity)
+			internal override void Handle(IEnumerable<Entity> entities)
 			{
-				entity.Add(++position);
+				int position = 0;
+				foreach (Entity entity in entities)
+					entity.Add(++position);
 			}
-
-			private static int position;
 		}
 
 		[Test]
 		public void SelectingEntityHandlerProcessesEntitiesThatPassTheSelectionCriteria()
 		{
 			EntitySystem.Use(new TestEntitySystem<SelectingHandler>());
-			var entity1 = new EmptyEntity().Add<SelectingHandler>().Add(3.0f);
-			var entity2 = new EmptyEntity().Add<SelectingHandler>().Add(-1.0f);
-			var entity3 = new EmptyEntity().Add<SelectingHandler>().Add(2.0f);
+			var entity1 = new EmptyEntity().Start<SelectingHandler>().Add(3.0f);
+			var entity2 = new EmptyEntity().Start<SelectingHandler>().Add(-1.0f);
+			var entity3 = new EmptyEntity().Start<SelectingHandler>().Add(2.0f);
 			EntitySystem.Current.Run();
-			Assert.AreEqual(1, entity1.Get<int>());
-			Assert.AreEqual(2, entity3.Get<int>());
+			var start = entity1.Get<int>();
+			Assert.AreEqual(start + 1, entity3.Get<int>());
 			Assert.IsFalse(entity2.Contains<int>());
 		}
 
-		private class SelectingHandler : EntityHandler
+		private class SelectingHandler : BatchedBehavior<Entity>
 		{
 			public SelectingHandler()
 			{
 				Filter = entity => entity.Get<float>() > 0.0f;
 			}
 
-			public override void Handle(Entity entity)
+			internal override void Handle(IEnumerable<Entity> entities)
 			{
-				entity.Add(++position);
+				int position = 0;
+				foreach (Entity entity in entities)
+					entity.Add(++position);
 			}
-
-			private static int position;
 		}
 
 		[Test]
 		public void SelectingAndOrderingHandlerBothSelectsAndOrders()
 		{
 			EntitySystem.Use(new TestEntitySystem<SelectingOrderingHandler>());
-			var entity1 = new EmptyEntity().Add<SelectingOrderingHandler>().Add(3.0f);
-			var entity2 = new EmptyEntity().Add<SelectingOrderingHandler>().Add(-1.0f);
-			var entity3 = new EmptyEntity().Add<SelectingOrderingHandler>().Add(2.0f);
+			var entity1 = new EmptyEntity().Start<SelectingOrderingHandler>().Add(3.0f);
+			var entity2 = new EmptyEntity().Start<SelectingOrderingHandler>().Add(-1.0f);
+			var entity3 = new EmptyEntity().Start<SelectingOrderingHandler>().Add(2.0f);
 			EntitySystem.Current.Run();
-			Assert.AreEqual(1, entity3.Get<int>());
-			Assert.AreEqual(2, entity1.Get<int>());
+			var start = entity3.Get<int>();
+			Assert.AreEqual(start + 1, entity1.Get<int>());
 			Assert.IsFalse(entity2.Contains<int>());
 		}
 
-		private class SelectingOrderingHandler : EntityHandler
+		private class SelectingOrderingHandler : BatchedBehavior<Entity>
 		{
 			public SelectingOrderingHandler()
 			{
@@ -368,12 +399,75 @@ namespace DeltaEngine.Entities.Tests
 				Order = entity => entity.Get<float>();
 			}
 
-			public override void Handle(Entity entity)
+			internal override void Handle(IEnumerable<Entity> entities)
 			{
-				entity.Add(++position);
+				int position = 0;
+				foreach (Entity entity in entities)
+					entity.Add(++position);
 			}
+		}
 
-			private static int position;
+		[Test]
+		public void AddingHandlerExecutesStartingCode()
+		{
+			var entity = new EmptyEntity().Add(0);
+			EntitySystem.Current.Run();
+			Assert.IsFalse(entity.Contains<string>());
+			entity.Start<IncrementCounter>();
+			EntitySystem.Current.Run();
+			Assert.AreEqual("IncrementCounter Is Running", entity.Get<string>());
+		}
+
+		[Test]
+		public void AddingHandlerTwiceOnlyExecutesStartingCodeOnce()
+		{
+			var entity = new EmptyEntity().Add(0).Start<IncrementCounter>();
+			EntitySystem.Current.Run();
+			entity.Set("Method Didn't Get Called Again");
+			entity.Start<IncrementCounter>();
+			EntitySystem.Current.Run();
+			Assert.AreEqual("Method Didn't Get Called Again", entity.Get<string>());
+		}
+
+		[Test]
+		public void RemovingHandlerExecutesStoppingCode()
+		{
+			var entity = new EmptyEntity().Add(0).Start<IncrementCounter>();
+			EntitySystem.Current.Run();
+			entity.Stop<IncrementCounter>();
+			EntitySystem.Current.Run();
+			Assert.AreEqual("IncrementCounter Is Not Running", entity.Get<string>());
+		}
+
+		[Test]
+		public void RemovingHandlerTwiceOnlyExecutesStoppingCodeOnce()
+		{
+			var entity = new EmptyEntity().Add(0).Start<IncrementCounter>();
+			EntitySystem.Current.Run();
+			entity.Stop<IncrementCounter>();
+			EntitySystem.Current.Run();
+			entity.Set("Method Didn't Get Called Again");
+			entity.Stop<IncrementCounter>();
+			EntitySystem.Current.Run();
+			Assert.AreEqual("Method Didn't Get Called Again", entity.Get<string>());
+		}
+
+		[Test]
+		public void RemovingHandlerWhenNeverAddedExecutesNoCode()
+		{
+			var entity = new EmptyEntity();
+			EntitySystem.Current.Run();
+			entity.Stop<IncrementCounter>();
+			EntitySystem.Current.Run();
+			Assert.IsFalse(entity.Contains<string>());
+		}
+
+		[Test]
+		public void AddingAndRemovingHandlerInTheSameFrameExecutesNoCode()
+		{
+			var entity = new EmptyEntity().Start<IncrementCounter>().Stop<IncrementCounter>();
+			EntitySystem.Current.Run();
+			Assert.IsFalse(entity.Contains<string>());
 		}
 	}
 }

@@ -26,5 +26,11 @@ namespace DeltaEngine.Core.Tests
 			SomeValue,
 			AnotherValue,
 		}
+
+		[Test]
+		public void TextToEnum()
+		{
+			Assert.AreEqual(TestEnum.AnotherValue, EnumExtensions.Parse<TestEnum>("AnotherValue"));
+		}
 	}
 }

@@ -5,86 +5,135 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:local="clr-namespace:DeltaEngine.Editor.Builder"
-	mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="440" MinWidth="600" MinHeight="440"
+	mc:Ignorable="d" d:DesignWidth="720" d:DesignHeight="480" MinWidth="720" MinHeight="480"
 	HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
 >
-	<UserControl.Background>
-		<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-			<GradientStop Color="Black" Offset="1"/>
-			<GradientStop Color="DimGray"/>
-		</LinearGradientBrush>
-	</UserControl.Background>
-	
-	<Grid Name="LayoutRoot">
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="10"/>
-			<ColumnDefinition Width="210"/>
-			<ColumnDefinition Width="10"/>
-			<ColumnDefinition Width="*"/>
-			<ColumnDefinition Width="150"/>
-		</Grid.ColumnDefinitions>
-		<Image
-			Source="/DeltaEngine.Editor.Builder;component/Images/BuilderIcon.png"
-			VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,10,0,0"
-			MaxHeight="118" Grid.Column="1"
-		/>
+    <UserControl.Background>
+        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="Black" Offset="1"/>
+            <GradientStop Color="DimGray"/>
+        </LinearGradientBrush>
+    </UserControl.Background>
 
-		<Label
-			x:Name="SourcePathLabel" Content="C# Project" Height="30"
+    <Grid Name="LayoutRoot">
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                <GradientStop Color="#FFFBFBFB" Offset="0"/>
+                <GradientStop Color="#FFE2E2E2" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="96"/>
+            <ColumnDefinition Width="16"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="8"/>
+            <ColumnDefinition Width="32"/>
+            <ColumnDefinition Width="188"/>
+        </Grid.ColumnDefinitions>
+
+        <Label
+			x:Name="SolutionPathLabel" Content="C# Solution" Height="30"
 			HorizontalAlignment="Right"
-			VerticalAlignment="Top" Foreground="WhiteSmoke" FontSize="14"
-			Margin="0,15,0,0" d:LayoutOverrides="Width" Grid.ColumnSpan="2"
+			VerticalAlignment="Top" Foreground="White" FontSize="14"
+			Margin="0,15,0,0" Background="#FF7794D2" FontFamily="Bebas" Grid.Column="1" Width="84"
 		/>
-		<TextBox
-			x:Name="SourcePathTextBox" Height="30" Margin="0,15,0,0" VerticalAlignment="Top"
+        <TextBox
+			x:Name="SolutionPathTextBox" Height="30" Margin="0,15,0,0" VerticalAlignment="Top"
 			Grid.Column="3" IsReadOnly="True" x:FieldModifier="public"
-			Text="{Binding Path=UserProjectPath}"
+			Text="{Binding Path=UserSolutionPath}"
 		/>
-		<Button
-			x:Name="SourcePathButton" Margin="12,15,12,0" VerticalAlignment="Top" Height="30"
-			FontSize="14" Content="Browse..." Grid.Column="4"
+        <Button
+			x:Name="SolutionPathBrowseButton" Margin="0,15,0,0" VerticalAlignment="Top" Height="30"
+			FontSize="14" Content="..." Grid.Column="5" IsEnabled="False"
 			ToolTip="Select the source code for the entry point project. The source code and all dependencies must exist locally to build. If you don't have the source code you can only start the latest Build Result (if available)."
-			Click="OnBrowseUserProjectClicked"
-		/>
+			Click="OnBrowseUserProjectClicked" Foreground="#FFEBF5FF" BorderBrush="{x:Null}"
+		>
+            <Button.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FF6499D6" Offset="0"/>
+                    <GradientStop Color="#FF203875" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.Background>
+        </Button>
 
-		<Label
-			x:Name="EntryPointLabel" Content="Entry Point" Foreground="WhiteSmoke"
+        <Label
+			x:Name="ProjectSelectionLabel" Content="Project" Foreground="White"
 			HorizontalAlignment="Right"
 			FontSize="14" Margin="0,55,0,0" Height="30"
-			VerticalAlignment="Top" Grid.Column="1" d:LayoutOverrides="Width"
+			VerticalAlignment="Top" Grid.Column="1" Width="63" Background="#FF7794D2" FontFamily="Bebas"
 		/>
-		<ComboBox
-			x:Name="EntryPointComboBox" Margin="0,55,0,0" Grid.Column="3" Height="30"
+        <ComboBox
+			x:Name="ProjectComboBox" Margin="0,55,1,0" Grid.Column="3" Height="30"
 			VerticalAlignment="Top" FontSize="14" HorizontalContentAlignment="Center"
-			ItemsSource="{Binding Path=UserProjectEntryPoints}"
-			SelectedValue="{Binding Path=UserSelectedEntryPoint}"
+			ItemsSource="{Binding Path=AvailableProjectsInSelectedSolution}"
+			SelectedValue="{Binding Path=SelectedProject}"
+			DisplayMemberPath="Title"
 		/>
-		<Button
-			Name="RefreshButton" Content="Refresh" FontSize="14" Height="30"
-			Margin="12,55,12,0" VerticalAlignment="Top" Grid.Column="4"
-			ToolTip="Refreshes the list of available entry points. Useful if you just added a new unit test!"
-		/>
+        <Button
+			x:Name="EditSettings" Content="⚙" FontSize="14" Height="30"
+			Margin="0,135,0,0" VerticalAlignment="Top" Grid.Column="5"
+			ToolTip="Refreshes the list of available entry points. Useful if you just added a new unit test!" HorizontalAlignment="Left" Width="33" Foreground="#FFEBF5FF" Grid.ColumnSpan="2"
+		>
+            <Button.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FF6499D6" Offset="0"/>
+                    <GradientStop Color="#FF203875" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.Background>
+        </Button>
 
-		<Label
-			Name="PlatformLabel" Content="Platform" Height="30" HorizontalAlignment="Right"
-			VerticalAlignment="Top" Foreground="WhiteSmoke" FontSize="14"
-			Margin="0,95,0,0" Grid.Column="1"
+        <Label
+			x:Name="EntryPointLabel" Content="Entry Point" Foreground="White"
+			HorizontalAlignment="Right"
+			FontSize="14" Margin="0,95,0,0" Height="30"
+			VerticalAlignment="Top" Grid.Column="1" Width="84" Background="#FF7794D2" FontFamily="Bebas"
 		/>
-		<ComboBox
-			Name="PlatformComboBox" Margin="0,95,0,0" VerticalAlignment="Top" FontSize="14"
+        <ComboBox
+			x:Name="EntryPointComboBox" Margin="0,95,0,0" Grid.Column="3" Height="30"
+			VerticalAlignment="Top" FontSize="14" HorizontalContentAlignment="Center"
+			ItemsSource="{Binding Path=AvailableEntryPointsInSelectedProject}"
+			SelectedValue="{Binding Path=SelectedEntryPoint}"
+		/>
+        <Button
+			Name="RefreshButton" Content="↻" FontSize="16" Height="30"
+			Margin="0,94,0,0" VerticalAlignment="Top" Grid.Column="5"
+			ToolTip="Refreshes the list of available entry points. Useful if you just added a new unit test!" Foreground="#FFEBF5FF"
+		>
+            <Button.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FF6499D6" Offset="0"/>
+                    <GradientStop Color="#FF203875" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.Background>
+        </Button>
+
+        <Label
+			Name="PlatformLabel" Content="Platform" Height="30" HorizontalAlignment="Right"
+			VerticalAlignment="Top" Foreground="White" FontSize="14"
+			Margin="0,135,0,0" Grid.Column="1" Width="72" Background="#FF7794D2" FontFamily="Bebas"
+		/>
+        <ComboBox
+			Name="PlatformComboBox" Margin="0,135,0,0" VerticalAlignment="Top" FontSize="14"
 			Height="30"	Grid.Column="3" HorizontalContentAlignment="Center"
 			ItemsSource="{Binding Path=SupportedPlatforms}"
 			SelectedValue="{Binding Path=SelectedPlatform}"
 		/>
-
-		<Button
-			Name="LaunchButton" Height="30" Margin="12,95,12,0" VerticalAlignment="Top"
-			Content="Build" FontSize="18" FontWeight="Bold"  Grid.Column="4" Grid.ColumnSpan="1"
+        <Button
+			Name="LaunchButton" Height="150" Margin="0,15,17,0" VerticalAlignment="Top" FontSize="18"  Grid.Column="6"
 			ToolTip="Builds the current specified code for the selected Platform."
-			Command="{Binding Path=BuildPressed}"
-		/>
+			Command="{Binding Path=BuildPressed}" FontFamily="Bebas" Foreground="#FFEBF5FF" FontWeight="Bold" TextOptions.TextHintingMode="Fixed" HorizontalAlignment="Right" Width="156"
+		>
+            <Button.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FF6499D6" Offset="0"/>
+                    <GradientStop Color="#FF203875" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.Background>
+            <Image Height="122" Source="Images\StartBuildIcon.png" Stretch="Fill" Width="122"/>
+        </Button>
 
-		<local:BuildMessagesListView
-			x:Name="BuildMessagesList"  Margin="3,150,3,3" Grid.Column="0" Grid.ColumnSpan="5" />
-	</Grid>
+		<local:BuilderInfoListView
+			x:Name="BuildList"  Margin="3,236,3,3" Grid.Column="0" Grid.ColumnSpan="7" />
+    </Grid>
 </UserControl>

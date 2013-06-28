@@ -1,3 +1,4 @@
+using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
 using DeltaEngine.Rendering.Fonts;
@@ -27,8 +28,14 @@ namespace DeltaEngine.Scenes
 
 		public struct Appearance
 		{
+			public Appearance(string imageName)
+				: this(ContentLoader.Load<Image>(imageName)) { }
+
 			public Appearance(Image image)
 				: this(image, Color.White) {}
+
+			public Appearance(string imageName, Color color)
+				: this(ContentLoader.Load<Image>(imageName), color) { }
 
 			public Appearance(Image image, Color color)
 				: this()

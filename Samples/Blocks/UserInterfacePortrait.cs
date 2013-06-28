@@ -1,5 +1,6 @@
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
+using DeltaEngine.Rendering.Fonts;
 using DeltaEngine.Rendering.Sprites;
 using DeltaEngine.Scenes;
 
@@ -17,6 +18,7 @@ namespace Blocks
 			AddBackground();
 			AddGrid();
 			AddScoreWindow();
+			AddScore();
 		}
 
 		private readonly BlocksContent content;
@@ -69,6 +71,16 @@ namespace Blocks
 			var height = Width / image.PixelSize.AspectRatio;
 			return new Rectangle(left, top, Width, height);
 		}
+
+		private void AddScore()
+		{
+			Text = new FontText(new Font("Verdana12"), "", scoreWindow.Center)
+			{
+				RenderLayer = (int)RenderLayer.Foreground
+			};
+		}
+
+		internal FontText Text { get; private set; }
 
 		private const float ScoreRenderTopOffset = -0.135f;
 	}

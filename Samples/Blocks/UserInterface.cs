@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace Blocks
 {
@@ -33,10 +34,14 @@ namespace Blocks
 		public void AddToScore(int points)
 		{
 			Score += points;
+			userInterfacePortrait.Text.Text = "Score: " + Score;
+			userInterfaceLandscape.Text.Text = "Score: " + Score;
 		}
 
 		public void Lose()
 		{
+			userInterfacePortrait.Text.Text = "Final Score: " + Score;
+			userInterfaceLandscape.Text.Text = "Final Score: " + Score;
 			Score = 0;
 		}
 

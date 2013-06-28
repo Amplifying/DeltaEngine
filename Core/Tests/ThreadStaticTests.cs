@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Threading;
 using NUnit.Framework;
 
 namespace DeltaEngine.Core.Tests
@@ -12,7 +13,7 @@ namespace DeltaEngine.Core.Tests
 			var threadStatic = new ThreadStatic<string>();
 			Assert.IsFalse(threadStatic.HasCurrent);
 			Assert.Throws<ThreadStatic<string>.NoValueAvailable>(
-				() => Assert.NotNull(threadStatic.Current));
+				() => Assert.IsNotNull(threadStatic.Current));
 		}
 
 		[Test]
@@ -95,13 +96,14 @@ namespace DeltaEngine.Core.Tests
 		}
 
 		// ncrunch: no coverage start
-		[Test, NUnit.Framework.Category("Slow")]
+		[Test, Ignore]
 		public void DisposingOnADifferentThreadToCreationThrowsException()
 		{
 			var worker = new BackgroundWorker();
 			worker.DoWork += CreateScope;
 			worker.RunWorkerCompleted += DisposeScope;
 			worker.RunWorkerAsync();
+			Thread.Sleep(1);
 		}
 
 		private static void CreateScope(object sender, DoWorkEventArgs e)

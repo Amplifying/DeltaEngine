@@ -10,7 +10,7 @@ namespace DeltaEngine.Editor.Launcher
 	/// <summary>
 	/// Interaction logic for LauncherView.xaml
 	/// </summary>
-	public partial class LauncherView : EditorPluginView
+	public partial class LauncherView// : EditorPluginView
 	{
 		public LauncherView(Service service)
 			: this(new LauncherViewModel(service)) {}
@@ -54,12 +54,12 @@ namespace DeltaEngine.Editor.Launcher
 
 		public string Icon
 		{
-			get { return "Icons/Launcher.png"; }
+			get { return "Icons/Builder.png"; }
 		}
 
 		public EditorPluginCategory Category
 		{
-			get { return EditorPluginCategory.Launcher; }
+			get { return EditorPluginCategory.Builder; }
 		}
 
 		public int Priority
@@ -72,9 +72,10 @@ namespace DeltaEngine.Editor.Launcher
 			var builderViewModel = new BuilderViewModel(viewModel.Service);
 			var window = new Window
 			{
+				Owner = viewModel.Service.PluginHostWindow,
 				Content = new BuilderView(builderViewModel),
-				Width = 640,
-				Height = 480
+				Width = 800,
+				Height = 600
 			};
 			window.ShowDialog();
 		}

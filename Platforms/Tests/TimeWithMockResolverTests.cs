@@ -1,4 +1,5 @@
 using DeltaEngine.Core;
+using DeltaEngine.Platforms.Mocks;
 using NUnit.Framework;
 
 namespace DeltaEngine.Platforms.Tests

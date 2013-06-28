@@ -1,26 +1,21 @@
-using System.IO;
-using DeltaEngine.Core.Xml;
+using DeltaEngine.Content;
+using DeltaEngine.Content.Xml;
+using DeltaEngine.Platforms;
 using DeltaEngine.Rendering.Fonts;
 using NUnit.Framework;
 
 namespace DeltaEngine.Rendering.Tests.Fonts
 {
-	public class TextConverterTests
+	public class TextConverterTests : TestWithMocksOrVisually
 	{
-		[SetUp]
-		public void Init()
-		{
-			var fontData = new FontData(new XmlFile(Path.Combine("Content", "Verdana12.xml")).Root);
-			textConverter = new TextConverter(fontData.GlyphDictionary, fontData.PixelLineHeight);
-		}
-
-		private TextConverter textConverter;
-
 		[Test]
 		public void GetGlyphs()
 		{
-			var glyphs = textConverter.GetRenderableGlyphs("Test");
+			var fontData = new FontData(ContentLoader.Load<XmlContent>("Verdana12").Data);
+			var textConverter = new TextConverter(fontData.GlyphDictionary, fontData.PixelLineHeight);
+			var glyphs = textConverter.GetRenderableGlyphs("    ");
 			Assert.AreEqual(4, glyphs.Length);
+			Window.CloseAfterFrame();
 		}
 	}
 }

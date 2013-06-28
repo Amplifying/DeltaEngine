@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Input;
+using DeltaEngine.Rendering;
 
 namespace DeltaEngine.Scenes.UserInterfaces
 {
@@ -17,12 +18,12 @@ namespace DeltaEngine.Scenes.UserInterfaces
 			Text = text;
 			Add(theme);
 			Add(new Interact.State());
-			Add<Interact, Interact.Clicking, UpdateAppearance>();
+			Start<Interact, Interact.Clicking, UpdateAppearance>();
 		}
 
-		private class UpdateAppearance : EntityListener
+		private class UpdateAppearance : EventListener2D
 		{
-			public override void ReceiveMessage(Entity entity, object message)
+			public override void ReceiveMessage(Entity2D entity, object message)
 			{
 				if (!interactions.Contains(message.GetType()))
 					return;

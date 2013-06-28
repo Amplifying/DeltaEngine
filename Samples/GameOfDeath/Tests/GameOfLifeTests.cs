@@ -1,15 +1,12 @@
-using System;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.All;
-using DeltaEngine.Platforms.Tests;
 using DeltaEngine.Rendering.Shapes;
 using NUnit.Framework;
 
 namespace GameOfDeath.Tests
 {
-	internal class GameOfLifeTests : TestWithAllFrameworks
+	internal class GameOfLifeTests : TestWithMocksOrVisually
 	{
 		[Test]
 		public void CreateSimplestGameOfLifeEverWith1X1()
@@ -141,25 +138,22 @@ namespace GameOfDeath.Tests
 			game[x, y + 2] = true;
 		}
 
-		[VisualTest]
-		public void ShowGameOfLife(Type resolver)
+		public void ShowGameOfLife()
 		{
 			game = new GameOfLife(24, 24);
 			game.Randomize();
-			Start(resolver, (Window window) => window.TotalPixelSize = new Size(1024, 1024), () =>
-			{
-				if (resolver == typeof(MockResolver) || Time.Current.CheckEvery(0.1f))
-					game.Run();
 
-				for (int x = 0; x < game.width; x++)
-					for (int y = 0; y < game.height; y++)
-					{
-						float posX = 0.1f + 0.8f * x / game.width;
-						float posY = 0.1f + 0.8f * y / game.height;
-						Color color = game[x, y] ? Color.White : Color.DarkGray;
-						new Ellipse(Rectangle.FromCenter(posX, posY, 0.025f, 0.025f), color);
-					}
-			});
+			if (Time.Current.CheckEvery(0.1f))
+				game.Run();
+
+			for (int x = 0; x < game.width; x++)
+				for (int y = 0; y < game.height; y++)
+				{
+					float posX = 0.1f + 0.8f * x / game.width;
+					float posY = 0.1f + 0.8f * y / game.height;
+					Color color = game[x, y] ? Color.White : Color.DarkGray;
+					new Ellipse(Rectangle.FromCenter(posX, posY, 0.025f, 0.025f), color);
+				}
 		}
 	}
 }

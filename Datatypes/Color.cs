@@ -171,6 +171,24 @@ namespace DeltaEngine.Datatypes
 			return GetRandomColor(128);
 		}
 
+		public static Color GetHeatmapColor(float percent)
+		{
+			if (0.0f <= percent && percent <= 0.125f)
+				return new Color(0.0f, 0.0f, 4.0f * percent + .5f);
+
+			if (0.125f < percent && percent <= 0.375f)
+				return new Color(0.0f, 4.0f * percent - .5f, 0.0f);
+
+			if (0.375f < percent && percent <= 0.625f)
+				return new Color(4.0f * percent - 1.5f, 1.0f, -4.0f * percent + 2.5f);
+
+			if (0.625f < percent && percent <= 0.875f)
+				return new Color(1.0f, -4.0f * percent + 3.5f, 0.0f);
+
+			return (0.875f < percent && percent <= 1.0f)
+				? new Color(-4.0f * percent + 4.5f, 0.0f, 0.0f) : White;
+		}
+
 		public static bool operator !=(Color c1, Color c2)
 		{
 			return c1.Equals(c2) == false;
@@ -206,6 +224,19 @@ namespace DeltaEngine.Datatypes
 		{
 			return new Color(c1.RedValue * c2.RedValue, c1.GreenValue * c2.GreenValue,
 				c1.BlueValue * c2.BlueValue, c1.AlphaValue * c2.AlphaValue);
+		}
+
+		public static byte[] GetBytesFromArray(Color[] colors)
+		{
+			var bytes = new byte[colors.Length * 4];
+			for (int num = 0; num < colors.Length; num++)
+			{
+				bytes[num * 4 + 0] = colors[num].R;
+				bytes[num * 4 + 1] = colors[num].G;
+				bytes[num * 4 + 2] = colors[num].B;
+				bytes[num * 4 + 3] = colors[num].A;
+			}
+			return bytes;
 		}
 
 		public override string ToString()

@@ -1,44 +1,33 @@
-using System;
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
-using DeltaEngine.Platforms.All;
-using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms;
 using DeltaEngine.Rendering.Shapes;
 using DeltaEngine.Rendering.Sprites;
 using NUnit.Framework;
 
 namespace DeltaEngine.Rendering.Tests.Sprites
 {
-	public class SpriteTests : TestWithAllFrameworks
+	public class SpriteTests : TestWithMocksOrVisually
 	{
-		[VisualTest]
-		public void RenderSprite(Type resolver)
+		[Test]
+		public void RenderSprite()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{ new Sprite(content.Load<Image>("DeltaEngineLogo"), screenCenter, Color.White); });
+			new Sprite("DeltaEngineLogo", screenCenter);
 		}
 
-		[VisualTest]
-		public void RenderWalkingCharacterSprite(Type resolver)
+		[Test]
+		public void RenderWalkingCharacterSprite()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				new Sprite(content.Load<Image>("DeltaEngineLogo"), screenCenter, Color.White); 
-				new Sprite(content.Load<Image>("WalkingCharacter"), screenCenter, Color.White);
-			});
+			new Sprite("DeltaEngineLogo", screenCenter);
+			new Sprite("WalkingCharacter", screenCenter);
 		}
 
-
-		[VisualTest]
-		public void RenderRedSpriteOverBlue(Type resolver)
+		[Test]
+		public void RenderRedSpriteOverBlue()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				var image = content.Load<Image>("DeltaEngineLogo");
-				new Sprite(image, screenCenter, Color.Red) { RenderLayer = 1 };
-				new Sprite(image, screenTopLeft, Color.Blue) { RenderLayer = 0 };
-			});
+			new Sprite("DeltaEngineLogo", screenCenter) { Color = Color.Red, RenderLayer = 1 };
+			new Sprite("DeltaEngineLogo", screenTopLeft) { Color = Color.Blue, RenderLayer = 0 };
 		}
 
 		private readonly Rectangle screenCenter = Rectangle.FromCenter(Point.Half, Size.Half);
@@ -47,78 +36,111 @@ namespace DeltaEngine.Rendering.Tests.Sprites
 		[Test]
 		public void CreateSprite()
 		{
-			Start(typeof(MockResolver), (ContentLoader content) =>
-			{
-				var image = content.Load<Image>("DeltaEngineLogo");
-				var sprite = new Sprite(image, screenCenter);
-				Assert.AreEqual(Color.White, sprite.Color);
-				Assert.AreEqual(image, sprite.Image);
-				Assert.AreEqual(new Size(128, 128), sprite.Image.PixelSize);
-			});
-		}
-
-		[Test]
-		public void SpriteWithNoImageThrowsException()
-		{
-			Assert.Throws<NullReferenceException>(() => new Sprite(null, Rectangle.Zero));
+			var sprite = new Sprite("DeltaEngineLogo", screenCenter);
+			Assert.AreEqual(Color.White, sprite.Color);
+			Assert.AreEqual("DeltaEngineLogo", sprite.Image.Name);
+			Assert.AreEqual(new Size(128, 128), sprite.Image.PixelSize);
+			Window.CloseAfterFrame();
 		}
 
 		[Test]
 		public void ChangeImage()
 		{
-			Start(typeof(MockResolver), (ContentLoader content) =>
-			{
-				var image1 = content.Load<Image>("DeltaEngineLogo");
-				var sprite = new Sprite(image1, screenCenter, Color.White);
-				Assert.AreEqual(image1, sprite.Image);
-				var image2 = content.Load<Image>("ImageAnimation01");
-				sprite.Image = image2;
-				Assert.AreEqual(image2, sprite.Image);
-			});
-		}
-
-		[VisualTest]
-		public void RenderSpriteAndLines(Type resolver)
-		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				new Line2D(Point.Zero, Point.One, Color.Blue);
-				var image = content.Load<Image>("DeltaEngineLogo");
-				new Sprite(image, screenCenter, Color.Red);
-				new Line2D(Point.UnitX, Point.UnitY, Color.Purple);
-			});
+			var sprite = new Sprite("DeltaEngineLogo", screenCenter);
+			Assert.AreEqual("DeltaEngineLogo", sprite.Image.Name);
+			Assert.AreEqual(BlendMode.Normal, sprite.Get<BlendMode>());
+			sprite.Image = ContentLoader.Load<Image>("Verdana12Font");
+			Assert.AreEqual("Verdana12Font", sprite.Image.Name);
+			Assert.AreEqual(BlendMode.Normal, sprite.Get<BlendMode>());
+			Window.CloseAfterFrame();
 		}
 
 		[Test]
-		public void CheckDrawsWith1Sprite()
+		public void RenderSpriteAndLines()
 		{
-			Start(typeof(MockResolver), (ContentLoader content) =>
-			{
-				new Sprite(content.Load<Image>("DeltaEngineLogo"), screenCenter, Color.White);
-			});
-			Assert.AreEqual(1, mockResolver.rendering.NumberOfTimesDrawn);
+			new Line2D(Point.Zero, Point.One, Color.Blue);
+			new Sprite("DeltaEngineLogo", screenCenter);
+			new Line2D(Point.UnitX, Point.UnitY, Color.Purple);
 		}
 
 		[Test]
-		public void CheckDrawsWith2Sprite()
+		public void DrawingTwoSpritesWithTheSameImageAndRenderLayerOnlyIssuesOneDrawCall()
 		{
-			Start(typeof(MockResolver), (ContentLoader content) =>
-			{
-				new Sprite(content.Load<Image>("DeltaEngineLogo"), screenCenter, Color.White);
-				new Sprite(content.Load<Image>("DeltaEngineLogo"), screenCenter, Color.White);
-			});
-			Assert.AreEqual(2, mockResolver.rendering.NumberOfTimesDrawn);
+			new Sprite("DeltaEngineLogo", screenCenter);
+			new Sprite("DeltaEngineLogo", screenCenter);
+			RunCode = () => Assert.AreEqual(1, Resolve<Drawing>().NumberOfTimesDrawn);
+			Window.CloseAfterFrame();
 		}
 
 		[Test]
-		public void CheckDrawsWith2DifferentSprites()
+		public void DrawingTwoSpritesWithTheSameImageButDifferentRenderLayersIssuesTwoDrawCalls()
 		{
-			Start(typeof(MockResolver), (ContentLoader content) =>
+			new Sprite("DeltaEngineLogo", screenCenter) { RenderLayer = 1 };
+			new Sprite("DeltaEngineLogo", screenCenter) { RenderLayer = 2 };
+			RunCode = () => Assert.AreEqual(2, Resolve<Drawing>().NumberOfTimesDrawn);
+			Window.CloseAfterFrame();
+		}
+
+		[Test]
+		public void DrawingTwoSpritesWithDifferentImagesIssuesTwoDrawCalls()
+		{
+			new Sprite("DeltaEngineLogo", screenCenter);
+			new Sprite("WalkingCharacter", screenCenter);
+			RunCode = () => Assert.AreEqual(2, Resolve<Drawing>().NumberOfTimesDrawn);
+			Window.CloseAfterFrame();
+		}
+
+		[Test]
+		public void DrawSpritesWithDifferentBlendModes()
+		{
+			Window.Title = "Blend modes: Opaque, Normal, Additive; AlphaTest, LightEffect, Subtractive";
+			var drawAreas = CreateDrawAreas(3, 2);
+			var image = ContentLoader.Load<Image>("DeltaEngineLogo");
+			var alpha = ContentLoader.Load<Image>("DeltaEngineLogoAlpha");
+			new Sprite(image, drawAreas[0]) { BlendMode = BlendMode.Opaque };
+			new Sprite(alpha, drawAreas[1]) { BlendMode = BlendMode.Opaque };
+			new Sprite(image, drawAreas[2]) { BlendMode = BlendMode.Normal };
+			new Sprite(alpha, drawAreas[3]) { BlendMode = BlendMode.Normal };
+			new Sprite(image, drawAreas[4]) { BlendMode = BlendMode.Additive };
+			new Sprite(alpha, drawAreas[5]) { BlendMode = BlendMode.Additive };
+			new Sprite(image, drawAreas[6]) { BlendMode = BlendMode.AlphaTest };
+			new Sprite(alpha, drawAreas[7]) { BlendMode = BlendMode.AlphaTest };
+			new Sprite(image, drawAreas[8]) { BlendMode = BlendMode.LightEffect };
+			new Sprite(alpha, drawAreas[9]) { BlendMode = BlendMode.LightEffect };
+			new Sprite(image, drawAreas[10]) { BlendMode = BlendMode.Subtractive };
+			new Sprite(alpha, drawAreas[11]) { BlendMode = BlendMode.Subtractive };
+		}
+
+		private static Rectangle[] CreateDrawAreas(int cols, int rows)
+		{
+			var drawAreas = new Rectangle[cols * rows * 2];
+			var size = new Size(0.2f, 0.2f);
+			var position1 = new Point(0.2f, 0.35f);
+			for (int y = 0; y < rows; y++)
 			{
-				new Sprite(content.Load<Image>("DeltaEngineLogo"), screenCenter, Color.White);
-				new Sprite(content.Load<Image>("WalkingCharacter"), screenCenter, Color.White);
-			});
-			Assert.AreEqual(2, mockResolver.rendering.NumberOfTimesDrawn);
+				for (int x = 0; x < cols; x++)
+				{
+					var index = x * 2 + (y * cols * rows);
+					drawAreas[index] = Rectangle.FromCenter(position1, size);
+					var position2 = new Point(position1.X + 0.04f, position1.Y + 0.04f);
+					drawAreas[index + 1] = Rectangle.FromCenter(position2, size);
+					position1.X += 0.3f;
+				}
+				position1 = new Point(0.2f, position1.Y + 0.275f);
+			}
+			return drawAreas;
+		}
+
+		[Test]
+		public void DrawSpritesWithBlendModeFromContentMetaData()
+		{
+			var drawAreas = CreateDrawAreas(3, 1);
+			new Sprite("DeltaEngineLogo", drawAreas[0]);
+			new Sprite("DeltaEngineLogoOpaque", drawAreas[1]);
+			new Sprite("DeltaEngineLogo", drawAreas[2]);
+			new Sprite("DeltaEngineLogoAlpha", drawAreas[3]);
+			new Sprite("DeltaEngineLogo", drawAreas[4]);
+			new Sprite("DeltaEngineLogoAdditive", drawAreas[5]);
 		}
 	}
 }

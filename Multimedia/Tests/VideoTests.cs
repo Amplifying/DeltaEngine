@@ -1,8 +1,7 @@
-using System;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Entities;
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Platforms;
 using NUnit.Framework;
 
 namespace DeltaEngine.Multimedia.Tests
@@ -10,73 +9,62 @@ namespace DeltaEngine.Multimedia.Tests
 	/// <summary>
 	/// Test video playback. Xna video loading won't work from ReSharper, use Program.cs instead.
 	/// </summary>
-	public class VideoTests : TestWithAllFrameworks
+	[Ignore]
+	public class VideoTests : TestWithMocksOrVisually
 	{
-		[VisualTest]
-		public void PlayVideo(Type resolver)
+		[Test]
+		public void PlayVideo()
 		{
-			Start(resolver, (ContentLoader content) => content.Load<Video>("DefaultVideo").Play());
+			ContentLoader.Load<Video>("DefaultVideo").Play();
 		}
 
-		[IntegrationTest]
-		public void PlayAndStop(Type resolver)
+		[Test]
+		public void PlayAndStop()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				var video = content.Load<Video>("DefaultVideo");
-				video.Stop();
-				Assert.IsFalse(video.IsPlaying());
-				video.Play();
-				Assert.IsTrue(video.IsPlaying());
-			});
+			var video = ContentLoader.Load<Video>("DefaultVideo");
+			video.Stop();
+			Assert.IsFalse(video.IsPlaying());
+			video.Play();
+			Assert.IsTrue(video.IsPlaying());
 		}
 
-		[IntegrationTest]
-		public void PlayAndStopWithEntitySystem(Type resolver)
+		[Test]
+		public void PlayAndStopWithEntitySystem()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				var video = content.Load<Video>("DefaultVideo");
-				Assert.AreEqual(0, EntitySystem.Current.NumberOfEntities);
-				video.Stop();
-				Assert.AreEqual(0, EntitySystem.Current.NumberOfEntities);
-				video.Play();
-				Assert.AreEqual(1, EntitySystem.Current.NumberOfEntities);
-				video.Stop();
-				Assert.AreEqual(0, EntitySystem.Current.NumberOfEntities);
-			});
+			var video = ContentLoader.Load<Video>("DefaultVideo");
+			Assert.AreEqual(0, EntitySystem.Current.NumberOfEntities);
+			video.Stop();
+			Assert.AreEqual(0, EntitySystem.Current.NumberOfEntities);
+			video.Play();
+			Assert.AreEqual(1, EntitySystem.Current.NumberOfEntities);
+			video.Stop();
+			Assert.AreEqual(0, EntitySystem.Current.NumberOfEntities);
 		}
 
-		[IntegrationTest]
-		public void CheckDurationAndPosition(Type resolver)
+		[Test]
+		public void CheckDurationAndPosition()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				var video = content.Load<Video>("DefaultVideo");
-				video.Run();
-				Assert.AreEqual(3.791f, video.DurationInSeconds, 0.5f);
-				Assert.AreEqual(1.0f, video.PositionInSeconds);
-			});
+			var video = ContentLoader.Load<Video>("DefaultVideo");
+			video.Run();
+			Assert.AreEqual(3.791f, video.DurationInSeconds, 0.5f);
+			Assert.AreEqual(1.0f, video.PositionInSeconds);
 		}
 
-		[VisualTest]
-		public void StartAndStopVideo(Type resolver)
+		[Test]
+		public void StartAndStopVideo()
 		{
-			Video video = null;
-			Start(resolver, (ContentLoader content) =>
+			var video = ContentLoader.Load<Video>("DefaultVideo");
+			Assert.AreEqual(3.791f, video.DurationInSeconds, 0.5f);
+			video.Play();
+			RunCode = () =>
 			{
-				video = content.Load<Video>("DefaultVideo");
-				Assert.AreEqual(3.791f, video.DurationInSeconds, 0.5f);
-				video.Play();
-			}, () =>
-			{
-				if (Time.Current.Milliseconds >= 1000 || mockResolver != null)
+				if (Time.Current.Milliseconds >= 1000)
 				{
 					video.Stop();
 					Assert.Less(0.99f, video.PositionInSeconds);
 					Assert.Greater(1.04f, video.PositionInSeconds);
 				}
-			});
+			};
 		}
 	}
 }

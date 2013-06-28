@@ -9,10 +9,11 @@ namespace DeltaEngine.Networking.Sockets.Tests
 		[SetUp]
 		public void CreateLocalEchoServer()
 		{
+			serverPort++;
 			serverReceivedMessageCount = 0;
 			clientReceivedResponseCount = 0;
 			echoServer = new TcpServer();
-			echoServer.Start(ServerPort);
+			echoServer.Start(serverPort);
 			echoServer.ClientDataReceived +=
 				(connection, data) => connection.Send(new TextMessage("TestMessage"));
 		}
@@ -20,7 +21,13 @@ namespace DeltaEngine.Networking.Sockets.Tests
 		private int serverReceivedMessageCount;
 		private int clientReceivedResponseCount;
 		private TcpServer echoServer;
-		private const int ServerPort = 8585;
+		private static int serverPort = 8585;
+
+		[TearDown]
+		public void DisposeConnectionsSockets()
+		{
+			echoServer.Dispose();
+		}
 
 		[Test, Category("Slow")]
 		public void ConnectAndDisposeClientConnection()
@@ -33,7 +40,7 @@ namespace DeltaEngine.Networking.Sockets.Tests
 			bool clientDisconnected = false;
 			client.Disconnected += () => clientDisconnected = true;
 			WaitForServerResponse();
-			Assert.AreEqual(ServerAddress + ":" + ServerPort, client.TargetAddress);
+			Assert.AreEqual(ServerAddress + ":" + echoServer.ListenPort, client.TargetAddress);
 			client.Dispose();
 			Assert.IsTrue(clientDisconnected);
 		}
@@ -43,7 +50,7 @@ namespace DeltaEngine.Networking.Sockets.Tests
 		private static Client CreatedConnectedClient()
 		{
 			var client = new TcpSocket();
-			client.Connect(ServerAddress, ServerPort);
+			client.Connect(ServerAddress, serverPort);
 			return client;
 		}
 
@@ -56,6 +63,7 @@ namespace DeltaEngine.Networking.Sockets.Tests
 		public void ConnectClientAndDisposeServer()
 		{
 			var client = CreatedConnectedClient();
+			Thread.Sleep(1);
 			echoServer.ClientConnected += connection => Assert.IsTrue(client.IsConnected);
 			ShutDownServer();
 		}
@@ -137,12 +145,6 @@ namespace DeltaEngine.Networking.Sockets.Tests
 				client.Dispose();
 				client.Send(new TextMessage("TestMessage"));
 			}
-		}
-
-		[TearDown]
-		public void DisposeConnectionsSockets()
-		{
-			echoServer.Dispose();
 		}
 	}
 }

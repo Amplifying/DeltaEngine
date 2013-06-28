@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
@@ -9,8 +9,8 @@ namespace FindTheWord
 {
 	public class Button : Sprite, IDisposable
 	{
-		public Button(InputCommands input, ContentLoader content, string imageName, Rectangle drawArea)
-			: base(content.Load<Image>(imageName), drawArea)
+		public Button(InputCommands input, string imageName, Rectangle drawArea)
+			: base(ContentLoader.Load<Image>(imageName), drawArea)
 		{
 			Input = input;
 			RenderLayer = 2;

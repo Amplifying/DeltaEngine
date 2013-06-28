@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--Delta Engine Content Meta Data, auto-generated, will be refreshed at each start-->
-<ContentMetaData Name="DrawFontAndLine" Type="Scene" LastTimeUpdated="2013-05-21 15:07:22Z" ContentDeviceName="Delta">
-  <ContentMetaData Name="Tahoma30" Type="Xml" LastTimeUpdated="2013-05-17 11:05:33Z" PlatformFileId="-5" FileSize="16326" LocalFilePath="Tahoma30.xml" />
-  <ContentMetaData Name="Tahoma30Font" Type="Image" LastTimeUpdated="2013-05-17 11:05:33Z" PlatformFileId="-6" FileSize="26363" LocalFilePath="Tahoma30Font.png" />
-	<ContentMetaData Name="Verdana12" Type="Xml" LastTimeUpdated="2013-05-17 11:05:33Z" PlatformFileId="-5" FileSize="16326" LocalFilePath="Verdana12.xml" />
-  <ContentMetaData Name="Verdana12Font" Type="Image" LastTimeUpdated="2013-05-17 11:05:33Z" PlatformFileId="-6" FileSize="26363" LocalFilePath="Verdana12Font.png" />
-  <ContentMetaData Name="VectorText" Type="Xml" LastTimeUpdated="2013-03-05 18:15:08Z" PlatformFileId="-7" FileSize="7810" LocalFilePath="VectorText.xml" />
-</ContentMetaData>

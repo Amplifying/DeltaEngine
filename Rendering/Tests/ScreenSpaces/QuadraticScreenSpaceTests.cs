@@ -1,7 +1,7 @@
 using System;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms.Mocks;
 using DeltaEngine.Rendering.ScreenSpaces;
 using NUnit.Framework;
 
@@ -15,11 +15,11 @@ namespace DeltaEngine.Rendering.Tests.ScreenSpaces
 			SquareWindowShouldAlwaysReturnRelativeValues(new QuadraticScreenSpace(window));
 		}
 
-		private readonly Window window = new MockResolver().rendering.Window;
+		private readonly Window window = new MockWindow();
 
 		private void SquareWindowShouldAlwaysReturnRelativeValues(ScreenSpace screen)
 		{
-			window.TotalPixelSize = new Size(100, 100);
+			window.ViewportPixelSize = new Size(100, 100);
 			Assert.AreEqual(Point.Zero, screen.TopLeft);
 			Assert.AreEqual(Point.One, screen.BottomRight);
 			Assert.AreEqual(Rectangle.One, screen.Viewport);
@@ -32,7 +32,7 @@ namespace DeltaEngine.Rendering.Tests.ScreenSpaces
 		[Test]
 		public void ToQuadraticWithUnevenSize()
 		{
-			window.TotalPixelSize = new Size(99, 199);
+			window.ViewportPixelSize = new Size(99, 199);
 			var screen = new QuadraticScreenSpace(window);
 			Assert.AreEqual(new Point(0.2512563f, 0), screen.TopLeft);
 			Assert.AreEqual(new Point(0.7487437f, 1), screen.BottomRight);
@@ -42,7 +42,7 @@ namespace DeltaEngine.Rendering.Tests.ScreenSpaces
 		[Test]
 		public void ToQuadraticWithNonSquareWindow()
 		{
-			window.TotalPixelSize = new Size(100, 75);
+			window.ViewportPixelSize = new Size(100, 75);
 			var screen = new QuadraticScreenSpace(window);
 			Assert.AreEqual(0, screen.Left);
 			Assert.AreEqual(0.125f, screen.Top);
@@ -57,7 +57,7 @@ namespace DeltaEngine.Rendering.Tests.ScreenSpaces
 		[Test]
 		public void ToQuadraticWithPortraitWindow()
 		{
-			window.TotalPixelSize = new Size(75, 100);
+			window.ViewportPixelSize = new Size(75, 100);
 			var screen = new QuadraticScreenSpace(window);
 			Assert.AreEqual(new Point(0.125f, 0), screen.TopLeft);
 			Assert.AreEqual(new Point(0.875f, 1), screen.BottomRight);
@@ -70,7 +70,7 @@ namespace DeltaEngine.Rendering.Tests.ScreenSpaces
 		[Test]
 		public void ToPixelWithSquareWindow()
 		{
-			window.TotalPixelSize = new Size(100, 100);
+			window.ViewportPixelSize = new Size(100, 100);
 			var screen = new QuadraticScreenSpace(window);
 			Assert.AreEqual(new Point(100, 100), screen.ToPixelSpace(Point.One));
 			Assert.AreEqual(Point.Zero, screen.ToPixelSpace(Point.Zero));
@@ -80,7 +80,7 @@ namespace DeltaEngine.Rendering.Tests.ScreenSpaces
 		[Test]
 		public void ToPixelWithUnevenSizeFromQuadraticSpace()
 		{
-			window.TotalPixelSize = new Size(99, 199);
+			window.ViewportPixelSize = new Size(99, 199);
 			var screen = new QuadraticScreenSpace(window);
 			Assert.AreEqual(new Point(149, 199), screen.ToPixelSpace(Point.One));
 			Assert.AreEqual(new Point(-50, 0), screen.ToPixelSpace(Point.Zero));
@@ -93,7 +93,7 @@ namespace DeltaEngine.Rendering.Tests.ScreenSpaces
 		[Test]
 		public void ToPixelWithNonSquareWindow()
 		{
-			window.TotalPixelSize = new Size(100, 75);
+			window.ViewportPixelSize = new Size(100, 75);
 			var screen = new QuadraticScreenSpace(window);
 			Assert.AreEqual(new Point(100, 75), screen.ToPixelSpace(new Point(1f, 0.875f)));
 			Assert.AreEqual(Point.Zero, screen.ToPixelSpace(new Point(0, 0.125f)));
@@ -106,7 +106,7 @@ namespace DeltaEngine.Rendering.Tests.ScreenSpaces
 		[Test]
 		public void ToPixelWithPortraitWindow()
 		{
-			window.TotalPixelSize = new Size(75, 100);
+			window.ViewportPixelSize = new Size(75, 100);
 			var screen = new QuadraticScreenSpace(window);
 			Assert.AreEqual(new Point(75, 100), screen.ToPixelSpace(new Point(0.875f, 1f)));
 			Assert.AreEqual(Point.Zero, screen.ToPixelSpace(new Point(0.125f, 0)));
@@ -117,7 +117,7 @@ namespace DeltaEngine.Rendering.Tests.ScreenSpaces
 		[Test]
 		public void GetInnerPoint()
 		{
-			window.TotalPixelSize = new Size(800, 600);
+			window.ViewportPixelSize = new Size(800, 600);
 			ScreenSpace screen = new QuadraticScreenSpace(window);
 			Assert.AreEqual(screen.TopLeft, screen.GetInnerPoint(Point.Zero));
 			Assert.AreEqual(screen.BottomRight, screen.GetInnerPoint(Point.One));
@@ -126,11 +126,11 @@ namespace DeltaEngine.Rendering.Tests.ScreenSpaces
 		[Test]
 		public void TestViewportSizeChanged()
 		{
-			window.TotalPixelSize = new Size(800, 800);
+			window.ViewportPixelSize = new Size(800, 800);
 			var screen = new QuadraticScreenSpace(window);
 			Action checkSize = delegate { Assert.AreEqual(Rectangle.One, screen.Viewport); };
 			screen.ViewportSizeChanged += checkSize;
-			window.TotalPixelSize = new Size(800, 800);
+			window.ViewportPixelSize = new Size(800, 800);
 			screen.ViewportSizeChanged -= checkSize;
 		}
 	}

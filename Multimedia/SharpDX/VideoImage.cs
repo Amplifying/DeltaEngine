@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using DeltaEngine.Graphics.SharpDX;
-using DeltaEngine.Logging;
 using DeltaEngine.Multimedia.AviVideo;
 using DeltaEngine.Platforms;
 using SharpDX;
@@ -13,8 +12,8 @@ namespace DeltaEngine.Multimedia.SharpDX
 	[IgnoreForResolver]
 	public class VideoImage : SharpDXImage
 	{
-		public VideoImage(SharpDXDevice device, Logger log)
-			: base("<VideoTexture>", device, log)
+		public VideoImage(SharpDXDevice device)
+			: base("<VideoTexture>", device)
 		{
 			this.device = device;
 		}

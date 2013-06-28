@@ -1,14 +1,15 @@
 using System;
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Platforms;
+using NUnit.Framework;
 
 namespace GameOfDeath.Tests
 {
-	internal class IntroTests : TestWithAllFrameworks
+	internal class IntroTests : TestWithMocksOrVisually
 	{
-		[VisualTest]
-		public void Show(Type resolver)
+		[Test]
+		public void Show()
 		{
-			Start(resolver, (Intro intro) => {});
+			Resolve<Intro>();
 		}
 	}
 }

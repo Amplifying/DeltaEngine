@@ -3,7 +3,7 @@ namespace DeltaEngine.Editor.Common
 	public enum EditorPluginCategory
 	{
 		GettingStarted,
-		Launcher,
+		Builder,
 		Content,
 		UI,
 		GameLogic,

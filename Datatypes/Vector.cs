@@ -47,7 +47,50 @@ namespace DeltaEngine.Datatypes
 		public static readonly Vector UnitY = new Vector(0, 1, 0);
 		public static readonly Vector UnitZ = new Vector(0, 0, 1);
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector));
-		
+
+		public static float Dot(Vector vector1, Vector vector2)
+		{
+			return vector1.X * vector2.X + vector1.Y * vector2.Y + vector1.Z * vector2.Z;
+		}
+
+		public static Vector Cross(Vector vector1, Vector vector2)
+		{
+			return new Vector(
+				vector1.Y * vector2.Z - vector1.Z * vector2.Y,
+				vector1.Z * vector2.X - vector1.X * vector2.Z,
+				vector1.X * vector2.Y - vector1.Y * vector2.X);
+		}
+
+		public static Vector Normalize(Vector vector)
+		{
+			float distanceSquared = vector.LengthSquared;
+			if (distanceSquared == 0.0f)
+				return vector;
+
+			float distanceInverse = 1.0f / MathExtensions.Sqrt(distanceSquared);
+			return new Vector(
+				vector.X * distanceInverse,
+				vector.Y * distanceInverse,
+				vector.Z * distanceInverse);
+		}
+
+		public float LengthSquared
+		{
+			get { return X * X + Y * Y + Z * Z; }
+		}
+
+		public static float AngleBetweenVectors(Vector vector1, Vector vector2)
+		{
+			float dotProduct = Dot(vector1, vector2);
+			var cosine = dotProduct / (vector1.Length * vector2.Length);
+			return (float)(Math.Acos(cosine)*180.0/Math.PI);
+		}
+
+		public float Length
+		{
+			get { return MathExtensions.Sqrt(X * X + Y * Y + Z * Z); }
+		}
+
 		public static Vector operator +(Vector v1, Vector v2)
 		{
 			return new Vector(v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z);
@@ -123,8 +166,7 @@ namespace DeltaEngine.Datatypes
 
 		public override string ToString()
 		{
-			return "(" + X.ToInvariantString() + ", " + Y.ToInvariantString() + ", " +
-				Z.ToInvariantString() + ")";
+			return X.ToInvariantString() + ", " + Y.ToInvariantString() + ", " + Z.ToInvariantString();
 		}
 	}
 }

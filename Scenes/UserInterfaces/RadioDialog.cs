@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Rendering;
 
 namespace DeltaEngine.Scenes.UserInterfaces
@@ -16,12 +15,12 @@ namespace DeltaEngine.Scenes.UserInterfaces
 		{
 			Add(theme);
 			Add(new List<RadioButton>());
-			Add<ArrangeButtons>();
+			Start<ArrangeButtons>();
 		}
 
-		private class ArrangeButtons : EntityHandler
+		private class ArrangeButtons : Behavior2D
 		{
-			public override void Handle(Entity entity)
+			public override void Handle(Entity2D entity)
 			{
 				var dialog = entity as RadioDialog;
 				var buttons = entity.Get<List<RadioButton>>();

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
+using DeltaEngine.Content.Online;
 using DeltaEngine.Editor.Common;
 
 namespace DeltaEngine.Editor.Mocks
@@ -16,6 +17,7 @@ namespace DeltaEngine.Editor.Mocks
 			ImageList = new List<string>();
 			xmlFile = new ContentMetaDataCreator(this);
 			this.fileSystem = fileSystem;
+			ContentPath = "Content";
 			if (!fileSystem.Directory.Exists(ContentPath))
 				fileSystem.Directory.CreateDirectory(ContentPath);
 		}
@@ -24,6 +26,7 @@ namespace DeltaEngine.Editor.Mocks
 		public List<string> ImageList { get; set; }
 		private readonly ContentMetaDataCreator xmlFile;
 		public readonly IFileSystem fileSystem;
+		public string ContentPath { get; private set; }
 
 		public void AddProject(string projectName)
 		{
@@ -46,8 +49,6 @@ namespace DeltaEngine.Editor.Mocks
 			return ProjectList;
 		}
 
-		public const string ContentPath = "Content";
-
 		public List<string> GetContentNames(string projectName)
 		{
 			ImageList.Clear();
@@ -58,7 +59,7 @@ namespace DeltaEngine.Editor.Mocks
 			xmlFile.SaveImagesToXml(projectName);
 			return ImageList;
 		}
-		
+
 		public void AddContent(string projectName, string contentName, Stream data)
 		{
 			var targetFilePath = Path.Combine(ContentPath, projectName, contentName);
@@ -88,7 +89,8 @@ namespace DeltaEngine.Editor.Mocks
 			return fileSystem.File.OpenRead(fullFilename);
 		}
 
-		public void SaveImagesAsAnimation(List<string> itemList, string animationName, string projectName)
+		public void SaveImagesAsAnimation(List<string> itemList, string animationName,
+			string projectName)
 		{
 			xmlFile.SaveImagesAsAnimation(itemList, animationName, projectName);
 		}

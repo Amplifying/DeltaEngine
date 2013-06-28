@@ -6,8 +6,8 @@ namespace Breakout.Tests
 {
 	public class TestBall : Ball
 	{
-		public TestBall(Paddle paddle, ContentLoader content, InputCommands inputCommands)
-			: base(paddle, content, inputCommands) {}
+		public TestBall(Paddle paddle, InputCommands inputCommands)
+			: base(paddle, inputCommands) {}
 
 		public Point CurrentVelocity
 		{

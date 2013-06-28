@@ -10,8 +10,8 @@ namespace Blobs.Levels
 	/// </summary>
 	public class Level2 : WalledLevel
 	{
-		public Level2(ScreenSpace screen, InputCommands input, ContentLoader content)
-			: base(screen, input, content)
+		public Level2(ScreenSpace screen, InputCommands input)
+			: base(screen, input)
 		{
 			Color = Color.LightBlue;
 		}
@@ -43,29 +43,13 @@ namespace Blobs.Levels
 			AddEnemy(new Point(1.1f, 0.32f), 0.065f);
 		}
 
-		protected override void AddText()
+		protected override void SetText()
 		{
-			//TODO: VectorText
-			//Renderer.Add(
-			//	text1 = new VectorText(vectorData, new Point(-0.2f, 0.0f), 0.05f) { Text = "Level 2" });
-			//Renderer.Add(
-			//	text2 =
-			//		new VectorText(vectorData, new Point(-0.2f, 0.1f), 0.05f)
-			//		{
-			//			Text = "Eat Greens... Get Bigger... Reds turn green."
-			//		});
+			text.IsActive = true;
+			text.Text = "Eat Greens... Get Bigger... Reds turn green";
+			text.SetPosition(new Point(0.2f, 0.1f));
 		}
-
-		//private VectorText text1;
-		//private VectorText text2;
 
 		protected override void SetupEvents() {}
-
-		public override void Dispose()
-		{
-			base.Dispose();
-			//text1.Dispose();
-			//text2.Dispose();
-		}
 	}
 }

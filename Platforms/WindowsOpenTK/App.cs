@@ -1,42 +1,44 @@
 using System;
-using System.Collections.Generic;
 
 namespace DeltaEngine.Platforms
 {
 	/// <summary>
-	/// Provides the easily exchangeable App.Start function for OpenTK applications and visual tests.
+	/// Initializes the OpenTK resolver and the window to get started. To execute the app call Run.
 	/// </summary>
-	public class App
+	public class App : IDisposable
 	{
-		public void Start<AppEntryRunner>(int instancesToCreate = 1)
+		protected App()
 		{
-			resolver.Start<AppEntryRunner>(instancesToCreate);
-			
+			resolver.CreateEntitySystemAndAddAsRunner();
+		}
+
+		internal App(Window windowToRegister)
+		{
+			resolver.RegisterInstance(windowToRegister);
+			resolver.CreateEntitySystemAndAddAsRunner();
 		}
 
 		private readonly OpenTKResolver resolver = new OpenTKResolver();
 
-		public void Start<AppEntryRunner, FirstClassToRegisterAndResolve>(int instancesToCreate = 1)
+		public void Run(Action optionalRunCode = null)
 		{
-			resolver.Start<AppEntryRunner, FirstClassToRegisterAndResolve>(instancesToCreate);
+			resolver.Run(optionalRunCode);
+			Dispose();
 		}
 
-		public void Start<AppEntryRunner, FirstClassToRegisterAndResolve,
-			SecondClassToRegisterAndResolve>(int instancesToCreate = 1)
+		public void Dispose()
 		{
-			resolver.Start<AppEntryRunner, FirstClassToRegisterAndResolve,
-				SecondClassToRegisterAndResolve>(instancesToCreate);
+			resolver.Dispose();
 		}
 
-		public void Start<AppEntryRunner>(List<Type> typesToRegisterAndResolve,
-			int instancesToCreate = 1)
+		public T Resolve<T>()
 		{
-			resolver.Start<AppEntryRunner>(typesToRegisterAndResolve, instancesToCreate);
+			return resolver.Resolve<T>();
 		}
 
-		public void RegisterSingleton<T>()
+		internal void RunFrame()
 		{
-			resolver.RegisterSingleton<T>();
+			resolver.TryRunAllRunnersAndPresenters(null);
 		}
 	}
 }

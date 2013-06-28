@@ -10,7 +10,10 @@ namespace DeltaEngine.Input.Xna
 	/// </summary>
 	public class XnaGamePad : GamePad
 	{
-		public XnaGamePad()
+		public XnaGamePad() : this(GamePadNumber.Any) {}
+
+		public XnaGamePad(GamePadNumber number)
+			: base(number)
 		{
 			states = new State[GamePadButton.A.GetCount()];
 			for (int i = 0; i < states.Length; i++)
@@ -18,15 +21,39 @@ namespace DeltaEngine.Input.Xna
 		}
 		private readonly State[] states;
 
-		public void Run()
+		public override void Run()
 		{
-			XnaInput.GamePadState state = XnaInput.GamePad.GetState(PlayerIndex.One);
-			IsAvailable = state.IsConnected;
+			XnaInput.GamePadState state = XnaInput.GamePad.GetState(GetPlayerIndexFromNumber());
+			isAvailable = state.IsConnected;
 			if (IsAvailable)
 				UpdateValuesFromState(state);
 		}
 
-		public bool IsAvailable { get; private set; }
+		public override bool IsAvailable
+		{
+			get { return isAvailable; }
+		}
+
+		private bool isAvailable;
+
+		private PlayerIndex GetPlayerIndexFromNumber()
+		{
+			if (Number == GamePadNumber.Any)
+				return GetAnyPlayerIndex();
+			if (Number == GamePadNumber.Two)
+				return PlayerIndex.Two;
+			if (Number == GamePadNumber.Three)
+				return PlayerIndex.Three;
+			return Number == GamePadNumber.Four ? PlayerIndex.Four : PlayerIndex.One;
+		}
+
+		private PlayerIndex GetAnyPlayerIndex()
+		{
+			for (int i = 0; i < 4; i++)
+				if (XnaInput.GamePad.GetState((PlayerIndex)i).IsConnected)
+					return (PlayerIndex)i;
+			return PlayerIndex.One;
+		}
 
 		private void UpdateValuesFromState(XnaInput.GamePadState state)
 		{
@@ -85,34 +112,39 @@ namespace DeltaEngine.Input.Xna
 				states[buttonIndex].UpdateOnNativePressing(newState == XnaInput.ButtonState.Pressed);
 		}
 
-		public void Dispose()
+		public override void Dispose()
 		{
-			IsAvailable = false;
+			isAvailable = false;
 		}
 
-		public Point GetLeftThumbStick()
+		public override Point GetLeftThumbStick()
 		{
 			return leftThumbStick;
 		}
 
-		public Point GetRightThumbStick()
+		public override Point GetRightThumbStick()
 		{
 			return rightThumbStick;
 		}
 
-		public float GetLeftTrigger()
+		public override float GetLeftTrigger()
 		{
 			return leftTrigger;
 		}
 
-		public float GetRightTrigger()
+		public override float GetRightTrigger()
 		{
 			return rightTrigger;
 		}
 
-		public State GetButtonState(GamePadButton button)
+		public override State GetButtonState(GamePadButton button)
 		{
 			return states[(int)button];
+		}
+
+		public override void Vibrate(float strength)
+		{
+			XnaInput.GamePad.SetVibration(GetPlayerIndexFromNumber(), strength, strength);
 		}
 	}
 }

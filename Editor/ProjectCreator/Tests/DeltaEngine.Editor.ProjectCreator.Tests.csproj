@@ -69,24 +69,24 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\Game.cs">
+    <Content Include="NewDeltaEngineProject\Game.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Program.cs">
+    <Content Include="NewDeltaEngineProject\Program.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Properties\AssemblyInfo.cs">
+    <Content Include="NewDeltaEngineProject\Properties\AssemblyInfo.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\NewDeltaEngineProject.csproj">
+    <Content Include="NewDeltaEngineProject\NewDeltaEngineProject.csproj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\NewDeltaEngineProjectIcon.ico">
+    <Content Include="NewDeltaEngineProject\NewDeltaEngineProjectIcon.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Content\EmptyGame.zip">
+    <None Include="NewDeltaEngineProject\EmptyGame.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />

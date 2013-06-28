@@ -22,8 +22,8 @@ namespace Blobs.Creatures
 
 		public virtual void Run()
 		{
-			Start.RotateAround(eye.Center, eye.Rotation);
-			End.RotateAround(eye.Center, eye.Rotation);
+			StartPoint.RotateAround(eye.Center, eye.Rotation);
+			EndPoint.RotateAround(eye.Center, eye.Rotation);
 		}
 	}
 }

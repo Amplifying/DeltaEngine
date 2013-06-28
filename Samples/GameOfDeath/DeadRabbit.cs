@@ -13,7 +13,7 @@ namespace GameOfDeath
 		public DeadRabbit(Image image, Rectangle drawArea)
 			: base(image, drawArea)
 		{
-			Add<FinalTransition>().Add(new Transition.Duration(DeadRabbitDuration)).Add(
+			Start<FinalTransition>().Add(new Transition.Duration(DeadRabbitDuration)).Add(
 				new Transition.FadingColor(Color));
 		}
 

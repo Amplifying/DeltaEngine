@@ -13,12 +13,12 @@ namespace Breakout
 	/// </summary>
 	public class Level : IDisposable
 	{
-		public Level(ContentLoader content, Score score)
+		public Level(Score score)
 		{
-			brickImage = content.Load<Image>("Brick");
-			explosionImage = content.Load<Image>("Explosion");
-			explosionSound = content.Load<Sound>("BrickExplosion");
-			lostBallSound = content.Load<Sound>("LostBall");
+			brickImage = ContentLoader.Load<Image>("Brick");
+			explosionImage = ContentLoader.Load<Image>("Explosion");
+			explosionSound = ContentLoader.Load<Sound>("BrickExplosion");
+			lostBallSound = ContentLoader.Load<Sound>("LostBall");
 			this.score = score;
 			Initialize();
 		}
@@ -49,7 +49,11 @@ namespace Breakout
 		{
 			for (int x = 0; x < rows; x++)
 				for (int y = 0; y < columns; y++)
-					bricks[x, y] = new Sprite(brickImage, GetBounds(x, y), GetBrickColor(x, y));
+				{
+					bricks[x, y] = new Sprite(brickImage, GetBounds(x, y));
+					bricks[x, y].Set(GetBrickColor(x, y));
+					bricks[x, y].RenderLayer = 5;
+				}
 		}
 
 		private Rectangle GetBounds(int x, int y)
@@ -148,7 +152,6 @@ namespace Breakout
 		{
 			score.IncreasePoints();
 			brick.Visibility = Visibility.Hide;
-			//brick.IsActive = false;
 			CreateExplosion(collision);
 			explosionSound.Play();
 		}
@@ -159,7 +162,8 @@ namespace Breakout
 			explosion.Add(new Transition.Size(ExplosionSize, 2 * ExplosionSize));
 			explosion.Add(new Transition.FadingColor(Color.White));
 			explosion.Add(new Transition.Duration());
-			explosion.Add<FinalTransition>();
+			explosion.Start<FinalTransition>();
+			explosion.RenderLayer = 6;
 		}
 
 		private static readonly Size ExplosionSize = new Size(0.1f, 0.1f);

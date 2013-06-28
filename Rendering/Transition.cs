@@ -7,22 +7,21 @@ namespace DeltaEngine.Rendering
 	/// <summary>
 	/// Transitions the position, size, color and/or rotation of an Entity2D
 	/// </summary>
-	public class Transition : EntityHandler
+	public class Transition : Behavior2D
 	{
-		public override void Handle(Entity entity)
+		public override void Handle(Entity2D entity)
 		{
-			var entity2D = entity as Entity2D;
-			var duration = entity2D.GetOrCreate<Duration>();
+			var duration = entity.GetOrCreate<Duration>();
 			if (duration.Elapsed >= duration.Value)
 				return;
 
 			var percentage = duration.Elapsed / duration.Value;
-			UpdateEntityColor(entity2D, percentage);
-			UpdateEntityOutlineColor(entity2D, percentage);
-			UpdateEntityPosition(entity2D, percentage);
-			UpdateEntitySize(entity2D, percentage);
-			UpdateEntityRotation(entity2D, percentage);
-			CheckForEndOfTransition(entity2D, duration);
+			UpdateEntityColor(entity, percentage);
+			UpdateEntityOutlineColor(entity, percentage);
+			UpdateEntityPosition(entity, percentage);
+			UpdateEntitySize(entity, percentage);
+			UpdateEntityRotation(entity, percentage);
+			CheckForEndOfTransition(entity, duration);
 		}
 
 		private static void UpdateEntityColor(Entity2D entity, float percentage)
@@ -109,9 +108,9 @@ namespace DeltaEngine.Rendering
 				entity.Remove<Rotation>();
 		}
 
-		public override EntityHandlerPriority Priority
+		public override Priority Priority
 		{
-			get { return EntityHandlerPriority.First; }
+			get { return Priority.First; }
 		}
 
 		/// <summary>

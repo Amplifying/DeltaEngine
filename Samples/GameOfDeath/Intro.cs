@@ -11,9 +11,9 @@ namespace GameOfDeath
 	/// </summary>
 	public class Intro
 	{
-		public Intro(ContentLoader content)
+		public Intro()
 		{
-			var image = content.Load<Image>("Logo");
+			var image = ContentLoader.Load<Image>("Logo");
 			var drawArea = Rectangle.FromCenter(Point.Half,
 				image.PixelSize / Scoreboard.QuadraticFullscreenSize);
 			CreateLogo(image, drawArea);
@@ -30,7 +30,7 @@ namespace GameOfDeath
 
 		private static void FadeOut(Entity2D entity)
 		{
-			entity.Add<FinalTransition>().Add(new Transition.Duration(5.0f)).Add(
+			entity.Start<FinalTransition>().Add(new Transition.Duration(5.0f)).Add(
 				new Transition.FadingColor(entity.Color));
 		}
 	}

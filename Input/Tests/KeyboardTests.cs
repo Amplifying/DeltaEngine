@@ -1,44 +1,36 @@
-using System;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Platforms;
+using DeltaEngine.Platforms.Mocks;
+using DeltaEngine.Rendering.ScreenSpaces;
 using DeltaEngine.Rendering.Shapes;
 using NUnit.Framework;
 
 namespace DeltaEngine.Input.Tests
 {
-	public class KeyboardTests : TestWithAllFrameworks
+	public class KeyboardTests : TestWithMocksOrVisually
 	{
-		[IntegrationTest]
-		public void UpdateKeyboard(Type resolver)
+		[Test]
+		public void GraphicalUnitTest()
 		{
-			Start(resolver, (Keyboard keyboard) =>
-			{
-				keyboard.Run();
-				Assert.True(keyboard.IsAvailable);
-				Assert.AreEqual(keyboard.GetKeyState(Key.B), State.Released);
-				Assert.AreEqual(keyboard.GetKeyState(Key.Enter), State.Released);
-			});
+			Resolve<ScreenSpace>().Window.Title = "Press A to show ellipse";
+			var ellipse = new Ellipse(new Rectangle(0.1f, 0.1f, 0.1f, 0.1f),
+				Color.GetRandomBrightColor());
+			RunCode =
+				() =>
+				{
+					ellipse.Center = Resolve<Keyboard>().GetKeyState(Key.A) == State.Pressed
+						? Point.Half : Point.Zero;
+				};
 		}
 
-		[VisualTest]
-		public void GraphicalUnitTest(Type resolver)
+		[Test]
+		public void UpdateKeyboard()
 		{
-			Ellipse ellipse = null;
-			Keyboard remKeyboard = null;
-
-			Start(resolver, (Keyboard keyboard) =>
-			{
-				remKeyboard = keyboard;
-				ellipse = new Ellipse(new Rectangle(0.1f, 0.1f, 0.1f, 0.1f), Color.GetRandomBrightColor());
-			}, delegate
-			{
-				var position = remKeyboard.GetKeyState(Key.A) == State.Pressed ? Point.Half : Point.Zero;
-				var drawArea = ellipse.DrawArea;
-				drawArea.Left = position.X;
-				drawArea.Top = position.Y;
-				ellipse.DrawArea = drawArea;
-				ellipse.Color = Color.GetRandomBrightColor();
-			});
+			var keyboard = Resolve<Keyboard>();
+			keyboard.Run();
+			Assert.True(keyboard.IsAvailable);
+			Assert.AreEqual(keyboard.GetKeyState(Key.B), State.Released);
+			Assert.AreEqual(keyboard.GetKeyState(Key.Enter), State.Released);
 		}
 	}
 }

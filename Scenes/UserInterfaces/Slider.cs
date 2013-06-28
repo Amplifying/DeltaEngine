@@ -4,6 +4,7 @@ using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Input;
+using DeltaEngine.Rendering;
 using DeltaEngine.Rendering.Sprites;
 
 namespace DeltaEngine.Scenes.UserInterfaces
@@ -14,12 +15,13 @@ namespace DeltaEngine.Scenes.UserInterfaces
 	public class Slider : Sprite
 	{
 		public Slider(Theme theme, Rectangle drawArea)
-			: base(theme.Slider.Image, drawArea, theme.Slider.Color)
+			: base(theme.Slider.Image, drawArea)
 		{
+			Color = theme.Slider.Color;
 			Add(new Values { MinValue = 0, Value = 100, MaxValue = 100 });
 			Add(new Pointer(theme));
 			Add(new Interact.State());
-			Add<Interact, UpdateSlider>();
+			Start<Interact, UpdateSlider>();
 		}
 
 		private class Values
@@ -32,17 +34,18 @@ namespace DeltaEngine.Scenes.UserInterfaces
 		internal class Pointer : Sprite
 		{
 			public Pointer(Theme theme)
-				: base(theme.SliderPointer.Image, theme.SliderPointer.Color)
+				: base(theme.SliderPointer.Image, Rectangle.Zero)
 			{
+				Color = theme.SliderPointer.Color;
 				Add(new Interact.State());
 				Add(theme);
-				Add<Interact, UpdateAppearance>();
+				Start<Interact, UpdateAppearance>();
 			}
 		}
 
-		private class UpdateAppearance : EntityListener
+		private class UpdateAppearance : EventListener2D
 		{
-			public override void ReceiveMessage(Entity entity, object message)
+			public override void ReceiveMessage(Entity2D entity, object message)
 			{
 				if (!interactions.Contains(message.GetType()))
 					return;
@@ -60,15 +63,15 @@ namespace DeltaEngine.Scenes.UserInterfaces
 				entity.Set(appearance.Color);
 			}
 
-			public override EntityHandlerPriority Priority
+			public override Priority Priority
 			{
-				get { return EntityHandlerPriority.High; }
+				get { return Priority.High; }
 			}
 		}
 
-		private class UpdateSlider : EntityHandler
+		private class UpdateSlider : Behavior2D
 		{
-			public override void Handle(Entity entity)
+			public override void Handle(Entity2D entity)
 			{
 				var slider = entity as Slider;
 				var pointer = entity.Get<Pointer>();
@@ -115,9 +118,9 @@ namespace DeltaEngine.Scenes.UserInterfaces
 				pointer.DrawArea = Rectangle.FromCenter(center, size);
 			}
 
-			public override EntityHandlerPriority Priority
+			public override Priority Priority
 			{
-				get { return EntityHandlerPriority.First; }
+				get { return Priority.First; }
 			}
 		}
 

@@ -1,12 +1,21 @@
-﻿using DeltaEngine.Platforms;
+using DeltaEngine.Input;
+using DeltaEngine.Platforms;
 
 namespace FindTheWord
 {
-	public class Program
+	public class Program : App
 	{
+		public Program()
+		{
+			var input = Resolve<InputCommands>();
+			var startupScreen = new StartupScreen(input);
+			var gameScreen = new GameScreen(input);
+			new Game(Resolve<Window>(), startupScreen, gameScreen);
+		}
+
 		public static void Main()
 		{
-			new App().Start<Game>();
+			new Program().Run();
 		}
 	}
 }

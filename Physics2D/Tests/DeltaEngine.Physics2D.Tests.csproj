@@ -59,13 +59,13 @@
       <Project>{8f701b0d-48b6-45cf-85e0-286bd53328ba}</Project>
       <Name>DeltaEngine.Graphics</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Platforms\All\DeltaEngine.Platforms.All.csproj">
-      <Project>{CC714F92-36AA-44E1-AA01-495D9A6588D2}</Project>
-      <Name>DeltaEngine.Platforms.All</Name>
+    <ProjectReference Include="..\..\Platforms\DeltaEngine.Platforms.csproj">
+      <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
+      <Name>DeltaEngine.Platforms</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Platforms\Tests\DeltaEngine.Platforms.Tests.csproj">
-      <Project>{D0AAD622-ED82-40E5-88A9-980EAFC12C16}</Project>
-      <Name>DeltaEngine.Platforms.Tests</Name>
+    <ProjectReference Include="..\..\Platforms\TestWithGLFW\DeltaEngine.TestWithGLFW.csproj">
+      <Project>{9892E4BA-9E69-4033-9B5E-B02561FC9C5E}</Project>
+      <Name>DeltaEngine.TestWithGLFW</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
       <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
@@ -74,10 +74,6 @@
     <ProjectReference Include="..\DeltaEngine.Physics2D.csproj">
       <Project>{dc3aa434-09b9-43ad-8f43-431811fa054d}</Project>
       <Name>DeltaEngine.Physics2D</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Farseer\DeltaEngine.Physics2D.Farseer.csproj">
-      <Project>{C983D137-8B7F-47BE-996E-894A3596DD06}</Project>
-      <Name>DeltaEngine.Physics2D.Farseer</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -1,34 +1,30 @@
-using System;
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
 using DeltaEngine.Input;
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Platforms;
+using DeltaEngine.Platforms.Mocks;
 using DeltaEngine.Rendering.ScreenSpaces;
+using NUnit.Framework;
 
 namespace GameOfDeath.Tests
 {
-	public class RabbitTests : TestWithAllFrameworks
+	public class RabbitTests : TestWithMocksOrVisually
 	{
-		[VisualTest]
-		public void ShowSingleRabbit(Type resolver)
+		[Test]
+		public void ShowSingleRabbit()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				var rabbitImage = content.Load<Image>("Rabbit");
+				var rabbitImage = ContentLoader.Load<Image>("Rabbit");
 				CreateRabbitWith50Health(rabbitImage, Point.Half);
-			});
 		}
 
-		[VisualTest]
-		public void DamageSingleRabbitToHalfHealth(Type resolver)
+		[Test]
+		public void DamageSingleRabbitToHalfHealth()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				var rabbitImage = content.Load<Image>("Rabbit");
+
+			var rabbitImage = ContentLoader.Load<Image>("Rabbit");
 				var rabbit = CreateRabbitWith50Health(rabbitImage, Point.Half);
 				rabbit.DoDamage(25);
-			});
 		}
 
 		private static Rabbit CreateRabbitWith50Health(Image rabbitImage, Point position)
@@ -38,37 +34,30 @@ namespace GameOfDeath.Tests
 			return rabbit;
 		}
 
-		[VisualTest]
-		public void ShowManyRabbits(Type resolver)
+		[Test]
+		public void ShowManyRabbits()
 		{
-			Start(resolver, (ContentLoader content, ScreenSpace screen) =>
-			{
-				var rabbitImage = content.Load<Image>("Rabbit");
-				var viewport = screen.Viewport;
+			var rabbitImage = ContentLoader.Load<Image>("Rabbit");
+				var viewport = Resolve<ScreenSpace>().Viewport;
 				var size = RabbitGrid.CellSize;
 				for (float x = viewport.Left + size.Width / 2; x <= viewport.Right; x += size.Width)
 					for (float y = viewport.Top + size.Height / 2; y <= viewport.Bottom; y += size.Height)
 						CreateRabbitWith50Health(rabbitImage, new Point(x, y));
-			});
 		}
 
-		[VisualTest]
-		public void SpawnDeadRabbitAtMousePosition(Type resolver)
+		[Test]
+		public void SpawnDeadRabbitAtMousePosition()
 		{
-			Start(resolver, (ContentLoader content, InputCommands input) =>
-			{
-				var deadRabbitImage = content.Load<Image>("DeadRabbit");
-				input.Add(MouseButton.Left,
+
+			var deadRabbitImage = ContentLoader.Load<Image>("DeadRabbit");
+				Resolve<InputCommands>().Add(MouseButton.Left,
 					mouse =>
 						new DeadRabbit(deadRabbitImage,
 							Rectangle.FromCenter(mouse.Position,
 								deadRabbitImage.PixelSize / Scoreboard.QuadraticFullscreenSize)));
-				if (mockResolver == null)
-					return;
 
-				mockResolver.input.SetMouseButtonState(MouseButton.Left, State.Releasing);
-				mockResolver.AdvanceTimeAndExecuteRunners(1);
-			});
+				Resolve<MockMouse>().SetButtonState(MouseButton.Left, State.Releasing);
+				resolver.AdvanceTimeAndExecuteRunners(1);
 		}
 	}
 }

@@ -1,96 +1,69 @@
-using System;
 using System.Linq;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Platforms;
+using DeltaEngine.Platforms.Mocks;
 using DeltaEngine.Rendering.Shapes;
 using NUnit.Framework;
 
 namespace DeltaEngine.Input.Tests
 {
-	public class CommandTests : TestWithAllFrameworks
+	public class CommandTests : TestWithMocksOrVisually
 	{
-		[IntegrationTest]
-		public void AddAndRemoveTrigger(Type resolver)
+		[Test]
+		public void AddAndRemoveTrigger()
 		{
-			Start(resolver, (InputCommands input) =>
+			var command = new Command();
+			var trigger = new MouseButtonTrigger(MouseButton.Left, State.Releasing);
+			command.Add(trigger);
+			Assert.AreEqual(1, command.NumberOfAttachedTriggers);
+			command.Remove(trigger);
+			Assert.AreEqual(0, command.NumberOfAttachedTriggers);
+		}
+
+		[Test]
+		public void SimulateMouseMovement()
+		{
+			var command = new Command();
+			Resolve<InputCommands>().Add(command);
+			command.Add(new MouseMovementTrigger());
+			Resolve<MockMouse>().SetMousePositionNextFrame(Point.Half);
+			resolver.AdvanceTimeAndExecuteRunners(0.1f);
+			Resolve<MockMouse>().SetMousePositionNextFrame(Point.One);
+			resolver.AdvanceTimeAndExecuteRunners(0.1f);
+			Assert.IsTrue(command.TriggerFired);
+		}
+
+		[Test]
+		public void SimulateTouch()
+		{
+			var command = new Command();
+			Resolve<InputCommands>().Add(command);
+			command.Add(new TouchPressTrigger(State.Pressed));
+			MockTouch.SetTouchState(0, State.Pressed, Point.Half);
+			resolver.AdvanceTimeAndExecuteRunners(0.1f);
+			Assert.IsTrue(command.TriggerFired);
+		}
+
+		[Test]
+		public void SimulateKeyPress()
+		{
+			SimulateKeyOrMousePress(Resolve<InputCommands>(), true);
+		}
+
+		[Test]
+		public void SimulateGamePad()
+		{
+			var command = new Command();
+			Resolve<InputCommands>().Add(command);
+			command.Add(new GamePadButtonTrigger(GamePadButton.A, State.Pressed));
+			Resolve<MockGamePad>().SetGamePadState(GamePadButton.A, State.Pressed);
+			resolver.AdvanceTimeAndExecuteRunners(0.1f);
+			Assert.IsTrue(command.TriggerFired);
+			foreach (var buttonTrigger in command.GetTriggers().Cast<GamePadButtonTrigger>())
 			{
-				var command = new Command();
-				var trigger = new MouseButtonTrigger(MouseButton.Left, State.Releasing);
-				command.Add(trigger);
-				Assert.AreEqual(1, command.NumberOfAttachedTriggers);
-				command.Remove(trigger);
-				Assert.AreEqual(0, command.NumberOfAttachedTriggers);
-			});
-		}
-
-		[IntegrationTest]
-		public void SimulateMouseClick(Type resolver)
-		{
-			Start(resolver, (InputCommands input) => { SimulateKeyOrMousePress(input, false); });
-		}
-
-		[IntegrationTest]
-		public void SimulateMouseMovement(Type resolver)
-		{
-			Start(resolver, (InputCommands input) =>
-			{
-				var command = new Command();
-				input.Add(command);
-				command.Add(new MouseMovementTrigger());
-				if (mockResolver != null)
-				{
-					mockResolver.input.SetMousePosition(Point.Half);
-					mockResolver.AdvanceTimeAndExecuteRunners(0.1f);
-					mockResolver.input.SetMousePosition(Point.One);
-					mockResolver.AdvanceTimeAndExecuteRunners(0.1f);
-					Assert.IsTrue(command.TriggerFired);
-				}
-			});
-		}
-
-		[IntegrationTest]
-		public void SimulateTouch(Type resolver)
-		{
-			Start(resolver, (InputCommands input) =>
-			{
-				var command = new Command();
-				input.Add(command);
-				command.Add(new TouchPressTrigger(State.Pressed));
-				if (mockResolver != null)
-				{
-					mockResolver.input.SetTouchState(0, State.Pressed, Point.Half);
-					mockResolver.AdvanceTimeAndExecuteRunners(0.1f);
-					Assert.IsTrue(command.TriggerFired);
-				}
-			});
-		}
-
-		[IntegrationTest]
-		public void SimulateKeyPress(Type resolver)
-		{
-			Start(resolver, (InputCommands input) => SimulateKeyOrMousePress(input, true));
-		}
-
-		[IntegrationTest]
-		public void SimulateGamePad(Type resolver)
-		{
-			Start(resolver, (InputCommands input) =>
-			{
-				var command = new Command();
-				input.Add(command);
-				command.Add(new GamePadButtonTrigger(GamePadButton.A, State.Pressed));
-				if (mockResolver != null)
-				{
-					mockResolver.input.SetGamePadState(GamePadButton.A, State.Pressed);
-					mockResolver.AdvanceTimeAndExecuteRunners(0.1f);
-					Assert.IsTrue(command.TriggerFired);
-					foreach (var buttonTrigger in command.GetTriggers().Cast<GamePadButtonTrigger>())
-					{
-						Assert.AreEqual(GamePadButton.A, buttonTrigger.Button);
-						Assert.AreEqual(State.Pressed, buttonTrigger.State);
-					}
-				}
-			});
+				Assert.AreEqual(GamePadButton.A, buttonTrigger.Button);
+				Assert.AreEqual(State.Pressed, buttonTrigger.State);
+			}
 		}
 
 		private void SimulateKeyOrMousePress(InputCommands input, bool key)
@@ -99,17 +72,13 @@ namespace DeltaEngine.Input.Tests
 			InputIsKeyOrMouse(input, key, command);
 			bool triggered = false;
 			command.Attach(trigger => triggered = true);
-			if (mockResolver != null)
-			{
-				if (key)
-					mockResolver.input.SetKeyboardState(Key.A, State.Pressed);
-				else
-					mockResolver.input.SetMouseButtonState(MouseButton.Left, State.Releasing);
-
-				mockResolver.AdvanceTimeAndExecuteRunners(0.1f);
-				Assert.IsTrue(triggered);
-				CheckTriggers(command, key);
-			}
+			if (key)
+				Resolve<MockKeyboard>().SetKeyboardState(Key.A, State.Pressed);
+			else
+				Resolve<MockMouse>().SetMouseButtonStateNextFrame(MouseButton.Left, State.Releasing);
+			resolver.AdvanceTimeAndExecuteRunners(0.1f);
+			Assert.IsTrue(triggered);
+			CheckTriggers(command, key);
 		}
 
 		private static void InputIsKeyOrMouse(InputCommands input, bool key, Command command)
@@ -137,39 +106,32 @@ namespace DeltaEngine.Input.Tests
 				}
 		}
 
-		[IntegrationTest]
-		public void Run(Type resolver)
+		[Test]
+		public void Run()
 		{
-			Start(resolver, (InputCommands input) =>
-			{
-				var command = new Command();
-				command.Add(new KeyTrigger(Key.Y, State.Releasing));
-				command.Run(input);
-			});
+			var command = new Command();
+			command.Add(new KeyTrigger(Key.Y, State.Releasing));
+			command.Run(Resolve<InputCommands>());
 		}
 
-		[IntegrationTest]
-		public void ConditionMatched(Type resolver)
+		[Test]
+		public void ConditionMatched()
 		{
-			Start(resolver, (InputCommands input) =>
-			{
-				var command = new Command();
-				command.Add(new KeyTrigger(Key.Y, State.Released));
-				command.Run(input);
-			});
+			var command = new Command();
+			command.Add(new KeyTrigger(Key.Y, State.Released));
+			command.Run(Resolve<InputCommands>());
 		}
 
-		[VisualTest]
-		public void GraphicalUnitTest(Type resolver)
+		[Test]
+		public void GraphicalUnitTest()
 		{
-			Ellipse ellipse = null;
 			var currentPosition = new Point(0.1f, 0.1f);
-			Start(resolver, (InputCommands input) =>
-			{
-				ellipse = new Ellipse(new Rectangle(Point.Zero, new Size(0.1f, 0.1f)), Color.Red);
-				input.Add(Key.A, State.Pressing, key => currentPosition = new Point(0.6f, 0.5f));
-				input.Add(Key.A, State.Released, key => currentPosition = new Point(0.1f, 0.1f));
-			}, () => ellipse.Center = currentPosition);
+			var ellipse = new Ellipse(new Rectangle(Point.Zero, new Size(0.1f, 0.1f)), Color.Red);
+			Resolve<InputCommands>().Add(Key.A, State.Pressing,
+				key => currentPosition = new Point(0.6f, 0.5f));
+			Resolve<InputCommands>().Add(Key.A, State.Released,
+				key => currentPosition = new Point(0.1f, 0.1f));
+			RunCode = () => ellipse.Center = currentPosition;
 		}
 	}
 }

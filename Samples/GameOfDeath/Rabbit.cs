@@ -1,5 +1,4 @@
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
 using DeltaEngine.Rendering;
 using DeltaEngine.Rendering.Shapes;
@@ -9,15 +8,15 @@ namespace GameOfDeath
 	/// <summary>
 	/// Holds the rabbit sprite and healthbar
 	/// </summary>
-	public class Rabbit : Entity
+	public class Rabbit : Entity2D
 	{
-		public Rabbit(Image image, Point position)
+		public Rabbit(Image image, Point position) :base(new Rectangle(position, image.PixelSize))
 		{
 			CreateRabbitSprite(image, position);
 			CreateRabbitHealthBar();
 			Add(new RabbitHealth());
-			Add<MoveRabbit>();
-			Add<UpdateRabbitHealthBar>();
+			Start<MoveRabbit>();
+			Start<UpdateRabbitHealthBar>();
 		}
 
 		private void CreateRabbitSprite(Image image, Point position)
@@ -28,8 +27,8 @@ namespace GameOfDeath
 
 		private void CreateRabbitHealthBar()
 		{
-			var healthBar = new Rect { Visibility = Visibility.Hide };
-			healthBar.Remove<Polygon.RenderOutline>();
+			var healthBar = new FilledRect(new Rectangle(), Color.Red) { Visibility = Visibility.Hide };
+			healthBar.Stop<Polygon.RenderOutline>();
 			var rabbitHealthBar = healthBar;
 			Add(rabbitHealthBar);
 		}
@@ -85,9 +84,9 @@ namespace GameOfDeath
 			get { return Get<RabbitSprite>(); }
 		}
 
-		public Rect RabbitHealthBar
+		public FilledRect RabbitHealthBar
 		{
-			get { return Get<Rect>(); }
+			get { return Get<FilledRect>(); }
 		}
 	}
 }

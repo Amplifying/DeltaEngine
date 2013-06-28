@@ -162,13 +162,6 @@ namespace DeltaEngine.Datatypes.Tests
 		}
 
 		[Test]
-		public new void ToString()
-		{
-			Assert.AreEqual("(R=10, G=20, B=30, A=40)", new Color(10, 20, 30, 40).ToString());
-			Assert.AreEqual("(R=255, G=255, B=255, A=255)", Color.White.ToString());
-		}
-
-		[Test]
 		public void Lerp()
 		{
 			var color1 = new Color(10, 20, 30, 40);
@@ -224,30 +217,30 @@ namespace DeltaEngine.Datatypes.Tests
 		}
 
 		[Test]
-		public void SaveColor()
+		public void GetHeatmapColor()
 		{
-			byte[] savedBytes = Color.Red.ToByteArray();
-			Assert.AreEqual(4, savedBytes.Length);
-			Assert.AreEqual(255, savedBytes[0]);
-			Assert.AreEqual(0, savedBytes[1]);
-			Assert.AreEqual(0, savedBytes[2]);
-			Assert.AreEqual(255, savedBytes[3]);
+			Assert.AreEqual(new Color(0.0f, 0.0f, 0.5f), Color.GetHeatmapColor(0.0f));
+			Assert.AreEqual(new Color(0.0f, 0.0f, 0.899f), Color.GetHeatmapColor(0.1f));
+			Assert.AreEqual(new Color(0.0f, 0.7f, 0.0f), Color.GetHeatmapColor(0.3f));
+			Assert.AreEqual(new Color(0.5f, 1.0f, 0.5f), Color.GetHeatmapColor(0.5f));
+			Assert.AreEqual(new Color(1.0f, 0.7f, 0.0f), Color.GetHeatmapColor(0.7f));
+			Assert.AreEqual(new Color(0.5f, 0.0f, 0.0f), Color.GetHeatmapColor(1.0f));
+			Assert.AreEqual(Color.White, Color.GetHeatmapColor(2.0f));
+		}
+		
+		[Test]
+		public void GetBytesFromColorArray()
+		{
+			var colors = new[] { Color.Black, Color.White, Color.Red };
+			Assert.AreEqual(new byte[] { 0, 0, 0, 255, 255, 255, 255, 255, 255, 0, 0, 255 },
+				Color.GetBytesFromArray(colors));
 		}
 
 		[Test]
-		public void LoadColor()
+		public new void ToString()
 		{
-			var data = Color.Red.SaveToMemoryStream();
-			var reconstructedColor = data.CreateFromMemoryStream();
-			Assert.AreEqual(Color.Red, reconstructedColor);
-		}
-
-		[Test]
-		public void GetBytes()
-		{
-			var colors = new[] { Color.Black, Color.White };
-			Assert.AreEqual(new byte[] { 0, 0, 0, 255, 255, 255, 255, 255 },
-				BinaryDataExtensions.GetBytesFromArray(colors));
+			Assert.AreEqual("(R=10, G=20, B=30, A=40)", new Color(10, 20, 30, 40).ToString());
+			Assert.AreEqual("(R=255, G=255, B=255, A=255)", Color.White.ToString());
 		}
 	}
 }

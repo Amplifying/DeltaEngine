@@ -7,8 +7,8 @@ namespace DeltaNinja
 {
    class Background : Sprite
    {
-      public Background(ContentLoader content, ScreenSpace screen)
-         : base(content.Load<Image>("Background"), screen.Viewport)
+      public Background(ScreenSpace screen)
+         : base(ContentLoader.Load<Image>("Background"), screen.Viewport)
       {
          RenderLayer = (int) GameRenderLayer.Background;
          screen.ViewportSizeChanged += () => DrawArea = screen.Viewport;

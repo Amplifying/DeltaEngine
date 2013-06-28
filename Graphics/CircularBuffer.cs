@@ -1,42 +1,83 @@
+using System;
 using System.Runtime.InteropServices;
 
 namespace DeltaEngine.Graphics
 {
-	public abstract class CircularBuffer
+	/// <summary>
+	/// Provides a way to render lots of small batches inside a much larger vertex buffer.
+	/// </summary>
+	public abstract class CircularBuffer<T> : IDisposable where T : struct
 	{
-		protected CircularBuffer(int bufferSize)
+		protected CircularBuffer(int maxNumberOfElements)
 		{
-			this.bufferSize = bufferSize;
-			currentDataSize = 0;
-			Offset = 0;
+			MaxNumberOfElements = maxNumberOfElements;
+			elementSize = Marshal.SizeOf(typeof(T));
+			Initialize();
 		}
 
-		protected int bufferSize;
-		protected int currentDataSize;
+		public int MaxNumberOfElements { get; private set; }
+		protected readonly int elementSize;
 
+		private void Initialize()
+		{
+			bufferSizeInBytes = MaxNumberOfElements * elementSize;
+			lastDataSize = 0;
+			Offset = 0;
+			if (IsCreated)
+			{
+				Dispose();
+				Create();
+			}
+		}
+
+		protected int bufferSizeInBytes;
+		protected int lastDataSize;
+
+		public int Offset { get; private set; }
 		public bool IsCreated { get; protected set; }
-		public int Offset { get; protected set; }
 
 		public abstract void Create();
 		public abstract void Dispose();
 
-		public void SetVertexData<T>(T[] vertices) where T : struct
+		public bool IsIndexBuffer
 		{
-			var dataSizeInBytes = vertices.Length * Marshal.SizeOf(typeof(T));
-			UpdateOffset(dataSizeInBytes);
-			SetNativeVertexData(vertices, dataSizeInBytes);
+			get
+			{
+				return typeof(T) == typeof(short) || typeof(T) == typeof(ushort) ||
+					typeof(T) == typeof(int) || typeof(T) == typeof(uint);
+			}
 		}
 
-		protected void UpdateOffset(int newDataSize)
+		public void SetData(T[] elements)
 		{
-			Offset += currentDataSize;
-			if ((Offset + newDataSize) >= bufferSize)
+			var dataSizeInBytes = elements.Length * elementSize;
+			CheckDataSize(elements.Length);
+			UpdateOffset(dataSizeInBytes);
+			SetNativeData(elements, dataSizeInBytes);
+		}
+
+		private void CheckDataSize(int numberOfElements)
+		{
+			bool sizeChanged = false;
+			while (numberOfElements > MaxNumberOfElements)
+			{
+				MaxNumberOfElements *= 2;
+				sizeChanged = true;
+			}
+
+			if (sizeChanged)
+				Initialize();
+		}
+
+		private void UpdateOffset(int newDataSize)
+		{
+			Offset += lastDataSize;
+			if (Offset + newDataSize >= MaxNumberOfElements)
 				Offset = 0;
 
-			currentDataSize = newDataSize;
+			lastDataSize = newDataSize;
 		}
 
-		protected abstract void SetNativeVertexData<T>(T[] vertices, int dataSizeInBytes)
-			where T: struct;
+		protected abstract void SetNativeData(T[] elements, int dataSizeInBytes);
 	}
 }

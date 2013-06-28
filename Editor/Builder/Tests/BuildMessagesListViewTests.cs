@@ -12,7 +12,7 @@ namespace DeltaEngine.Editor.Builder.Tests
 		[Test, STAThread, Category("Slow")]
 		public void VerifyViewWithMocking()
 		{
-			var listViewModel = CreateListViewModelWithDummyMessages();
+			var listViewModel = CreateViewModelWithDummyMessages();
 			WpfApprovals.Verify(CreateVerifiableWindowFromViewModel(listViewModel));
 		}
 
@@ -22,15 +22,14 @@ namespace DeltaEngine.Editor.Builder.Tests
 			return new Window
 			{
 				Content = new BuildMessagesListView(listViewModel),
-				Width = 640,
+				Width = 800,
 				Height = 480
 			};
 		}
 
-		private static BuildMessagesListViewModel CreateListViewModelWithDummyMessages()
+		private static BuildMessagesListViewModel CreateViewModelWithDummyMessages()
 		{
 			var listViewModel = new BuildMessagesListViewModel();
-			listViewModel.AddMessage("A simple build info message".AsBuildTestInfoMessage());
 			listViewModel.AddMessage("A simple build warning".AsBuildTestWarning());
 			listViewModel.AddMessage("A simple build error".AsBuildTestError());
 			listViewModel.AddMessage("A second simple build error".AsBuildTestError());
@@ -38,11 +37,11 @@ namespace DeltaEngine.Editor.Builder.Tests
 		}
 
 		[Test, STAThread, Ignore]
-		public void ShowViewWithEmptyViewModel()
+		public void ShowViewWithWithDummyMessages()
 		{
-			var listViewModel = CreateListViewModelWithDummyMessages();
+			var listViewModel = CreateViewModelWithDummyMessages();
 			var window = CreateVerifiableWindowFromViewModel(listViewModel);
-			listViewModel.AddMessage("This messages was added later".AsBuildTestInfoMessage());
+			listViewModel.AddMessage("This error was added later".AsBuildTestError());
 			window.ShowDialog();
 		}
 	}

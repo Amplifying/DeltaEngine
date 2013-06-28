@@ -1,19 +1,16 @@
 using System;
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Platforms;
 using NUnit.Framework;
 
 namespace DeltaEngine.Input.Tests
 {
-	public class GamePadButtonTriggerTests : TestWithAllFrameworks
+	public class GamePadButtonTriggerTests : TestWithMocksOrVisually
 	{
-		[IntegrationTest]
-		public void ConditionMatched(Type resolver)
+		[Test]
+		public void ConditionMatched()
 		{
-			Start(resolver, (InputCommands input) =>
-			{
-				var trigger = new GamePadButtonTrigger(GamePadButton.Y, State.Pressing);
-				Assert.False(trigger.ConditionMatched(input));
-			});
+			var trigger = new GamePadButtonTrigger(GamePadButton.Y, State.Pressing);
+			Assert.False(trigger.ConditionMatched(Input));
 		}
 	}
 }

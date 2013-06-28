@@ -10,9 +10,12 @@ namespace DeltaEngine.Input.SharpDX
 	/// </summary>
 	public class SharpDXGamePad : GamePad
 	{
-		public SharpDXGamePad()
+		public SharpDXGamePad() : this(GamePadNumber.Any) {}
+
+		public SharpDXGamePad(GamePadNumber number)
+			: base(number)
 		{
-			controller = new XInput.Controller(XInput.UserIndex.One);
+			controller = new XInput.Controller(GetUserIndexFromNumber());
 			states = new State[GamePadButton.A.GetCount()];
 			for (int i = 0; i < states.Length; i++)
 				states[i] = State.Released;
@@ -21,17 +24,35 @@ namespace DeltaEngine.Input.SharpDX
 		private XInput.Controller controller;
 		private readonly State[] states;
 
-		public void Dispose()
+		private XInput.UserIndex GetUserIndexFromNumber()
+		{
+			if (Number == GamePadNumber.Any)
+				return XInput.UserIndex.Any;
+			if (Number == GamePadNumber.Two)
+				return XInput.UserIndex.Two;
+			if (Number == GamePadNumber.Three)
+				return XInput.UserIndex.Three;
+			return Number == GamePadNumber.Four ? XInput.UserIndex.Four : XInput.UserIndex.One;
+		}
+
+		public override void Dispose()
 		{
 			controller = null;
 		}
 
-		public bool IsAvailable
+		public override bool IsAvailable
 		{
 			get { return controller.IsConnected; }
 		}
 
-		public void Run()
+		public override void Vibrate(float strength)
+		{
+			short motorSpeed = (short)(strength * short.MaxValue);
+			controller.SetVibration(new XInput.Vibration
+			{ LeftMotorSpeed = motorSpeed, RightMotorSpeed = motorSpeed });
+		}
+
+		public override void Run()
 		{
 			XInput.State state = controller.GetState();
 			leftThumbStick.X = NormalizeShortToFloat(state.Gamepad.LeftThumbX);
@@ -147,7 +168,8 @@ namespace DeltaEngine.Input.SharpDX
 
 		private static bool IsPadShoulder(XInputGamePadButton button)
 		{
-			return button == XInputGamePadButton.LeftShoulder || button == XInputGamePadButton.RightShoulder;
+			return button == XInputGamePadButton.LeftShoulder ||
+				button == XInputGamePadButton.RightShoulder;
 		}
 
 		private static GamePadButton ConvertShoulders(XInputGamePadButton button)
@@ -176,27 +198,27 @@ namespace DeltaEngine.Input.SharpDX
 			return (bitfield & (int)button) != 0;
 		}
 
-		public Point GetLeftThumbStick()
+		public override Point GetLeftThumbStick()
 		{
 			return leftThumbStick;
 		}
 
-		public Point GetRightThumbStick()
+		public override Point GetRightThumbStick()
 		{
 			return rightThumbStick;
 		}
 
-		public float GetLeftTrigger()
+		public override float GetLeftTrigger()
 		{
 			return leftTrigger;
 		}
 
-		public float GetRightTrigger()
+		public override float GetRightTrigger()
 		{
 			return rightTrigger;
 		}
 
-		public State GetButtonState(GamePadButton button)
+		public override State GetButtonState(GamePadButton button)
 		{
 			return states[(int)button];
 		}

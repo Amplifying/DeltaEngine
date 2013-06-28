@@ -14,6 +14,8 @@ namespace DeltaEngine.Multimedia
 			runThread = ThreadExtensions.Start(ThreadRun);
 		}
 
+		public abstract bool IsInitialized { get; }
+
 		private readonly Thread runThread;
 
 		private void ThreadRun()

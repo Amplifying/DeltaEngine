@@ -1,5 +1,6 @@
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
 using NUnit.Framework;
 
 namespace DeltaEngine.Rendering.Tests
@@ -9,7 +10,7 @@ namespace DeltaEngine.Rendering.Tests
 		[Test]
 		public void CreateEntity2D()
 		{
-			var entity = new Entity2D(DoubleSizedRectangle, Color.Green, 15);
+			var entity = new Entity2D(DoubleSizedRectangle) { Color = Color.Green, Rotation = 15 };
 			Assert.AreEqual(DoubleSizedRectangle, entity.DrawArea);
 			Assert.AreEqual(Color.Green, entity.Color);
 			Assert.AreEqual(15, entity.Rotation);
@@ -26,16 +27,17 @@ namespace DeltaEngine.Rendering.Tests
 			var entity = new Entity2D(Rectangle.Zero);
 			Assert.AreEqual(Rectangle.Zero, entity.DrawArea);
 			Assert.AreEqual(Color.White, entity.Color);
-			Assert.AreEqual(4, entity.NumberOfComponents);
+			Assert.AreEqual(1, entity.NumberOfComponents);
 			entity.Add(Size.Zero);
-			Assert.AreEqual(5, entity.NumberOfComponents);
+			Assert.AreEqual(2, entity.NumberOfComponents);
 		}
 
 		[Test]
 		public void SetDrawAreaProperties()
 		{
-			var entity = new Entity2D(Rectangle.One, Color.Blue)
+			var entity = new Entity2D(Rectangle.One)
 			{
+				Color = Color.Blue,
 				Center = Point.One,
 				Size = new Size(2)
 			};
@@ -50,7 +52,7 @@ namespace DeltaEngine.Rendering.Tests
 		[Test]
 		public void SetColorRotationAndRenderLayerProperties()
 		{
-			var entity = new Entity2D(Rectangle.One, Color.Blue);
+			var entity = new Entity2D(Rectangle.One) { Color = Color.Blue };
 			entity.Color = Color.Teal;
 			Assert.AreEqual(Color.Teal, entity.Color);
 			entity.AlphaValue = 0.5f;
@@ -66,7 +68,7 @@ namespace DeltaEngine.Rendering.Tests
 		[Test]
 		public void SetAndGetEntity2DComponentsDirectly()
 		{
-			var entity = new Entity2D(DoubleSizedRectangle, Color.Red);
+			var entity = new Entity2D(DoubleSizedRectangle) { Color = Color.Red };
 			entity.Set(Color.Green);
 			Assert.AreEqual(Color.Green, entity.Get<Color>());
 			entity.Set(Rectangle.One);
@@ -83,10 +85,9 @@ namespace DeltaEngine.Rendering.Tests
 			var entity = new Entity2D(Rectangle.Zero);
 			var data = entity.SaveToMemoryStream();
 			byte[] savedBytes = data.ToArray();
-			Assert.AreEqual(94, savedBytes.Length);
+			Assert.AreEqual(67, savedBytes.Length);
 			var loadedEntity = data.CreateFromMemoryStream() as Entity2D;
-			Assert.AreEqual(entity.Tag, loadedEntity.Tag);
-			Assert.AreEqual(4, loadedEntity.NumberOfComponents);
+			Assert.AreEqual(1, loadedEntity.NumberOfComponents);
 			Assert.IsTrue(loadedEntity.IsActive);
 		}
 	}

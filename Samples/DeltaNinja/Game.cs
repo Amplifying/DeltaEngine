@@ -1,33 +1,34 @@
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
+using DeltaEngine.Graphics;
 using DeltaEngine.Input;
 using DeltaEngine.Platforms;
 using DeltaEngine.Rendering.ScreenSpaces;
-using System;
+using DeltaEngine.Rendering.Sprites;
+using DeltaNinja.Entities;
+using DeltaNinja.Pages;
 
 namespace DeltaNinja
 {
 	class Game : Entity
 	{
-		public Game(ContentLoader content, Window window, ScreenSpace screen, InputCommands input)
+		public Game(ScreenSpace screen, InputCommands input)
 		{
-			this.content = content;
-			this.window = window;
 			this.screen = screen;
+			window = screen.Window;
 			this.input = input;
 
 			window.Title = "Delta Ninja - A Delta Engine sample";
-			window.TotalPixelSize = new Size(1280, 720);
+			window.ViewportPixelSize = new Size(1280, 720);
 
 			InitBackground();
 			InitInput();
 			InitPages();
-
+						
 			home.Show();
 		}
 
-		private readonly ContentLoader content;
 		private readonly Window window;
 		private readonly ScreenSpace screen;
 		private readonly InputCommands input;
@@ -35,56 +36,58 @@ namespace DeltaNinja
 		private HomePage home;
 		private Match playing;
 		private GameOverPage gameOver;
-
+		
 		private void InitBackground()
 		{
-			new Background(content, screen);
+			new Background(screen);
 		}
 
 		private void InitInput()
 		{
-			input.Add(Key.Escape, x => Exit());
-			input.Add(Key.F, x => SwitchWindowMode());
+			// input.Add(Key.Escape, m => { Exit(); });
+			
+			// TODO: seems not work properly
+			// input.Add(Key.F, x => SwitchWindowMode());			
 		}
 
 		private void InitPages()
 		{
-			home = new HomePage(content, screen, input);
+			home = new HomePage(screen, input);			
 			home.ButtonClicked += OnButtonClicked;
 
-			this.playing = new Match(content, screen, input, new NumberFactory(content), new LogoFactory(content, screen));
+			this.playing = new Match(screen, input, new NumberFactory(), new LogoFactory(screen));
 			playing.GameEnded += (sender, e) => ShowGameOver(e);
 
-			gameOver = new GameOverPage(content, screen, input);
+			gameOver = new GameOverPage(screen, input);
 			gameOver.ButtonClicked += OnButtonClicked;
 		}
 
-		protected void OnButtonClicked(object sender, EventArgs e)
+		protected void OnButtonClicked(MenuButton code)
 		{
-			switch (((Button)sender).Code)
+			switch (code)
 			{
-				case (MenuButton.Home):
+				case MenuButton.Home:
 					ShowHome();
 					break;
 
-				case (MenuButton.NewGame):
-				case (MenuButton.Retry):
+				case MenuButton.NewGame:
+				case MenuButton.Retry:
 					StartNewGame();
 					break;
 
-				case (MenuButton.Exit):
+				case MenuButton.Exit:
 					Exit();
 					break;
 			}
 		}
 
-		private void SwitchWindowMode()
-		{
-			if (window.IsFullscreen)
-				window.SetWindowed();
-			else
-				window.SetFullscreen(new Size(1920, 1080));
-		}
+		//private void SwitchWindowMode()
+		//{
+		//	if (window.IsFullscreen)
+		//		window.SetWindowed();
+		//	else
+		//		window.SetFullscreen(new Size(1920, 1080));
+		//}
 
 		private void StartNewGame()
 		{
@@ -102,7 +105,10 @@ namespace DeltaNinja
 
 		private void ShowGameOver(GameOverEventArgs e)
 		{
-			gameOver.Show();
+			if (e == null)
+				ShowHome();
+			else
+				gameOver.Show();
 		}
 
 		private void Exit()

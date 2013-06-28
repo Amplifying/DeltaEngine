@@ -7,6 +7,7 @@ using SharpDX.Direct3D11;
 using DxDevice = SharpDX.Direct3D11.Device;
 using DxSwapChain = SharpDX.DXGI.SwapChain;
 using MapFlags = SharpDX.Direct3D11.MapFlags;
+using Matrix = DeltaEngine.Datatypes.Matrix;
 using Resource = SharpDX.Direct3D11.Resource;
 
 namespace DeltaEngine.Graphics.SharpDX
@@ -17,12 +18,10 @@ namespace DeltaEngine.Graphics.SharpDX
 	/// </summary>
 	public class SharpDXDevice : SharpDXStates, Device
 	{
-		public SharpDXDevice(Window window)
+		public SharpDXDevice(Window window, Settings settings)
+			: base(settings)
 		{
 			this.window = window;
-			if (window.Title == "")
-				window.Title = "SharpDX Device";
-
 			DxDevice.CreateWithSwapChain(DriverType.Hardware, CreationFlags,
 				CreateSwapChainDescription(Width, Height, window.Handle), out nativeDevice, out swapChain);
 			window.ViewportSizeChanged += ResetDeviceToNewViewportSize;
@@ -84,6 +83,15 @@ namespace DeltaEngine.Graphics.SharpDX
 			set { backBuffer = value; }
 		}
 
+		public void SetProjectionMatrix(Matrix matrix)
+		{
+			//TODO
+		}
+		public void SetModelViewMatrix(Matrix matrix)
+		{
+			//TODO
+		}
+
 		public void Run()
 		{
 			if (nativeDevice.IsDisposed)
@@ -92,7 +100,8 @@ namespace DeltaEngine.Graphics.SharpDX
 			Context.OutputMerger.SetTargets(backBufferView);
 			Context.Rasterizer.SetViewports(new Viewport(0, 0, Width, Height, 0.0f, 1.0f));
 			if (window.BackgroundColor.A > 0)
-				Context.ClearRenderTargetView(backBufferView, new Color4(window.BackgroundColor.PackedRgba));
+				Context.ClearRenderTargetView(backBufferView,
+					new Color4(window.BackgroundColor.PackedRgba));
 			Context.Rasterizer.State = CullClockwise(nativeDevice);
 		}
 

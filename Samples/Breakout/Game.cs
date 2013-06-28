@@ -5,7 +5,7 @@ namespace Breakout
 	/// <summary>
 	/// Renders the background, ball, level and score; Also handles starting new levels
 	/// </summary>
-	public class Game : Runner
+	public class Game
 	{
 		public Game(BallInLevel ball, Score score)
 		{
@@ -16,19 +16,5 @@ namespace Breakout
 
 		private readonly BallInLevel ball;
 		public Score Score { get; private set; }
-
-		public void Run()
-		{
-			StartNewLevelIfAllBricksAreDestroyed();
-		}
-
-		private void StartNewLevelIfAllBricksAreDestroyed()
-		{
-			if (ball.Level.BricksLeft > 0)
-				return;
-
-			ball.Level.InitializeNextLevel();
-			ball.ResetBall();
-		}
 	}
 }

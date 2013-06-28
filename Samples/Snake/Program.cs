@@ -1,12 +1,19 @@
+using DeltaEngine.Input;
 using DeltaEngine.Platforms;
+using DeltaEngine.Rendering.ScreenSpaces;
 
 namespace Snake
 {
-	internal static class Program
+	internal class Program : App
 	{
+		public Program()
+		{
+			new SnakeGame(Resolve<ScreenSpace>(), Resolve<InputCommands>());
+		}
+
 		public static void Main()
 		{
-			new App().Start<SnakeGame>();
+			new Program().Run();
 		}
 	}
 }

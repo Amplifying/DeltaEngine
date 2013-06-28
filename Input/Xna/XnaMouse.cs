@@ -46,8 +46,7 @@ namespace DeltaEngine.Input.Xna
 
 		private void UpdateValuesFromState(ref MouseState newState)
 		{
-			Position = new Point(newState.X, newState.Y);
-			Position = screen.FromPixelSpace(Position);
+			Position = screen.FromPixelSpace(new Point(newState.X, newState.Y));
 			ScrollWheelValue = newState.ScrollWheelValue;
 			UpdateButtonStates(ref newState);
 		}

@@ -2,6 +2,7 @@ using System;
 using System.Windows;
 using ApprovalTests.Reporters;
 using ApprovalTests.Wpf;
+using DeltaEngine.Editor.Common;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.Builder.Tests
@@ -12,51 +13,45 @@ namespace DeltaEngine.Editor.Builder.Tests
 		[Test, STAThread, Category("Slow")]
 		public void VerifyViewWithMocking()
 		{
-			WpfApprovals.Verify(CreateVerifiableWindowFromViewModel(CreateMockViewModel()));
+			WpfApprovals.Verify(CreateVerifiableWindowFromViewModel(CreateViewModelWithMockService()));
+		}
+
+		private static BuilderViewModel CreateViewModelWithMockService()
+		{
+			var mockService = new BuilderMockService();
+			var viewModel = new BuilderViewModel(mockService);
+			mockService.ReceiveSomeTestMessages();
+			viewModel.AppListViewModel.BuiltApps.Add("My favorite app".AsBuiltApp(PlatformName.Windows));
+			viewModel.AppListViewModel.BuiltApps.Add("My mobile app".AsBuiltApp(PlatformName.Android));
+
+			return viewModel;
 		}
 
 		private static Window CreateVerifiableWindowFromViewModel(BuilderViewModel viewModel)
 		{
-			return new Window { Content = new BuilderView(viewModel), Width = 640, Height = 480 };
+			return new Window { Content = new BuilderView(viewModel), Width = 800, Height = 480 };
 		}
 
-		private static BuilderViewModel CreateMockViewModel()
+		[Test, STAThread, Category("Slow")]
+		public void ShowViewWithMockService()
 		{
-			return new MockBuilderViewModel();
-		}
-
-		[Test, STAThread, Ignore]
-		public void ShowViewWithEmptyViewModel()
-		{
-			var window = CreateVerifiableWindowFromViewModel(CreateEmptyViewModel());
+			var window = CreateVerifiableWindowFromViewModel(CreateViewModelWithMockService());
 			window.ShowDialog();
 		}
 
-		private static BuilderViewModel CreateEmptyViewModel()
-		{
-			return new BuilderViewModel(new MockBuilderService());
-		}
-
-		[Test, STAThread, Ignore]
-		public void ShowViewWithFullyMocking()
-		{
-			var window = CreateVerifiableWindowFromViewModel(CreateMockViewModel());
-			window.ShowDialog();
-		}
-
-		[Test, STAThread, Ignore]
-		public void ShowViewWithMockedModelButRealNetworking()
+		[Test, STAThread, Category("Slow")]
+		public void ShowViewWithRealService()
 		{
 			var viewModel = CreateViewModelWithRealConnection();
 			var window = CreateVerifiableWindowFromViewModel(viewModel);
 			viewModel.SelectedPlatform = viewModel.SupportedPlatforms[0];
-			viewModel.UserProjectPath = "LogoApp.sln";
 			window.ShowDialog();
 		}
 
 		private static BuilderViewModel CreateViewModelWithRealConnection()
 		{
-			return new BuilderViewModel(new BuildServiceConnectionViaLAN());
+			var editorModel = new EditorViewModel(null);
+			return new BuilderViewModel(editorModel.Service);
 		}
 	}
 }

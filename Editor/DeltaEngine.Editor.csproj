@@ -54,6 +54,7 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsFormsIntegration" />
     <Reference Include="WPFLocalizeExtension">
       <HintPath>packages\WpfLocalizeExtension.2.1.3\lib\net35\WPFLocalizeExtension.dll</HintPath>
     </Reference>
@@ -66,6 +67,10 @@
       <Project>{A8D386EA-D376-46EA-A721-2BA51426A721}</Project>
       <Name>DeltaEngine.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Datatypes\DeltaEngine.Datatypes.csproj">
+      <Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
+      <Name>DeltaEngine.Datatypes</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Networking\DeltaEngine.Networking.csproj">
       <Project>{5231706E-2955-43BF-9C06-291E12AF5C5C}</Project>
       <Name>DeltaEngine.Networking</Name>
@@ -73,6 +78,18 @@
     <ProjectReference Include="..\Networking\Sockets\DeltaEngine.Networking.Sockets.csproj">
       <Project>{9E085AB9-B4DE-4815-BD90-D975C75DFE94}</Project>
       <Name>DeltaEngine.Networking.Sockets</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Platforms\DeltaEngine.Platforms.csproj">
+      <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
+      <Name>DeltaEngine.Platforms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Platforms\WindowsOpenTK\DeltaEngine.WindowsOpenTK.csproj">
+      <Project>{cc943ae0-a1cc-4788-ac9b-01db3a0ebcd6}</Project>
+      <Name>DeltaEngine.WindowsOpenTK</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Platforms\Windows\DeltaEngine.Platforms.Windows.csproj">
+      <Project>{BD8A80E2-A313-437E-B0EF-FC0B066280A7}</Project>
+      <Name>DeltaEngine.Platforms.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="Common\DeltaEngine.Editor.Common.csproj">
       <Project>{FC0E9FDC-68E0-405E-BFC7-1F3523BD3EA7}</Project>
@@ -82,6 +99,10 @@
       <Project>{2A38417D-2378-41F8-BCC6-A65E1894835A}</Project>
       <Name>DeltaEngine.Editor.Mocks</Name>
     </ProjectReference>
+    <ProjectReference Include="Viewport\DeltaEngine.Editor.Viewport.csproj">
+      <Project>{f24c3242-aa60-4ddb-b4e0-d9583913daad}</Project>
+      <Name>DeltaEngine.Editor.Viewport</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -89,10 +110,6 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="EditorPluginEntryView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="EditorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -120,7 +137,7 @@
     <Resource Include="Icons\Trigger.png" />
     <Resource Include="Icons\Xml.png" />
     <Resource Include="Icons\YourProjects.png" />
-    <Resource Include="Icons\Launcher.png" />
+    <Resource Include="Icons\Builder.png" />
     <Resource Include="Icons\Emulator.png" />
     <Resource Include="Icons\UI.png" />
     <Resource Include="Icons\Forum.png" />
@@ -132,7 +149,6 @@
     <Resource Include="Images\ExitButton.png" />
     <Resource Include="Images\MaximizeWindowButton.png" />
     <Resource Include="Images\MinimizeWindowButton.png" />
-    <Resource Include="Images\User.jpg" />
     <Resource Include="Images\ExitButtonHover.png" />
     <Resource Include="Images\MaximizeWindowButtonHover.png" />
     <Resource Include="Images\MinimizeWindowButtonHover.png" />
@@ -156,10 +172,7 @@
     <Compile Include="EditorPluginEntryView.xaml.cs">
       <DependentUpon>EditorPluginEntryView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="EditorWindow.xaml.cs">
-      <DependentUpon>EditorWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="EditorWindowModel.cs" />
+    <Compile Include="EditorViewModel.cs" />
     <Compile Include="Helpers\MaximizerForEmptyWindows.cs" />
     <Compile Include="Helpers\NativeScreens.cs" />
   </ItemGroup>

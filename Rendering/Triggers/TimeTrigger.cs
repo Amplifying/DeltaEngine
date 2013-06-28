@@ -1,21 +1,20 @@
 using DeltaEngine.Core;
-using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 
 namespace DeltaEngine.Rendering.Triggers
 {
-	internal class TimeTrigger : EntityHandler
+	internal class TimeTrigger : Behavior2D
 	{
-		public override void Handle(Entity entity)
+		public override void Handle(Entity2D entity)
 		{
 			var data = entity.Get<TimeTriggerData>();
 			if (Time.Current.CheckEvery(data.Interval))
-				entity.Set(entity.Get<Color>() == data.FirstColor ? data.SecondColor : data.FirstColor);
+				entity.Color = entity.Color == data.FirstColor ? data.SecondColor : data.FirstColor;
 		}
 
-		public override EntityHandlerPriority Priority
+		public override Priority Priority
 		{
-			get { return EntityHandlerPriority.High; }
+			get { return Priority.High; }
 		}
 	}
 }

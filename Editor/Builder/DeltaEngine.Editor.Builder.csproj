@@ -40,14 +40,8 @@
     <Reference Include="GalaSoft.MvvmLight.WPF4">
       <HintPath>..\packages\MvvmLightLibs.4.1.27.0\lib\net40\GalaSoft.MvvmLight.WPF4.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Practices.ServiceLocation">
-      <HintPath>..\packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.IO.Abstractions">
-      <HintPath>..\packages\System.IO.Abstractions.1.4.0.64\lib\net35\System.IO.Abstractions.dll</HintPath>
-    </Reference>
     <Reference Include="System.Runtime">
       <HintPath>C:\Windows\Microsoft.NET\Framework\v4.0.30319\System.Runtime.dll</HintPath>
     </Reference>
@@ -90,10 +84,6 @@
       <Project>{FC0E9FDC-68E0-405E-BFC7-1F3523BD3EA7}</Project>
       <Name>DeltaEngine.Editor.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Mocks\DeltaEngine.Editor.Mocks.csproj">
-      <Project>{2A38417D-2378-41F8-BCC6-A65E1894835A}</Project>
-      <Name>DeltaEngine.Editor.Mocks</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -107,6 +97,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="BuiltAppsListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="BuilderInfoListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\BuilderIcon.png" />
@@ -114,6 +112,7 @@
     <Resource Include="Images\BuildInfoIcon.png" />
     <Resource Include="Images\BuildWarningIcon.png" />
     <Resource Include="Images\BuilderIcon.ico" />
+    <Resource Include="Images\StartBuildIcon.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -128,14 +127,24 @@
     <Compile Include="BuildMessageType.cs" />
     <Compile Include="BuildRequest.cs" />
     <Compile Include="BuildResult.cs" />
-    <Compile Include="BuildServiceConnection.cs" />
-    <Compile Include="BuildServiceConnectionViaLAN.cs" />
+    <Compile Include="BuiltApp.cs" />
+    <Compile Include="BuiltAppsListView.xaml.cs">
+      <DependentUpon>BuiltAppsListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="BuiltAppsListViewModel.cs" />
     <Compile Include="CodeData.cs" />
+    <Compile Include="BuilderInfoListView.xaml.cs">
+      <DependentUpon>BuilderInfoListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CodePacker.cs" />
+    <Compile Include="CodeUnpacker.cs" />
+    <Compile Include="SolutionFileLoader.cs" />
     <Compile Include="BuilderView.xaml.cs">
       <DependentUpon>BuilderView.xaml</DependentUpon>
     </Compile>
     <Compile Include="BuilderViewModel.cs" />
     <Compile Include="ProcessRunner.cs" />
+    <Compile Include="ProjectEntry.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

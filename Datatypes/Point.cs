@@ -18,7 +18,7 @@ namespace DeltaEngine.Datatypes
 			X = x;
 			Y = y;
 		}
-
+		
 		public Point(string pointAsString)
 			: this()
 		{
@@ -83,11 +83,13 @@ namespace DeltaEngine.Datatypes
 			return new Point(-p.X, -p.Y);
 		}
 
+		[Pure]
 		public bool Equals(Point other)
 		{
 			return X.IsNearlyEqual(other.X) && Y.IsNearlyEqual(other.Y);
 		}
 
+		[Pure]
 		public override bool Equals(object other)
 		{
 			return other is Point ? Equals((Point)other) : base.Equals(other);
@@ -98,14 +100,28 @@ namespace DeltaEngine.Datatypes
 			return new Point(s.Width, s.Height);
 		}
 
+		[Pure]
 		public override int GetHashCode()
 		{
 			return X.GetHashCode() ^ Y.GetHashCode();
 		}
 
+		[Pure]
 		public override string ToString()
 		{
-			return "(" + X.ToInvariantString() + ", " + Y.ToInvariantString() + ")";
+			return X.ToInvariantString() + ", " + Y.ToInvariantString();
+		}
+
+		[Pure]
+		public float Length
+		{
+			get { return (float)Math.Sqrt(X * X + Y * Y); }
+		}
+
+		[Pure]
+		public float LengthSquared
+		{
+			get { return X * X + Y * Y; }
 		}
 
 		[Pure]
@@ -116,6 +132,7 @@ namespace DeltaEngine.Datatypes
 			return (float)Math.Sqrt(distanceX * distanceX + distanceY * distanceY);
 		}
 
+		[Pure]
 		public float DistanceToSquared(Point other)
 		{
 			float distanceX = X - other.X;
@@ -123,6 +140,7 @@ namespace DeltaEngine.Datatypes
 			return distanceX * distanceX + distanceY * distanceY;
 		}
 
+		[Pure]
 		public Point DirectionTo(Point other)
 		{
 			return other - this;
@@ -147,17 +165,27 @@ namespace DeltaEngine.Datatypes
 			return new Point(x, y);
 		}
 
+		[Pure]
 		public Point RotateAround(Point center, float angleInDegrees)
 		{
-			RotateAround(center, MathExtensions.Sin(angleInDegrees), MathExtensions.Cos(angleInDegrees));
-			return this;
+			return RotateAround(center, MathExtensions.Sin(angleInDegrees),
+				MathExtensions.Cos(angleInDegrees));
 		}
 
-		public void RotateAround(Point center, float rotationSin, float rotationCos)
+		[Pure]
+		public Point RotateAround(Point center, float rotationSin, float rotationCos)
 		{
 			var translatedPoint = this - center;
-			X = center.X + translatedPoint.X * rotationCos - translatedPoint.Y * rotationSin;
-			Y = center.Y + translatedPoint.X * rotationSin + translatedPoint.Y * rotationCos;
+			return new Point(
+				center.X + translatedPoint.X * rotationCos - translatedPoint.Y * rotationSin,
+				center.Y + translatedPoint.X * rotationSin + translatedPoint.Y * rotationCos);
+		}
+
+		[Pure]
+		public float RotationTo(Point target)
+		{
+			var normal = (this - target).Normalize();
+			return MathExtensions.Atan2(normal.Y, normal.X);
 		}
 
 		public Point Normalize()
@@ -168,26 +196,67 @@ namespace DeltaEngine.Datatypes
 			return this;
 		}
 
+		[Pure]
 		public float DotProduct(Point point)
 		{
 			return X * point.X + Y * point.Y;
 		}
 
+		[Pure]
 		public float DistanceFromProjectAxisPointX(Point axis)
 		{
 			return (X * axis.X + Y * axis.Y) / (axis.X * axis.X + axis.Y * axis.Y) * axis.X;
 		}
 
+		[Pure]
 		public float DistanceFromProjectAxisPointY(Point axis)
 		{
 			return (X * axis.X + Y * axis.Y) / (axis.X * axis.X + axis.Y * axis.Y) * axis.Y;
 		}
 
+		/// <summary>
+		/// http://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
+		/// </summary>
 		[Pure]
-		public float RotationTo(Point target)
+		public float DistanceToLine(Point lineStart, Point lineEnd)
 		{
-			var normal = (this - target).Normalize();
-			return MathExtensions.Atan2(normal.Y, normal.X);
+			var lineDirection = lineEnd - lineStart;
+			var lineLengthSquared = lineDirection.LengthSquared;
+			if (lineLengthSquared == 0.0)
+				return DistanceTo(lineStart);
+			var startDirection = this - lineStart;
+			var linePosition = startDirection.DotProduct(lineDirection) / lineLengthSquared;
+			var projection = lineStart + linePosition * lineDirection;
+			return DistanceTo(projection);
+		}
+
+		/// <summary>
+		/// http://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
+		/// </summary>
+		[Pure]
+		public float DistanceToLineSegment(Point lineStart, Point lineEnd)
+		{
+			var lineDirection = lineEnd - lineStart;
+			var lineLengthSquared = lineDirection.LengthSquared;
+			if (lineLengthSquared == 0.0)
+				return DistanceTo(lineStart);
+			var startDirection = this - lineStart;
+			var linePosition = startDirection.DotProduct(lineDirection) / lineLengthSquared;
+			if (linePosition < 0.0)
+				return DistanceTo(lineStart);
+			if (linePosition > 1.0)
+				return DistanceTo(lineEnd);
+			var projection = lineStart + linePosition * lineDirection;
+			return DistanceTo(projection);
+		}
+
+		/// <summary>
+		/// http://stackoverflow.com/questions/3461453/determine-which-side-of-a-line-a-point-lies
+		/// </summary>
+		[Pure]
+		public bool IsLeftOfLineOrOnIt(Point start, Point end)
+		{
+			return ((end.X - start.X) * (Y - start.Y) - (end.Y - start.Y) * (X - start.X)) >= 0;
 		}
 	}
 }

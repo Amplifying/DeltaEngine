@@ -14,10 +14,10 @@ namespace DeltaEngine.Editor.ContentManager
 	/// </summary>
 	public sealed class ContentManagerViewModel : ViewModelBase
 	{
-		public ContentManagerViewModel(ContentService content)
+		public ContentManagerViewModel(ContentService contentService)
 		{
-			this.content = content;
-			content.GetProjects();
+			this.contentService = contentService;
+			contentService.GetProjects();
 			RaisePropertyChanged("Projects");
 			SetMessenger();
 			Images = new ObservableCollection<string>();
@@ -31,10 +31,13 @@ namespace DeltaEngine.Editor.ContentManager
 			Messenger.Default.Register<IDataObject>(this, "AddImage", DropContent);
 			Messenger.Default.Register<Size>(this, "ChangeImageSize", ChangeImageSize);
 			Messenger.Default.Register<string>(this, "AddProject", AddNewProject);
-			Messenger.Default.Register<List<string>>(this, "SaveImagesAsAnimation", SaveImagesAsAnimation);
+			Messenger.Default.Register<List<string>>(this, "SaveImagesAsAnimation",
+				SaveImagesAsAnimation);
+			Messenger.Default.Register<Dictionary<string, string>>(this, "CopyContentIntoProject",
+				CopyContentIntoProject);
 		}
 
-		private ContentService content;
+		private readonly ContentService contentService;
 		public ObservableCollection<string> Images { get; set; }
 
 		public void DropContent(IDataObject dropObject)
@@ -51,8 +54,8 @@ namespace DeltaEngine.Editor.ContentManager
 		{
 			using (Stream stream = File.OpenRead(imageFilePath))
 			{
-				content.AddContent(SelectedProject, Path.GetFileName(imageFilePath), stream);
-				Images = new ObservableCollection<string>(content.GetContentNames(SelectedProject));
+				contentService.AddContent(SelectedProject, Path.GetFileName(imageFilePath), stream);
+				Images = new ObservableCollection<string>(contentService.GetContentNames(SelectedProject));
 			}
 			RaisePropertyChanged("Images");
 		}
@@ -69,7 +72,7 @@ namespace DeltaEngine.Editor.ContentManager
 		{
 			selectedProject = value;
 			if (selectedProject != null)
-				Images = new ObservableCollection<string>(content.GetContentNames(selectedProject));
+				Images = new ObservableCollection<string>(contentService.GetContentNames(selectedProject));
 			RaisePropertyChanged("Images");
 			ViewImage = null;
 			RaisePropertyChanged("ViewImage");
@@ -81,10 +84,10 @@ namespace DeltaEngine.Editor.ContentManager
 		public void EditViewImage()
 		{
 			if (selectedContent == null)
-				return;	
+				return;
 
 			var image = new BitmapImage();
-			using (var contentStream = content.LoadContent(SelectedProject, SelectedContent))
+			using (var contentStream = contentService.LoadContent(SelectedProject, SelectedContent))
 			{
 				image.BeginInit();
 				image.CacheOption = BitmapCacheOption.OnLoad;
@@ -109,7 +112,7 @@ namespace DeltaEngine.Editor.ContentManager
 
 		public ObservableCollection<string> Projects
 		{
-			get { return new ObservableCollection<string>(content.GetProjects()); }
+			get { return new ObservableCollection<string>(contentService.GetProjects()); }
 		}
 
 		public void DeleteImageFromList(string msg)
@@ -118,7 +121,7 @@ namespace DeltaEngine.Editor.ContentManager
 			RaisePropertyChanged("ViewImage");
 			string deleteContent = selectedContent;
 			Images.Remove(selectedContent);
-			content.DeleteContent(SelectedProject, deleteContent);
+			contentService.DeleteContent(SelectedProject, deleteContent);
 		}
 
 		public void AddNewProject(string obj)
@@ -129,8 +132,8 @@ namespace DeltaEngine.Editor.ContentManager
 				return;
 			}
 
-			content.AddProject(NewProjectName);
-			content.GetProjects();
+			contentService.AddProject(NewProjectName);
+			contentService.GetProjects();
 			RaisePropertyChanged("Projects");
 		}
 
@@ -150,10 +153,21 @@ namespace DeltaEngine.Editor.ContentManager
 		public void SaveImagesAsAnimation(List<string> itemlist)
 		{
 			if (string.IsNullOrEmpty(AnimationName) || string.IsNullOrEmpty(selectedProject))
-			itemlist.Sort();
-			content.SaveImagesAsAnimation(itemlist, AnimationName, selectedProject);
+				itemlist.Sort();
+			contentService.SaveImagesAsAnimation(itemlist, AnimationName, selectedProject);
 		}
 
 		public string AnimationName { get; set; }
+
+		private void CopyContentIntoProject(Dictionary<string, string> copiedContent)
+		{
+			foreach (var content in copiedContent)
+				using (var contentStream = contentService.LoadContent(content.Value, content.Key))
+				{
+					contentService.AddContent(selectedProject, content.Key, contentStream);
+					Images = new ObservableCollection<string>(contentService.GetContentNames(SelectedProject));
+				}
+			RaisePropertyChanged("Images");
+		}
 	}
 }

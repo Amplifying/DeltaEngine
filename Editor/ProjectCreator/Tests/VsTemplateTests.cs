@@ -25,21 +25,16 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 
 		private MockFileSystem CreateFileSystemMock()
 		{
-			var fileSystem =
-				new MockFileSystem(new Dictionary<string, MockFileData>
-				{
-					{
-						templateZipMockPath,
-						new MockFileData(File.ReadAllText(Path.Combine("Content", "EmptyGame.zip")))
-					}
-				});
+			var files = new Dictionary<string, MockFileData>();
+			files.Add(templateZipMockPath,
+				new MockFileData(File.ReadAllText(Path.Combine("NewDeltaEngineProject", "EmptyGame.zip"))));
+			var fileSystem = new MockFileSystem(files);
 			fileSystem.Directory.SetCurrentDirectory(templateZipMockPath);
 			return fileSystem;
 		}
 
-		private static readonly string BasePath =
-			Path.GetFullPath(Path.Combine("D" + Path.VolumeSeparatorChar + Path.DirectorySeparatorChar,
-				"Development", "DeltaEngine", "VisualStudioTemplates", "Delta Engine"));
+		private const string BasePath =
+			@"D:\Development\DeltaEngine\VisualStudioTemplates\Delta Engine";
 		private readonly string templateZipMockPath = Path.Combine(BasePath, "EmptyGame.zip");
 		private readonly string assemblyInfo = Path.Combine(BasePath, "Properties", "AssemblyInfo.cs");
 		private readonly string csproj = Path.Combine(BasePath, "EmptyGame.csproj");

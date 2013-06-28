@@ -26,23 +26,23 @@ namespace DeltaEngine.Physics2D
 		/// <summary>
 		/// Rotates an Entity2D every frame
 		/// </summary>
-		public class Rotate : EntityHandler
+		public class Rotate : Behavior2D
 		{
-			public override void Handle(Entity entity)
+			public override void Handle(Entity2D entity)
 			{
 				entity.Set(entity.Get<float>() + entity.Get<Data>().RotationSpeed * Time.Current.Delta);
 			}
 
-			public override EntityHandlerPriority Priority
+			public override Priority Priority
 			{
-				get { return EntityHandlerPriority.First; }
+				get { return Priority.First; }
 			}
 		}
 
 		/// <summary>
 		/// Bounces an Entity2D off the edges of the screen
 		/// </summary>
-		public class BounceOffScreenEdges : EntityHandler
+		public class BounceOffScreenEdges : Behavior2D
 		{
 			public BounceOffScreenEdges(ScreenSpace screen)
 			{
@@ -51,21 +51,19 @@ namespace DeltaEngine.Physics2D
 
 			private readonly ScreenSpace screen;
 
-			public override void Handle(Entity entity)
+			public override void Handle(Entity2D entity)
 			{
 				var physics = entity.Get<Data>();
-				var drawArea = entity.Get<Rectangle>();
-				drawArea = new Rectangle(drawArea.TopLeft + physics.Velocity * Time.Current.Delta,
-					drawArea.Size);
-				entity.Set(drawArea);
+				entity.DrawArea = new Rectangle(entity.TopLeft + physics.Velocity * Time.Current.Delta,
+					entity.Size);
 				Point velocity = physics.Velocity;
-				velocity.ReflectIfHittingBorder(drawArea, screen.Viewport);
+				velocity.ReflectIfHittingBorder(entity.DrawArea, screen.Viewport);
 				physics.Velocity = velocity;
 			}
 
-			public override EntityHandlerPriority Priority
+			public override Priority Priority
 			{
-				get { return EntityHandlerPriority.First; }
+				get { return Priority.First; }
 			}
 		}
 
@@ -73,23 +71,22 @@ namespace DeltaEngine.Physics2D
 		/// Causes an Entity2D to move and fall under gravity.
 		/// When the duration is complete it removes the Entity from the Entity System
 		/// </summary>
-		public class Fall : EntityHandler
+		public class Fall : Behavior2D
 		{
-			public override void Handle(Entity entity)
+			public override void Handle(Entity2D entity)
 			{
-				var entity2D = entity as Entity2D;
-				var physics = entity2D.Get<Data>();
+				var physics = entity.Get<Data>();
 				physics.Velocity += physics.Gravity * Time.Current.Delta;
-				entity2D.Center += physics.Velocity * Time.Current.Delta;
-				entity2D.Rotation += physics.RotationSpeed * Time.Current.Delta;
+				entity.Center += physics.Velocity * Time.Current.Delta;
+				entity.Rotation += physics.RotationSpeed * Time.Current.Delta;
 				physics.Elapsed += Time.Current.Delta;
 				if (physics.Duration > 0.0f && physics.Elapsed >= physics.Duration)
 					entity.IsActive = false;
 			}
 
-			public override EntityHandlerPriority Priority
+			public override Priority Priority
 			{
-				get { return EntityHandlerPriority.First; }
+				get { return Priority.First; }
 			}
 		}
 	}

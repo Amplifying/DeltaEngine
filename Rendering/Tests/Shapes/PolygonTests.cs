@@ -9,16 +9,17 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 		[Test]
 		public void NewPolygon()
 		{
-			var polygon = new Polygon();
+			var polygon = new Polygon(Rectangle.One, Color.White);
+			polygon.Points.AddRange(new[] { Point.Zero, Point.One, Point.UnitY });
+			Assert.AreEqual(Rectangle.One, polygon.DrawArea);
 			Assert.AreEqual(Color.White, polygon.Color);
-			Assert.AreEqual(Rectangle.Zero, polygon.DrawArea);
 		}
 
 		[Test]
 		public void ChangeOutlineColor()
 		{
-			var polygon =
-				new Polygon(Color.Red).Add(new OutlineColor(Color.Blue)).Add<Polygon.RenderOutline>();
+			var polygon = new Polygon(Rectangle.One, Color.Red);
+			polygon.Add(new OutlineColor(Color.Blue)).Start<Polygon.RenderOutline>();
 			Assert.AreEqual(Color.Blue, polygon.Get<OutlineColor>().Value);
 		}
 	}

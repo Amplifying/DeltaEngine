@@ -1,41 +1,32 @@
-using System;
-using DeltaEngine.Platforms.All;
-using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms;
+using DeltaEngine.Platforms.Mocks;
 using NUnit.Framework;
 
 namespace DeltaEngine.Input.Tests
 {
-	public class MouseButtonTriggerTests : TestWithAllFrameworks
+	public class MouseButtonTriggerTests : TestWithMocksOrVisually
 	{
-		[IntegrationTest]
-		public void ConditionMatchedWithoutMouse(Type resolver)
+		[Test]
+		public void ConditionMatchedWithoutMouse()
 		{
-			Start(resolver, (InputCommands input) =>
-			{
-				var trigger = new MouseButtonTrigger(MouseButton.Right, State.Pressing);
-				Assert.False(trigger.ConditionMatched(input));
-			});
+			var trigger = new MouseButtonTrigger(MouseButton.Right, State.Pressing);
+			Assert.False(trigger.ConditionMatched(Input));
 		}
 
 		[Test]
 		public void ConditionMatched()
 		{
-			Start(typeof(MockResolver), (InputCommands input) =>
-			{
-				CheckIfTriggerConditionMatches(MouseButton.Left, State.Releasing, mockResolver, input);
-				CheckIfTriggerConditionMatches(MouseButton.Middle, State.Released, mockResolver, input);
-				CheckIfTriggerConditionMatches(MouseButton.Right, State.Pressing, mockResolver, input);
-				CheckIfTriggerConditionMatches(MouseButton.X1, State.Released, mockResolver, input);
-				CheckIfTriggerConditionMatches(MouseButton.X2, State.Released, mockResolver, input);
-			});
+			CheckIfTriggerConditionMatches(MouseButton.Left, State.Releasing);
+			CheckIfTriggerConditionMatches(MouseButton.Middle, State.Released);
+			CheckIfTriggerConditionMatches(MouseButton.Right, State.Pressing);
+			CheckIfTriggerConditionMatches(MouseButton.X1, State.Released);
+			CheckIfTriggerConditionMatches(MouseButton.X2, State.Released);
 		}
 
-		private static void CheckIfTriggerConditionMatches(MouseButton button, State state,
-			MockResolver resolver, InputCommands input)
+		private void CheckIfTriggerConditionMatches(MouseButton button, State state)
 		{
 			var trigger = new MouseButtonTrigger(button, state);
-			resolver.input.SetMouseButtonState(trigger.Button, trigger.State);
-			Assert.True(trigger.ConditionMatched(input));
+			Resolve<MockMouse>().SetButtonState(trigger.Button, trigger.State);
 		}
 
 		[Test]

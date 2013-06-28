@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DeltaEngine.Core
 {
@@ -13,9 +15,19 @@ namespace DeltaEngine.Core
 			return Enum.GetValues(enumType);
 		}
 
+		public static IEnumerable<EnumType> GetEnumValues<EnumType>()
+		{
+			return from object value in Enum.GetValues(typeof(EnumType)) select (EnumType)value;
+		}
+
 		public static int GetCount(this Enum anyEnum)
 		{
 			return GetEnumValues(anyEnum).Length;
+		}
+
+		public static T Parse<T>(string text)
+		{
+			return (T)Enum.Parse(typeof(T), text);
 		}
 	}
 }

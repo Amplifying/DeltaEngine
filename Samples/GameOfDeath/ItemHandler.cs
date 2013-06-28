@@ -14,54 +14,54 @@ namespace GameOfDeath
 	/// </summary>
 	public class ItemHandler
 	{
-		public ItemHandler(ScreenSpace screen, ContentLoader content)
+		public ItemHandler(ScreenSpace screen)
 		{
 			this.screen = screen;
-			CreateItems(content);
-			CreateIcons(content);
+			CreateItems();
+			CreateIcons();
 			SelectItem(0);
 		}
 
 		private readonly ScreenSpace screen;
 
-		private void CreateItems(ContentLoader content)
+		private void CreateItems()
 		{
-			CreateMallet(content);
-			CreateFire(content);
-			CreateToxic(content);
-			CreateAtomic(content);
+			CreateMallet();
+			CreateFire();
+			CreateToxic();
+			CreateAtomic();
 		}
 
-		private void CreateMallet(ContentLoader content)
+		private void CreateMallet()
 		{
-			var mallet = new Mallet(content);
+			var mallet = new Mallet();
 			cachedItems.Add(mallet);
 		}
 
-		private void CreateFire(ContentLoader content)
+		private void CreateFire()
 		{
-			var fire = new Fire(content);
+			var fire = new Fire();
 			cachedItems.Add(fire);
 		}
 
-		private void CreateToxic(ContentLoader content)
+		private void CreateToxic()
 		{
-			var toxic = new Toxic(content);
+			var toxic = new Toxic();
 			cachedItems.Add(toxic);
 		}
 
-		private void CreateAtomic(ContentLoader content)
+		private void CreateAtomic()
 		{
-			var atomic = new Atomic(content);
+			var atomic = new Atomic();
 			cachedItems.Add(atomic);
 		}
 
 		private readonly List<Item> cachedItems = new List<Item>();
 
-		private void CreateIcons(ContentLoader content)
+		private void CreateIcons()
 		{
 			for (int index = 0; index < NumberOfItems; index++)
-				icons[index] = new Icon(content, index, screen);
+				icons[index] = new Icon(index, screen);
 		}
 
 		private const int NumberOfItems = 4;

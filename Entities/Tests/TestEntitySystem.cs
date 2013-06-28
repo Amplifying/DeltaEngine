@@ -2,67 +2,64 @@ using System;
 
 namespace DeltaEngine.Entities.Tests
 {
-	public class TestEntitySystem<EntityHandlerType> : EntitySystem
-		where EntityHandlerType : EntityHandler, new()
+	public class TestEntitySystem<HandlerType> : EntitySystem
+		where HandlerType : Handler, new()
 	{
 		public TestEntitySystem()
 			: base(new TestHandlerResolver()) {}
 
-		private class TestHandlerResolver : EntityHandlerResolver
+		private class TestHandlerResolver : HandlerResolver
 		{
-			public EntityHandler Resolve(Type handlerType)
+			public Handler Resolve(Type handlerType)
 			{
-				if (handlerType == typeof(EntityHandlerType))
-					return new EntityHandlerType();
+				if (handlerType == typeof(HandlerType))
+					return new HandlerType();
 
 				return null; //ncrunch: no coverage
 			}
 		}
 	}
 
-	public class TestEntitySystem<EntityHandlerType1, EntityHandlerType2> : EntitySystem
-		where EntityHandlerType1 : EntityHandler, new()
-		where EntityHandlerType2 : EntityHandler, new()
+	public class TestEntitySystem<HandlerType1, HandlerType2> : EntitySystem
+		where HandlerType1 : Handler, new() where HandlerType2 : Handler, new()
 	{
 		public TestEntitySystem()
 			: base(new TestHandlerResolver()) {}
 
-		private class TestHandlerResolver : EntityHandlerResolver
+		private class TestHandlerResolver : HandlerResolver
 		{
-			public EntityHandler Resolve(Type handlerType)
+			public Handler Resolve(Type handlerType)
 			{
-				if (handlerType == typeof(EntityHandlerType1))
-					return new EntityHandlerType1();
+				if (handlerType == typeof(HandlerType1))
+					return new HandlerType1();
 
-				if (handlerType == typeof(EntityHandlerType2))
-					return new EntityHandlerType2();
+				if (handlerType == typeof(HandlerType2))
+					return new HandlerType2();
 
 				return null; //ncrunch: no coverage
 			}
 		}
 	}
 
-	public class TestEntitySystem<EntityHandlerType1, EntityHandlerType2, EntityHandlerType3> 
-		: EntitySystem
-		where EntityHandlerType1 : EntityHandler, new()
-		where EntityHandlerType2 : EntityHandler, new()
-		where EntityHandlerType3 : EntityHandler, new()
+	public class TestEntitySystem<HandlerType1, HandlerType2, HandlerType3> : EntitySystem
+		where HandlerType1 : Handler, new() where HandlerType2 : Handler, new()
+		where HandlerType3 : Handler, new()
 	{
 		public TestEntitySystem()
-			: base(new TestHandlerResolver()) { }
+			: base(new TestHandlerResolver()) {}
 
-		private class TestHandlerResolver : EntityHandlerResolver
+		private class TestHandlerResolver : HandlerResolver
 		{
-			public EntityHandler Resolve(Type handlerType)
+			public Handler Resolve(Type handlerType)
 			{
-				if (handlerType == typeof(EntityHandlerType1))
-					return new EntityHandlerType1();
+				if (handlerType == typeof(HandlerType1))
+					return new HandlerType1();
 
-				if (handlerType == typeof(EntityHandlerType2))
-					return new EntityHandlerType2();
+				if (handlerType == typeof(HandlerType2))
+					return new HandlerType2();
 
-				if (handlerType == typeof(EntityHandlerType3))
-					return new EntityHandlerType3();
+				if (handlerType == typeof(HandlerType3))
+					return new HandlerType3();
 
 				return null; //ncrunch: no coverage
 			}

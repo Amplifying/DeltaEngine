@@ -15,14 +15,13 @@ namespace DeltaEngine.Scenes.UserInterfaces
 			: base(theme, drawArea, text)
 		{
 			Add(drawArea.Size);
-			Add<UpdateSize>();
+			Start<UpdateSize>();
 		}
 
-		private class UpdateSize : EntityListener
+		private class UpdateSize : EventListener2D
 		{
-			public override void ReceiveMessage(Entity entity, object message)
+			public override void ReceiveMessage(Entity2D control, object message)
 			{
-				var control = entity as Entity2D;
 				if (message is Interact.ControlEntered || message is Interact.ControlClicked)
 					Grow(control);
 				else if (message is Interact.ControlPressed)
@@ -33,9 +32,9 @@ namespace DeltaEngine.Scenes.UserInterfaces
 
 			private static void Grow(Entity2D control)
 			{
-				control.Add<Transition>();
-				control.AddOrSet(new Transition.Size(control.Size, control.Get<Size>() * Growth));
-				control.AddOrSet(new Transition.Duration(TransitionSlowly));
+				control.Start<Transition>();
+				control.Set(new Transition.Size(control.Size, control.Get<Size>() * Growth));
+				control.Set(new Transition.Duration(TransitionSlowly));
 			}
 
 			private const float Growth = 1.05f;
@@ -43,23 +42,23 @@ namespace DeltaEngine.Scenes.UserInterfaces
 
 			private static void Shrink(Entity2D control)
 			{
-				control.Add<Transition>();
-				control.AddOrSet(new Transition.Size(control.Size, control.Get<Size>() / Growth));
-				control.AddOrSet(new Transition.Duration(TransitionQuickly));
+				control.Start<Transition>();
+				control.Set(new Transition.Size(control.Size, control.Get<Size>() / Growth));
+				control.Set(new Transition.Duration(TransitionQuickly));
 			}
 
 			private const float TransitionQuickly = 0.075f;
 
 			private static void Normalize(Entity2D control)
 			{
-				control.Add<Transition>();
-				control.AddOrSet(new Transition.Size(control.Size, control.Get<Size>()));
-				control.AddOrSet(new Transition.Duration(TransitionSlowly));
+				control.Start<Transition>();
+				control.Set(new Transition.Size(control.Size, control.Get<Size>()));
+				control.Set(new Transition.Duration(TransitionSlowly));
 			}
 
-			public override EntityHandlerPriority Priority
+			public override Priority Priority
 			{
-				get { return EntityHandlerPriority.Low; }
+				get { return Priority.Low; }
 			}
 		}
 

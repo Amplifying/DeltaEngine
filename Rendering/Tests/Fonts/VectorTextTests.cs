@@ -1,54 +1,49 @@
-using System;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Platforms.All;
-using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Graphics;
+using DeltaEngine.Platforms;
+using DeltaEngine.Platforms.Mocks;
 using DeltaEngine.Rendering.Fonts;
 using NUnit.Framework;
 
 namespace DeltaEngine.Rendering.Tests.Fonts
 {
-	public class VectorTextTests : TestWithAllFrameworks
+	public class VectorTextTests : TestWithMocksOrVisually
 	{
-		[VisualTest, ApproveFirstFrameScreenshot]
-		public void DrawHi(Type resolver)
+		[Test, ApproveFirstFrameScreenshot]
+		public void DrawHi()
 		{
-			Start(resolver, () => new VectorText("Hi", Point.Half));
+			new VectorText("Hi", Point.Half);
 		}
 
-		[VisualTest, ApproveFirstFrameScreenshot]
-		public void DrawSampleText(Type resolver)
+		[Test, ApproveFirstFrameScreenshot]
+		public void DrawSampleText()
 		{
-			Start(resolver, () =>
-			{
-				new VectorText("The Quick Brown Fox...", Point.Half) { Color = Color.Red };
-				new VectorText("Jumps Over The Lazy Dog", new Point(0.5f, 0.6f)) { Color = Color.Teal };
-			});
+			new VectorText("The Quick Brown Fox...", Point.Half) { Color = Color.Red };
+			new VectorText("Jumps Over The Lazy Dog", new Point(0.5f, 0.6f)) { Color = Color.Teal };
 		}
 
-		[VisualTest, ApproveFirstFrameScreenshot]
-		public void DrawBigText(Type resolver)
+		[Test, ApproveFirstFrameScreenshot]
+		public void DrawBigText()
 		{
-			Start(resolver,
-				() => new VectorText("Yo yo, whats up", Point.Half) { Size = new Size(0.1f) });
+			new VectorText("Yo yo, whats up", Point.Half) { Size = new Size(0.1f) };
 		}
 
 		[Test]
-		public void CountNumberOfDrawsWithOneText()
+		public void DrawingTwoVectorTextsWithTheSameRenderLayerOnlyIssuesOneDrawCall()
 		{
-			Start(typeof(MockResolver),
-				() => { new VectorText("Yo yo, whats up", Point.Half) { Size = new Size(0.1f) }; });
-			Assert.AreEqual(1, mockResolver.rendering.NumberOfTimesDrawn);
+			new VectorText("Yo yo, whats up", Point.Half) { Size = new Size(0.1f) };
+			new VectorText("Jumps Over The Lazy Dog", new Point(0.5f, 0.6f)) { Color = Color.Teal };
+			RunCode = () => Assert.AreEqual(1, Resolve<Drawing>().NumberOfTimesDrawn);
+			Window.CloseAfterFrame();
 		}
 
 		[Test]
-		public void CountNumberOfDrawsWithTwoTexts()
+		public void DrawingTwoVectorTextsWithDifferentRenderLayersIssuesTwoDrawCalls()
 		{
-			Start(typeof(MockResolver), () =>
-			{
-				new VectorText("Yo yo, whats up", Point.Half) { Size = new Size(0.1f) };
-				new VectorText("Jumps Over The Lazy Dog", new Point(0.5f, 0.6f)) { Color = Color.Teal };
-			});
-			Assert.AreEqual(2, mockResolver.rendering.NumberOfTimesDrawn);
+			new VectorText("Yo yo, whats up", Point.Half) { Size = new Size(0.1f), RenderLayer = 1 };
+			new VectorText("Jumps Over The Lazy Dog", Point.One) { Color = Color.Teal, RenderLayer = 2 };
+			RunCode = () => Assert.AreEqual(2, Resolve<Drawing>().NumberOfTimesDrawn);
+			Window.CloseAfterFrame();
 		}
 	}
 }

@@ -4,8 +4,8 @@ namespace DeltaEngine.Content.Tests
 {
 	public class MockContent : ContentData
 	{
-		public MockContent(string filename)
-			: base(filename)
+		public MockContent(string contentName)
+			: base(contentName)
 		{
 			ContentChanged += () => changeCounter++;
 		}

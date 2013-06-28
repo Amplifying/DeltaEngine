@@ -13,7 +13,7 @@ namespace Blobs.Creatures
 		public RubberBall()
 			: base(Rectangle.Zero, Color.White)
 		{
-			Remove<RenderOutline>();
+			Stop<RenderOutline>();
 		}
 
 		public void SetDamping(float setProportionalDamping, float setAbsoluteDamping)

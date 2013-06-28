@@ -1,6 +1,6 @@
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms.Mocks;
 using DeltaEngine.Rendering.ScreenSpaces;
 using NUnit.Framework;
 
@@ -11,7 +11,7 @@ namespace DeltaEngine.Rendering.Tests.ScreenSpaces
 		[Test]
 		public void SquareWindowWithInvertedSpace()
 		{
-			window.TotalPixelSize = new Size(100, 100);
+			window.ViewportPixelSize = new Size(100, 100);
 			var screen = new InvertedScreenSpace(window);
 			Assert.AreEqual(Point.UnitY, screen.TopLeft);
 			Assert.AreEqual(Point.UnitX, screen.BottomRight);
@@ -21,12 +21,12 @@ namespace DeltaEngine.Rendering.Tests.ScreenSpaces
 				screen.FromPixelSpace(new Rectangle(10, 10, 80, 80)));
 		}
 
-		private readonly Window window = new MockResolver().rendering.Window;
+		private readonly Window window = new MockWindow();
 
 		[Test]
 		public void GetInnerPoint()
 		{
-			window.TotalPixelSize = new Size(800, 600);
+			window.ViewportPixelSize = new Size(800, 600);
 			ScreenSpace screen = new InvertedScreenSpace(window);
 			Assert.AreEqual(screen.TopLeft, screen.GetInnerPoint(Point.Zero));
 			Assert.AreEqual(screen.BottomRight, screen.GetInnerPoint(Point.One));
@@ -35,7 +35,7 @@ namespace DeltaEngine.Rendering.Tests.ScreenSpaces
 		[Test]
 		public void ToPixelSpaceAndFromInvertedSpace()
 		{
-			window.TotalPixelSize = new Size(75, 100);
+			window.ViewportPixelSize = new Size(75, 100);
 			var screen = new InvertedScreenSpace(window);
 			Assert.AreEqual(Point.Zero, screen.ToPixelSpace(screen.TopLeft));
 			Assert.AreEqual(new Point(75, 100), screen.ToPixelSpace(screen.BottomRight));
@@ -46,7 +46,7 @@ namespace DeltaEngine.Rendering.Tests.ScreenSpaces
 		[Test]
 		public void NonSquareWindowWithInvertedSpace()
 		{
-			window.TotalPixelSize = new Size(100, 75);
+			window.ViewportPixelSize = new Size(100, 75);
 			var screen = new InvertedScreenSpace(window);
 			Assert.AreEqual(0.0f, screen.Left);
 			Assert.AreEqual(1.0f, screen.Top);

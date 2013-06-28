@@ -7,53 +7,58 @@ using NUnit.Framework;
 
 namespace DeltaEngine.Editor.SampleBrowser.Tests
 {
+	[NUnit.Framework.Category("Slow")]
 	public class SampleLauncherTests
 	{
 		[SetUp]
 		public void Init()
 		{
 			sampleLauncher = new SampleLauncher(GetTestAssembly());
-			sample = GetTestSample();
 		}
 
 		private SampleLauncher sampleLauncher;
 
 		private static Type GetTestAssembly()
 		{
-			Assembly assembly = Assembly.LoadFrom(GetPathToTestAssembly());
+			Assembly assembly = Assembly.LoadFrom(GetPathToTestAssembly(true));
 			return assembly.GetTypes().FirstOrDefault(type => type.Name == "TestClass");
 		}
 
-		private Sample sample;
-
-		private static Sample GetTestSample()
+		private static string GetPathToTestAssembly(bool isValid)
 		{
-			return Sample.CreateTest("TestSample", @"Test\Test.csproj", GetPathToTestAssembly(),
+			return isValid ? Path.GetFullPath("TestAssembly.dll") : @"Z:\invalid\TestAssembly.dll";
+		}
+
+		[Test]
+		public void LaunchingInvalidSampleShouldThrow()
+		{
+			Assert.Throws<Win32Exception>(() => sampleLauncher.OpenProject(GetTestSample(false)));
+			Assert.Throws<Win32Exception>(() => sampleLauncher.StartExecutable(GetGameSample(false)));
+		}
+
+		private static Sample GetTestSample(bool isValid)
+		{
+			return Sample.CreateTest("TestSample", @"Test\Test.csproj", GetPathToTestAssembly(isValid),
 				"TestClass", "TestMethod");
 		}
 
-		private static string GetPathToTestAssembly()
+		private static Sample GetGameSample(bool isValid)
 		{
-			return Path.GetFullPath(Path.Combine("Content", "TestAssembly.dll"));
+			return Sample.CreateGame("TestSample", @"Test\Test.csproj", GetPathToTestAssembly(isValid));
 		}
 
-		[Test, Ignore]
-		public void LaunchingInvalidSampleShouldThrow()
-		{
-			Assert.Throws<Win32Exception>(() => sampleLauncher.OpenProject(sample));
-			Assert.Throws<FileNotFoundException>(() => sampleLauncher.StartExecutable(sample));
-		}
-
-		[Test, Ignore]
+		[Test]
 		public void FakeProjectShouldNotBeAvailable()
 		{
-			Assert.IsFalse(sampleLauncher.DoesProjectExist(sample));
+			Assert.IsFalse(sampleLauncher.DoesProjectExist(GetTestSample(true)));
+			Assert.IsFalse(sampleLauncher.DoesProjectExist(GetGameSample(true)));
 		}
 
-		[Test, Ignore]
+		[Test]
 		public void MockAssemblyShouldBeAvailable()
 		{
-			Assert.IsTrue(sampleLauncher.DoesAssemblyExist(sample));
+			Assert.IsTrue(sampleLauncher.DoesAssemblyExist(GetTestSample(true)));
+			Assert.IsTrue(sampleLauncher.DoesAssemblyExist(GetGameSample(true)));
 		}
 	}
 }

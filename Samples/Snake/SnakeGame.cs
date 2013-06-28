@@ -1,4 +1,3 @@
-using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
 using DeltaEngine.Rendering.Fonts;
@@ -13,12 +12,11 @@ namespace Snake
 	/// </summary>
 	public class SnakeGame
 	{
-		public SnakeGame(ScreenSpace screen, InputCommands input, ContentLoader content)
+		public SnakeGame(ScreenSpace screen, InputCommands input)
 		{
 			gridSize = 25;
 			blockSize = 1.0f / gridSize;
 			this.screen = screen;
-			this.content = content;
 			this.input = input;
 			SetupPlayArea();
 			SetInput();
@@ -29,15 +27,14 @@ namespace Snake
 		private readonly int gridSize;
 		private readonly float blockSize;
 		private readonly ScreenSpace screen;
-		private readonly ContentLoader content;
 		private readonly InputCommands input;
 
 		private void SetupPlayArea()
 		{
 			screen.Window.Title = "Snake - Let's go";
-			screen.Window.TotalPixelSize = new Size(500, 500);
+			screen.Window.ViewportPixelSize = new Size(500, 500);
 			screen.Window.BackgroundColor = Color.Red;
-			new Rect(CalculateBackgroundDrawArea(), Color.Black);
+			new FilledRect(CalculateBackgroundDrawArea(), Color.Black);
 		}
 
 		private Rectangle CalculateBackgroundDrawArea()
@@ -120,7 +117,7 @@ namespace Snake
 		{
 			var snakeBodyParts = snakeBody.BodyParts;
 			var tail = snakeBodyParts[snakeBodyParts.Count - 1].DrawArea.TopLeft;
-			var newBodyPart = new Rect(CalculateTrailDrawArea(trailingVector, tail), Color.Teal);
+			var newBodyPart = new FilledRect(CalculateTrailDrawArea(trailingVector, tail), Color.Teal);
 			snakeBodyParts.Add(newBodyPart);
 			screen.Window.Title = "Snake - Length: " + snakeBodyParts.Count;
 		}
@@ -141,8 +138,8 @@ namespace Snake
 		private void DisplayGameOverMessage()
 		{
 			Chunk.IsActive = false;
-			var fontGameOverText = new Font(content, "Tahoma30");
-			var fontReplayText = new Font(content, "Verdana12");
+			var fontGameOverText = new Font("Tahoma30");
+			var fontReplayText = new Font("Verdana12");
 			gameOverMsg = new FontText(fontGameOverText, "Game Over", Point.Half) { Color = Color.Red };
 			restartMsg = new FontText(fontReplayText, "Do you want to continue (Y/N)",
 				new Point(0.5f, 0.7f)) { Color = Color.Yellow };

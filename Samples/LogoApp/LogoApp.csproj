@@ -65,23 +65,25 @@
       <Project>{dc3aa434-09b9-43ad-8f43-431811fa054d}</Project>
       <Name>DeltaEngine.Physics2D</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Platforms\WindowsOpenTK\DeltaEngine.WindowsOpenTK.csproj">
-      <Project>{cc943ae0-a1cc-4788-ac9b-01db3a0ebcd6}</Project>
-      <Name>DeltaEngine.WindowsOpenTK</Name>
+    <ProjectReference Include="..\..\Platforms\DeltaEngine.Platforms.csproj">
+      <Project>{bae8830e-5f62-48d6-b772-c4b1e8665fb3}</Project>
+      <Name>DeltaEngine.Platforms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Platforms\WindowsGLFW\DeltaEngine.WindowsGLFW.csproj">
+      <Project>{157F559D-CF12-488B-AD0F-3F3477990B1F}</Project>
+      <Name>DeltaEngine.WindowsGLFW</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
       <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
       <Name>DeltaEngine.Rendering</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Scenes\DeltaEngine.Scenes.csproj">
+      <Project>{75bb4c75-de36-47b3-9910-10ea8e8973b7}</Project>
+      <Name>DeltaEngine.Scenes</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\ContentMetaData.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="LogoAppIcon.ico" />
-    <Content Include="Content\DeltaEngineLogo.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />

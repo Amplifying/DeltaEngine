@@ -1,7 +1,6 @@
-using System.Collections.Generic;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Input;
+using DeltaEngine.Rendering;
 
 namespace DeltaEngine.Scenes.UserInterfaces
 {
@@ -16,13 +15,13 @@ namespace DeltaEngine.Scenes.UserInterfaces
 			Text = text;
 			Add(theme);
 			Add(new Interact.State { CanHaveFocus = true });
-			Add<Interact, InteractWithKeyboard>();
-			Add<UpdateAppearance, UpdateText>();
+			Start<Interact, InteractWithKeyboard>();
+			Start<UpdateAppearance, UpdateText>();
 		}
 
-		private class UpdateAppearance : EntityHandler
+		private class UpdateAppearance : Behavior2D
 		{
-			public override void Handle(Entity entity)
+			public override void Handle(Entity2D entity)
 			{
 				var theme = entity.Get<Theme>();
 				var hasFocus = entity.Get<Interact.State>().HasFocus;

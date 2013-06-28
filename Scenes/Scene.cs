@@ -20,7 +20,7 @@ namespace DeltaEngine.Scenes
 		}
 
 		private readonly List<Entity> controls = new List<Entity>();
-		private bool isShown;
+		private bool isShown = true;
 
 		public List<Entity> Controls
 		{
@@ -66,6 +66,6 @@ namespace DeltaEngine.Scenes
 				Add(background);
 		}
 
-		private Sprite background;
+		protected Sprite background;
 	}
 }

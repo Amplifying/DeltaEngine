@@ -21,7 +21,7 @@ namespace DeltaEngine.Core.Tests
 			foreach (Assembly assembly in assemblies.Where(assembly => assembly.IsAllowed()))
 				assembliesAllowed.Add(assembly.GetName().Name);
 
-			// At this point only DeltaEngine.Core.Tests, DeltaEngine.Core should be loaded
+			// At this point only DeltaEngine.Core.Tests and DeltaEngine.Core should be loaded
 			Assert.AreEqual(2, assembliesAllowed.Count, "Assemblies: " + assembliesAllowed.ToText());
 		}
 	}

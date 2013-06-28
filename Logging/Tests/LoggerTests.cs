@@ -2,67 +2,52 @@ using System;
 using System.Runtime.InteropServices;
 using DeltaEngine.Logging.Basic;
 using DeltaEngine.Networking;
-using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms;
 using NUnit.Framework;
 
 namespace DeltaEngine.Logging.Tests
 {
 	[Category("Slow")]
-	public class LoggerTests : TestWithMockResolver
+	public class LoggerTests : TestWithMocksOrVisually
 	{
 		//ncrunch: no coverage start
 		[Test]
 		public void LogInfoMessage()
 		{
-			Start(typeof(MockResolver), (Logger logger) =>
-			{
-				Assert.IsNull(logger.LastMessage);
-				logger.Info("Hello");
-				Assert.AreEqual("Hello", logger.LastMessage.Text);
-			});
+			Assert.IsNull(Logger.Current.LastMessage);
+			Logger.Current.Info("Hello");
+			Assert.AreEqual("Hello", Logger.Current.LastMessage.Text);
 		}
 
 		[Test]
 		public void LogWarning()
 		{
-			Start(typeof(MockResolver), (Logger logger) =>
-			{
-				logger.Warning("Ohoh");
-				Assert.AreEqual("Ohoh", logger.LastMessage.Text);
-				logger.Warning(new NullReferenceException());
-				Assert.IsTrue(logger.LastMessage.Text.Contains("NullReferenceException"));
-			});
+			Logger.Current.Warning("Ohoh");
+			Assert.AreEqual("Ohoh", Logger.Current.LastMessage.Text);
+			Logger.Current.Warning(new NullReferenceException());
+			Assert.IsTrue(Logger.Current.LastMessage.Text.Contains("NullReferenceException"));
 		}
 
 		[Test]
 		public void LogError()
 		{
-			Start(typeof(MockResolver), (Logger logger) =>
-			{
-				logger.Error(new ExternalException());
-				Assert.IsTrue(logger.LastMessage.Text.Contains("ExternalException"));
-			});
+			Logger.Current.Error(new ExternalException());
+			Assert.IsTrue(Logger.Current.LastMessage.Text.Contains("ExternalException"));
 		}
 
 		[Test, Category("Slow")]
 		public void DisposeLogger()
 		{
-			Start(typeof(MockResolver), (Logger logger) =>
-			{
-				logger.Info("Hello");
-				logger.Dispose();
-			});
+			Logger.Current.Info("Hello");
+			Logger.Current.Dispose();
 		}
 
 		[Test, Category("Slow")]
 		public void DisposeProviders()
 		{
-			Start(typeof(MockResolver), (Client client) =>
-			{
-				Logger logger = new DefaultLogger(client);
-				logger.Info("Hello");
-				logger.Dispose();
-			});
+			Logger logger = new DefaultLogger(Resolve<Client>(), Resolve<Settings>());
+			logger.Info("Hello");
+			logger.Dispose();
 		}
 	}
 }

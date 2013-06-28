@@ -7,15 +7,12 @@ namespace DeltaEngine.Editor.Builder
 	{
 		public BuildMessagesListViewModel()
 		{
-			Infos = new List<BuildMessage>();
 			Warnings = new List<BuildMessage>();
 			Errors = new List<BuildMessage>();
 			IsShowingErrorsAllowed = true;
 			IsShowingWarningsAllowed = true;
-			IsShowingInfosAllowed = true;
 		}
 
-		public List<BuildMessage> Infos { get; set; }
 		public List<BuildMessage> Warnings { get; set; }
 		public List<BuildMessage> Errors { get; set; }
 
@@ -48,18 +45,6 @@ namespace DeltaEngine.Editor.Builder
 
 		private bool isShowingWarningsAllowed;
 
-		public bool IsShowingInfosAllowed
-		{
-			get { return isShowingInfosAllowed; }
-			set
-			{
-				isShowingInfosAllowed = value;
-				TriggerMatchingCurrentFilterChanged();
-			}
-		}
-
-		private bool isShowingInfosAllowed;
-
 		public string TextOfErrorCount
 		{
 			get { return GetCountAndWordInPluralIfNeeded("Error", Errors.Count); }
@@ -78,26 +63,13 @@ namespace DeltaEngine.Editor.Builder
 			}
 		}
 
-		public string TextOfInfoCount
-		{
-			get { return GetCountAndWordInPluralIfNeeded("Message", Infos.Count); }
-		}
-
 		public void AddMessage(BuildMessage message)
 		{
-			if (message.Type == BuildMessageType.BuildWarning)
-				AddMessageToWarnings(message);
-			else if (message.Type == BuildMessageType.BuildError)
+			if (message.Type == BuildMessageType.BuildError)
 				AddMessageToErrors(message);
 			else
-				AddMessageToInfos(message);
+				AddMessageToWarnings(message);
 			TriggerMatchingCurrentFilterChanged();
-		}
-
-		private void AddMessageToWarnings(BuildMessage message)
-		{
-			Warnings.Add(message);
-			RaisePropertyChanged("TextOfWarningCount");
 		}
 
 		private void AddMessageToErrors(BuildMessage message)
@@ -106,10 +78,10 @@ namespace DeltaEngine.Editor.Builder
 			RaisePropertyChanged("TextOfErrorCount");
 		}
 
-		private void AddMessageToInfos(BuildMessage message)
+		private void AddMessageToWarnings(BuildMessage message)
 		{
-			Infos.Add(message);
-			RaisePropertyChanged("TextOfInfoCount");
+			Warnings.Add(message);
+			RaisePropertyChanged("TextOfWarningCount");
 		}
 
 		public List<BuildMessageViewModel> MessagesMatchingCurrentFilter
@@ -117,8 +89,6 @@ namespace DeltaEngine.Editor.Builder
 			get
 			{
 				var messages = new List<BuildMessageViewModel>();
-				if (IsShowingInfosAllowed)
-					AddMessageToViewModelList(Infos, messages);
 				if (IsShowingWarningsAllowed)
 					AddMessageToViewModelList(Warnings, messages);
 				if (IsShowingErrorsAllowed)

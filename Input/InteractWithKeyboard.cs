@@ -1,12 +1,13 @@
 using System;
 using DeltaEngine.Entities;
+using DeltaEngine.Rendering;
 
 namespace DeltaEngine.Input
 {
 	/// <summary>
-	/// Allows entities to respond to keyboard input by sending them a message on a key press or hold
+	/// Allows 2D entities to respond to keyboard input by sending them a message on a key press or hold
 	/// </summary>
-	public class InteractWithKeyboard : EntityHandler
+	public class InteractWithKeyboard : Behavior2D
 	{
 		public InteractWithKeyboard(InputCommands input)
 		{
@@ -54,6 +55,6 @@ namespace DeltaEngine.Input
 			public Key Key { get; private set; }
 		}
 
-		public override void Handle(Entity entity) {}
+		public override void Handle(Entity2D entity) {}
 	}
 }

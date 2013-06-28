@@ -1,22 +1,23 @@
 using System;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.All;
+using NUnit.Framework;
 
 namespace GameOfDeath.Tests
 {
-	internal class UITests : TestWithAllFrameworks
+	internal class UITests : TestWithMocksOrVisually
 	{
-		[VisualTest]
-		public void ShowBackgroundWithUI(Type resolver)
+		[Test]
+		public void ShowBackgroundWithUI()
 		{
-			Start(resolver, (UI ui) => {});
+			Resolve<UI>();
 		}
 
-		[VisualTest]
-		public void Resize(Type resolver)
+		[Test]
+		public void Resize()
 		{
-			Start(resolver, (UI ui, Window window) => window.TotalPixelSize = new Size(800, 600));
+			Resolve<UI>();
+			Window.ViewportPixelSize = new Size(800, 600);
 		}
 	}
 }

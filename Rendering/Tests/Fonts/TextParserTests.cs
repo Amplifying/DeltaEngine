@@ -1,60 +1,72 @@
 using System;
-using System.IO;
-using DeltaEngine.Core.Xml;
+using DeltaEngine.Content;
+using DeltaEngine.Content.Xml;
+using DeltaEngine.Platforms;
 using DeltaEngine.Rendering.Fonts;
 using NUnit.Framework;
 
 namespace DeltaEngine.Rendering.Tests.Fonts
 {
-	public class TextParserTests
+	public class TextParserTests : TestWithMocksOrVisually
 	{
-		[SetUp]
-		public void Init()
-		{
-			var fontData = new FontData(new XmlFile(Path.Combine("Content", "Verdana12.xml")).Root);
-			textParser = new TextParser(fontData.GlyphDictionary, '?');
-		}
-
-		private TextParser textParser;
-
 		[Test]
 		public void ParseEmptyText()
 		{
-			var lines = textParser.GetLines("");
+			var lines = GetTextParser().GetLines(GetSpaces(0));
 			Assert.AreEqual(0, lines.Count);
+			Window.CloseAfterFrame();
+		}
+
+		public TextParser GetTextParser()
+		{
+			var fontData = new FontData(ContentLoader.Load<XmlContent>("Verdana12").Data);
+			return new TextParser(fontData.GlyphDictionary, ' ');
+		}
+
+		private static string GetSpaces(int numberOfSpaces)
+		{
+			string spaces = "";
+			for (int i = 0; i < numberOfSpaces; i++)
+				spaces += " ";
+
+			return spaces;
 		}
 
 		[Test]
 		public void ParseSingleTextLine()
 		{
-			var lines = textParser.GetLines("long loong looong loooong text");
+			var lines = GetTextParser().GetLines(GetSpaces(3));
 			Assert.AreEqual(1, lines.Count);
-			Assert.AreEqual("long loong looong loooong text", new string(lines[0].ToArray()));
+			Assert.AreEqual(GetSpaces(3), new string(lines[0].ToArray()));
+			Window.CloseAfterFrame();
 		}
 
 		[Test]
 		public void ParseMultipleTextLines()
 		{
-			var lines = textParser.GetLines("first text line" + Environment.NewLine + "Newline");
+			var lines = GetTextParser().GetLines(GetSpaces(1) + Environment.NewLine + GetSpaces(2));
 			Assert.AreEqual(2, lines.Count);
-			Assert.AreEqual("first text line", new string(lines[0].ToArray()));
-			Assert.AreEqual("Newline", new string(lines[1].ToArray()));
+			Assert.AreEqual(GetSpaces(1), new string(lines[0].ToArray()));
+			Assert.AreEqual(GetSpaces(2), new string(lines[1].ToArray()));
+			Window.CloseAfterFrame();
 		}
 
 		[Test]
 		public void ConvertTabsIntoTwoSpaces()
 		{
-			var lines = textParser.GetLines("\ttab\t");
+			var lines = GetTextParser().GetLines("\t \t");
 			Assert.AreEqual(1, lines.Count);
-			Assert.AreEqual("  tab  ", new string(lines[0].ToArray()));
+			Assert.AreEqual(GetSpaces(5), new string(lines[0].ToArray()));
+			Window.CloseAfterFrame();
 		}
 
 		[Test]
 		public void ParseWithUnsupportedCharacters()
 		{
-			var lines = textParser.GetLines("€TextäöüTextÄÖÜ");
+			var lines = GetTextParser().GetLines("äöüÄÖÜ");
 			Assert.AreEqual(1, lines.Count);
-			Assert.AreEqual("?Text???Text???", new string(lines[0].ToArray()));
+			Assert.AreEqual(GetSpaces(6), new string(lines[0].ToArray()));
+			Window.CloseAfterFrame();
 		}
 	}
 }

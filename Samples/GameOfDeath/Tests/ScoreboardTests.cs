@@ -1,21 +1,19 @@
-using System;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Platforms;
 using DeltaEngine.Rendering.Shapes;
+using NUnit.Framework;
 
 namespace GameOfDeath.Tests
 {
-	internal class ScoreboardTests : TestWithAllFrameworks
+	internal class ScoreboardTests : TestWithMocksOrVisually
 	{
-		[VisualTest]
-		public void ShowTwentyFiveDollarsAndElevenKills(Type resolver)
+		[Test]
+		public void ShowTwentyFiveDollarsAndElevenKills()
 		{
-			Start(resolver, (Scoreboard numbers) => {}, (Scoreboard numbers) =>
-			{
-				new Rect(Rectangle.One, Color.White);
-				numbers.Money = 25;
-				numbers.Kills = 11;
-			});
+			new FilledRect(Rectangle.One, Color.White);
+			var numbers = Resolve<Scoreboard>();
+			numbers.Money = 25;
+			numbers.Kills = 11;
 		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
@@ -13,22 +13,21 @@ namespace FindTheWord
 {
 	public class GameScreen : Sprite, IDisposable
 	{
-		public GameScreen(InputCommands input, ContentLoader content)
-			: base(content.Load<Image>("GameBackground"), DefaultDrawArea)
+		public GameScreen(InputCommands input)
+			: base(
+				ContentLoader.Load<Image>("GameBackground"), DefaultDrawArea)
 		{
-			this.content = content;
 			Input = input;
 			currentLevelIndex = -1;
 			randomizer = new PseudoRandom();
-			font = new Font(content, "Tahoma30");
+			font = new Font("Tahoma30");
 			currentLevelFontText = new FontText(font, "", new Point(0.5f, DrawArea.Top + 0.079f));
-			nextLevel = new NextLevelScreen(input, content);
+			nextLevel = new NextLevelScreen(input);
 			CreateImageContainersForRiddle();
 			CreateDisplayCharacterButtons();
 			CreateLevels();
 		}
 
-		private readonly ContentLoader content;
 		private static readonly Rectangle DefaultDrawArea = new Rectangle(0, 0.1875f, 1, 0.625f);
 		private InputCommands Input { get; set; }
 		private int currentLevelIndex;
@@ -86,7 +85,7 @@ namespace FindTheWord
 
 		private CharacterButton CreateEmptyCharacter(float xCenter, float yCenter)
 		{
-			return new CharacterButton(Input, content, xCenter, yCenter);
+			return new CharacterButton(Input, xCenter, yCenter);
 		}
 
 		private void OnDisplayCharButtonClicked(Button sender)
@@ -167,9 +166,9 @@ namespace FindTheWord
 			image1.Visibility = Visibility.Show;
 			image2.Visibility = Visibility.Show;
 			image3.Visibility = Visibility.Show;
-			image1.Image = content.Load<Image>(currentRiddle.Image1);
-			image2.Image = content.Load<Image>(currentRiddle.Image2);
-			image3.Image = content.Load<Image>(currentRiddle.Image3);
+			image1.Image = ContentLoader.Load<Image>(currentRiddle.Image1);
+			image2.Image = ContentLoader.Load<Image>(currentRiddle.Image2);
+			image3.Image = ContentLoader.Load<Image>(currentRiddle.Image3);
 		}
 
 		private void SetDisplayCharactersToCurrentLevel()
@@ -299,14 +298,11 @@ namespace FindTheWord
 
 		private bool IsWordCorrect()
 		{
-			bool isCorrect = true;
 			for (int i = 0; i < solutionCharacters.Count; i++)
 				if (!solutionCharacters[i].Letter.Equals(levels[currentLevelIndex].SearchedWord[i]))
-				{
-					isCorrect = false;
-					break;
-				}
-			return isCorrect;
+					return false;
+
+			return true;
 		}
 
 		private void ClearLevel()

@@ -1,8 +1,8 @@
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
 using DeltaEngine.Physics2D;
+using DeltaEngine.Rendering;
 using DeltaEngine.Rendering.ScreenSpaces;
 using DeltaEngine.Rendering.Sprites;
 
@@ -14,7 +14,7 @@ namespace Asteroids
 	public class Projectile : Sprite
 	{
 		public Projectile(Image texture, Point startPosition, float angle)
-			: base(texture, Rectangle.FromCenter(startPosition, new Size(.02f)), Color.White)
+			: base(texture, Rectangle.FromCenter(startPosition, new Size(.005f)))
 		{
 			Rotation = angle;
 			RenderLayer = (int)AsteroidsRenderLayer.Rockets;
@@ -25,12 +25,12 @@ namespace Asteroids
 					new Point(MathExtensions.Sin(angle) * ProjectileVelocity,
 						-MathExtensions.Cos(angle) * ProjectileVelocity)
 			});
-			Add<MoveAndDisposeOnBorderCollision>();
+			Start<MoveAndDisposeOnBorderCollision>();
 		}
 
 		private const float ProjectileVelocity = .5f;
 
-		private class MoveAndDisposeOnBorderCollision : EntityHandler
+		private class MoveAndDisposeOnBorderCollision : Behavior2D
 		{
 			public MoveAndDisposeOnBorderCollision(ScreenSpace screen)
 			{
@@ -39,7 +39,7 @@ namespace Asteroids
 
 			private readonly ScreenSpace screen;
 
-			public override void Handle(Entity entity)
+			public override void Handle(Entity2D entity)
 			{
 				var projectile = entity as Projectile;
 				projectile.DrawArea = CalculateFutureDrawArea(projectile);

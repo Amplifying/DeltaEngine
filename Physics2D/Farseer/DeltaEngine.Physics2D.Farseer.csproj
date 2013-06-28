@@ -47,10 +47,6 @@
       <Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
       <Name>DeltaEngine.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
-      <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
-      <Name>DeltaEngine.Rendering</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Physics2D.csproj">
       <Project>{dc3aa434-09b9-43ad-8f43-431811fa054d}</Project>
       <Name>DeltaEngine.Physics2D</Name>

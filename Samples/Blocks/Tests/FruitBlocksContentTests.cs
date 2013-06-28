@@ -1,6 +1,4 @@
-using DeltaEngine.Content;
-using DeltaEngine.Platforms.All;
-using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms;
 using NUnit.Framework;
 
 namespace Blocks.Tests
@@ -8,18 +6,15 @@ namespace Blocks.Tests
 	/// <summary>
 	/// Unit test for FruitBlocksContent
 	/// </summary>
-	public class FruitBlocksContentTests : TestWithAllFrameworks
+	public class FruitBlocksContentTests : TestWithMocksOrVisually
 	{
 		[Test]
 		public void Constructor()
 		{
-			Start(typeof(MockResolver), (ContentLoader contentLoader) =>
-			{
-				var content = new FruitBlocksContent(contentLoader);
-				Assert.AreEqual("FruitBlocks_", content.Prefix);
-				Assert.IsTrue(content.AreFiveBrickBlocksAllowed);
-				Assert.IsTrue(content.DoBricksSplitInHalfWhenRowFull);
-			});
+			var content = new FruitBlocksContent();
+			Assert.AreEqual("FruitBlocks_", content.Prefix);
+			Assert.IsTrue(content.AreFiveBrickBlocksAllowed);
+			Assert.IsTrue(content.DoBricksSplitInHalfWhenRowFull);
 		}
 	}
 }

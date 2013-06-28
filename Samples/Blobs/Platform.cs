@@ -32,7 +32,7 @@ namespace Blobs
 			RenderLayer = PlatformRenderLayer
 		};
 
-		private readonly Polygon middle = new Polygon(Color.White)
+		private readonly Polygon middle = new Polygon(Rectangle.Zero, Color.White)
 		{
 			RenderLayer = PlatformRenderLayer
 		};

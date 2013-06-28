@@ -1,13 +1,13 @@
 using System;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Platforms.All;
-using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Input;
+using DeltaEngine.Platforms;
 using DeltaEngine.Rendering.ScreenSpaces;
 using NUnit.Framework;
 
 namespace Snake.Tests
 {
-	public class SnakeGameTests : TestWithAllFrameworks
+	public class SnakeGameTests : TestWithMocksOrVisually
 	{
 		[SetUp]
 		public void Init()
@@ -23,171 +23,148 @@ namespace Snake.Tests
 		private float startPosition;
 		private float moveSpeed;
 
-		[VisualTest]
-		public void StartGame(Type resolver)
+		[Test]
+		public void StartGame()
 		{
-			Start(resolver, (SnakeGame game) => { });
+			new SnakeGame(Resolve<ScreenSpace>(), Resolve<InputCommands>());
 		}
 
 		[Test]
 		public void MoveSnakeLeft()
 		{
-			Start(typeof(MockResolver), (SnakeGame game, ScreenSpace screen) =>
-			{
-				game.MoveLeft();
-				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
-				Assert.AreEqual(new Point(startPosition - blockSize, startPosition),
-					game.Snake.Get<Body>().BodyParts[0].TopLeft);
-			});
+			var game = new SnakeGame(Resolve<ScreenSpace>(), Resolve<InputCommands>());
+			game.MoveLeft();
+			resolver.AdvanceTimeAndExecuteRunners(moveSpeed);
+			Assert.AreEqual(new Point(startPosition - blockSize, startPosition),
+				game.Snake.Get<Body>().BodyParts[0].TopLeft);
 		}
 
 		[Test]
 		public void MoveSnakeRight()
 		{
-			Start(typeof(MockResolver), (SnakeGame game, ScreenSpace screen) =>
-			{
-				game.MoveRight();
-				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
-				Assert.AreEqual(new Point(startPosition + blockSize, startPosition),
-					game.Snake.Get<Body>().BodyParts[0].TopLeft);
-			});
+			var game = new SnakeGame(Resolve<ScreenSpace>(), Resolve<InputCommands>());
+			game.MoveRight();
+			resolver.AdvanceTimeAndExecuteRunners(moveSpeed);
+			Assert.AreEqual(new Point(startPosition + blockSize, startPosition),
+				game.Snake.Get<Body>().BodyParts[0].TopLeft);
 		}
 
 		[Test]
 		public void MoveSnakeLeftAndThenBotom()
 		{
-			Start(typeof(MockResolver), (SnakeGame game, ScreenSpace screen) =>
-			{
-				game.MoveLeft();
-				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
-				game.MoveDown();
-				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
-				Assert.AreEqual(new Point(startPosition - blockSize, startPosition + blockSize),
-					game.Snake.Get<Body>().BodyParts[0].TopLeft);
-			});
+			var game = new SnakeGame(Resolve<ScreenSpace>(), Resolve<InputCommands>());
+			game.MoveLeft();
+			resolver.AdvanceTimeAndExecuteRunners(moveSpeed);
+			game.MoveDown();
+			resolver.AdvanceTimeAndExecuteRunners(moveSpeed);
+			Assert.AreEqual(new Point(startPosition - blockSize, startPosition + blockSize),
+				game.Snake.Get<Body>().BodyParts[0].TopLeft);
 		}
 
 		[Test]
 		public void MoveSnakeTop()
 		{
-			Start(typeof(MockResolver), (SnakeGame game, ScreenSpace screen) =>
-			{
-				game.MoveUp();
-				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
-				Assert.AreEqual(new Point(startPosition, startPosition - blockSize),
-					game.Snake.Get<Body>().BodyParts[0].TopLeft);
-			});
+			var game = new SnakeGame(Resolve<ScreenSpace>(), Resolve<InputCommands>());
+			game.MoveUp();
+			resolver.AdvanceTimeAndExecuteRunners(moveSpeed);
+			Assert.AreEqual(new Point(startPosition, startPosition - blockSize),
+				game.Snake.Get<Body>().BodyParts[0].TopLeft);
 		}
 
 		[Test]
 		public void SnakeCantMoveDownWhenGoingUp()
 		{
-			Start(typeof(MockResolver), (SnakeGame game, ScreenSpace screen) =>
-			{
-				game.MoveDown();
-				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
-				Assert.AreEqual(new Point(startPosition, startPosition - blockSize),
-					game.Snake.Get<Body>().BodyParts[0].TopLeft);
-			});
+			var game = new SnakeGame(Resolve<ScreenSpace>(), Resolve<InputCommands>());
+			game.MoveDown();
+			resolver.AdvanceTimeAndExecuteRunners(moveSpeed);
+			Assert.AreEqual(new Point(startPosition, startPosition - blockSize),
+				game.Snake.Get<Body>().BodyParts[0].TopLeft);
 		}
 
 		[Test]
 		public void SnakeCantMoveUpWhenWhenGoingDown()
 		{
-			Start(typeof(MockResolver), (SnakeGame game, ScreenSpace screen) =>
-			{
-				game.MoveLeft();
-				game.MoveDown();
-				game.MoveUp();
-				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
-				Assert.AreEqual(new Point(startPosition, startPosition - blockSize),
-					game.Snake.Get<Body>().BodyParts[0].TopLeft);
-			});
+			var game = new SnakeGame(Resolve<ScreenSpace>(), Resolve<InputCommands>());
+			game.MoveLeft();
+			game.MoveDown();
+			game.MoveUp();
+			resolver.AdvanceTimeAndExecuteRunners(moveSpeed);
+			Assert.AreEqual(new Point(startPosition, startPosition - blockSize),
+				game.Snake.Get<Body>().BodyParts[0].TopLeft);
 		}
 
 		[Test]
 		public void SnakeCantMoveLeftWhenWhenGoingRight()
 		{
-			Start(typeof(MockResolver), (SnakeGame game, ScreenSpace screen) =>
-			{
-				game.MoveRight();
-				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
-				game.MoveLeft();
-				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
-				Assert.AreEqual(new Point(startPosition + blockSize * 2, startPosition),
-					game.Snake.Get<Body>().BodyParts[0].TopLeft);
-			});
+			var game = new SnakeGame(Resolve<ScreenSpace>(), Resolve<InputCommands>());
+			game.MoveRight();
+			resolver.AdvanceTimeAndExecuteRunners(moveSpeed);
+			game.MoveLeft();
+			resolver.AdvanceTimeAndExecuteRunners(moveSpeed);
+			Assert.AreEqual(new Point(startPosition + blockSize * 2, startPosition),
+				game.Snake.Get<Body>().BodyParts[0].TopLeft);
 		}
 
 		[Test]
 		public void SnakeCantMoveRightWhenWhenGoingLeft()
 		{
-			Start(typeof(MockResolver), (SnakeGame game, ScreenSpace screen) =>
-			{
-				game.MoveLeft();
-				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
-				game.MoveRight();
-				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
-				Assert.AreEqual(new Point(startPosition - blockSize * 2, startPosition),
-					game.Snake.Get<Body>().BodyParts[0].TopLeft);
-			});
+			var game = new SnakeGame(Resolve<ScreenSpace>(), Resolve<InputCommands>());
+			game.MoveLeft();
+			resolver.AdvanceTimeAndExecuteRunners(moveSpeed);
+			game.MoveRight();
+			resolver.AdvanceTimeAndExecuteRunners(moveSpeed);
+			Assert.AreEqual(new Point(startPosition - blockSize * 2, startPosition),
+				game.Snake.Get<Body>().BodyParts[0].TopLeft);
 		}
 
 		[Test]
 		public void SnakeCantMoveUptWhenWhenGoingDown()
 		{
-			Start(typeof(MockResolver), (SnakeGame game, ScreenSpace screen) =>
-			{
-				game.MoveLeft();
-				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
-				game.MoveDown();
-				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
-				game.MoveUp();
-				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
-				Assert.AreEqual(new Point(startPosition - blockSize, startPosition + blockSize * 2),
-					game.Snake.Get<Body>().BodyParts[0].TopLeft);
-			});
+			var game = new SnakeGame(Resolve<ScreenSpace>(), Resolve<InputCommands>());
+			game.MoveLeft();
+			resolver.AdvanceTimeAndExecuteRunners(moveSpeed);
+			game.MoveDown();
+			resolver.AdvanceTimeAndExecuteRunners(moveSpeed);
+			game.MoveUp();
+			resolver.AdvanceTimeAndExecuteRunners(moveSpeed);
+			Assert.AreEqual(new Point(startPosition - blockSize, startPosition + blockSize * 2),
+				game.Snake.Get<Body>().BodyParts[0].TopLeft);
 		}
 
-		[IntegrationTest]
-		public void RespawnChunkIfCollidingWithSnake(Type resolver)
+		[Test]
+		public void RespawnChunkIfCollidingWithSnake()
 		{
-			Start(resolver, (SnakeGame snakeGame) =>
-			{
-				snakeGame.Chunk.DrawArea = snakeGame.Snake.Get<Body>().BodyParts[0].DrawArea;
-				Assert.IsTrue(
-					snakeGame.Chunk.IsCollidingWithSnake(snakeGame.Snake.Get<Body>().BodyParts));
-				snakeGame.RespawnChunk();
-				Assert.IsFalse(
-					snakeGame.Chunk.IsCollidingWithSnake(snakeGame.Snake.Get<Body>().BodyParts));
-			});
+			var snakeGame = new SnakeGame(Resolve<ScreenSpace>(), Resolve<InputCommands>());
+			snakeGame.Chunk.DrawArea = snakeGame.Snake.Get<Body>().BodyParts[0].DrawArea;
+			Assert.IsTrue(snakeGame.Chunk.IsCollidingWithSnake(snakeGame.Snake.Get<Body>().BodyParts));
+			snakeGame.RespawnChunk();
+			Assert.IsFalse(snakeGame.Chunk.IsCollidingWithSnake(snakeGame.Snake.Get<Body>().BodyParts));
 		}
 
 		[Test]
 		public void SnakeEatsChunk()
 		{
-			Start(typeof(MockResolver), (SnakeGame game) =>
-			{
-				var snakeHead = game.Snake.Get<Body>().BodyParts[0].DrawArea;
-				var direction = game.Snake.Get<Body>().Direction;
-				var snakeBodyParts = game.Snake.Get<Body>().BodyParts;
-				var oldTailTopLeftCorner = snakeBodyParts[snakeBodyParts.Count - 1].DrawArea.TopLeft;
+			var game = new SnakeGame(Resolve<ScreenSpace>(), Resolve<InputCommands>());
+			var snakeHead = game.Snake.Get<Body>().BodyParts[0].DrawArea;
+			var direction = game.Snake.Get<Body>().Direction;
+			var snakeBodyParts = game.Snake.Get<Body>().BodyParts;
+			var oldTailTopLeftCorner = snakeBodyParts[snakeBodyParts.Count - 1].DrawArea.TopLeft;
 
-				game.Chunk.DrawArea =
-					new Rectangle(new Point(snakeHead.Left + direction.X, snakeHead.Top + direction.Y),
-						new Size(blockSize));
-				game.MoveUp();
-				mockResolver.AdvanceTimeAndExecuteRunners(moveSpeed);
-				Assert.AreEqual(3, game.Snake.Get<Body>().BodyParts.Count);
-				var newTailTopLeftCorner = snakeBodyParts[snakeBodyParts.Count - 1].DrawArea.TopLeft;
-				Assert.AreEqual(oldTailTopLeftCorner, newTailTopLeftCorner);
-			});
+			game.Chunk.DrawArea =
+				new Rectangle(new Point(snakeHead.Left + direction.X, snakeHead.Top + direction.Y),
+					new Size(blockSize));
+			game.MoveUp();
+			resolver.AdvanceTimeAndExecuteRunners(moveSpeed);
+			Assert.AreEqual(3, game.Snake.Get<Body>().BodyParts.Count);
+			var newTailTopLeftCorner = snakeBodyParts[snakeBodyParts.Count - 1].DrawArea.TopLeft;
+			Assert.AreEqual(oldTailTopLeftCorner, newTailTopLeftCorner);
 		}
 
-		[VisualTest]
-		public void DisplayGameOver(Type resolver)
+		[Test]
+		public void DisplayGameOver()
 		{
-			Start(resolver, (SnakeGame game) => { game.Reset(); });
+			var game = new SnakeGame(Resolve<ScreenSpace>(), Resolve<InputCommands>());
+			game.Reset();
 		}
 	}
 }

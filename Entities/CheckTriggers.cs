@@ -6,18 +6,18 @@ namespace DeltaEngine.Entities
 	/// <summary>
 	/// Checks all triggers each frame
 	/// </summary>
-	public class CheckTriggers : EntityHandler
+	internal class CheckTriggers : Behavior<Entity>
 	{
-		public override void Handle(Entity entity)
+		internal override void Handle(Entity entity)
 		{
 			var triggers = entity.Get<List<Trigger>>();
 			foreach (Trigger trigger in triggers.Where(t => t.Condition(entity)))
 				trigger.Fire(entity);
 		}
 
-		public override EntityHandlerPriority Priority
+		public override Priority Priority
 		{
-			get { return EntityHandlerPriority.High; } //ncrunch: no coverage
+			get { return Priority.High; } //ncrunch: no coverage
 		}
 	}
 }

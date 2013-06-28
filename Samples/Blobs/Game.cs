@@ -11,18 +11,16 @@ namespace Blobs
 	/// </summary>
 	public class Game : Runner
 	{
-		public Game(ScreenSpace screen, InputCommands input, ContentLoader content)
+		public Game(ScreenSpace screen, InputCommands input)
 		{
 			this.screen = screen;
 			this.input = input;
-			this.content = content;
 			CreateLevels();
 			SwitchScene(intro);
 		}
 
 		private readonly ScreenSpace screen;
 		private readonly InputCommands input;
-		private readonly ContentLoader content;
 
 		private void CreateLevels()
 		{
@@ -33,7 +31,7 @@ namespace Blobs
 
 		private void CreateIntro()
 		{
-			intro = new Intro(screen, input, content);
+			intro = new Intro(screen, input);
 			intro.Passed += () => SwitchScene(level1);
 		}
 
@@ -41,7 +39,7 @@ namespace Blobs
 
 		private void CreateLevel1()
 		{
-			level1 = new Level1(screen, input, content);
+			level1 = new Level1(screen, input);
 			level1.Passed += () => SwitchScene(level2);
 			level1.Failed += () => SwitchScene(intro);
 		}
@@ -50,7 +48,7 @@ namespace Blobs
 
 		private void CreateLevel2()
 		{
-			level2 = new Level2(screen, input, content);
+			level2 = new Level2(screen, input);
 			level2.Passed += () => SwitchScene(intro);
 			level2.Failed += () => SwitchScene(intro);
 		}

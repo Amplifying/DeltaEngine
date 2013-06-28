@@ -1,25 +1,19 @@
-using DeltaEngine.Content;
 using DeltaEngine.Input;
-using DeltaEngine.Platforms.All;
-using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms;
 using DeltaEngine.Rendering.ScreenSpaces;
 using NUnit.Framework;
 
 namespace Asteroids.Tests
 {
-	internal class GameTests : TestWithAllFrameworks
+	internal class GameTests : TestWithMocksOrVisually
 	{
 		[Test]
 		public void GameOver()
 		{
-			Start(typeof(MockResolver),
-				(ContentLoader contentLoader, InputCommands inputCommands, ScreenSpace screenSpace) =>
-				{
-					var game = new AsteroidsGame(contentLoader, inputCommands, screenSpace);
-					game.GameOver();
-					Assert.AreEqual(GameState.GameOver, game.GameState);
-					Assert.IsFalse(game.GameLogic.Player.IsActive);
-				});
+			var game = new AsteroidsGame(Resolve<InputCommands>(), Resolve<ScreenSpace>());
+			game.GameOver();
+			Assert.AreEqual(GameState.GameOver, game.GameState);
+			Assert.IsFalse(game.GameLogic.Player.IsActive);
 		}
 	}
 }

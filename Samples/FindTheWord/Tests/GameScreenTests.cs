@@ -1,24 +1,20 @@
-﻿using System;
-using DeltaEngine.Content;
+using System;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.All;
+using NUnit.Framework;
 
 namespace FindTheWord.Tests
 {
-	internal class GameScreenTests : TestWithAllFrameworks
+	internal class GameScreenTests : TestWithMocksOrVisually
 	{
-		[VisualTest]
-		public void ShowScreen(Type resolver)
+		[Test]
+		public void ShowScreen()
 		{
-			Start(resolver, (Window window, InputCommands input, ContentLoader content) =>
-			{
-				window.TotalPixelSize = new Size(1280, 800);
-				var screen = new GameScreen(input, content);
-				screen.FadeIn();
-				screen.StartNextLevel();
-			});
+			Window.ViewportPixelSize = new Size(1280, 800);
+			var screen = new GameScreen(Resolve<InputCommands>());
+			screen.FadeIn();
+			screen.StartNextLevel();
 		}
 	}
 }

@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
-using DeltaEngine.Core;
 
 namespace DeltaEngine.Content
 {
@@ -12,40 +10,79 @@ namespace DeltaEngine.Content
 	/// </summary>
 	public abstract class ContentLoader
 	{
-		protected ContentLoader(ContentDataResolver resolver)
+		protected ContentLoader(ContentDataResolver resolver, string contentPath)
 		{
+			current = this;
 			this.resolver = resolver;
-			ContentLoadedInThread += data => AddLoadedContentToRessources(data);
+			ContentPath = contentPath;
 		}
 
-		protected readonly ContentDataResolver resolver;
+		/// <summary>
+		/// Is only initialized when first used. Normally set in Platforms to the OnlineContentLoader.
+		/// </summary>
+		private static ContentLoader current;
 
-		public Content Load<Content>(string contentName) where Content : ContentData
-		{
-			return Load(typeof(Content), contentName) as Content;
-		}
+		private readonly ContentDataResolver resolver;
+		public string ContentPath { get; protected set; }
 
-		public virtual List<Content> LoadRecursively<Content>(string parentName)
-			where Content : ContentData
-		{
-			return new List<Content>();
-		}
-
-		internal ContentData Load(Type contentType, string contentName)
+		public static Content Load<Content>(string contentName) where Content : ContentData
 		{
 			if (Path.HasExtension(contentName))
 				throw new ContentNameShouldNotHaveExtension();
 
-			if (resources.ContainsKey(contentName))
-				if (resources[contentName].IsDisposed)
-					resources.Remove(contentName);
-				else
-					return GetCachedResource(contentType, contentName);
-
-			return LoadAndCacheContent(contentType, contentName);
+			return Load(typeof(Content), contentName) as Content;
 		}
 
+		public static bool Exists(string contentName)
+		{
+			return current.GetMetaData(contentName) != null;
+		}
+
+		protected abstract void LazyInitialize();
+
 		public class ContentNameShouldNotHaveExtension : Exception {}
+
+		internal static ContentData Load(Type contentType, string contentName)
+		{
+			if (!current.resources.ContainsKey(contentName))
+				return current.LoadAndCacheContent(contentType, contentName);
+
+			if (!current.resources[contentName].IsDisposed)
+				return current.GetCachedResource(contentType, contentName);
+
+			current.resources.Remove(contentName);
+			return current.LoadAndCacheContent(contentType, contentName);
+		}
+
+		private readonly Dictionary<string, ContentData> resources =
+			new Dictionary<string, ContentData>();
+
+		private ContentData LoadAndCacheContent(Type contentType, string contentName)
+		{
+			if (GetMetaData(contentName) == null)
+				throw new ContentNotFound(contentName);
+
+			var contentData = resolver.Resolve(contentType, contentName);
+			LoadMetaDataAndContent(contentData);
+			resources.Add(contentName, contentData);
+			return contentData;
+		}
+
+		protected abstract ContentMetaData GetMetaData(string contentName);
+
+		public class ContentNotFound : Exception
+		{
+			public ContentNotFound(string contentName)
+				: base(contentName) {}
+		}
+
+		private void LoadMetaDataAndContent(ContentData contentData)
+		{
+			contentData.MetaData = GetMetaData(contentData.Name);
+			contentData.InternalLoad(GetContentDataStream);
+		}
+
+		protected abstract Stream GetContentDataStream(ContentData content);
 
 		private ContentData GetCachedResource(Type contentType, string contentName)
 		{
@@ -55,7 +92,8 @@ namespace DeltaEngine.Content
 
 			throw new CachedResourceExistsButIsOfTheWrongType("Content '" + contentName + "' of type '" +
 				contentType + "' requested - but type '" + cachedResource.GetType() +
-				"' found in cache\n '" + contentName + "' must be in meta data files twice with different suffixes!");
+				"' found in cache\n '" + contentName +
+				"' should not be in meta data files twice with different suffixes!");
 		}
 
 		public class CachedResourceExistsButIsOfTheWrongType : Exception
@@ -64,82 +102,11 @@ namespace DeltaEngine.Content
 				: base(message) {}
 		}
 
-		protected readonly Dictionary<string, ContentData> resources =
-			new Dictionary<string, ContentData>();
-		protected readonly Dictionary<string, string> contentFilenames =
-			new Dictionary<string, string>();
-
-		protected ContentData LoadAndCacheContent(Type contentType, string contentName)
+		public static void ReloadContent(string contentName)
 		{
-			var contentData = resolver.Resolve(contentType, contentName);
-			LoadContent(contentData);
-			resources.Add(contentName, contentData);
-			return contentData;
-		}
-
-		private void LoadContent(ContentData contentData)
-		{
-			contentData.InternalLoad(GetContentDataStream);
-			//AddContentToThreadedLoadingQueue(contentData);
-			//ThreadExtensions.Start(ThreadedLoading);
-		}
-
-		private void AddContentToThreadedLoadingQueue(ContentData contentData)
-		{
-			lock (ContentForThreadedLoading)
-			{
-				ContentForThreadedLoading.Enqueue(contentData);	
-			}
-			contentAddedToQueue.Set();
-		}
-
-		private readonly AutoResetEvent contentAddedToQueue = new AutoResetEvent(false);
-
-		protected readonly Queue<ContentData> ContentForThreadedLoading = new Queue<ContentData>();
-
-		protected void ThreadedLoading()
-		{
-			lock (ContentForThreadedLoading)
-			{
-				while (ContentForThreadedLoading.Count > 0)
-				{
-					var contentToLoad = ContentForThreadedLoading.Dequeue();
-					contentToLoad.InternalLoad(GetContentDataStream);
-					ContentLoadedInThread.Invoke(contentToLoad);
-				}
-			}
-			contentAddedToQueue.WaitOne();
-		}
-
-		protected event Action<ContentData> ContentLoadedInThread;
-
-		protected void AddLoadedContentToRessources(ContentData loadedContent)
-		{
-			resources.Add(loadedContent.Name, loadedContent);
-		}
-
-		protected abstract Stream GetContentDataStream(string contentName);
-
-		public void ReloadContent(string contentName)
-		{
-			var content = resources[contentName];
-			LoadContent(content);
+			var content = current.resources[contentName];
+			current.LoadMetaDataAndContent(content);
 			content.FireContentChangedEvent();
-		}
-
-		public string GetFilenameFromContentName(string contentName)
-		{
-			string filename;
-			if (contentFilenames.TryGetValue(contentName, out filename))
-				return filename;
-
-			throw new ContentNotFound(contentName);
-		}
-
-		public class ContentNotFound : Exception
-		{
-			public ContentNotFound(string contentName)
-				: base(contentName) {}
 		}
 	}
 }

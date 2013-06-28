@@ -1,6 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<ContentMetaData Name="DeltaEngine.Multimedia.Tests" Type="Scene" LastTimeUpdated="2013-04-22 17:00:00" ContentDeviceName="Delta">
-  <ContentMetaData Name="DefaultMusic" Type="Music" LocalFilePath="DefaultMusic.mp3"></ContentMetaData>
-  <ContentMetaData Name="DefaultSound" Type="Sound" LocalFilePath="DefaultSound.wav"></ContentMetaData>
-  <ContentMetaData Name="DefaultVideo" Type="Video" LocalFilePath="DefaultVideo.wmv"></ContentMetaData>
-</ContentMetaData>

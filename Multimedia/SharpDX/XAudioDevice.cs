@@ -16,6 +16,11 @@ namespace DeltaEngine.Multimedia.SharpDX
 		public XAudio2 XAudio2 { get; private set; }
 		public MasteringVoice MasteringVoice { get; private set; }
 
+		public override bool IsInitialized
+		{
+			get { return XAudio2 == null; }
+		}
+
 		public override void Run()
 		{
 			base.Run();

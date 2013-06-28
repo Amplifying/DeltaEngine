@@ -3,6 +3,7 @@ using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
 using DeltaEngine.Input;
+using DeltaEngine.Rendering;
 using DeltaEngine.Rendering.Sprites;
 
 namespace Breakout
@@ -10,12 +11,14 @@ namespace Breakout
 	/// <summary>
 	/// Holds the paddle position
 	/// </summary>
-	public class Paddle : Sprite, Runner
+	public class Paddle : Sprite
 	{
-		public Paddle(ContentLoader content, InputCommands inputCommands)
-			: base(content.Load<Image>("Paddle"), Rectangle.One)
+		public Paddle(InputCommands inputCommands)
+			: base(ContentLoader.Load<Image>("Paddle"), Rectangle.One)
 		{
 			RegisterInputCommands(inputCommands);
+			Start<RunPaddle>();
+			RenderLayer = 5;
 		}
 
 		private void RegisterInputCommands(InputCommands inputCommands)
@@ -36,10 +39,14 @@ namespace Breakout
 		private float xPosition = 0.5f;
 		private const float PaddleMovementSpeed = 1.5f;
 
-		public void Run()
+		public class RunPaddle : EventListener2D
 		{
-			xPosition = xPosition.Clamp(HalfWidth, 1.0f - HalfWidth);
-			DrawArea = Rectangle.FromCenter(xPosition, YPosition, Width, Height);
+			public override void ReceiveMessage(Entity2D entity, object message)
+			{
+				Paddle paddle = (Paddle)entity;
+				var xPosition = paddle.xPosition.Clamp(HalfWidth, 1.0f - HalfWidth);
+				paddle.DrawArea = Rectangle.FromCenter(xPosition, YPosition, Width, Height);
+			}
 		}
 
 		private const float YPosition = 0.9f;
@@ -50,6 +57,10 @@ namespace Breakout
 		public Point Position
 		{
 			get { return new Point(DrawArea.Center.X, DrawArea.Top); }
+		}
+		public void Run()
+		{
+			
 		}
 	}
 }

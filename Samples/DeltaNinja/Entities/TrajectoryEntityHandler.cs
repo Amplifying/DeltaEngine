@@ -1,42 +1,34 @@
 using DeltaEngine.Core;
-using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
-using DeltaEngine.Graphics;
 using DeltaEngine.Physics2D;
 using DeltaEngine.Rendering;
-using DeltaEngine.Rendering.Sprites;
-using System.Linq;
-using System.Collections.Generic;
 
-namespace DeltaNinja
+namespace DeltaNinja.Entities
 {
-	class TrajectoryEntityHandler : EntityHandler
+	class TrajectoryEntityHandler : Behavior2D
 	{
-		public TrajectoryEntityHandler()
+		public override void Handle(Entity2D entity)
 		{
-			Filter = entity => entity is Entity2D;
+			var sprite = entity as MovingSprite;
+			if (sprite == null) return;
+			if (sprite.IsPaused) return;
+			MoveEntity(sprite);
 		}
 
-		public override void Handle(Entity entity)
+		private static void MoveEntity(MovingSprite sprite)
 		{
-			var entity2D = entity as Entity2D;
-			MoveEntity(entity2D);
-		}
-
-		private static void MoveEntity(Entity2D entity)
-		{
-			var physics = entity.Get<SimplePhysics.Data>();
+			var physics = sprite.Get<SimplePhysics.Data>();
 			physics.Velocity += physics.Gravity * Time.Current.Delta;
-			entity.Center += physics.Velocity * Time.Current.Delta;
-			entity.Rotation += physics.RotationSpeed * Time.Current.Delta;
+			sprite.Center += physics.Velocity * Time.Current.Delta;
+			sprite.Rotation += physics.RotationSpeed * Time.Current.Delta;
 			physics.Elapsed += Time.Current.Delta;
 			if (physics.Duration > 0.0f && physics.Elapsed >= physics.Duration)
-				entity.IsActive = false;
+				sprite.IsActive = false;
 		}
 
-		public override EntityHandlerPriority Priority
+		public override Priority Priority
 		{
-			get { return EntityHandlerPriority.First; }
+			get { return Priority.First; }
 		}
 	}
 }

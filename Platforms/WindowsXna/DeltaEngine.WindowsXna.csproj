@@ -36,6 +36,8 @@
     <Reference Include="Microsoft.Xna.Framework.Game" />
     <Reference Include="Microsoft.Xna.Framework.Video" />
     <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
@@ -43,9 +45,9 @@
       <Project>{f1b6345b-6f28-482f-9230-8f1d8674c28a}</Project>
       <Name>DeltaEngine.Content</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Content\Disk\DeltaEngine.Content.Disk.csproj">
-      <Project>{3B3B8BE3-A213-4383-BA7B-1AFE5F779108}</Project>
-      <Name>DeltaEngine.Content.Disk</Name>
+    <ProjectReference Include="..\..\Content\Online\DeltaEngine.Content.Online.csproj">
+      <Project>{68AA6280-09EF-4325-B5F8-B8A967004144}</Project>
+      <Name>DeltaEngine.Content.Online</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
       <Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
@@ -60,7 +62,7 @@
       <Name>DeltaEngine.Graphics</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Graphics\Xna\DeltaEngine.Graphics.Xna.csproj">
-      <Project>{cc533b9b-fc08-411a-b02d-9bb0e2dd90ec}</Project>
+      <Project>{CC533B9B-FC08-411A-B02D-9BB0E2DD90EC}</Project>
       <Name>DeltaEngine.Graphics.Xna</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Input\DeltaEngine.Input.csproj">
@@ -72,29 +74,55 @@
       <Name>DeltaEngine.Input.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Input\Xna\DeltaEngine.Input.Xna.csproj">
-      <Project>{5d28c1b5-43ad-4e69-840d-b068c3844589}</Project>
+      <Project>{5D28C1B5-43AD-4E69-840D-B068C3844589}</Project>
       <Name>DeltaEngine.Input.Xna</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Logging\Basic\DeltaEngine.Logging.Basic.csproj">
+      <Project>{03C2EB6A-826D-4D24-BE10-244B20CCD1D8}</Project>
+      <Name>DeltaEngine.Logging.Basic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Logging\DeltaEngine.Logging.csproj">
+      <Project>{E4440567-3D5D-4670-AB49-8163B18E302E}</Project>
+      <Name>DeltaEngine.Logging</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Multimedia\DeltaEngine.Multimedia.csproj">
       <Project>{6016ABB8-05F5-4A07-8FBA-16576277DDE7}</Project>
       <Name>DeltaEngine.Multimedia</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Multimedia\Xna\DeltaEngine.Multimedia.Xna.csproj">
-      <Project>{70773e53-5d8e-4218-8afa-0a07e48fd4a2}</Project>
+      <Project>{70773E53-5D8E-4218-8AFA-0A07E48FD4A2}</Project>
       <Name>DeltaEngine.Multimedia.Xna</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Networking\DeltaEngine.Networking.csproj">
+      <Project>{5231706E-2955-43BF-9C06-291E12AF5C5C}</Project>
+      <Name>DeltaEngine.Networking</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Networking\Sockets\DeltaEngine.Networking.Sockets.csproj">
+      <Project>{9E085AB9-B4DE-4815-BD90-D975C75DFE94}</Project>
+      <Name>DeltaEngine.Networking.Sockets</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Physics2D\DeltaEngine.Physics2D.csproj">
+      <Project>{DC3AA434-09B9-43AD-8F43-431811FA054D}</Project>
+      <Name>DeltaEngine.Physics2D</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Physics2D\Farseer\DeltaEngine.Physics2D.Farseer.csproj">
+      <Project>{C983D137-8B7F-47BE-996E-894A3596DD06}</Project>
+      <Name>DeltaEngine.Physics2D.Farseer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
+      <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
+      <Name>DeltaEngine.Rendering</Name>
     </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Platforms.csproj">
       <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
       <Name>DeltaEngine.Platforms</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Windows\DeltaEngine.Platforms.Windows.csproj">
-      <Project>{bd8a80e2-a313-437e-b0ef-fc0b066280a7}</Project>
-      <Name>DeltaEngine.Platforms.Windows</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="App.cs" />
+    <Compile Include="XnaDisplayDevice.cs" />
+    <Compile Include="XnaSystemInformation.cs" />
     <Compile Include="XnaResolver.cs" />
     <Compile Include="XnaGame.cs" />
     <Compile Include="XnaWindow.cs" />

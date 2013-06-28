@@ -6,13 +6,13 @@ using DeltaEngine.Platforms.Windows;
 
 namespace DeltaEngine.Platforms
 {
-	internal class SharpDxResolver : WindowsResolver
+	internal class SharpDXResolver : WindowsResolver
 	{
-		public SharpDxResolver()
+		public SharpDXResolver()
 		{
 			RegisterSingleton<SharpDXDevice>();
 			RegisterSingleton<SharpDXDrawing>();
-			RegisterSingleton<SharpDxScreenshotCapturer>();
+			RegisterSingleton<SharpDXScreenshotCapturer>();
 			RegisterSingleton<XAudioDevice>();
 			RegisterSingleton<SharpDXMouse>();
 			RegisterSingleton<SharpDXKeyboard>();
@@ -20,6 +20,7 @@ namespace DeltaEngine.Platforms
 			RegisterSingleton<WindowsTouch>();
 			RegisterSingleton<WindowsGamePad>();
 			RegisterSingleton<CursorPositionTranslater>();
+			RegisterSingleton<SharpDXSystemInformation>();
 		}
 	}
 }

@@ -1,48 +1,36 @@
-using System;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.All;
-using DeltaEngine.Platforms.Tests;
 using NUnit.Framework;
 
 namespace DeltaEngine.Graphics.Tests
 {
-	public class DeviceTests : TestWithAllFrameworks
+	public class DeviceTests : TestWithMocksOrVisually
 	{
-		[VisualTest, ApproveFirstFrameScreenshot]
-		public void DrawRedBackground(Type resolver)
+		[Test, ApproveFirstFrameScreenshot]
+		public void DrawRedBackground()
 		{
-			Start(resolver, (Device device, Window window) => { window.BackgroundColor = Color.Red; });
-		}
-		
-		[VisualTest]
-		public void SizeChanged(Type resolver)
-		{
-			Start(resolver,
-				(Device device, Window window) => window.TotalPixelSize = new Size(100, 100));
+			Window.BackgroundColor = Color.Red;
 		}
 
-		[IntegrationTest]
-		public void Present(Type resolver)
+		[Test]
+		public void SizeChanged()
 		{
-			Start(resolver, (Device device, Window window) => device.Present());
+			Window.ViewportPixelSize = new Size(200, 100);
+			Assert.AreEqual(new Size(200, 100), Window.ViewportPixelSize);
 		}
 
-		[IntegrationTest]
-		public void Dispose(Type resolver)
+		[Test]
+		public void CloseAfterOneFrame()
 		{
-			Start(resolver, (Device device) => device.Dispose());
+			Window.CloseAfterFrame();
 		}
 
-		//ncrunch: no coverage start
-		[VisualTest, ApproveFirstFrameScreenshot, Ignore]
-		public void SetFullscreenResolutionRedBackground(Type resolver)
+		[Test, ApproveFirstFrameScreenshot]
+		public void SetFullscreenModeAndShowRedBackground()
 		{
-			Start(resolver, (Device device, Window window) =>
-			{
-				window.SetFullscreen(new Size(800, 600));
-				window.BackgroundColor = Color.Red;
-			});
+			Settings.StartInFullscreen = true;
+			Window.BackgroundColor = Color.Red;
+			Settings.StartInFullscreen = false;
 		}
 	}
 }

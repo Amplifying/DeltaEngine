@@ -9,10 +9,10 @@ namespace GameOfDeath.Items
 	/// </summary>
 	public class Toxic : Item
 	{
-		public Toxic(ContentLoader content)
+		public Toxic()
 			: base(
-				content.Load<Image>("Toxic"), content.Load<Image>("ToxicCloud"),
-				content.Load<Sound>("ToxicEffect")) {}
+				ContentLoader.Load<Image>("Toxic"), ContentLoader.Load<Image>("ToxicCloud"),
+				ContentLoader.Load<Sound>("ToxicEffect")) { }
 
 		protected override float ImpactSize
 		{

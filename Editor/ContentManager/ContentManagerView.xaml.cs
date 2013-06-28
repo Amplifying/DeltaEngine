@@ -26,7 +26,10 @@ namespace DeltaEngine.Editor.ContentManager
 			ScrollViewer.PreviewMouseLeftButtonDown += OnMouseLeftButtonDown;
 			ScrollViewer.MouseMove += OnMouseMove;
 			Slider.ValueChanged += OnSliderValueChanged;
+			copiedContent = new Dictionary<string, string>();
 		}
+
+		private readonly Dictionary<string, string> copiedContent; 
 
 		public void OnScrollViewerScrollChanged(object sender, ScrollChangedEventArgs e)
 		{
@@ -180,6 +183,22 @@ namespace DeltaEngine.Editor.ContentManager
 			foreach (var item in selectedItems)
 				itemList.Add(item.ToString());
 			Messenger.Default.Send(itemList, "SaveImagesAsAnimation");
+		}
+
+		private void CopyContent(object sender, RoutedEventArgs e)
+		{
+			copiedContent.Clear();
+			var selectedItems = ImageList.SelectedItems;
+			foreach (var item in selectedItems)
+				copiedContent.Add(item.ToString(), ProjectList.SelectedItem.ToString());
+		}
+
+		private void PastContent(object sender, RoutedEventArgs e)
+		{
+			if (copiedContent.Count < 1)
+				return;
+
+			Messenger.Default.Send(copiedContent, "CopyContentIntoProject");
 		}
 	}
 }

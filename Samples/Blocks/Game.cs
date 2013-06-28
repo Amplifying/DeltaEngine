@@ -38,7 +38,7 @@ namespace Blocks
 
 		private void SetDisplayMode()
 		{
-			screen.Window.TotalPixelSize = new Size(700, 700);
+			screen.Window.ViewportPixelSize = new Size(700, 700);
 			screen.Window.Title = "Sample Blocks Game";
 			var aspectRatio = screen.Viewport.Aspect;
 			DisplayMode = aspectRatio >= 1.0f

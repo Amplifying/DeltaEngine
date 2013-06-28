@@ -1,114 +1,97 @@
-using System;
 using System.Collections.Generic;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Platforms.Mocks;
 using NUnit.Framework;
 
 namespace DeltaEngine.Input.Tests
 {
-	public class InputCommandsTests : TestWithAllFrameworks
+	public class InputCommandsTests : TestWithMocksOrVisually
 	{
-		[IntegrationTest]
-		public void CountCommandsForSimpleCommand(Type resolver)
+		[Test]
+		public void CountCommandsForSimpleCommand()
 		{
-			Start(resolver, (InputCommands input) =>
-			{
-				Assert.AreEqual(0, input.Count);
-				input.Add(Key.Space, key => { });
-				Assert.AreEqual(1, input.Count);
-			});
+			Assert.AreEqual(0, Input.Count);
+			Input.Add(Key.Space, key => { });
+			Assert.AreEqual(1, Input.Count);
 		}
 
-		[IntegrationTest]
-		public void AddRemoveAndCountCommand(Type resolver)
+		[Test]
+		public void AddRemoveAndCountCommand()
 		{
-			Start(resolver, (InputCommands input) =>
-			{
-				var command = new Command();
-				input.Add(command);
-				input.Add(delegate { });
-				Assert.AreEqual(2, input.Count);
-				input.Add(MouseButton.Left, State.Pressed, delegate(Mouse mouse) { });
-				Assert.AreEqual(3, input.Count);
-				input.Remove(command);
-				Assert.AreEqual(2, input.Count);
-				input.Add(MouseButton.Middle, delegate { });
-				Assert.AreEqual(3, input.Count);
-			});
+			var command = new Command();
+			Input.Add(command);
+			Input.Add(delegate { });
+			Assert.AreEqual(2, Input.Count);
+			Input.Add(MouseButton.Left, State.Pressed, delegate(Mouse mouse) { });
+			Assert.AreEqual(3, Input.Count);
+			Input.Remove(command);
+			Assert.AreEqual(2, Input.Count);
+			Input.Add(MouseButton.Middle, delegate { });
+			Assert.AreEqual(3, Input.Count);
 		}
 
-		[IntegrationTest]
-		public void AddDifferentCommands(Type resolver)
+		[Test]
+		public void AddDifferentCommands()
 		{
-			Start(resolver, (InputCommands input) =>
-			{
-				input.Add(Key.Space, State.Pressing, key => { });
-				input.Add(Key.Escape, key => { });
-				input.Add(MouseButton.Left, State.Pressing, mouse => { });
-				input.Add(MouseButton.Middle, delegate { });
-				input.AddMouseMovement(mouse => { });
-				input.AddMouseHover(mouse => { });
-				input.Add(touch => { });
-				Assert.AreEqual(7, input.Count);
-			});
+			Input.Add(Key.Space, State.Pressing, key => { });
+			Input.Add(Key.Escape, key => { });
+			Input.Add(MouseButton.Left, State.Pressing, mouse => { });
+			Input.Add(MouseButton.Middle, delegate { });
+			Input.AddMouseMovement(mouse => { });
+			Input.AddMouseHover(mouse => { });
+			Input.Add(touch => { });
+			Assert.AreEqual(7, Input.Count);
 		}
 
-		[IntegrationTest]
-		public void StoreAndRemoveCommands(Type resolver)
+		[Test]
+		public void StoreAndRemoveCommands()
 		{
-			Start(resolver, (InputCommands input) =>
-			{
-				List<Command> commands = CreateAndStoreCommands(input);
-				Assert.AreEqual(9, input.Count);
-				input.Remove(commands[2]);
-				input.Remove(commands[4]);
-				input.Remove(commands[7]);
-				Assert.AreEqual(6, input.Count);
-			});
+			List<Command> commands = CreateAndStoreCommands();
+			Assert.AreEqual(9, Input.Count);
+			Input.Remove(commands[2]);
+			Input.Remove(commands[4]);
+			Input.Remove(commands[7]);
+			Assert.AreEqual(6, Input.Count);
 		}
 
-		private static List<Command> CreateAndStoreCommands(InputCommands input)
+		private List<Command> CreateAndStoreCommands()
 		{
 			return new List<Command>
 			{
-				input.Add(Key.A, key => { }),
-				input.Add(Key.A, State.Released, key => { }),
-				input.Add(MouseButton.Left, mouse => { }),
-				input.Add(MouseButton.Left, State.Pressing, mouse => { }),
-				input.AddMouseMovement(mouse => { }),
-				input.AddMouseHover(mouse => { }),
-				input.Add(touch => { }),
-				input.Add(State.Pressing, touch => { }),
-				input.Add(GamePadButton.A, State.Pressing, () => { })
+				Input.Add(Key.A, key => { }),
+				Input.Add(Key.A, State.Released, key => { }),
+				Input.Add(MouseButton.Left, mouse => { }),
+				Input.Add(MouseButton.Left, State.Pressing, mouse => { }),
+				Input.AddMouseMovement(mouse => { }),
+				Input.AddMouseHover(mouse => { }),
+				Input.Add(touch => { }),
+				Input.Add(State.Pressing, touch => { }),
+				Input.Add(GamePadButton.A, State.Pressing, () => { })
 			};
 		}
 
 		[Test]
 		public void AddTouchCallback()
 		{
-			var input = new InputCommands(null, null, null);
+			var input = new InputCommands(null, null, null, null);
 			input.Add(touch => { });
 			Assert.AreEqual(1, input.Count);
 		}
 
-		[IntegrationTest]
-		public void Clear(Type resolver)
+		[Test]
+		public void Clear()
 		{
-			Start(resolver, (InputCommands input) =>
-			{
-				input.Add(Key.Space, State.Pressing, key => { });
-				input.Add(Key.Escape, key => { });
-				input.Add(MouseButton.Left, State.Pressing, mouse => { });
-				input.Clear();
-				Assert.AreEqual(0, input.Count);
-			});
+			Input.Add(Key.Space, State.Pressing, key => { });
+			Input.Add(Key.Escape, key => { });
+			Input.Add(MouseButton.Left, State.Pressing, mouse => { });
+			Input.Clear();
+			Assert.AreEqual(0, Input.Count);
 		}
 
-		[VisualTest]
-		public void QuitWithEscape(Type resolver)
+		[Test]
+		public void QuitWithEscape()
 		{
-			Start(resolver,
-				(InputCommands input, Window window) => input.Add(Key.Escape, key => window.Dispose()));
+			Input.Add(Key.Escape, key => Resolve<MockResolver>().Window.Dispose());
 		}
 	}
 }

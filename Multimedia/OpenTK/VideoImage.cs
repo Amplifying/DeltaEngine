@@ -10,7 +10,7 @@ namespace DeltaEngine.Multimedia.OpenTK
 	[IgnoreForResolver]
 	public class VideoImage : Image
 	{
-		public VideoImage()
+		public VideoImage(Device device)
 			: base("<VideoTexture>")
 		{
 			GL.GenTextures(1, out glHandle);
@@ -20,7 +20,8 @@ namespace DeltaEngine.Multimedia.OpenTK
 		protected const int InvalidHandle = -1;
 		protected int glHandle = InvalidHandle;
 
-		protected override void LoadData(Stream fileData) {}
+		protected override void LoadImage(Stream fileData) {}
+		protected override void CreateDefaultTexture() {}
 
 		protected override void DisposeData()
 		{
@@ -30,21 +31,6 @@ namespace DeltaEngine.Multimedia.OpenTK
 			GL.DeleteTexture(glHandle);
 			glHandle = InvalidHandle;
 		}
-
-		public override Size PixelSize
-		{
-			get { return size; }
-		}
-		public override bool HasAlpha
-		{
-			get
-			{
-				//TODO
-				return false;
-			}
-		}
-
-		private Size size;
 
 		public void Draw(VertexPositionColorTextured[] vertices)
 		{
@@ -63,7 +49,7 @@ namespace DeltaEngine.Multimedia.OpenTK
 
 		public void UpdateTexture(VideoStream stream, int frameIndex)
 		{
-			size = new Size(stream.Width, stream.Height);
+			//size = new Size(stream.Width, stream.Height);
 			GL.BindTexture(TextureTarget.Texture2D, glHandle);
 			AviInterop.BitmapInfoHeader bitmapHeader;
 			byte[] pixelData = stream.GetStreamData(frameIndex, out bitmapHeader);
@@ -72,7 +58,7 @@ namespace DeltaEngine.Multimedia.OpenTK
 			SetSamplerState();
 		}
 
-		private void SetSamplerState()
+		protected override void SetSamplerState()
 		{
 			SetTexture2DParameter(TextureParameterName.TextureMinFilter,
 				DisableLinearFiltering ? All.Nearest : All.Linear);

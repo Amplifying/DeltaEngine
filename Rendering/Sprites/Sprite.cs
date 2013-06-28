@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Generic;
+using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
 using DeltaEngine.Rendering.ScreenSpaces;
 
@@ -12,36 +11,28 @@ namespace DeltaEngine.Rendering.Sprites
 	/// </summary>
 	public class Sprite : Entity2D
 	{
-		//ncrunch: no coverage start
 		private Sprite()
-			: base(Rectangle.Zero, Color.White) {}
+			: base(Rectangle.Zero) {}
 
-		//ncrunch: no coverage end
-
-		public Sprite(Image image)
-			: this(image, Rectangle.Zero) {}
+		public Sprite(string imageName, Rectangle drawArea)
+			: this(ContentLoader.Load<Image>(imageName), drawArea) {}
 
 		public Sprite(Image image, Rectangle drawArea)
-			: this(image, drawArea, Color.White) {}
-
-		public Sprite(Image image, Color color)
-			: this(image, Rectangle.Zero, color) {}
-
-		public Sprite(Image image, Rectangle drawArea, Color color)
-			: base(drawArea, color)
+			: base(drawArea)
 		{
-			if (image == null)
-				throw new NullReferenceException("image");
-
 			Add(image);
-			Add(image.HasAlpha ? BlendMode.Normal : BlendMode.Opaque);
-			Add<Render>();
+			Add(image.BlendMode);
+			Start<BatchRender>();
 		}
 
 		public Image Image
 		{
 			get { return Get<Image>(); }
-			set { Set(value); }
+			set
+			{
+				Set(value);
+				Set(value.BlendMode);
+			}
 		}
 
 		public BlendMode BlendMode
@@ -51,91 +42,118 @@ namespace DeltaEngine.Rendering.Sprites
 		}
 
 		/// <summary>
-		/// Responsible for rendering sprites
+		/// Responsible for rendering sprites in batches
 		/// </summary>
-		private class Render : EntityListener
+		public class BatchRender : EventListener2D
 		{
-			public Render(ScreenSpace screen, Drawing drawing)
+			public BatchRender(ScreenSpace screen, Drawing drawing)
 			{
 				this.screen = screen;
 				this.drawing = drawing;
-				drawingSprites = new Dictionary<Image, SpriteInfo>();
+				spriteDrawQueue = new List<SpriteDrawContext>();
+				verticesBatch = new List<VertexPositionColorTextured>();
+				indicesBatch = new List<short>();
 			}
 
 			private readonly ScreenSpace screen;
 			private readonly Drawing drawing;
-			private readonly Dictionary<Image, SpriteInfo> drawingSprites;
+			private readonly List<SpriteDrawContext> spriteDrawQueue;
+			private readonly List<VertexPositionColorTextured> verticesBatch;
+			private readonly List<short> indicesBatch;
 
-			public override void Handle(Entity entity)
+			public override void ReceiveMessage(Entity2D entity, object message)
 			{
-				if (entity.Get<Visibility>() == Visibility.Hide)
-					return;
-
-				drawingSprites.Clear();
-				RenderSprite(entity);
-				foreach (var sprite in drawingSprites)
-					drawing.DrawQuad(sprite.Key, sprite.Value.vertices, sprite.Value.indices);
+				if (message is SortAndRender.AddToBatch)
+					BatchSprite(entity);
 			}
 
-			public override void ReceiveMessage(Entity entity, object message) {}
-
-			private void RenderSprite(Entity entity)
+			private void BatchSprite(Entity2D entity)
 			{
-				var drawArea = entity.Get<Rectangle>();
-				var rotation = entity.Get<float>();
+				SpriteDrawContext sprite;
+				FillSpriteDrawContext(entity, out sprite);
+				spriteDrawQueue.Add(sprite);
+			}
+
+			private void FillSpriteDrawContext(Entity2D entity, out SpriteDrawContext drawContext)
+			{
+				var rotation = entity.Rotation;
+				var drawArea = entity.DrawArea;
+				var color = entity.Color;
 				var center = drawArea.Center;
 				var rotationCenter = entity.Contains<RotationCenter>()
 					? entity.Get<RotationCenter>().Value : center;
 
-				var newVertices = new List<VertexPositionColorTextured>
+				drawContext.texture = entity.Get<Image>();
+				drawContext.vertices = new[]
 				{
-					GetVertex(drawArea.TopLeft.RotateAround(rotationCenter, rotation), Point.Zero, entity),
-					GetVertex(drawArea.TopRight.RotateAround(rotationCenter, rotation), Point.UnitX, entity),
-					GetVertex(drawArea.BottomRight.RotateAround(rotationCenter, rotation), Point.One, entity),
-					GetVertex(drawArea.BottomLeft.RotateAround(rotationCenter, rotation), Point.UnitY, entity)
+					GetVertex(drawArea.TopLeft.RotateAround(rotationCenter, rotation), Point.Zero, color),
+					GetVertex(drawArea.TopRight.RotateAround(rotationCenter, rotation), Point.UnitX, color),
+					GetVertex(drawArea.BottomRight.RotateAround(rotationCenter, rotation), Point.One, color),
+					GetVertex(drawArea.BottomLeft.RotateAround(rotationCenter, rotation), Point.UnitY, color)
 				};
-				var image = entity.Get<Image>();
-				CheckIfNewImage(image, newVertices);
 			}
 
-			private void CheckIfNewImage(Image image, List<VertexPositionColorTextured> newVertices)
+			private struct SpriteDrawContext
 			{
-				if (!drawingSprites.ContainsKey(image))
-					drawingSprites.Add(image,
-						new SpriteInfo { vertices = newVertices, indices = new List<short> { 0, 1, 2, 0, 2, 3 } });
-				else
-					AddNewVerticesToList(image, newVertices);
+				public Image texture;
+				public VertexPositionColorTextured[] vertices;
 			}
 
-			private void AddNewVerticesToList(Image image, List<VertexPositionColorTextured> newVertices)
+			private VertexPositionColorTextured GetVertex(Point position, Point uv, Color color)
 			{
-				SpriteInfo spriteInfo;
-				drawingSprites.TryGetValue(image, out spriteInfo);
-				SetIndicesOfNewVertices(spriteInfo);
-				foreach (var vertice in newVertices)
-					spriteInfo.vertices.Add(vertice);
+				return new VertexPositionColorTextured(screen.ToPixelSpaceRounded(position), color, uv);
 			}
 
-			private static void SetIndicesOfNewVertices(SpriteInfo spriteInfo)
+			public override void ReceiveMessage(object message)
 			{
-				spriteInfo.indices.Add((short)spriteInfo.vertices.Count);
-				spriteInfo.indices.Add((short)(spriteInfo.vertices.Count + 1));
-				spriteInfo.indices.Add((short)(spriteInfo.vertices.Count + 2));
-				spriteInfo.indices.Add((short)spriteInfo.vertices.Count);
-				spriteInfo.indices.Add((short)(spriteInfo.vertices.Count + 2));
-				spriteInfo.indices.Add((short)(spriteInfo.vertices.Count + 3));
+				if (!(message is SortAndRender.RenderBatch) || spriteDrawQueue.Count == 0)
+					return;
+
+				RenderBatchesByTexture();
 			}
 
-			private VertexPositionColorTextured GetVertex(Point position, Point uv, Entity entity)
+			private void RenderBatchesByTexture()
 			{
-				return new VertexPositionColorTextured(screen.ToPixelSpaceRounded(position),
-					entity.Get<Color>(), uv);
+				Image batchTexture = spriteDrawQueue[0].texture;
+				for (int pos = 0; pos < spriteDrawQueue.Count; ++pos)
+					batchTexture = BatchSpriteByTexture(spriteDrawQueue[pos], batchTexture);
+
+				RenderBatch(batchTexture);
+				spriteDrawQueue.Clear();
 			}
 
-			private struct SpriteInfo
+			private Image BatchSpriteByTexture(SpriteDrawContext sprite, Image batchTexture)
 			{
-				public List<VertexPositionColorTextured> vertices;
-				public List<short> indices;
+				Image currentTexture = sprite.texture;
+				if (currentTexture != batchTexture)
+				{
+					RenderBatch(currentTexture);
+					batchTexture = currentTexture;
+				}
+
+				QueueSpriteRenderData(sprite.vertices);
+				return batchTexture;
+			}
+
+			private void RenderBatch(Image texture)
+			{
+				drawing.EnableTexturing(texture);
+				drawing.SetIndices(indicesBatch.ToArray(), indicesBatch.Count);
+				drawing.DrawVerticesForSprite(VerticesMode.Triangles, verticesBatch.ToArray());
+				verticesBatch.Clear();
+				indicesBatch.Clear();
+			}
+
+			private void QueueSpriteRenderData(VertexPositionColorTextured[] vertices)
+			{
+				int verticesCount = verticesBatch.Count;
+				indicesBatch.Add((short)(verticesCount + 0));
+				indicesBatch.Add((short)(verticesCount + 1));
+				indicesBatch.Add((short)(verticesCount + 2));
+				indicesBatch.Add((short)(verticesCount + 0));
+				indicesBatch.Add((short)(verticesCount + 2));
+				indicesBatch.Add((short)(verticesCount + 3));
+				verticesBatch.AddRange(vertices);
 			}
 		}
 	}

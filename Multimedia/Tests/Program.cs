@@ -1,4 +1,4 @@
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Platforms;
 
 namespace DeltaEngine.Multimedia.Tests
 {
@@ -8,8 +8,8 @@ namespace DeltaEngine.Multimedia.Tests
 		public static void Main()
 		{
 			//new SoundTests().PlaySoundRightAndPitched(TestWithAllFrameworks.Xna);
-			//new MusicTests().PlayMusic(TestWithAllFrameworks.OpenGL);
-			new MusicTests().PlayMusicWith5Fps(TestWithAllFrameworks.OpenGL);
+			new MusicTests().PlayMusic();
+			//new MusicTests().PlayMusicWith5Fps(TestWithAllFrameworks.OpenTK);
 			//new MusicTests().PlayMusicWith10Fps(TestWithAllFrameworks.OpenGL);
 			//new MusicTests().PlayMusicWith30Fps(TestWithAllFrameworks.OpenGL);
 			//new VideoTests().PlayVideo(TestWithAllFrameworks.OpenGL);

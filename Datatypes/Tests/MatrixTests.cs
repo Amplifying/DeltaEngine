@@ -92,6 +92,24 @@ namespace DeltaEngine.Datatypes.Tests
 		}
 
 		[Test]
+		public void CreateLookAt()
+		{
+			var createdLookAt = Matrix.CreateLookAt(Vector.UnitZ, Vector.Zero, Vector.UnitY);
+			var referenceResult = new Matrix(
+				1.0f, 0.0f, 0.0f, 0.0f,
+				0.0f, 1.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 1.0f, 0.0f,
+				0.0f, 0.0f, -1.0f, 1.0f);
+			AssertMatrix(referenceResult, createdLookAt);
+		}
+
+		private static void AssertMatrix(Matrix matrix1, Matrix matrix2)
+		{
+			for (int i = 0; i < 16; ++i)
+				Assert.AreEqual(matrix1[i], matrix2[i], 0.001f);
+		}
+
+		[Test]
 		public void AccessViolation()
 		{
 			var matrix1 = new Matrix(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
@@ -182,17 +200,6 @@ namespace DeltaEngine.Datatypes.Tests
 			var transformation = scale * rotation * translation;
 			var result = translation * (rotation * (scale * position));
 			Assert.AreEqual(result, transformation * position);
-		}
-
-		[Test]
-		public void SaveAndLoad()
-		{
-			var data = Matrix.Identity.SaveToMemoryStream();
-			byte[] savedBytes = data.ToArray();
-			Assert.AreEqual(1 + "Matrix".Length + Matrix.SizeInBytes, savedBytes.Length);
-			Assert.AreEqual("Matrix".Length, savedBytes[0]);
-			var reconstructed = (Matrix)data.CreateFromMemoryStream();
-			Assert.AreEqual(Matrix.Identity, reconstructed);
 		}
 	}
 }

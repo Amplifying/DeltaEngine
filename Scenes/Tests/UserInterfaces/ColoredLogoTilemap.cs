@@ -11,11 +11,11 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces
 	/// </summary>
 	public class ColoredLogoTilemap : Tilemap
 	{
-		public ColoredLogoTilemap(ContentLoader content, Size world, Size map)
+		public ColoredLogoTilemap(Size world, Size map)
 			: base(world, map)
 		{
 			var data = Get<Data>();
-			var logo = content.Load<Image>("DeltaEngineLogo");
+			var logo = ContentLoader.Load<Image>("DeltaEngineLogo");
 			CreateWorld(data, logo);
 			CreateMap(data, logo);
 		}
@@ -38,7 +38,7 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces
 		{
 			for (int x = 0; x < data.MapWidth; x++)
 				for (int y = 0; y < data.MapHeight; y++)
-					data.Map[x, y] = new Sprite(logo);
+					data.Map[x, y] = new Sprite(logo, Rectangle.Zero);
 		}
 
 		private class RainbowTile : Tile

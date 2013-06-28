@@ -11,8 +11,8 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
 [assembly: Guid("3e1b547b-52ed-48c1-a7a9-c796ea4cb31a")]
-[assembly: AssemblyVersion("0.9.8.2")]
-[assembly: AssemblyFileVersion("0.9.8.2")]
+[assembly: AssemblyVersion("0.9.8.3")]
+[assembly: AssemblyFileVersion("0.9.8.3")]
 [assembly: InternalsVisibleTo("DeltaEngine.Networking.Sockets.Tests")]
 [assembly: InternalsVisibleTo("LogService.Tests")]
 

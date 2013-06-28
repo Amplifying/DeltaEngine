@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Datatypes;
+using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 
 namespace FindTheWord
@@ -8,7 +8,7 @@ namespace FindTheWord
 		public Game(Window window, StartupScreen startScreen, GameScreen gameScreen)
 		{
 			window.BackgroundColor = Color.Gray;
-			window.TotalPixelSize = new Size(1280, 800);
+			window.ViewportPixelSize = new Size(1280, 800);
 			this.startScreen = startScreen;
 			startScreen.GameStarted += OnStartupScreenGameStarted;
 			this.gameScreen = gameScreen;

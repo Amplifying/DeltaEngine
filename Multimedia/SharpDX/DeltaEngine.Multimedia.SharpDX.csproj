@@ -74,16 +74,12 @@
       <Name>DeltaEngine.Graphics</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Graphics\SharpDX\DeltaEngine.Graphics.SharpDX.csproj">
-      <Project>{9066595c-9e66-4631-a53a-28c2d22cfe53}</Project>
+      <Project>{9066595C-9E66-4631-A53A-28C2D22CFE53}</Project>
       <Name>DeltaEngine.Graphics.SharpDX</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Platforms\DeltaEngine.Platforms.csproj">
       <Project>{bae8830e-5f62-48d6-b772-c4b1e8665fb3}</Project>
       <Name>DeltaEngine.Platforms</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Logging\DeltaEngine.Logging.csproj">
-      <Project>{E4440567-3D5D-4670-AB49-8163B18E302E}</Project>
-      <Name>DeltaEngine.Logging</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
       <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>

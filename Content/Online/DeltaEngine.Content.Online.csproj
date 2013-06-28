@@ -32,9 +32,18 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
+      <Project>{A8D386EA-D376-46EA-A721-2BA51426A721}</Project>
+      <Name>DeltaEngine.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Networking\DeltaEngine.Networking.csproj">
+      <Project>{5231706E-2955-43BF-9C06-291E12AF5C5C}</Project>
+      <Name>DeltaEngine.Networking</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Networking\Sockets\DeltaEngine.Networking.Sockets.csproj">
+      <Project>{9E085AB9-B4DE-4815-BD90-D975C75DFE94}</Project>
+      <Name>DeltaEngine.Networking.Sockets</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Content.csproj">
       <Project>{F1B6345B-6F28-482F-9230-8F1D8674C28A}</Project>
       <Name>DeltaEngine.Content</Name>
@@ -42,7 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="OnlineContentLoader.cs" />
+    <Compile Include="DeveloperOnlineContentLoader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

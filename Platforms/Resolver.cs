@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using DeltaEngine.Core;
+using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Platforms
 {
@@ -11,6 +12,16 @@ namespace DeltaEngine.Platforms
 	/// </summary>
 	public abstract class Resolver : IDisposable
 	{
+		static Resolver()
+		{
+			typeof(Color).AddConvertTypeCreation(value => new Color(value));
+			typeof(Size).AddConvertTypeCreation(value => new Size(value));
+			typeof(Point).AddConvertTypeCreation(value => new Point(value));
+			typeof(Range).AddConvertTypeCreation(value => new Range(value));
+			typeof(Vector).AddConvertTypeCreation(value => new Vector(value));
+			typeof(Rectangle).AddConvertTypeCreation(value => new Rectangle(value));
+		}
+
 		protected void RegisterInstanceAsRunnerOrPresenterIfPossible(object instance)
 		{
 			var runner = instance as Runner;

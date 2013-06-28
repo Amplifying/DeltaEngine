@@ -3,16 +3,28 @@ using OpenTK.Graphics.OpenGL;
 
 namespace DeltaEngine.Graphics.OpenTK
 {
-	public class OpenTKCircularBuffer : CircularBuffer
+	public class OpenTKCircularBuffer<T> : CircularBuffer<T> where T : struct
 	{
-		public OpenTKCircularBuffer(int bufferSize) : base(bufferSize)
+		public OpenTKCircularBuffer(int maxNumberOfElements) : base(maxNumberOfElements)
 		{
+			if (IsIndexBuffer)
+			{
+				bufferTarget = BufferTarget.ElementArrayBuffer;
+				bufferUsageHint = BufferUsageHint.StreamDraw;
+			} else
+			{
+				bufferTarget = BufferTarget.ArrayBuffer;
+				bufferUsageHint = BufferUsageHint.DynamicDraw;
+			}
 		}
 
-		public int NativeBuffer
+		private readonly BufferTarget bufferTarget;
+		private readonly BufferUsageHint bufferUsageHint;
+
+		protected int NativeBuffer
 		{
 			get;
-			protected set;
+			set;
 		}
 
 		public override void Create()
@@ -20,8 +32,8 @@ namespace DeltaEngine.Graphics.OpenTK
 			int bufferID;
 			GL.GenBuffers(1, out bufferID);
 			NativeBuffer = bufferID;
-			GL.BindBuffer(BufferTarget.ArrayBuffer, NativeBuffer);
-			GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)bufferSize, IntPtr.Zero, 
+			GL.BindBuffer(bufferTarget, NativeBuffer);
+			GL.BufferData(bufferTarget, (IntPtr)bufferSizeInBytes, IntPtr.Zero, 
 				BufferUsageHint.StaticDraw);
 			IsCreated = true;
 		}
@@ -32,12 +44,10 @@ namespace DeltaEngine.Graphics.OpenTK
 			IsCreated = false;
 		}
 
-		protected override void SetNativeVertexData<T>(T[] vertices, int dataSizeInBytes)
+		protected override void SetNativeData(T[] elements, int dataSizeInBytes)
 		{
-			GL.BindBufferRange(BufferTarget.ArrayBuffer, 0, NativeBuffer, (IntPtr)Offset, 
-				(IntPtr)dataSizeInBytes);
-			GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)dataSizeInBytes, vertices, 
-				BufferUsageHint.DynamicDraw);
+			GL.BindBufferRange(bufferTarget, 0, NativeBuffer, (IntPtr)Offset, (IntPtr)dataSizeInBytes);
+			GL.BufferData(bufferTarget, (IntPtr)dataSizeInBytes, elements, bufferUsageHint);
 		}
 	}
 }

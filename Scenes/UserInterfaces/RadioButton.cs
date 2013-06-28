@@ -22,9 +22,12 @@ namespace DeltaEngine.Scenes.UserInterfaces
 			Add(new Data());
 			Add(theme);
 			Add(new Interact.State());
-			Add<Interact, Interact.Clicking>();
-			Add(new Sprite(theme.RadioButtonNotSelected.Image, theme.RadioButtonNotSelected.Color));
-			Add<UpdateAppearance>();
+			Start<Interact, Interact.Clicking>();
+			Add(new Sprite(theme.RadioButtonNotSelected.Image, Rectangle.Zero)
+			{
+				Color = theme.RadioButtonNotSelected.Color
+			});
+			Start<UpdateAppearance>();
 		}
 
 		public class Data
@@ -32,12 +35,12 @@ namespace DeltaEngine.Scenes.UserInterfaces
 			public bool IsSelected { get; set; }
 		}
 
-		private class UpdateAppearance : EntityHandler
+		private class UpdateAppearance : Behavior2D
 		{
-			public override void Handle(Entity entity)
+			public override void Handle(Entity2D entity)
 			{
 				var button = entity as RadioButton;
-				var selector = entity.Get<Sprite>();
+				var selector = button.Get<Sprite>();
 				UpdateSelectorDrawArea(button, selector);
 				UpdateSelectorAppearance(button, selector);
 			}

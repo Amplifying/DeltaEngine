@@ -1,7 +1,5 @@
-using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
 using DeltaEngine.Physics2D;
 using DeltaEngine.Rendering.Sprites;
 
@@ -12,9 +10,10 @@ namespace LogoApp
 	/// </summary>
 	public class BouncingLogo : Sprite
 	{
-		public BouncingLogo(ContentLoader content)
-			: base(content.Load<Image>("DeltaEngineLogo"), LogoDrawArea, Color.GetRandomColor())
+		public BouncingLogo()
+			: base("DeltaEngineLogo", LogoDrawArea)
 		{
+			Color = Color.GetRandomColor();
 			Randomizer random = Randomizer.Current;
 			Rotation = random.Get(0, 360);
 			Add(new SimplePhysics.Data
@@ -22,9 +21,9 @@ namespace LogoApp
 				RotationSpeed = random.Get(-50, 50),
 				Velocity = new Point(random.Get(-0.4f, 0.4f), random.Get(-0.4f, 0.4f))
 			});
-			Add<SimplePhysics.BounceOffScreenEdges, SimplePhysics.Rotate>();
+			Start<SimplePhysics.BounceOffScreenEdges, SimplePhysics.Rotate>();
 		}
 
-		private static readonly Rectangle LogoDrawArea = new Rectangle(0.4f, 0.4f, 0.2f, 0.2f);
+		private static readonly Rectangle LogoDrawArea = new Rectangle(0.4f, 0.4f, 0.15f, 0.15f);
 	}
 }

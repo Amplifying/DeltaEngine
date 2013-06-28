@@ -1,13 +1,12 @@
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Rendering.Sprites;
 
 namespace DeltaEngine.Rendering.Particles
 {
-	internal class ParticleFactory : EntityHandler
+	internal class ParticleFactory : Behavior2D
 	{
-		public override void Handle(Entity entity)
+		public override void Handle(Entity2D entity)
 		{
 			Create((ParticleEmitter)entity);
 		}
@@ -20,7 +19,7 @@ namespace DeltaEngine.Rendering.Particles
 				return;
 
 			for (int i = 0; i < particlesToSpawn; i++)
-				CreateParticle(GetRandomizedPreset(), data);
+				CreateParticle(GetRandomizedPreset());
 			data.LastSpawnMs = Time.Current.Milliseconds;
 		}
 
@@ -49,29 +48,20 @@ namespace DeltaEngine.Rendering.Particles
 			return new ParticlePreset(data.PresetLowerBounds, data.PresetUpperBounds);
 		}
 
-		private void CreateParticle(ParticlePreset preset, ParticleEmitterData data)
+		private void CreateParticle(ParticlePreset preset)
 		{
 			var drawArea = new Rectangle(data.Position + preset.Position, preset.Size);
 			var particle = new Sprite(data.Image, drawArea);
 			data.ParticlesCreated++;
-			particle.Add<ParticleUpdater>();
+			particle.Start<ParticleUpdater>();
 			particle.Add(new Transition.Duration(preset.Lifetime));
 			particle.Add(new Transition.TransitionEnded());
 			particle.Add(new Transition.FadingColor(preset.Color));
 			particle.Add(new ParticleInfo(preset.StartVelocity, preset.Velocity, preset.Speed,
 				preset.Lifetime));
-			SetPosibleTransition(preset, particle);
-		}
-
-		private void SetPosibleTransition(ParticlePreset preset, Sprite particle)
-		{
-			if (!data.HasSecondaryDirection)
-				particle.Get<ParticleInfo>().Direction = particle.Get<ParticleInfo>().StartDirection;
 			particle.Add(new Transition.Position(particle.Center, SetEndPosition(preset)));
-			if (data.HasSecondaryRotation)
-				particle.Add(new Transition.Rotation(preset.StartRotation, preset.Rotation));
-			if (data.HasSecondarySize)
-				particle.Add(new Transition.Size(preset.StartSize, preset.Size));
+			particle.Add(new Transition.Rotation(preset.StartRotation, preset.Rotation));
+			particle.Add(new Transition.Size(preset.StartSize, preset.Size));
 		}
 
 		private Point SetEndPosition(ParticlePreset preset)

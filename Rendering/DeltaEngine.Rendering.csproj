@@ -39,17 +39,13 @@
       <Project>{f1b6345b-6f28-482f-9230-8f1d8674c28a}</Project>
       <Name>DeltaEngine.Content</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Content\Disk\DeltaEngine.Content.Disk.csproj">
-      <Project>{3b3b8be3-a213-4383-ba7b-1afe5f779108}</Project>
-      <Name>DeltaEngine.Content.Disk</Name>
+    <ProjectReference Include="..\Content\Xml\DeltaEngine.Content.Xml.csproj">
+      <Project>{138A40B5-3D80-4BA3-BD84-D82C151EE7FE}</Project>
+      <Name>DeltaEngine.Content.Xml</Name>
     </ProjectReference>
     <ProjectReference Include="..\Core\DeltaEngine.Core.csproj">
       <Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
       <Name>DeltaEngine.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Core\Xml\DeltaEngine.Core.Xml.csproj">
-      <Project>{138a40b5-3d80-4ba3-bd84-d82c151ee7fe}</Project>
-      <Name>DeltaEngine.Core.Xml</Name>
     </ProjectReference>
     <ProjectReference Include="..\Datatypes\DeltaEngine.Datatypes.csproj">
       <Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
@@ -70,6 +66,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="BatchedBehavior2D.cs" />
+    <Compile Include="BatchedBehavior3D.cs" />
+    <Compile Include="Behavior2D.cs" />
+    <Compile Include="Behavior3D.cs" />
+    <Compile Include="EventListener2D.cs" />
+    <Compile Include="Cameras\BaseCamera.cs" />
+    <Compile Include="Cameras\LookAtCamera.cs" />
+    <Compile Include="Entity3D.cs" />
+    <Compile Include="EventListener3D.cs" />
     <Compile Include="Fonts\TextConverter.cs" />
     <Compile Include="Fonts\TextParser.cs" />
     <Compile Include="Fonts\TextWrapper.cs" />
@@ -80,25 +85,29 @@
     <Compile Include="Fonts\Glyph.cs" />
     <Compile Include="Fonts\GlyphDrawData.cs" />
     <Compile Include="Fonts\VectorText.cs" />
+    <Compile Include="Shapes\Line3D.cs" />
+    <Compile Include="ObserveEntity2D.cs" />
     <Compile Include="Particles\ParticleFactory.cs" />
     <Compile Include="Particles\ParticleEmitter.cs" />
     <Compile Include="Particles\ParticleEmitterData.cs" />
     <Compile Include="Particles\ParticleInfo.cs" />
     <Compile Include="Particles\ParticlePreset.cs" />
     <Compile Include="Particles\ParticleUpdater.cs" />
-    <Compile Include="Shapes\Rect.cs" />
+    <Compile Include="Shapes\FilledRect.cs" />
     <Compile Include="Sprites\Animation.cs" />
     <Compile Include="ScreenSpaces\Camera2DControlledQuadraticScreenSpace.cs" />
     <Compile Include="FinalTransition.cs" />
-    <Compile Include="Sprites\SpriteSheet.cs" />
+    <Compile Include="Sprites\AnimationData.cs" />
+    <Compile Include="Sprites\SpriteSheetData.cs" />
     <Compile Include="Entity2D.cs" />
     <Compile Include="Shapes\Line2D.cs" />
     <Compile Include="Shapes\Polygon.cs" />
     <Compile Include="Shapes\Ellipse.cs" />
     <Compile Include="Shapes\OutlineColor.cs" />
-    <Compile Include="RenderLayer.cs" />
     <Compile Include="RotationCenter.cs" />
     <Compile Include="Sprites\Sprite.cs" />
+    <Compile Include="Sprites\SpriteSheetAnimation.cs" />
+    <Compile Include="Transform.cs" />
     <Compile Include="Triggers\CollisionTrigger.cs" />
     <Compile Include="Triggers\TimeTrigger.cs" />
     <Compile Include="Triggers\TimeTriggerData.cs" />

@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using Blobs.Creatures;
 using DeltaEngine.Content;
-using DeltaEngine.Core.Xml;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
+using DeltaEngine.Rendering.Fonts;
 using DeltaEngine.Rendering.ScreenSpaces;
 
 namespace Blobs.Levels
@@ -14,19 +14,19 @@ namespace Blobs.Levels
 	/// </summary>
 	public abstract class Level : IDisposable
 	{
-		protected Level(ScreenSpace screen, InputCommands input, ContentLoader content)
+		protected Level(ScreenSpace screen, InputCommands input)
 		{
 			this.screen = screen;
 			camera = (Camera2DControlledQuadraticScreenSpace)screen;
 			this.input = input;
-			vectorData = content.Load<XmlContent>("VectorText");
+			text = new FontText(new Font("Verdana12"), "", Point.Zero);
 			Blobs = new List<Blob>();
 		}
 
 		private readonly ScreenSpace screen;
 		protected readonly Camera2DControlledQuadraticScreenSpace camera;
 		protected readonly InputCommands input;
-		protected readonly XmlContent vectorData;
+		protected readonly FontText text;
 		private List<Blob> Blobs { get; set; }
 
 		public virtual void Reset()
@@ -34,8 +34,8 @@ namespace Blobs.Levels
 			CreatePlayer();
 			PositionPlayer();
 			AddEnemies();
+			SetText();
 			AddPlatforms();
-			AddText();
 			SetupEvents();
 			PositionCamera();
 			elapsed = 0.0f;
@@ -53,8 +53,8 @@ namespace Blobs.Levels
 
 		protected abstract void PositionPlayer();
 		protected abstract void AddEnemies();
+		protected abstract void SetText();
 		protected abstract void AddPlatforms();
-		protected abstract void AddText();
 		protected abstract void SetupEvents();
 		protected abstract void PositionCamera();
 
@@ -118,6 +118,7 @@ namespace Blobs.Levels
 
 			platforms.Clear();
 			Blobs.Clear();
+			text.IsActive = false;
 		}
 
 		public event Action Passed;

@@ -1,12 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.All;
-using DeltaEngine.Platforms.Tests;
 using NUnit.Framework;
 
 namespace DeltaEngine.Graphics.Tests
@@ -15,32 +12,32 @@ namespace DeltaEngine.Graphics.Tests
 	/// The image tests here are limited to loading and integration tests, not visual tests, which
 	/// you can find in DeltaEngine.Rendering.Tests.SpriteTests.
 	/// </summary>
-	public class ImageTests : TestWithAllFrameworks
+	public class ImageTests : TestWithMocksOrVisually
 	{
-		[VisualTest, ApproveFirstFrameScreenshot]
-		public void DrawImage(Type resolver)
+		[Test, ApproveFirstFrameScreenshot]
+		public void DrawImage()
 		{
-			Image image = null;
-			Start(resolver, (ContentLoader content, Window window) =>
-			{
-				window.BackgroundColor = Color.CornflowerBlue;
-				image = content.Load<Image>("DeltaEngineLogo");
-			},
-				(Drawing drawing) =>
-					drawing.DrawQuad(image,
-						new List<VertexPositionColorTextured>
-						{
-							new VertexPositionColorTextured(new Point(175, 25), Color.Yellow, Point.Zero),
-							new VertexPositionColorTextured(new Point(475, 25), Color.Red, Point.UnitX),
-							new VertexPositionColorTextured(new Point(475, 325), Color.Blue, Point.One),
-							new VertexPositionColorTextured(new Point(175, 325), Color.Teal, Point.UnitY)
-						}, new List<short> { 0, 1, 2, 0, 2, 3 }));
+			Window.BackgroundColor = Color.CornflowerBlue;
+			RunCode =
+				() =>
+					Resolve<Drawing>().DrawQuad(ContentLoader.Load<Image>("DeltaEngineLogo"),
+						CreateImageVertices(), new List<short> { 0, 1, 2, 0, 2, 3 });
 		}
 
-		[VisualTest]
-		public void DrawImagesWithOneMillionPolygonsPerFrame(Type resolver)
+		private static List<VertexPositionColorTextured> CreateImageVertices()
 		{
-			Image image = null;
+			return new List<VertexPositionColorTextured>
+			{
+				new VertexPositionColorTextured(new Point(175, 25), Color.Yellow, Point.Zero),
+				new VertexPositionColorTextured(new Point(475, 25), Color.Red, Point.UnitX),
+				new VertexPositionColorTextured(new Point(475, 325), Color.Blue, Point.One),
+				new VertexPositionColorTextured(new Point(175, 325), Color.Teal, Point.UnitY)
+			};
+		}
+
+		[Test]
+		public void DrawImagesWithOneMillionPolygonsPerFrame()
+		{
 			var vertices = new VertexPositionColorTextured[40000];
 			var indices = new short[60000];
 			var indicesIndex = 0;
@@ -65,30 +62,28 @@ namespace DeltaEngine.Graphics.Tests
 					indices[indicesIndex++] = (short)(quadIndex + 3);
 				}
 
-			Start(resolver,
-				(ContentLoader content) => { image = content.Load<Image>("DeltaEngineLogo"); },
-				(Drawing drawing, Window window) =>
-				{
-					drawing.EnableTexturing(image);
-					// Draw 50 times to reach 1 million polygons per frame
-					drawing.SetIndices(indices, indices.Length);
-					for (int num = 0; num < 50; num++)
-						drawing.DrawVerticesForSprite(VerticesMode.Triangles, vertices);
+			RunCode = () =>
+			{
+				var image = ContentLoader.Load<Image>("DeltaEngineLogo");
+				var drawing = Resolve<Drawing>();
+				drawing.EnableTexturing(image);
+				// Draw 50 times to reach 1 million polygons per frame
+				drawing.SetIndices(indices, indices.Length);
+				for (int num = 0; num < 50; num++)
+					drawing.DrawVerticesForSprite(VerticesMode.Triangles, vertices);
 
-					if (Time.Current.CheckEvery(1))
-						window.Title = "Fps: " + Time.Current.Fps;
-				});
+				if (Time.Current.CheckEvery(1))
+					Window.Title = "Fps: " + Time.Current.Fps;
+			};
 		}
 
-		[VisualTest]
-		public void BlendModes(Type resolver)
+		[Test]
+		public void BlendModes()
 		{
-			Image image = null;
-			Start(resolver, (ContentLoader content, Window window) =>
-			{
-				image = content.Load<Image>("DeltaEngineLogoAlpha");
-				window.Title = "Blend modes: Opaque, Normal, Additive";
-			}, (Drawing drawing) =>
+			Window.Title = "Blend modes: Opaque, Normal, Additive";
+			var drawing = Resolve<Drawing>();
+			var image = ContentLoader.Load<Image>("DeltaEngineLogoAlpha");
+			RunCode = () =>
 			{
 				drawing.SetBlending(BlendMode.Opaque);
 				DrawAlphaImageTwice(image, drawing, new Point(25, 80));
@@ -96,7 +91,7 @@ namespace DeltaEngine.Graphics.Tests
 				DrawAlphaImageTwice(image, drawing, new Point(225, 80));
 				drawing.SetBlending(BlendMode.Additive);
 				DrawAlphaImageTwice(image, drawing, new Point(425, 80));
-			});
+			};
 		}
 
 		private static void DrawAlphaImageTwice(Image image, Drawing drawing, Point startPoint)
@@ -113,34 +108,32 @@ namespace DeltaEngine.Graphics.Tests
 						new VertexPositionColorTextured(new Point(x + Size, y), Color.White, Point.UnitX),
 						new VertexPositionColorTextured(new Point(x + Size, y + Size), Color.White, Point.One),
 						new VertexPositionColorTextured(new Point(x, y + Size), Color.White, Point.UnitY)
-					}, new List<short> { 0, 1, 2, 0, 2, 3 });
+					},
+					new List<short> { 0, 1, 2, 0, 2, 3 });
 				x += Size / 2;
 				y += Size / 2;
 			}
 		}
 
-		[IntegrationTest]
-		public void LoadExistingImage(Type resolver)
+		[Test]
+		public void LoadExistingImage()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				var image = content.Load<Image>("DeltaEngineLogo");
-				Assert.AreEqual("DeltaEngineLogo", image.Name);
-				Assert.IsFalse(image.IsDisposed);
-				Assert.AreEqual(new Size(128, 128), image.PixelSize);
-			});
+			var image = ContentLoader.Load<Image>("DeltaEngineLogo");
+			Assert.AreEqual("DeltaEngineLogo", image.Name);
+			Assert.IsFalse(image.IsDisposed);
+			Assert.AreEqual(new Size(128, 128), image.PixelSize);
+			Window.CloseAfterFrame();
 		}
 
-		[IntegrationTest]
-		public void ShouldThrowIfImageNotLoadedWithDebuggerAttached(Type resolver)
+		//ncrunch: no coverage start
+		[Test]
+		public void ShouldThrowIfImageNotLoadedWithDebuggerAttached()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				if (!Debugger.IsAttached || resolver.FullName.Contains("Mock"))
-					return;
-				//ncrunch: no coverage start
-				Assert.Throws<ContentLoader.ContentNotFound>(() => content.Load<Image>("UnavailableImage"));
-			});
+			if (Debugger.IsAttached)
+				Assert.Throws<ContentLoader.ContentNotFound>(
+					() => ContentLoader.Load<Image>("UnavailableImage"));
+
+			Window.CloseAfterFrame();
 		}
 	}
 }

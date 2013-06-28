@@ -13,11 +13,12 @@ namespace DeltaEngine.Scenes.UserInterfaces
 	public abstract class Tilemap : Entity2D
 	{
 		protected Tilemap(Size world, Size map)
+			: base(Rectangle.Zero)
 		{
 			Add(new Interact.State());
-			Add<Interact, InteractWithKeyboard, ApplyInteractions>();
+			Start<Interact, InteractWithKeyboard, ApplyInteractions>();
 			Add(new Data(world, map));
-			Add<Update>();
+			Start<Update>();
 		}
 
 		public class Data
@@ -53,9 +54,9 @@ namespace DeltaEngine.Scenes.UserInterfaces
 			public Point TargetTopLeft = Point.Zero;
 		}
 
-		private class ApplyInteractions : EntityListener
+		private class ApplyInteractions : EventListener2D
 		{
-			public override void ReceiveMessage(Entity entity, object message)
+			public override void ReceiveMessage(Entity2D entity, object message)
 			{
 				var tilemap = entity as Tilemap;
 				if (message is Interact.ControlDragged)
@@ -111,9 +112,9 @@ namespace DeltaEngine.Scenes.UserInterfaces
 			private const float ScrollSpeed = 4.0f;
 		}
 
-		private class Update : EntityHandler
+		private class Update : Behavior2D
 		{
-			public override void Handle(Entity entity)
+			public override void Handle(Entity2D entity)
 			{
 				tilemap = entity as Tilemap;
 				data = tilemap.Get<Data>();

@@ -12,14 +12,12 @@ namespace DeltaEngine.Rendering.Shapes
 	/// </summary>
 	public class Polygon : Entity2D
 	{
-		public Polygon()
-			: this(Color.White) {}
-
-		public Polygon(Color color)
-			: base(Rectangle.Zero, color)
+		public Polygon(Rectangle drawArea, Color color)
+			: base(drawArea)
 		{
+			Color = color;
 			Add(new List<Point>());
-			Add<Render>();
+			Start<Render>();
 		}
 
 		public List<Point> Points
@@ -30,7 +28,7 @@ namespace DeltaEngine.Rendering.Shapes
 		/// <summary>
 		/// Responsible for rendering filled 2D shapes defined by their border points
 		/// </summary>
-		public class Render : EntityListener
+		public class Render : EventListener2D
 		{
 			public Render(Drawing draw, ScreenSpace screen)
 			{
@@ -43,25 +41,19 @@ namespace DeltaEngine.Rendering.Shapes
 			private readonly ScreenSpace screen;
 			private readonly List<VertexPositionColor> vertices;
 
-			public override void Handle(Entity entity)
+			public override void ReceiveMessage(Entity2D entity, object message)
 			{
-				if (entity.Get<Visibility>() == Visibility.Hide)
-					return;
-
-				vertices.Clear();
-				RenderPolygon(entity);
-				SetIndices();
+				if (message is SortAndRender.AddToBatch)
+					AddToBatch(entity);
 			}
 
-			public override void ReceiveMessage(Entity entity, object message) {}
-
-			private void RenderPolygon(Entity entity)
+			private void AddToBatch(Entity2D entity)
 			{
 				var points = entity.Get<List<Point>>();
 				if (points.Count < 3)
 					return;
 
-				var color = entity.Get<Color>();
+				var color = entity.Color;
 				var center = GetCenter(points);
 				lastPoint = points[points.Count - 1];
 				foreach (Point point in points)
@@ -78,7 +70,7 @@ namespace DeltaEngine.Rendering.Shapes
 
 			private void CreateAndDrawTriangle(Point point, Point center, Color color)
 			{
-				SetTrianglePoints(new Triangle2D(center, point, lastPoint), color);
+				SetTrianglePoints(new Triangle2D(center, lastPoint, point), color);
 				lastPoint = point;
 			}
 
@@ -91,8 +83,20 @@ namespace DeltaEngine.Rendering.Shapes
 
 			private static short[] triangleIndices = { 0, 1, 2 };
 
+			public override void ReceiveMessage(object message)
+			{
+				if (!(message is SortAndRender.RenderBatch) || vertices.Count == 0)
+					return;
+
+				SetIndices();
+				vertices.Clear();
+			}
+
 			private void SetIndices()
 			{
+				if (vertices.Count == 0)
+					return;
+
 				var newVertices = new VertexPositionColor[vertices.Count + 1];
 				var newIndices = new short[vertices.Count + 1];
 				for (int posInList = 0; posInList < vertices.Count; ++posInList)
@@ -120,7 +124,7 @@ namespace DeltaEngine.Rendering.Shapes
 		/// <summary>
 		/// Responsible for rendering the outline of 2D shapes defined by their border points
 		/// </summary>
-		public class RenderOutline : EntityListener
+		public class RenderOutline : EventListener2D
 		{
 			public RenderOutline(Drawing draw, ScreenSpace screen)
 			{
@@ -133,20 +137,17 @@ namespace DeltaEngine.Rendering.Shapes
 			private readonly ScreenSpace screen;
 			private readonly List<VertexPositionColor> vertices;
 
-			public override void Handle(Entity entity)
+			public override void ReceiveMessage(Entity2D entity, object message)
 			{
-				vertices.Clear();
-				RenderPolygonOutline(entity);
-				draw.DrawVertices(VerticesMode.Lines, vertices.ToArray());
+				if (message is SortAndRender.AddToBatch)
+					AddToBatch(entity);
 			}
 
-			public override void ReceiveMessage(Entity entity, object message) {}
-
-			private void RenderPolygonOutline(Entity entity)
+			private void AddToBatch(Entity2D entity)
 			{
 				var color = entity.Get<OutlineColor>().Value;
 				var points = entity.Get<List<Point>>();
-				if (points.Count == 0)
+				if (points.Count <= 1)
 					return;
 
 				lastPoint = points[points.Count - 1];
@@ -163,9 +164,18 @@ namespace DeltaEngine.Rendering.Shapes
 				lastPoint = point;
 			}
 
-			public override EntityHandlerPriority Priority
+			public override void ReceiveMessage(object message)
 			{
-				get { return EntityHandlerPriority.Last; }
+				if (!(message is SortAndRender.RenderBatch) || vertices.Count == 0)
+					return;
+
+				draw.DrawVertices(VerticesMode.Lines, vertices.ToArray());
+				vertices.Clear();
+			}
+
+			public override Priority Priority
+			{
+				get { return Priority.Last; }
 			}
 		}
 	}

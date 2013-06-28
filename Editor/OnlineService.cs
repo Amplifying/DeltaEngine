@@ -1,9 +1,10 @@
 using System;
 using System.IO.Abstractions;
-using System.Windows;
 using DeltaEngine.Editor.Common;
 using DeltaEngine.Editor.Mocks;
 using DeltaEngine.Networking;
+using DeltaEngine.Platforms;
+using Window = System.Windows.Window;
 
 namespace DeltaEngine.Editor
 {
@@ -12,18 +13,17 @@ namespace DeltaEngine.Editor
 		public OnlineService(Client connection)
 		{
 			Connection = connection;
-			connection.Connect(ServerAddress, ServerListeningPort);
+			AllowedPlatforms = new[] { PlatformName.Windows };
+			var settings = new FileSettings(false);
+			connection.Connect(settings.ContentServerIp, settings.ContentServerPort);
 			Content = new ContentServiceFiles(new FileSystem());
 			connection.DataReceived += OnDataReceived;
 		}
 
-		public Client Connection { get; private set; }
-		private const string ServerAddress = "deltaengine.net";//"DeltaEngine.net"
-		private const int ServerListeningPort = 800;
+		public Client Connection { get; protected set; }
 		public ContentService Content { get; private set; }
-		public Window PluginHostWindow { get; private set; }
+		public Window PluginHostWindow { get; internal set; }
 
-		//TODO: this is duplicate, same as BuildServiceConnection
 		private void OnDataReceived(object message)
 		{
 			var user = message as BuildServiceUser;

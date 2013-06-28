@@ -9,10 +9,10 @@ namespace GameOfDeath.Items
 	/// </summary>
 	public class Atomic : Item
 	{
-		public Atomic(ContentLoader content)
+		public Atomic()
 			: base(
-				content.Load<Image>("Atomic"), content.Load<Image>("RingExplosion"),
-				content.Load<Sound>("AtomicExplosion")) {}
+				ContentLoader.Load<Image>("Atomic"), ContentLoader.Load<Image>("RingExplosion"),
+				ContentLoader.Load<Sound>("AtomicExplosion")) { }
 
 		protected override float ImpactSize
 		{

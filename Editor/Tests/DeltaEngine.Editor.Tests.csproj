@@ -78,7 +78,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EditorPluginLoaderTests.cs" />
-    <Compile Include="EditorWindowModelTests.cs" />
+    <Compile Include="EditorViewModelTests.cs" />
     <Compile Include="MockEditorPluginView.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

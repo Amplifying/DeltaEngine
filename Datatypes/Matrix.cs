@@ -9,8 +9,7 @@ namespace DeltaEngine.Datatypes
 	/// <summary>
 	/// 4x4 Matrix from 16 floats, access happens via indexer, optimizations done in BuildService.
 	/// </summary>
-	[DebuggerDisplay("Matrix(Right={m11, m12, m13}\n, Up={m21, m22, m23}\n, " +
-		"Front={m31, m32, m33}\n, Translation={m41, m42, m43})")]
+	[DebuggerDisplay("Matrix(Right={Right},\nUp={Up},\nFront={Front},\nTranslation={Translation})")]
 	public struct Matrix : IEquatable<Matrix>
 	{
 		public Matrix(params float[] values)
@@ -97,6 +96,23 @@ namespace DeltaEngine.Datatypes
 				m44 = value;
 		}
 
+		public Vector Right
+		{
+			get { return new Vector(m11, m12, m13);}
+		}
+		public Vector Up
+		{
+			get { return new Vector(m21, m22, m23); }
+		}
+		public Vector Front
+		{
+			get { return new Vector(m31, m32, m33); }
+		}
+		public Vector Translation
+		{
+			get { return new Vector(m41, m42, m43); }
+		}
+
 		public static readonly Matrix Identity = 
 			new Matrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Matrix));
@@ -147,6 +163,70 @@ namespace DeltaEngine.Datatypes
 				-1, 1, 0, 1);
 		}
 
+		public static Matrix CreateLookAt(Vector cameraPosition, Vector cameraTarget, Vector cameraUp)
+		{
+			var direction = Vector.Normalize(cameraPosition - cameraTarget);
+			var upVector = ComputeUpVector(cameraUp, direction);
+			var right = Vector.Cross(direction, upVector);
+			return new Matrix(
+				upVector.X, right.X, direction.X, 0.0f,
+				upVector.Y, right.Y, direction.Y, 0.0f,
+				upVector.Z, right.Z, direction.Z, 0.0f,
+				-Vector.Dot(upVector, cameraPosition),
+				-Vector.Dot(right, cameraPosition),
+				-Vector.Dot(direction, cameraPosition), 1.0f);
+		}
+
+		private static Vector ComputeUpVector(Vector cameraUp, Vector forward)
+		{
+			var upVector = Vector.Normalize(Vector.Cross(cameraUp, forward));
+			if (upVector.LengthSquared == 0.0f)
+				upVector = Vector.UnitY;
+
+			return upVector;
+		}
+
+		public static Vector TransformNormal(Vector normal, Matrix matrix)
+		{
+			return new Vector(
+				normal.X * matrix.m11 + normal.Y * matrix.m21 + normal.Z * matrix.m31,
+				normal.X * matrix.m12 + normal.Y * matrix.m22 + normal.Z * matrix.m32,
+				normal.X * matrix.m13 + normal.Y * matrix.m23 + normal.Z * matrix.m33);
+		}
+
+		public static Matrix CreateRotationX(float degrees)
+		{
+			float cosValue = MathExtensions.Cos(degrees);
+			float sinValue = MathExtensions.Sin(degrees);
+			return new Matrix(
+				1f, 0f, 0f, 0f,
+				0f, cosValue, sinValue, 0f,
+				0f, -sinValue, cosValue, 0f,
+				0f, 0f, 0f, 1f);
+		}
+
+		public static Matrix CreateRotationY(float degrees)
+		{
+			float cosValue = MathExtensions.Cos(degrees);
+			float sinValue = MathExtensions.Sin(degrees);
+			return new Matrix(
+				cosValue, 0f, -sinValue, 0f,
+				0f, 1f, 0f, 0f,
+				sinValue, 0f, cosValue, 0f,
+				0f, 0f, 0f, 1f);
+		}
+
+		public static Matrix CreateRotationZ(float degrees)
+		{
+			float cosValue = MathExtensions.Cos(degrees);
+			float sinValue = MathExtensions.Sin(degrees);
+			return new Matrix(
+				cosValue, sinValue, 0f, 0f,
+				-sinValue, cosValue, 0f, 0f,
+				0f, 0f, 1f, 0f,
+				0f, 0f, 0f, 1f);
+		}
+
 		/// <summary>
 		/// More details how to calculate Matrix Determinants: http://en.wikipedia.org/wiki/Determinant
 		/// </summary>
@@ -163,6 +243,18 @@ namespace DeltaEngine.Datatypes
 			float det13 = this[2] * (this[4] * det32X44 - this[5] * det31X44 + this[7] * det31X42);
 			float det14 = this[3] * (this[4] * det32X43 - this[5] * det31X43 + this[6] * det31X42);
 			return det11 - det12 + det13 - det14;
+		}
+
+		public static Matrix CreatePerspective(float fieldOfView, float aspectRatio,
+			float nearPlaneDistance, float farPlaneDistance)
+		{
+			float focalLength = 1.0f / MathExtensions.Tan(fieldOfView * 0.5f);
+			float oneOverDistance = -1.0f / (farPlaneDistance - nearPlaneDistance);
+			return new Matrix(
+				focalLength, 0.0f, 0.0f, 0.0f,
+				0.0f, focalLength / aspectRatio, 0.0f, 0.0f,
+				0.0f, 0.0f, oneOverDistance * (farPlaneDistance + nearPlaneDistance), -1.0f,
+				0.0f, 0.0f, oneOverDistance * (2.0f * farPlaneDistance * nearPlaneDistance), 0.0f);
 		}
 
 		public static bool operator ==(Matrix matrix1, Matrix matrix2)
@@ -196,9 +288,9 @@ namespace DeltaEngine.Datatypes
 		public static Vector operator *(Matrix matrix, Vector vector)
 		{
 			return new Vector(
-				vector.X * matrix[0] + vector.Y * matrix[4] + vector.Z * matrix[8] + matrix[12],
-				vector.X * matrix[1] + vector.Y * matrix[5] + vector.Z * matrix[9] + matrix[13],
-				vector.X * matrix[2] + vector.Y * matrix[6] + vector.Z * matrix[10] + matrix[14]);
+				vector.X * matrix.m11 + vector.Y * matrix.m21 + vector.Z * matrix.m13 + matrix.m41,
+				vector.X * matrix.m12 + vector.Y * matrix.m22 + vector.Z * matrix.m23 + matrix.m42,
+				vector.X * matrix.m13 + vector.Y * matrix.m23 + vector.Z * matrix.m33 + matrix.m43);
 		}
 
 		public static Matrix operator*(Matrix matrix1, Matrix matrix2)

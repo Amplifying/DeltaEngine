@@ -1,6 +1,6 @@
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms.Mocks;
 using DeltaEngine.Rendering.ScreenSpaces;
 using NUnit.Framework;
 
@@ -14,11 +14,11 @@ namespace DeltaEngine.Rendering.Tests.ScreenSpaces
 			SquareWindowShouldAlwaysReturnRelativeValues(new RelativeScreenSpace(window));
 		}
 
-		private readonly Window window = new MockResolver().rendering.Window;
+		private readonly Window window = new MockWindow();
 
 		private void SquareWindowShouldAlwaysReturnRelativeValues(ScreenSpace screen)
 		{
-			window.TotalPixelSize = new Size(100, 100);
+			window.ViewportPixelSize = new Size(100, 100);
 			Assert.AreEqual(Point.Zero, screen.TopLeft);
 			Assert.AreEqual(Point.One, screen.BottomRight);
 			Assert.AreEqual(Rectangle.One, screen.Viewport);
@@ -31,7 +31,7 @@ namespace DeltaEngine.Rendering.Tests.ScreenSpaces
 		[Test]
 		public void GetInnerPoint()
 		{
-			window.TotalPixelSize = new Size(800, 600);
+			window.ViewportPixelSize = new Size(800, 600);
 			ScreenSpace screen = new RelativeScreenSpace(window);
 			Assert.AreEqual(screen.TopLeft, screen.GetInnerPoint(Point.Zero));
 			Assert.AreEqual(screen.BottomRight, screen.GetInnerPoint(Point.One));
@@ -40,7 +40,7 @@ namespace DeltaEngine.Rendering.Tests.ScreenSpaces
 		[Test]
 		public void ToRelativeWithUnevenSize()
 		{
-			window.TotalPixelSize = new Size(99, 199);
+			window.ViewportPixelSize = new Size(99, 199);
 			var screen = new RelativeScreenSpace(window);
 			Assert.AreEqual(Point.Zero, screen.TopLeft);
 			Assert.AreEqual(Point.One, screen.BottomRight);
@@ -50,7 +50,7 @@ namespace DeltaEngine.Rendering.Tests.ScreenSpaces
 		[Test]
 		public void ToPixelSpaceFromRelativeSpace()
 		{
-			window.TotalPixelSize = new Size(30, 50);
+			window.ViewportPixelSize = new Size(30, 50);
 			var screen = new RelativeScreenSpace(window);
 			Assert.AreEqual(new Point(30, 50), screen.ToPixelSpace(Point.One));
 			Assert.AreEqual(Size.Zero, screen.ToPixelSpace(Size.Zero));
@@ -61,7 +61,7 @@ namespace DeltaEngine.Rendering.Tests.ScreenSpaces
 		[Test]
 		public void NonSquareWindowWithRelativeSpace()
 		{
-			window.TotalPixelSize = new Size(100, 75);
+			window.ViewportPixelSize = new Size(100, 75);
 			var screen = new RelativeScreenSpace(window);
 			Assert.AreEqual(0.0f, screen.Left);
 			Assert.AreEqual(0.0f, screen.Top);

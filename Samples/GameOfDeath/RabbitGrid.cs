@@ -16,10 +16,10 @@ namespace GameOfDeath
 	/// </summary>
 	public class RabbitGrid : GameOfLife
 	{
-		public RabbitGrid(ContentLoader content, ScreenSpace screen)
+		public RabbitGrid(ScreenSpace screen)
 			: base(GetColumns(screen.Viewport), GetRows(screen.Viewport))
 		{
-			LoadContent(content);
+			LoadContent();
 			InitializeRabbits();
 		}
 
@@ -38,13 +38,13 @@ namespace GameOfDeath
 		private static Size initialSize;
 		public static readonly Size CellSize = new Size(0.05f);
 
-		private void LoadContent(ContentLoader content)
+		private void LoadContent()
 		{
-			rabbitImage = content.Load<Image>("Rabbit");
-			deadRabbitImage = content.Load<Image>("DeadRabbit");
-			malletHitSound = content.Load<Sound>("MalletHit");
-			malletBloodImage = content.Load<Image>("BloodSplatter");
-			gameOverImage = content.Load<Image>("GameOver");
+			rabbitImage = ContentLoader.Load<Image>("Rabbit");
+			deadRabbitImage = ContentLoader.Load<Image>("DeadRabbit");
+			malletHitSound = ContentLoader.Load<Sound>("MalletHit");
+			malletBloodImage = ContentLoader.Load<Image>("BloodSplatter");
+			gameOverImage = ContentLoader.Load<Image>("GameOver");
 		}
 
 		private Image rabbitImage;
@@ -170,7 +170,7 @@ namespace GameOfDeath
 		{
 			var drawArea = Rectangle.FromCenter(center, MalletBloodSize);
 			var blood = new Sprite(malletBloodImage, drawArea);
-			blood.Add<FinalTransition>().Add(new Transition.Duration(1.0f)).Add(
+			blood.Start<FinalTransition>().Add(new Transition.Duration(1.0f)).Add(
 				new Transition.FadingColor(blood.Color));
 		}
 

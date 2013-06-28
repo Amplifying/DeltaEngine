@@ -9,6 +9,5 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
 [assembly: Guid("4d33a50e-3aa2-4e7e-bc0c-4ef7b3d5e985")]
-[assembly: AssemblyVersion("0.9.8.2")]
-[assembly: AssemblyFileVersion("0.9.8.2")]
-[assembly: AssemblyProductAttribute("LogoApp")]
+[assembly: AssemblyVersion("0.9.8.3")]
+[assembly: AssemblyFileVersion("0.9.8.3")]

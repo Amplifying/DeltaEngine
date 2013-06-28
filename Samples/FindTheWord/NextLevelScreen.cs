@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
@@ -10,27 +10,25 @@ namespace FindTheWord
 {
 	public class NextLevelScreen
 	{
-		public NextLevelScreen(InputCommands input, ContentLoader content)
+		public NextLevelScreen(InputCommands input)
 		{
-			this.input = input;
-			this.content = content;
 			InitializeBackground();
+			this.input = input;
 		}
-
-		private readonly InputCommands input;
-		private readonly ContentLoader content;
 
 		private void InitializeBackground()
 		{
-			background = new Sprite(content.Load<Image>("NextLevel"), DefaultDrawArea());
+			background = new Sprite(ContentLoader.Load<Image>("NextLevel"), GetDrawArea());
 			background.Visibility = Visibility.Hide;
 			background.RenderLayer = 10;
 		}
 
-		private static Rectangle DefaultDrawArea()
+		private static Rectangle GetDrawArea()
 		{
 			return new Rectangle(0, 0.1875f, 1, 0.625f);
 		}
+
+		private readonly InputCommands input;
 
 		public void ShowAndWaitForInput()
 		{
@@ -40,7 +38,7 @@ namespace FindTheWord
 
 		private void InitializeButton()
 		{
-			advanceButton = new Button(input, content, "NextLevelButton",
+			advanceButton = new Button(input, "NextLevelButton",
 				Rectangle.FromCenter(0.5f, 0.6f, 0.2f, 0.1f));
 			advanceButton.RenderLayer = 11;
 			advanceButton.Clicked += button => { HideAndStartNextLevel(); };

@@ -12,17 +12,16 @@ namespace Asteroids
 	/// </summary>
 	public class AsteroidsGame
 	{
-		public AsteroidsGame(ContentLoader content, InputCommands input, ScreenSpace screenSpace)
+		public AsteroidsGame(InputCommands input, ScreenSpace screenSpace)
 		{
-			this.content = content;
 			controls = new GameControls(this, input);
 			score = 0;
 			SetUpBackground();
 			GameState = GameState.Playing;
-			GameLogic = new GameLogic(content);
+			GameLogic = new GameLogic();
 			SetUpEvents();
 			controls.SetControlsToState(GameState);
-			hudInterface = new HudInterface(content, screenSpace);
+			hudInterface = new HudInterface(screenSpace);
 		}
 
 		private void SetUpEvents()
@@ -35,7 +34,6 @@ namespace Asteroids
 			};
 		}
 
-		public readonly ContentLoader content;
 		internal readonly GameControls controls;
 		internal int score;
 		public GameLogic GameLogic { get; private set; }
@@ -44,7 +42,7 @@ namespace Asteroids
 
 		private void SetUpBackground()
 		{
-			new Sprite(content.Load<Image>("black-background"), new Rectangle(Point.Zero, new Size(1)));
+			new Sprite(ContentLoader.Load<Image>("black-background"), new Rectangle(Point.Zero, new Size(1)));
 		}
 
 		public void GameOver()
@@ -53,6 +51,17 @@ namespace Asteroids
 			GameState = GameState.GameOver;
 			controls.SetControlsToState(GameState);
 			hudInterface.SetGameOverText();
+		}
+
+		public void RestartGame()
+		{
+			GameLogic.Restart();
+			score = 0;
+			hudInterface.SetScoreText(score);
+			hudInterface.SetIngameMode();
+			GameState = GameState.Playing;
+			controls.SetControlsToState(GameState);
+
 		}
 	}
 }

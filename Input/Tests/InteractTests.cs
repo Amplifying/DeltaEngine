@@ -1,31 +1,29 @@
-using System;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Platforms;
 using DeltaEngine.Rendering;
+using DeltaEngine.Platforms.Mocks;
 using NUnit.Framework;
 
 namespace DeltaEngine.Input.Tests
 {
-	public class InteractTests : TestWithAllFrameworks
+	public class InteractTests : TestWithMocksOrVisually
 	{
-		[IntegrationTest]
-		public void RelativePointerPositionIsCorrect(Type resolver)
+		[Test]
+		public void RelativePointerPositionIsCorrect()
 		{
-			Start(resolver, () =>
-			{
-				var entity = CreateEntity();
-				SetMouseState(new Point(0.3f, 0.4f), State.Released);
-				Assert.AreEqual(Point.Zero, entity.Get<Interact.State>().RelativePointerPosition);
-				SetMouseState(new Point(0.1f, 0.8f), State.Released);
-				Assert.AreEqual(new Point(-0.5f, 2f), entity.Get<Interact.State>().RelativePointerPosition);
-			});
+			var entity = CreateEntity();
+			SetMouseState(Point.Half, State.Released);
+			Assert.AreEqual(Point.Half, entity.Get<Interact.State>().RelativePointerPosition);
+			SetMouseState(new Point(0.1f, 0.8f), State.Released);
+			Assert.AreEqual(new Point(-0.5f, 2f), entity.Get<Interact.State>().RelativePointerPosition);
+			Window.CloseAfterFrame();
 		}
 
 		private Entity2D CreateEntity()
 		{
-			var entity = new Entity2D { DrawArea = Center };
-			entity.Add<Interact>().Add(new Interact.State());
+			var entity = new Entity2D(Center);
+			entity.Start<Interact>().Add(new Interact.State());
 			EntitySystem.Current.Run();
 			InitializeMouse();
 			return entity;
@@ -35,178 +33,151 @@ namespace DeltaEngine.Input.Tests
 
 		private void InitializeMouse()
 		{
-			mockResolver.input.SetMousePosition(Point.Zero);
-			mockResolver.AdvanceTimeAndExecuteRunners();
+			Resolve<MockMouse>().SetPosition(Point.Zero);
+			resolver.AdvanceTimeAndExecuteRunners();
 		}
 
 		private void SetMouseState(Point position, State state, float duration = 0.02f)
 		{
-			mockResolver.input.SetMousePosition(position);
-			mockResolver.input.SetMouseButtonState(MouseButton.Left, state);
-			mockResolver.AdvanceTimeAndExecuteRunners(duration);
+			Resolve<MockMouse>().SetPosition(position);
+			Resolve<MockMouse>().SetButtonState(MouseButton.Left, state);
+			resolver.AdvanceTimeAndExecuteRunners(duration);
 		}
 
-		[IntegrationTest]
-		public void IsPressedDoesNotFireOutside(Type resolver)
+		[Test]
+		public void IsPressedDoesNotFireOutside()
 		{
-			Start(resolver, () =>
+			var entity = CreateEntity();
+			bool pressed = false;
+			entity.Messaged += message =>
 			{
-				var entity = CreateEntity();
-				bool pressed = false;
-				entity.Messaged += message =>
-				{
-					if (message is Interact.ControlPressed)
-						pressed = true;
-				};
-				SetMouseState(Point.Zero, State.Pressing);
-				Assert.IsFalse(pressed);
-				Assert.IsFalse(entity.Get<Interact.State>().IsPressed);
-			});
+				if (message is Interact.ControlPressed)
+					pressed = true;
+			};
+			SetMouseState(Point.Zero, State.Pressing);
+			Assert.IsFalse(pressed);
+			Assert.IsFalse(entity.Get<Interact.State>().IsPressed);
 		}
 
-		[IntegrationTest]
-		public void IsPressedFiresInside(Type resolver)
+		[Test]
+		public void IsPressedFiresInside()
 		{
-			Start(resolver, () =>
+			var entity = CreateEntity();
+			bool pressed = false;
+			entity.Messaged += message =>
 			{
-				var entity = CreateEntity();
-				bool pressed = false;
-				entity.Messaged += message =>
-				{
-					if (message is Interact.ControlPressed)
-						pressed = true;
-				};
-				SetMouseState(Point.Half, State.Pressing);
-				Assert.IsTrue(pressed);
-				Assert.IsTrue(entity.Get<Interact.State>().IsPressed);
-			});
+				if (message is Interact.ControlPressed)
+					pressed = true;
+			};
+			SetMouseState(Point.Half, State.Pressing);
+			Assert.IsTrue(pressed);
+			Assert.IsTrue(entity.Get<Interact.State>().IsPressed);
 		}
 
-		[IntegrationTest]
-		public void NotEnteringEntity(Type resolver)
+		[Test]
+		public void NotEnteringEntity()
 		{
-			Start(resolver, () =>
+			var entity = CreateEntity();
+			bool entered = false;
+			entity.Messaged += message =>
 			{
-				var entity = CreateEntity();
-				bool entered = false;
-				entity.Messaged += message =>
-				{
-					if (message is Interact.ControlEntered)
-						entered = true;
-				};
-				SetMouseState(Point.Zero, State.Released);
-				Assert.IsFalse(entered);
-				Assert.IsFalse(entity.Get<Interact.State>().IsInside);
-			});
+				if (message is Interact.ControlEntered)
+					entered = true;
+			};
+			SetMouseState(Point.Zero, State.Released);
+			Assert.IsFalse(entered);
+			Assert.IsFalse(entity.Get<Interact.State>().IsInside);
 		}
 
-		[IntegrationTest]
-		public void EnteringEntity(Type resolver)
+		[Test]
+		public void EnteringEntity()
 		{
-			Start(resolver, () =>
+			var entity = CreateEntity();
+			bool entered = false;
+			entity.Messaged += message =>
 			{
-				var entity = CreateEntity();
-				bool entered = false;
-				entity.Messaged += message =>
-				{
-					if (message is Interact.ControlEntered)
-						entered = true;
-				};
-				SetMouseState(Point.Half, State.Released);
-				Assert.IsTrue(entered);
-				Assert.IsTrue(entity.Get<Interact.State>().IsInside);
-			});
+				if (message is Interact.ControlEntered)
+					entered = true;
+			};
+			SetMouseState(Point.Half, State.Released);
+			Assert.IsTrue(entered);
+			Assert.IsTrue(entity.Get<Interact.State>().IsInside);
 		}
 
-		[IntegrationTest]
-		public void ExitingEntity(Type resolver)
+		[Test]
+		public void ExitingEntity()
 		{
-			Start(resolver, () =>
+			var entity = CreateEntity();
+			bool exited = false;
+			entity.Messaged += message =>
 			{
-				var entity = CreateEntity();
-				bool exited = false;
-				entity.Messaged += message =>
-				{
-					if (message is Interact.ControlExited)
-						exited = true;
-				};
-				SetMouseState(Point.Half, State.Released);
-				SetMouseState(Point.Zero, State.Released);
-				Assert.IsTrue(exited);
-				Assert.IsFalse(entity.Get<Interact.State>().IsInside);
-			});
+				if (message is Interact.ControlExited)
+					exited = true;
+			};
+			SetMouseState(Point.Half, State.Released);
+			SetMouseState(Point.Zero, State.Released);
+			Assert.IsTrue(exited);
+			Assert.IsFalse(entity.Get<Interact.State>().IsInside);
 		}
 
-		[IntegrationTest]
-		public void HoveringOverEntityForShortTimeDoesNotStartHovering(Type resolver)
+		[Test]
+		public void HoveringOverEntityForShortTimeDoesNotStartHovering()
 		{
-			Start(resolver, () =>
+			var entity = CreateEntity();
+			bool hovered = false;
+			entity.Messaged += message =>
 			{
-				var entity = CreateEntity();
-				bool hovered = false;
-				entity.Messaged += message =>
-				{
-					if (message is Interact.ControlHoveringStarted)
-						hovered = true;
-				};
-				SetMouseState(Point.Half, State.Released, 1.0f);
-				Assert.IsFalse(hovered);
-				Assert.IsFalse(entity.Get<Interact.State>().IsHovering);
-			});
+				if (message is Interact.ControlHoveringStarted)
+					hovered = true;
+			};
+			SetMouseState(Point.Half, State.Released, 1.0f);
+			Assert.IsFalse(hovered);
+			Assert.IsFalse(entity.Get<Interact.State>().IsHovering);
 		}
 
-		[IntegrationTest]
-		public void HoveringOverEntityForLongTimeStartHoverings(Type resolver)
+		[Test]
+		public void HoveringOverEntityForLongTimeStartHoverings()
 		{
-			Start(resolver, () =>
+			var entity = CreateEntity();
+			bool hovered = false;
+			entity.Messaged += message =>
 			{
-				var entity = CreateEntity();
-				bool hovered = false;
-				entity.Messaged += message =>
-				{
-					if (message is Interact.ControlHoveringStarted)
-						hovered = true;
-				};
-				SetMouseState(Point.Half, State.Released, 3.0f);
-				Assert.IsTrue(hovered);
-				Assert.IsTrue(entity.Get<Interact.State>().IsHovering);
-			});
+				if (message is Interact.ControlHoveringStarted)
+					hovered = true;
+			};
+			SetMouseState(Point.Half, State.Released, 3.0f);
+			Assert.IsTrue(hovered);
+			Assert.IsTrue(entity.Get<Interact.State>().IsHovering);
 		}
 
-		[IntegrationTest]
-		public void StartThenStopHovering(Type resolver)
-		{
-			Start(resolver, () =>
+		[Test]
+		public void StartThenStopHovering()
+		{ 
+			var entity = CreateEntity();
+			bool stoppedHovering = false;
+			entity.Messaged += message =>
 			{
-				var entity = CreateEntity();
-				bool stoppedHovering = false;
-				entity.Messaged += message =>
-				{
-					if (message is Interact.ControlHoveringStopped)
-						stoppedHovering = true;
-				};
-				SetMouseState(Point.Half, State.Released, 3.0f);
-				SetMouseState(Point.Zero, State.Released);
-				Assert.IsTrue(stoppedHovering);
-				Assert.IsFalse(entity.Get<Interact.State>().IsHovering);
-			});
+				if (message is Interact.ControlHoveringStopped)
+					stoppedHovering = true;
+			};
+			SetMouseState(Point.Half, State.Released, 3.0f);
+			SetMouseState(Point.Zero, State.Released);
+			Assert.IsTrue(stoppedHovering);
+			Assert.IsFalse(entity.Get<Interact.State>().IsHovering);
 		}
 
-		[IntegrationTest]
-		public void PressingAndReleasingEntity(Type resolver)
+		[Test]
+		public void PressingAndReleasingEntity()
 		{
-			Start(resolver, () =>
+			var entity = CreateEntity();
+			bool released = false;
+			entity.Messaged += message =>
 			{
-				var entity = CreateEntity();
-				bool released = false;
-				entity.Messaged += message =>
-				{
-					if (message is Interact.ControlReleased)
-						released = true;
-				};
-				PressAndReleaseMouse(Point.Half, Point.Zero);
-				Assert.IsTrue(released);
-			});
+				if (message is Interact.ControlReleased)
+					released = true;
+			};
+			PressAndReleaseMouse(Point.Half, Point.Zero);
+			Assert.IsTrue(released);
 		}
 
 		private void PressAndReleaseMouse(Point press, Point release)
@@ -215,28 +186,25 @@ namespace DeltaEngine.Input.Tests
 			SetMouseState(release, State.Releasing);
 		}
 
-		[IntegrationTest]
-		public void ClickingEntity(Type resolver)
+		[Test]
+		public void ClickingEntity()
 		{
-			Start(resolver, () =>
+			var entity = CreateClickableEntity();
+			bool clicked = false;
+			entity.Messaged += message =>
 			{
-				var entity = CreateClickableEntity();
-				bool clicked = false;
-				entity.Messaged += message =>
-				{
-					if (message is Interact.ControlClicked)
-						clicked = true;
-				};
-				PressAndReleaseMouse(Point.Half, Point.Half);
-				Assert.IsTrue(clicked);
-				Assert.IsTrue(entity.Clicked);
-			});
+				if (message is Interact.ControlClicked)
+					clicked = true;
+			};
+			PressAndReleaseMouse(Point.Half, Point.Half);
+			Assert.IsTrue(clicked);
+			Assert.IsTrue(entity.Clicked);
 		}
 
 		private ClickableEntity CreateClickableEntity()
 		{
 			var entity = new ClickableEntity { DrawArea = Center };
-			entity.Add<Interact, Interact.Clicking>().Add(new Interact.State());
+			entity.Start<Interact, Interact.Clicking>().Add(new Interact.State());
 			EntitySystem.Current.Run();
 			InitializeMouse();
 			return entity;
@@ -244,6 +212,9 @@ namespace DeltaEngine.Input.Tests
 
 		private class ClickableEntity : Entity2D, Interact.Clickable
 		{
+			public ClickableEntity()
+				: base(Rectangle.Zero) {}
+
 			public void Clicking()
 			{
 				Clicked = true;
@@ -252,15 +223,12 @@ namespace DeltaEngine.Input.Tests
 			public bool Clicked { get; private set; }
 		}
 
-		[IntegrationTest]
-		public void FocusableControlAcceptsFocus(Type resolver)
+		[Test]
+		public void FocusableControlAcceptsFocus()
 		{
-			Start(resolver, () =>
-			{
-				var entity = CreateFocusableEntity();
-				PressAndReleaseMouse(Point.Half, Point.Half);
-				Assert.IsTrue(entity.Get<Interact.State>().HasFocus);
-			});
+			var entity = CreateFocusableEntity();
+			PressAndReleaseMouse(Point.Half, Point.Half);
+			Assert.IsTrue(entity.Get<Interact.State>().HasFocus);
 		}
 
 		private Entity2D CreateFocusableEntity()
@@ -270,91 +238,76 @@ namespace DeltaEngine.Input.Tests
 			return entity;
 		}
 
-		[IntegrationTest]
-		public void ControlGrabsFocusFromPreviousControl(Type resolver)
+		[Test]
+		public void ControlGrabsFocusFromPreviousControl()
 		{
-			Start(resolver, () =>
-			{
-				var entity1 = CreateFocusableEntity();
-				var entity2 = CreateFocusableEntity();
-				entity2.DrawArea = Rectangle.FromCenter(Point.Zero, Size.Half);
-				PressAndReleaseMouse(Point.Half, Point.Half);
-				Assert.IsTrue(entity1.Get<Interact.State>().HasFocus);
-				PressAndReleaseMouse(Point.Zero, Point.Zero);
-				Assert.IsFalse(entity1.Get<Interact.State>().HasFocus);
-				Assert.IsTrue(entity2.Get<Interact.State>().HasFocus);
-			});
+			var entity1 = CreateFocusableEntity();
+			var entity2 = CreateFocusableEntity();
+			entity2.DrawArea = Rectangle.FromCenter(Point.Zero, Size.Half);
+			PressAndReleaseMouse(Point.Half, Point.Half);
+			Assert.IsTrue(entity1.Get<Interact.State>().HasFocus);
+			PressAndReleaseMouse(Point.Zero, Point.Zero);
+			Assert.IsFalse(entity1.Get<Interact.State>().HasFocus);
+			Assert.IsTrue(entity2.Get<Interact.State>().HasFocus);
 		}
 
-		[IntegrationTest]
-		public void NonFocussableControlDoesntAcceptsFocus(Type resolver)
+		[Test]
+		public void NonFocussableControlDoesntAcceptsFocus()
 		{
-			Start(resolver, () =>
-			{
-				var entity = CreateEntity();
-				SetMouseState(Point.Half, State.Pressing);
-				SetMouseState(Point.Half, State.Releasing);
-				Assert.IsFalse(entity.Get<Interact.State>().HasFocus);
-			});
+			var entity = CreateEntity();
+			SetMouseState(Point.Half, State.Pressing);
+			SetMouseState(Point.Half, State.Releasing);
+			Assert.IsFalse(entity.Get<Interact.State>().HasFocus);
 		}
 
-		[IntegrationTest]
-		public void PressingWithoutMovingMouseDoesNotDrag(Type resolver)
+		[Test]
+		public void PressingWithoutMovingMouseDoesNotDrag()
 		{
-			Start(resolver, () =>
+			var entity = CreateEntity();
+			bool dragging = false;
+			entity.Messaged += message =>
 			{
-				var entity = CreateEntity(); 
-				bool dragging = false;
-				entity.Messaged += message =>
-				{
-					if (message is Interact.ControlDragStarted)
-						dragging = true;
-				};
-				SetMouseState(Point.Half, State.Pressing);
-				Assert.IsFalse(entity.Get<Interact.State>().IsDragging);
-				Assert.IsFalse(dragging);
-			});
+				if (message is Interact.ControlDragStarted)
+					dragging = true;
+			};
+			SetMouseState(Point.Half, State.Pressing);
+			Assert.IsFalse(entity.Get<Interact.State>().IsDragging);
+			Assert.IsFalse(dragging);
 		}
 
-		[IntegrationTest]
-		public void StartDraggingMouse(Type resolver)
+		[Test]
+		public void StartDraggingMouse()
 		{
-			Start(resolver, () =>
+			var entity = CreateEntity();
+			bool dragging = false;
+			entity.Messaged += message =>
 			{
-				var entity = CreateEntity();
-				bool dragging = false;
-				entity.Messaged += message =>
-				{
-					if (message is Interact.ControlDragStarted)
-						dragging = true;
-				};
-				SetMouseState(Point.Half, State.Pressing);
-				SetMouseState(new Point(0.6f, 0.7f), State.Pressed);
-				Assert.IsTrue(entity.Get<Interact.State>().IsDragging);
-				Assert.IsTrue(dragging);
-				Assert.AreEqual(new Point(0.1f, 0.2f), entity.Get<Interact.State>().DragDelta);
-			});
+				if (message is Interact.ControlDragStarted)
+					dragging = true;
+			};
+			SetMouseState(Point.Half, State.Pressing);
+			SetMouseState(new Point(0.6f, 0.7f), State.Pressed);
+			Assert.IsTrue(entity.Get<Interact.State>().IsDragging);
+			Assert.IsTrue(dragging);
+			Assert.AreEqual(new Point(0.1f, 0.2f), entity.Get<Interact.State>().DragDelta);
 		}
 
-		[IntegrationTest]
-		public void StopDraggingMouse(Type resolver)
+		[Test]
+		public void StopDraggingMouse()
 		{
-			Start(resolver, () =>
+			var entity = CreateEntity();
+			bool stopDragging = false;
+			entity.Messaged += message =>
 			{
-				var entity = CreateEntity();
-				bool stopDragging = false;
-				entity.Messaged += message =>
-				{
-					if (message is Interact.ControlDragFinished)
-						stopDragging = true;
-				};
-				SetMouseState(Point.Half, State.Pressing);
-				SetMouseState(new Point(0.6f, 0.7f), State.Pressed);
-				Assert.IsFalse(stopDragging);
-				SetMouseState(new Point(0.6f, 0.8f), State.Releasing);
-				Assert.IsFalse(entity.Get<Interact.State>().IsDragging);
-				Assert.IsTrue(stopDragging);
-			});
+				if (message is Interact.ControlDragFinished)
+					stopDragging = true;
+			};
+			SetMouseState(Point.Half, State.Pressing);
+			SetMouseState(new Point(0.6f, 0.7f), State.Pressed);
+			Assert.IsFalse(stopDragging);
+			SetMouseState(new Point(0.6f, 0.8f), State.Releasing);
+			Assert.IsFalse(entity.Get<Interact.State>().IsDragging);
+			Assert.IsTrue(stopDragging);
 		}
 	}
 }

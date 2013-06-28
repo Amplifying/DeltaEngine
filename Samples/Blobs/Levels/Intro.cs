@@ -11,8 +11,8 @@ namespace Blobs.Levels
 	/// </summary>
 	public class Intro : Level
 	{
-		public Intro(ScreenSpace screen, InputCommands input, ContentLoader content)
-			: base(screen, input, content) {}
+		public Intro(ScreenSpace screen, InputCommands input)
+			: base(screen, input) {}
 
 		protected override void PositionPlayer()
 		{
@@ -28,24 +28,17 @@ namespace Blobs.Levels
 
 		protected override void AddEnemies() {}
 
+		protected override void SetText()
+		{
+			text.IsActive = true;
+			text.Text = "ClickToStart";
+			text.SetPosition(new Point(0.65f, 0.805f));
+		}
+
 		protected override void AddPlatforms()
 		{
 			AddPlatform(new Rectangle(0.2f, 0.8f, 10.0f, 0.2f), 0.0f, Color.Green);
 		}
-
-		protected override void AddText()
-		{
-			//TODO: VectorText
-			//Renderer.Add(
-			//	text =
-			//		new VectorText(vectorData, new Point(0.65f, 0.805f), 0.01f)
-			//		{
-			//			Text = "Click to start",
-			//			Color = Color.Black
-			//		});
-		}
-
-		//private VectorText text;
 
 		protected override void SetupEvents()
 		{
@@ -57,7 +50,6 @@ namespace Blobs.Levels
 		public override void Dispose()
 		{
 			base.Dispose();
-			//text.Dispose();
 			input.Remove(command);
 		}
 

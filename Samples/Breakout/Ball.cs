@@ -6,7 +6,6 @@ using DeltaEngine.Graphics;
 using DeltaEngine.Input;
 using DeltaEngine.Multimedia;
 using DeltaEngine.Rendering;
-using DeltaEngine.Rendering.ScreenSpaces;
 using DeltaEngine.Rendering.Sprites;
 
 namespace Breakout
@@ -14,16 +13,18 @@ namespace Breakout
 	/// <summary>
 	/// The player interacts with the ball with his paddle and navigates it to destroy bricks.
 	/// </summary>
-	public class Ball : Sprite, Runner<ScreenSpace>
+	public class Ball : Sprite
 	{
-		public Ball(Paddle paddle, ContentLoader content, InputCommands inputCommands)
-			: base(content.Load<Image>("Ball"), Rectangle.Zero)
+		public Ball(Paddle paddle, InputCommands inputCommands)
+			: base(ContentLoader.Load<Image>("Ball"), Rectangle.Zero)
 		{
 			this.paddle = paddle;
-			fireBallSound = content.Load<Sound>("PaddleBallStart");
-			collisionSound = content.Load<Sound>("BallCollision");
+			fireBallSound = ContentLoader.Load<Sound>("PaddleBallStart");
+			collisionSound = ContentLoader.Load<Sound>("BallCollision");
 			UpdateOnPaddle();
 			RegisterFireBallCommand(inputCommands);
+			Start<RunBall>();
+			RenderLayer = 5;
 		}
 
 		private readonly Paddle paddle;
@@ -57,7 +58,7 @@ namespace Breakout
 			fireBallSound.Play();
 		}
 
-		protected Point velocity;
+		protected static Point velocity;
 		private const float StartBallSpeedY = -1f;
 
 		public virtual void ResetBall()
@@ -66,15 +67,19 @@ namespace Breakout
 			velocity = Point.Zero;
 		}
 
-		public virtual void Run(ScreenSpace screen)
+		public class RunBall : EventListener2D
 		{
-			if (isOnPaddle)
-				UpdateOnPaddle();
-			else
-				UpdateInFlight(Time.Current.Delta);
+			public override void ReceiveMessage(Entity2D entity, object message)
+			{
+				var ball = (Ball)entity;
+				if (ball.isOnPaddle)
+					ball.UpdateOnPaddle();
+				else
+					ball.UpdateInFlight(Time.Current.Delta);
 
-			float aspect = screen.ToPixelSpace(BallSize).AspectRatio;
-			DrawArea = Rectangle.FromCenter(Position, new Size(Height / aspect, Height));
+				float aspect = 1;
+				ball.DrawArea = Rectangle.FromCenter(ball.Position, new Size(Height / aspect, Height));
+			}
 		}
 
 		public Point Position { get; protected set; }

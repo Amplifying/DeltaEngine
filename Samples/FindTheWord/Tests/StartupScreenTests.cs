@@ -1,27 +1,26 @@
-﻿using System;
-using DeltaEngine.Platforms.All;
+using System;
+using DeltaEngine.Platforms;
 using NUnit.Framework;
 
 namespace FindTheWord.Tests
 {
-	public class StartupScreenTests : TestWithAllFrameworks
+	public class StartupScreenTests : TestWithMocksOrVisually
 	{
-		[IntegrationTest]
-		public void RaisingGameStarted(Type resolver)
+		[Test]
+		public void RaisingGameStarted()
 		{
 			int isGameStartedCount = 0;
-			Start(resolver, (StartupScreen screen) =>
-			{
-				screen.GameStarted += () => isGameStartedCount++;
-				screen.StartGame();
-				Assert.AreEqual(1, isGameStartedCount);
-			});
+			var screen = Resolve<StartupScreen>();
+			screen.GameStarted += () => isGameStartedCount++;
+			screen.StartGame();
+			Assert.AreEqual(1, isGameStartedCount);
+			Window.CloseAfterFrame();
 		}
 
-		[VisualTest]
-		public void ShowScreen(Type resolver)
+		[Test]
+		public void ShowScreen()
 		{
-			Start(resolver, (StartupScreen screen) => { });
+			Resolve<StartupScreen>();
 		}
 	}
 }

@@ -50,6 +50,10 @@
       <Project>{c6ba144d-59b0-41b1-8682-b092b4efbbb1}</Project>
       <Name>DeltaEngine.Entities</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Rendering\DeltaEngine.Rendering.csproj">
+      <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
+      <Name>DeltaEngine.Rendering</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\DeltaEngine.Input.csproj">
       <Project>{cc65e69e-fafd-4c2b-85eb-5e57fd3af847}</Project>
       <Name>DeltaEngine.Input</Name>

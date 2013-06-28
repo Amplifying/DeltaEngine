@@ -9,14 +9,6 @@ namespace DeltaEngine.Core.Tests
 	public class StackTraceExtensionsTests
 	{
 		[Test]
-		public void ContainsNoTestOrIsVisualTest()
-		{
-			Assert.IsFalse(StackTraceExtensions.ContainsNoTestOrIsVisualTest());
-			StackTraceExtensions.IsVisualTestCase = true;
-			Assert.IsTrue(StackTraceExtensions.ContainsNoTestOrIsVisualTest());
-		}
-
-		[Test]
 		public void HasAttribute()
 		{
 			var stackFrame = new StackFrame();
@@ -27,8 +19,7 @@ namespace DeltaEngine.Core.Tests
 		[Test]
 		public void IsApprovalTest()
 		{
-			var frames = new StackTrace().GetFrames();
-			Assert.IsFalse(frames.IsApprovalTest());
+			Assert.AreEqual("", StackTraceExtensions.GetApprovalTestName());
 		}
 
 		[Test]
@@ -42,7 +33,6 @@ namespace DeltaEngine.Core.Tests
 		{
 			// Because this method is named "Main" we will get the namespace name instead!
 			Assert.AreEqual("DeltaEngine.Core.Tests", StackTraceExtensions.GetEntryName());
-			Assert.NotNull(new DerivedTestToFakeMainAttribute());
 		}
 
 		[AttributeUsage(AttributeTargets.Method)]
@@ -63,16 +53,9 @@ namespace DeltaEngine.Core.Tests
 		}
 
 		[Test]
-		public void ContainsUnitTest()
+		public void IsUnitTest()
 		{
-			Assert.IsTrue(StackTraceExtensions.ContainsUnitTest());
-		}
-
-		[TestCase]
-		public void GetTestCaseName()
-		{
-			Assert.AreEqual("GetTestCaseName", new StackTrace().GetFrames().GetTestMethodName());
-			Assert.IsFalse(IsTestCaseWithIgnore(new StackFrame()));
+			Assert.IsTrue(StackTraceExtensions.IsUnitTest());
 		}
 
 		private static bool IsTestCaseWithIgnore(StackFrame frame)

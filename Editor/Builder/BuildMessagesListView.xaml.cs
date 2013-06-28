@@ -17,51 +17,15 @@ namespace DeltaEngine.Editor.Builder
 		public BuildMessagesListView(BuildMessagesListViewModel messagesViewModel)
 		{
 			InitializeComponent();
-			MessagesViewModel = messagesViewModel;
 		}
 
-		public BuildMessagesListViewModel MessagesViewModel
+		private void UpdatePlatformsStackPanelBackground()
 		{
-			get
-			{
-				return messagesViewModel;
-			}
-			set
-			{
-				messagesViewModel = value;
-				DataContext = messagesViewModel;
-				UpdateErrorsStackPanelBackground();
-				UpdateWarningsStackPanelBackground();
-				UpdateMessagesStackPanelBackground();
-			}
-		}
-		private BuildMessagesListViewModel messagesViewModel;
-
-		private void UpdateErrorsStackPanelBackground()
-		{
-			Color brushColor = MessagesViewModel.IsShowingErrorsAllowed ?
-				ToggleEnabledColor :
-				ToggleDisabledColor;
-			ErrorsStackPanel.Background = new SolidColorBrush(brushColor);
-		}
-
-		private static readonly Color ToggleEnabledColor = Colors.SteelBlue;
-		private static readonly Color ToggleDisabledColor = Colors.DimGray;
-
-		private void UpdateWarningsStackPanelBackground()
-		{
-			Color brushColor = MessagesViewModel.IsShowingWarningsAllowed ?
-				ToggleEnabledColor :
-				ToggleDisabledColor;
-			WarningsStackPanel.Background = new SolidColorBrush(brushColor);
-		}
-
-		private void UpdateMessagesStackPanelBackground()
-		{
-			Color brushColor = MessagesViewModel.IsShowingInfosAllowed ?
-				ToggleEnabledColor :
-				ToggleDisabledColor;
-			MessagesStackPanel.Background = new SolidColorBrush(brushColor);
+			// TODO: Collapse error/warning list and show available packages to delpoy/launch
+			//Color brushColor = MessagesViewModel.IsShowingInfosAllowed ?
+			//	ToggleEnabledColor :
+			//	ToggleDisabledColor;
+			//PlatformsStackPanel.Background = new SolidColorBrush(brushColor);
 		}
 
 		private void UpdateMessageColumnWidth(object sender, SizeChangedEventArgs e)
@@ -83,24 +47,6 @@ namespace DeltaEngine.Editor.Builder
 		private void OnOpenDoubleClickedFile(object sender, MouseButtonEventArgs e)
 		{
 			// TODO when possible
-		}
-
-		private void OnErrorsStackPanelClicked(object sender, MouseButtonEventArgs e)
-		{
-			MessagesViewModel.IsShowingErrorsAllowed = !MessagesViewModel.IsShowingErrorsAllowed;
-			UpdateErrorsStackPanelBackground();
-		}
-
-		private void OnWarningsStackPanelClicked(object sender, MouseButtonEventArgs e)
-		{
-			MessagesViewModel.IsShowingWarningsAllowed = !MessagesViewModel.IsShowingWarningsAllowed;
-			UpdateWarningsStackPanelBackground();
-		}
-
-		private void OnMessagesStackPanelClicked(object sender, MouseButtonEventArgs e)
-		{
-			MessagesViewModel.IsShowingInfosAllowed = !MessagesViewModel.IsShowingInfosAllowed;
-			UpdateMessagesStackPanelBackground();
 		}
 	}
 }

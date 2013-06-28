@@ -5,22 +5,23 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Color = Microsoft.Xna.Framework.Color;
+using Matrix = DeltaEngine.Datatypes.Matrix;
 
 namespace DeltaEngine.Graphics.Xna
 {
 	public class XnaDevice : Device
 	{
-		public XnaDevice(Game game, Window window)
+		public XnaDevice(Game game, Window window, Settings settings)
 		{
 			this.window = window;
+			this.settings = settings;
 			window.ViewportSizeChanged += ResetDeviceToNewViewportSize;
 			window.FullscreenChanged += OnFullscreenChanged;
-			if (window.Title == "")
-				window.Title = "XNA Device";
 			CreateAndSetupNativeDeviceManager(game);
 		}
 
 		private readonly Window window;
+		private readonly Settings settings;
 
 		private void CreateAndSetupNativeDeviceManager(Game game)
 		{
@@ -39,10 +40,11 @@ namespace DeltaEngine.Graphics.Xna
 						DisplayOrientation.LandscapeRight,
 				SynchronizeWithVerticalRetrace = false,
 				PreferredBackBufferFormat = SurfaceFormat.Color,
-				PreferredBackBufferWidth = 640,
-				PreferredBackBufferHeight = 360,
+				PreferredBackBufferWidth = (int)settings.Resolution.Width,
+				PreferredBackBufferHeight = (int)settings.Resolution.Height,
 				GraphicsProfile = GraphicsProfile.HiDef
 			};
+			deviceManager.IsFullScreen = settings.StartInFullscreen;
 			deviceManager.ApplyChanges();
 		}
 
@@ -70,6 +72,15 @@ namespace DeltaEngine.Graphics.Xna
 
 		public ContentManager NativeContent { get; private set; }
 
+		public void SetProjectionMatrix(Matrix matrix)
+		{
+			//TODO
+		}
+		public void SetModelViewMatrix(Matrix matrix)
+		{
+			//TODO
+		}
+
 		public void Run()
 		{
 			var color = window.BackgroundColor;
@@ -79,6 +90,9 @@ namespace DeltaEngine.Graphics.Xna
 
 		public void Present() {}
 
-		public void Dispose() {}
+		public void Dispose()
+		{
+			NativeDevice.Dispose();
+		}
 	}
 }

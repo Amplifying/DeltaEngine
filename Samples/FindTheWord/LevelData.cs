@@ -1,4 +1,4 @@
-﻿namespace FindTheWord
+namespace FindTheWord
 {
 	public class LevelData
 	{

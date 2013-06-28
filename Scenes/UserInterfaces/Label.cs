@@ -3,6 +3,7 @@ using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
 using DeltaEngine.Input;
+using DeltaEngine.Rendering;
 using DeltaEngine.Rendering.Fonts;
 using DeltaEngine.Rendering.Sprites;
 
@@ -32,32 +33,32 @@ namespace DeltaEngine.Scenes.UserInterfaces
 		}
 
 		internal Label(Image image, Color color, Font font)
-			: base(image, color)
+			: base(image, Rectangle.Zero)
 		{
+			Color = color;
 			Add(new FontText(font, "", Point.Zero));
-			Add<PositionText>();
+			Start<PositionText>();
 		}
 
-		private class PositionText : EntityHandler
+		private class PositionText : Behavior2D
 		{
-			public override void Handle(Entity entity)
+			public override void Handle(Entity2D label)
 			{
-				var label = entity as Label;
 				Point center = label.DrawArea.Center;
 				var size = label.Get<FontText>().Get<Size>();
-				entity.Get<FontText>().DrawArea = Rectangle.FromCenter(center, size);
-				entity.Get<FontText>().RenderLayer = label.RenderLayer + 1;
+				label.Get<FontText>().DrawArea = Rectangle.FromCenter(center, size);
+				label.Get<FontText>().RenderLayer = label.RenderLayer + 1;
 			}
 
-			public override EntityHandlerPriority Priority
+			public override Priority Priority
 			{
-				get { return EntityHandlerPriority.High; }
+				get { return Priority.High; }
 			}
 		}
 
-		protected class UpdateText : EntityListener
+		protected class UpdateText : EventListener2D
 		{
-			public override void ReceiveMessage(Entity entity, object message)
+			public override void ReceiveMessage(Entity2D entity, object message)
 			{
 				var keypress = message as InteractWithKeyboard.KeyPress;
 				var label = entity as Label;
@@ -82,7 +83,7 @@ namespace DeltaEngine.Scenes.UserInterfaces
 				if (key == Key.Space)
 					label.Text += " ";
 
-				if (key == Key.BackSpace && label.Text.Length > 0)
+				if (key == Key.Backspace && label.Text.Length > 0)
 					label.Text = label.Text.Substring(0, label.Text.Length - 1);
 			}
 		}

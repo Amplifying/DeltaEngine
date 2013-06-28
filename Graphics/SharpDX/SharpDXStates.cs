@@ -1,4 +1,5 @@
 using System;
+using DeltaEngine.Platforms;
 using SharpDX.DXGI;
 using SharpDX.Direct2D1;
 using SharpDX.Direct3D11;
@@ -16,11 +17,13 @@ namespace DeltaEngine.Graphics.SharpDX
 	/// </summary>
 	public class SharpDXStates : IDisposable
 	{
-		public SharpDXStates()
+		public SharpDXStates(Settings settings)
 		{
+			this.settings = settings;
 			d2DFactory = new D2dFactory();
 		}
 
+		private readonly Settings settings;
 		protected readonly D2dFactory d2DFactory;
 
 		protected static CreationFlags CreationFlags
@@ -35,7 +38,13 @@ namespace DeltaEngine.Graphics.SharpDX
 			}
 		}
 
-		protected static SwapChainDescription CreateSwapChainDescription(int width, int height,
+		internal const int BackBufferCount = 1;
+		internal const Format BackBufferFormat = Format.R8G8B8A8_UNorm;
+		internal const SwapChainFlags BackBufferFlags = SwapChainFlags.AllowModeSwitch;
+		protected readonly RenderTargetProperties defaultRenderTargetProperties =
+			new RenderTargetProperties(new PixelFormat(Format.Unknown, AlphaMode.Premultiplied));
+
+		protected SwapChainDescription CreateSwapChainDescription(int width, int height,
 			IntPtr handle)
 		{
 			return new SwapChainDescription
@@ -44,17 +53,12 @@ namespace DeltaEngine.Graphics.SharpDX
 				ModeDescription = new ModeDescription(width, height, new Rational(60, 1), BackBufferFormat),
 				IsWindowed = true,
 				OutputHandle = handle,
-				SampleDescription = new SampleDescription(1, 0),
+				SampleDescription = new SampleDescription(settings.AntiAliasingSamples,
+					settings.AntiAliasingSamples > 1 ? 1 : 0),
 				SwapEffect = SwapEffect.Discard,
-				Usage = Usage.RenderTargetOutput
+				Usage = Usage.RenderTargetOutput,
 			};
 		}
-
-		internal const int BackBufferCount = 1;
-		internal const Format BackBufferFormat = Format.R8G8B8A8_UNorm;
-		internal const SwapChainFlags BackBufferFlags = SwapChainFlags.AllowModeSwitch;
-		protected readonly RenderTargetProperties defaultRenderTargetProperties =
-			new RenderTargetProperties(new PixelFormat(Format.Unknown, AlphaMode.Premultiplied));
 
 		protected RasterizerState CullClockwise(DxDevice device)
 		{

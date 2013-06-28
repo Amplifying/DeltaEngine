@@ -6,14 +6,14 @@ using DeltaEngine.Physics2D;
 using DeltaEngine.Rendering.ScreenSpaces;
 using System;
 
-namespace DeltaNinja
+namespace DeltaNinja.Entities
 {
-	class LogoFactory
+	public class LogoFactory
 	{
-		public LogoFactory(ContentLoader content, ScreenSpace screen)
+		public LogoFactory(ScreenSpace screen)
 		{
 			this.screen = screen;	
-			logoImage = content.Load<Image>("DeltaEngineLogo");
+			logoImage = ContentLoader.Load<Image>("DeltaEngineLogo");
 		}
 
 		private readonly ScreenSpace screen;		

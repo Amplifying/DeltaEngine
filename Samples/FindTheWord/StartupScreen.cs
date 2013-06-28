@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
@@ -10,21 +10,19 @@ namespace FindTheWord
 {
 	public class StartupScreen : Sprite
 	{
-		public StartupScreen(ContentLoader content, InputCommands input)
-			: base(content.Load<Image>("Startscreen"), DefaultDrawArea())
+		public StartupScreen(InputCommands input)
+			: base(ContentLoader.Load<Image>("Startscreen"), GetDrawArea())
 		{
-			this.content = content;
 			Input = input;
 			CreateStartButton();
 		}
 
-		private readonly ContentLoader content;
-		private InputCommands Input { get; set; }
-
-		private static Rectangle DefaultDrawArea()
+		private static Rectangle GetDrawArea()
 		{
 			return new Rectangle(0, 0.1875f, 1, 0.625f);
-		}
+		} 
+
+		private InputCommands Input { get; set; }
 
 		private void CreateStartButton()
 		{
@@ -34,7 +32,7 @@ namespace FindTheWord
 			float xPos = DrawArea.Right - BottomRightGap - ButtonWidth;
 			float yPos = DrawArea.Bottom - BottomRightGap - ButtonHeight;
 			Rectangle startDrawArea = new Rectangle(xPos, yPos, ButtonWidth, ButtonHeight);
-			StartButton = new Button(Input, content, "StartButton", startDrawArea);
+			StartButton = new Button(Input, "StartButton", startDrawArea);
 			StartButton.Clicked += button => StartGame();
 		}
 

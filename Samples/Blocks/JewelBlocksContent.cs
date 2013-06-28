@@ -7,7 +7,7 @@ namespace Blocks
 	/// </summary>
 	public class JewelBlocksContent : BlocksContent
 	{
-		public JewelBlocksContent(ContentLoader content)
-			: base(content, "JewelBlocks_") {}
+		public JewelBlocksContent()
+			: base("JewelBlocks_") {}
 	}
 }

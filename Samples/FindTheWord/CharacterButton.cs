@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
@@ -9,10 +9,10 @@ namespace FindTheWord
 {
 	public class CharacterButton : Button
 	{
-		public CharacterButton(InputCommands input, ContentLoader content, float xCenter, float yCenter)
-			: base(input, content, "CharBackground", GetDrawArea(xCenter, yCenter))
+		public CharacterButton(InputCommands input, float xCenter, float yCenter)
+			: base(input, "CharBackground", GetDrawArea(xCenter, yCenter))
 		{
-			font = new Font(content, "Tahoma30");
+			font = new Font("Tahoma30");
 			letter = NoCharacter;
 			currentFontText = new FontText(font, "", Point.Half);
 			currentFontText.RenderLayer = 4;

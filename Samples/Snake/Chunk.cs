@@ -11,7 +11,7 @@ namespace Snake
 	/// This class holds the data for the chunk and moves the chunk to random locations after 
 	/// being consumed.
 	/// </summary>
-	public class Chunk : Rect
+	public class Chunk : FilledRect
 	{
 		public Chunk(int gridSize, float blockSize)
 			: base(
@@ -37,7 +37,7 @@ namespace Snake
 			DrawArea = newDrawArea;
 		}
 
-		public bool IsCollidingWithSnake(List<Rect> snakeBodies)
+		public bool IsCollidingWithSnake(List<FilledRect> snakeBodies)
 		{
 			return snakeBodies.Any(IsBodyColliding);
 		}

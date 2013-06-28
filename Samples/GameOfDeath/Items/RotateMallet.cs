@@ -1,26 +1,27 @@
 using DeltaEngine.Core;
 using DeltaEngine.Entities;
+using DeltaEngine.Rendering;
 
 namespace GameOfDeath.Items
 {
 	/// <summary>
 	/// Handles the angle of rotation of a Game of Death Mallet
 	/// </summary>
-	public class RotateMallet : EntityHandler
+	public class RotateMallet : Behavior2D
 	{
-		public override void Handle(Entity entity)
+		public override void Handle(Entity2D entity)
 		{
-			var rotation = entity.Get<float>();
+			var rotation = entity.Rotation;
 			var rotationAdjust = RotationSpeed * Time.Current.Delta;
 			if (rotation < 0 - rotationAdjust)
-				entity.Set(rotation + rotationAdjust);
+				entity.Rotation = rotation + rotationAdjust;
 		}
 
 		private const float RotationSpeed = 300;
 
-		public override EntityHandlerPriority Priority
+		public override Priority Priority
 		{
-			get { return EntityHandlerPriority.First; }
+			get { return Priority.First; }
 		}
 	}
 }

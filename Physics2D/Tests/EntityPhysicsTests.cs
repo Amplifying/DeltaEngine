@@ -1,11 +1,7 @@
-using System;
-using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
-using DeltaEngine.Graphics;
-using DeltaEngine.Platforms.All;
-using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms;
 using DeltaEngine.Rendering;
 using DeltaEngine.Rendering.Shapes;
 using DeltaEngine.Rendering.Sprites;
@@ -13,22 +9,19 @@ using NUnit.Framework;
 
 namespace DeltaEngine.Physics2D.Tests
 {
-	public class EntityPhysicsTests : TestWithAllFrameworks
+	public class EntityPhysicsTests : TestWithMocksOrVisually
 	{
 		[Test]
 		public void FallingEffectIsRemovedAfterOneSecond()
 		{
-			Start(typeof(MockResolver), (ContentLoader content) =>
-			{
-				var sprite = CreateFallingSpriteWhichExpires(content);
-				CheckSpriteAfterHalfASecond(sprite);
-				CheckFallingEffectStateAfterOneSecond(sprite);
-			});
+			var sprite = CreateFallingSpriteWhichExpires();
+			CheckSpriteAfterHalfASecond(sprite);
+			CheckFallingEffectStateAfterOneSecond(sprite);
 		}
 
-		private static Sprite CreateFallingSpriteWhichExpires(ContentLoader content)
+		private static Sprite CreateFallingSpriteWhichExpires()
 		{
-			var sprite = new Sprite(content.Load<Image>("test"), Rectangle.One);
+			var sprite = new Sprite("DeltaEngineLogo", Rectangle.One);
 			sprite.Add(new SimplePhysics.Data
 			{
 				Velocity = Point.Half,
@@ -36,13 +29,14 @@ namespace DeltaEngine.Physics2D.Tests
 				RotationSpeed = 100.0f,
 				Duration = 1.0f
 			});
-			sprite.Add<SimplePhysics.Fall>();
+			sprite.Start<SimplePhysics.Fall>();
+			sprite.Color = Color.Red;
 			return sprite;
 		}
 
 		private void CheckSpriteAfterHalfASecond(Entity2D entity)
 		{
-			mockResolver.AdvanceTimeAndExecuteRunners(0.5f);
+			resolver.AdvanceTimeAndExecuteRunners(0.5f);
 			Assert.AreEqual(0.879f, entity.DrawArea.Center.X, 0.01f);
 			Assert.AreEqual(1.008f, entity.DrawArea.Center.Y, 0.01f);
 			Assert.AreEqual(50.0f, entity.Rotation, 2.0f);
@@ -50,95 +44,82 @@ namespace DeltaEngine.Physics2D.Tests
 
 		private void CheckFallingEffectStateAfterOneSecond(Entity2D entity)
 		{
-			mockResolver.AdvanceTimeAndExecuteRunners(1.0f);
+			resolver.AdvanceTimeAndExecuteRunners(1.0f);
 			Assert.AreEqual(1.534f, entity.DrawArea.Center.X, 0.01f);
 			Assert.AreEqual(2.059f, entity.DrawArea.Center.Y, 0.01f);
 			Assert.AreEqual(100.0f, entity.Rotation, 5.0f);
 		}
 
-		[VisualTest]
-		public void RenderFallingLogo(Type resolver)
+		[Test]
+		public void RenderFallingLogo()
 		{
-			Start(resolver, (ContentLoader content) => { CreateFallingSprite(content); });
+			CreateFallingSprite();
 		}
 
-		private Sprite CreateFallingSprite(ContentLoader content)
+		private Sprite CreateFallingSprite()
 		{
-			var sprite = new Sprite(content.Load<Image>("DeltaEngineLogo"), screenCenter);
+			var sprite = new Sprite("DeltaEngineLogo", screenCenter);
 			sprite.Add(new SimplePhysics.Data
 			{
 				Velocity = new Point(0.0f, -0.3f),
 				RotationSpeed = 100.0f,
-				Gravity = new Point(0.0f, 0.1f)
+				Gravity = new Point(0.0f, 0.1f),
 			});
-			sprite.Add<SimplePhysics.Fall>();
+			sprite.Add(Color.Red);
+			sprite.Start<SimplePhysics.Fall>();
 			return sprite;
 		}
 
 		private readonly Rectangle screenCenter = Rectangle.FromCenter(Point.Half,
 			new Size(0.2f, 0.2f));
 
-		[VisualTest]
-		public void RenderFallingLogoBouncingUsingTrigger(Type resolver)
+		[Test]
+		public void RenderFallingLogoBouncingUsingTrigger()
 		{
-			Start(resolver, (ContentLoader content) =>
+			// When the sprite hits the bottom of the screen
+			// - Bounce up
+			// - Change color
+			var trigger = new Trigger(entity => entity.Get<Rectangle>().Bottom > 0.75f);
+			trigger.Fired += entity =>
 			{
-				// When the sprite hits the bottom of the screen
-				// - Bounce up
-				// - Change color
-				var trigger = new Trigger(entity => entity.Get<Rectangle>().Bottom > 0.75f);
-				trigger.Fired += entity =>
-				{
-					var velocity = entity.Get<SimplePhysics.Data>().Velocity;
-					entity.Get<SimplePhysics.Data>().Velocity = new Point(velocity.X, -velocity.Y.Abs());
-				};
-				trigger.Fired += entity => entity.Set(Color.GetRandomBrightColor());
-				CreateFallingSprite(content).AddTrigger(trigger);
-				if (resolver == typeof(MockResolver))
-					mockResolver.AdvanceTimeAndExecuteRunners(8);
+				var velocity = entity.Get<SimplePhysics.Data>().Velocity;
+				entity.Get<SimplePhysics.Data>().Velocity = new Point(velocity.X, -velocity.Y.Abs());
+			};
+			trigger.Fired += entity => entity.Set(Color.GetRandomBrightColor());
+			CreateFallingSprite().AddTrigger(trigger);
+			resolver.AdvanceTimeAndExecuteRunners(8);
+		}
+
+		[Test]
+		public void RenderFallingCircle()
+		{
+			var ellipse = new Ellipse(Point.Half, 0.1f, 0.1f, Color.Blue);
+			ellipse.Add(new SimplePhysics.Data
+			{
+				Velocity = new Point(0.1f, -0.1f),
+				Gravity = new Point(0.0f, 0.1f)
+			});
+			ellipse.Start<SimplePhysics.Fall>();
+		}
+
+		[Test]
+		public void RenderEllipsemovingInScreenSpace()
+		{
+			var ellipse = new Ellipse(Point.Half, 0.1f, 0.06f, Color.Green);
+			ellipse.Add(new SimplePhysics.Data
+			{
+				Velocity = new Point(0.4f, -0.4f),
+				Gravity = new Point(0.0f, 0.0f)
 			});
 		}
 
-		[VisualTest]
-		public void RenderFallingCircle(Type resolver)
+		[Test]
+		public void RenderRotatingRect()
 		{
-			Start(resolver, () =>
-			{
-				var ellipse = new Ellipse(Point.Half, 0.1f, 0.1f, Color.Blue);
-				ellipse.Add(new SimplePhysics.Data
-				{
-					Velocity = new Point(0.1f, -0.1f),
-					Gravity = new Point(0.0f, 0.1f)
-				});
-				ellipse.Add<SimplePhysics.Fall>();
-			});
-		}
-
-		[VisualTest]
-		public void RenderEllipsemovingInScreenSpace(Type resolver)
-		{
-			Start(resolver, () =>
-			{
-				var ellipse = new Ellipse(Point.Half, 0.1f, 0.06f, Color.Green);
-				ellipse.Add(new SimplePhysics.Data
-				{
-					Velocity = new Point(0.4f, -0.4f),
-					Gravity = new Point(0.0f, 0.0f)
-				});
-				ellipse.Add<SimplePhysics.BounceOffScreenEdges>();
-			});
-		}
-
-		[VisualTest]
-		public void RenderRotatingRect(Type resolver)
-		{
-			Start(resolver, () =>
-			{ 
-				var rect = new Rect(Rectangle.FromCenter(Point.Half, new Size(0.2f)), Color.Orange);
-				rect.Add(new SimplePhysics.Data { Gravity = Point.Zero, RotationSpeed = 5});
-				rect.Add<SimplePhysics.Rotate>();
-			});
-
+			var rect = new FilledRect(Rectangle.FromCenter(Point.Half, new Size(0.2f)), Color.Orange)
+				{Rotation = 0};
+			rect.Add(new SimplePhysics.Data { Gravity = Point.Zero, RotationSpeed = 5 });
+			rect.Start<SimplePhysics.Rotate>(); 
 		}
 	}
 }

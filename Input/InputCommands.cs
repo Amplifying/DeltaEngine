@@ -10,26 +10,18 @@ namespace DeltaEngine.Input
 	/// </summary>
 	public class InputCommands : PriorityRunner
 	{
-		public InputCommands(Keyboard keyboard, PointerDevices pointerDevices, GamePad gamePad)
+		public InputCommands(Keyboard keyboard, Mouse mouse, Touch touch, GamePad gamePad)
 		{
 			this.keyboard = keyboard;
-			this.pointerDevices = pointerDevices;
+			this.Mouse = mouse;
+			this.Touch = touch;
 			this.gamePad = gamePad;
 		}
 
 		internal readonly Keyboard keyboard;
-		private readonly PointerDevices pointerDevices;
+		internal readonly Mouse Mouse;
+		internal readonly Touch Touch;
 		internal readonly GamePad gamePad;
-
-		internal Mouse Mouse
-		{
-			get { return pointerDevices.mouse; }
-		}
-
-		internal Touch Touch
-		{
-			get { return pointerDevices.touch; }
-		}
 
 		public Command Add(Key key, Action<Key> callback)
 		{
