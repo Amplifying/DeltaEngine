@@ -8,9 +8,9 @@ namespace GameOfDeath
 	/// <summary>
 	/// Applies the damage from an item if it is time to do so
 	/// </summary>
-	public class DoDamage : EntityHandler
+	public class DoDamage : Behavior2D
 	{
-		public override void Handle(Entity entity)
+		public override void Handle(Entity2D entity)
 		{
 			var itemEffect = entity as ItemEffect;
 			if (itemEffect.Visibility == Visibility.Show &&
@@ -18,9 +18,9 @@ namespace GameOfDeath
 				itemEffect.DoDamage();
 		}
 
-		public override EntityHandlerPriority Priority
+		public override Priority Priority
 		{
-			get { return EntityHandlerPriority.First; }
+			get { return Priority.First; }
 		}
 	}
 }

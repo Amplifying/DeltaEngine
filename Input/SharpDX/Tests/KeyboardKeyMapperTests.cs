@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using SharpDXKey = global::SharpDX.DirectInput.Key;
+using SharpDXKey = SharpDX.DirectInput.Key;
 
 namespace DeltaEngine.Input.SharpDX.Tests
 {
@@ -8,9 +8,8 @@ namespace DeltaEngine.Input.SharpDX.Tests
 		[Test]
 		public void Translate()
 		{
-			Assert.AreEqual(Key.O, SharpDX.KeyboardKeyMapper.Translate(SharpDXKey.O));
-			Assert.AreEqual(Key.CloseBrackets, SharpDX.KeyboardKeyMapper.Translate(
-				SharpDXKey.RightBracket));
+			Assert.AreEqual(Key.O, KeyboardKeyMapper.Translate(SharpDXKey.O));
+			Assert.AreEqual(Key.CloseBrackets, KeyboardKeyMapper.Translate(SharpDXKey.RightBracket));
 		}
 	}
 }

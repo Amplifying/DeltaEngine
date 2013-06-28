@@ -1,19 +1,15 @@
-using System;
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Platforms;
 using NUnit.Framework;
 
 namespace DeltaEngine.Input.Tests
 {
-	public class KeyboardTriggerTests : TestWithAllFrameworks
+	public class KeyboardTriggerTests : TestWithMocksOrVisually
 	{
-		[IntegrationTest]
-		public void ConditionMatched(Type resolver)
+		[Test]
+		public void ConditionMatched()
 		{
-			Start(resolver, (InputCommands input) =>
-			{
-				var trigger = new KeyTrigger(Key.Y, State.Pressing);
-				Assert.False(trigger.ConditionMatched(input));
-			});
+			var trigger = new KeyTrigger(Key.Y, State.Pressing);
+			Assert.False(trigger.ConditionMatched(Input));
 		}
 
 		[Test]

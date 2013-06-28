@@ -7,9 +7,9 @@ using DeltaEngine.Rendering;
 namespace DeltaEngine.Input
 {
 	/// <summary>
-	/// Allows an Entity to respond to pointer input (mouse or touch)
+	/// Allows an Entity2D to respond to pointer input (mouse or touch)
 	/// </summary>
-	public class Interact : EntityHandler
+	public class Interact : Behavior2D
 	{
 		public Interact(InputCommands input)
 		{
@@ -200,16 +200,14 @@ namespace DeltaEngine.Input
 
 		public class ControlReleased {}
 
-		public override void Handle(Entity entity) {}
-
 		public interface Clickable
 		{
 			void Clicking();
 		}
 
-		public class Clicking : EntityListener
+		public class Clicking : EventListener2D
 		{
-			public override void ReceiveMessage(Entity entity, object message)
+			public override void ReceiveMessage(Entity2D entity, object message)
 			{
 				var clickable = entity as Clickable;
 				var clicked = message as ControlClicked;
@@ -217,5 +215,7 @@ namespace DeltaEngine.Input
 					clickable.Clicking();
 			}
 		}
+
+		public override void Handle(Entity2D entity) { }
 	}
 }

@@ -1,5 +1,6 @@
+using System;
 using System.Collections.Generic;
-using System.IO;
+using DeltaEngine.Core;
 using NUnit.Framework;
 
 namespace DeltaEngine.Datatypes.Tests
@@ -84,6 +85,18 @@ namespace DeltaEngine.Datatypes.Tests
 		}
 
 		[Test]
+		public static void FromInvariantStringWithDatatypes()
+		{
+			Assert.Throws<NotSupportedException>(() => "0,0".Convert<Point>());
+			typeof(Size).AddConvertTypeCreation(value => new Size(value));
+			typeof(Point).AddConvertTypeCreation(value => new Point(value));
+			typeof(Rectangle).AddConvertTypeCreation(value => new Rectangle(value));
+			Assert.AreEqual(Size.Zero, "0,0".Convert<Size>());
+			Assert.AreEqual(Point.UnitX, "1,0".Convert<Point>());
+			Assert.AreEqual(new Rectangle(1, 1, 2, 2), "1 1 2 2".Convert<Rectangle>());
+		}
+
+		[Test]
 		public void Right()
 		{
 			var rect = new Rectangle(1, 2, 10, 20) { Right = 13 };
@@ -151,12 +164,27 @@ namespace DeltaEngine.Datatypes.Tests
 		}
 
 		[Test]
+		public void Lerp()
+		{
+			Assert.AreEqual(Rectangle.One, Rectangle.Lerp(Rectangle.Zero, Rectangle.One, 1.1f));
+			Assert.AreEqual(new Rectangle(0.5f, 0.5f, 1, 1),
+				Rectangle.Lerp(Rectangle.Zero, new Rectangle(1, 1, 2, 2), 0.5f));
+		}
+
+		[Test]
 		public void FromCenter()
 		{
 			Rectangle rect = Rectangle.FromCenter(new Point(11, 12), new Size(4, 6));
 			Assert.AreEqual(new Rectangle(9, 9, 4, 6), rect);
 			Rectangle anotherRect = Rectangle.FromCenter(0.5f, 0.5f, 1.0f, 1.0f);
 			Assert.AreEqual(new Rectangle(0, 0, 1, 1), anotherRect);
+		}
+
+		[Test]
+		public void FromCorners()
+		{
+			Rectangle rect = Rectangle.FromCorners(new Point(1, 2), new Point(3, 5));
+			Assert.AreEqual(new Rectangle(new Point(1, 2), new Size(2, 3)), rect);
 		}
 
 		[Test]
@@ -210,32 +238,6 @@ namespace DeltaEngine.Datatypes.Tests
 		}
 
 		[Test]
-		public void SaveAndLoad()
-		{
-			var data = Rectangle.One.SaveToMemoryStream();
-			byte[] savedBytes = data.ToArray();
-			Assert.AreEqual(1 + "Rectangle".Length + Rectangle.SizeInBytes, savedBytes.Length);
-			Assert.AreEqual("Rectangle".Length, savedBytes[0]);
-			var reconstructed = data.CreateFromMemoryStream();
-			Assert.AreEqual(Rectangle.One, reconstructed);
-		}
-
-		[Test]
-		public void SaveAndLoadManuallyWithBinaryWriterAndReader()
-		{
-			using (var dataStream = new MemoryStream())
-			{
-				var writer = new BinaryWriter(dataStream);
-				var data = Rectangle.One;
-				data.Save(writer);
-				dataStream.Seek(0, SeekOrigin.Begin);
-				var reader = new BinaryReader(dataStream);
-				data = (Rectangle)reader.Create();
-				Assert.AreEqual(Rectangle.One, data);
-			}
-		}
-
-		[Test]
 		public void GetRotatedRectangleCornersWithoutRotation()
 		{
 			var points = new Rectangle(1, 1, 1, 1).GetRotatedRectangleCorners(Point.Zero, 0);
@@ -269,8 +271,8 @@ namespace DeltaEngine.Datatypes.Tests
 		[Test]
 		public void IsCollidingTopBottom()
 		{
-			var topRect = new Rectangle(0.44f, 0.1f, 0.05f, 0.03f);
-			var bottomRect = new Rectangle(0.44f, 0.86f, 0.04f, 0.03f);
+			var topRect = new Rectangle(0.44f, 0.4f, 0.05f, 0.03f);
+			var bottomRect = new Rectangle(0.44f, 0.44f, 0.04f, 0.03f);
 			Assert.IsFalse(topRect.IsColliding(0, bottomRect, 0));
 			Assert.IsFalse(bottomRect.IsColliding(0, topRect, 0));
 		}

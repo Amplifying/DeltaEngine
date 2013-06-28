@@ -1,61 +1,41 @@
-using System;
 using DeltaEngine.Content;
-using DeltaEngine.Platforms.All;
-using DeltaEngine.Platforms.Tests.ModuleMocks;
+using DeltaEngine.Platforms;
+using DeltaEngine.Platforms.Mocks;
 using NUnit.Framework;
 
 namespace DeltaEngine.Multimedia.Tests
 {
-	public class SoundDeviceTests : TestWithAllFrameworks
+	public class SoundDeviceTests : TestWithMocksOrVisually
 	{
-		[IntegrationTest, Category("Slow")]
-		public void PlayMusicWhileOtherIsPlaying(Type resolver)
+		[Test, Category("Slow")]
+		public void PlayMusicWhileOtherIsPlaying()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				var music1 = content.Load<Music>("DefaultMusic");
-				var music2 = content.Load<Music>("DefaultMusic");
-				if (mockResolver != null)
-				{
-					music1.Play();
-					Assert.False(MultimediaMocks.MusicStopCalled);
-					music2.Play();
-					Assert.False(MultimediaMocks.MusicStopCalled);
-				}
-			});
+			var music1 = ContentLoader.Load<Music>("DefaultMusic");
+			var music2 = ContentLoader.Load<Music>("DefaultMusic");
+			music1.Play();
+			Assert.False(MockMusic.MusicStopCalled);
+			music2.Play();
+			Assert.False(MockMusic.MusicStopCalled);
 		}
 
-		[IntegrationTest, Category("Slow")]
-		public void PlayVideoWhileOtherIsPlaying(Type resolver)
+		[Test, Category("Slow"), Ignore]
+		public void PlayVideoWhileOtherIsPlaying()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				var video1 = content.Load<Video>("DefaultVideo");
-				var video2 = content.Load<Video>("DefaultVideo");
-				if (mockResolver != null)
-				{
-					video1.Play();
-					Assert.False(MultimediaMocks.VideoStopCalled);
-					video2.Play();
-					Assert.False(MultimediaMocks.VideoStopCalled);
-				}
-			});
+			var video1 = ContentLoader.Load<Video>("DefaultVideo");
+			var video2 = ContentLoader.Load<Video>("DefaultVideo");
+			video1.Play();
+			Assert.False(MockVideo.VideoStopCalled);
+			video2.Play();
+			Assert.False(MockVideo.VideoStopCalled);
 		}
 
-		[IntegrationTest, Category("Slow")]
-		public void RunWithVideoAndMusic(Type resolver)
+		[Test, Category("Slow"), Ignore]
+		public void RunWithVideoAndMusic()
 		{
-			Start(resolver, (ContentLoader content, SoundDevice device) =>
-			{
-				var video = content.Load<Video>("DefaultVideo");
-				var music = content.Load<Music>("DefaultMusic");
-				if (mockResolver != null)
-				{
-					video.Play();
-					music.Play();
-					device.Run();
-				}
-			});
+			var video = ContentLoader.Load<Video>("DefaultVideo");
+			var music = ContentLoader.Load<Music>("DefaultMusic");
+			video.Play();
+			music.Play();
 		}
 	}
 }

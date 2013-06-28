@@ -1,106 +1,117 @@
+using System.Diagnostics;
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
 using DeltaEngine.Input;
+using DeltaEngine.Rendering.Fonts;
 using DeltaEngine.Rendering.ScreenSpaces;
 using DeltaEngine.Rendering.Sprites;
+using DeltaEngine.Scenes;
 using System;
 using System.Collections.Generic;
 
-namespace DeltaNinja
+namespace DeltaNinja.Pages
 {
-   // TODO: must be a Menu but Scenes.Button throws Autofac.Core.Registration.ComponentNotRegisteredException.
-   // NOTE: https://deltaengine.net/Forum/default.aspx?g=posts&t=1481
-   abstract class BasePage
-   {
-      public event EventHandler ButtonClicked;
+	public abstract class BasePage : Menu
+	{
+		internal const float TITLE_TopMargin = 0.02f;
+		// internal const float LINKS_BottomMargin = 0.03f;
 
-      public BasePage(ContentLoader content, ScreenSpace screen, InputCommands input)
-      {
-         this.content = content;
-         this.screen = screen;
-         this.input = input;
+		public event Action<MenuButton> ButtonClicked;
 
-         screen.ViewportSizeChanged += () => Update();
-      }
+		public BasePage(ScreenSpace screen, InputCommands input)
+			: base(new Size(0.2f, 0.2f / 4f))
+		{
+			this.screen = screen;
+			links = new List<LogoLink>();
 
-      private readonly ContentLoader content;
-      private readonly ScreenSpace screen;
-      private readonly InputCommands input;
+			input.AddMouseMovement(m => OnMouseMovement(m));
+			input.Add(MouseButton.Left, m => OnMouseClick(m));
+		}
 
-      private Sprite title;
-      private List<Button> buttons = new List<Button>();
-      private bool isShown;
+		private readonly ScreenSpace screen;
+		private readonly List<LogoLink> links;
+		
+		public void SetTitle(string imageName, float width, float ratio, float topOffset)
+		{
+			var view = screen.Viewport;
 
-      public void SetTitle(string imageName, float width, float ratio)
-      {
-         title = new Sprite(content.Load<Image>(imageName), new Rectangle(0, 0, width, width / ratio));
-         title.RenderLayer = (int)GameRenderLayer.Menu;
-      }
+			float center = view.Width / 2f;
+			float offset = view.Top + topOffset;
 
-      public void AddButton(MenuButton code, float width, float ratio)
-      {
-         Add(new Button(code, content.Load<Image>(code.ToString() + "Button"), new Rectangle(0, 0, width, width / ratio), input, OnButtonClicked));
-         Update();
-      }
+			var title = new Sprite(ContentLoader.Load<Image>(imageName), new Rectangle(0,0, width, width / ratio));
+			title.Center = new Point(center, offset + TITLE_TopMargin + title.DrawArea.Height / 2f);
+			title.RenderLayer = (int)GameRenderLayer.Menu;
 
-      public void Add(Button button)
-      {
-         if (!buttons.Contains(button))
-            buttons.Add(button);
+			Add(title);			
+		}
 
-         button.RenderLayer = (int)GameRenderLayer.Menu;
-         button.IsActive = isShown;
-      }
+		public void AddLogoLink(string imageName, string link, float size, int offset)
+		{
+			var view = screen.Viewport;
 
-      public void Show()
-      {
-         if (title != null)
-            title.IsActive = true;
+			float center = (view.Width / 2f) + (offset * size);
 
-         foreach (Button button in buttons)
-            button.IsActive = true;
+			var logo = new LogoLink(ContentLoader.Load<Image>(imageName), link, size);
+			logo.Center = new Point(center, view.Bottom - size);
+			logo.RenderLayer = (int)GameRenderLayer.Menu;
 
-         isShown = true;
-         Update();
-      }
+			links.Add(logo);			
+			Add(logo);			
+		}		
 
-      public void Hide()
-      {
-         if (title != null)
-            title.IsActive = false;
+		public void AddButton(MenuButton code, float width, float ratio)
+		{
+			var image = ContentLoader.Load<Image>(code.ToString() + "Button");
 
-         foreach (Button button in buttons)
-            button.IsActive = false;
+			var theme = new Theme
+			{
+				Button = new Theme.Appearance(image),
+				ButtonMouseover = new Theme.Appearance(image, DefaultColors.HoverButton),
+				ButtonPressed = new Theme.Appearance(image),
+				Font = new Font("Verdana12")
+			};
 
-         isShown = false;
-      }
+			AddMenuOption(theme, () => { OnButtonClicked(code); });
+		}
 
-      private void Update()
-      {
-         if (!isShown) return;
+		protected virtual void OnButtonClicked(MenuButton code)
+		{
+			var handler = ButtonClicked;
 
-         var view = screen.Viewport;
+			if (handler != null)
+			{				
+				handler(code);
+			}
+		}
 
-         float center = view.Width / 2f;
-         float middle = view.Top + view.Height / 2f;
-         float offset = view.Top;
+		private void OnMouseClick(Mouse m)
+		{
+			foreach (var link in links)
+			{
+				if (link.IsHover(m.Position))
+				{
+					try
+					{
+						Process.Start(link.Url);
+					}
+					catch (Exception ex)
+					{
+						screen.Window.ShowMessageBox("Open link error", ex.ToString(), DeltaEngine.Platforms.MessageBoxButton.Okay);
+					}
+				}
+			}
+		}
 
-         if (title != null)
-            title.Center = new Point(center, offset += title.DrawArea.Height);
-
-         foreach (Button button in buttons)
-            button.Center = new Point(center, offset += (button.DrawArea.Height * 2));
-      }
-
-      protected void OnButtonClicked(object sender, EventArgs e)
-      {
-         var handler = ButtonClicked;
-
-         if (handler != null)
-         {
-            handler(sender, e);
-         }
-      }
-   }
+		private void OnMouseMovement(Mouse m)
+		{
+			foreach (var link in links)
+			{
+				if (link.IsHover(m.Position))
+					link.Color = DefaultColors.Yellow;
+				else
+					link.Color = Color.White;
+			}
+		}
+	}
 }

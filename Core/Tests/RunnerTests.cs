@@ -28,7 +28,6 @@ namespace DeltaEngine.Core.Tests
 
 			const string ExpectedOutput = "Window.Run, Device.Run, RunnerTests.Run, Device.Present";
 			Assert.AreEqual(ExpectedOutput, Output.ToText());
-			Assert.IsNotNull(new Device());
 		}
 
 		private static readonly List<string> Output = new List<string>();

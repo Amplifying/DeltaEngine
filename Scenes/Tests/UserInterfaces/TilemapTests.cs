@@ -1,21 +1,17 @@
-using System;
-using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Platforms;
 using DeltaEngine.Rendering.Shapes;
+using NUnit.Framework;
 
 namespace DeltaEngine.Scenes.Tests.UserInterfaces
 {
-	public class TilemapTests : TestWithAllFrameworks
+	public class TilemapTests : TestWithMocksOrVisually
 	{
-		[VisualTest]
-		public void RenderColoredLogoTilemap(Type resolver)
+		[Test]
+		public void RenderColoredLogoTilemap()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				new ColoredLogoTilemap(content, World, Map) { DrawArea = Center };
-				CreateBorder();
-			});
+			new ColoredLogoTilemap(World, Map) { DrawArea = Center };
+			CreateBorder();
 		}
 
 		private static readonly Size World = new Size(100, 100);
@@ -28,16 +24,16 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces
 
 		private static void CreateBorder()
 		{
-			new Rect(new Rectangle(Left - TileWidth, Top - TileHeight, BorderWidth, TileHeight),
-				Color.Black);
-			new Rect(new Rectangle(Left - TileWidth, Top - TileHeight, TileWidth, BorderHeight),
-				Color.Black);
-			new Rect(
+			new FilledRect(new Rectangle(Left - TileWidth, Top - TileHeight, BorderWidth, TileHeight),
+				Color.Black) { RenderLayer = 1 };
+			new FilledRect(new Rectangle(Left - TileWidth, Top - TileHeight, TileWidth, BorderHeight),
+				Color.Black) { RenderLayer = 1 };
+			new FilledRect(
 				new Rectangle(Left - TileWidth, Top + (Map.Height - 1) * TileHeight, BorderWidth,
-					TileHeight), Color.Black);
-			new Rect(
+					TileHeight), Color.Black) { RenderLayer = 1 };
+			new FilledRect(
 				new Rectangle(Left + (Map.Width - 1) * TileWidth, Top - TileHeight, TileWidth, BorderHeight),
-				Color.Black);
+				Color.Black) { RenderLayer = 1 };
 		}
 
 		private static readonly float TileWidth = Center.Width / Map.Width;

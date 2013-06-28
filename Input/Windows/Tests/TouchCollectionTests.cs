@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms.Mocks;
 using DeltaEngine.Rendering.ScreenSpaces;
 using NUnit.Framework;
 
@@ -69,7 +69,7 @@ namespace DeltaEngine.Input.Windows.Tests
 		public void CalculateQuadraticPosition()
 		{
 			TouchCollection touchCollection = CreateCollection();
-			Point quadPosition = touchCollection.CalculateQuadraticPosition(400*100, 300*100);
+			Point quadPosition = touchCollection.CalculateQuadraticPosition(400 * 100, 300 * 100);
 			Assert.AreEqual(new Point(400, 300), quadPosition);
 		}
 
@@ -77,10 +77,7 @@ namespace DeltaEngine.Input.Windows.Tests
 		public void ProcessNewTouches()
 		{
 			TouchCollection touchCollection = CreateCollection();
-			var newTouches = new List<NativeTouchInput>
-			{
-				GetTestTouchInput()
-			};
+			var newTouches = new List<NativeTouchInput> { GetTestTouchInput() };
 			touchCollection.ProcessNewTouches(newTouches);
 
 			Assert.AreEqual(15, touchCollection.ids[0]);
@@ -114,10 +111,7 @@ namespace DeltaEngine.Input.Windows.Tests
 		public void UpdateAllTouches()
 		{
 			TouchCollection touchCollection = CreateCollection();
-			var newTouches = new List<NativeTouchInput>
-			{
-				GetTestTouchInput()
-			};
+			var newTouches = new List<NativeTouchInput> { GetTestTouchInput() };
 
 			touchCollection.ids[0] = 15;
 			touchCollection.states[0] = State.Pressing;
@@ -133,10 +127,7 @@ namespace DeltaEngine.Input.Windows.Tests
 		public void UpdateTouchWithUpdatedActiveTouch()
 		{
 			TouchCollection touchCollection = CreateCollection();
-			var newTouches = new List<NativeTouchInput>
-			{
-				GetTestTouchInput()
-			};
+			var newTouches = new List<NativeTouchInput> { GetTestTouchInput() };
 
 			touchCollection.ids[0] = 15;
 			touchCollection.states[0] = State.Pressing;
@@ -184,7 +175,7 @@ namespace DeltaEngine.Input.Windows.Tests
 
 		private TouchCollection CreateCollection()
 		{
-			var window = resolver.rendering.Window;
+			var window = resolver.Window;
 			var screen = new PixelScreenSpace(window);
 			var positionTranslator = new CursorPositionTranslater(window, screen);
 			return new TouchCollection(positionTranslator);

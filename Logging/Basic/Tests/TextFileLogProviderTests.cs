@@ -5,7 +5,6 @@ using NUnit.Framework;
 
 namespace DeltaEngine.Logging.Basic.Tests
 {
-	[Category("Slow")]
 	internal class TextFileLogProviderTests
 	{
 		//ncrunch: no coverage start
@@ -36,7 +35,7 @@ namespace DeltaEngine.Logging.Basic.Tests
 			{
 				return
 					Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-						"Delta Engine", AssemblyExtensions.DetermineProjectName() + ".txt");
+						"Delta Engine", AssemblyExtensions.GetTestNameOrProjectName() + ".txt");
 			}
 		}
 

@@ -8,8 +8,16 @@ namespace DeltaEngine.Logging
 	/// </summary>
 	public abstract class Logger : IDisposable
 	{
+		static Logger()
+		{
+			Current = new ConsoleLogger();
+		}
+
+		public static Logger Current { get; set; }
+
 		protected Logger(params LogProvider[] providers)
 		{
+			Current = this;
 			this.providers = providers;
 		}
 

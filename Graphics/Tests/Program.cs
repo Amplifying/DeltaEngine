@@ -1,4 +1,4 @@
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Platforms;
 
 namespace DeltaEngine.Graphics.Tests
 {
@@ -8,7 +8,11 @@ namespace DeltaEngine.Graphics.Tests
 		{
 			//new DrawingTests().ShowRedLine(TestWithAllFrameworks.OpenGL);
 			//new DrawingTests().DrawVertices(TestStarterWithAllFrameworks.Xna);
-			new ImageTests().DrawImage(TestWithAllFrameworks.DirectX9);
+			//new ImageTests().DrawImage(TestWithAllFrameworks.SlimDX);
+			var tests =new MeshTests();
+			tests.InitializeResolver();
+			tests.DrawRotatingIceTower();
+			tests.RunTestAndDisposeResolverWhenDone();
 		}
 	}
 }

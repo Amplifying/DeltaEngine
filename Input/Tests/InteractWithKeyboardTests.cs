@@ -1,64 +1,74 @@
-using System;
-using DeltaEngine.Entities.Tests;
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Datatypes;
+using DeltaEngine.Platforms;
+using DeltaEngine.Platforms.Mocks;
+using DeltaEngine.Rendering;
 using NUnit.Framework;
 
 namespace DeltaEngine.Input.Tests
 {
-	public class InteractWithKeyboardTests : TestWithAllFrameworks
+	public class InteractWithKeyboardTests : TestWithMocksOrVisually
 	{
-		[IntegrationTest]
-		public void PressKey(Type resolver)
+		[Test]
+		public void PressKey()
 		{
-			Start(resolver, () =>
+			//TODO: this should not be an Entity2D
+			var entity = new Entity2D(Rectangle.Zero).Start<InteractWithKeyboard>();
+			var keypress = Key.None;
+			entity.Messaged += message =>
 			{
-				var entity = new EmptyEntity().Add<InteractWithKeyboard>();
-				var keypress = Key.None;
-				entity.Messaged += key => keypress = ((InteractWithKeyboard.KeyPress)key).Key;
-				PressKey(Key.A, State.Releasing);
-				Assert.AreEqual(Key.A, keypress);
-			});
+				var keyPressed = message as InteractWithKeyboard.KeyPress;
+				if (keyPressed != null)
+					keypress = keyPressed.Key;
+			};
+			PressKey(Key.A, State.Releasing);
+			Assert.AreEqual(Key.A, keypress);
 		}
 
 		private void PressKey(Key key, State state)
 		{
-			mockResolver.AdvanceTimeAndExecuteRunners();
-			mockResolver.input.SetKeyboardState(key, state);
-			mockResolver.AdvanceTimeAndExecuteRunners();
+			resolver.AdvanceTimeAndExecuteRunners();
+			Resolve<MockKeyboard>().SetKeyboardState(key, state);
+			resolver.AdvanceTimeAndExecuteRunners();
 		}
 
-		[IntegrationTest]
-		public void PressingTwoKeysTogetherSendsTwoMessages(Type resolver)
+		[Test]
+		public void PressingTwoKeysTogetherSendsTwoMessages()
 		{
-			Start(resolver, () =>
+			//TODO: this should not be an Entity2D
+			var entity = new Entity2D(Rectangle.Zero).Start<InteractWithKeyboard>();
+			int count = 0;
+			entity.Messaged += message =>
 			{
-				var entity = new EmptyEntity().Add<InteractWithKeyboard>();
-				int count = 0;
-				entity.Messaged += key => count++;
-				PressTwoKeys();
-				Assert.AreEqual(2, count);
-			});
+				var keyPressed = message as InteractWithKeyboard.KeyPress;
+				if (keyPressed != null)
+					count++;
+			};
+			PressTwoKeys();
+			Assert.AreEqual(2, count);
 		}
 
 		private void PressTwoKeys()
 		{
-			mockResolver.AdvanceTimeAndExecuteRunners();
-			mockResolver.input.SetKeyboardState(Key.A, State.Releasing);
-			mockResolver.input.SetKeyboardState(Key.B, State.Releasing);
-			mockResolver.AdvanceTimeAndExecuteRunners();
+			resolver.AdvanceTimeAndExecuteRunners();
+			Resolve<MockKeyboard>().SetKeyboardState(Key.A, State.Releasing);
+			Resolve<MockKeyboard>().SetKeyboardState(Key.B, State.Releasing);
+			resolver.AdvanceTimeAndExecuteRunners();
 		}
 
-		[IntegrationTest]
-		public void HoldKey(Type resolver)
+		[Test]
+		public void HoldKey()
 		{
-			Start(resolver, () =>
+			//TODO: this should not be an Entity2D
+			var entity = new Entity2D(Rectangle.Zero).Start<InteractWithKeyboard>();
+			var keypress = Key.None;
+			entity.Messaged += message =>
 			{
-				var entity = new EmptyEntity().Add<InteractWithKeyboard>();
-				var keypress = Key.None;
-				entity.Messaged += key => keypress = ((InteractWithKeyboard.KeyHeld)key).Key;
-				PressKey(Key.A, State.Pressed);
-				Assert.AreEqual(Key.A, keypress);
-			});
+				var keyHeld = message as InteractWithKeyboard.KeyHeld;
+				if (keyHeld != null)
+					keypress = keyHeld.Key;
+			};
+			PressKey(Key.A, State.Pressed);
+			Assert.AreEqual(Key.A, keypress);
 		}
 	}
 }

@@ -7,7 +7,7 @@ namespace DeltaEngine.Input
 	{
 		None = 0,
 		//// ReSharper disable UnusedMember.Global
-		BackSpace = 8,
+		Backspace = 8,
 		Tab = 9,
 		Enter = 13,
 		Pause = 19,

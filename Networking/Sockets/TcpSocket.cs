@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
 
 namespace DeltaEngine.Networking.Sockets
 {
@@ -31,7 +31,7 @@ namespace DeltaEngine.Networking.Sockets
 			using (var dataStream = new MemoryStream(dataContainer.Data))
 			using (var dataReader = new BinaryReader(dataStream))
 			{
-				object receivedMessage = GetReceivedMessage(dataReader);
+				object receivedMessage = dataReader.Create();
 				if (DataReceived != null)
 					DataReceived(receivedMessage);
 				else
@@ -40,21 +40,7 @@ namespace DeltaEngine.Networking.Sockets
 		}
 
 		public event Action<object> DataReceived;
-
-		private static object GetReceivedMessage(BinaryReader dataReader)
-		{
-			object receivedMessage;
-			try
-			{
-				receivedMessage = dataReader.Create();
-			}
-			catch (BinaryDataExtensions.UnknownMessageTypeReceived ex)
-			{
-				receivedMessage = new UnknownMessage(ex.Message);
-			}
-			return receivedMessage;
-		}
-
+		
 		private class NoDataReceivedEventWasAttached : Exception
 		{
 			public NoDataReceivedEventWasAttached(object receivedMessage)
@@ -63,8 +49,11 @@ namespace DeltaEngine.Networking.Sockets
 
 		public void Connect(string serverAddress, int serverPort)
 		{
+			connectionTargetAddress = serverAddress + ":" + serverPort;
 			Connect(serverAddress.ToEndPoint(serverPort));
 		}
+
+		private string connectionTargetAddress;
 
 		public void Connect(EndPoint targetAddress)
 		{
@@ -125,6 +114,8 @@ namespace DeltaEngine.Networking.Sockets
 
 		private void SendDataThroughNativeSocket(object message)
 		{
+			if (nativeSocket == null || isDisposed)
+				throw new SocketException();		
 			int numberOfSendBytes = nativeSocket.Send(message.ToByteArrayWithLengthHeader());
 			if (numberOfSendBytes == 0)
 				throw new SocketException();			
@@ -182,7 +173,7 @@ namespace DeltaEngine.Networking.Sockets
 
 		public string TargetAddress
 		{
-			get { return IsConnected ? nativeSocket.RemoteEndPoint.ToString() : ""; }
+			get { return IsConnected ? nativeSocket.RemoteEndPoint.ToString() : connectionTargetAddress; }
 		}
 
 		public bool IsConnected

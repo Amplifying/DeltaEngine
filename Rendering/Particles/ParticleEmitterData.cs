@@ -3,7 +3,7 @@ using DeltaEngine.Graphics;
 
 namespace DeltaEngine.Rendering.Particles
 {
-	internal class ParticleEmitterData
+	public class ParticleEmitterData
 	{
 		public Image Image { get; set; }
 		public Point Position { get; set; }

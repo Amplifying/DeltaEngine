@@ -2,41 +2,36 @@ using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
-using DeltaEngine.Graphics;
 using DeltaEngine.Input;
-using DeltaEngine.Physics2D;
+using DeltaEngine.Rendering;
 using DeltaEngine.Rendering.ScreenSpaces;
-using DeltaEngine.Rendering.Sprites;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using DeltaNinja.Entities;
+using DeltaNinja.Pages;
 
 namespace DeltaNinja
 {
-	class Match : Entity
+	class Match : Entity2D
 	{
 		public event EventHandler<GameOverEventArgs> GameEnded;
 
-		public Match(ContentLoader content, ScreenSpace screen, InputCommands input, NumberFactory numberFactory, LogoFactory logoFactory)
+		public Match(ScreenSpace screen, InputCommands input, NumberFactory numberFactory, LogoFactory logoFactory) : base (Rectangle.Zero)
 		{
 			this.content = content;
 			this.screen = screen;
 			this.input = input;
 			this.logoFactory = logoFactory;
 
-			var view = screen.Viewport;
-			var center = view.Width / 2f;
+			hud = new HudScene(screen, numberFactory);
+			pause = new PausePage(screen, input);
 
 			logoSet = new List<Logo>();
 			Slice = new Slice();
 			PointsTips = new List<PointsTip>();
 			ErrorFlags = new List<ErrorFlag>();
 			
-			pointsNumber = numberFactory.CreateNumber(view.Left, view.Top, 0.05f, Alignment.Left, 0);
-			levelBox = new LevelBox(content, numberFactory, center, view.Top);
-
-			errorFlag = new ErrorsBox(content, view.Right, view.Top);
-
 			HideScore();
 			
 			screen.ViewportSizeChanged += () => RefreshSize();
@@ -48,12 +43,12 @@ namespace DeltaNinja
 		private readonly InputCommands input;
 		private readonly LogoFactory logoFactory;
 
+		private readonly HudScene hud;
+		private readonly PausePage pause;
+
 		private List<Logo> logoSet;
 		public readonly Slice Slice;
 		private Score score;
-		private Number pointsNumber;
-		private LevelBox levelBox;
-		private ErrorsBox errorFlag;
 		public readonly List<PointsTip> PointsTips;
 		public readonly List<ErrorFlag> ErrorFlags;
 
@@ -70,8 +65,8 @@ namespace DeltaNinja
 			get { return logoSet.ToArray(); }
 		}
 
-		//public bool IsActive { get; private set; }
-
+		public bool IsPaused { get; private set; }
+		
 		public void Start()
 		{
 			Slice.Reset();
@@ -81,20 +76,38 @@ namespace DeltaNinja
 
 			score = new Score();
 
-			pointsNumber.Show();
-			levelBox.Show();
-			errorFlag.Show();
-
+			hud.Reset();
+			hud.Show();
+			
 			IsActive = true;
-			Add<GameLogicsHandler>();
+			Start<GameLogicsHandler>();
+
+			IsPaused = false;
+			pauseCommand = input.Add(Key.Space, x => SwitchPause());
+			pauseMouseCommand = input.Add(MouseButton.Right, x => SwitchPause());
 		}
 
-		private void End()
+		private Command pauseCommand;
+		private Command pauseMouseCommand;
+
+		private void Reset()
 		{
 			IsActive = false;
 
-			if (mouseMovement != null) input.Remove(mouseMovement);
-			if (mouseLeftClick != null) input.Remove(mouseLeftClick);
+			input.Remove(pauseCommand);
+			input.Remove(pauseMouseCommand);
+
+			if (mouseMovement != null)
+			{
+				input.Remove(mouseMovement);
+				mouseMovement = null;
+			}
+
+			if (mouseLeftClick != null)
+			{
+				input.Remove(mouseLeftClick);
+				mouseLeftClick = null;
+			}
 
 			foreach (var logo in logoSet)
 				logo.IsActive = false;
@@ -110,22 +123,26 @@ namespace DeltaNinja
 
 			foreach (var flag in ErrorFlags)
 				flag.Reset();
+		}
 
-			levelBox.Hide();
+		private void EndGame(bool abort)
+		{
+			Reset();
 
 			var handler = GameEnded;
 			
 			if (handler != null)
 			{
-				handler(this, new GameOverEventArgs(score));
-			}
+				if(abort)
+					handler(this, null);
+				else
+					handler(this, new GameOverEventArgs(score));
+			}				
 		}
 
 		public void HideScore()
 		{
-			pointsNumber.Hide();
-			levelBox.Hide();
-			errorFlag.Hide();
+			hud.Hide();
 		}
 
 		public void CreateLogos(int count)
@@ -141,11 +158,13 @@ namespace DeltaNinja
 
 		private void CheckMouse(Mouse mouse)
 		{
+			if (IsPaused) return;
 			Slice.Check(mouse.Position, logoSet);
 		}
 
 		private void StartSlice(Mouse mouse)
 		{
+			if (IsPaused) return;
 			Slice.Switch(mouse.Position);
 		}
 
@@ -153,9 +172,9 @@ namespace DeltaNinja
 		{
 			var view = screen.Viewport;
 
-			pointsNumber.Top = view.Top;
-			levelBox.Top = view.Top;
-			errorFlag.Top = view.Top;
+			//pointsNumber.Top = view.Top;
+			//levelBox.Top = view.Top;
+			//errorFlag.Top = view.Top;
 		}
 
 		public void AddOneMoreSlice()
@@ -166,18 +185,18 @@ namespace DeltaNinja
 		public bool AddError()
 		{
 			score.Errors += 1;
-			errorFlag.SetError(score.Errors);
+			hud.SetError(score.Errors);
 
 			if (score.Errors < 3) return true;
 
-			End();
+			EndGame(false);
 			return false;
 		}
 
 		public void AddPoints(int points)
 		{
 			score.Points += points;
-			pointsNumber.SetValue(score.Points);
+			hud.SetPoints(score.Points);
 		}
 
 		public int CurrentLevel { get { return score.Level;  } }
@@ -185,12 +204,12 @@ namespace DeltaNinja
 		public void NextLevel()
 		{
 			score.Level += 1;
-			levelBox.Value = score.Level;
+			hud.SetLevel(score.Level);
 		}
 
 		public void ShowError(float left, float width)
 		{
-			ErrorFlags.Add(new ErrorFlag(content, left, width, screen.Viewport.Bottom));			
+			ErrorFlags.Add(new ErrorFlag(left, width, screen.Viewport.Bottom));			
 		}
 
 		public void ClearEntities()
@@ -213,6 +232,46 @@ namespace DeltaNinja
 					flag.IsActive = false;
 					ErrorFlags.Remove(flag);
 				}
+			}
+		}
+
+		private void SwitchPause()
+		{
+			IsPaused = !IsPaused;
+
+			foreach (var logo in logoSet) logo.SetPause(IsPaused);
+
+			if (IsPaused)
+			{
+				Slice.Reset();
+				pause.Show();
+				pause.ButtonClicked += OnPauseButtonClicked;
+			}
+			else
+			{
+				pause.ButtonClicked -= OnPauseButtonClicked;
+				pause.Hide();
+			}				
+		}
+
+		protected void OnPauseButtonClicked(MenuButton code)
+		{
+			switch (code)
+			{
+				case (MenuButton.Resume):
+					SwitchPause();
+					break;
+
+				case (MenuButton.NewGame):
+					SwitchPause();
+					Reset();
+					Start();
+					break;
+					
+				case (MenuButton.Abort):
+					SwitchPause();
+					EndGame(true);
+					break;
 			}
 		}
 	}

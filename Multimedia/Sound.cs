@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DeltaEngine.Content;
+using DeltaEngine.Platforms;
 
 namespace DeltaEngine.Multimedia
 {
@@ -10,13 +11,14 @@ namespace DeltaEngine.Multimedia
 	/// </summary>
 	public abstract class Sound : ContentData
 	{
-		protected Sound(string contentName, SoundDevice device)
+		protected Sound(string contentName, Settings settings)
 			: base(contentName)
 		{
-			this.device = device;
+			this.settings = settings;
 		}
 
-		protected readonly SoundDevice device;
+		private readonly Settings settings;
+
 		public abstract float LengthInSeconds { get; }
 		public int NumberOfInstances
 		{
@@ -41,7 +43,17 @@ namespace DeltaEngine.Multimedia
 				Remove(instance);
 		}
 
-		public void Play(float volume = 1.0f, float panning = 0.0f)
+		public void Play()
+		{
+			Play(settings.SoundVolume, 0.0f);
+		}
+
+		public void Play(float panning)
+		{
+			Play(settings.SoundVolume, panning);
+		}
+
+		public void Play(float volume, float panning)
 		{
 			SoundInstance freeInstance = GetInternalNonPlayingInstance();
 			freeInstance.Volume = volume;
@@ -62,7 +74,7 @@ namespace DeltaEngine.Multimedia
 
 		public SoundInstance CreateSoundInstance()
 		{
-			var instance = new SoundInstance(this);
+			var instance = new SoundInstance(this) { Volume = settings.SoundVolume };
 			Add(instance);
 
 			return instance;

@@ -57,9 +57,9 @@
       <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
       <Name>DeltaEngine.Platforms</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Platforms\Tests\DeltaEngine.Platforms.Tests.csproj">
-      <Project>{d0aad622-ed82-40e5-88a9-980eafc12c16}</Project>
-      <Name>DeltaEngine.Platforms.Tests</Name>
+    <ProjectReference Include="..\..\..\Platforms\Mocks\DeltaEngine.Platforms.Mocks.csproj">
+      <Project>{bf968f20-246b-4f86-bb7b-377fd4b47a9f}</Project>
+      <Name>DeltaEngine.Platforms.Mocks</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Rendering\DeltaEngine.Rendering.csproj">
       <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>

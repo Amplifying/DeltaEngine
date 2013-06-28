@@ -10,8 +10,8 @@ namespace Breakout
 	/// </summary>
 	public class Background : Sprite
 	{
-		public Background(ContentLoader content)
-			: base(content.Load<Image>("Background"), Rectangle.One)
+		public Background()
+			: base(ContentLoader.Load<Image>("Background"), Rectangle.One)
 		{
 			RenderLayer = DefaultRenderLayer;
 		}

@@ -1,9 +1,7 @@
-using System;
 using System.IO;
 using DeltaEngine.Core;
+using DeltaEngine.Platforms;
 using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using System.Diagnostics;
 
 namespace DeltaEngine.Multimedia.Xna
 {
@@ -12,45 +10,15 @@ namespace DeltaEngine.Multimedia.Xna
 	/// </summary>
 	public class XnaSound : Sound
 	{
-		public XnaSound(string contentName, XnaSoundDevice device, ContentManager contentManager)
-			: base(contentName, device)
-		{
-			this.contentManager = contentManager;
-		}
-
-		private readonly ContentManager contentManager;
-
-		private SoundEffect effect;
-
-		protected override bool CanLoadDataFromStream
-		{
-			get { return false; }
-		}
+		public XnaSound(string contentName, Settings settings)
+			: base(contentName, settings) {}
 
 		protected override void LoadData(Stream fileData)
 		{
-			throw new XnaVideo.XnaOnlyAllowsLoadingThroughContentNames();	
+			effect = SoundEffect.FromStream(fileData);
 		}
 
-		protected override void LoadFromContentName(string contentName)
-		{
-			try
-			{
-				effect = contentManager.Load<SoundEffect>(contentName);
-			}
-			catch (Exception ex)
-			{
-				//logger.Error(ex);
-				if (Debugger.IsAttached)
-					throw new XnaSoundContentNotFound(contentName, ex);
-			}
-		}
-
-		public class XnaSoundContentNotFound : Exception
-		{
-			public XnaSoundContentNotFound(string contentName, Exception exception)
-				: base(contentName, exception) {}
-		}
+		private SoundEffect effect;
 
 		protected override void DisposeData()
 		{

@@ -2,33 +2,31 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using DeltaEngine.Core;
+using DeltaEngine.Logging;
 using DeltaEngine.Multimedia.AviVideo;
 using DeltaEngine.Multimedia.OpenTK.Helpers;
-using DeltaEngine.Rendering.ScreenSpaces;
 using DeltaEngine.Rendering.Sprites;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
-using DeltaEngine.Logging;
+using DeltaEngine.Rendering.ScreenSpaces;
 
 namespace DeltaEngine.Multimedia.OpenTK
 {
 	public class OpenTKVideo : Video
 	{
-		public OpenTKVideo(string filename, SoundDevice device, Drawing drawing, ScreenSpace screen, 
-			Logger log) : base(filename, device)
+		public OpenTKVideo(string filename, Device device, OpenTKSoundDevice soundDevice, ScreenSpace 
+			screen) : base(filename, soundDevice)
 		{
+			openAL = soundDevice;
 			this.screen = screen;
-			this.log = log;
-			openAL = new OpenTKOpenAL();
 			channelHandle = openAL.CreateChannel();
 			buffers = openAL.CreateBuffers(NumberOfBuffers);
-			image = new VideoImage();
+			image = new VideoImage(device);
 		}
 
-		private readonly Logger log;
+		private readonly ScreenSpace screen;
 		private readonly VideoImage image;
-		private ScreenSpace screen;
-		private OpenTKOpenAL openAL;
+		private readonly OpenTKSoundDevice openAL;
 		private int channelHandle;
 		private int[] buffers;
 		private const int NumberOfBuffers = 4;
@@ -59,14 +57,14 @@ namespace DeltaEngine.Multimedia.OpenTK
 		{
 			try
 			{
-				var aviManager = new AviFile("Content/DefaultVideo.avi");
+				var aviManager = new AviFile("Content/" + Name + ".avi");
 				video = aviManager.GetVideoStream();
 				audio = aviManager.GetAudioStream();
 				format = audio.Channels == 2 ? AudioFormat.Stereo16 : AudioFormat.Mono16;
 			}
 			catch (Exception ex)
 			{
-				ExecuteLogger(ex);
+				Logger.Current.Error(ex);
 				if (Debugger.IsAttached)
 					throw new VideoNotFoundOrAccessible(Name, ex);
 			}
@@ -163,12 +161,7 @@ namespace DeltaEngine.Multimedia.OpenTK
 			openAL.Play(channelHandle);
 			openAL.SetVolume(channelHandle, volume);
 			elapsedSeconds = 0f;
-			surface = new Sprite(image, screen.Viewport, Color.White);
-		}
-
-		private void ExecuteLogger(Exception ex)
-		{
-			log.Error(ex);
+			surface = new Sprite(image, screen.Viewport);
 		}
 
 		private void UpdateVideoTexture()

@@ -1,9 +1,8 @@
-using System;
 using System.Diagnostics;
 using System.Threading;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Platforms;
 using NUnit.Framework;
 
 namespace DeltaEngine.Multimedia.Tests
@@ -11,81 +10,67 @@ namespace DeltaEngine.Multimedia.Tests
 	/// <summary>
 	/// Test music playback. Xna music loading won't work from ReSharper, use Program.cs instead.
 	/// </summary>
-	public class MusicTests : TestWithAllFrameworks
+	[Ignore]
+	public class MusicTests : TestWithMocksOrVisually
 	{
-		[IntegrationTest]
-		public void PlayMusic(Type resolver)
+		[Test]
+		public void PlayMusic()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				var music = content.Load<Music>("DefaultMusic");
-				music.Play();
-			});
+			ContentLoader.Load<Music>("DefaultMusic").Play();
 		}
 
-		[IntegrationTest]
-		public void PlayMusicWith5Fps(Type resolver)
+		[Test]
+		public void PlayMusicWith5Fps()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				var music = content.Load<Music>("DefaultMusic");
-				music.Play();
-			}, () => Thread.Sleep(200));
+			var music = ContentLoader.Load<Music>("DefaultMusic");
+			music.Play();
+			RunCode = () => Thread.Sleep(200);
 		}
 
-		[IntegrationTest]
-		public void PlayMusicWith10Fps(Type resolver)
+		[Test]
+		public void PlayMusicWith10Fps()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				var music = content.Load<Music>("DefaultMusic");
-				music.Play();
-			}, () => Thread.Sleep(100));
+			var music = ContentLoader.Load<Music>("DefaultMusic");
+			music.Play();
+			RunCode = () => Thread.Sleep(100);
 		}
 
-		[IntegrationTest]
-		public void PlayMusicWith30Fps(Type resolver)
+		[Test]
+		public void PlayMusicWith30Fps()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				var music = content.Load<Music>("DefaultMusic");
-				music.Play();
-			}, () => Thread.Sleep(1000 / 30));
+			var music = ContentLoader.Load<Music>("DefaultMusic");
+			music.Play();
+			RunCode = () => Thread.Sleep(1000 / 30);
 		}
 
-		[IntegrationTest]
-		public void StartAndStopMusic(Type resolver)
+		[Test]
+		public void StartAndStopMusic()
 		{
-			Music music = null;
-			Start(resolver, (ContentLoader content) =>
+			Music music = ContentLoader.Load<Music>("DefaultMusic");
+			Assert.Less(4.12f, music.DurationInSeconds);
+			Assert.Greater(4.14f, music.DurationInSeconds);
+			music.Play();
+			Assert.IsTrue(music.IsPlaying());
+			RunCode = () =>
 			{
-				music = content.Load<Music>("DefaultMusic");
-				Assert.Less(4.12f, music.DurationInSeconds);
-				Assert.Greater(4.14f, music.DurationInSeconds);
-				music.Play();
-				Assert.IsTrue(music.IsPlaying());
-			}, () =>
-			{
-				if (Time.Current.Milliseconds >= 1000 || mockResolver != null)
+				if (Time.Current.Milliseconds >= 1000)
 				{
 					music.Stop();
 					Assert.IsFalse(music.IsPlaying());
 					Assert.Less(0.99f, music.PositionInSeconds);
 					Assert.Greater(1.01f, music.PositionInSeconds);
 				}
-			});
+			};
 		}
 
-		[IntegrationTest]
-		public void ShouldThrowIfMusicNotLoadedInDebugModeOrWithDebuggerAttached(Type resolver)
+		[Test]
+		public void ShouldThrowIfMusicNotLoadedInDebugModeOrWithDebuggerAttached()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				if (!Debugger.IsAttached || resolver.FullName.Contains("Mock"))
-					return;
-				//ncrunch: no coverage start
-				Assert.Throws<ContentLoader.ContentNotFound>(() => content.Load<Music>("UnavailableMusic"));
-			});
+			if (!Debugger.IsAttached)
+				return;
+			//ncrunch: no coverage start
+			Assert.Throws<ContentLoader.ContentNotFound>(
+				() => ContentLoader.Load<Music>("UnavailableMusic"));
 		}
 	}
 }

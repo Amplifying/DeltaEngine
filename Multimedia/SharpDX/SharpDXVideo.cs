@@ -4,7 +4,6 @@ using System.IO;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics.SharpDX;
-using DeltaEngine.Logging;
 using DeltaEngine.Multimedia.AviVideo;
 using DeltaEngine.Rendering.ScreenSpaces;
 using DeltaEngine.Rendering.Sprites;
@@ -15,12 +14,12 @@ namespace DeltaEngine.Multimedia.SharpDX
 {
 	public class SharpDXVideo : Video
 	{
-		public SharpDXVideo(string filename, SoundDevice device, Logger log,
+		public SharpDXVideo(string filename, SoundDevice device,
 			SharpDXDevice graphicsDevice, ScreenSpace screen)
 			: base(filename, device)
 		{
 			this.screen = screen;
-			image = new VideoImage(graphicsDevice, log);
+			image = new VideoImage(graphicsDevice);
 			CreateBuffers();
 		}
 
@@ -87,7 +86,7 @@ namespace DeltaEngine.Multimedia.SharpDX
 			isPlaying = true;
 			video.GetFrameOpen();
 			elapsedSeconds = 0f;
-			surface = new Sprite(image, screen.Viewport, Color.White);
+			surface = new Sprite(image, screen.Viewport);
 		}
 
 		private bool isPlaying;

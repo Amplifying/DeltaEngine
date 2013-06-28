@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using DeltaEngine.Platforms;
 using SharpDX;
 using SharpDX.Multimedia;
 using SharpDX.XAudio2;
@@ -13,8 +14,8 @@ namespace DeltaEngine.Multimedia.SharpDX
 	/// </summary>
 	public class XAudioSound : Sound
 	{
-		public XAudioSound(string filename, XAudioDevice device)
-			: base(filename, device)
+		public XAudioSound(string filename, XAudioDevice device, Settings settings)
+			: base(filename, settings)
 		{
 			xAudio = device.XAudio2;
 		}

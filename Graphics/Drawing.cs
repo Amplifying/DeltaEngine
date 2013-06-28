@@ -39,5 +39,8 @@ namespace DeltaEngine.Graphics
 			SetIndices(indicesArray, indicesArray.Length);
 			DrawVerticesForSprite(VerticesMode.Triangles, vertexArray);
 		}
+
+		public int NumberOfVerticesDrawn { get; set; }
+		public int NumberOfTimesDrawn { get; set; }
 	}
 }

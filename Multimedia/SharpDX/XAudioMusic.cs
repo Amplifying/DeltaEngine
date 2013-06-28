@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using DeltaEngine.Core;
+using DeltaEngine.Platforms;
 using SharpDX.Multimedia;
 using SharpDX.XAudio2;
 using System.Diagnostics;
@@ -13,8 +14,8 @@ namespace DeltaEngine.Multimedia.SharpDX
 	/// </summary>
 	public class XAudioMusic : Music
 	{
-		public XAudioMusic(string filename, XAudioDevice device)
-			: base(filename, device)
+		public XAudioMusic(string filename, XAudioDevice device, Settings settings)
+			: base(filename, device, settings)
 		{
 			CreateBuffers();
 		}
@@ -55,6 +56,7 @@ namespace DeltaEngine.Multimedia.SharpDX
 				return;
 
 			source.Start();
+			source.SetVolume(volume);
 			isPlaying = true;
 			playStartTime = DateTime.Now;
 		}

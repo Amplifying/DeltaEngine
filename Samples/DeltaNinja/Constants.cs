@@ -21,26 +21,29 @@ namespace DeltaNinja
 		public readonly static float FadeStep = 0.0015f;		
 	}
 
-	internal enum MenuButton
+	public enum MenuButton
 	{
 		Home,
 		NewGame,
+		Resume,
+		Abort,
 		Retry,
+		About,
 		Exit
 	}
 
-	internal enum GameRenderLayer
+	public enum GameRenderLayer
 	{
 		Default,
 		Background,
 		Menu,
-		Score,
+		Hud,
 		Logos,		
 		Segments,
 		Points
 	}
 
-	internal enum Alignment
+	public enum Alignment
 	{
 		Left,
 		Center,

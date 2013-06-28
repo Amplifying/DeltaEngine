@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
@@ -9,93 +9,76 @@ using DeltaEngine.Graphics;
 namespace DeltaEngine.Rendering.Sprites
 {
 	/// <summary>
-	/// An animated sprite
+	/// An animated sprite consisting of multiple images
 	/// </summary>
 	public class Animation : Sprite
 	{
-		public Animation(IList<Image> images, Rectangle initialDrawArea, float animationLength)
-			: base(images[0], initialDrawArea)
+		public Animation(string name, Rectangle drawArea)
+			: this(ContentLoader.Load<AnimationData>(name), drawArea) {}
+
+		private Animation(AnimationData data, Rectangle drawArea)
+			: base(data.Frames[0], drawArea)
 		{
-			Add(new Data { Images = images, Duration = animationLength });
-			Add<Update>();
+			Add(data);
+			Elapsed = 0.0f;
+			CurrentFrame = 0;
+			IsPlaying = true;
+			Start<Update>();
 		}
 
-		public Animation(string animationName, ContentLoader contentLoader, Rectangle initialDrawArea,
-			float animationLength) :
-			base(contentLoader.LoadRecursively<Image>(animationName)[0], initialDrawArea)
-		{
-			var images = contentLoader.LoadRecursively<Image>(animationName);
-			Add(new Data { Images = images, Duration = animationLength });
-			Add<Update>();
-
-		}
+		public float Elapsed { get; set; }
+		public int CurrentFrame { get; private set; }
+		public bool IsPlaying { get; set; }
 
 		public IList<Image> Images
 		{
-			get { return Get<Data>().Images; }
-			set { Get<Data>().Images = value; }
+			get { return Get<AnimationData>().Frames; }
 		}
 
 		public float Duration
 		{
-			get { return Get<Data>().Duration; }
-			set { Get<Data>().Duration = value; }
-		}
-
-		public int CurrentFrame
-		{
-			get { return Get<Data>().CurrentFrame; }
-		}
-
-		public void AddImageWithoutIncreasingDuration(Image image)
-		{
-			Get<Data>().Images.Add(image);
-		}
-
-		public void AddImageIncreasingDuration(Image image)
-		{
-			var animationData = Get<Data>();
-			animationData.Images.Add(image);
-			float imageCount = animationData.Images.Count;
-			animationData.Duration *= imageCount / (imageCount - 1);
+			get { return Get<AnimationData>().Duration; }
+			set { Get<AnimationData>().Duration = value; }
 		}
 
 		public void Reset()
 		{
-			var animationData = Get<Data>();
-			animationData.CurrentFrame = 0;
-			animationData.Elapsed = 0;
+			CurrentFrame = 0;
+			Elapsed = 0.0f;
+			Set(Get<AnimationData>().Frames[CurrentFrame]);
 		}
 
-		/// <summary>
-		/// Holds the data used by AnimatedSprite
-		/// </summary>
-		public class Data
+		internal void InvokeFinalFrame()
 		{
-			public IList<Image> Images { get; set; }
-			public float Duration { get; set; }
-			public int CurrentFrame { get; set; }
-			public float Elapsed { get; set; }
+			if (FinalFrame != null)
+				FinalFrame();
 		}
+
+		public event Action FinalFrame;
 
 		/// <summary>
 		/// Updates current frame for a sprite animation
 		/// </summary>
-		public class Update : EntityHandler
+		public class Update : Behavior2D
 		{
-			public override void Handle(Entity entity)
+			public override void Handle(Entity2D entity)
 			{
-				var animationData = entity.Get<Data>();
-				animationData.Elapsed += Time.Current.Delta;
-				animationData.Elapsed = animationData.Elapsed % animationData.Duration;
-				animationData.CurrentFrame =
-					(int)(animationData.Images.Count * animationData.Elapsed / animationData.Duration);
-				entity.Set(animationData.Images[animationData.CurrentFrame]);
+				var animation = entity as Animation;
+				if (!animation.IsPlaying)
+					return;
+				var animationData = animation.Get<AnimationData>();
+				animation.Elapsed += Time.Current.Delta;
+				animation.Elapsed = animation.Elapsed % animationData.Duration;
+				animation.CurrentFrame =
+					(int)(animationData.Frames.Count * animation.Elapsed / animationData.Duration);
+				entity.Set(animationData.Frames[animation.CurrentFrame]);
+				if (animation.CurrentFrame == animationData.Frames.Count - 1)
+					animation.InvokeFinalFrame();
 			}
 
-			public override EntityHandlerPriority Priority
+			public override Priority Priority
 			{
-				get { return EntityHandlerPriority.First; }
+				get { return Priority.First; }
 			}
 		}
 	}

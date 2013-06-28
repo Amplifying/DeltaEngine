@@ -86,6 +86,7 @@ namespace DeltaEngine.Scenes
 		{
 			var button = new ActiveButton(theme, new Rectangle(Point.Zero, ButtonSize), text);
 			button.Clicked += clicked;
+			button.RenderLayer = 10;
 			buttons.Add(button);
 			Add(button);
 		}

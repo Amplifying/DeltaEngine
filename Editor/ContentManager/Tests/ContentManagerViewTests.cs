@@ -1,25 +1,29 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using System.Windows;
 using System.Windows.Input;
+using DeltaEngine.Content.Online;
 using DeltaEngine.Editor.Mocks;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.ContentManager.Tests
 {
+	[Category("Slow")]
 	public class ContentManagerViewTests
 	{
 		[SetUp, STAThread]
 		public void Setup()
 		{
+			var contentPath = "Content";
 			var fileSystem =
 				new MockFileSystem(new Dictionary<string, MockFileData>
 				{
 					{
 						@"Content\BreakOut\DeltaEngineLogo.png",
-						new MockFileData(DataToString(@"Content\DeltaEngineLogo.png"))
+						new MockFileData(DataToString(Path.Combine(contentPath, "DeltaEngineLogo.png")))
 					},
 				});
 			manager =

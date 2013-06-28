@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
+using DeltaEngine.Rendering;
 
 namespace GameOfDeath
 {
@@ -8,9 +8,9 @@ namespace GameOfDeath
 	/// Makes a rabbit's health bar follow the rabbit sprite, plus updates its size and color
 	/// according to the rabbit's health
 	/// </summary>
-	public class UpdateRabbitHealthBar : EntityListener
+	public class UpdateRabbitHealthBar : EventListener2D
 	{
-		public override void ReceiveMessage(Entity entity, object message)
+		public override void ReceiveMessage(Entity2D entity, object message)
 		{
 			if (message is MoveRabbit.HasMoved)
 				UpdateHealthBar((Rabbit)entity);
@@ -41,9 +41,9 @@ namespace GameOfDeath
 		private static readonly Color Yellow = new Color(96, 96, 0, 128);
 		private static readonly Color Green = new Color(0, 96, 0, 128);
 
-		public override EntityHandlerPriority Priority
+		public override Priority Priority
 		{
-			get { return EntityHandlerPriority.First; }
+			get { return DeltaEngine.Entities.Priority.First; }
 		}
 	}
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows.Input;
 using DeltaEngine.Editor.Common;
 using GalaSoft.MvvmLight;
@@ -12,30 +13,17 @@ namespace DeltaEngine.Editor.Builder
 	{
 		public BuilderViewModel(Service service)
 		{
-			// TODO:
-			this.service = service;
-			//this.service = new BuildServiceConnectionViaLAN();
+			this.Service = service;
 			service.MessageReceived += OnServiceMessageReceived;
 			MessagesListViewModel = new BuildMessagesListViewModel();
-			UserProjectEntryPoints = new List<string>();
-			UserProjectEntryPoints.Add(DefaultEntryPoint);
-			UserSelectedEntryPoint = DefaultEntryPoint;
+			AppListViewModel = new BuiltAppsListViewModel();
 			BuildPressed = new RelayCommand(OnBuildExecuted, CanBuildExecuted);
+			SelectFirstAvailablePlatform();
 		}
 
-		protected readonly Service service;
+		public Service Service { get; private set; }
 		public BuildMessagesListViewModel MessagesListViewModel { get; set; }
-
-		public PlatformName[] SupportedPlatforms
-		{
-			// TODO: Doesn't contain all available platforms
-			//get { return service.AllowedPlatforms; }
-			get { return new[] { PlatformName.WindowsPhone7, PlatformName.Android, }; }
-		}
-
-		public List<string> UserProjectEntryPoints { get; set; }
-		private const string DefaultEntryPoint = "Program.Main";
-		public string UserSelectedEntryPoint { get; set; }
+		public BuiltAppsListViewModel AppListViewModel { get; set; }
 		public ICommand BuildPressed { get; private set; }
 
 		protected virtual void OnBuildExecuted()
@@ -52,13 +40,13 @@ namespace DeltaEngine.Editor.Builder
 
 		private void SendBuildRequestToServer()
 		{
-			string projectName = Path.GetFileNameWithoutExtension(UserProjectPath);
-			var projectData = new CodeData(Path.GetDirectoryName(UserProjectPath));
+			string projectName = Path.GetFileNameWithoutExtension(UserSolutionPath);
+			var projectData = new CodeData(Path.GetDirectoryName(UserSolutionPath));
 			var request = new BuildRequest(projectName, SelectedPlatform, projectData.GetBytes())
 			{
-				SolutionFilePath = Path.GetFileName(userProjectPath),
+				SolutionFilePath = Path.GetFileName(userSolutionPath),
 			};
-			service.SendMessage(request);
+			Service.SendMessage(request);
 		}
 
 		private BuildMessage GetErrorMessage(Exception ex)
@@ -66,7 +54,7 @@ namespace DeltaEngine.Editor.Builder
 			string errorMessage = "Failed to send BuildRequest to server because " + ex.Message;
 			return new BuildMessage(errorMessage)
 			{
-				Filename = Path.GetFileName(UserProjectPath),
+				Filename = Path.GetFileName(UserSolutionPath),
 				Type = BuildMessageType.BuildError,
 			};
 		}
@@ -80,30 +68,96 @@ namespace DeltaEngine.Editor.Builder
 
 		private bool IsUserProjectPathValid()
 		{
-			return File.Exists(UserProjectPath);
+			return File.Exists(UserSolutionPath);
 		}
-
-		public string UserProjectPath
-		{
-			get { return userProjectPath; }
-			set
-			{
-				userProjectPath = value;
-				RaisePropertyChanged("UserProjectPath");
-			}
-		}
-		private string userProjectPath;
 
 		private bool IsUserSelectedEntryPointValid()
 		{
-			return UserSelectedEntryPoint == DefaultEntryPoint;
+			return SelectedEntryPoint == DefaultEntryPoint;
+		}
+
+		private void SelectFirstAvailablePlatform()
+		{
+			UserSelectedPlatform = Service.AllowedPlatforms[0];
 		}
 
 		public PlatformName UserSelectedPlatform { get; set; }
 
+		public void SelectSamplesSolution()
+		{
+			string engineDirectory = Environment.GetEnvironmentVariable(EnginePathEnvironmentVariableName);
+			if (engineDirectory == null)
+				return; //throw new DeltaEnginePathUnknown();
+
+			UserSolutionPath = Path.Combine(engineDirectory, "DeltaEngine.Samples.sln");
+		}
+
+		public const string EnginePathEnvironmentVariableName = "DeltaEnginePath";
+
+		public class DeltaEnginePathUnknown : Exception {}
+
+		public string UserSolutionPath
+		{
+			get { return userSolutionPath; }
+			set
+			{
+				userSolutionPath = value;
+				RaisePropertyChanged("UserSolutionPath");
+				DetermineAvailableProjectsOfSamplesSolution();
+			}
+		}
+		private string userSolutionPath;
+
+		private void DetermineAvailableProjectsOfSamplesSolution()
+		{
+			AvailableProjectsInSelectedSolution = new List<ProjectEntry>();
+			var solutionLoader = new SolutionFileLoader(UserSolutionPath);
+			List<ProjectEntry> allProjects = solutionLoader.GetCSharpProjects();
+			foreach (var project in allProjects.Where(project => IsSampleProject(project)))
+				AvailableProjectsInSelectedSolution.Add(project);
+			RaisePropertyChanged("AvailableProjectsInSelectedSolution");
+			SelectedProject = AvailableProjectsInSelectedSolution[0];
+		}
+
+		public List<ProjectEntry> AvailableProjectsInSelectedSolution { get; set; }
+
+		private static bool IsSampleProject(ProjectEntry project)
+		{
+			return !project.Title.EndsWith(".Tests") && !project.Title.StartsWith("DeltaEngine.") &&
+				!project.Title.StartsWith("Empty");
+		}
+
+		public ProjectEntry SelectedProject
+		{
+			get { return selectedProject; }
+			set
+			{
+				selectedProject = value;
+				RaisePropertyChanged("SelectedProject");
+				DetermineEntryPointsOfProject();
+			}
+		}
+		private ProjectEntry selectedProject;
+
+		private void DetermineEntryPointsOfProject()
+		{
+			AvailableEntryPointsInSelectedProject = new List<string>();
+			AvailableEntryPointsInSelectedProject.Add(DefaultEntryPoint);
+			SelectedEntryPoint = DefaultEntryPoint;
+		}
+
+		public List<string> AvailableEntryPointsInSelectedProject { get; set; }
+		private const string DefaultEntryPoint = "Program.Main";
+		public string SelectedEntryPoint { get; set; }
+
+		public PlatformName[] SupportedPlatforms
+		{
+			get { return Service.AllowedPlatforms; }
+		}
+
 		public void OnBrowseUserProjectExecuted(string newUserProjectPath)
 		{
-			UserProjectPath = newUserProjectPath;
+			UserSolutionPath = newUserProjectPath;
 		}
 
 		private void OnServiceMessageReceived(object serviceMessage)

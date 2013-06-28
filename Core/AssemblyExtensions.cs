@@ -10,13 +10,22 @@ namespace DeltaEngine.Core
 	public static class AssemblyExtensions
 	{
 		//ncrunch: no coverage start
-		public static string DetermineProjectName()
+		public static string GetTestNameOrProjectName()
 		{
 			Assembly entryAssembly = Assembly.GetEntryAssembly();
 			if (entryAssembly != null)
 				return entryAssembly.GetName().Name;
 
 			return StackTraceExtensions.GetEntryName();
+		}
+
+		public static string GetEntryAssemblyForProjectName()
+		{
+			Assembly entryAssembly = Assembly.GetEntryAssembly();
+			if (entryAssembly != null)
+				return entryAssembly.GetName().Name;
+
+			return StackTraceExtensions.GetExecutingAssemblyName();
 		}
 
 		public static bool IsAllowed(this AssemblyName assembly)

@@ -63,6 +63,10 @@
       <Project>{bae8830e-5f62-48d6-b772-c4b1e8665fb3}</Project>
       <Name>DeltaEngine.Platforms</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
+      <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
+      <Name>DeltaEngine.Rendering</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Input.csproj">
       <Project>{cc65e69e-fafd-4c2b-85eb-5e57fd3af847}</Project>
       <Name>DeltaEngine.Input</Name>

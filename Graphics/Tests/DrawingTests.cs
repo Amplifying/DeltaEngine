@@ -1,89 +1,74 @@
-using System;
-using System.Collections.Generic;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.All;
-using DeltaEngine.Platforms.Tests;
 using NUnit.Framework;
 
 namespace DeltaEngine.Graphics.Tests
 {
-	public class DrawingTests : TestWithAllFrameworks
+	public class DrawingTests : TestWithMocksOrVisually
 	{
-		[VisualTest, ApproveFirstFrameScreenshot]
-		public void ShowRedLine(Type resolver)
+		[Test, ApproveFirstFrameScreenshot]
+		public void DrawRedLine()
+		{
+			var vertices = CreateLine(Color.Red);
+			RunCode = () => Resolve<Drawing>().DrawVertices(VerticesMode.Lines, vertices);
+		}
+
+		private VertexPositionColor[] CreateLine(Color color)
 		{
 			var vertices = new VertexPositionColor[2];
-			Drawing remDrawing = null;
-			Start(resolver, (Drawing drawing, Window window) =>
-			{
-				remDrawing = drawing;
-				DrawLine(window, vertices, Color.Red);
-			}, () => remDrawing.DrawVertices(VerticesMode.Lines, vertices));
-		}
-
-		private static void DrawLine(Window window, IList<VertexPositionColor> vertices, Color color)
-		{
 			vertices[0] = new VertexPositionColor(Point.Zero, color);
-			vertices[1] = new VertexPositionColor(window.ViewportPixelSize, color);
-			window.ViewportSizeChanged += s => vertices[1] = new VertexPositionColor(s, Color.White);
+			vertices[1] = new VertexPositionColor(Window.ViewportPixelSize, color);
+			Window.ViewportSizeChanged += s => vertices[1] = new VertexPositionColor(s, Color.Green);
+			return vertices;
 		}
 
-		[IntegrationTest]
-		public void DrawVertices(Type resolver)
+		[Test]
+		public void DrawVertices()
 		{
-			Start(resolver,
-				(Drawing d) => d.DrawVertices(VerticesMode.Lines, new VertexPositionColor[4]));
+			RunCode =
+				() => Resolve<Drawing>().DrawVertices(VerticesMode.Lines, new VertexPositionColor[4]);
+			Window.CloseAfterFrame();
 		}
 
-		[IntegrationTest]
-		public void DrawVerticesWithIndices(Type resolver)
+		[Test]
+		public void DrawVerticesWithIndices()
 		{
-			Start(resolver, (Drawing drawing) =>
+			RunCode = () =>
 			{
+				var drawing = Resolve<Drawing>();
 				drawing.SetIndices(new short[16], 16);
 				drawing.DrawVertices(VerticesMode.Lines, new VertexPositionColor[4]);
-			});
+			};
+			Window.CloseAfterFrame();
 		}
 
-		[IntegrationTest]
-		public void SetIndices(Type resolver)
+		[Test]
+		public void SetIndicesTwice()
 		{
-			Start(resolver, (Drawing drawing) => drawing.SetIndices(new short[16], 16));
+			var drawing = Resolve<Drawing>();
+			drawing.SetIndices(new short[16], 16);
+			drawing.SetIndices(new short[16], 16);
+			Window.CloseAfterFrame();
 		}
 
-		[IntegrationTest]
-		public void SetIndicesTwice(Type resolver)
+		[Test]
+		public void CheckCreatePositionColorBuffer()
 		{
-			Start(resolver, (Device device, Window window, Drawing drawing) =>
-			{
-				drawing.SetIndices(new short[16], 16);
-				drawing.SetIndices(new short[16], 16);
-			});
+			var drawing = Resolve<Drawing>();
+			drawing.DrawVertices(VerticesMode.Triangles, new VertexPositionColor[4]);
+			drawing.DrawVertices(VerticesMode.Triangles, new VertexPositionColor[4]);
+			Window.CloseAfterFrame();
 		}
 
-		[IntegrationTest]
-		public void CheckCreatePositionColorBuffer(Type resolver)
+		[Test, ApproveFirstFrameScreenshot]
+		public void ShowYellowLineFullscreen()
 		{
-			Start(resolver, (Drawing drawing, Window window) =>
-			{
-				drawing.DrawVertices(VerticesMode.Triangles, new VertexPositionColor[4]);
-				drawing.DrawVertices(VerticesMode.Triangles, new VertexPositionColor[4]);
-			});
-		}
-
-		//ncrunch: no coverage start
-		[VisualTest, ApproveFirstFrameScreenshot, Ignore]
-		public void ShowYellowLineFullscreen(Type resolver)
-		{
-			var vertices = new VertexPositionColor[2];
-			Drawing remDrawing = null;
-			Start(resolver, (Drawing drawing, Window window) =>
-			{
-				remDrawing = drawing;
-				window.SetFullscreen(new Size(640, 480));
-				DrawLine(window, vertices, Color.Yellow);
-			}, () => remDrawing.DrawVertices(VerticesMode.Lines, vertices));
+			Settings.StartInFullscreen = true;
+			Settings.Resolution = new Size(1920, 1080);
+			var drawing = Resolve<Drawing>();
+			RunCode = () => drawing.DrawVertices(VerticesMode.Lines, CreateLine(Color.Yellow));
+			Settings.StartInFullscreen = false;
+			Settings.Resolution = new Size(640, 360);
 		}
 	}
 }

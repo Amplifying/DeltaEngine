@@ -1,13 +1,19 @@
+using DeltaEngine.Input;
 using DeltaEngine.Platforms;
+using DeltaEngine.Rendering.ScreenSpaces;
 
 namespace DeltaNinja
 {
-	internal static class Program
-	{
-		public static void Main()
-		{
-			var app = new App();
-			app.Start<Game>();
-		}
-	}
+	 internal class Program : App
+	 {
+		 public Program()
+		 {
+			 new Game(Resolve<ScreenSpace>(), Resolve<InputCommands>());
+		 }
+
+			public static void Main()
+			{
+				 new Program().Run();
+			}
+	 }
 }

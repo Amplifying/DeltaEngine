@@ -21,6 +21,9 @@ namespace DeltaEngine.Datatypes
 			Height = height;
 		}
 
+		public float Width { get; set; }
+		public float Height { get; set; }
+
 		public Size(string sizeAsString)
 			: this()
 		{
@@ -31,9 +34,6 @@ namespace DeltaEngine.Datatypes
 			Width = components[0];
 			Height = components[1];
 		}
-
-		public float Width { get; set; }
-		public float Height { get; set; }
 
 		public class InvalidNumberOfComponents : Exception {}
 
@@ -56,7 +56,7 @@ namespace DeltaEngine.Datatypes
 
 		public float Length
 		{
-			get { return (float)Math.Sqrt(Width*Width+Height*Height); }
+			get { return (float)Math.Sqrt(Width * Width + Height * Height); }
 		}
 
 		public static bool operator ==(Size s1, Size s2)
@@ -131,7 +131,7 @@ namespace DeltaEngine.Datatypes
 
 		public override string ToString()
 		{
-			return "(" + Width.ToInvariantString() + ", " + Height.ToInvariantString() + ")";
+			return Width.ToInvariantString() + ", " + Height.ToInvariantString();
 		}
 	}
 }

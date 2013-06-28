@@ -1,4 +1,5 @@
 using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
 using NUnit.Framework;
 
 namespace DeltaEngine.Networking.Tests

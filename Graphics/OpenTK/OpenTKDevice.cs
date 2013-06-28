@@ -14,9 +14,6 @@ namespace DeltaEngine.Graphics.OpenTK
 		public OpenTKDevice(Window window)
 		{
 			this.window = window;
-			if (window.Title == "")
-				window.Title = "OpenTK Device";
-
 			Initialize();
 			window.ViewportSizeChanged += size => InitializeProjectionMatrix();
 			window.FullscreenChanged += OnFullscreenChanged;

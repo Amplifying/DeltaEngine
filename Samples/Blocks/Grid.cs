@@ -126,7 +126,7 @@ namespace Blocks
 				Duration = 5.0f,
 				Gravity = new Point(0.0f, 2.0f)
 			});
-			fallingBrick.Add<SimplePhysics.Fall>();
+			fallingBrick.Start<SimplePhysics.Fall>();
 		}
 
 		private void MoveBrickDown(int x, int y)
@@ -149,7 +149,7 @@ namespace Blocks
 			zoom.Add(new Transition.Duration(0.2f));
 			zoom.Add(new Transition.Size(brick.DrawArea.Size, 2 * brick.DrawArea.Size));
 			zoom.Add(new Transition.FadingColor(brick.Color));
-			zoom.Add<FinalTransition>();
+			zoom.Start<FinalTransition>();
 		}
 
 		public bool IsValidPosition(Block block)

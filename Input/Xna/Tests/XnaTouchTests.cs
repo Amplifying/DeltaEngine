@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using DeltaEngine.Platforms.Tests;
 using DeltaEngine.Rendering.ScreenSpaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input.Touch;
 using NUnit.Framework;
+using DeltaEngine.Platforms.Mocks;
 using Point = DeltaEngine.Datatypes.Point;
 
 namespace DeltaEngine.Input.Xna.Tests
@@ -13,7 +13,7 @@ namespace DeltaEngine.Input.Xna.Tests
 		[Test]
 		public void TestXnaTouchLogic()
 		{
-			var window = new MockResolver().rendering.Window;
+			var window = new MockResolver().Window;
 			var screen = new PixelScreenSpace(window);
 			var touch = new XnaMockTouch(window, screen) { TouchCollection = GetFirstTouchCollection() };
 			touch.Run();

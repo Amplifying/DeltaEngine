@@ -1,34 +1,30 @@
-using System;
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
 using DeltaEngine.Input;
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Platforms;
 using DeltaEngine.Rendering.Particles;
+using NUnit.Framework;
 
 namespace DeltaEngine.Rendering.Tests.Particles
 {
-	internal class ParticelTutorials : TestWithAllFrameworks
+	internal class ParticelTutorials : TestWithMocksOrVisually
 	{
-		[VisualTest]
-		public void CreatedLensFlareEffect(Type resolver)
+		[Test]
+		public void ParticleFollowingMouse()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				var image = content.Load<Image>("DeltaEngineLogo");
-				var particleEmitter = new ParticleEmitter(image);
-				particleEmitter.Get<ParticleEmitterData>().Position = Point.Half - new Point(0.05f, 0.05f);
-				particleEmitter.Get<ParticleEmitterData>().PresetLowerBounds = CreateBasicLowerPreset();
-				particleEmitter.Get<ParticleEmitterData>().PresetUpperBounds = CreateBasicUpperPreset();
-				particleEmitter.Get<ParticleEmitterData>().HasSecondaryDirection = false;
-				particleEmitter.Get<ParticleEmitterData>().HasSecondaryRotation = false;
-				particleEmitter.Get<ParticleEmitterData>().HasSecondarySize = false;
-				particleEmitter.Add<MoveToMousePosition>();
-			});
+			var image = ContentLoader.Load<Image>("DeltaEngineLogo");
+			var particleEmitter = new ParticleEmitter(image);
+			particleEmitter.Get<ParticleEmitterData>().Position = Point.Half - new Point(0.05f, 0.05f);
+			particleEmitter.Get<ParticleEmitterData>().PresetLowerBounds = CreateBasicLowerPreset();
+			particleEmitter.Get<ParticleEmitterData>().PresetUpperBounds = CreateBasicUpperPreset();
+			particleEmitter.Get<ParticleEmitterData>().HasSecondaryDirection = false;
+			particleEmitter.Get<ParticleEmitterData>().HasSecondaryRotation = false;
+			particleEmitter.Get<ParticleEmitterData>().HasSecondarySize = false;
+			particleEmitter.Start<MoveToMousePosition>();
 		}
 
-		public class MoveToMousePosition : EntityHandler
+		public class MoveToMousePosition : Behavior2D
 		{
 			public MoveToMousePosition(Mouse mouse)
 			{
@@ -37,7 +33,7 @@ namespace DeltaEngine.Rendering.Tests.Particles
 
 			private readonly Mouse mouse;
 
-			public override void Handle(Entity entity)
+			public override void Handle(Entity2D entity)
 			{
 				if (entity.GetType() == typeof(ParticleEmitter))
 					entity.Get<ParticleEmitterData>().Position = mouse.Position;

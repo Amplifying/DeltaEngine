@@ -1,4 +1,4 @@
-using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms.Mocks;
 using DeltaEngine.Rendering.ScreenSpaces;
 using NUnit.Framework;
 
@@ -26,7 +26,7 @@ namespace DeltaEngine.Input.Windows.Tests
 		private static WindowsMouse GetMouse()
 		{
 			var resolver = new MockResolver();
-			var window = resolver.rendering.Window;
+			var window = resolver.Window;
 			var screen = new QuadraticScreenSpace(window);
 			var positionTranslater = new CursorPositionTranslater(window, screen);
 			return new WindowsMouse(positionTranslater);

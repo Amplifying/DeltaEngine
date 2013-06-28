@@ -16,7 +16,7 @@ namespace DeltaEngine.Rendering.Fonts
 			: base(Rectangle.FromCenter(position, new Size(0.05f)))
 		{
 			Add(CalculateLinePoints(text));
-			Add<Render>();
+			Start<Render>();
 		}
 
 		private List<Point> CalculateLinePoints(string text)
@@ -42,7 +42,7 @@ namespace DeltaEngine.Rendering.Fonts
 
 		private readonly VectorCharacterLines characterLines = new VectorCharacterLines();
 
-		public class Render : EntityListener
+		public class Render : EventListener2D
 		{
 			public Render(Drawing drawing, ScreenSpace screen)
 			{
@@ -55,22 +55,14 @@ namespace DeltaEngine.Rendering.Fonts
 			private readonly ScreenSpace screen;
 			private readonly List<VertexPositionColor> vertices;
 
-			public override void Handle(Entity entity)
+			public override void ReceiveMessage(Entity2D entity, object message)
 			{
-				vertices.Clear();
-				RenderText(entity);
-				DrawLines();
+				if (message is SortAndRender.AddToBatch)
+					AddToBatch(entity);
 			}
 
-			public override void ReceiveMessage(Entity entity, object message)
+			private void AddToBatch(Entity2D text)
 			{
-				if (message is SortAndRender.TimeToRender)
-					RenderText(entity);
-			}
-
-			private void RenderText(Entity entity)
-			{
-				var text = entity as Entity2D;
 				var area = text.DrawArea;
 				AddLines(text.Get<List<Point>>(), area.Center, area.Height, text.Color);
 			}
@@ -82,6 +74,15 @@ namespace DeltaEngine.Rendering.Fonts
 						new VertexPositionColor(screen.ToPixelSpaceRounded(points[num] * scale + position), color));
 			}
 
+			public override void ReceiveMessage(object message)
+			{
+				if (!(message is SortAndRender.RenderBatch) || vertices.Count == 0)
+					return;
+
+				DrawLines();
+				vertices.Clear();
+			}
+
 			private void DrawLines()
 			{
 				var vertexArray = new VertexPositionColor[vertices.Count + 1];
@@ -91,9 +92,9 @@ namespace DeltaEngine.Rendering.Fonts
 				drawing.DrawVertices(VerticesMode.Lines, vertexArray);
 			}
 
-			public override EntityHandlerPriority Priority
+			public override Priority Priority
 			{
-				get { return EntityHandlerPriority.Last; }
+				get { return Priority.Last; }
 			}
 		}
 	}

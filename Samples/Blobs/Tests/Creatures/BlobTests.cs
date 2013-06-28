@@ -1,59 +1,47 @@
-using System;
 using Blobs.Creatures;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Input;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.All;
 using DeltaEngine.Rendering.ScreenSpaces;
+using NUnit.Framework;
 
 namespace Blobs.Tests.Creatures
 {
-	public class BlobTests : TestWithAllFrameworks
+	public class BlobTests : TestWithMocksOrVisually
 	{
-		[VisualTest]
-		public void Bounce(Type resolver)
+		[Test]
+		public void Bounce()
 		{
-			Blob blob = null;
-			Start(resolver, (Blob b) =>
-			{
-				blob = b;
-				blob.Radius = 0.05f;
-				blob.Center = new Point(0.1f, 0.2f);
-				blob.Color = Color.Blue;
-				blob.Velocity = new Point(0.2f, 0.0f);
-			}, () =>
-			{
-				if (blob.Center.Y + blob.Radius > 0.8f)
-					blob.Collision = new Collision(new Point(blob.Center.X, 0.8f), -Point.UnitY, null);
-
-				if (blob.Center.X + blob.Radius > 0.6f)
-					blob.Collision = new Collision(new Point(0.6f, blob.Center.Y), -Point.UnitX, null);
-			});
+			var blob = new Blob(Resolve<ScreenSpace>(), Resolve<InputCommands>());
+			blob.Radius = 0.05f;
+			blob.Center = new Point(0.1f, 0.2f);
+			blob.Color = Color.Blue;
+			blob.Velocity = new Point(0.2f, 0.0f);
+			if (blob.Center.Y + blob.Radius > 0.8f)
+				blob.Collision = new Collision(new Point(blob.Center.X, 0.8f), -Point.UnitY, null);
+			if (blob.Center.X + blob.Radius > 0.6f)
+				blob.Collision = new Collision(new Point(0.6f, blob.Center.Y), -Point.UnitX, null);
 		}
 
-		[VisualTest]
-		public void CameraZoomsInOnBlob(Type resolver)
+		[Test]
+		public void CameraZoomsInOnBlob()
 		{
-			Blob blob = null;
-			Camera2DControlledQuadraticScreenSpace camera = null;
 			float elapsed = 0.0f;
-			Start(resolver, (Blob b, Camera2DControlledQuadraticScreenSpace c) =>
-			{
-				blob = SetupBlob(b);
-				camera = c;
-			}, (Window window) =>
-			{
-				if (blob.Center.Y + blob.Radius > 0.8f)
-					blob.Collision = new Collision(new Point(blob.Center.X, 0.8f), -Point.UnitY, null);
+			var camera = new Camera2DControlledQuadraticScreenSpace(Resolve<Window>());
+			var blob = new Blob(camera, Resolve<InputCommands>());
+			blob = SetupBlob(blob);
+			var window = Resolve<Window>();
+			if (blob.Center.Y + blob.Radius > 0.8f)
+				blob.Collision = new Collision(new Point(blob.Center.X, 0.8f), -Point.UnitY, null);
 
-				elapsed += Time.Current.Delta;
-				if (elapsed > 5.0f)
-					camera.LookAt = Point.Lerp(Point.Half, new Point(blob.Center.X, 0.75f),
-						0.2f * (elapsed - 5.0f));
-				if (elapsed > 8.0f)
-					camera.Zoom += 0.02f;
-				window.Title = "FPS: " + Time.Current.Fps;
-			});
+			elapsed += Time.Current.Delta;
+			if (elapsed > 5.0f)
+				camera.LookAt = Point.Lerp(Point.Half, new Point(blob.Center.X, 0.75f),
+					0.2f * (elapsed - 5.0f));
+			if (elapsed > 8.0f)
+				camera.Zoom += 0.02f;
+			window.Title = "FPS: " + Time.Current.Fps;
 		}
 
 		private static Blob SetupBlob(Blob blob)
@@ -65,33 +53,23 @@ namespace Blobs.Tests.Creatures
 			return blob;
 		}
 
-		[VisualTest]
-		public void DrawSinkingRotatingBlob(Type resolver)
+		[Test]
+		public void DrawSinkingRotatingBlob()
 		{
-			Blob blob = null;
-			Start(resolver, (Blob b) => { blob = SetupBlob(b); }, () =>
-			{
-				blob.Velocity = Point.Zero;
-				blob.Rotation += 45 * Time.Current.Delta;
-			});
+			var blob = new Blob(new Camera2DControlledQuadraticScreenSpace(Resolve<Window>()), 
+				Resolve<InputCommands>());
+			blob.Velocity = Point.Zero;
+			blob.Rotation += 45 * Time.Current.Delta;
 		}
 
-		[VisualTest]
-		public void BlobBouncingOffPlatformZoomOut(Type resolver)
+		[Test]
+		public void BlobBouncingOffPlatformZoomOut()
 		{
-			Blob blob = null;
-			Platform platform = null;
-			Camera2DControlledQuadraticScreenSpace camera = null;
-			Start(resolver, (Camera2DControlledQuadraticScreenSpace c, Blob b) =>
-			{
-				blob = SetupBlob(b);
-				camera = c;
-				platform = AddPlatform();
-			}, () =>
-			{
-				camera.Zoom = MathExtensions.Max(camera.Zoom - Time.Current.Delta / 10f, 0.0f);
-				platform.CheckForCollision(blob);
-			});
+			var platform = AddPlatform();
+			var camera = new Camera2DControlledQuadraticScreenSpace(Resolve<Window>());
+			var blob = SetupBlob(new Blob(camera, Resolve<InputCommands>()));
+			camera.Zoom = MathExtensions.Max(camera.Zoom - Time.Current.Delta / 10f, 0.0f);
+			platform.CheckForCollision(blob);
 		}
 
 		private static Platform AddPlatform()

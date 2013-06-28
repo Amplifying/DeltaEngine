@@ -1,32 +1,31 @@
 using System;
 using System.IO;
 using DeltaEngine.Core;
-using DeltaEngine.Multimedia.OpenTK.Helpers;
-using ToyMp3;
-using System.Diagnostics;
 using DeltaEngine.Logging;
+using DeltaEngine.Multimedia.OpenTK.Helpers;
+using System.Diagnostics;
+using DeltaEngine.Platforms;
 
 namespace DeltaEngine.Multimedia.OpenTK
 {
 	public class OpenTKMusic : Music
 	{
-		public OpenTKMusic(string filename, SoundDevice device, Logger log) : base(filename, device)
+		public OpenTKMusic(string filename, OpenTKSoundDevice device, Settings settings) : 
+			base(filename, device, settings)
 		{
-			this.openAL = new OpenTKOpenAL();
+			openAL = device;
 			channelHandle = openAL.CreateChannel();
 			buffers = openAL.CreateBuffers(NumberOfBuffers);
 			bufferData = new byte[BufferSize];
-			this.log = log;
 		}
 
-		private readonly Logger log;
-		private OpenTKOpenAL openAL;
+		private OpenTKSoundDevice openAL;
 		private int channelHandle;
 		private int[] buffers;
 		private byte[] bufferData;
 		private const int NumberOfBuffers = 2;
 		private const int BufferSize = 1024 * 8;
-		private Mp3Stream musicStream;
+		private BaseMusicStream musicStream;
 		private AudioFormat format;
 		private DateTime playStartTime;
 
@@ -53,15 +52,27 @@ namespace DeltaEngine.Multimedia.OpenTK
 			{
 				var stream = new MemoryStream();
 				fileData.CopyTo(stream);
-				musicStream = new Mp3Stream(stream);
+				stream.Seek(0, SeekOrigin.Begin);
+				if (IsOggStream(stream))
+					musicStream = new OggMusicStream(stream);
+				else
+					musicStream = new Mp3MusicStream(stream);
 				format = musicStream.Channels == 2 ? AudioFormat.Stereo16 : AudioFormat.Mono16;
 			}
 			catch (Exception ex)
 			{
-				ExecuteLogger(ex);
+				Logger.Current.Error(ex);
 				if (Debugger.IsAttached)
 					throw new MusicNotFoundOrAccessible(Name, ex);
 			}
+		}
+
+		private bool IsOggStream(MemoryStream stream)
+		{
+			byte[] magicBytes = new byte[3];
+			stream.Read(magicBytes, 0, magicBytes.Length);
+			stream.Seek(0, SeekOrigin.Begin);
+			return magicBytes [0] == 'O' && magicBytes [1] == 'g' && magicBytes [2] == 'g';
 		}
 
 		protected override void PlayNativeMusic(float volume)
@@ -142,11 +153,6 @@ namespace DeltaEngine.Multimedia.OpenTK
 			openAL.DeleteBuffers(buffers);
 			openAL.DeleteChannel(channelHandle);
 			musicStream = null;
-		}
-
-		private void ExecuteLogger(Exception ex)
-		{
-			log.Error(ex);
 		}
 	}
 }

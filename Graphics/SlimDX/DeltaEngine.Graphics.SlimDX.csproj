@@ -72,7 +72,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SlimDXCircularBuffer.cs" />
+    <Compile Include="SlimDXCircularIndexBuffer.cs" />
+    <Compile Include="SlimDXCircularVertexBuffer.cs" />
     <Compile Include="SlimDXDevice.cs" />
     <Compile Include="SlimDXDrawing.cs" />
     <Compile Include="SlimDXShader.cs" />

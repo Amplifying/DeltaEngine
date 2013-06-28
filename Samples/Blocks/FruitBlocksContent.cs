@@ -7,8 +7,8 @@ namespace Blocks
 	/// </summary>
 	public class FruitBlocksContent : BlocksContent
 	{
-		public FruitBlocksContent(ContentLoader content)
-			: base(content, "FruitBlocks_")
+		public FruitBlocksContent()
+			: base("FruitBlocks_")
 		{
 			DoBricksSplitInHalfWhenRowFull = true;
 		}

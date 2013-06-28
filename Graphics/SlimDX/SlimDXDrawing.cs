@@ -2,6 +2,7 @@ using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 using SlimDX.Direct3D9;
 using NativeDevice = SlimDX.Direct3D9.Device;
+using VertexElementD3D9 = SlimDX.Direct3D9.VertexElement;
 
 namespace DeltaEngine.Graphics.SlimDX
 {
@@ -65,24 +66,25 @@ namespace DeltaEngine.Graphics.SlimDX
 
 		private void CreatePositionColorBuffer()
 		{
-			positionColorBuffer = new SlimDXCircularBuffer(VertexBufferSize, (SlimDXDevice)device);
+			positionColorBuffer =
+				new SlimDXCircularVertexBuffer<VertexPositionColor>(VertexBufferSize, (SlimDXDevice)device);
 			positionColorBuffer.Create();
 			SetVertexBufferPositionColorDeclaration();
 		}
 
-		private SlimDXCircularBuffer positionColorBuffer;
+		private SlimDXCircularVertexBuffer<VertexPositionColor> positionColorBuffer;
 		private const int VertexPositionColorSize = 16;
-		private const int VertexBufferSize = 1024;
+		private const int VertexBufferSize = 16384;
 
 		private void SetVertexBufferPositionColorDeclaration()
 		{
 			var vertexElems = new []
 			{
-				new VertexElement(0, 0, DeclarationType.Float3, DeclarationMethod.Default,
+				new VertexElementD3D9(0, 0, DeclarationType.Float3, DeclarationMethod.Default,
 					DeclarationUsage.Position, 0),
-				new VertexElement(0, 12, DeclarationType.Color, DeclarationMethod.Default,
+				new VertexElementD3D9(0, 12, DeclarationType.Color, DeclarationMethod.Default,
 					DeclarationUsage.Color, 0),
-				VertexElement.VertexDeclarationEnd
+				VertexElementD3D9.VertexDeclarationEnd
 			};
 
 			positionColorVertexDeclaration = new VertexDeclaration(nativeDevice, vertexElems);
@@ -92,25 +94,26 @@ namespace DeltaEngine.Graphics.SlimDX
 
 		private void CreatePositionColorUvBuffer()
 		{
-			positionColorTextureBuffer = new SlimDXCircularBuffer(VertexBufferSize, (SlimDXDevice)device);
+			positionColorTextureBuffer =
+				new SlimDXCircularVertexBuffer<VertexPositionColorTextured>(VertexBufferSize, (SlimDXDevice)device);
 			positionColorTextureBuffer.Create();
 			SetVertexBufferPositionColorTextureDeclaration();
 		}
 
-		private SlimDXCircularBuffer positionColorTextureBuffer;
+		private SlimDXCircularVertexBuffer<VertexPositionColorTextured> positionColorTextureBuffer;
 		private const int VertexPositionColorUvSize = 24;
 
 		private void SetVertexBufferPositionColorTextureDeclaration()
 		{
 			var vertexElems = new []
 			{
-				new VertexElement(0, 0, DeclarationType.Float3, DeclarationMethod.Default,
+				new VertexElementD3D9(0, 0, DeclarationType.Float3, DeclarationMethod.Default,
 					DeclarationUsage.Position, 0),
-				new VertexElement(0, 12, DeclarationType.Color, DeclarationMethod.Default,
+				new VertexElementD3D9(0, 12, DeclarationType.Color, DeclarationMethod.Default,
 					DeclarationUsage.Color, 0),
-				new VertexElement(0, 16, DeclarationType.Float2, DeclarationMethod.Default,
+				new VertexElementD3D9(0, 16, DeclarationType.Float2, DeclarationMethod.Default,
 					DeclarationUsage.TextureCoordinate, 0), 
-				VertexElement.VertexDeclarationEnd
+				VertexElementD3D9.VertexDeclarationEnd
 			};
 
 			positionColorTextureVertexDeclaration =
@@ -126,16 +129,12 @@ namespace DeltaEngine.Graphics.SlimDX
 
 		private void CreateIndexBuffer()
 		{
-			if (indexBuffer != null)
-				indexBuffer.Dispose();
-
-			indexBuffer = new IndexBuffer(nativeDevice, IndexBufferSize, Usage.Dynamic,
-				Pool.Default, true);
+			indexBuffer = new SlimDXCircularIndexBuffer(IndexBufferSize, (SlimDXDevice)device);
 		}
 
-		private IndexBuffer indexBuffer;
+		private SlimDXCircularIndexBuffer indexBuffer;
 		private int indicesCount;
-		private const int IndexBufferSize = 1024;
+		private const int IndexBufferSize = 65536;
 
 		public override void EnableTexturing(Image image)
 		{
@@ -222,10 +221,11 @@ namespace DeltaEngine.Graphics.SlimDX
 
 		public override void SetIndices(short[] indices, int usedIndicesCount)
 		{
+			if (!indexBuffer.IsCreated)
+				indexBuffer.Create();
+
 			indicesCount = indices.Length;
-			indexBuffer.Lock(0, indices.Length * sizeof(short), LockFlags.None).WriteRange(indices, 0,
-				indices.Length);
-			indexBuffer.Unlock();
+			indexBuffer.SetData(indices);
 		}
 
 		public override void DisableIndices()
@@ -235,7 +235,9 @@ namespace DeltaEngine.Graphics.SlimDX
 
 		public override void DrawVertices(VerticesMode mode, VertexPositionColor[] vertices)
 		{
-			positionColorBuffer.SetVertexData(vertices);
+			NumberOfVerticesDrawn += vertices.Length;
+			NumberOfTimesDrawn++;
+			positionColorBuffer.SetData(vertices);
 			nativeDevice.VertexDeclaration = positionColorVertexDeclaration;
 			nativeDevice.SetStreamSource(0, positionColorBuffer.NativeBuffer,
 				positionColorBuffer.Offset, VertexPositionColorSize);
@@ -245,7 +247,9 @@ namespace DeltaEngine.Graphics.SlimDX
 
 		private void DrawPrimitives(VerticesMode mode, int verticesCount)
 		{
-			nativeDevice.Indices = indexBuffer;
+			NumberOfVerticesDrawn += verticesCount;
+			NumberOfTimesDrawn++;
+			nativeDevice.Indices = indexBuffer.NativeBuffer;
 			var primitiveType = mode == VerticesMode.Triangles
 				? PrimitiveType.TriangleList : PrimitiveType.LineList;
 			var verticesPerPrimitive = mode == VerticesMode.Triangles
@@ -262,7 +266,9 @@ namespace DeltaEngine.Graphics.SlimDX
 
 		public override void DrawVerticesForSprite(VerticesMode mode, VertexPositionColorTextured[] vertices)
 		{
-			positionColorTextureBuffer.SetVertexData(vertices);
+			NumberOfVerticesDrawn += vertices.Length;
+			NumberOfTimesDrawn++;
+			positionColorTextureBuffer.SetData(vertices);
 			nativeDevice.VertexDeclaration = positionColorTextureVertexDeclaration;
 			nativeDevice.SetStreamSource(0, positionColorTextureBuffer.NativeBuffer,
 				positionColorTextureBuffer.Offset, VertexPositionColorUvSize);
@@ -272,13 +278,23 @@ namespace DeltaEngine.Graphics.SlimDX
 
 		public override void Dispose()
 		{
-			indexBuffer.Dispose();
-			positionColorBuffer.Dispose();
+			DisposeBuffers();
 			positionColorShader.Dispose();
 			positionColorVertexDeclaration.Dispose();
-			positionColorTextureBuffer.Dispose();
 			positionColorTextureShader.Dispose();
 			positionColorTextureVertexDeclaration.Dispose();
+		}
+
+		private void DisposeBuffers()
+		{
+			if (positionColorBuffer.IsCreated)
+				positionColorBuffer.Dispose();
+
+			if (positionColorTextureBuffer.IsCreated)
+				positionColorTextureBuffer.Dispose();
+
+			if (indexBuffer.IsCreated)
+				indexBuffer.Dispose();			
 		}
 	}
 }

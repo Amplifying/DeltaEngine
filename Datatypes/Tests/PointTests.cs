@@ -135,8 +135,7 @@ namespace DeltaEngine.Datatypes.Tests
 		[Test]
 		public void PointToString()
 		{
-			var p = new Point(3, 4);
-			Assert.AreEqual("(3, 4)", p.ToString());
+			Assert.AreEqual("3, 4", new Point(3, 4).ToString());
 		}
 
 		[Test]
@@ -175,11 +174,8 @@ namespace DeltaEngine.Datatypes.Tests
 		[Test]
 		public void RotateAround()
 		{
-			var point = Point.UnitX;
-			point.RotateAround(Point.Zero, 90.0f);
-			Assert.AreEqual(Point.UnitY, point);
-			point.RotateAround(new Point(0.0f, 0.5f), 180.0f);
-			Assert.AreEqual(Point.Zero, point);
+			Assert.AreEqual(Point.UnitY, Point.UnitX.RotateAround(Point.Zero, 90.0f));
+			Assert.AreEqual(Point.Zero, Point.UnitY.RotateAround(new Point(0.0f, 0.5f), 180.0f));
 		}
 
 		[Test]
@@ -188,9 +184,8 @@ namespace DeltaEngine.Datatypes.Tests
 			var point = Point.UnitX;
 			var rotation = point.RotationTo(Point.Zero);
 			Assert.AreEqual(0, rotation);
-			point.RotateAround(Point.Zero, 90.0f);
-			Assert.AreEqual(Point.UnitY, point);
-			rotation = point.RotationTo(Point.Zero);
+			Assert.AreEqual(Point.UnitY, point.RotateAround(Point.Zero, 90.0f));
+			rotation = Point.UnitY.RotationTo(Point.Zero);
 			Assert.AreEqual(90, rotation);
 		}
 
@@ -214,14 +209,35 @@ namespace DeltaEngine.Datatypes.Tests
 		}
 
 		[Test]
-		public void SaveAndLoad()
+		public void DistanceToLine()
 		{
-			var data = Point.Half.SaveToMemoryStream();
-			byte[] savedBytes = data.ToArray();
-			Assert.AreEqual(1 + "Point".Length +  Point.SizeInBytes, savedBytes.Length);
-			Assert.AreEqual("Point".Length, savedBytes[0]);
-			var reconstructed = data.CreateFromMemoryStream();
-			Assert.AreEqual(Point.Half, reconstructed);
+			Assert.AreEqual(1, Point.UnitX.DistanceToLine(Point.Zero, Point.Zero));
+			Assert.AreEqual(0, Point.Zero.DistanceToLine(Point.Zero, Point.UnitX));
+			Assert.AreEqual(0, Point.UnitX.DistanceToLine(Point.Zero, Point.UnitX));
+			Assert.AreEqual(0, (-Point.UnitX).DistanceToLine(Point.Zero, Point.UnitX));
+			Assert.AreEqual(1, Point.UnitY.DistanceToLine(Point.Zero, Point.UnitX));
+			Assert.AreEqual(5, (Point.One*5).DistanceToLine(Point.Zero, Point.UnitX));
+		}
+
+		[Test]
+		public void DistanceToLineSegment()
+		{
+			Assert.AreEqual(1, Point.UnitX.DistanceToLineSegment(Point.Zero, Point.Zero));
+			Assert.AreEqual(0, Point.Zero.DistanceToLineSegment(Point.Zero, Point.UnitX));
+			Assert.AreEqual(1, Point.UnitY.DistanceToLineSegment(Point.Zero, Point.UnitX));
+			Assert.AreEqual(5, new Point(6, 0).DistanceToLineSegment(Point.Zero, Point.UnitX));
+			Assert.AreEqual(5, new Point(-3, -4).DistanceToLineSegment(Point.Zero, Point.UnitX));
+			Assert.AreEqual(0, Point.Half.DistanceToLineSegment(Point.UnitX, Point.UnitY));
+		}
+
+		[Test]
+		public void IsLeftOfLine()
+		{
+			Assert.IsTrue(Point.Zero.IsLeftOfLineOrOnIt(Point.Zero, Point.UnitX));
+			Assert.IsTrue(Point.UnitY.IsLeftOfLineOrOnIt(Point.Zero, Point.UnitX));
+			Assert.IsFalse((-Point.UnitY).IsLeftOfLineOrOnIt(Point.Zero, Point.UnitX));
+			Assert.IsTrue(Point.UnitY.IsLeftOfLineOrOnIt(Point.Zero, Point.One));
+			Assert.IsFalse(Point.UnitX.IsLeftOfLineOrOnIt(Point.Zero, Point.One));
 		}
 	}
 }

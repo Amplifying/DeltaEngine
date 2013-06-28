@@ -1,42 +1,30 @@
-using System;
-using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Platforms.All;
-using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms;
 using DeltaEngine.Rendering.Fonts;
+using NUnit.Framework;
 
 namespace DeltaEngine.Rendering.Tests.Fonts
 {
-	internal class FontTextTests : TestWithAllFrameworks
+	internal class FontTextTests : TestWithMocksOrVisually
 	{
-		[VisualTest, ApproveFirstFrameScreenshot]
-		public void TextShouldSayChangedText(Type resolver)
+		[Test, ApproveFirstFrameScreenshot]
+		public void TextShouldSayChangedText()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				var text = new FontText(new Font(content, "Tahoma30"), "To be changed", Point.Half);
-				text.Text = "Changed\nText";
-			});
+			var text = new FontText(new Font("Tahoma30"), "To be changed", Point.Half);
+			text.Text = "Changed\nText";
 		}
 
-		[VisualTest, ApproveFirstFrameScreenshot]
-		public void TextShouldBeInTheMiddleOfTheScreen(Type resolver)
+		[Test, ApproveFirstFrameScreenshot]
+		public void TextShouldBeInTheMiddleOfTheScreen()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				var text = new FontText(new Font(content, "Tahoma30"), "Middle", Point.Zero);
-				text.SetPosition(Point.Half);
-			});
+			var text = new FontText(new Font("Tahoma30"), "Middle", Point.Zero);
+			text.SetPosition(Point.Half);
 		}
 
-		[VisualTest, ApproveFirstFrameScreenshot]
-		public void CentralAlignedText(Type resolver)
+		[Test, ApproveFirstFrameScreenshot]
+		public void CentralAlignedText()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				var font = new Font(content, "Tahoma30");
-				new FontText(font, "Text\ncenter\naligned", center);
-			});
+			new FontText(new Font("Tahoma30"), "Text\ncenter\naligned", center);
 		}
 
 		private readonly Point center = new Point(0.5f, 0.5f);

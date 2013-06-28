@@ -1,43 +1,23 @@
 using System;
-using System.Collections.Generic;
 
 namespace DeltaEngine.Platforms
 {
 	/// <summary>
-	/// Exchangable App entry point for Windows DirectX applications and visual tests.
+	/// Initializes the SharpDX resolver for Windows DirectX 11. To execute the app call Run.
 	/// </summary>
-	public class App
+	public abstract class App
 	{
-		public void Start<AppEntryRunner>(int instancesToCreate = 1)
+		protected App()
 		{
-			resolver.Start<AppEntryRunner>(instancesToCreate);
+			resolver.CreateEntitySystemAndAddAsRunner();
 		}
 
-		private readonly SharpDxResolver resolver = new SharpDxResolver();
+		private readonly SharpDXResolver resolver = new SharpDXResolver();
 
-		public void Start<AppEntryRunner, FirstClassToRegisterAndResolve>(int instancesToCreate = 1)
+		public void Run(Action optionalRunCode = null)
 		{
-			resolver.Start<AppEntryRunner, FirstClassToRegisterAndResolve>(instancesToCreate);
-		}
-
-		public void Start
-			<AppEntryRunner, FirstClassToRegisterAndResolve, SecondClassToRegisterAndResolve>(
-			int instancesToCreate = 1)
-		{
-			resolver.Start
-				<AppEntryRunner, FirstClassToRegisterAndResolve, SecondClassToRegisterAndResolve>(
-					instancesToCreate);
-		}
-
-		public void Start<AppEntryRunner>(List<Type> typesToRegisterAndResolve,
-			int instancesToCreate = 1)
-		{
-			resolver.Start<AppEntryRunner>(typesToRegisterAndResolve, instancesToCreate);
-		}
-
-		public void RegisterSingleton<T>()
-		{
-			resolver.RegisterSingleton<T>();
+			resolver.Run(optionalRunCode);
+			resolver.Dispose();
 		}
 	}
 }

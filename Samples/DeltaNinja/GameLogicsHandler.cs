@@ -1,25 +1,21 @@
-using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Entities;
 using DeltaEngine.Physics2D;
+using DeltaEngine.Rendering;
 using DeltaEngine.Rendering.ScreenSpaces;
-using System.Collections.Generic;
-using System.Linq;
+using DeltaNinja.Entities;
 
 namespace DeltaNinja
 {
-	class GameLogicsHandler : EntityHandler
+	class GameLogicsHandler : Behavior2D
 	{
-		public GameLogicsHandler(ContentLoader content, ScreenSpace screen, NumberFactory numberFactory)
+		public GameLogicsHandler(ScreenSpace screen, NumberFactory numberFactory)
 		{
-			this.content = content;
 			this.numberFactory = numberFactory;
 			this.screen = screen;
 			this.waveTimeout = GameSettigs.InitialWaveTimeout;
-			Filter = entity => entity is Match;
 		}
 
-		private readonly ContentLoader content;
 		private readonly ScreenSpace screen;
 		private readonly NumberFactory numberFactory;
 
@@ -28,7 +24,7 @@ namespace DeltaNinja
 		private int waveLogoCount;
 		private float waveTimeout;
 
-		public override void Handle(Entity entity)
+		public override void Handle(Entity2D entity)
 		{
 			var match = entity as Match;
 			if (match == null || !match.IsActive)
@@ -40,6 +36,8 @@ namespace DeltaNinja
 				waveTimeout = 0;
 				return;
 			}
+
+			if (match.IsPaused) return;
 
 			var time = Time.Current;
 
@@ -76,7 +74,7 @@ namespace DeltaNinja
 					}						
 					
 					match.PointsTips.Add(
-						new PointsTip(content, numberFactory, logo.Center, logoPoints));
+						new PointsTip(numberFactory, logo.Center, logoPoints));
 
 					match.AddOneMoreSlice();
 					points += logoPoints;
@@ -155,9 +153,9 @@ namespace DeltaNinja
 			}
 		}
 
-		public override EntityHandlerPriority Priority
+		public override Priority Priority
 		{
-			get { return EntityHandlerPriority.First; }
+			get { return Priority.First; }
 		}
 	}
 }

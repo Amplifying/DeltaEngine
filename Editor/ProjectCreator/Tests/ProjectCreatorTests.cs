@@ -34,42 +34,35 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 
 		private static MockFileSystem CreateSolutionTemplateMock()
 		{
-			string templateZipMockPath =
-				Path.GetFullPath(Path.Combine(
-					"D" + Path.VolumeSeparatorChar + Path.DirectorySeparatorChar, "Development", "DeltaEngine",
-					"VisualStudioTemplates", "Delta Engine", "EmptyGame.zip"));
-			var fileSystem =
-				new MockFileSystem(new Dictionary<string, MockFileData>
-				{
-					{
-						templateZipMockPath,
-						new MockFileData(File.ReadAllText(Path.Combine("Content", "EmptyGame.zip")))
-					}
-				});
-			fileSystem.Directory.SetCurrentDirectory(templateZipMockPath);
+			const string TemplateZipMockPath =
+				@"D:\Development\DeltaEngine\VisualStudioTemplates\Delta Engine\EmptyGame.zip";
+			var files = new Dictionary<string, MockFileData>();
+			files.Add(TemplateZipMockPath,
+				new MockFileData(File.ReadAllText(Path.Combine("NewDeltaEngineProject", "EmptyGame.zip"))));
+			var fileSystem = new MockFileSystem(files);
+			fileSystem.Directory.SetCurrentDirectory(TemplateZipMockPath);
 			return fileSystem;
 		}
 
 		private static IFileSystem CreateEmptyGameFileSystemMock(CsProject project,
 			VsTemplate template)
 		{
-			string basePath = Path.Combine(
-				"D" + Path.VolumeSeparatorChar + Path.DirectorySeparatorChar, "Development", "DeltaEngine",
-				"VisualStudioTemplates", "Delta Engine");
-			List<string> files = GetMockFileDataFromZip(Path.Combine("Content", "EmptyGame.zip"));
+			const string BasePath = @"D:\Development\DeltaEngine\VisualStudioTemplates\Delta Engine";
+			List<string> files =
+				GetMockFileDataFromZip(Path.Combine("NewDeltaEngineProject", "EmptyGame.zip"));
 			Assert.AreEqual(5, files.Count);
 			return
 				new MockFileSystem(new Dictionary<string, MockFileData>
 				{
 					{
-						Path.Combine(basePath, "EmptyGame.zip"),
-						new MockFileData(File.ReadAllText(Path.Combine("Content", "EmptyGame.zip")))
+						Path.Combine(BasePath, "EmptyGame.zip"),
+						new MockFileData(File.ReadAllText(Path.Combine("NewDeltaEngineProject", "EmptyGame.zip")))
 					},
-					{ Path.Combine(basePath, template.AssemblyInfo), files[3] },
-					{ Path.Combine(basePath, template.Csproj), files[4] },
-					{ Path.Combine(basePath, template.Ico), files[0] },
-					{ Path.Combine(basePath, template.SourceCodeFiles[0]), files[2] },
-					{ Path.Combine(basePath, template.SourceCodeFiles[1]), files[1] },
+					{ Path.Combine(BasePath, template.AssemblyInfo), files[3] },
+					{ Path.Combine(BasePath, template.Csproj), files[4] },
+					{ Path.Combine(BasePath, template.Ico), files[0] },
+					{ Path.Combine(BasePath, template.SourceCodeFiles[0]), files[2] },
+					{ Path.Combine(BasePath, template.SourceCodeFiles[1]), files[1] },
 					{ project.Location, new MockDirectoryData() }
 				});
 		}
@@ -111,14 +104,12 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 
 		private static IFileSystem CreateCorruptFileSystemMock(VsTemplate template)
 		{
-			return
-				new MockFileSystem(new Dictionary<string, MockFileData>
-				{
-					{ "C:\\Foo\\AssemblyInfo.cs", new MockFileData("Assembly information") },
-					{ template.SourceCodeFiles[0], new MockFileData("using System;") },
-					{ "C:\\Bar\\DeltaEngine\\", new MockFileData(";") },
-					{ template.SourceCodeFiles[1], new MockFileData("") }
-				});
+			var files = new Dictionary<string, MockFileData>();
+			files.Add("C:\\Foo\\AssemblyInfo.cs", new MockFileData("Assembly information"));
+			files.Add(template.SourceCodeFiles[0], new MockFileData("using System;"));
+			files.Add("C:\\Bar\\DeltaEngine\\", new MockFileData(";"));
+			files.Add(template.SourceCodeFiles[1], new MockFileData(""));
+			return new MockFileSystem(files);
 		}
 
 		[Test]
@@ -171,7 +162,7 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 
 		private static IFileSystem CreateApprovedSystemMock(CsProject project)
 		{
-			const string GeneratedProjectToCompare = "Content";
+			const string GeneratedProjectToCompare = "NewDeltaEngineProject";
 			string locationPath = Path.Combine(project.Location, project.Name);
 			string mockPathAssemblyInfo = Path.Combine(locationPath, "Properties", "AssemblyInfo.cs");
 			string realPathAssemblyInfo = Path.Combine(GeneratedProjectToCompare, "Properties",

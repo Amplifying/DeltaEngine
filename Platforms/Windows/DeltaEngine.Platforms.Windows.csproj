@@ -34,6 +34,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
@@ -41,25 +42,17 @@
       <Project>{F1B6345B-6F28-482F-9230-8F1D8674C28A}</Project>
       <Name>DeltaEngine.Content</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Content\Disk\DeltaEngine.Content.Disk.csproj">
-      <Project>{3B3B8BE3-A213-4383-BA7B-1AFE5F779108}</Project>
-      <Name>DeltaEngine.Content.Disk</Name>
+    <ProjectReference Include="..\..\Content\Online\DeltaEngine.Content.Online.csproj">
+      <Project>{68AA6280-09EF-4325-B5F8-B8A967004144}</Project>
+      <Name>DeltaEngine.Content.Online</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
       <Project>{A8D386EA-D376-46EA-A721-2BA51426A721}</Project>
       <Name>DeltaEngine.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Core\Xml\DeltaEngine.Core.Xml.csproj">
-      <Project>{138a40b5-3d80-4ba3-bd84-d82c151ee7fe}</Project>
-      <Name>DeltaEngine.Core.Xml</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Datatypes\DeltaEngine.Datatypes.csproj">
       <Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
       <Name>DeltaEngine.Datatypes</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Entities\DeltaEngine.Entities.csproj">
-      <Project>{c6ba144d-59b0-41b1-8682-b092b4efbbb1}</Project>
-      <Name>DeltaEngine.Entities</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Input\DeltaEngine.Input.csproj">
       <Project>{cc65e69e-fafd-4c2b-85eb-5e57fd3af847}</Project>
@@ -101,7 +94,9 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FormsWindow.cs" />
+    <Compile Include="WindowsDisplayDevice.cs" />
     <Compile Include="WindowsResolver.cs" />
+    <Compile Include="WindowsSystemInformation.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

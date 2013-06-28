@@ -1,20 +1,9 @@
-using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
-using DeltaEngine.Graphics;
-using DeltaEngine.Input;
-using DeltaEngine.Physics2D;
-using DeltaEngine.Platforms;
-using DeltaEngine.Rendering;
-using DeltaEngine.Rendering.ScreenSpaces;
 using DeltaEngine.Rendering.Shapes;
-using DeltaEngine.Rendering.Sprites;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
-namespace DeltaNinja
+namespace DeltaNinja.Entities
 {
 	class Slice
 	{

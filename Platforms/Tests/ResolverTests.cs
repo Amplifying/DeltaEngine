@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DeltaEngine.Core;
+using DeltaEngine.Platforms.Mocks;
 using NUnit.Framework;
 
 namespace DeltaEngine.Platforms.Tests
@@ -107,7 +108,7 @@ namespace DeltaEngine.Platforms.Tests
 		public void EmptyConfigurationShouldNotCrash()
 		{
 			var resolver = new MockResolver();
-			resolver.resolver.Resolve<MockDevice>();
+			resolver.Resolve<MockDrawing>();
 			resolver.Dispose();
 		}
 

@@ -46,6 +46,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Content\Online\DeltaEngine.Content.Online.csproj">
+      <Project>{68AA6280-09EF-4325-B5F8-B8A967004144}</Project>
+      <Name>DeltaEngine.Content.Online</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Common\DeltaEngine.Editor.Common.csproj">
       <Project>{FC0E9FDC-68E0-405E-BFC7-1F3523BD3EA7}</Project>
       <Name>DeltaEngine.Editor.Common</Name>
@@ -54,11 +58,6 @@
       <Project>{2A38417D-2378-41F8-BCC6-A65E1894835A}</Project>
       <Name>DeltaEngine.Editor.Mocks</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Content\DeltaEngineLogo.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">

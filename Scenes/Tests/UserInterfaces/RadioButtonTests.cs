@@ -1,49 +1,41 @@
-using System;
-using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Platforms;
 using DeltaEngine.Rendering.Fonts;
 using DeltaEngine.Scenes.UserInterfaces;
+using NUnit.Framework;
 
 namespace DeltaEngine.Scenes.Tests.UserInterfaces
 {
-	public class RadioButtonTests : TestWithAllFrameworks
+	public class RadioButtonTests : TestWithMocksOrVisually
 	{
-		[VisualTest]
-		public void RenderRadioButton(Type resolver)
+		[Test]
+		public void RenderRadioButton()
 		{
-			Start(resolver,
-				(Scene s, ContentLoader content) => CreateRadioButton(content, Center, "Hello"));
+			CreateRadioButton(Center, "Hello");
 		}
 
 		private static readonly Rectangle Center = Rectangle.FromCenter(0.5f, 0.5f, 0.5f, 0.1f);
 
-		private static void CreateRadioButton(ContentLoader content, Rectangle drawArea, string text)
+		private static void CreateRadioButton(Rectangle drawArea, string text)
 		{
 			var theme = new Theme
 			{
-				RadioButtonBackground = new Theme.Appearance(content.Load<Image>("DefaultLabel")),
-				RadioButtonNotSelected = new Theme.Appearance(content.Load<Image>("DefaultRadiobuttonOff")),
-				RadioButtonNotSelectedMouseover =
-					new Theme.Appearance(content.Load<Image>("DefaultRadioButtonOffHover")),
-				RadioButtonSelected = new Theme.Appearance(content.Load<Image>("DefaultRadiobuttonOn")),
-				RadioButtonSelectedMouseover =
-					new Theme.Appearance(content.Load<Image>("DefaultRadioButtonOnHover")),
-				Font = new Font(content, "Verdana12")
+				RadioButtonBackground = new Theme.Appearance("DefaultLabel"),
+				RadioButtonNotSelected = new Theme.Appearance("DefaultRadiobuttonOff"),
+				RadioButtonNotSelectedMouseover = new Theme.Appearance("DefaultRadioButtonOffHover"),
+				RadioButtonSelected = new Theme.Appearance("DefaultRadiobuttonOn"),
+				RadioButtonSelectedMouseover = new Theme.Appearance("DefaultRadioButtonOnHover"),
+				Font = new Font("Verdana12")
 			};
 			new RadioButton(theme, drawArea, text);
 		}
 
-		[VisualTest]
-		public void RenderThreeRadioButtons(Type resolver)
+		[Test]
+		public void RenderThreeRadioButtons()
 		{
-			Start(resolver, (Scene s, ContentLoader content) =>
-			{
-				CreateRadioButton(content, Top, "Top Button");
-				CreateRadioButton(content, Center, "Middle Button");
-				CreateRadioButton(content, Bottom, "Bottom Button");
-			});
+			CreateRadioButton(Top, "Top Button");
+			CreateRadioButton(Center, "Middle Button");
+			CreateRadioButton(Bottom, "Bottom Button");
 		}
 
 		private static readonly Rectangle Top = Rectangle.FromCenter(0.5f, 0.4f, 0.5f, 0.1f);

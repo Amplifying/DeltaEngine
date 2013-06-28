@@ -21,22 +21,18 @@ namespace DeltaEngine.Editor.SampleBrowser.Tests
 
 		private static IFileSystem CreateMockSamplesFileSystem()
 		{
-			return
-				new MockFileSystem(new Dictionary<string, MockFileData>
-				{
-					{ @"Samples\EmptyGame\EmptyGame.csproj", new MockFileData("") },
-					{ @"Samples\EmptyGame\bin\Debug\EmptyGame.exe", new MockFileData("") },
-					{ @"Samples\EmptyGame\Tests\EmptyGame.Tests.csproj", new MockFileData("") },
-					{
-						@"C:\Code\DeltaEngine\Editor\SampleBrowser\Tests\Assemblies\EmptyGame.Tests.dll",
-						new MockFileData(GetTestAssemblyData())
-					}
-				});
+			var files = new Dictionary<string, MockFileData>();
+			files.Add(@"Samples\EmptyGame\EmptyGame.csproj", new MockFileData(""));
+			files.Add(@"Samples\EmptyGame\bin\Debug\EmptyGame.exe", new MockFileData(""));
+			files.Add(@"Samples\EmptyGame\Tests\EmptyGame.Tests.csproj", new MockFileData(""));
+			files.Add(@"C:\Code\DeltaEngine\Editor\SampleBrowser\Tests\Assemblies\EmptyGame.Tests.dll",
+				new MockFileData(GetTestAssemblyData()));
+			return new MockFileSystem(files);
 		}
 
 		private static string GetTestAssemblyData()
 		{
-			string assembly = Path.GetFullPath(Path.Combine("Content", "TestAssembly.dll"));
+			string assembly = Path.GetFullPath("TestAssembly.dll");
 			return File.ReadAllText(assembly);
 		}
 

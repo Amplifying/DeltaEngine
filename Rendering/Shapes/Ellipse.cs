@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
@@ -11,18 +10,15 @@ namespace DeltaEngine.Rendering.Shapes
 	/// </summary>
 	public class Ellipse : Polygon
 	{
-		public Ellipse()
-			: this(Rectangle.Zero, Color.White) {}
-
-		public Ellipse(Rectangle drawArea, Color color)
-			: base(color)
-		{
-			DrawArea = drawArea;
-			Add<UpdatePoints>();
-		}
-
 		public Ellipse(Point center, float radiusX, float radiusY, Color color)
 			: this(Rectangle.FromCenter(center, new Size(2 * radiusX, 2 * radiusY)), color) {}
+
+		public Ellipse(Rectangle drawArea, Color color)
+			: base(drawArea, color)
+		{
+			Add(new ObserveEntity2D.SavedProperties());
+			Start<ObserveEntity2D, UpdatePoints>();
+		}
 
 		public float RadiusX
 		{
@@ -57,26 +53,29 @@ namespace DeltaEngine.Rendering.Shapes
 		/// <summary>
 		/// This recalculates the points of an Ellipse if they change
 		/// </summary>
-		public class UpdatePoints : EntityHandler
+		public class UpdatePoints : EventListener2D
 		{
-			public override void Handle(Entity entity)
+			public override void ReceiveMessage(Entity2D entity, object message)
 			{
+				if (!(message is ObserveEntity2D.HasChanged))
+					return;
+
 				InitializeVariables(entity);
 				FormEllipsePoints(entity);
 			}
 
-			private void InitializeVariables(Entity entity)
+			private void InitializeVariables(Entity2D entity)
 			{
-				var rotation = entity.Get<float>();
+				var rotation = entity.Rotation;
 				rotationSin = MathExtensions.Sin(rotation);
 				rotationCos = MathExtensions.Cos(rotation);
-				var drawArea = entity.Get<Rectangle>();
+				var drawArea = entity.DrawArea;
 				center = drawArea.Center;
 				radiusX = drawArea.Width / 2.0f;
 				radiusY = drawArea.Height / 2.0f;
 				float maxRadius = MathExtensions.Max(radiusX, radiusY);
 				pointsCount = GetPointsCount(maxRadius);
-				theta = 360.0f / (pointsCount - 1);
+				theta = -360.0f / (pointsCount - 1);
 			}
 
 			private float rotationSin;
@@ -114,11 +113,6 @@ namespace DeltaEngine.Rendering.Shapes
 					radiusY * MathExtensions.Cos(i * theta));
 				ellipsePoint.RotateAround(Point.Zero, rotationSin, rotationCos);
 				ellipsePoints.Add(center + ellipsePoint);
-			}
-
-			public override EntityHandlerPriority Priority
-			{
-				get { return EntityHandlerPriority.First; }
 			}
 		}
 	}

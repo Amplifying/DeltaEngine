@@ -26,7 +26,7 @@ namespace DeltaEngine.Core.Tests
 		public void GetCurrentDelta()
 		{
 			Time.Current.Run();
-			Assert.IsTrue(Time.Current.Delta < 2);
+			Assert.IsTrue(Time.Current.Delta < 2, Time.Current.Delta.ToInvariantString());
 		}
 
 		[Test]
@@ -66,13 +66,13 @@ namespace DeltaEngine.Core.Tests
 		public void CalculateFpsWithStopwatch()
 		{
 			var time = new StopwatchTime();
-			const int TargetFps = 50;
+			const int TargetFps = 30;
 			do
 			{
 				Thread.Sleep(1000 / TargetFps);
 				time.Run();
 			} while (!time.CheckEvery(1.0f));
-			Assert.IsTrue(Math.Abs(time.Fps - TargetFps) <= 4, "Fps=" + time.Fps);
+			Assert.IsTrue(Math.Abs(time.Fps - TargetFps) <= 5, "Fps=" + time.Fps);
 		}
 	}
 }

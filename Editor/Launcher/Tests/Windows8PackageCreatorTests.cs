@@ -35,7 +35,7 @@ namespace DeltaEngine.Editor.Launcher.Tests
 				() => packageCreator.CreatePackage(GetTestDirOrFile("/"), outputPath));
 		}
 
-		[Test, Category("Slow")]
+		[Test, Ignore]
 		public void TestPackageCreation()
 		{
 			var packageCreator = new Windows8StorePackageCreator();
@@ -44,7 +44,7 @@ namespace DeltaEngine.Editor.Launcher.Tests
 			Assert.IsFalse(packageCreator.IsPackageSigned(outputPath));
 		}
 
-		[Test]
+		[Test, Ignore]
 		public void SignPackageShouldTrowExceptionOnInvalidPaths()
 		{
 			var packageCreator = new Windows8StorePackageCreator();
@@ -55,7 +55,7 @@ namespace DeltaEngine.Editor.Launcher.Tests
 				() => packageCreator.SignPackage(outputPath, @"X:\Key.pfx"));
 		}
 
-		[Test, Category("Slow")]
+		[Test, Ignore]
 		public void TestSignPackage()
 		{
 			var packageCreator = new Windows8StorePackageCreator();

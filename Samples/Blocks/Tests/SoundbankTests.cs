@@ -1,5 +1,4 @@
-using DeltaEngine.Platforms.All;
-using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms;
 using NUnit.Framework;
 
 namespace Blocks.Tests
@@ -7,20 +6,18 @@ namespace Blocks.Tests
 	/// <summary>
 	/// Unit tests for Soundbank class
 	/// </summary>
-	public class SoundbankTests : TestWithAllFrameworks
+	public class SoundbankTests : TestWithMocksOrVisually
 	{
 		[Test]
 		public void Constructor()
 		{
-			Start(typeof(MockResolver), (JewelBlocksContent content, Soundbank soundbank) =>
-			{
-				Assert.IsNotNull(soundbank.BlockAffixed);
-				Assert.IsNotNull(soundbank.BlockCouldntMove);
-				Assert.IsNotNull(soundbank.BlockMoved);
-				Assert.IsNotNull(soundbank.GameLost);
-				Assert.IsNotNull(soundbank.MultipleRowsRemoved);
-				Assert.IsNotNull(soundbank.RowRemoved);
-			});
+			var soundbank = new Soundbank(new JewelBlocksContent());
+			Assert.IsNotNull(soundbank.BlockAffixed);
+			Assert.IsNotNull(soundbank.BlockCouldntMove);
+			Assert.IsNotNull(soundbank.BlockMoved);
+			Assert.IsNotNull(soundbank.GameLost);
+			Assert.IsNotNull(soundbank.MultipleRowsRemoved);
+			Assert.IsNotNull(soundbank.RowRemoved);
 		}
 	}
 }

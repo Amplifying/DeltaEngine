@@ -26,6 +26,7 @@ namespace DeltaEngine.Input.SharpDX
 		private DInput.DirectInput directInput;
 		private DInput.Mouse mouse;
 		private DInput.MouseState currentState;
+
 		public override bool IsAvailable
 		{
 			get { return mouseCounter.GetNumberOfAvailableMice() > 0; }

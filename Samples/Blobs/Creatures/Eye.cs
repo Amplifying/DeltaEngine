@@ -27,7 +27,7 @@ namespace Blobs.Creatures
 		private void CreateEyeElements()
 		{
 			eyeball = new Ellipse(Rectangle.Zero, Color.White) { RenderLayer = 12, Color = Color.White };
-			eyeball.Add(new OutlineColor(Color.Black)).Add<Polygon.RenderOutline>();
+			eyeball.Add(new OutlineColor(Color.Black)).Start<Polygon.RenderOutline>();
 			pupil = new Ellipse(Rectangle.Zero, Color.White) { RenderLayer = 13, Color = Color.Black };
 			blink = new Line2D(Point.Zero, Point.Zero, Color.Black) { RenderLayer = 13 };
 		}
@@ -134,10 +134,10 @@ namespace Blobs.Creatures
 
 		private void PositionBlink()
 		{
-			blink.Start = center - new Point(radiusX, 0.0f);
-			blink.Start = blink.Start.RotateAround(Center, Rotation);
-			blink.End = center + new Point(radiusX, 0.0f);
-			blink.End = blink.End.RotateAround(Center, Rotation);
+			blink.StartPoint = center - new Point(radiusX, 0.0f);
+			blink.StartPoint = blink.StartPoint.RotateAround(Center, Rotation);
+			blink.EndPoint = center + new Point(radiusX, 0.0f);
+			blink.EndPoint = blink.EndPoint.RotateAround(Center, Rotation);
 			blink.Visibility = isBlinking ? Visibility.Show : Visibility.Hide;
 		}
 

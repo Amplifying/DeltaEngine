@@ -1,6 +1,5 @@
 using System;
 using System.Net;
-using System.Net.Sockets;
 
 namespace DeltaEngine.Networking.Sockets
 {
@@ -25,15 +24,18 @@ namespace DeltaEngine.Networking.Sockets
 
 		private TcpServerSocket socket;
 
-		public class ServerSocketMustBeTcpServerSocket : Exception { }
+		public class ServerSocketMustBeTcpServerSocket : Exception {}
 
 		private void SetUpSocketBindingAndRegisterCallback()
 		{
 			socket.ClientConnected += OnClientConnected;
+			socket.DataReceived += DataReceived;
 			socket.DataReceived += data => LastMessageReceived = data;
 			socket.StartListening();
 			ListenPort = socket.ListenPort;
 		}
+
+		public event Action<object> DataReceived;
 
 		public object LastMessageReceived { get; private set; }
 

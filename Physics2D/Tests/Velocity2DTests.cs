@@ -1,10 +1,10 @@
 using DeltaEngine.Datatypes;
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Platforms;
 using NUnit.Framework;
 
 namespace DeltaEngine.Physics2D.Tests
 {
-	internal class Velocity2DTests : TestWithAllFrameworks
+	internal class Velocity2DTests : TestWithMocksOrVisually
 	{
 		[SetUp]
 		public void InitializeVelocity()

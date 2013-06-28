@@ -109,19 +109,29 @@ namespace DeltaEngine.Content
 		Xml = 18,
 
 		/// <summary>
+		/// Json files for game specific content, if you are a JavaScript freak.
+		/// </summary>
+		Json = 18,
+
+		/// <summary>
 		/// You can store trigger data here directly and use it with Actors in Levels.
 		/// </summary>
-		Trigger = 19,
+		Trigger = 20,
 
 		/// <summary>
 		/// You can store all actor properties dynamically here and reconstruct them when loading!
 		/// </summary>
-		Actor = 20,
+		Actor = 21,
 
 		/// <summary>
 		/// Just store the file entry, this can be used for any file (binary makes most sense). All the
 		/// logic to load and use this file has to be done by the application.
 		/// </summary>
 		JustStore = 29,
+
+		/// <summary>
+		/// Unsupported Content, shall always be ignored!
+		/// </summary>
+		Unsupported = 99
 	}
 }

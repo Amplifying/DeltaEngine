@@ -47,10 +47,6 @@
       <Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
       <Name>DeltaEngine.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Core\Xml\DeltaEngine.Core.Xml.csproj">
-      <Project>{138a40b5-3d80-4ba3-bd84-d82c151ee7fe}</Project>
-      <Name>DeltaEngine.Core.Xml</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Datatypes\DeltaEngine.Datatypes.csproj">
       <Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
       <Name>DeltaEngine.Datatypes</Name>
@@ -67,6 +63,14 @@
       <Project>{cc65e69e-fafd-4c2b-85eb-5e57fd3af847}</Project>
       <Name>DeltaEngine.Input</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Platforms\DeltaEngine.Platforms.csproj">
+      <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
+      <Name>DeltaEngine.Platforms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Profiling\DeltaEngine.Profiling.csproj">
+      <Project>{462dc673-e132-4a82-b49b-ec353d25b409}</Project>
+      <Name>DeltaEngine.Profiling</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Rendering\DeltaEngine.Rendering.csproj">
       <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
       <Name>DeltaEngine.Rendering</Name>
@@ -79,10 +83,25 @@
     <Compile Include="UserInterfaces\ActiveButton.cs" />
     <Compile Include="UserInterfaces\Button.cs" />
     <Compile Include="Scene.cs" />
+    <Compile Include="UserInterfaces\Graphing\CodeProfilingGraph.cs" />
+    <Compile Include="UserInterfaces\Graphing\AvailableRamProfilingGraph.cs" />
+    <Compile Include="UserInterfaces\Graphing\FpsProfilingGraph.cs" />
+    <Compile Include="UserInterfaces\Graphing\SystemProfilingGraph.cs" />
+    <Compile Include="UserInterfaces\Terminal\History.cs" />
+    <Compile Include="UserInterfaces\Terminal\Terminal.cs" />
+    <Compile Include="UserInterfaces\Graphing\AutogrowViewport.cs" />
+    <Compile Include="UserInterfaces\Graphing\Graph.cs" />
+    <Compile Include="UserInterfaces\Graphing\GraphLine.cs" />
+    <Compile Include="UserInterfaces\Graphing\RemoveOldestPoints.cs" />
+    <Compile Include="UserInterfaces\Graphing\RenderAxes.cs" />
+    <Compile Include="UserInterfaces\Graphing\RenderKey.cs" />
+    <Compile Include="UserInterfaces\Graphing\RenderPercentileLabels.cs" />
+    <Compile Include="UserInterfaces\Graphing\RenderPercentiles.cs" />
     <Compile Include="UserInterfaces\Label.cs" />
     <Compile Include="UserInterfaces\RadioButton.cs" />
     <Compile Include="UserInterfaces\RadioDialog.cs" />
     <Compile Include="UserInterfaces\Slider.cs" />
+    <Compile Include="UserInterfaces\Terminal\TextLine.cs" />
     <Compile Include="UserInterfaces\TextBox.cs" />
     <Compile Include="UserInterfaces\Tile.cs" />
     <Compile Include="UserInterfaces\Tilemap.cs" />

@@ -3,7 +3,6 @@ using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.All;
 using DeltaEngine.Rendering.Fonts;
 using DeltaEngine.Rendering.Sprites;
 using DeltaEngine.Scenes.UserInterfaces;
@@ -11,156 +10,131 @@ using NUnit.Framework;
 
 namespace DeltaEngine.Scenes.Tests
 {
-	public class MenuTests : TestWithAllFrameworks
+	public class MenuTests : TestWithMocksOrVisually
 	{
-		[IntegrationTest]
-		public void CreatingSetsButtonSizeAndMenuCenter(Type resolver)
+		[Test]
+		public void CreatingSetsButtonSizeAndMenuCenter()
 		{
-			Start(resolver, (Scene s, ContentLoader content) =>
-			{
-				var menu = new Menu(ButtonSize);
-				Assert.AreEqual(ButtonSize, menu.ButtonSize);
-				Assert.AreEqual(Point.Half, menu.Center);
-			});
+			var menu = new Menu(ButtonSize);
+			Assert.AreEqual(ButtonSize, menu.ButtonSize);
+			Assert.AreEqual(Point.Half, menu.Center);
+			Window.CloseAfterFrame();
 		}
 
 		private static readonly Size ButtonSize = new Size(0.3f, 0.1f);
 
-		[IntegrationTest]
-		public void ChangingButtonSize(Type resolver)
+		[Test]
+		public void ChangingButtonSize()
 		{
-			Start(resolver, (Scene s, ContentLoader content) =>
-			{
-				var menu = new Menu(Size.Half) { ButtonSize = ButtonSize };
-				Assert.AreEqual(ButtonSize, menu.ButtonSize);
-			});
+			var menu = new Menu(Size.Half) { ButtonSize = ButtonSize };
+			Assert.AreEqual(ButtonSize, menu.ButtonSize);
+			Window.CloseAfterFrame();
 		}
 
-		[IntegrationTest]
-		public void ChangingCenterForSetOfButtons(Type resolver)
+		[Test]
+		public void ChangingCenterForSetOfButtons()
 		{
-			Start(resolver, (Scene s, ContentLoader content) =>
-			{
-				var menu = new Menu(ButtonSize) { Center = Point.One };
-				Assert.AreEqual(Point.One, menu.Center);
-			});
+			var menu = new Menu(ButtonSize) { Center = Point.One };
+			Assert.AreEqual(Point.One, menu.Center);
+			Window.CloseAfterFrame();
 		}
 
-		[IntegrationTest]
-		public void AddingMenuOptionAddsButton(Type resolver)
+		[Test]
+		public void AddingMenuOptionAddsButton()
 		{
-			Start(resolver, (Scene s, ContentLoader content) =>
-			{
-				var menu = new Menu(ButtonSize) { Center = new Point(0.6f, 0.6f) };
-				menu.AddMenuOption(CreateTheme(content), () => { });
-				Assert.AreEqual(1, menu.Controls.Count);
-				var button = (Button)menu.Controls[0];
-				Assert.AreEqual("DeltaEngineLogo", button.Image.Name);
-				Assert.AreEqual(new Rectangle(0.45f, 0.55f, 0.3f, 0.1f), button.DrawArea);
-			});
+			var menu = new Menu(ButtonSize) { Center = new Point(0.6f, 0.6f) };
+			menu.AddMenuOption(CreateTheme(), () => { });
+			Assert.AreEqual(1, menu.Controls.Count);
+			var button = (Button)menu.Controls[0];
+			Assert.AreEqual("DeltaEngineLogo", button.Image.Name);
+			Assert.AreEqual(new Rectangle(0.45f, 0.55f, 0.3f, 0.1f), button.DrawArea);
+			Window.CloseAfterFrame();
 		}
 
-		private static Theme CreateTheme(ContentLoader content)
+		private static Theme CreateTheme()
 		{
-			var appearance = new Theme.Appearance(content.Load<Image>("DeltaEngineLogo"));
+			var appearance = new Theme.Appearance(ContentLoader.Load<Image>("DeltaEngineLogo"));
 			return new Theme
 			{
 				Button = appearance,
 				ButtonMouseover = appearance,
 				ButtonPressed = appearance,
-				Font = new Font(content, "Verdana12")
+				Font = new Font("Verdana12")
 			};
 		}
 
-		[VisualTest]
-		public void ShowMenuWithTwoButtons(Type resolver)
+		[Test]
+		public void ShowMenuWithTwoButtons()
 		{
-			Start(resolver, (Scene s, ContentLoader content, Window window) =>
-			{
-				var menu = new Menu(ButtonSize);
-				menu.SetBackground(content.Load<Image>("SimpleSubMenuBackground"));
-				var theme = CreateTheme(content);
-				menu.AddMenuOption(theme, () => { window.Title = "Clicked Top Button"; });
-				menu.AddMenuOption(theme, () => { window.Title = "Clicked Bottom Button"; });
-				menu.Show();
-			});
+			var menu = new Menu(ButtonSize);
+			menu.SetBackground(ContentLoader.Load<Image>("SimpleSubMenuBackground"));
+			var theme = CreateTheme();
+			menu.AddMenuOption(theme, () => { Window.Title = "Clicked Top Button"; });
+			menu.AddMenuOption(theme, () => { Window.Title = "Clicked Bottom Button"; });
+			menu.Show();
 		}
 
-		[VisualTest]
-		public void ShowMenuWithThreeButtons(Type resolver)
+		[Test]
+		public void ShowMenuWithThreeButtons()
 		{
-			Start(resolver, (Scene s, ContentLoader content, Window window) =>
-			{
-				var menu = new Menu(ButtonSize);
-				menu.SetBackground(content.Load<Image>("SimpleSubMenuBackground"));
-				var theme = CreateTheme(content);
-				menu.AddMenuOption(theme, () => { window.Title = "Clicked Top Button"; });
-				menu.AddMenuOption(theme, () => { window.Title = "Clicked Middle Button"; });
-				menu.AddMenuOption(theme, () => { window.Title = "Clicked Bottom Button"; });
-				menu.Show();
-			});
+			var menu = new Menu(ButtonSize);
+			menu.SetBackground(ContentLoader.Load<Image>("SimpleSubMenuBackground"));
+			var theme = CreateTheme();
+			menu.AddMenuOption(theme, () => { Window.Title = "Clicked Top Button"; });
+			menu.AddMenuOption(theme, () => { Window.Title = "Clicked Middle Button"; });
+			menu.AddMenuOption(theme, () => { Window.Title = "Clicked Bottom Button"; });
+			menu.Show();
 		}
 
-		[VisualTest]
-		public void ShowMenuWithThreeTextButtons(Type resolver)
+		[Test]
+		public void ShowMenuWithThreeTextButtons()
 		{
-			Start(resolver, (Scene s, ContentLoader content, Window window) =>
-			{
-				var menu = new Menu(ButtonSize);
-				menu.SetBackground(content.Load<Image>("SimpleSubMenuBackground"));
-				var theme = CreateTextTheme(content);
-				menu.AddMenuOption(theme, () => { window.Title = "Clicked Top Button"; }, "Top Button");
-				menu.AddMenuOption(theme, () => { window.Title = "Clicked Middle Button"; },
-					"Middle Button");
-				menu.AddMenuOption(theme, () => { window.Title = "Clicked Bottom Button"; },
-					"Bottom Button");
-				menu.Show();
-			});
+			var menu = new Menu(ButtonSize);
+			menu.SetBackground(ContentLoader.Load<Image>("SimpleSubMenuBackground"));
+			var theme = CreateTextTheme();
+			menu.AddMenuOption(theme, () => { Window.Title = "Clicked Top Button"; }, "Top Button");
+			menu.AddMenuOption(theme, () => { Window.Title = "Clicked Middle Button"; }, "Middle Button");
+			menu.AddMenuOption(theme, () => { Window.Title = "Clicked Bottom Button"; }, "Bottom Button");
+			menu.Show();
 		}
 
-		private static Theme CreateTextTheme(ContentLoader content)
+		private static Theme CreateTextTheme()
 		{
 			return new Theme
 			{
-				Button =
-					new Theme.Appearance(content.Load<Image>("DefaultSliderBackground"), Color.LightGray),
-				ButtonMouseover = new Theme.Appearance(content.Load<Image>("DefaultSliderBackground")),
-				ButtonPressed =
-					new Theme.Appearance(content.Load<Image>("DefaultSliderBackground"), Color.Red),
-				Font = new Font(content, "Verdana12")
+				Button = new Theme.Appearance("DefaultSliderBackground", Color.LightGray),
+				ButtonMouseover = new Theme.Appearance("DefaultSliderBackground"),
+				ButtonPressed = new Theme.Appearance("DefaultSliderBackground", Color.Red),
+				Font = new Font("Verdana12")
 			};
 		}
 
-		[IntegrationTest]
-		public void ClearClearsButtons(Type resolver)
+		[Test]
+		public void ClearClearsButtons()
 		{
-			Start(resolver, (Scene s, ContentLoader content) =>
-			{
-				var menu = new Menu(ButtonSize);
-				var theme = CreateTheme(content);
-				menu.AddMenuOption(theme, () => { });
-				Assert.AreEqual(1, menu.Buttons.Count);
-				menu.Clear();
-				Assert.AreEqual(0, menu.Buttons.Count);
-			});
+			var menu = new Menu(ButtonSize);
+			var theme = CreateTheme();
+			menu.AddMenuOption(theme, () => { });
+			Assert.AreEqual(1, menu.Buttons.Count);
+			menu.Clear();
+			Assert.AreEqual(0, menu.Buttons.Count);
+			Window.CloseAfterFrame();
 		}
 
-		[IntegrationTest]
-		public void ClearMenuOptionsLeavesOtherControlsAlone(Type resolver)
+		[Test]
+		public void ClearMenuOptionsLeavesOtherControlsAlone()
 		{
-			Start(resolver, (Scene s, ContentLoader content) =>
-			{
-				var menu = new Menu(ButtonSize);
-				var logo = content.Load<Image>("DeltaEngineLogo");
-				menu.Add(new Sprite(logo, Rectangle.One));
-				var theme = CreateTheme(content);
-				menu.AddMenuOption(theme, () => { });
-				Assert.AreEqual(1, menu.Buttons.Count);
-				Assert.AreEqual(2, menu.Controls.Count);
-				menu.ClearMenuOptions();
-				Assert.AreEqual(0, menu.Buttons.Count);
-				Assert.AreEqual(1, menu.Controls.Count);
-			});
+			var menu = new Menu(ButtonSize);
+			var logo = ContentLoader.Load<Image>("DeltaEngineLogo");
+			menu.Add(new Sprite(logo, Rectangle.One));
+			var theme = CreateTheme();
+			menu.AddMenuOption(theme, () => { });
+			Assert.AreEqual(1, menu.Buttons.Count);
+			Assert.AreEqual(2, menu.Controls.Count);
+			menu.ClearMenuOptions();
+			Assert.AreEqual(0, menu.Buttons.Count);
+			Assert.AreEqual(1, menu.Controls.Count);
+			Window.CloseAfterFrame();
 		}
 	}
 }

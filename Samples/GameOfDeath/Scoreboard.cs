@@ -14,10 +14,10 @@ namespace GameOfDeath
 	/// </summary>
 	public class Scoreboard : Entity2D
 	{
-		public Scoreboard(ContentLoader content, ScreenSpace screen)
+		public Scoreboard(ScreenSpace screen)
 			: base(Rectangle.Zero)
 		{
-			Add(new Score(content, screen) { Money = InitialMoney });
+			Add(new Score(screen) { Money = InitialMoney });
 		}
 
 		public static readonly Size QuadraticFullscreenSize = new Size(1920, 1920);
@@ -40,15 +40,15 @@ namespace GameOfDeath
 		/// </summary>
 		public class Score
 		{
-			public Score(ContentLoader content, ScreenSpace screen)
+			public Score(ScreenSpace screen)
 			{
-				CreateText(content, screen);
-				CreateDeadRabbit(content, screen);
+				CreateText(screen);
+				CreateDeadRabbit(screen);
 			}
 
-			private void CreateText(ContentLoader content, ScreenSpace screen)
+			private void CreateText(ScreenSpace screen)
 			{
-				var font = new Font(content, "Tahoma30");
+				var font = new Font("Tahoma30");
 				moneyText = new FontText(font, "$0", screen.TopLeft + MoneyOffset)
 				{
 					RenderLayer = int.MaxValue,
@@ -67,9 +67,9 @@ namespace GameOfDeath
 			private static readonly Point MoneyOffset = new Point(0.1f, 0.08f);
 			private static readonly Point KillOffset = new Point(-0.09f, 0.08f);
 
-			private static void CreateDeadRabbit(ContentLoader content, ScreenSpace screen)
+			private static void CreateDeadRabbit(ScreenSpace screen)
 			{
-				new Sprite(content.Load<Image>("DeadRabbit"),
+				new Sprite(ContentLoader.Load<Image>("DeadRabbit"),
 					new Rectangle(screen.Viewport.TopRight + DeadRabbitOffset, DeadRabbitSize))
 				{
 					RenderLayer = int.MaxValue

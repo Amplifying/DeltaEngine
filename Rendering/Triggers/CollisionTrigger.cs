@@ -4,9 +4,9 @@ using DeltaEngine.Entities;
 
 namespace DeltaEngine.Rendering.Triggers
 {
-	internal class CollisionTrigger : EntityHandler
+	internal class CollisionTrigger : Behavior2D
 	{
-		public override void Handle(Entity entity)
+		public override void Handle(Entity2D entity)
 		{
 			var data = entity.Get<CollisionTriggerData>();
 			var foundEntities = GetEntitiesFromSearchTags(data);
@@ -29,13 +29,13 @@ namespace DeltaEngine.Rendering.Triggers
 		private static bool IsEntityRectCollidingWithOtherEntityRect(Entity entity,
 			Entity otherEntity)
 		{
-			return entity.Get<Rectangle>().IsColliding(entity.Get<float>(), otherEntity.Get<Rectangle>(),
-				otherEntity.Get<float>());
+			return entity.Get<Rectangle>().IsColliding(entity.GetWithDefault(0.0f),
+				otherEntity.Get<Rectangle>(), otherEntity.GetWithDefault(0.0f));
 		}
 
-		public override EntityHandlerPriority Priority
+		public override Priority Priority
 		{
-			get { return EntityHandlerPriority.High; }
+			get { return Priority.High; }
 		}
 	}
 }

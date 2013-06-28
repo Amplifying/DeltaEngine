@@ -43,7 +43,7 @@ namespace DeltaEngine.Core
 			Action<T1, T2> threadAction)
 		{
 			return EnqueueWorkerThread(new { Arg1 = argument1, Arg2 = argument2 },
-				args => { threadAction(args.Arg1, args.Arg2); });
+				args => threadAction(args.Arg1, args.Arg2));
 		}
 	}
 }

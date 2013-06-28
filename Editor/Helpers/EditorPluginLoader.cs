@@ -70,7 +70,7 @@ namespace DeltaEngine.Editor.Helpers
 			foreach (var file in dllFiles)
 			{
 				var fileName = Path.GetFileNameWithoutExtension(file);
-				if ((!fileName.StartsWith("DeltaEngine.") || fileName.StartsWith("DeltaEngine.Editor.")) &&
+				if (fileName.StartsWith("DeltaEngine.Editor.") &&
 					!assemblies.Any(assembly => assembly.FullName.Contains(fileName)))
 					assemblies.Add(Assembly.LoadFile(file));
 			}
@@ -85,7 +85,7 @@ namespace DeltaEngine.Editor.Helpers
 			{
 				foreach (var type in assembly.GetTypes())
 					if (typeof(EditorPluginView).IsAssignableFrom(type) &&
-						typeof(UserControl).IsAssignableFrom(type))
+						typeof(UserControl).IsAssignableFrom(type) && IsNotExcluded(type))
 						UserControlsType.Add(type);
 			}
 			catch (ReflectionTypeLoadException ex)
@@ -94,5 +94,13 @@ namespace DeltaEngine.Editor.Helpers
 					ex.LoaderExceptions.ToText());
 			}
 		}
+
+		private bool IsNotExcluded(Type type)
+		{
+			return excludedEditorPlugins.All(name => type.FullName != name);
+		}
+
+		private readonly string[] excludedEditorPlugins = new[]
+		{ "DeltaEngine.Editor.EmptyEditorPlugin.EmptyEditorPluginView" };
 	}
 }

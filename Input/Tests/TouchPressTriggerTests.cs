@@ -1,26 +1,21 @@
-using System;
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Platforms;
 using NUnit.Framework;
 
 namespace DeltaEngine.Input.Tests
 {
-	public class TouchPressTriggerTests : TestWithAllFrameworks
+	public class TouchPressTriggerTests : TestWithMocksOrVisually
 	{
-		[IntegrationTest]
-		public void ConditionMatched(Type resolver)
+		[Test]
+		public void ConditionMatched()
 		{
-			Start(resolver, (InputCommands input) =>
-			{
-				var trigger = new TouchPressTrigger(State.Pressing);
-				Assert.False(trigger.ConditionMatched(input));
-			});
+			var trigger = new TouchPressTrigger(State.Pressing);
+			Assert.False(trigger.ConditionMatched(Input));
 		}
 
 		[Test]
 		public void SetGetProperties()
 		{
-			var trigger = new TouchPressTrigger(State.Pressing);
-			trigger.State = State.Pressed;
+			var trigger = new TouchPressTrigger(State.Pressing) { State = State.Pressed };
 			Assert.AreNotEqual(trigger.State, State.Pressing);
 			Assert.AreEqual(trigger.State, State.Pressed);
 		}

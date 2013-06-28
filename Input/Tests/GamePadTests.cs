@@ -1,80 +1,78 @@
 using System;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Platforms.Mocks;
+using DeltaEngine.Rendering.ScreenSpaces;
 using DeltaEngine.Rendering.Shapes;
 using NUnit.Framework;
 
 namespace DeltaEngine.Input.Tests
 {
-	public class GamePadTests : TestWithAllFrameworks
+	public class GamePadTests : TestWithMocksOrVisually
 	{
-		[IntegrationTest]
-		public void UpdateGamepad(Type resolver)
+		[Test]
+		public void UpdateGamepad()
 		{
-			Start(resolver, (GamePad gamepad) =>
-			{
-				gamepad.Run();
-				Assert.True(gamepad.IsAvailable);
-				Assert.AreEqual(gamepad.GetButtonState(GamePadButton.Up), State.Released);
-				Assert.AreEqual(gamepad.GetButtonState(GamePadButton.X), State.Released);
-			});
+			var gamepad = Resolve<GamePad>();
+			if (!gamepad.IsAvailable)
+				return;
+
+			gamepad.Run();
+			Assert.AreEqual(gamepad.GetButtonState(GamePadButton.Up), State.Released);
+			Assert.AreEqual(gamepad.GetButtonState(GamePadButton.X), State.Released);
 		}
 
-		[VisualTest]
-		public void GraphicalUnitTest(Type resolver)
+		[Test]
+		public void GraphicalUnitTest()
 		{
-			Ellipse ellipse = null;
-			Start(resolver,
-				() =>
-				{
-					ellipse = new Ellipse(new Rectangle(0.1f, 0.1f, 0.1f, 0.1f), Color.GetRandomBrightColor());
-				}, (GamePad gamepad) =>
-				{
-					ellipse.Center = gamepad.GetButtonState(GamePadButton.X) == State.Pressed
-						? Point.Half : Point.Zero;
-					ellipse.Color = Color.GetRandomBrightColor();
-				});
+			var ellipse = new Ellipse(new Rectangle(0.1f, 0.1f, 0.1f, 0.1f),
+				Color.GetRandomBrightColor());
+			RunCode = () =>
+			{
+				ellipse.Center = Resolve<GamePad>().GetButtonState(GamePadButton.X) == State.Pressed
+					? Point.Half : Point.Zero;
+				ellipse.Color = Color.GetRandomBrightColor();
+			};
 		}
 
-		[VisualTest]
-		public void CheckLeftTrigger(Type resolver)
+		[Test]
+		public void CheckAvailable()
 		{
-			Start(resolver, (GamePad gamepad) => { }, (GamePad gamepad, Window window) =>
-			{
-				gamepad.Run();
-				window.Title = "LeftTrigger=" + gamepad.GetLeftTrigger();
-			});
+			var gamepad = Resolve<GamePad>();
+			gamepad.Run();
+			Resolve<ScreenSpace>().Window.Title = "Available=" + gamepad.IsAvailable;
 		}
 
-		[VisualTest]
-		public void CheckLeftThumb(Type resolver)
+		[Test]
+		public void CheckLeftTrigger()
 		{
-			Start(resolver, (GamePad gamepad) => { }, (GamePad gamepad, Window window) =>
-			{
-				gamepad.Run();
-				window.Title = "LeftThumb=" + gamepad.GetLeftThumbStick();
-			});
+			var gamepad = Resolve<GamePad>();
+			gamepad.Run();
+			Resolve<ScreenSpace>().Window.Title = "LeftTrigger=" + gamepad.GetLeftTrigger();
 		}
 
-		[VisualTest]
-		public void CheckRightTrigger(Type resolver)
+		[Test]
+		public void CheckLeftThumb()
 		{
-			Start(resolver, (GamePad gamepad) => { }, (GamePad gamepad, Window window) =>
-			{
-				gamepad.Run();
-				window.Title = "RightTrigger=" + gamepad.GetRightTrigger();
-			});
+			var gamepad = Resolve<GamePad>();
+			gamepad.Run();
+			Resolve<ScreenSpace>().Window.Title = "LeftThumb=" + gamepad.GetLeftThumbStick();
 		}
 
-		[VisualTest]
-		public void CheckRightThumb(Type resolver)
+		[Test]
+		public void CheckRightTrigger()
 		{
-			Start(resolver, (GamePad gamepad) => { }, (GamePad gamepad, Window window) =>
-			{
-				gamepad.Run();
-				window.Title = "RightThumb=" + gamepad.GetRightThumbStick();
-			});
+			var gamepad = Resolve<GamePad>();
+			gamepad.Run();
+			Resolve<ScreenSpace>().Window.Title = "RightTrigger=" + gamepad.GetRightTrigger();
+		}
+
+		[Test]
+		public void CheckRightThumb()
+		{
+			var gamepad = Resolve<GamePad>();
+			gamepad.Run();
+			Resolve<ScreenSpace>().Window.Title = "RightThumb=" + gamepad.GetRightThumbStick();
 		}
 	}
 }

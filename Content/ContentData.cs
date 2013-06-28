@@ -16,11 +16,11 @@ namespace DeltaEngine.Content
 		{
 			if (string.IsNullOrEmpty(contentName))
 				throw new ContentNameMissing();
-
+#if DEBUG
 			StackFrame[] frames = new StackTrace().GetFrames();
 			if (frames != null && frames.All(f => f.GetMethod().DeclaringType != typeof(ContentLoader)))
 				throw new MustBeCalledFromContentLoader();
-
+#endif
 			Name = contentName;
 		}
 
@@ -40,30 +40,13 @@ namespace DeltaEngine.Content
 		public bool IsDisposed { get; private set; }
 		protected abstract void DisposeData();
 
-		internal void InternalLoad(Func<string, Stream> getContentDataStream)
+		internal void InternalLoad(Func<ContentData, Stream> getContentDataStream)
 		{
-			if (CanLoadDataFromStream)
-				using (var stream = getContentDataStream(Name))
-					LoadData(stream);
-			else
-				LoadFromContentName(Name);
+			using (var stream = getContentDataStream(this))
+				LoadData(stream);
 		}
 
-		protected virtual bool CanLoadDataFromStream
-		{
-			get { return true; }
-		}
-
-		/// <summary>
-		/// This method needs to be implemented by derived classes to do the actual content loading.
-		/// </summary>
 		protected abstract void LoadData(Stream fileData);
-
-		/// <summary>
-		/// If loading content from a stream is not supported (e.g. with the XNA framework), then
-		/// CanLoadDataFromStream is false and this method will be called instead of LoadData.
-		/// </summary>
-		protected virtual void LoadFromContentName(string contentName) {}
 
 		internal void FireContentChangedEvent()
 		{
@@ -72,5 +55,7 @@ namespace DeltaEngine.Content
 		}
 
 		protected Action ContentChanged;
+
+		public ContentMetaData MetaData { get; internal set; }
 	}
 }

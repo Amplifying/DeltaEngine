@@ -1,13 +1,19 @@
+using DeltaEngine.Input;
 using DeltaEngine.Platforms;
+using DeltaEngine.Rendering.ScreenSpaces;
 
 namespace Asteroids
 {
-	internal static class Program
+	internal class Program : App
 	{
+		public Program()
+		{
+			new AsteroidsGame(Resolve<InputCommands>(),Resolve<ScreenSpace>());
+		}
+
 		public static void Main()
 		{
-			var app = new App();
-			app.Start<AsteroidsGame>();
+			new Program().Run();
 		}
 	}
 }

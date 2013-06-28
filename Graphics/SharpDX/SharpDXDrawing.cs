@@ -4,7 +4,6 @@ using SharpDX.DXGI;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using NativeDevice = SharpDX.Direct3D11.Device;
-using Buffer = SharpDX.Direct3D11.Buffer;
 using Matrix = SharpDX.Matrix;
 
 namespace DeltaEngine.Graphics.SharpDX
@@ -25,7 +24,7 @@ namespace DeltaEngine.Graphics.SharpDX
 			Reset(window.ViewportPixelSize);
 			window.ViewportSizeChanged += Reset;
 			device.Context.OutputMerger.BlendState = device.GetAlphaBlendStateLazy();
-			InitializeVertexBuffers();
+			InitializeBuffers();
 		}
 
 		private readonly DeviceContext context;
@@ -33,17 +32,21 @@ namespace DeltaEngine.Graphics.SharpDX
 		private readonly SharpDXPositionColorShader positionColorShader;
 		private readonly SharpDXPositionColorTextureShader positionColorTextureShader;
 
-		private void InitializeVertexBuffers()
+		private void InitializeBuffers()
 		{
-			positionColorVertexBuffer = new SharpDXCircularBuffer(VertexBufferSize,
-				(SharpDXDevice)device);
-			positionColorUvVertexBuffer = new SharpDXCircularBuffer(VertexBufferSize,
-				(SharpDXDevice)device);
+			positionColorVertexBuffer = new SharpDXCircularBuffer<VertexPositionColor>(
+				VertexBufferSize, (SharpDXDevice)device);
+			positionColorUvVertexBuffer = new SharpDXCircularBuffer<VertexPositionColorTextured>(
+				VertexBufferSize, (SharpDXDevice)device);
+			indexBuffer = new SharpDXCircularBuffer<short>(IndexBufferSize, (SharpDXDevice)device);
 		}
 
-		private SharpDXCircularBuffer positionColorVertexBuffer;
-		private SharpDXCircularBuffer positionColorUvVertexBuffer;
-		private const int VertexBufferSize = 1024;
+		private SharpDXCircularBuffer<VertexPositionColor> positionColorVertexBuffer;
+		private SharpDXCircularBuffer<VertexPositionColorTextured> positionColorUvVertexBuffer;
+		private SharpDXCircularBuffer<short> indexBuffer;
+
+		private const int VertexBufferSize = 16384;
+		private const int IndexBufferSize = 65536;
 
 		private void Reset(Size size)
 		{
@@ -62,7 +65,17 @@ namespace DeltaEngine.Graphics.SharpDX
 			positionColorShader.WorldViewProjection = viewportTransform;
 		}
 
-		public override void Dispose() {}
+		public override void Dispose()
+		{
+			if (positionColorVertexBuffer.IsCreated)
+				positionColorVertexBuffer.Dispose();
+
+			if (positionColorUvVertexBuffer.IsCreated)
+				positionColorUvVertexBuffer.Dispose();
+
+			if (indexBuffer.IsCreated)
+				indexBuffer.Dispose();
+		}
 
 		public override void EnableTexturing(Image image)
 		{
@@ -152,20 +165,23 @@ namespace DeltaEngine.Graphics.SharpDX
 
 		public override void DrawVertices(VerticesMode mode, VertexPositionColor[] vertices)
 		{
+			NumberOfVerticesDrawn += vertices.Length;
+			NumberOfTimesDrawn++;
 			CheckCreateVertexBuffer(positionColorVertexBuffer);
-			positionColorVertexBuffer.SetVertexData(vertices);
+			positionColorVertexBuffer.SetData(vertices);
 			positionColorShader.Apply();
 			BindVertexBuffer(positionColorVertexBuffer, VertexPositionColor.SizeInBytes);
 			DecideKindOfDraw(mode, vertices.Length);
 		}
 
-		private static void CheckCreateVertexBuffer(SharpDXCircularBuffer buffer)
+		private static void CheckCreateVertexBuffer<T>(CircularBuffer<T> buffer) where T : struct
 		{
 			if (!buffer.IsCreated)
 				buffer.Create();
 		}
 
-		private void BindVertexBuffer(SharpDXCircularBuffer vertexBuffer, int stride)
+		private void BindVertexBuffer<T>(SharpDXCircularBuffer<T> vertexBuffer, int stride)
+			where T : struct
 		{
 			context.InputAssembler.SetVertexBuffers(0,
 				new VertexBufferBinding(vertexBuffer.NativeBuffer, stride, vertexBuffer.Offset));
@@ -186,8 +202,10 @@ namespace DeltaEngine.Graphics.SharpDX
 
 		public override void DrawVerticesForSprite(VerticesMode mode, VertexPositionColorTextured[] vertices)
 		{
+			NumberOfVerticesDrawn += vertices.Length;
+			NumberOfTimesDrawn++;
 			CheckCreateVertexBuffer(positionColorUvVertexBuffer);
-			positionColorUvVertexBuffer.SetVertexData(vertices);
+			positionColorUvVertexBuffer.SetData(vertices);
 			positionColorTextureShader.Apply();
 			BindVertexBuffer(positionColorUvVertexBuffer, VertexPositionColorTextured.SizeInBytes);
 			DecideKindOfDraw(mode, vertices.Length);
@@ -195,21 +213,12 @@ namespace DeltaEngine.Graphics.SharpDX
 
 		public override void SetIndices(short[] indices, int usedIndicesCount)
 		{
-			CheckCreateIndexBuffer();
-			((SharpDXDevice)device).SetData(indexBuffer, indices, usedIndicesCount);
+			if (!indexBuffer.IsCreated)
+				indexBuffer.Create();
+
+			indexBuffer.SetData(indices);
 			lastIndicesCount = usedIndicesCount;
 		}
-
-		private void CheckCreateIndexBuffer(int indexCount = 600)
-		{
-			if (indexBuffer != null)
-				return;
-
-			indexBuffer = new SharpDXBuffer(nativeDevice, indexCount * sizeof(ushort),
-				BindFlags.IndexBuffer);
-		}
-
-		private Buffer indexBuffer;
 
 		private void DoDraw(int vertexCount)
 		{
@@ -218,7 +227,8 @@ namespace DeltaEngine.Graphics.SharpDX
 
 		private void DoDrawIndexed(int indexCount)
 		{
-			context.InputAssembler.SetIndexBuffer(indexBuffer, Format.R16_UInt, 0);
+			context.InputAssembler.SetIndexBuffer(indexBuffer.NativeBuffer, Format.R16_UInt,
+				indexBuffer.Offset);
 			context.DrawIndexed(indexCount, 0, 0);
 			lastIndicesCount = -1;
 		}

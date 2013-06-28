@@ -21,7 +21,7 @@ namespace DeltaEngine.Editor.Common.Tests
 			Assert.AreEqual(0, checker.OutdatedAssemblies.Count);
 		}
 
-		[Test]
+		[Test, Category("Slow")]
 		public void LoadOneOutdatedAssemblyToCurrentAppDomain()
 		{
 			LoadObsolescedAssembly();
@@ -35,7 +35,6 @@ namespace DeltaEngine.Editor.Common.Tests
 			Assembly.LoadFile(pathToTestAssembly);
 		}
 
-		private readonly string pathToTestAssembly =
-			Path.GetFullPath(Path.Combine("Content", "DeltaEngine.Editor.Common.dll"));
+		private readonly string pathToTestAssembly = Path.GetFullPath("FakeOldEditorLibrary.dll");
 	}
 }

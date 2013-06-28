@@ -14,10 +14,10 @@
 			<RowDefinition Height="5" />
 			<RowDefinition Height="25" />
 			<RowDefinition Height="6" />
-			<RowDefinition Height="361*" />
-			<RowDefinition Height="12" />
-			<RowDefinition Height="30" />
-			<RowDefinition Height="11" />
+			<RowDefinition />
+			<RowDefinition Height="39" />
+
+
 		</Grid.RowDefinitions>
 		<Grid.Background>
 			<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -26,10 +26,10 @@
 			</LinearGradientBrush>
 		</Grid.Background>
 
-		<Grid Margin="434,0,0,0" Background="Black" AllowDrop="True" Drop="OnImageViewDrop" SizeChanged="ChangedSize"
-		      Grid.Row="3">
+		<Grid Margin="455,0,0,0" Background="Black" AllowDrop="True" Grid.Row="3"
+		      Drop="OnImageViewDrop" SizeChanged="ChangedSize">
 			<Slider Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Left" Minimum="1"
-			        Name="Slider" Value="{Binding Path=SliderValue}" Margin="0,0,0,35" />
+			        Name="Slider" Value="{Binding Path=SliderValue}" Margin="-33,0,0,35" />
 			<ScrollViewer Name="ScrollViewer" Grid.Column="1" VerticalScrollBarVisibility="Visible"
 			              HorizontalScrollBarVisibility="Visible" Width="{Binding Path=ScrollViewerWidth}"
 			              Height="{Binding Path=ScrollViewerHeight}" x:FieldModifier="public">
@@ -39,42 +39,52 @@
 							<ScaleTransform x:Name="ScaleTransform" />
 						</TransformGroup>
 					</Grid.LayoutTransform>
-
 					<Viewbox Grid.Column="0" Grid.Row="0" Margin="-10,0,10,0">
-						<Image Source="{Binding Path=ViewImage}" Name="ImageView" Width="{Binding Path=ImageWidth}"
-						       Height="{Binding Path=ImageHeight}" Margin="0,0,0,0" />
+						<Image Name="ImageView" Margin="0,0,0,0" Source="{Binding Path=ViewImage}"
+						       Width="{Binding Path=ImageWidth}" Height="{Binding Path=ImageHeight}" />
 					</Viewbox>
 				</Grid>
 			</ScrollViewer>
 		</Grid>
-
-		<ListBox Margin="10,0,0,0"
-		         ItemsSource="{Binding Path=Projects}" SelectedItem="{Binding Path=SelectedProject}" Background="#FFFDFDFD"
-		         Grid.Row="3" HorizontalAlignment="Left" Width="200" VerticalAlignment="Top" Height="379"  />
-		<ListBox Margin="215,0,0,0"
-		         ItemsSource="{Binding Path=Images}" Name="ImageList"
-		         SelectedItem="{Binding Path=SelectedContent}" Background="WhiteSmoke" Grid.Row="3"
-		         HorizontalAlignment="Left" VerticalAlignment="Top"  Width="200" SelectionMode="Extended" Height="379">
-			<ListBox.ContextMenu>
-				<ContextMenu>
-					<MenuItem Header="Delete" Click="DeleteSelectedImage"></MenuItem>
-				</ContextMenu>
-			</ListBox.ContextMenu>
-		</ListBox>
-		<TextBox Margin="10,384,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"
-		         Width="200" Height="30" Text="{Binding Path=NewProjectName}" Grid.Row="3" />
-		<Button Margin="215,384,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"
-		        Content="Add new project" Click="AddProject" Width="200" Height="30" Grid.Row="3" />
-		<Button Margin="215,1,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"
-		        Content="Create animation from selected items" FontSize="11" Click="CreateAnimation"
-		        Width="200" Height="30" Grid.Row="5" Grid.RowSpan="2" />
-		<TextBox Margin="10,1,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"
-		         Width="200" Height="30" Text="{Binding Path=AnimationName}" Grid.Row="5" Grid.RowSpan="2"/>
-		<Label Content="Projects" HorizontalAlignment="Left" Margin="10,0,0,0" Grid.Row="1" FontSize="14" FontFamily="Arial"
-		       FontWeight="Bold" Background="#FFAEAEAE" Foreground="White" />
-		<Label Content="Content Files" HorizontalAlignment="Left" Margin="215,0,0,0" Grid.Row="1" FontSize="14"
-		       FontWeight="Bold" FontFamily="Arial" Background="#FFAEAEAE" Foreground="White" />
-		<Label Content="Preview Window (drag and drop your files here)" HorizontalAlignment="Left" Margin="434,0,0,0"
-		       Grid.Row="1" FontSize="14" FontWeight="Bold" FontFamily="Arial" Background="#FFAEAEAE" Foreground="White" />
+		<Grid Margin="0, 0, 0, 0" Grid.Row="3">
+			<ListBox Background="#FFFDFDFD" Grid.Row="3" Margin="10,0,0,0" Name="ProjectList"
+			         ItemsSource="{Binding Path=Projects}" SelectedItem="{Binding Path=SelectedProject}"
+			         HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Height="379">
+				<ListBox.ContextMenu>
+					<ContextMenu>
+						<MenuItem Header="Paste" Click="PastContent"></MenuItem>
+					</ContextMenu>
+				</ListBox.ContextMenu>
+			</ListBox>
+			<ListBox Name="ImageList" Background="WhiteSmoke" Margin="215,0,0,0" Grid.Row="3"
+			         HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Height="379"
+			         ItemsSource="{Binding Path=Images}" SelectedItem="{Binding Path=SelectedContent}"
+			         SelectionMode="Extended" Drop="OnImageViewDrop" AllowDrop="True">
+				<ListBox.ContextMenu>
+					<ContextMenu>
+						<MenuItem Header="Delete" Click="DeleteSelectedImage"></MenuItem>
+						<MenuItem Header="Copy" Click="CopyContent"></MenuItem>
+					</ContextMenu>
+				</ListBox.ContextMenu>
+			</ListBox>
+			<Button Margin="215,416,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"
+			        Content="Create animation from selected items" FontSize="11" Click="CreateAnimation"
+			        Width="200" Height="30" />
+			<TextBox Margin="10,416,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"
+			         Width="200" Height="30" Text="{Binding Path=AnimationName}" />
+			<TextBox Margin="10,384,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"
+			         Width="200" Height="30" Text="{Binding Path=NewProjectName}" />
+			<Button Margin="215,384,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"
+			        Content="Add new project" Click="AddProject" Width="200" Height="30" />
+		</Grid>
+		<Label Content="Projects" HorizontalAlignment="Left" Margin="10,0,0,0" Grid.Row="1"
+		       FontSize="14" FontFamily="Arial" FontWeight="Bold"
+		       Background="#FFAEAEAE" Foreground="White" Width="65" />
+		<Label Content="Content Files" HorizontalAlignment="Left" Margin="215,0,0,0" Grid.Row="1"
+		       FontSize="14" FontWeight="Bold" FontFamily="Arial"
+		       Background="#FFAEAEAE" Foreground="White" Width="99" />
+		<Label Content="Preview Window (drag and drop your files here)" HorizontalAlignment="Left"
+		       Margin="434,0,0,0" Grid.Row="1" FontSize="14" FontWeight="Bold" FontFamily="Arial"
+		       Background="#FFAEAEAE" Foreground="White" Width="327" />
 	</Grid>
 </UserControl>

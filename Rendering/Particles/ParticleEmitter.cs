@@ -1,14 +1,14 @@
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
 
 namespace DeltaEngine.Rendering.Particles
 {
-	public class ParticleEmitter : Entity
+	public class ParticleEmitter : Entity2D
 	{
 		public ParticleEmitter(Image image)
+			: base(Rectangle.Zero)
 		{
-			Add<ParticleFactory>();
+			Start<ParticleFactory>();
 			Add(new ParticleEmitterData
 			{
 				Image = image,

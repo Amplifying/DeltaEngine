@@ -19,19 +19,19 @@ namespace Snake
 
 		private void SpawnSnake()
 		{
-			BodyParts = new List<Rect>();
+			BodyParts = new List<FilledRect>();
 			Direction = new Point(0, -blockSize);
 			PlaceSnakeHead();
 			AddSnakeBody();
 		}
 
-		public List<Rect> BodyParts { get; private set; }
+		public List<FilledRect> BodyParts { get; private set; }
 		public Point Direction { get; set; }
 
 		private void PlaceSnakeHead()
 		{
 			var startPosition = blockSize * (float)Math.Floor(gridSize / 2.0f);
-			var firstPart = new Rect(CalculateHeadDrawArea(startPosition), Color.Teal);
+			var firstPart = new FilledRect(CalculateHeadDrawArea(startPosition), Color.Teal);
 			BodyParts.Add(firstPart);
 		}
 
@@ -43,7 +43,7 @@ namespace Snake
 		public void AddSnakeBody()
 		{
 			var snakeHead = BodyParts[BodyParts.Count - 1].DrawArea;
-			var newTail = new Rect(CalculateBodyDrawArea(snakeHead), Color.Teal);
+			var newTail = new FilledRect(CalculateBodyDrawArea(snakeHead), Color.Teal);
 			BodyParts.Add(newTail);
 		}
 
@@ -99,7 +99,7 @@ namespace Snake
 				SnakeCollidesWithBorderOrItself();
 		}
 
-		private bool SnakeCollidesWithItself(Rect snakeHead)
+		private bool SnakeCollidesWithItself(FilledRect snakeHead)
 		{
 			for (int count = 3; count < BodyParts.Count; count++)
 				if (snakeHead.DrawArea.TopLeft == BodyParts[count].DrawArea.TopLeft)
@@ -108,7 +108,7 @@ namespace Snake
 			return false;
 		}
 
-		private bool SnakeCollidesWithBorders(Rect snakeHead)
+		private bool SnakeCollidesWithBorders(FilledRect snakeHead)
 		{
 			if ((snakeHead.DrawArea.Left < blockSize - 0.01f ||
 				snakeHead.DrawArea.Top < blockSize - 0.01f ||

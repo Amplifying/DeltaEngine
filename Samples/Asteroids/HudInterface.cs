@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Rendering;
 using DeltaEngine.Rendering.Fonts;
 using DeltaEngine.Rendering.ScreenSpaces;
 
@@ -9,11 +10,15 @@ namespace Asteroids
 {
 	public class HudInterface
 	{
-		public HudInterface(ContentLoader contentLoader, ScreenSpace screenSpace)
+		public HudInterface(ScreenSpace screenSpace)
 		{
-			hudFont = new Font(contentLoader, "Tahoma30");
+			hudFont = new Font("Tahoma30");
 			ScoreDisplay = new FontText(hudFont, "0",
 				new Point(screenSpace.Viewport.Left + 0.02f, screenSpace.Viewport.Top + 0.08f));
+			ScoreDisplay.RenderLayer = (int)AsteroidsRenderLayer.UserInterface;
+			gameOverText = new FontText(hudFont, "", Point.Half);
+			gameOverText.RenderLayer = (int)AsteroidsRenderLayer.UserInterface;
+
 		}
 
 		private readonly Font hudFont;
@@ -29,8 +34,15 @@ namespace Asteroids
 
 		public void SetGameOverText()
 		{
-			var gameOverText = new FontText(hudFont, "Game Over", Point.Half);
-			metaInfoTexts.Add(gameOverText);
+			gameOverText.Text = "Game Over! \n [Space] \n to restart";
+			gameOverText.Visibility = Visibility.Show;
+		}
+
+		private readonly FontText gameOverText;
+
+		public void SetIngameMode()
+		{
+			gameOverText.Visibility = Visibility.Hide;
 		}
 	}
 }

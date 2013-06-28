@@ -1,128 +1,92 @@
-using System;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Platforms;
+using DeltaEngine.Platforms.Mocks;
+using NUnit.Framework;
 
 namespace GameOfDeath.Tests
 {
-	internal class ItemHandlerTests : TestWithAllFrameworks
+	internal class ItemHandlerTests : TestWithMocksOrVisually
 	{
-		[VisualTest]
-		public void ShowMallet(Type resolver)
+		[Test]
+		public void ShowMallet()
 		{
-			Start(resolver, (ItemHandler handler) => handler.SelectItemIfSufficientFunds(0, 100));
+			Resolve<ItemHandler>().SelectItemIfSufficientFunds(0, 100);
 		}
 
-		[VisualTest]
-		public void ShowFire(Type resolver)
+		[Test]
+		public void ShowFire()
 		{
-			Start(resolver, (ItemHandler handler) => handler.SelectItemIfSufficientFunds(1, 100));
+			Resolve<ItemHandler>().SelectItemIfSufficientFunds(1, 100);
 		}
 
-		[VisualTest]
-		public void ShowToxic(Type resolver)
+		[Test]
+		public void ShowToxic()
 		{
-			Start(resolver, (ItemHandler handler) => handler.SelectItemIfSufficientFunds(2, 100));
+			Resolve<ItemHandler>().SelectItemIfSufficientFunds(2, 100);
 		}
 
-		[VisualTest]
-		public void ShowAtomic(Type resolver)
+		[Test]
+		public void ShowAtomic()
 		{
-			Start(resolver, (ItemHandler handler) => handler.SelectItemIfSufficientFunds(3, 100));
+			Resolve<ItemHandler>().SelectItemIfSufficientFunds(3, 100);
 		}
 
-		[VisualTest]
-		public void AllowToCastAnyItemInGame(Type resolver)
+		[Test]
+		public void AllowToCastAnyItemInGame()
 		{
-			Start(resolver, (UI bg, ItemHandler handler, Scoreboard score) => score.Money = 5000);
+			Resolve<Scoreboard>().Money = 5000;
 		}
 
-		[VisualTest]
-		public void SimulateClicksInField(Type resolver)
+		[Test]
+		public void SimulateClicksInField()
 		{
-			Start(resolver, (UI bg, ItemHandler handler, Scoreboard score) =>
-			{
-				if (mockResolver != null)
-					mockResolver.input.SetMouseButtonState(MouseButton.Left, State.Pressing);
-			}, () =>
-			{
-				if (mockResolver != null)
-					mockResolver.input.SetMouseButtonState(MouseButton.Left, State.Pressing);
-			});
+			Resolve<MockMouse>().SetButtonState(MouseButton.Left, State.Pressing);
+			RunCode = () => { Resolve<MockMouse>().SetButtonState(MouseButton.Left, State.Pressing); };
 		}
 
-		[VisualTest]
-		public void SimulateClicksOnIcons(Type resolver)
+		[Test]
+		public void SimulateClicksOnIcons()
 		{
-			Start(resolver, (UI bg, ItemHandler handler, Scoreboard score) =>
-			{
-				if (mockResolver == null)
-					return;
-
-				mockResolver.input.SetMousePosition(new Point(0.5f, 0.2f));
-				mockResolver.input.SetMouseButtonState(MouseButton.Left, State.Pressing);
-				mockResolver.AdvanceTimeAndExecuteRunners(0.1f);
-				score.Money = 0;
-				mockResolver.input.SetMousePosition(Point.Half);
-				mockResolver.input.SetMouseButtonState(MouseButton.Left, State.Pressing);
-			});
+			Resolve<MockMouse>().SetPosition(new Point(0.5f, 0.2f));
+			Resolve<MockMouse>().SetButtonState(MouseButton.Left, State.Pressing);
+			resolver.AdvanceTimeAndExecuteRunners(0.1f);
+			Resolve<Scoreboard>().Money = 0;
+			Resolve<MockMouse>().SetPosition(Point.Half);
+			Resolve<MockMouse>().SetButtonState(MouseButton.Left, State.Pressing);
 		}
 
-		[VisualTest]
-		public void SimulateMalletClick(Type resolver)
+		[Test]
+		public void SimulateMalletClick()
 		{
-			Start(resolver, (UI bg, ItemHandler handler, Scoreboard score) =>
-			{
-				if (mockResolver == null)
-					return;
-
-				mockResolver.input.SetMouseButtonState(MouseButton.Left, State.Pressing);
-				mockResolver.AdvanceTimeAndExecuteRunners(0.1f);
-				mockResolver.input.SetMousePosition(Point.One);
-				mockResolver.input.SetMouseButtonState(MouseButton.Left, State.Pressing);
-			});
+			Resolve<MockMouse>().SetButtonState(MouseButton.Left, State.Pressing);
+			resolver.AdvanceTimeAndExecuteRunners(0.1f);
+			Resolve<MockMouse>().SetPosition(Point.One);
+			Resolve<MockMouse>().SetButtonState(MouseButton.Left, State.Pressing);
 		}
 
-		[VisualTest]
-		public void SimulateFireClick(Type resolver)
+		[Test]
+		public void SimulateFireClick()
 		{
-			Start(resolver, (UI bg, ItemHandler handler) =>
-			{
-				handler.SelectItemIfSufficientFunds(1, 100);
-				if (mockResolver == null)
-					return;
-
-				mockResolver.input.SetMouseButtonState(MouseButton.Left, State.Pressing);
-				mockResolver.AdvanceTimeAndExecuteRunners(0.25f);
-			});
+			Resolve<ItemHandler>().SelectItemIfSufficientFunds(1, 100);
+			Resolve<MockMouse>().SetButtonState(MouseButton.Left, State.Pressing);
+			resolver.AdvanceTimeAndExecuteRunners(0.25f);
 		}
 
-		[VisualTest]
-		public void SimulateToxicClick(Type resolver)
+		[Test]
+		public void SimulateToxicClick()
 		{
-			Start(resolver, (UI bg, ItemHandler handler) =>
-			{
-				handler.SelectItemIfSufficientFunds(2, 100);
-				if (mockResolver == null)
-					return;
-
-				mockResolver.input.SetMouseButtonState(MouseButton.Left, State.Pressing);
-				mockResolver.AdvanceTimeAndExecuteRunners(0.1f);
-			});
+			Resolve<ItemHandler>().SelectItemIfSufficientFunds(2, 100);
+			Resolve<MockMouse>().SetButtonState(MouseButton.Left, State.Pressing);
+			resolver.AdvanceTimeAndExecuteRunners(0.1f);
 		}
 
-		[VisualTest]
-		public void SimulateAtomicClick(Type resolver)
+		[Test]
+		public void SimulateAtomicClick()
 		{
-			Start(resolver, (UI bg, ItemHandler handler) =>
-			{
-				handler.SelectItemIfSufficientFunds(3, 100);
-				if (mockResolver == null)
-					return;
-
-				mockResolver.input.SetMouseButtonState(MouseButton.Left, State.Pressing);
-				mockResolver.AdvanceTimeAndExecuteRunners(0.5f);
-			});
+			Resolve<ItemHandler>().SelectItemIfSufficientFunds(3, 100);
+			Resolve<MockMouse>().SetButtonState(MouseButton.Left, State.Pressing);
+			resolver.AdvanceTimeAndExecuteRunners(0.5f);
 		}
 	}
 }

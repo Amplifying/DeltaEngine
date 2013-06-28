@@ -64,6 +64,7 @@ namespace DeltaEngine.Logging.Basic.Tests
 		public void LogError()
 		{
 			provider.Log(new Error(new ArgumentException()));
+			WaitForClientResponse();
 			ExpectThatServerLastMessageContains("ArgumentException");
 		}
 

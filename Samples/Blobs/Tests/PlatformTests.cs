@@ -1,23 +1,16 @@
 using System;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Platforms;
+using NUnit.Framework;
 
 namespace Blobs.Tests
 {
-	public class PlatformTests : TestWithAllFrameworks
+	public class PlatformTests : TestWithMocksOrVisually
 	{
-		[VisualTest]
-		public void DrawRotatingPlatform(Type resolver)
+		[Test]
+		public void DrawRotatingPlatform()
 		{
-			Platform platform = null;
-
-			Start(resolver,
-				() =>
-				{ platform = new Platform(new Rectangle(0.3f, 0.3f, 0.3f, 0.2f)) { Color = Color.Gold }; },
-				() =>
-				{
-					//platform.Rotation += 45 * Time.Current.Delta;
-				});
+			new Platform(new Rectangle(0.3f, 0.3f, 0.3f, 0.2f)) { Color = Color.Gold };
 		}
 	}
 }

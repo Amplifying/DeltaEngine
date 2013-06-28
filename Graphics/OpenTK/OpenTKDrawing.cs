@@ -7,31 +7,45 @@ namespace DeltaEngine.Graphics.OpenTK
 	{
 		public OpenTKDrawing(Device device) : base(device)
 		{
-			InitializeVertexBuffers();
+			InitializeBuffers();
 			SetBlending(BlendMode.Normal);
 		}
 
-		private const int VertexBufferSize = 1024;
 		private BlendMode currentBlendMode = BlendMode.Opaque;
-		private OpenTKCircularBuffer positionColorBuffer;
-		private OpenTKCircularBuffer positionColorUvBuffer;
+		private OpenTKCircularBuffer<VertexPositionColor> positionColorBuffer;
+		private OpenTKCircularBuffer<VertexPositionColorTextured> positionColorUvBuffer;
+		private OpenTKCircularBuffer<short> indexBuffer;
+		private const int VertexBufferSize = 16384;
+		private const int IndexBufferSize = 65536;
 		private const int InvalidHandle = -1;
-		private int indexBufferID = InvalidHandle;
-		private const int InitialIndexBufferSize = 12288;
 		private int lastIndicesCount = InvalidHandle;
 		private const int InitialVertexBufferSize = 8192;
 
 		public override void Dispose()
 		{
+			if (positionColorBuffer.IsCreated)
+				positionColorBuffer.Dispose();
+
+			if (positionColorUvBuffer.IsCreated)
+				positionColorUvBuffer.Dispose();
+
+			if (indexBuffer.IsCreated)
+				indexBuffer.Dispose();
 		}
 
 		public override void SetIndices(short[] indices, int usedIndicesCount)
 		{
-			if (indexBufferID == InvalidHandle)
-				indexBufferID = CreateIndexBuffer(InitialIndexBufferSize * sizeof(short));
+			if (!indexBuffer.IsCreated)
+				indexBuffer.Create();
 
-			BindIndexBufferAndAddData(indices);
+			indexBuffer.SetData(indices);
 			lastIndicesCount = usedIndicesCount;
+		}
+
+		public override void DisableIndices()
+		{
+			if (indexBuffer.IsCreated)
+				indexBuffer.Dispose();
 		}
 
 		public override void DrawVertices(VerticesMode mode, VertexPositionColor[] vertices)
@@ -39,11 +53,13 @@ namespace DeltaEngine.Graphics.OpenTK
 			if (!positionColorBuffer.IsCreated)
 				positionColorBuffer.Create();
 
-			positionColorBuffer.SetVertexData(vertices);
+			positionColorBuffer.SetData(vertices);
 			SetBaseClientStates();
 			SetBaseVertexDeclaration(VertexPositionColor.SizeInBytes);
 			DecideKindOfDraw(mode, vertices.Length);
 			lastIndicesCount = InvalidHandle;
+			NumberOfVerticesDrawn += vertices.Length;
+			NumberOfTimesDrawn++;
 		}
 
 		public override void DrawVerticesForSprite(VerticesMode mode, VertexPositionColorTextured[] 
@@ -52,24 +68,23 @@ namespace DeltaEngine.Graphics.OpenTK
 			if (!positionColorUvBuffer.IsCreated)
 				positionColorUvBuffer.Create();
 
-			positionColorUvBuffer.SetVertexData(vertices);
+			positionColorUvBuffer.SetData(vertices);
 			SetBaseClientStates();
 			EnableTextureCoordArray();
 			SetBaseVertexDeclaration(VertexPositionColorTextured.SizeInBytes);
 			SetTextureCoordDeclaration();
 			DecideKindOfDraw(mode, vertices.Length);
 			lastIndicesCount = InvalidHandle;
+			NumberOfVerticesDrawn += vertices.Length;
+			NumberOfTimesDrawn++;
 		}
 
-		private void InitializeVertexBuffers()
+		private void InitializeBuffers()
 		{
-			positionColorBuffer = new OpenTKCircularBuffer(VertexBufferSize);
-			positionColorUvBuffer = new OpenTKCircularBuffer(VertexBufferSize);
-		}
-
-		public override void DisableIndices()
-		{
-			indexBufferID = InvalidHandle;
+			positionColorBuffer = new OpenTKCircularBuffer<VertexPositionColor>(VertexBufferSize);
+			positionColorUvBuffer = new 
+				OpenTKCircularBuffer<VertexPositionColorTextured>(VertexBufferSize);
+			indexBuffer = new OpenTKCircularBuffer<short>(IndexBufferSize);
 		}
 
 		public override void SetBlending(BlendMode blendMode)
@@ -119,23 +134,6 @@ namespace DeltaEngine.Graphics.OpenTK
 		public override void DisableTexturing()
 		{
 			GL.Disable(EnableCap.Texture2D);
-		}
-
-		private int CreateIndexBuffer(int totalSize)
-		{
-			int bufferID;
-			GL.GenBuffers(1, out bufferID);
-			GL.BindBuffer(BufferTarget.ElementArrayBuffer, bufferID);
-			GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(totalSize), IntPtr.Zero, 
-				BufferUsageHint.StaticDraw);
-			return bufferID;
-		}
-
-		private void BindIndexBufferAndAddData(short[] indices)
-		{
-			GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferID);
-			GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(indices.Length * 2), indices, 
-				BufferUsageHint.StreamDraw);
 		}
 
 		private void SetBaseClientStates()

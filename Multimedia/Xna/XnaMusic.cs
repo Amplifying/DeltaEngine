@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using DeltaEngine.Logging;
+using DeltaEngine.Platforms;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Media;
 using System.Diagnostics;
@@ -11,8 +13,9 @@ namespace DeltaEngine.Multimedia.Xna
 	/// </summary>
 	public class XnaMusic : Music
 	{
-		public XnaMusic(string filename, XnaSoundDevice device, ContentManager contentManager)
-			: base(filename, device)
+		public XnaMusic(string filename, XnaSoundDevice device, ContentManager contentManager,
+			Settings settings)
+			: base(filename, device, settings)
 		{
 			this.contentManager = contentManager;
 		}
@@ -49,27 +52,17 @@ namespace DeltaEngine.Multimedia.Xna
 			positionInSeconds = (float)MediaPlayer.PlayPosition.TotalSeconds;
 		}
 
-		protected override bool CanLoadDataFromStream
-		{
-			get { return false; }
-		}
-
 		protected override void LoadData(Stream fileData)
-		{
-			throw new XnaVideo.XnaOnlyAllowsLoadingThroughContentNames();
-		}
-
-		protected override void LoadFromContentName(string contentName)
 		{
 			try
 			{
-				music = contentManager.Load<Song>(contentName);
+				music = contentManager.Load<Song>(Name);
 			}
 			catch (Exception ex)
 			{
-				//logger.Error(ex);
+				Logger.Current.Error(ex);
 				if (Debugger.IsAttached)
-					throw new XnaMusicContentNotFound(contentName, ex);
+					throw new XnaMusicContentNotFound(Name, ex);
 			}
 		}
 

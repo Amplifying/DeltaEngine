@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using DeltaEngine.Content.Xml;
 using DeltaEngine.Core;
-using DeltaEngine.Core.Xml;
 
 namespace DeltaEngine.Editor.Mocks
 {
@@ -24,14 +24,13 @@ namespace DeltaEngine.Editor.Mocks
 			foreach (var image in content.ImageList)
 				AddChild(root, image, selectedProject, "ContentMetaData");
 			var file = new XmlFile(root);
-			string path = Path.Combine(ContentServiceFiles.ContentPath, selectedProject,
-				MetaDataFilename);
+			string path = Path.Combine(content.ContentPath, selectedProject, MetaDataFilename);
 			string xmlDataString = file.Root.ToXmlString();
 			content.fileSystem.File.WriteAllText(path, xmlDataString);
 		}
 
 		private const string MetaDataFilename = "ContentMetaData.xml";
-		
+
 		private static XmlData CreateMainContentMetaData(string selectedProject, string name)
 		{
 			var root = new XmlData(selectedProject);
@@ -62,7 +61,7 @@ namespace DeltaEngine.Editor.Mocks
 			child1.AddAttribute("Type", fileType);
 			child1.AddAttribute("LastTimeUpdated", DateTime.Now.GetIsoDateTime());
 			child1.AddAttribute("PlatformFileId", 1);
-			string fullPath = Path.Combine(ContentServiceFiles.ContentPath, selectedProject, image);
+			string fullPath = Path.Combine(content.ContentPath, selectedProject, image);
 			child1.AddAttribute("FileSize", content.fileSystem.FileInfo.FromFileName(fullPath).Length);
 			child1.AddAttribute("LocalFilePath", image);
 		}
@@ -72,14 +71,14 @@ namespace DeltaEngine.Editor.Mocks
 			content = newContent;
 		}
 
-		public void SaveImagesAsAnimation(List<string> itemList, string animationName, string selectedProject)
+		public void SaveImagesAsAnimation(List<string> itemList, string animationName,
+			string selectedProject)
 		{
 			var root = CreateMainContentMetaData(selectedProject, animationName);
 			foreach (var item in itemList)
 				AddChild(root, item, selectedProject, animationName);
 			var file = new XmlFile(root);
-			string path = Path.Combine(ContentServiceFiles.ContentPath, selectedProject,
-				animationName + ".xml");
+			string path = Path.Combine(content.ContentPath, selectedProject, animationName + ".xml");
 			string xmlDataString = file.Root.ToXmlString();
 			content.fileSystem.File.WriteAllText(path, xmlDataString);
 		}

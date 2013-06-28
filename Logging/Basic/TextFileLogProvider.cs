@@ -17,7 +17,8 @@ namespace DeltaEngine.Logging.Basic
 					"Delta Engine");
 			if (!Directory.Exists(logFolder))
 				Directory.CreateDirectory(logFolder);
-			filePath = Path.Combine(logFolder, AssemblyExtensions.DetermineProjectName() + FileExtension);
+			filePath = Path.Combine(logFolder,
+				AssemblyExtensions.GetTestNameOrProjectName() + FileExtension);
 		}
 
 		private readonly string filePath;
@@ -67,7 +68,8 @@ namespace DeltaEngine.Logging.Basic
 
 		private void OpenLogFileInEditor()
 		{
-			if (!ExceptionExtensions.IsDebugMode || writer == null)
+			if (!ExceptionExtensions.IsDebugMode || StackTraceExtensions.StartedFromNCrunch ||
+				writer == null)
 				return;
 
 			try

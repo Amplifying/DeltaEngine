@@ -10,12 +10,12 @@ namespace GameOfDeath.Items
 	/// </summary>
 	public class Mallet : Item
 	{
-		public Mallet(ContentLoader content)
+		public Mallet()
 			: base(
-				content.Load<Image>("Mallet"), content.Load<Image>("MalletEffect"),
-				content.Load<Sound>("MalletSwing"))
+				ContentLoader.Load<Image>("Mallet"), ContentLoader.Load<Image>("MalletEffect"),
+				ContentLoader.Load<Sound>("MalletSwing"))
 		{
-			Add<RotateMallet>();
+			Start<RotateMallet>();
 		}
 
 		public override void UpdatePosition(Point newPosition)

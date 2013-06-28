@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
 using NUnit.Framework;
 
 namespace DeltaEngine.Logging.Tests

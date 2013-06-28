@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
 using DeltaEngine.Rendering.Shapes;
 using NUnit.Framework;
 
@@ -84,7 +86,7 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 		public void Triangle2DToString()
 		{
 			var triangle = new Triangle2D(new Point(1, 2), new Point(3, 4), new Point(5, 6));
-			Assert.AreEqual("(1, 2) (3, 4) (5, 6)", triangle.ToString());
+			Assert.AreEqual("1, 2 3, 4 5, 6", triangle.ToString());
 		}
 
 		[Test]
@@ -94,7 +96,8 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 				new Point(0.0f, -5.67f));
 			string triangleString = triangle.ToString();
 			Assert.AreEqual(triangle, new Triangle2D(triangleString));
-			Assert.Throws<Triangle2D.InvalidNumberOfComponents>(() => new Triangle2D("abc"));
+			Assert.Throws<Triangle2D.InvalidNumberOfComponents>(() => new Triangle2D("1, 2, 3"));
+			Assert.Throws<FormatException>(() => new Triangle2D("abc"));
 		}
 
 		[Test]

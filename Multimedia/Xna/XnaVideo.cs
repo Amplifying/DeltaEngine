@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Logging;
 using DeltaEngine.Rendering.Sprites;
 using Microsoft.Xna.Framework.Media;
 using Media = Microsoft.Xna.Framework.Media;
@@ -32,7 +33,7 @@ namespace DeltaEngine.Multimedia.Xna
 			positionInSeconds = 0f;
 			player.Volume = volume;
 			player.Play(video);
-			surface = new Sprite(image, rendering.Screen.Viewport, Color.White);
+			surface = new Sprite(image, rendering.Screen.Viewport);
 		}
 
 		private Sprite surface;
@@ -66,29 +67,17 @@ namespace DeltaEngine.Multimedia.Xna
 			positionInSeconds = (float)player.PlayPosition.TotalSeconds;
 		}
 
-		protected override bool CanLoadDataFromStream
-		{
-			get { return false; }
-		}
-
 		protected override void LoadData(Stream fileData)
-		{
-			throw new XnaOnlyAllowsLoadingThroughContentNames();
-		}
-
-		public class XnaOnlyAllowsLoadingThroughContentNames : Exception {}
-
-		protected override void LoadFromContentName(string contentName)
 		{
 			try
 			{
-				video = rendering.NativeContent.Load<Media.Video>(contentName);
+				video = rendering.NativeContent.Load<Media.Video>(Name);
 			}
 			catch (Exception ex)
 			{
-				//logger.Error(ex);
+				Logger.Current.Error(ex);
 				if (Debugger.IsAttached)
-					throw new XnaVideoContentNotFound(contentName, ex);
+					throw new XnaVideoContentNotFound(Name, ex);
 			}
 		}
 

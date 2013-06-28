@@ -1,6 +1,7 @@
-using System.Collections.Generic;
 using DeltaEngine.Core;
+using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
+using DeltaEngine.Rendering;
 
 namespace Snake
 {
@@ -8,27 +9,28 @@ namespace Snake
 	/// This class holds data about the snake body and checks for snake collisions with either 
 	/// itself or with the borders and whether the snake must grow in size.
 	/// </summary>
-	public class Snake : Entity
+	public class Snake : Entity2D
 	{
-		public Snake(int gridSize)
+		public Snake(int gridSize) : base(Rectangle.Zero)
 		{
 			Add(new Body(gridSize));
-			Add<SnakeHandler>();
+			Start<SnakeHandler>();
 		}
 
 		public void Dispose()
 		{
-			foreach (var bodyPart in Get<Body>().BodyParts)
+			var body = Get<Body>();
+			foreach (var bodyPart in body.BodyParts)
 				bodyPart.IsActive = false;
 
 			Get<Body>().BodyParts.Clear();
 			Remove<Body>();
-			Remove<SnakeHandler>();
+			Stop<SnakeHandler>();
 		}
 
-		internal class SnakeHandler : EntityHandler
+		internal class SnakeHandler : Behavior2D
 		{
-			public override void Handle(Entity entity)
+			public override void Handle(Entity2D entity)
 			{
 				if (!Time.Current.CheckEvery(0.15f))
 					return;
@@ -39,9 +41,9 @@ namespace Snake
 				body.CheckSnakeCollisionWithBorderOrItself();
 			}
 
-			public override EntityHandlerPriority Priority
+			public override Priority Priority
 			{
-				get { return EntityHandlerPriority.Normal; }
+				get { return Priority.Normal; }
 			}
 		}
 	}

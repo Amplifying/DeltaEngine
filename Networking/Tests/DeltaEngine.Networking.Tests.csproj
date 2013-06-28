@@ -43,6 +43,10 @@
       <Project>{460983FF-AA91-4E10-B70E-10D0BDA15A58}</Project>
       <Name>DeltaEngine.Datatypes</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Entities\DeltaEngine.Entities.csproj">
+      <Project>{C6BA144D-59B0-41B1-8682-B092B4EFBBB1}</Project>
+      <Name>DeltaEngine.Entities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Networking.csproj">
       <Project>{5231706e-2955-43bf-9c06-291e12af5c5c}</Project>
       <Name>DeltaEngine.Networking</Name>

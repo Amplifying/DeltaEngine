@@ -3,29 +3,26 @@ using System.Collections.Generic;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Rendering;
 
 namespace Asteroids
 {
-	public class GameLogic : Entity
+	public class GameLogic : Entity2D
 	{
-		public GameLogic(ContentLoader content)
+		public GameLogic() : base(Rectangle.Zero)
 		{
-			this.content = content;
 			random = new PseudoRandom();
 			ExistantAsteroids = new List<Asteroid>();
 			ExistantProjectiles = new List<Projectile>();
-			Player = new PlayerShip(content);
+			Player = new PlayerShip();
 			Player.ProjectileFired += projectile => { ExistantProjectiles.Add(projectile); };
 			CreateRandomAsteroids(1);
 			CreateRandomAsteroids(1, 2);
-			Add<GameLogicsHandler>();
+			Start<GameLogicsHandler>();
 			IncreaseScore += i => { };
 		}
 
 		public PlayerShip Player { get; private set; }
-		private readonly ContentLoader content;
 		private readonly PseudoRandom random;
 		public List<Asteroid> ExistantAsteroids { get; private set; }
 		public List<Projectile> ExistantProjectiles { get; private set; }
@@ -34,7 +31,7 @@ namespace Asteroids
 		{
 			for (int asteroidCount = 0; asteroidCount < howMany; asteroidCount++)
 			{
-				var asteroid = new Asteroid(content, random, this, sizeMod);
+				var asteroid = new Asteroid(random, this, sizeMod);
 				asteroidsToCreate.Add(asteroid);
 			}
 		}
@@ -45,7 +42,7 @@ namespace Asteroids
 		{
 			for (int asteroidCount = 0; asteroidCount < howMany; asteroidCount++)
 			{
-				var asteroid = new Asteroid(content, random, this, sizeMod);
+				var asteroid = new Asteroid(random, this, sizeMod);
 				asteroid.DrawArea = new Rectangle(position, asteroid.DrawArea.Size);
 				asteroidsToCreate.Add(asteroid);
 			}
@@ -56,14 +53,14 @@ namespace Asteroids
 			IncreaseScore.Invoke(increase);
 		}
 
-		internal class GameLogicsHandler : EntityHandler
+		internal class GameLogicsHandler : Behavior2D
 		{
 			public GameLogicsHandler()
 			{
 				timeLastNewAsteroid = 0;
 			}
 
-			public override void Handle(Entity entity)
+			public override void Handle(Entity2D entity)
 			{
 				var gameEntity = entity as GameLogic;
 				DoRemoveAndAddObjects(gameEntity);
@@ -139,5 +136,22 @@ namespace Asteroids
 
 		public event Action GameOver;
 		public event Action<int> IncreaseScore;
+
+		public void Restart()
+		{
+			foreach (Asteroid asteroid in ExistantAsteroids)
+				asteroid.IsActive = false;
+			foreach (Projectile projectile in ExistantProjectiles)
+				projectile.IsActive = false;
+			foreach (Asteroid asteroid in asteroidsToCreate)
+				asteroid.IsActive = false;
+
+			ExistantAsteroids.Clear();
+			ExistantProjectiles.Clear();
+			asteroidsToCreate.Clear();
+
+			Player = new PlayerShip();
+			Player.ProjectileFired += projectile => { ExistantProjectiles.Add(projectile); };
+		}
 	}
 }

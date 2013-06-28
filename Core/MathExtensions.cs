@@ -19,7 +19,7 @@ namespace DeltaEngine.Core
 			return (value1 - value2).Abs() < difference;
 		}
 
-		private const float Epsilon = 0.0001f;
+		public const float Epsilon = 0.0001f;
 
 		public static int Round(float value)
 		{
@@ -41,9 +41,19 @@ namespace DeltaEngine.Core
 			return (float)Math.Cos(degrees * Pi / 180.0f);
 		}
 
+		public static float Tan(float degrees)
+		{
+			return (float)Math.Tan(degrees * Pi / 180.0f);
+		}
+
 		public static float Atan2(float y, float x)
 		{
 			return (float)Math.Atan2(y, x) * 180 / Pi;
+		}
+
+		public static float Sqrt(float value)
+		{
+			return (float)Math.Sqrt(value);
 		}
 
 		public static int Clamp(this int value, int min, int max)

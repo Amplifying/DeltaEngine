@@ -1,15 +1,15 @@
 using DeltaEngine.Content;
-using DeltaEngine.Core.Xml;
+using DeltaEngine.Content.Xml;
 using DeltaEngine.Graphics;
 
 namespace DeltaEngine.Rendering.Fonts
 {
 	public class Font
 	{
-		public Font(ContentLoader content, string fontContentName)
+		public Font(string fontContentName)
 		{
-			Data = new FontData(content.Load<XmlContent>(fontContentName).Data);
-			Image = content.Load<Image>(Data.FontMapName);
+			Data = new FontData(ContentLoader.Load<XmlContent>(fontContentName).Data);
+			Image = ContentLoader.Load<Image>(Data.FontMapName);
 		}
 
 		public FontData Data { get; private set; }

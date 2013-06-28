@@ -24,6 +24,7 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 
 		private static Window CreateVerifiableWindowFromViewModel(ProjectCreatorViewModel viewModel)
 		{
+			viewModel.OnLocationChanged.Execute(@"C:\code\DeltaEngine\");
 			return new Window { Content = new ProjectCreatorView(viewModel), Width = 600, Height = 300 };
 		}
 

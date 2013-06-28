@@ -35,13 +35,9 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Content\DeltaEngine.Content.csproj">
-      <Project>{f1b6345b-6f28-482f-9230-8f1d8674c28a}</Project>
-      <Name>DeltaEngine.Content</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Datatypes\DeltaEngine.Datatypes.csproj">
-      <Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
-      <Name>DeltaEngine.Datatypes</Name>
+    <ProjectReference Include="..\..\Entities\DeltaEngine.Entities.csproj">
+      <Project>{c6ba144d-59b0-41b1-8682-b092b4efbbb1}</Project>
+      <Name>DeltaEngine.Entities</Name>
     </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Networking.csproj">
       <Project>{5231706e-2955-43bf-9c06-291e12af5c5c}</Project>

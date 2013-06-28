@@ -52,7 +52,7 @@
       <Name>DeltaEngine.Datatypes</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Entities\DeltaEngine.Entities.csproj">
-      <Project>{c6ba144d-59b0-41b1-8682-b092b4efbbb1}</Project>
+      <Project>{C6BA144D-59B0-41B1-8682-B092B4EFBBB1}</Project>
       <Name>DeltaEngine.Entities</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Graphics\DeltaEngine.Graphics.csproj">
@@ -67,17 +67,13 @@
       <Project>{6016ABB8-05F5-4A07-8FBA-16576277DDE7}</Project>
       <Name>DeltaEngine.Multimedia</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Multimedia\OpenTK\DeltaEngine.Multimedia.OpenTK.csproj">
-      <Project>{32665d04-5a07-4f99-9e20-0639cd1c1d6d}</Project>
-      <Name>DeltaEngine.Multimedia.OpenTK</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Platforms\DeltaEngine.Platforms.csproj">
       <Project>{bae8830e-5f62-48d6-b772-c4b1e8665fb3}</Project>
       <Name>DeltaEngine.Platforms</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Platforms\WindowsOpenTK\DeltaEngine.WindowsOpenTK.csproj">
-      <Project>{cc943ae0-a1cc-4788-ac9b-01db3a0ebcd6}</Project>
-      <Name>DeltaEngine.WindowsOpenTK</Name>
+    <ProjectReference Include="..\..\Platforms\WindowsGLFW\DeltaEngine.WindowsGLFW.csproj">
+      <Project>{157F559D-CF12-488B-AD0F-3F3477990B1F}</Project>
+      <Name>DeltaEngine.WindowsGLFW</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
       <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
@@ -86,47 +82,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="BreakoutIcon.ico" />
-    <Content Include="Content\ContentMetaData.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Icons\BreakoutIcon.ico" />
-    <Content Include="Icons\BreakoutIcon150x150.png" />
-    <Content Include="Icons\BreakoutIcon173x173.png" />
-    <Content Include="Icons\BreakoutIcon30x30.png" />
-    <Content Include="Icons\BreakoutIcon310x150.png" />
-    <Content Include="Icons\BreakoutIcon50x50.png" />
-    <Content Include="Icons\BreakoutIcon64x64.png" />
-    <Content Include="Content\Ball.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Brick.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Explosion.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Paddle.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Background.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\BrickExplosion.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\PaddleBallStart.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\BallCollision.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\LostBall.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Victory.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Icons\BreakOutSplashScreen.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 
@@ -137,8 +138,7 @@ namespace DeltaEngine.Datatypes.Tests
 		[Test]
 		public void SizeToString()
 		{
-			var s = new Size(2.23f, 3.45f);
-			Assert.AreEqual("(2.23, 3.45)", s.ToString());
+			Assert.AreEqual("2.23, 3.45", new Size(2.23f, 3.45f).ToString());
 		}
 
 		[Test]
@@ -148,7 +148,7 @@ namespace DeltaEngine.Datatypes.Tests
 			string sizeString = s.ToString();
 			Assert.AreEqual(s, new Size(sizeString));
 			Assert.Throws<Size.InvalidNumberOfComponents>(() => new Size("10"));
-			Assert.Throws<Size.InvalidNumberOfComponents>(() => new Size("abc"));
+			Assert.Throws<FormatException>(() => new Size("abc"));
 		}
 
 		[Test]
@@ -171,17 +171,6 @@ namespace DeltaEngine.Datatypes.Tests
 			Assert.AreEqual(0.5f, portrait.AspectRatio);
 			Assert.AreEqual(1.0f, square.AspectRatio);
 			Assert.AreEqual(2.0f, landscape.AspectRatio);
-		}
-
-		[Test]
-		public void SaveAndLoad()
-		{
-			var data = Size.Half.SaveToMemoryStream();
-			byte[] savedBytes = data.ToArray();
-			Assert.AreEqual(1 + "Size".Length + Size.SizeInBytes, savedBytes.Length);
-			Assert.AreEqual("Size".Length, savedBytes[0]);
-			var reconstructed = data.CreateFromMemoryStream();
-			Assert.AreEqual(Size.Half, reconstructed);
 		}
 	}
 }

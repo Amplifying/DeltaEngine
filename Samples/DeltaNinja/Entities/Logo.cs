@@ -1,12 +1,10 @@
-using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
 using DeltaEngine.Physics2D;
-using DeltaEngine.Rendering;
 using DeltaEngine.Rendering.Shapes;
 using System.Collections.Generic;
 
-namespace DeltaNinja
+namespace DeltaNinja.Entities
 {
 	public class Logo : MovingSprite
 	{
@@ -35,8 +33,8 @@ namespace DeltaNinja
 			sideStatus = Sides.None;
 
 			Add(data);
-			Add<TrajectoryEntityHandler>();
-			Add<SimplePhysics.Rotate>();
+			Start<TrajectoryEntityHandler>();
+			Start<SimplePhysics.Rotate>();
 		}
 
 		private Sides sideStatus;
@@ -51,6 +49,16 @@ namespace DeltaNinja
 				if (logoSize < 0.05f) return SizeCategory.Medium;
 				return SizeCategory.Big;
 			}
+		}
+
+		public override void SetPause(bool pause)
+		{
+			if(pause)
+				Remove<SimplePhysics.Rotate>();
+			else
+				Start<SimplePhysics.Rotate>();
+
+			base.SetPause(pause);
 		}
 
 		public void CheckForSlicing(Point start, Point end)
@@ -83,10 +91,9 @@ namespace DeltaNinja
 		{
 			foreach (var segment in segments)
 			{
-				if (CheckIfLineIntersectsLine(segment.Start, segment.End, startPoint, endPoint)) return true;
+				if (CheckIfLineIntersectsLine(segment.StartPoint, segment.EndPoint, startPoint, endPoint)) return true;
 			}
 			return false;
 		}
-
 	}
 }

@@ -9,9 +9,9 @@ namespace Breakout
 	/// </summary>
 	public class BallInLevel : Ball
 	{
-		public BallInLevel(Paddle paddle, ContentLoader content, InputCommands inputCommands,
+		public BallInLevel(Paddle paddle, InputCommands inputCommands,
 			Level level)
-			: base(paddle, content, inputCommands)
+			: base(paddle, inputCommands)
 		{
 			Level = level;
 		}
@@ -22,6 +22,7 @@ namespace Breakout
 		{
 			base.UpdateInFlight(timeDelta);
 			HandleBrickCollisions();
+			StartNewLevelIfAllBricksAreDestroyed();
 		}
 
 		private void HandleBrickCollisions()
@@ -30,6 +31,15 @@ namespace Breakout
 			HandleBrickCollision(Level.GetBrickAt(Position.X, Position.Y - Radius), Direction.Top);
 			HandleBrickCollision(Level.GetBrickAt(Position.X + Radius, Position.Y), Direction.Right);
 			HandleBrickCollision(Level.GetBrickAt(Position.X, Position.Y + Radius), Direction.Bottom);
+		}
+
+		private void StartNewLevelIfAllBricksAreDestroyed()
+		{
+			if (Level.BricksLeft > 0)
+				return;
+
+			Level.InitializeNextLevel();
+			ResetBall();
 		}
 
 		private void HandleBrickCollision(Sprite brick, Direction collisionSide)

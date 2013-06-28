@@ -20,39 +20,35 @@ namespace DeltaEngine.Core
 			return number.ToString(format, NumberFormatInfo.InvariantInfo);
 		}
 
-		public static T FromInvariantString<T>(this string value, T defaultValue)
+		public static T Convert<T>(this string value)
 		{
-			try
-			{
-				return TryConvertInvariantString(value, defaultValue);
-			}
-			catch (FormatException)
-			{
-				return defaultValue;
-			}
+			var type = typeof(T);
+			if (type == typeof(string))
+				return (T)(System.Convert.ToString(value) as object);
+			if (type == typeof(int))
+				return (T)(System.Convert.ToInt32(value) as object);
+			if (type == typeof(double))
+				return (T)(System.Convert.ToDouble(value, CultureInfo.InvariantCulture) as object);
+			if (type == typeof(float))
+				return (T)(System.Convert.ToSingle(value, CultureInfo.InvariantCulture) as object);
+			if (type == typeof(bool))
+				return (T)(System.Convert.ToBoolean(value) as object);
+			if (type == typeof(char))
+				return (T)(System.Convert.ToChar(value) as object);
+			if (type.IsEnum)
+				return (T)Enum.Parse(type, value);
+			if (RegisteredConvertCallbacks.ContainsKey(type))
+				return (T)RegisteredConvertCallbacks[type](value);
+			throw new NotSupportedException("Type " + type + " was not registered for conversion!");
 		}
 
-		private static T TryConvertInvariantString<T>(string value, T defaultValue)
+		private static readonly Dictionary<Type, Func<string, object>> RegisteredConvertCallbacks =
+			new Dictionary<Type, Func<string, object>>();
+
+		public static void AddConvertTypeCreation(this Type typeToConvert, Func<string, object> conversion)
 		{
-			if (defaultValue is string)
-				return (T)(Convert.ToString(value) as object);
-			
-			if (defaultValue is int)
-				return (T)(Convert.ToInt32(value) as object);
-			
-			if (defaultValue is double)
-				return (T)(Convert.ToDouble(value, CultureInfo.InvariantCulture) as object);
-
-			if (defaultValue is float)
-				return (T)(Convert.ToSingle(value, CultureInfo.InvariantCulture) as object);
-
-			if (defaultValue is bool)
-				return (T)(Convert.ToBoolean(value) as object);
-			
-			if (defaultValue is char)
-				return (T)(Convert.ToChar(value) as object);
-			
-			return defaultValue;
+			if (!RegisteredConvertCallbacks.ContainsKey(typeToConvert))
+				RegisteredConvertCallbacks.Add(typeToConvert, conversion);
 		}
 
 		public static string ToInvariantString(object someObj)
@@ -85,7 +81,7 @@ namespace DeltaEngine.Core
 		{
 			var floats = new float[components.Length];
 			for (int i = 0; i < floats.Length; i++)
-				floats[i] = components[i].FromInvariantString(0.0f);
+				floats[i] = components[i].Convert<float>();
 
 			return floats;
 		}

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using DeltaEngine.Core.Xml;
+using DeltaEngine.Content.Xml;
 using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Rendering.Fonts
@@ -90,7 +90,7 @@ namespace DeltaEngine.Rendering.Fonts
 			get
 			{
 				var bitmap = data.GetChild("Bitmap");
-				return bitmap == null ? "Verdana9" : bitmap.GetAttributeValue("Name");
+				return bitmap == null ? "Verdana12Font" : bitmap.GetAttributeValue("Name");
 			}
 		}
 

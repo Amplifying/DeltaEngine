@@ -13,11 +13,9 @@ namespace Asteroids
 	/// </summary>
 	public class Asteroid : Sprite
 	{
-		public Asteroid(ContentLoader content, Randomizer randomizer, GameLogic gameLogic,
-			int sizeModifier = 1)
+		public Asteroid(Randomizer randomizer, GameLogic gameLogic, int sizeModifier = 1)
 			: base(
-				content.Load<Image>(AsteroidTextureName), CreateDrawArea(randomizer, sizeModifier),
-				Color.White)
+				ContentLoader.Load<Image>(AsteroidTextureName), CreateDrawArea(randomizer, sizeModifier))
 		{
 			this.gameLogic = gameLogic;
 			this.sizeModifier = sizeModifier;
@@ -29,8 +27,9 @@ namespace Asteroids
 				RotationSpeed = randomizer.Get(.1f, 50)
 			});
 
-			Add<SimplePhysics.BounceOffScreenEdges>();
-			Add<SimplePhysics.Rotate>();
+			Add(0.0f);
+			Start<SimplePhysics.BounceOffScreenEdges>();
+			Start<SimplePhysics.Rotate>();
 		}
 
 		private const string AsteroidTextureName = "asteroid";

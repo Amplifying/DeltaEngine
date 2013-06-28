@@ -4,14 +4,14 @@ namespace DeltaEngine.Logging.Basic.Tests
 {
 	public class ConsoleLoggerTests
 	{
-		[Test, Category("Slow")]
+		[Test]
 		public void CreateLogger()
 		{
 			var logger = new ConsoleLogger();
 			Assert.IsNotNull(logger);
 		}
 
-		[Test, Category("Slow")]
+		[Test]
 		public void ConsoleLogger()
 		{
 			var logger = new ConsoleLogger();

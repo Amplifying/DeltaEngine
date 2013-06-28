@@ -5,7 +5,7 @@ namespace DeltaEngine.Editor.Common
 	/// </summary>
 	public enum PlatformName
 	{
-		//not supported yet: Windows,
+		Windows,
 		//not supported yet: Windows8,
 		WindowsPhone7,
 		Android

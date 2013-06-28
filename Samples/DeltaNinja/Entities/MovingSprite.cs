@@ -2,22 +2,27 @@ using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
 using DeltaEngine.Rendering.Sprites;
 
-namespace DeltaNinja
+namespace DeltaNinja.Entities
 {
 	public class MovingSprite : Sprite
 	{
 		private static int ID = 0;
-		// 1 ScreenSpace = Scale m
-		// public const float Scale = 1f;
-		public const float Gravity = 0.5f; // 9.81f / 20f;
-
+		public const float Gravity = 0.5f; 
+		
 		public MovingSprite(Image image, Color color, Point position, Size size)
-			: base(image, Rectangle.One, color)
+			: base(image, Rectangle.One)
 		{
-			base.Size = size;
-			base.Center = position;
+			Size = size;
+			Center = position;
 
 			ID += 1;
+		}
+
+		public bool IsPaused { get; protected set; }
+
+		public virtual void SetPause(bool pause)
+		{
+			IsPaused = pause;
 		}
 
 		private bool CheckBounds(Rectangle view)
@@ -26,15 +31,6 @@ namespace DeltaNinja
 			if (view.Right < DrawArea.Right) return false;
 			if (DrawArea.Top < 0) return false;
 			if (view.Top + 0.05f > DrawArea.Center.Y) return false;
-			return true;
-		}
-
-		public bool CheckForHit(Point position)
-		{
-			if (!DrawArea.Contains(position)) return false;
-
-			// ToDo: check if transparent pixel
-			Visibility = DeltaEngine.Rendering.Visibility.Hide;
 			return true;
 		}
 

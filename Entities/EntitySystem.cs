@@ -10,12 +10,12 @@ namespace DeltaEngine.Entities
 	/// </summary>
 	public class EntitySystem : Runner
 	{
-		public EntitySystem(EntityHandlerResolver handlerResolver)
+		public EntitySystem(HandlerResolver handlerResolver)
 		{
 			this.handlerResolver = handlerResolver;
 		}
 
-		private readonly EntityHandlerResolver handlerResolver;
+		private readonly HandlerResolver handlerResolver;
 
 		public static bool HasCurrent
 		{
@@ -66,7 +66,7 @@ namespace DeltaEngine.Entities
 
 		private readonly List<Entity> entitiesWithoutHandlers = new List<Entity>();
 
-		private HandlerWithEntities FindHandlerWithEntities(EntityHandler searchHandler)
+		private HandlerWithEntities FindHandlerWithEntities(Handler searchHandler)
 		{
 			return handlersWithAffectedEntities.FirstOrDefault(h => h.handler == searchHandler);
 		}
@@ -95,51 +95,66 @@ namespace DeltaEngine.Entities
 
 		private class HandlerWithEntities
 		{
-			public HandlerWithEntities(EntityHandler handler)
+			public HandlerWithEntities(Handler handler)
 			{
 				this.handler = handler;
 			}
 
-			public readonly EntityHandler handler;
+			public readonly Handler handler;
 			public readonly List<Entity> entities = new List<Entity>();
+		}
+
+		internal void AddTag(Entity entity, string tag)
+		{
+			List<Entity> entitiesWithTag;
+			if (entityTags.TryGetValue(tag, out entitiesWithTag))
+				entitiesWithTag.Add(entity);
+			else
+				entityTags.Add(tag, new List<Entity> { entity });
+		}
+
+		private readonly Dictionary<string, List<Entity>> entityTags =
+			new Dictionary<string, List<Entity>>();
+
+		internal void RemoveTag(Entity entity, string tag)
+		{
+			List<Entity> entitiesWithTag;
+			if (entityTags.TryGetValue(tag, out entitiesWithTag))
+				entitiesWithTag.Remove(entity);
 		}
 
 		public List<Entity> GetEntitiesWithTag(string searchTag)
 		{
-			foundEntities = new List<Entity>();
-			foreach (var handler in handlersWithAffectedEntities)
-				SearchEntitiesWithTag(handler.entities, searchTag);
-
-			SearchEntitiesWithTag(entitiesWithoutHandlers, searchTag);
-			SearchEntitiesWithTag(rememberToAdd, searchTag);
-			return foundEntities;
+			List<Entity> entitiesWithTag;
+			return entityTags.TryGetValue(searchTag, out entitiesWithTag)
+				? entitiesWithTag : new List<Entity>();
 		}
 
-		private List<Entity> foundEntities;
-
-		private void SearchEntitiesWithTag(IEnumerable<Entity> entities, string searchTag)
+		public List<Entity> GetEntitiesByHandler(Handler handler)
 		{
-			foundEntities.AddRange(entities.Where(entity => entity.Tag == searchTag));
-		}
-
-		public List<Entity> GetEntitiesByHandler(EntityHandler entityHandler)
-		{
-			HandlerWithEntities handlerWithEntities = FindHandlerWithEntities(entityHandler);
+			HandlerWithEntities handlerWithEntities = FindHandlerWithEntities(handler);
 			return handlerWithEntities == null ? new List<Entity>() : handlerWithEntities.entities;
+		}
+
+		public List<T> GetEntitiesOfType<T>()
+		{
+			return GetAllEntitiesInCurrent().OfType<T>().ToList();
 		}
 
 		public int NumberOfEntities
 		{
-			get
-			{
-				var total = new List<Entity>(entitiesWithoutHandlers);
-				total.AddRange(
-					handlersWithAffectedEntities.SelectMany(handler => handler.entities).Distinct());
-				total.AddRange(rememberToAdd);
-				foreach (var entity in rememberToRemove)
-					total.Remove(entity);
-				return total.Count;
-			}
+			get { return GetAllEntitiesInCurrent().Count; }
+		}
+
+		private List<Entity> GetAllEntitiesInCurrent()
+		{
+			var total = new List<Entity>(entitiesWithoutHandlers);
+			total.AddRange(
+				handlersWithAffectedEntities.SelectMany(handler => handler.entities).Distinct());
+			total.AddRange(rememberToAdd);
+			foreach (var entity in rememberToRemove)
+				total.Remove(entity);
+			return total;
 		}
 
 		public void Run()
@@ -153,7 +168,6 @@ namespace DeltaEngine.Entities
 
 		private void AddRememberedEntities()
 		{
-			//TODO: this makes no sense, but it crashes when calling from server code
 			lock (rememberToAdd)
 			{
 				foreach (var entity in rememberToAdd)
@@ -175,22 +189,48 @@ namespace DeltaEngine.Entities
 		private void RemoveAndAddUnresolvedEntityHandlers(Entity entity)
 		{
 			foreach (Type handlerType in entity.handlerTypesToRemove)
-				entity.activeHandlers.Remove(GetHandler(handlerType));
+				RemoveHandlerAndRunStoppedHandlingCode(entity, handlerType);
 
 			foreach (Type handlerType in entity.handlerTypesToAdd)
-				entity.AddHandler(GetHandler(handlerType));
+				AddHandlerAndRunStartedHandlingCode(entity, handlerType);
 
 			entity.handlerTypesToAdd.Clear();
 			entity.handlerTypesToRemove.Clear();
 			entity.isActiveChanged = false;
 		}
 
-		public T GetHandler<T>() where T : EntityHandler
+		private void AddHandlerAndRunStartedHandlingCode(Entity entity, Type handlerType)
+		{
+			Handler handler = GetHandler(handlerType);
+			if (entity.activeHandlers.Contains(handler))
+				return;
+
+			var behavior = handler as Behavior<Entity>;
+			if (behavior != null)
+				behavior.StartedHandling(entity);
+
+			entity.AddHandler(GetHandler(handlerType));
+		}
+
+		private void RemoveHandlerAndRunStoppedHandlingCode(Entity entity, Type handlerType)
+		{
+			Handler handler = GetHandler(handlerType);
+			if (!entity.activeHandlers.Contains(handler))
+				return;
+
+			var behavior = handler as Behavior<Entity>;
+			if (behavior != null)
+				behavior.StoppedHandling(entity);
+
+			entity.activeHandlers.Remove(handler);
+		}
+
+		public T GetHandler<T>() where T : Handler
 		{
 			return GetHandler(typeof(T)) as T;
 		}
 
-		private EntityHandler GetHandler(Type handlerType)
+		private Handler GetHandler(Type handlerType)
 		{
 			foreach (var handler in handlersWithAffectedEntities)
 				if (handler.handler.GetType() == handlerType)
@@ -282,17 +322,50 @@ namespace DeltaEngine.Entities
 					pair.entities.Remove(entity);
 		}
 
-		private static void RunHandler(EntityHandler handler, IEnumerable<Entity> entities)
+		private static void RunHandler(Handler handler, IEnumerable<Entity> entities)
 		{
-			if (handler.Filter != null && handler.Order != null)
-				entities = entities.Where(handler.Filter).OrderBy(handler.Order);
-			else if (handler.Filter != null)
-				entities = entities.Where(handler.Filter);
-			else if (handler.Order != null)
-				entities = entities.OrderBy(handler.Order);
+			var behavior = handler as Behavior<Entity>;
+			var batchedBehavior = handler as BatchedBehavior<Entity>;
+			if (behavior == null && batchedBehavior == null)
+				return;
 
+			if (behavior != null)
+				RunBehavior(behavior, entities);
+			else
+				RunBatchedBehavior(batchedBehavior, entities);
+		}
+
+		private static void RunBehavior(Behavior<Entity> behavior, IEnumerable<Entity> entities)
+		{
+			entities = FilterAndSortEntities(entities, behavior.Filter, behavior.Order);
 			foreach (Entity entity in entities)
-				handler.Handle(entity);
+				behavior.Handle(entity);
+		}
+
+		private static IEnumerable<Entity> FilterAndSortEntities(IEnumerable<Entity> entities,
+			Func<Entity, bool> filter, Func<Entity, IComparable> order)
+		{
+			if (filter != null && order != null)
+				return entities.Where(filter).OrderBy(order);
+
+			if (filter != null)
+				return entities.Where(filter);
+
+			return order != null ? entities.OrderBy(order) : entities;
+		}
+
+		private static void RunBatchedBehavior(BatchedBehavior<Entity> batchedBehavior,
+			IEnumerable<Entity> entities)
+		{
+			entities = FilterAndSortEntities(entities, batchedBehavior.Filter, batchedBehavior.Order);
+			batchedBehavior.Handle(entities);
+		}
+
+		public void MessageAllListeners(object message)
+		{
+			foreach (
+				var pair in handlersWithAffectedEntities.Where(pair => pair.handler is EventListener))
+				((EventListener)pair.handler).ReceiveMessage(message);
 		}
 	}
 }

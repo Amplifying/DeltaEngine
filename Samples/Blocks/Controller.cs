@@ -2,23 +2,23 @@ using System;
 using System.Collections.Generic;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Platforms;
+using DeltaEngine.Rendering;
 
 namespace Blocks
 {
 	/// <summary>
 	/// Handles the falling and upcoming blocks.
 	/// </summary>
-	public class Controller : Entity
+	public class Controller : Entity2D
 	{
-		public Controller(Orientation displayMode, BlocksContent content)
+		public Controller(Orientation displayMode, BlocksContent content) :base(Rectangle.Zero)
 		{
 			this.content = content;
 			this.displayMode = displayMode;
 			Add(new Grid(content));
 			Add(new Soundbank(content));
-			Add<InteractionHandler>();
+			Start<InteractionHandler>();
 		}
 
 		public readonly BlocksContent content;
@@ -190,9 +190,9 @@ namespace Blocks
 			}
 		}
 
-		internal class InteractionHandler : EntityHandler
+		internal class InteractionHandler : Behavior2D
 		{
-			public override void Handle(Entity entity)
+			public override void Handle(Entity2D entity)
 			{
 				var controller = entity as Controller;
 				if (controller.FallingBlock == null)

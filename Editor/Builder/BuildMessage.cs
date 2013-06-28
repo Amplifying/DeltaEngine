@@ -8,7 +8,8 @@ namespace DeltaEngine.Editor.Builder
 		/// <summary>
 		/// Need empty constructor for BinaryDataExtensions class reconstruction
 		/// </summary>
-		protected BuildMessage() { }
+		protected BuildMessage() {}
+
 		public BuildMessage(string text)
 			: base(text)
 		{

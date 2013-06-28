@@ -43,6 +43,10 @@
       <Project>{5231706e-2955-43bf-9c06-291e12af5c5c}</Project>
       <Name>DeltaEngine.Networking</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Platforms\DeltaEngine.Platforms.csproj">
+      <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
+      <Name>DeltaEngine.Platforms</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Logging.csproj">
       <Project>{E4440567-3D5D-4670-AB49-8163B18E302E}</Project>
       <Name>DeltaEngine.Logging</Name>
@@ -51,8 +55,6 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DefaultLogger.cs" />
-    <Compile Include="ConsoleLogger.cs" />
-    <Compile Include="ConsoleLogProvider.cs" />
     <Compile Include="NetworkClientLogProvider.cs" />
     <Compile Include="OfflineLogger.cs" />
     <Compile Include="TextFileLogger.cs" />

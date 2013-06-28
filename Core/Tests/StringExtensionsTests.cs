@@ -20,15 +20,22 @@ namespace DeltaEngine.Core.Tests
 		[Test]
 		public void FromInvariantString()
 		{
-			Assert.AreEqual(1.0f, "1.0".FromInvariantString(0.0f));
-			Assert.AreEqual("abc", "abc".FromInvariantString(""));
-			Assert.AreEqual(0.0f, "val".FromInvariantString(0.0f));
-			Assert.AreEqual(1, "1".FromInvariantString(0));
-			Assert.AreEqual(24, "24".FromInvariantString(0));
-			Assert.AreEqual('A', "A".FromInvariantString(' '));
-			Assert.AreEqual(943578.39543, "943578.39543".FromInvariantString(0.0));
-			Assert.AreEqual(true, "True".FromInvariantString(false));
-			Assert.AreEqual(false, "False".FromInvariantString(false));
+			Assert.AreEqual(1.0f, "1.0".Convert<float>());
+			Assert.AreEqual("abc", "abc".Convert<string>());
+			Assert.Throws<FormatException>(() => "val".Convert<float>());
+			Assert.AreEqual(1, "1".Convert<int>());
+			Assert.AreEqual(24, "24".Convert<int>());
+			Assert.AreEqual('A', "A".Convert<char>());
+			Assert.AreEqual(943578.39543, "943578.39543".Convert<double>());
+			Assert.AreEqual(true, "True".Convert<bool>());
+			Assert.AreEqual(false, "False".Convert<bool>());
+			Assert.AreEqual(SomeEnum.Additive, "Additive".Convert<SomeEnum>());
+		}
+
+		public enum SomeEnum
+		{
+			Normal,
+			Additive,
 		}
 
 		[Test]

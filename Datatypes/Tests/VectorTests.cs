@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using DeltaEngine.Core;
 using NUnit.Framework;
 
 namespace DeltaEngine.Datatypes.Tests
@@ -34,8 +36,7 @@ namespace DeltaEngine.Datatypes.Tests
 			Assert.AreEqual(v.Y, 1.5f);
 			Assert.AreEqual(v.Z, 0.9f);
 			Assert.Throws<Vector.InvalidNumberOfComponents>(() => new Vector("2.3"));
-			var invalidPoint = new Vector("a, b, c");
-			Assert.AreEqual(Vector.Zero, invalidPoint);
+			Assert.Throws<FormatException>(() => new Vector("a, b, c"));
 		}
 
 		[Test]
@@ -47,6 +48,36 @@ namespace DeltaEngine.Datatypes.Tests
 			Assert.AreEqual(new Vector(0, 1, 0), Vector.UnitY);
 			Assert.AreEqual(new Vector(0, 0, 1), Vector.UnitZ);
 			Assert.AreEqual(12, Vector.SizeInBytes);
+		}
+
+		[Test]
+		public void Dot()
+		{
+			Assert.AreEqual(0.0f, Vector.Dot(Vector.UnitX, Vector.UnitY));
+			Assert.AreEqual(1.0f, Vector.Dot(Vector.UnitX, Vector.UnitX));
+		}
+
+		[Test]
+		public void Cross()
+		{
+			Assert.AreEqual(Vector.UnitZ, Vector.Cross(Vector.UnitX, Vector.UnitY));
+			Assert.AreEqual(Vector.UnitX, Vector.Cross(Vector.UnitY, Vector.UnitZ));
+		}
+
+		
+		[Test]
+		public void GetAngleBetweenTwoVectors()
+		{
+			Assert.AreEqual(90.0f, Vector.AngleBetweenVectors(Vector.UnitX, Vector.UnitY));
+		}
+
+		[Test]
+		public void Normalize()
+		{
+			var vector = new Vector(2.0f, 4.0f, -3.0f);
+			var normalized = Vector.Normalize(vector);
+			Assert.AreEqual(1.0f, normalized.LengthSquared, MathExtensions.Epsilon);
+			Assert.AreEqual(Vector.Zero, Vector.Normalize(Vector.Zero));
 		}
 
 		[Test]
@@ -138,8 +169,7 @@ namespace DeltaEngine.Datatypes.Tests
 		[Test]
 		public void VectorToString()
 		{
-			var v = new Vector(3, 4, 5);
-			Assert.AreEqual("(3, 4, 5)", v.ToString());
+			Assert.AreEqual("3, 4, 5", new Vector(3, 4, 5).ToString());
 		}
 
 		[Test]
@@ -148,17 +178,6 @@ namespace DeltaEngine.Datatypes.Tests
 			var v = new Vector(2.23f, 3.45f, 0.59f);
 			string vectorAsString = v.ToString();
 			Assert.AreEqual(v, new Vector(vectorAsString));
-		}
-
-		[Test]
-		public void SaveAndLoad()
-		{
-			var data = Vector.UnitZ.SaveToMemoryStream();
-			byte[] savedBytes = data.ToArray();
-			Assert.AreEqual(1 + "Vector".Length + Vector.SizeInBytes, savedBytes.Length);
-			Assert.AreEqual("Vector".Length, savedBytes[0]);
-			var reconstructed = data.CreateFromMemoryStream();
-			Assert.AreEqual(Vector.UnitZ, reconstructed);
 		}
 	}
 }

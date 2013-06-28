@@ -1,17 +1,22 @@
 using DeltaEngine.Platforms;
+using DeltaEngine.Scenes.UserInterfaces.Graphing;
 
 namespace LogoApp
 {
 	/// <summary>
 	/// Displays a number of colored moving logo sprites bouncing around.
 	/// </summary>
-	internal static class Program
+	public class Program : App
 	{
-		public static void Main()
+		public Program()
 		{
-			new App().Start<BouncingLogo>(NumberOfBouncingLogos);
+			for (int num = 0; num < 50; num++)
+				new BouncingLogo();
 		}
 
-		private const int NumberOfBouncingLogos = 100;
+		public static void Main()
+		{
+			new Program().Run();
+		}
 	}
 }

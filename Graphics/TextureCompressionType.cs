@@ -9,7 +9,6 @@ namespace DeltaEngine.Graphics
 		Dxt5,
 		Atc,
 		Atca,
-		Atci,
-
+		Atci
 	}
 }

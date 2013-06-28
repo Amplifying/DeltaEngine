@@ -1,27 +1,22 @@
-using System;
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
-using DeltaEngine.Platforms.All;
-using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms;
 using DeltaEngine.Rendering.Particles;
 using NUnit.Framework;
 
 namespace DeltaEngine.Rendering.Tests.Particles
 {
-	internal class ParticelTests : TestWithAllFrameworks
+	internal class ParticelTests : TestWithMocksOrVisually
 	{
-		[VisualTest]
-		public void CreatedstaticParticles(Type resolver)
+		[Test]
+		public void CreateStaticParticle()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				var image = content.Load<Image>("DeltaEngineLogo");
-				var particleEmitter = new ParticleEmitter(image);
-				particleEmitter.Get<ParticleEmitterData>().Position = Point.Half - new Point(0.05f, 0.05f);
-				particleEmitter.Get<ParticleEmitterData>().PresetLowerBounds = BasicLowerPreset();
-				particleEmitter.Get<ParticleEmitterData>().PresetUpperBounds = BasicUpperPreset();
-			});
+			var image = ContentLoader.Load<Image>("DeltaEngineLogo");
+			var particleEmitter = new ParticleEmitter(image);
+			particleEmitter.Get<ParticleEmitterData>().Position = Point.Half - new Point(0.05f, 0.05f);
+			particleEmitter.Get<ParticleEmitterData>().PresetLowerBounds = BasicLowerPreset();
+			particleEmitter.Get<ParticleEmitterData>().PresetUpperBounds = BasicUpperPreset();
 		}
 
 		public ParticlePreset BasicLowerPreset()
@@ -60,20 +55,17 @@ namespace DeltaEngine.Rendering.Tests.Particles
 			return emptyUpperPreset;
 		}
 
-		[VisualTest]
-		public void DeleteParticlesAfterLifeTime(Type resolver)
+		[Test]
+		public void DeleteParticlesAfterLifeTime()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				var emitter = CreateBasicParticleEmitter(content);
-				emitter.Get<ParticleEmitterData>().PresetLowerBounds.Lifetime = 0.5f;
-				emitter.Get<ParticleEmitterData>().PresetUpperBounds.Lifetime = 0.5f;
-			});
+			var emitter = CreateBasicParticleEmitter();
+			emitter.Get<ParticleEmitterData>().PresetLowerBounds.Lifetime = 0.5f;
+			emitter.Get<ParticleEmitterData>().PresetUpperBounds.Lifetime = 0.5f;
 		}
 
-		private ParticleEmitter CreateBasicParticleEmitter(ContentLoader content)
+		private ParticleEmitter CreateBasicParticleEmitter()
 		{
-			var image = content.Load<Image>("DeltaEngineLogo");
+			var image = ContentLoader.Load<Image>("DeltaEngineLogo");
 			var particleEmitter = new ParticleEmitter(image);
 			particleEmitter.Get<ParticleEmitterData>().Position = Point.Half - new Point(0.05f, 0.05f);
 			particleEmitter.Get<ParticleEmitterData>().SpawnIntervalMs = 1000;
@@ -82,62 +74,52 @@ namespace DeltaEngine.Rendering.Tests.Particles
 			return particleEmitter;
 		}
 
-		[VisualTest]
-		public void ParticlesWithVelecityAndSpeed(Type resolver)
+		[Test]
+		public void ParticlesWithVelecityAndSpeed()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				var particleEmitter = CreateBasicParticleEmitter(content);
-				SetUpVelocityAndSpeed(particleEmitter);
-			});
+			var particleEmitter = CreateBasicParticleEmitter();
+			SetUpVelocityAndSpeed(particleEmitter);
 		}
 
 		private static void SetUpVelocityAndSpeed(ParticleEmitter particleEmitter)
 		{
 			particleEmitter.Get<ParticleEmitterData>().PresetLowerBounds.Speed = 1;
 			particleEmitter.Get<ParticleEmitterData>().PresetUpperBounds.Speed = 1;
-			particleEmitter.Get<ParticleEmitterData>().PresetLowerBounds.StartVelocity = new Point(-1, -1);
-			particleEmitter.Get<ParticleEmitterData>().PresetUpperBounds.StartVelocity = new Point(-1, -1);
+			particleEmitter.Get<ParticleEmitterData>().PresetLowerBounds.StartVelocity = new Point(-1,
+				-1);
+			particleEmitter.Get<ParticleEmitterData>().PresetUpperBounds.StartVelocity = new Point(-1,
+				-1);
 		}
 
-		[VisualTest]
-		public void ChangingVelocity(Type resolver)
+		[Test]
+		public void ChangingVelocity()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				var particleEmitter = CreateBasicParticleEmitter(content);
-				SetUpVelocityAndSpeed(particleEmitter);
-				particleEmitter.Get<ParticleEmitterData>().PresetLowerBounds.Velocity = new Point(-1, 1);
-				particleEmitter.Get<ParticleEmitterData>().PresetUpperBounds.Velocity = new Point(-1, 1);
-			});
+			var particleEmitter = CreateBasicParticleEmitter();
+			SetUpVelocityAndSpeed(particleEmitter);
+			particleEmitter.Get<ParticleEmitterData>().PresetLowerBounds.Velocity = new Point(-1, 1);
+			particleEmitter.Get<ParticleEmitterData>().PresetUpperBounds.Velocity = new Point(-1, 1);
 		}
 
-		[VisualTest]
-		public void ChangeSizeAndRotateParticle(Type resolver)
+		[Test]
+		public void ChangeSizeAndRotateParticle()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				var particleEmitter = CreateBasicParticleEmitter(content);
-				SetUpVelocityAndSpeed(particleEmitter);
-				particleEmitter.Get<ParticleEmitterData>().PresetLowerBounds.Size = new Size(0.2f, 0.2f);
-				particleEmitter.Get<ParticleEmitterData>().PresetUpperBounds.Size = new Size(0.2f, 0.2f);
-				particleEmitter.Get<ParticleEmitterData>().PresetLowerBounds.Rotation = 360;
-				particleEmitter.Get<ParticleEmitterData>().PresetUpperBounds.Rotation = 360;
-			});
+			var particleEmitter = CreateBasicParticleEmitter();
+			SetUpVelocityAndSpeed(particleEmitter);
+			particleEmitter.Get<ParticleEmitterData>().PresetLowerBounds.Size = new Size(0.2f, 0.2f);
+			particleEmitter.Get<ParticleEmitterData>().PresetUpperBounds.Size = new Size(0.2f, 0.2f);
+			particleEmitter.Get<ParticleEmitterData>().PresetLowerBounds.Rotation = 270;
+			particleEmitter.Get<ParticleEmitterData>().PresetUpperBounds.Rotation = 270;
 		}
 
-		[VisualTest]
-		public void GiveRandomValues(Type resolver)
+		[Test]
+		public void GiveRandomValues()
 		{
-			Start(resolver, (ContentLoader content) =>
-			{
-				var particleEmitter = CreateRandomParticleEmitter(content);
-			});
+			CreateRandomParticleEmitter();
 		}
 
-		private ParticleEmitter CreateRandomParticleEmitter(ContentLoader content)
+		private ParticleEmitter CreateRandomParticleEmitter()
 		{
-			var image = content.Load<Image>("DeltaEngineLogo");
+			var image = ContentLoader.Load<Image>("DeltaEngineLogo");
 			var particleEmitter = new ParticleEmitter(image);
 			particleEmitter.Get<ParticleEmitterData>().Position = Point.Half - new Point(0.05f, 0.05f);
 			particleEmitter.Get<ParticleEmitterData>().SpawnIntervalMs = 20;
@@ -167,7 +149,7 @@ namespace DeltaEngine.Rendering.Tests.Particles
 
 		public ParticlePreset RandomUpperPreset()
 		{
-			var emptyUpperPreset = new ParticlePreset
+			var presetUpperBounds = new ParticlePreset
 			{
 				Position = new Point(0.01f, 0.01f),
 				StartVelocity = new Point(0.2f, -1),
@@ -181,18 +163,15 @@ namespace DeltaEngine.Rendering.Tests.Particles
 				Color = Color.Blue
 			};
 
-			return emptyUpperPreset;
+			return presetUpperBounds;
 		}
 
-		[Test, Category("Slow")]
+		[Test]
 		public void TestParticleHandler()
 		{
-			Start(typeof(MockResolver), (ContentLoader content) =>
-			{ 
-				var particleEmitter = CreateRandomParticleEmitter(content); 
-				mockResolver.AdvanceTimeAndExecuteRunners(1.5f);
-				Assert.AreNotEqual(0, particleEmitter.ParticlesCreated);
-			});
+			var particleEmitter = CreateRandomParticleEmitter();
+			resolver.AdvanceTimeAndExecuteRunners(1.5f);
+			Assert.AreNotEqual(0, particleEmitter.ParticlesCreated);
 		}
 	}
 }

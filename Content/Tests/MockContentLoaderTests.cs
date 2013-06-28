@@ -7,11 +7,10 @@ namespace DeltaEngine.Content.Tests
 		[SetUp]
 		public void Setup()
 		{
-			contentLoader = new MockContentLoader(new MockContentDataResolver());
-			content = contentLoader.Load<MockContent>("Test");
+			new MockContentLoader(new ContentDataResolver());
+			content = ContentLoader.Load<MockContent>("Test");
 		}
 
-		private MockContentLoader contentLoader;
 		private MockContent content;
 
 		[Test]
@@ -26,23 +25,13 @@ namespace DeltaEngine.Content.Tests
 		public void LoadWithExtensionNotAllowed()
 		{
 			Assert.Throws<ContentLoader.ContentNameShouldNotHaveExtension>(
-				() => contentLoader.Load<TestImage>("DeltaEngineLogo.png"));
-		}
-
-		[Test]
-		public void GetContentExtension()
-		{
-			Assert.AreEqual("Test.xml", contentLoader.GetFilenameFromContentName("Test"));
-			Assert.AreEqual("DeltaEngineLogo.png",
-				contentLoader.GetFilenameFromContentName("DeltaEngineLogo"));
-			Assert.Throws<ContentLoader.ContentNotFound>(
-				() => contentLoader.GetFilenameFromContentName("abc"));
+				() => ContentLoader.Load<TestImage>("DeltaEngineLogo.png"));
 		}
 
 		[Test]
 		public void LoadCachedContent()
 		{
-			var contentTwo = contentLoader.Load<MockContent>("Test");
+			var contentTwo = ContentLoader.Load<MockContent>("Test");
 			Assert.IsFalse(contentTwo.IsDisposed);
 			Assert.AreEqual(content, contentTwo);
 		}
@@ -50,7 +39,7 @@ namespace DeltaEngine.Content.Tests
 		[Test]
 		public void ForceReload()
 		{
-			contentLoader.ReloadContent("Test");
+			ContentLoader.ReloadContent("Test");
 			Assert.Greater(content.LoadCounter, 1);
 			Assert.AreEqual(1, content.changeCounter);
 		}
@@ -58,8 +47,8 @@ namespace DeltaEngine.Content.Tests
 		[Test]
 		public void TwoContentFilesShouldNotReloadEachOther()
 		{
-			var content2 = contentLoader.Load<MockContent>("Test2");
-			contentLoader.ReloadContent("Test2");
+			var content2 = ContentLoader.Load<MockContent>("Test2");
+			ContentLoader.ReloadContent("Test2");
 			Assert.AreEqual(2, content2.LoadCounter);
 			Assert.AreEqual(1, content.LoadCounter);
 		}
@@ -76,7 +65,7 @@ namespace DeltaEngine.Content.Tests
 		public void DisposeAndLoadAgainShouldReturnFreshInstance()
 		{
 			content.Dispose();
-			var freshContent = contentLoader.Load<MockContent>("Test");
+			var freshContent = ContentLoader.Load<MockContent>("Test");
 			Assert.IsFalse(freshContent.IsDisposed);
 		}
 

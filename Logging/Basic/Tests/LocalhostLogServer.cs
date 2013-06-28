@@ -1,7 +1,5 @@
 using System;
-using System.Net;
 using DeltaEngine.Networking;
-using DeltaEngine.Networking.Sockets;
 
 namespace DeltaEngine.Logging.Basic.Tests
 {

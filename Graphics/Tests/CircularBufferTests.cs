@@ -13,10 +13,10 @@ namespace DeltaEngine.Graphics.Tests
 
 		private const int BufferSize = 1024;
 
-		private class CircularBufferTest : CircularBuffer
+		private class CircularBufferTest : CircularBuffer<byte>
 		{
-			public CircularBufferTest(int bufferSize)
-				: base(bufferSize) {}
+			public CircularBufferTest(int maxNumberOfElements)
+				: base(maxNumberOfElements) {}
 
 			public override void Create()
 			{
@@ -28,11 +28,12 @@ namespace DeltaEngine.Graphics.Tests
 				IsCreated = false;
 			}
 
-			protected override void SetNativeVertexData<T>(T[] vertices, int dataSizeInBytes) {}
+			protected override void SetNativeData(byte[] elements, int dataSizeInBytes) {}
 		}
 
-		private static void CreateAndCheck(CircularBuffer buffer)
+		private static void CreateAndCheck(CircularBufferTest buffer)
 		{
+			Assert.IsFalse(buffer.IsIndexBuffer);
 			Assert.IsFalse(buffer.IsCreated);
 			buffer.Create();
 			Assert.IsTrue(buffer.IsCreated);
@@ -59,9 +60,9 @@ namespace DeltaEngine.Graphics.Tests
 		{
 			var buffer = new CircularBufferTest(BufferSize);
 			var data = new byte[DataSize];
-			buffer.SetVertexData(data);
+			buffer.SetData(data);
 			Assert.AreEqual(0, buffer.Offset);
-			buffer.SetVertexData(data);
+			buffer.SetData(data);
 			Assert.AreEqual(DataSize, buffer.Offset);
 		}
 
@@ -74,7 +75,7 @@ namespace DeltaEngine.Graphics.Tests
 			var data = new byte[DataSize];
 			for (int i = 0; i < IncrementCount; i++)
 			{
-				buffer.SetVertexData(data);
+				buffer.SetData(data);
 				Assert.AreEqual(i * DataSize, buffer.Offset);
 			}
 		}
@@ -88,7 +89,7 @@ namespace DeltaEngine.Graphics.Tests
 			var data = new byte[BigDataSize];
 			for (int i = 0; i < IncrementCount; i++)
 			{
-				buffer.SetVertexData(data);
+				buffer.SetData(data);
 				Assert.AreEqual(0, buffer.Offset);
 			}			
 		}
@@ -101,14 +102,26 @@ namespace DeltaEngine.Graphics.Tests
 			var buffer = new CircularBufferTest(BufferSize);
 			var smallData = new byte[DataSize];
 			var bigData = new byte[BigDataSize];
-			buffer.SetVertexData(bigData);
+			buffer.SetData(bigData);
 			Assert.AreEqual(0, buffer.Offset);
-			buffer.SetVertexData(smallData);
+			buffer.SetData(smallData);
 			Assert.AreEqual(BigDataSize, buffer.Offset);
-			buffer.SetVertexData(smallData);
+			buffer.SetData(smallData);
 			Assert.AreEqual(BigDataSize + DataSize, buffer.Offset);
-			buffer.SetVertexData(bigData);
+			buffer.SetData(bigData);
 			Assert.AreEqual(0, buffer.Offset);
+		}
+
+		[Test]
+		public void DataBiggerThanBufferSize()
+		{
+			var buffer = new CircularBufferTest(BufferSize);
+			var data = new byte[BufferSize + 1];
+			buffer.Create();
+			buffer.SetData(data);
+			Assert.AreEqual(0, buffer.Offset);
+			Assert.AreEqual(BufferSize * 2, buffer.MaxNumberOfElements);
+			Assert.IsTrue(buffer.IsCreated);
 		}
 	}
 }

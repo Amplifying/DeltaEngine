@@ -1,10 +1,11 @@
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
+using DeltaEngine.Rendering;
 using DeltaEngine.Rendering.ScreenSpaces;
 
 namespace DeltaEngine.Physics2D
 {
-	public class Physics2D : EntityHandler
+	public class Physics2D : Behavior2D
 	{
 		private readonly ScreenSpace screen;
 
@@ -12,8 +13,7 @@ namespace DeltaEngine.Physics2D
 		{
 			this.screen = screen;
 		}
-
-		public override void Handle(Entity entity)
+		public override void Handle(Entity2D entity)
 		{
 			var physicsBody = entity.Get<PhysicsBody>();
 			var size = entity.Get<Rectangle>().Size;
@@ -21,9 +21,9 @@ namespace DeltaEngine.Physics2D
 			entity.Set(physicsBody.Rotation);
 		}
 
-		public override EntityHandlerPriority Priority
+		public override Priority Priority
 		{
-			get { return EntityHandlerPriority.First; }
+			get { return Priority.First; }
 		}
 	}
 }

@@ -1,41 +1,35 @@
-using System;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Platforms.All;
+using DeltaEngine.Platforms;
+using DeltaEngine.Platforms.Mocks;
 using NUnit.Framework;
 
 namespace DeltaEngine.Input.Tests
 {
-	public class MouseHoverTriggerTests : TestWithAllFrameworks
+	public class MouseHoverTriggerTests : TestWithMocksOrVisually
 	{
-		[IntegrationTest]
-		public void HoverTriggersIfMouseDoesntMove(Type resolver)
+		[Test]
+		public void HoverTriggersIfMouseDoesntMove()
 		{
-			Start(resolver, (InputCommands input) =>
-			{
-				bool triggered = false;
-				input.AddMouseHover(mouse => { triggered = true; });
-				mockResolver.input.SetMousePosition(Point.Zero);
-				mockResolver.AdvanceTimeAndExecuteRunners(1.0f);
-				Assert.False(triggered);
-				mockResolver.AdvanceTimeAndExecuteRunners(1.0f);
-				Assert.True(triggered);
-			});
+			bool triggered = false;
+			Input.AddMouseHover(mouse => { triggered = true; });
+			Resolve<MockMouse>().SetMousePositionNextFrame(Point.Zero);
+			resolver.AdvanceTimeAndExecuteRunners(1.0f);
+			Assert.False(triggered);
+			resolver.AdvanceTimeAndExecuteRunners(1.0f);
+			Assert.True(triggered);
 		}
 
-		[IntegrationTest]
-		public void HoverDoesntTriggerIfMouseMoves(Type resolver)
+		[Test]
+		public void HoverDoesntTriggerIfMouseMoves()
 		{
-			Start(resolver, (InputCommands input) =>
-			{
-				bool triggered = false;
-				input.AddMouseHover(mouse => { triggered = true; });
-				mockResolver.input.SetMousePosition(Point.Zero);
-				mockResolver.AdvanceTimeAndExecuteRunners(1.0f);
-				Assert.False(triggered);
-				mockResolver.input.SetMousePosition(Point.Half);
-				mockResolver.AdvanceTimeAndExecuteRunners(1.0f);
-				Assert.False(triggered);
-			});
+			bool triggered = false;
+			Input.AddMouseHover(mouse => { triggered = true; });
+			Resolve<MockMouse>().SetMousePositionNextFrame(Point.Zero);
+			resolver.AdvanceTimeAndExecuteRunners(1.0f);
+			Assert.False(triggered);
+			Resolve<MockMouse>().SetMousePositionNextFrame(Point.Half);
+			resolver.AdvanceTimeAndExecuteRunners(1.0f);
+			Assert.False(triggered);
 		}
 	}
 }

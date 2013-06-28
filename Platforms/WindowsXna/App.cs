@@ -1,43 +1,23 @@
 using System;
-using System.Collections.Generic;
 
 namespace DeltaEngine.Platforms
 {
 	/// <summary>
-	/// Windows Xna config (graphics, sound, input) for any Delta Engine application or test.
+	/// Initializes the XNA resolver and the window to get started. To execute the app call Run.
 	/// </summary>
-	public class App
+	public abstract class App
 	{
-		public void Start<AppEntryRunner>(int instancesToCreate = 1)
+		protected App()
 		{
-			resolver.Start<AppEntryRunner>(instancesToCreate);
+			resolver.CreateEntitySystemAndAddAsRunner();
 		}
 
 		private readonly XnaResolver resolver = new XnaResolver();
 
-		public void Start<AppEntryRunner, FirstClassToRegisterAndResolve>(int instancesToCreate = 1)
+		public void Run(Action optionalRunCode = null)
 		{
-			resolver.Start<AppEntryRunner, FirstClassToRegisterAndResolve>(instancesToCreate);
-		}
-
-		public void Start
-			<AppEntryRunner, FirstClassToRegisterAndResolve, SecondClassToRegisterAndResolve>(
-			int instancesToCreate = 1)
-		{
-			resolver.Start
-				<AppEntryRunner, FirstClassToRegisterAndResolve, SecondClassToRegisterAndResolve>(
-					instancesToCreate);
-		}
-
-		public void Start<AppEntryRunner>(List<Type> typesToRegisterAndResolve,
-			int instancesToCreate = 1)
-		{
-			resolver.Start<AppEntryRunner>(typesToRegisterAndResolve, instancesToCreate);
-		}
-
-		public void RegisterSingleton<T>()
-		{
-			resolver.RegisterSingleton<T>();
+			resolver.Run(optionalRunCode);
+			resolver.Dispose();
 		}
 	}
 }

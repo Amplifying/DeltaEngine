@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 
@@ -12,34 +9,16 @@ namespace DeltaEngine.Rendering
 	/// </summary>
 	public class Entity2D : Entity
 	{
-		public Entity2D()
-			: this(Rectangle.Zero) { }
+		private Entity2D()
+			: this(Rectangle.Zero) {}
 
 		public Entity2D(Rectangle drawArea)
-			: this(drawArea, Color.White) {}
-
-		public Entity2D(Rectangle drawArea, Color color, float rotation = 0)
 		{
 			Add(drawArea);
-			Add(color);
-			Add(rotation);
-			Add<SortAndRender>();
-			Add(Visibility.Show);
+			Start<SortAndRender>();
 		}
 
-		public Visibility Visibility
-		{
-			get { return Contains<Visibility>() ? Get<Visibility>() : Visibility.Show; }
-			set
-			{
-				if (Contains<Visibility>())
-					Set(value);
-				else
-					Add(value);
-			}
-		}
-
-		public Rectangle DrawArea
+		public virtual Rectangle DrawArea
 		{
 			get { return Get<Rectangle>(); }
 			set { Set(value); }
@@ -51,7 +30,7 @@ namespace DeltaEngine.Rendering
 			set { Set(new Rectangle(value, Get<Rectangle>().Size)); }
 		}
 
-		public Point Center
+		public virtual Point Center
 		{
 			get { return Get<Rectangle>().Center; }
 			set { Set(Rectangle.FromCenter(value, Get<Rectangle>().Size)); }
@@ -63,15 +42,21 @@ namespace DeltaEngine.Rendering
 			set { Set(Rectangle.FromCenter(Get<Rectangle>().Center, value)); }
 		}
 
+		public Visibility Visibility
+		{
+			get { return GetWithDefault(Visibility.Show); }
+			set { Set(value); }
+		}
+
 		public Color Color
 		{
-			get { return Get<Color>(); }
+			get { return GetWithDefault(Color.White); }
 			set { Set(value); }
 		}
 
 		public float AlphaValue
 		{
-			get { return Get<Color>().AlphaValue; }
+			get { return Color.AlphaValue; }
 			set
 			{
 				var color = Color;
@@ -79,22 +64,16 @@ namespace DeltaEngine.Rendering
 			}
 		}
 
-		public float Rotation
+		public virtual float Rotation
 		{
-			get { return Get<float>(); }
+			get { return GetWithDefault(0.0f); }
 			set { Set(value); }
 		}
 
 		public int RenderLayer
 		{
-			get { return Contains<RenderLayer>() ? Get<RenderLayer>().Value : DefaultRenderLayer; }
-			set
-			{
-				if (Contains<RenderLayer>())
-					Set(new RenderLayer(value));
-				else
-					Add(new RenderLayer(value));
-			}
+			get { return GetWithDefault(DefaultRenderLayer); }
+			set { Set(value); }
 		}
 
 		public const int DefaultRenderLayer = 0;
@@ -102,34 +81,62 @@ namespace DeltaEngine.Rendering
 		public bool RotatedDrawAreaContains(Point point)
 		{
 			var center = Contains<RotationCenter>() ? Get<RotationCenter>().Value : DrawArea.Center;
-			point.RotateAround(center, -Rotation);
-			return DrawArea.Contains(point);
+			return DrawArea.Contains(point.RotateAround(center, -Rotation));
 		}
 
 		/// <summary>
 		/// Sorts all Entities into RenderLayer order; Then, for each, messages any listeners attached 
 		/// that it's time to render it.
 		/// </summary>
-		public class SortAndRender : EntityHandler
+		public class SortAndRender : BatchedBehavior2D
 		{
 			public SortAndRender()
 			{
 				Filter = entity => ((Entity2D)entity).Visibility == Visibility.Show;
-				Order = entity => ((Entity2D)entity).RenderLayer;
+				Order = entity => GetSortKey((Entity2D)entity);
 			}
 
-			public override void Handle(Entity entity)
+			private static long GetSortKey(Entity2D entity)
 			{
-				entity.MessageAllListeners(new TimeToRender());
+				long renderLayer = entity.RenderLayer;
+				long hashCode = entity.GetType().GetHashCode();
+				return renderLayer << 32 | hashCode;
 			}
 
-			public class TimeToRender {}
-
-			public int NumberOfActiveRenderableObjects { get; private set; }
-
-			public override EntityHandlerPriority Priority
+			public override void Handle(IEnumerable<Entity2D> entity2Ds)
 			{
-				get { return EntityHandlerPriority.High; }
+				isHandlingStarted = false;
+				foreach (Entity2D entity in entity2Ds)
+					ProcessEntity(entity);
+
+				if (!isHandlingStarted)
+					return;
+
+				EntitySystem.Current.MessageAllListeners(new RenderBatch());
+			}
+
+			private bool isHandlingStarted;
+
+			private void ProcessEntity(Entity2D entity)
+			{
+				long sortKey = GetSortKey(entity);
+				if (isHandlingStarted && sortKey != lastSortKey)
+					EntitySystem.Current.MessageAllListeners(new RenderBatch());
+
+				entity.MessageAllListeners(new AddToBatch());
+				lastSortKey = sortKey;
+				isHandlingStarted = true;
+			}
+
+			private long lastSortKey;
+
+			public class AddToBatch { }
+
+			public class RenderBatch { }
+
+			public override Priority Priority
+			{
+				get { return Priority.High; }
 			}
 		}
 	}

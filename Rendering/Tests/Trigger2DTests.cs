@@ -1,75 +1,69 @@
-using System;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.All;
-using DeltaEngine.Platforms.Tests;
 using DeltaEngine.Rendering.Sprites;
 using DeltaEngine.Rendering.Triggers;
 using NUnit.Framework;
 
 namespace DeltaEngine.Rendering.Tests
 {
-	internal class Trigger2DTests : TestWithAllFrameworks
+	internal class Trigger2DTests : TestWithMocksOrVisually
 	{
 		[Test]
 		public void CreateTrigger()
 		{
-			Start(typeof(MockResolver), (ContentLoader content) =>
+			var image = ContentLoader.Load<Image>("DeltaEngineLogo");
+			var trigger = new Sprite(image, new Rectangle(Point.Zero, (Size)Point.One))
 			{
-				var image = content.Load<Image>("DeltaEngineLogo");
-				var trigger = new Sprite(image, new Rectangle(Point.Zero, (Size)Point.One), Color.Red);
-				trigger.Add(new TimeTriggerData(Color.Red, Color.Gray, 1));
-				trigger.Add<CollisionTrigger>().Add(new CollisionTriggerData(Color.White, Color.Red));
-				Assert.AreEqual(Point.Zero, trigger.Get<Rectangle>().TopLeft);
-				Assert.AreEqual(Point.One, trigger.Get<Rectangle>().BottomRight);
-			});
+				Color = Color.Red
+			};
+			trigger.Add(new TimeTriggerData(Color.Red, Color.Gray, 1));
+			trigger.Start<CollisionTrigger>().Add(new CollisionTriggerData(Color.White, Color.Red));
+			Assert.AreEqual(Point.Zero, trigger.Get<Rectangle>().TopLeft);
+			Assert.AreEqual(Point.One, trigger.Get<Rectangle>().BottomRight);
 		}
 
-		[VisualTest]
-		public void ChangeColorIfTwoRectanglesCollide(Type resolver)
+		[Test]
+		public void ChangeColorIfTwoRectanglesCollide()
 		{
-			Start(resolver, (ContentLoader content, Window window) =>
-			{
-				window.BackgroundColor = Color.Red;
-				var image = content.Load<Image>("DeltaEngineLogo");
-				var sprite = new Sprite(image, new Rectangle(0.25f, 0.2f, 0.1f, 0.5f), Color.White);
-				sprite.Add<CollisionTrigger>().Add<Rotate>().Add(new CollisionTriggerData(Color.Yellow,
-					Color.Blue));
-				sprite.Get<CollisionTriggerData>().SearchTags.Add("Creep");
-				var sprite2 = new Sprite(image, new Rectangle(0.5f, 0.2f, 0.1f, 0.5f), Color.White);
-				sprite2.Tag = "Creep";
-			});
+			Window.BackgroundColor = Color.Red;
+			var image = ContentLoader.Load<Image>("DeltaEngineLogo");
+			var sprite = new Sprite(image, new Rectangle(0.25f, 0.2f, 0.1f, 0.5f));
+			sprite.Start<CollisionTrigger, Rotate>().Add(new CollisionTriggerData(Color.Yellow,
+				Color.Blue));
+			sprite.Get<CollisionTriggerData>().SearchTags.Add("Creep");
+			var sprite2 = new Sprite(image, new Rectangle(0.5f, 0.2f, 0.1f, 0.5f));
+			sprite2.AddTag("Creep");
 		}
 
-		public class Rotate : EntityHandler
+		public class Rotate : Behavior2D
 		{
-			public override void Handle(Entity entity)
+			public override void Handle(Entity2D entity)
 			{
-				var angle = entity.Get<float>();
+				var angle = entity.Rotation;
 				angle = angle + 50 * Time.Current.Delta;
-				entity.Set(angle);
+				entity.Rotation = angle;
 			}
 
-			public override EntityHandlerPriority Priority
+			public override Priority Priority
 			{
-				get { return EntityHandlerPriority.First; }
+				get { return Priority.First; }
 			}
 		}
 
-		[VisualTest]
-		public void ChangeColorOverTime(Type resolver)
+		[Test]
+		public void ChangeColorOverTime()
 		{
-			Start(resolver, (ContentLoader content, Window window) =>
+			Window.BackgroundColor = Color.Red;
+			var image = ContentLoader.Load<Image>("DeltaEngineLogo");
+			var sprite = new Sprite(image, new Rectangle(0.25f, 0.2f, 0.5f, 0.5f))
 			{
-				window.BackgroundColor = Color.Red;
-				var image = content.Load<Image>("DeltaEngineLogo");
-				var sprite = new Sprite(image, new Rectangle(0.25f, 0.2f, 0.5f, 0.5f), Color.Green);
-				sprite.Add<TimeTrigger>().Add(new TimeTriggerData(Color.Green, Color.Gold, 0.1f));
-			});
+				Color = Color.Green
+			};
+			sprite.Start<TimeTrigger>().Add(new TimeTriggerData(Color.Green, Color.Gold, 0.1f));
 		}
 	}
 }

@@ -1,8 +1,7 @@
 namespace DeltaEngine.Input.SharpDX
 {
 	/// <summary>
-	/// The buttons are set read from a Bitmask.
-	/// A set bit indicates that the corresponding button is pressed.
+	/// Buttons are read from a bitmask, set means the corresponding button is pressed.
 	/// </summary>
 	internal enum XInputGamePadButton
 	{

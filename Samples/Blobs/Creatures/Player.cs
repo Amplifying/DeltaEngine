@@ -37,23 +37,23 @@ namespace Blobs.Creatures
 
 		private void AlterAim(Point center, Point mousePosition)
 		{
-			aim.End = mousePosition;
+			aim.EndPoint = mousePosition;
 			UpdateArrow1(center, mousePosition);
 			UpdateArrow2(center, mousePosition);
 		}
 
 		private void UpdateArrow1(Point center, Point mousePosition)
 		{
-			arrow1.Start = mousePosition;
-			arrow1.End = center + center.DirectionTo(mousePosition) * ArrowLength;
-			arrow1.End = arrow1.End.RotateAround(center, -5);
+			arrow1.StartPoint = mousePosition;
+			arrow1.EndPoint = center + center.DirectionTo(mousePosition) * ArrowLength;
+			arrow1.EndPoint = arrow1.EndPoint.RotateAround(center, -5);
 		}
 
 		private void UpdateArrow2(Point center, Point mousePosition)
 		{
-			arrow2.Start = mousePosition;
-			arrow2.End = center + center.DirectionTo(mousePosition) * ArrowLength;
-			arrow2.End = arrow2.End.RotateAround(center, 5);
+			arrow2.StartPoint = mousePosition;
+			arrow2.EndPoint = center + center.DirectionTo(mousePosition) * ArrowLength;
+			arrow2.EndPoint = arrow2.EndPoint.RotateAround(center, 5);
 		}
 
 		private Line2D arrow1;
@@ -77,7 +77,7 @@ namespace Blobs.Creatures
 			if (aim == null)
 				return;
 
-			Velocity = LaunchVelocityFactor * (aim.End - aim.Start);
+			Velocity = LaunchVelocityFactor * (aim.EndPoint - aim.StartPoint);
 			aim.IsActive = false;
 			arrow1.IsActive = false;
 			arrow2.IsActive = false;

@@ -1,33 +1,25 @@
-using System;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Platforms.All;
-using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms;
 using NUnit.Framework;
 
 namespace DeltaEngine.Input.Tests
 {
-	public class MouseMovementTriggerTests : TestWithAllFrameworks
+	public class MouseMovementTriggerTests : TestWithMocksOrVisually
 	{
-		[IntegrationTest]
-		public void ConditionMatchedWithoutMouse(Type resolver)
+		[Test]
+		public void ConditionMatchedWithoutMouse()
 		{
-			Start(resolver, (InputCommands input) =>
-			{
-				var trigger = new MouseMovementTrigger();
-				Assert.False(trigger.ConditionMatched(input));
-			});
+			var trigger = new MouseMovementTrigger();
+			Assert.False(trigger.ConditionMatched(Input));
 		}
 
 		[Test]
 		public void ConditionMatched()
 		{
-			Start(typeof(MockResolver), (InputCommands input, Mouse mouse) =>
-			{
-				var trigger = new MouseMovementTrigger();
-				Assert.False(trigger.ConditionMatched(input));
-				mouse.SetPosition(Point.Zero);
-				Assert.True(trigger.ConditionMatched(input));
-			});
+			var trigger = new MouseMovementTrigger();
+			Assert.False(trigger.ConditionMatched(Input));
+			Resolve<Mouse>().SetPosition(Point.Zero);
+			Assert.True(trigger.ConditionMatched(Input));
 		}
 	}
 }

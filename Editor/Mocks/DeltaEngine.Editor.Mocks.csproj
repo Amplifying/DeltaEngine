@@ -42,21 +42,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Content\DeltaEngine.Content.csproj">
+      <Project>{F1B6345B-6F28-482F-9230-8F1D8674C28A}</Project>
+      <Name>DeltaEngine.Content</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Content\Online\DeltaEngine.Content.Online.csproj">
+      <Project>{68AA6280-09EF-4325-B5F8-B8A967004144}</Project>
+      <Name>DeltaEngine.Content.Online</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Content\Xml\DeltaEngine.Content.Xml.csproj">
+      <Project>{138a40b5-3d80-4ba3-bd84-d82c151ee7fe}</Project>
+      <Name>DeltaEngine.Content.Xml</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
       <Project>{A8D386EA-D376-46EA-A721-2BA51426A721}</Project>
       <Name>DeltaEngine.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core\Xml\DeltaEngine.Core.Xml.csproj">
-      <Project>{138A40B5-3D80-4BA3-BD84-D82C151EE7FE}</Project>
-      <Name>DeltaEngine.Core.Xml</Name>
     </ProjectReference>
     <ProjectReference Include="..\Common\DeltaEngine.Editor.Common.csproj">
       <Project>{fc0e9fdc-68e0-405e-bfc7-1f3523bd3ea7}</Project>
       <Name>DeltaEngine.Editor.Common</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Content\DeltaEngineLogo.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">

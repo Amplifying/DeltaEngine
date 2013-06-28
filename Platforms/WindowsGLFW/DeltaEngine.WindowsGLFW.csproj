@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{157F559D-CF12-488B-AD0F-3F3477990B1F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DeltaEngine.WindowsGLFW</RootNamespace>
+    <AssemblyName>DeltaEngine.WindowsGLFW</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Pencil.Gaming">
+      <HintPath>..\..\packages\Pencil.Gaming.1.0.4915\lib\NET40\Pencil.Gaming.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Content\DeltaEngine.Content.csproj">
+      <Project>{F1B6345B-6F28-482F-9230-8F1D8674C28A}</Project>
+      <Name>DeltaEngine.Content</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Content\Online\DeltaEngine.Content.Online.csproj">
+      <Project>{68AA6280-09EF-4325-B5F8-B8A967004144}</Project>
+      <Name>DeltaEngine.Content.Online</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Content\Online\DeltaEngine.Content.Online.csproj">
+      <Project>{68AA6280-09EF-4325-B5F8-B8A967004144}</Project>
+      <Name>DeltaEngine.Content.Online</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
+      <Project>{A8D386EA-D376-46EA-A721-2BA51426A721}</Project>
+      <Name>DeltaEngine.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Datatypes\DeltaEngine.Datatypes.csproj">
+      <Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
+      <Name>DeltaEngine.Datatypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Graphics\DeltaEngine.Graphics.csproj">
+      <Project>{8F701B0D-48B6-45CF-85E0-286BD53328BA}</Project>
+      <Name>DeltaEngine.Graphics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Graphics\GLFW\DeltaEngine.Graphics.GLFW.csproj">
+      <Project>{9CD61FF4-F534-42E7-95FD-63747ED0C965}</Project>
+      <Name>DeltaEngine.Graphics.GLFW</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Input\DeltaEngine.Input.csproj">
+      <Project>{CC65E69E-FAFD-4C2B-85EB-5E57FD3AF847}</Project>
+      <Name>DeltaEngine.Input</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Input\GLFW\DeltaEngine.Input.GLFW.csproj">
+      <Project>{125F8661-31E0-4D0C-AEC4-4A96C1776529}</Project>
+      <Name>DeltaEngine.Input.GLFW</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Logging\Basic\DeltaEngine.Logging.Basic.csproj">
+      <Project>{03C2EB6A-826D-4D24-BE10-244B20CCD1D8}</Project>
+      <Name>DeltaEngine.Logging.Basic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Logging\DeltaEngine.Logging.csproj">
+      <Project>{E4440567-3D5D-4670-AB49-8163B18E302E}</Project>
+      <Name>DeltaEngine.Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Multimedia\DeltaEngine.Multimedia.csproj">
+      <Project>{6016ABB8-05F5-4A07-8FBA-16576277DDE7}</Project>
+      <Name>DeltaEngine.Multimedia</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Multimedia\GLFW\DeltaEngine.Multimedia.GLFW.csproj">
+      <Project>{89262CA9-DBA8-44D8-AAD6-124C332EA461}</Project>
+      <Name>DeltaEngine.Multimedia.GLFW</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Networking\DeltaEngine.Networking.csproj">
+      <Project>{5231706E-2955-43BF-9C06-291E12AF5C5C}</Project>
+      <Name>DeltaEngine.Networking</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Networking\Sockets\DeltaEngine.Networking.Sockets.csproj">
+      <Project>{9E085AB9-B4DE-4815-BD90-D975C75DFE94}</Project>
+      <Name>DeltaEngine.Networking.Sockets</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Physics2D\DeltaEngine.Physics2D.csproj">
+      <Project>{DC3AA434-09B9-43AD-8F43-431811FA054D}</Project>
+      <Name>DeltaEngine.Physics2D</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Physics2D\Farseer\DeltaEngine.Physics2D.Farseer.csproj">
+      <Project>{C983D137-8B7F-47BE-996E-894A3596DD06}</Project>
+      <Name>DeltaEngine.Physics2D.Farseer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
+      <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
+      <Name>DeltaEngine.Rendering</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DeltaEngine.Platforms.csproj">
+      <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
+      <Name>DeltaEngine.Platforms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Windows\DeltaEngine.Platforms.Windows.csproj">
+      <Project>{bd8a80e2-a313-437e-b0ef-fc0b066280a7}</Project>
+      <Name>DeltaEngine.Platforms.Windows</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="App.cs" />
+    <Compile Include="GLFWDisplayDevice.cs" />
+    <Compile Include="GLFWSystemInformation.cs" />
+    <Compile Include="GLFWWindow.cs" />
+    <Compile Include="GLFWResolver.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+</Project>

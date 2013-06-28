@@ -21,13 +21,21 @@ namespace Asteroids
 		public void SetControlsToState(GameState state)
 		{
 			input.Clear();
-			if (state != GameState.Playing)
+			addedCommands.Clear();
+			switch (state)
+			{
+			case GameState.Playing:
+				AddPlayerForward(input);
+				AddPlayerSteerLeft(input);
+				AddPlayerSteerRight(input);
+				AddPlayerFireAndHoldFire(input);
+				break;
+			case GameState.GameOver:
+				AddRestartCommand(input);
+				break;
+			default:
 				return;
-
-			AddPlayerForward(input);
-			AddPlayerSteerLeft(input);
-			AddPlayerSteerRight(input);
-			AddPlayerFireAndHoldFire(input);
+			}
 		}
 
 		private void AddPlayerForward(InputCommands input)
@@ -83,6 +91,11 @@ namespace Asteroids
 		private void PlayerHoldFire()
 		{
 			game.GameLogic.Player.IsFiring = false;
+		}
+
+		private void AddRestartCommand(InputCommands input)
+		{
+			input.Add(Key.Space, State.Pressing, key => {game.RestartGame(); });
 		}
 	}
 }

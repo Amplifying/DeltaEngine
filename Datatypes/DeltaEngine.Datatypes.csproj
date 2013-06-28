@@ -35,10 +35,6 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Content\DeltaEngine.Content.csproj">
-      <Project>{F1B6345B-6F28-482F-9230-8F1D8674C28A}</Project>
-      <Name>DeltaEngine.Content</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Core\DeltaEngine.Core.csproj">
       <Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
       <Name>DeltaEngine.Core</Name>
@@ -46,12 +42,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="BinaryDataExtensions.cs" />
-    <Compile Include="BinaryDataLoader.cs" />
+    <Compile Include="BoundingBox.cs" />
+    <Compile Include="BoundingSphere.cs" />
     <Compile Include="Color.cs" />
-    <Compile Include="BinaryDataSaver.cs" />
     <Compile Include="Matrix.cs" />
     <Compile Include="Point.cs" />
+    <Compile Include="Quaternion.cs" />
+    <Compile Include="Range.cs" />
     <Compile Include="Rectangle.cs" />
     <Compile Include="Size.cs" />
     <Compile Include="Vector.cs" />

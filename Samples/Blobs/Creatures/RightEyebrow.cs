@@ -12,9 +12,9 @@ namespace Blobs.Creatures
 
 		public override void Run()
 		{
-			Start = eye.Center -
+			StartPoint = eye.Center -
 				new Point(eye.RadiusX, (2.0f - (0.5f * mood.Anger) - (0.25f * mood.Anger)) * eye.RadiusY);
-			End = eye.Center +
+			EndPoint = eye.Center +
 				new Point(eye.RadiusX, (-1.5f - (0.5f * mood.Anger) + (0.25f * mood.Anger)) * eye.RadiusY);
 
 			base.Run();

@@ -3,70 +3,72 @@ using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
-using DeltaEngine.Platforms.All;
-using DeltaEngine.Platforms.Tests;
+using DeltaEngine.Platforms;
+using DeltaEngine.Platforms.Mocks;
 using DeltaEngine.Rendering;
 using DeltaEngine.Rendering.ScreenSpaces;
 using NUnit.Framework;
 
 namespace Breakout.Tests
 {
-	public class BallInLevelTests : TestWithAllFrameworks
+	public class BallInLevelTests : TestWithMocksOrVisually
 	{
-		[VisualTest]
+		[Test]
 		public void Draw(Type type)
 		{
-			Start(type, (BallInLevel ball) => {});
+			Resolve<BallInLevel>();
 		}
 
-		[VisualTest]
+		[Test]
 		public void AdvanceInLevelAfterDestroyingAllBricks(Type type)
 		{
-			Start(type, (BallInLevel ball, Level level) =>
-			{
-				level.GetBrickAt(0.25f, 0.125f).Visibility = Visibility.Hide;
-				level.GetBrickAt(0.75f, 0.125f).Visibility = Visibility.Hide;
-				level.GetBrickAt(0.25f, 0.375f).Visibility = Visibility.Hide;
-				level.GetBrickAt(0.75f, 0.375f).Visibility = Visibility.Hide;
-			}, (Level level) =>
+			Resolve<BallInLevel>();
+			var level = Resolve<Level>();
+			level.GetBrickAt(0.25f, 0.125f).Visibility = Visibility.Hide;
+			level.GetBrickAt(0.75f, 0.125f).Visibility = Visibility.Hide;
+			level.GetBrickAt(0.25f, 0.375f).Visibility = Visibility.Hide;
+			level.GetBrickAt(0.75f, 0.375f).Visibility = Visibility.Hide;
+			RunCode = () =>
 			{
 				if (level.BricksLeft == 0)
 					level.InitializeNextLevel();
-			});
+			};
 		}
 
 		[Test]
 		public void FireBall()
 		{
-			Start(typeof(MockResolver), (BallInLevel ball) =>
-			{
-				Assert.IsTrue(ball.Visibility == Visibility.Show);
-				mockResolver.AdvanceTimeAndExecuteRunners(0.01f);
-				var initialBallPosition = new Point(0.5f, 0.86f);
-				Assert.AreEqual(initialBallPosition, ball.Position);
-				mockResolver.input.SetKeyboardState(Key.Space, State.Pressing);
-				mockResolver.AdvanceTimeAndExecuteRunners(1.0f);
-				Assert.AreNotEqual(initialBallPosition, ball.Position);
-			});
+			Resolve<BallInLevel>();
+			var ball = Resolve<Ball>();
+			Assert.IsTrue(ball.Visibility == Visibility.Show);
+			resolver.AdvanceTimeAndExecuteRunners(0.01f);
+			var initialBallPosition = new Point(0.5f, -0.02f);
+			Assert.AreEqual(initialBallPosition, ball.Position);
+			Resolve<MockKeyboard>().SetKeyboardState(Key.Space, State.Pressing);
+			resolver.AdvanceTimeAndExecuteRunners(1.0f);
+			Assert.AreNotEqual(initialBallPosition, ball.Position);
 		}
 
-		[VisualTest]
+		[Test]
 		public void PlayGameWithGravity(Type type)
 		{
-			Start(type, (Paddle paddle, BallWithGravity ball) => {});
+			Resolve<Paddle>();
+			Resolve<BallWithGravity>();
 		}
 
 		private class BallWithGravity : BallInLevel
 		{
 			public BallWithGravity(Paddle paddle, ContentLoader content, InputCommands inputCommands,
 				Level level)
-				: base(paddle, content, inputCommands, level) {}
+				: base(paddle, inputCommands, level) {}
 
-			public override void Run(ScreenSpace screen)
+			public class RunGravity : EventListener2D
 			{
-				var gravity = new Point(0.0f, 9.81f);
-				velocity += gravity * 0.15f * Time.Current.Delta;
-				base.Run(screen);
+				public override void ReceiveMessage(Entity2D entity, object message)
+				{
+					var gravity = new Point(0.0f, 9.81f);
+					velocity += gravity * 0.15f * Time.Current.Delta;
+				}		
 			}
 		}
 	}

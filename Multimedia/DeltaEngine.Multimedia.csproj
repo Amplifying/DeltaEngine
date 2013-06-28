@@ -43,9 +43,9 @@
       <Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
       <Name>DeltaEngine.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Datatypes\DeltaEngine.Datatypes.csproj">
-      <Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
-      <Name>DeltaEngine.Datatypes</Name>
+    <ProjectReference Include="..\Platforms\DeltaEngine.Platforms.csproj">
+      <Project>{bae8830e-5f62-48d6-b772-c4b1e8665fb3}</Project>
+      <Name>DeltaEngine.Platforms</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -7,8 +7,8 @@ namespace Blobs.Levels
 {
 	public abstract class WalledLevel : Level
 	{
-		protected WalledLevel(ScreenSpace screen, InputCommands input, ContentLoader content)
-			: base(screen, input, content) {}
+		protected WalledLevel(ScreenSpace screen, InputCommands input)
+			: base(screen, input) {}
 
 		protected Color Color;
 

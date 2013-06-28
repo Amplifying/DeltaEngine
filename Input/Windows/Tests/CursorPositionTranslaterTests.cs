@@ -1,35 +1,31 @@
-using System;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.All;
 using DeltaEngine.Rendering.ScreenSpaces;
 using NUnit.Framework;
 
 namespace DeltaEngine.Input.Windows.Tests
 {
-	public class CursorPositionTranslaterTests : TestWithAllFrameworks
+	public class CursorPositionTranslaterTests : TestWithMocksOrVisually
 	{
-		[IntegrationTest]
-		public void GetClientPositionOnScreen(Type resolver)
+		[Test]
+		public void GetClientPositionOnScreen()
 		{
-			Start(resolver, (CursorPositionTranslater translator, Window window, ScreenSpace screen) =>
-			{
-				var outsidePosition = screen.FromPixelSpace(new Point(-10, -10));
-				var screenPos = translator.ToScreenPositionFromScreenSpace(outsidePosition);
-				Assert.IsTrue(screenPos.X < window.PixelPosition.X || screenPos.Y < window.PixelPosition.Y);
-				Assert.AreEqual(outsidePosition, translator.FromScreenPositionToScreenSpace(screenPos));
-			});
+			var window = Resolve<ScreenSpace>().Window;
+			var translator = new CursorPositionTranslater(window, Resolve<ScreenSpace>());
+			var outsidePosition = Resolve<ScreenSpace>().FromPixelSpace(new Point(-10, -10));
+			var screenPos = translator.ToScreenPositionFromScreenSpace(outsidePosition);
+			Assert.IsTrue(screenPos.X < window.PixelPosition.X || screenPos.Y < window.PixelPosition.Y);
+			Assert.AreEqual(outsidePosition, translator.FromScreenPositionToScreenSpace(screenPos));
 		}
 
-		[IntegrationTest]
-		public void ConvertPixelFromScreenPositionAndBack(Type resolver)
+		[Test]
+		public void ConvertPixelFromScreenPositionAndBack()
 		{
-			Start(resolver, (CursorPositionTranslater positionTranslator, ScreenSpace screen) =>
-			{
-				var topLeftPixel = Point.Zero;
-				var outside = positionTranslator.FromScreenPositionToScreenSpace(topLeftPixel);
-				Assert.AreEqual(topLeftPixel, positionTranslator.ToScreenPositionFromScreenSpace(outside));
-			});
+			var positionTranslator = new CursorPositionTranslater(Resolve<ScreenSpace>().Window,
+				Resolve<ScreenSpace>());
+			var topLeftPixel = Point.Zero;
+			var outside = positionTranslator.FromScreenPositionToScreenSpace(topLeftPixel);
+			Assert.AreEqual(topLeftPixel, positionTranslator.ToScreenPositionFromScreenSpace(outside));
 		}
 	}
 }

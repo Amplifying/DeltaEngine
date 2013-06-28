@@ -24,11 +24,9 @@ namespace DeltaEngine.Platforms
 				(sender, args) => OnOrientationChanged(GetOrientation(game.Window.CurrentOrientation));
 			game.Exiting += (sender, args) => { IsClosing = true; };
 			BackgroundColor = Color.Black;
-			closeAfterOneFrameIfInIntegrationTest = !StackTraceExtensions.ContainsNoTestOrIsVisualTest();
 		}
 
 		private readonly Game game;
-		private readonly bool closeAfterOneFrameIfInIntegrationTest;
 
 		private void OnViewportSizeChanged(object sender, EventArgs e)
 		{
@@ -47,14 +45,15 @@ namespace DeltaEngine.Platforms
 
 		public event Action<Orientation> OrientationChanged;
 
-		private static Orientation GetOrientation(DisplayOrientation xnaOrientaion)
+		private Orientation GetOrientation(DisplayOrientation xnaOrientaion)
 		{
-			if (xnaOrientaion == DisplayOrientation.LandscapeLeft ||
-				xnaOrientaion == DisplayOrientation.LandscapeRight)
-				return Orientation.Landscape;
-
-			return Orientation.Portrait;
+			Orientation = xnaOrientaion == DisplayOrientation.LandscapeLeft ||
+										xnaOrientaion == DisplayOrientation.LandscapeRight
+				? Orientation.Landscape : Orientation.Portrait;
+			return Orientation;
 		}
+
+		public Orientation Orientation { get; private set; }
 
 		public string Title
 		{
@@ -75,6 +74,7 @@ namespace DeltaEngine.Platforms
 		public Size ViewportPixelSize
 		{
 			get { return new Size(game.Window.ClientBounds.Width, game.Window.ClientBounds.Height); }
+			set { TotalPixelSize = value; }
 		}
 
 		public Size TotalPixelSize
@@ -92,6 +92,14 @@ namespace DeltaEngine.Platforms
 		public Point PixelPosition
 		{
 			get { return new Point(game.Window.ClientBounds.X, game.Window.ClientBounds.Y); }
+			set
+			{
+				Control window = Control.FromHandle(Handle);
+				int leftBorder = game.Window.ClientBounds.X - window.Location.X;
+				int topBorder = game.Window.ClientBounds.Y - window.Location.Y;
+				window.Location = new System.Drawing.Point((int)value.X - leftBorder,
+					(int)value.Y - topBorder);
+			}
 		}
 
 		public Color BackgroundColor { get; set; }
@@ -154,17 +162,22 @@ namespace DeltaEngine.Platforms
 
 		public void Present()
 		{
-			if (closeAfterOneFrameIfInIntegrationTest)
-				game.Exit();
+			if (IsClosing && WindowClosing != null)
+				WindowClosing();
 		}
 
-		public void Dispose()
+		public void CloseAfterFrame()
 		{
 			if (IsClosing)
 				return;
 
 			IsClosing = true;
 			FrameworkDispatcher.Update();
+		}
+
+		public void Dispose()
+		{
+			CloseAfterFrame();
 			game.Exit();
 		}
 	}

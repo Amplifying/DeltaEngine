@@ -20,7 +20,7 @@ namespace DeltaEngine.Editor.SampleBrowser
 
 		private void LoadOpenTKResolverAssembly()
 		{
-			string pathToOpenTKResolver = GetOpenTKResolverPath();
+			string pathToOpenTKResolver = GetOpenTKResolverPath(Directory.GetCurrentDirectory());
 			try
 			{
 				Assembly assembly = Assembly.LoadFrom(pathToOpenTKResolver);
@@ -47,12 +47,25 @@ namespace DeltaEngine.Editor.SampleBrowser
 			this.resolver = resolver;
 		}
 
-		private static string GetOpenTKResolverPath()
+		private string GetOpenTKResolverPath(string currentDirectory)
+		{
+			string parentDirectory = Path.GetFullPath(Path.Combine(currentDirectory, ".."));
+			if (IsDeltaEngineDirectory(parentDirectory))
+				return Path.GetFullPath(Path.Combine(parentDirectory, relativeResolverPath));
+
+			return parentDirectory != Path.GetPathRoot(parentDirectory)
+				? GetOpenTKResolverPath(parentDirectory) : "";
+		}
+
+		private static bool IsDeltaEngineDirectory(string path)
 		{
 			return
-				Path.GetFullPath(Path.Combine("..", "..", "..", "Platforms", "WindowsOpenTK", "bin",
-					"Debug", "DeltaEngine.WindowsOpenTK.dll"));
+				Directory.GetDirectories(path).Any(
+					directory => Path.GetFileName(directory.TrimEnd(Path.DirectorySeparatorChar)) == "Editor");
 		}
+
+		private readonly string relativeResolverPath = Path.Combine("Platforms", "WindowsOpenTK",
+			"bin", "Debug", "DeltaEngine.WindowsOpenTK.dll");
 
 		public void OpenProject(Sample sample)
 		{

@@ -2,7 +2,7 @@
 	x:Class="DeltaEngine.Editor.App"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	StartupUri="EditorWindow.xaml">
+	StartupUri="EditorView.xaml">
 	<Application.Resources>
 
 	</Application.Resources>

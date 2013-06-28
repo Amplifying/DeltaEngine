@@ -2,9 +2,9 @@ using System;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
 using DeltaEngine.Physics2D;
+using DeltaEngine.Rendering;
 using DeltaEngine.Rendering.ScreenSpaces;
 using DeltaEngine.Rendering.Sprites;
 
@@ -16,16 +16,15 @@ namespace Asteroids
 	/// </summary>
 	public class PlayerShip : Sprite
 	{
-		public PlayerShip(ContentLoader content)
+		public PlayerShip()
 			: base(
-				content.Load<Image>(PlayerShipTextureName), new Rectangle(Point.Half, PlayerShipSize),
-				Color.White)
+				ContentLoader.Load<Image>(PlayerShipTextureName), new Rectangle(Point.Half, PlayerShipSize))
 		{
 			Add(new Velocity2D(Point.Zero, MaximumPlayerVelocity));
-			Add<PlayerMovementHandler>();
-			Add<FullAutoFire>();
+			Start<PlayerMovementHandler>();
+			Start<FullAutoFire>();
 			RenderLayer = (int)AsteroidsRenderLayer.Player;
-			projectileTexture = content.Load<Image>(ProjectileTextureName);
+			projectileTexture = ContentLoader.Load<Image>(ProjectileTextureName);
 		}
 
 		private const string PlayerShipTextureName = "ship2";
@@ -53,7 +52,7 @@ namespace Asteroids
 
 		private const float PlayerTurnSpeed = 160;
 
-		private class PlayerMovementHandler : EntityHandler
+		private class PlayerMovementHandler : Behavior2D
 		{
 			public PlayerMovementHandler(ScreenSpace screen)
 			{
@@ -62,7 +61,7 @@ namespace Asteroids
 
 			private readonly ScreenSpace screen;
 
-			public override void Handle(Entity entity)
+			public override void Handle(Entity2D entity)
 			{
 				var nextRect = CalculateRectAfterMove(entity);
 				MoveEntity(entity, nextRect);
@@ -73,70 +72,70 @@ namespace Asteroids
 
 			private const float PlayerDecelFactor = 0.7f;
 
-			private static Rectangle CalculateRectAfterMove(Entity entity)
+			private static Rectangle CalculateRectAfterMove(Entity2D entity)
 			{
 				return
 					new Rectangle(
-						entity.Get<Rectangle>().TopLeft + entity.Get<Velocity2D>().velocity * Time.Current.Delta,
-						entity.Get<Rectangle>().Size);
+						entity.DrawArea.TopLeft + entity.Get<Velocity2D>().velocity * Time.Current.Delta,
+						entity.Size);
 			}
 
-			private void MoveEntity(Entity entity, Rectangle rect)
+			private void MoveEntity(Entity2D entity, Rectangle rect)
 			{
 				StopAtBorder(entity);
 				entity.Set(rect);
 			}
 
-			private void StopAtBorder(Entity entity)
+			private void StopAtBorder(Entity2D entity)
 			{
-				var rect = entity.Get<Rectangle>();
+				var drawArea = entity.DrawArea;
 				var vel = entity.Get<Velocity2D>();
-				CheckStopRightBorder(rect, vel);
-				CheckStopLeftBorder(rect, vel);
-				CheckStopTopBorder(rect, vel);
-				CheckStopBottomBorder(rect, vel);
+				CheckStopRightBorder(ref drawArea, vel);
+				CheckStopLeftBorder(ref drawArea, vel);
+				CheckStopTopBorder(ref drawArea, vel);
+				CheckStopBottomBorder(ref drawArea, vel);
 				entity.Set(vel);
-				entity.Set(rect);
+				entity.Set(drawArea);
 			}
 
-			private void CheckStopLeftBorder(Rectangle rect, Velocity2D vel)
+			private void CheckStopRightBorder(ref Rectangle rect, Velocity2D vel)
 			{
-				if (rect.Left < screen.Viewport.Left)
-				{
-					vel.velocity.X = 0.02f;
-					rect.Left = screen.Viewport.Left;
-				}
+				if (rect.Right <= screen.Viewport.Right)
+					return;
+
+				vel.velocity.X = -0.02f;
+				rect.Right = screen.Viewport.Right;
 			}
 
-			private void CheckStopRightBorder(Rectangle rect, Velocity2D vel)
+			private void CheckStopLeftBorder(ref Rectangle rect, Velocity2D vel)
 			{
-				if (rect.Right > screen.Viewport.Right)
-				{
-					vel.velocity.X = -0.02f;
-					rect.Right = screen.Viewport.Right;
-				}
+				if (rect.Left >= screen.Viewport.Left)
+					return;
+
+				vel.velocity.X = 0.02f;
+				rect.Left = screen.Viewport.Left;
 			}
 
-			private void CheckStopTopBorder(Rectangle rect, Velocity2D vel)
+			private void CheckStopTopBorder(ref Rectangle rect, Velocity2D vel)
 			{
-				if (rect.Top < screen.Viewport.Top)
-				{
-					vel.velocity.Y = 0.02f;
-					rect.Top = screen.Viewport.Top;
-				}
+				if (rect.Top >= screen.Viewport.Top)
+					return;
+
+				vel.velocity.Y = 0.02f;
+				rect.Top = screen.Viewport.Top;
 			}
 
-			private void CheckStopBottomBorder(Rectangle rect, Velocity2D vel)
+			private void CheckStopBottomBorder(ref Rectangle rect, Velocity2D vel)
 			{
-				if (rect.Bottom > screen.Viewport.Bottom)
-				{
-					vel.velocity.Y = -0.02f;
-					rect.Bottom = screen.Viewport.Bottom;
-				}
+				if (rect.Bottom <= screen.Viewport.Bottom)
+					return;
+
+				vel.velocity.Y = -0.02f;
+				rect.Bottom = screen.Viewport.Bottom;
 			}
 		}
 
-		private class FullAutoFire : EntityHandler
+		private class FullAutoFire : Behavior2D
 		{
 			public FullAutoFire()
 			{
@@ -148,7 +147,7 @@ namespace Asteroids
 			private float CadenceShotsPerSec { get; set; }
 			private float timeLastShot;
 
-			public override void Handle(Entity entity)
+			public override void Handle(Entity2D entity)
 			{
 				var ship = entity as PlayerShip;
 				if (!ship.IsFiring || !(Time.Current.Milliseconds - 1 / CadenceShotsPerSec > timeLastShot))

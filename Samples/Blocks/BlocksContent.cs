@@ -9,17 +9,15 @@ namespace Blocks
 	/// </summary>
 	public abstract class BlocksContent
 	{
-		protected BlocksContent(ContentLoader content, string prefix = "",
+		protected BlocksContent(string prefix = "",
 			bool doBricksSplitInHalfWhenRowFull = false)
 		{
-			Content = content;
 			Prefix = prefix;
 			DoBricksSplitInHalfWhenRowFull = doBricksSplitInHalfWhenRowFull;
 			AreFiveBrickBlocksAllowed = true;
 			DoBlocksStartInARandomColumn = false;
 		}
 
-		public ContentLoader Content { get; private set; }
 		public string Prefix { get; set; }
 		public bool DoBricksSplitInHalfWhenRowFull { get; set; }
 		public bool AreFiveBrickBlocksAllowed { get; set; }
@@ -27,7 +25,7 @@ namespace Blocks
 
 		public T Load<T>(string contentName) where T : ContentData
 		{
-			return Content.Load<T>(Prefix + contentName);
+			return ContentLoader.Load<T>(Prefix + contentName);
 		}
 
 		public string GetFilenameWithoutPrefix(string filenameWithPrefix)

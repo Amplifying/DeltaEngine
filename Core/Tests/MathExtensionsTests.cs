@@ -53,11 +53,27 @@ namespace DeltaEngine.Core.Tests
 		}
 
 		[Test]
+		public void Tan()
+		{
+			Assert.AreEqual(0.0f, MathExtensions.Tan(0.0f), Precision);
+			Assert.AreEqual(0.0f, MathExtensions.Tan(180.0f), Precision);
+			Assert.AreEqual(1.0f, MathExtensions.Tan(45.0f), Precision);
+		}
+
+		[Test]
 		public void Atan2()
 		{
 			Assert.AreEqual(0.0f, MathExtensions.Atan2(0, 0));
 			Assert.AreEqual(90.0f, MathExtensions.Atan2(1, 0));
 			Assert.AreEqual(-135.0f, MathExtensions.Atan2(-1, -1));
+		}
+
+		[Test]
+		public void Sqrt()
+		{
+			Assert.AreEqual(0.0f, MathExtensions.Sqrt(0.0f));
+			Assert.AreEqual(2.0f, MathExtensions.Sqrt(4.0f));
+			Assert.AreEqual(9.0f, MathExtensions.Sqrt(81.0f));
 		}
 
 		[Test]
