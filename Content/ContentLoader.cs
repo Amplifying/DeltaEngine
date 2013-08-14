@@ -1,57 +1,74 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace DeltaEngine.Content
 {
 	/// <summary>
-	/// Abstract factory to load types derived from ContentData (images, sounds, xml files, levels,
-	/// etc). Returns cached useable instances and provides quick and easy access to all cached data.
+	/// Loads content types like images, sounds, xml files, levels, etc. Returns cached useable
+	/// instances and provides quick and easy access to all cached data plus creation of dynamic data.
 	/// </summary>
-	public abstract class ContentLoader
+	public abstract class ContentLoader : IDisposable
 	{
-		protected ContentLoader(ContentDataResolver resolver, string contentPath)
+		protected ContentLoader(string contentPath)
 		{
+			if (current != null && !current.GetType().Name.StartsWith("Mock"))
+				throw new ContentLoaderAlreadyExistsItIsOnlyAllowedToSetBeforeTheAppStarts();
 			current = this;
-			this.resolver = resolver;
-			ContentPath = contentPath;
+			this.contentPath = contentPath;
 		}
 
-		/// <summary>
-		/// Is only initialized when first used. Normally set in Platforms to the OnlineContentLoader.
-		/// </summary>
-		private static ContentLoader current;
+		public class ContentLoaderAlreadyExistsItIsOnlyAllowedToSetBeforeTheAppStarts : Exception {}
 
-		private readonly ContentDataResolver resolver;
-		public string ContentPath { get; protected set; }
+		/// <summary>
+		/// Normally set in Platforms.AppRunner to DeveloperOnlineContentLoader by creating it.
+		/// </summary>
+		internal static ContentLoader current;
+		internal ContentDataResolver resolver;
+
+		protected readonly string contentPath;
 
 		public static Content Load<Content>(string contentName) where Content : ContentData
 		{
 			if (Path.HasExtension(contentName))
 				throw new ContentNameShouldNotHaveExtension();
-
 			return Load(typeof(Content), contentName) as Content;
 		}
-
-		public static bool Exists(string contentName)
-		{
-			return current.GetMetaData(contentName) != null;
-		}
-
-		protected abstract void LazyInitialize();
 
 		public class ContentNameShouldNotHaveExtension : Exception {}
 
 		internal static ContentData Load(Type contentType, string contentName)
 		{
+			if (current == null)
+				throw new NoContentLoaderWasInitialized();
+			current.resolver.MakeSureResolverIsInitializedAndContentIsReady();
+			if (contentName.StartsWith("<Generated"))
+				return current.resolver.Resolve(contentType, contentName);
 			if (!current.resources.ContainsKey(contentName))
 				return current.LoadAndCacheContent(contentType, contentName);
-
 			if (!current.resources[contentName].IsDisposed)
 				return current.GetCachedResource(contentType, contentName);
-
 			current.resources.Remove(contentName);
 			return current.LoadAndCacheContent(contentType, contentName);
+		}
+
+		public class NoContentLoaderWasInitialized : Exception {}
+
+		public static bool Exists(string contentName)
+		{
+			if (current == null)
+				throw new NoContentLoaderWasInitialized();
+			current.resolver.MakeSureResolverIsInitializedAndContentIsReady();
+			return current.GetMetaData(contentName) != null;
+		}
+
+		public static bool Exists(string contentName, ContentType type)
+		{
+			if (current == null)
+				throw new NoContentLoaderWasInitialized();
+			current.resolver.MakeSureResolverIsInitializedAndContentIsReady();
+			var metaData = current.GetMetaData(contentName);
+			return metaData != null && metaData.Type == type;
 		}
 
 		private readonly Dictionary<string, ContentData> resources =
@@ -59,16 +76,29 @@ namespace DeltaEngine.Content
 
 		private ContentData LoadAndCacheContent(Type contentType, string contentName)
 		{
-			if (GetMetaData(contentName) == null)
-				throw new ContentNotFound(contentName);
-
 			var contentData = resolver.Resolve(contentType, contentName);
 			LoadMetaDataAndContent(contentData);
 			resources.Add(contentName, contentData);
 			return contentData;
 		}
 
-		protected abstract ContentMetaData GetMetaData(string contentName);
+		protected abstract ContentMetaData GetMetaData(string contentName,
+			Type contentClassType = null);
+
+		private void LoadMetaDataAndContent(ContentData contentData)
+		{
+			contentData.MetaData = GetMetaData(contentData.Name, contentData.GetType());
+			if (contentData.MetaData != null)
+				contentData.InternalLoad(GetContentDataStream);
+			else if (contentData.InternalAllowCreationIfContentNotFound)
+			{
+				if (!current.GetType().Name.StartsWith("Mock"))
+					Logger.Warning("Content not found: " + contentData);
+				contentData.InternalCreateDefault();
+			}
+			else
+				throw new ContentNotFound(contentData.Name);
+		}
 
 		public class ContentNotFound : Exception
 		{
@@ -76,24 +106,35 @@ namespace DeltaEngine.Content
 				: base(contentName) {}
 		}
 
-		private void LoadMetaDataAndContent(ContentData contentData)
+		protected virtual Stream GetContentDataStream(ContentData content)
 		{
-			contentData.MetaData = GetMetaData(contentData.Name);
-			contentData.InternalLoad(GetContentDataStream);
+			if (String.IsNullOrEmpty(content.MetaData.LocalFilePath))
+				return Stream.Null;
+			var filePath = Path.Combine(contentPath, content.MetaData.LocalFilePath);
+			try
+			{
+				return File.OpenRead(filePath);
+			}
+			catch (Exception ex)
+			{
+				throw new ContentFileDoesNotExist(filePath, ex);
+			}
 		}
 
-		protected abstract Stream GetContentDataStream(ContentData content);
+		public class ContentFileDoesNotExist : Exception
+		{
+			public ContentFileDoesNotExist(string filePath, Exception innerException)
+				: base(filePath, innerException) {}
+		}
 
 		private ContentData GetCachedResource(Type contentType, string contentName)
 		{
 			var cachedResource = resources[contentName];
 			if (contentType.IsInstanceOfType(cachedResource))
 				return cachedResource;
-
 			throw new CachedResourceExistsButIsOfTheWrongType("Content '" + contentName + "' of type '" +
-				contentType + "' requested - but type '" + cachedResource.GetType() +
-				"' found in cache\n '" + contentName +
-				"' should not be in meta data files twice with different suffixes!");
+				contentType + "' requested - but type '" + cachedResource.GetType() + "' found in cache" +
+				"\n '" + contentName + "' should not be in meta data files twice with different suffixes!");
 		}
 
 		public class CachedResourceExistsButIsOfTheWrongType : Exception
@@ -102,11 +143,54 @@ namespace DeltaEngine.Content
 				: base(message) {}
 		}
 
+		public static T Create<T>(ContentCreationData creationData) where T : ContentData
+		{
+			if (current == null)
+				throw new NoContentLoaderWasInitialized();
+			return current.resolver.Resolve(typeof(T), creationData) as T;
+		}
+
 		public static void ReloadContent(string contentName)
 		{
 			var content = current.resources[contentName];
 			current.LoadMetaDataAndContent(content);
 			content.FireContentChangedEvent();
+		}
+
+		public virtual void Dispose()
+		{
+			current = null;
+		}
+
+		public static string ContentLocale
+		{
+			get { return current.locale; }
+			set
+			{
+				if (string.IsNullOrEmpty(value))
+					return;
+				current.locale = value;
+			}
+		}
+
+		private string locale = "en";
+
+		internal static bool HasValidContentForStartup()
+		{
+			return current.HasValidContentAndMakeSureItIsLoaded();
+		}
+
+		protected abstract bool HasValidContentAndMakeSureItIsLoaded();
+
+		protected string ContentMetaDataFilePath
+		{
+			get { return Path.Combine(contentPath, "ContentMetaData.xml"); }
+		}
+
+		public static void RemoveResource(string key)
+		{
+			if (current.resources.ContainsKey(key))
+				current.resources.Clear();
 		}
 	}
 }

@@ -1,4 +1,4 @@
-using DeltaEngine.Input;
+﻿using DeltaEngine;
 using DeltaEngine.Platforms;
 
 namespace SideScroller
@@ -7,7 +7,8 @@ namespace SideScroller
 	{
 		public Program()
 		{
-			new SideScrollerGame(Resolve<InputCommands>());
+			Resolve<Window>();
+			new SideScrollerGame();
 		}
 
 		public static void Main()

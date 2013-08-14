@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -40,25 +40,25 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
-      <Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
-      <Name>DeltaEngine.Core</Name>
+    <ProjectReference Include="..\..\DeltaEngine.csproj">
+      <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
+      <Name>DeltaEngine</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Platforms\DeltaEngine.Platforms.csproj">
-      <Project>{bae8830e-5f62-48d6-b772-c4b1e8665fb3}</Project>
+      <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
       <Name>DeltaEngine.Platforms</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Platforms\TestWithGLFW\DeltaEngine.TestWithGLFW.csproj">
-      <Project>{9892e4ba-9e69-4033-9b5e-b02561fc9c5e}</Project>
-      <Name>DeltaEngine.TestWithGLFW</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Platforms\Windows\DeltaEngine.Platforms.Windows.csproj">
-      <Project>{bd8a80e2-a313-437e-b0ef-fc0b066280a7}</Project>
-      <Name>DeltaEngine.Platforms.Windows</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Profiling.csproj">
-      <Project>{462dc673-e132-4a82-b49b-ec353d25b409}</Project>
+      <Project>{462DC673-E132-4A82-B49B-EC353D25B409}</Project>
       <Name>DeltaEngine.Profiling</Name>
+    </ProjectReference>
+    <ProjectReference Include="Platforms\TestWithOpenTK20\DeltaEngine.TestWithOpenTK20.csproj">
+      <Project>{3A3D2E3E-FCD6-40A4-8F4E-36F3D173AB41}</Project>
+      <Name>DeltaEngine.TestWithOpenTK20</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Platforms\TestWithOpenTK20\DeltaEngine.TestWithOpenTK20.csproj">
+      <Project>{3A3D2E3E-FCD6-40A4-8F4E-36F3D173AB41}</Project>
+      <Name>DeltaEngine.TestWithOpenTK20</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

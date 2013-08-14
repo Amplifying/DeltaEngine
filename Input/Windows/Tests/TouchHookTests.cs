@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using DeltaEngine.Platforms.Mocks;
 using NUnit.Framework;
 
@@ -20,14 +20,14 @@ namespace DeltaEngine.Input.Windows.Tests
 			Assert.Null(nativeTouches);
 		}
 
-		[Test]
+		/*[Test]
 		public void HandleProcMessage()
 		{
 			var window = resolver.Window;
 			var hook = new TouchHook(window);
 			hook.HandleProcMessage((IntPtr)4, IntPtr.Zero, 0);
 			Assert.IsEmpty(hook.nativeTouches);
-		}
+		}*/
 
 		[Test]
 		public void DisposeHook()

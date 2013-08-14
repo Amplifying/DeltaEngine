@@ -1,4 +1,4 @@
-namespace DeltaEngine.Editor.SampleBrowser.Helpers
+﻿namespace DeltaEngine.Editor.SampleBrowser.Helpers
 {
 	public class DesignSampleItem : Sample
 	{

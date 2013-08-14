@@ -1,4 +1,8 @@
+﻿using System;
+using System.Collections.Generic;
+using DeltaEngine.Commands;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
 
 namespace DeltaEngine.Input
 {
@@ -7,7 +11,6 @@ namespace DeltaEngine.Input
 	/// </summary>
 	public abstract class Mouse : InputDevice
 	{
-		public abstract bool IsAvailable { get; }
 		public Point Position { get; protected set; }
 		public int ScrollWheelValue { get; protected set; }
 		public State LeftButton { get; protected set; }
@@ -26,12 +29,126 @@ namespace DeltaEngine.Input
 				return X1Button;
 			if (button == MouseButton.X2)
 				return X2Button;
-
 			return LeftButton;
 		}
 
 		public abstract void SetPosition(Point newPosition);
-		public abstract void Run();
-		public abstract void Dispose();
+
+		public override void Update(IEnumerable<Entity> entities)
+		{
+			if (!IsAvailable)
+				return;
+			foreach (Entity entity in entities)
+			{
+				TryInvokeTriggerOfType<MouseButtonTrigger>(entity, IsMouseButtonTriggered);
+				TryInvokeTriggerOfType<MouseDragTrigger>(entity, IsMouseDragTriggered);
+				TryInvokeTriggerOfType<MouseDragDropTrigger>(entity, IsMouseDragDropTriggered);
+				TryInvokeTriggerOfType<MouseHoldTrigger>(entity, IsMouseHoldTriggered);
+				TryInvokeTriggerOfType<MouseHoverTrigger>(entity, IsMouseHoverTriggered);
+				TryInvokeTriggerOfType<MouseMovementTrigger>(entity, IsMouseMovementTriggered);
+				TryInvokeTriggerOfType<MousePositionTrigger>(entity, IsMousePositionTriggered);
+				TryInvokeTriggerOfType<MouseTapTrigger>(entity, IsMouseTapTriggered);
+			}
+		}
+
+		private static void TryInvokeTriggerOfType<T>(Entity entity, Func<T, bool> triggeredCode)
+			where T : Trigger
+		{
+			var trigger = entity as T;
+			if (trigger != null)
+				trigger.WasInvoked = triggeredCode.Invoke(trigger);
+		}
+
+		private bool IsMouseButtonTriggered(MouseButtonTrigger trigger)
+		{
+			trigger.Position = Position;
+			return GetButtonState(trigger.Button) == trigger.State;
+		}
+
+		private bool IsMouseDragTriggered(MouseDragTrigger trigger)
+		{
+			if (GetButtonState(trigger.Button) == State.Pressing)
+				trigger.DrawArea = new Rectangle(Position, Size.Zero);
+			else if (trigger.DrawArea != Rectangle.Unused &&
+				GetButtonState(trigger.Button) != State.Released)
+			{
+				if (trigger.DrawArea.TopLeft.DistanceTo(Position) > PositionEpsilon)
+				{
+					trigger.DrawArea = Rectangle.FromCorners(trigger.DrawArea.TopLeft, Position);
+					return true;
+				}
+			}
+			else
+				trigger.DrawArea = Rectangle.Unused;
+			return false;
+		}
+
+		private const float PositionEpsilon = 0.0025f;
+
+		private bool IsMouseDragDropTriggered(MouseDragDropTrigger trigger)
+		{
+			if (trigger.StartArea.Contains(Position) && GetButtonState(trigger.Button) == State.Pressing)
+				trigger.StartDragPosition = Position;
+			else if (trigger.StartDragPosition != Point.Unused &&
+				GetButtonState(trigger.Button) != State.Released)
+			{
+				if (trigger.StartDragPosition.DistanceTo(Position) > PositionEpsilon)
+					return true;
+			}
+			else
+				trigger.StartDragPosition = Point.Unused;
+			return false;
+		}
+
+		private bool IsMouseHoldTriggered(MouseHoldTrigger trigger)
+		{
+			if (GetButtonState(trigger.Button) == State.Pressing)
+				trigger.StartPosition = Position;
+			if (CheckHoverState(trigger))
+				return trigger.IsHovering();
+			trigger.LastPosition = Position;
+			trigger.Elapsed = 0.0f;
+			return false;
+		}
+
+		private bool CheckHoverState(MouseHoldTrigger trigger)
+		{
+			return trigger.HoldArea.Contains(trigger.StartPosition) &&
+				GetButtonState(trigger.Button) == State.Pressed &&
+				trigger.LastPosition.DistanceTo(Position) < PositionEpsilon;
+		}
+
+		private bool IsMouseHoverTriggered(MouseHoverTrigger trigger)
+		{
+			if (trigger.LastPosition.DistanceTo(Position) < PositionEpsilon)
+				return trigger.IsHovering();
+			trigger.LastPosition = Position;
+			trigger.Elapsed = 0.0f;
+			return false;
+		}
+
+		private bool IsMouseMovementTriggered(MouseMovementTrigger trigger)
+		{
+			bool changedPosition = trigger.Position != Position && trigger.Position != Point.Unused;
+			trigger.Position = Position;
+			return changedPosition;
+		}
+
+		private bool IsMousePositionTriggered(MousePositionTrigger trigger)
+		{
+			var isButton = GetButtonState(trigger.Button) == trigger.State;
+			bool hasPositionChanged = trigger.Position != Position && trigger.Position != Point.Unused;
+			trigger.Position = Position;
+			return isButton && hasPositionChanged;
+		}
+
+		private bool IsMouseTapTriggered(MouseTapTrigger trigger)
+		{
+			bool wasJustStartedPressing = trigger.LastState == State.Pressing;
+			State currentState = GetButtonState(trigger.Button);
+			var isNowReleased = currentState == State.Releasing;
+			trigger.LastState = currentState;
+			return isNowReleased && wasJustStartedPressing;
+		}
 	}
 }

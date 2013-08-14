@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using DeltaEngine.Core;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Content.Xml
 {
@@ -72,7 +72,6 @@ namespace DeltaEngine.Content.Xml
 		{
 			if (child == null)
 				return this;
-
 			child.Parent = this;
 			Children.Add(child);
 			return this;
@@ -129,22 +128,11 @@ namespace DeltaEngine.Content.Xml
 				foreach (XmlAttribute attribute in child.Attributes)
 					if (attribute.Name.Compare(attributeName))
 						return attribute;
-
 				XmlAttribute? childAttribute = FindFirstDescendantAttribute(child.Children, attributeName);
 				if (childAttribute != null)
 					return childAttribute;
 			}
-
 			return null;
-		}
-
-		public Dictionary<string, string> GetAttributes()
-		{
-			var result = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-			foreach (XmlAttribute attribute in Attributes)
-				result.Add(attribute.Name, attribute.Value);
-
-			return result;
 		}
 
 		public XmlData GetChild(string childName)
@@ -163,12 +151,10 @@ namespace DeltaEngine.Content.Xml
 			{
 				if (child.Name.Compare(childName))
 					return child;
-
 				XmlData childOfChild = child.GetChild(childName);
 				if (childOfChild != null)
 					return childOfChild;
 			}
-
 			return null;
 		}
 
@@ -180,12 +166,10 @@ namespace DeltaEngine.Content.Xml
 				if ((anyDescendant || child.Name.Compare(childName)) &&
 					child.GetAttributeValue(attribute.Name) == attribute.Value)
 					return child;
-
 				XmlData childOfChild = child.GetDescendant(attribute, childName);
 				if (childOfChild != null)
 					return childOfChild;
 			}
-
 			return null;
 		}
 
@@ -197,12 +181,10 @@ namespace DeltaEngine.Content.Xml
 				if (anyDescendant || child.Name.Compare(childName))
 					if (child.ContainsAttributes(attributes))
 						return child;
-
 				XmlData childOfChild = child.GetDescendant(attributes, childName);
 				if (childOfChild != null)
 					return childOfChild;
 			}
-
 			return null;
 		}
 
@@ -212,7 +194,6 @@ namespace DeltaEngine.Content.Xml
 			foreach (var attribute in attributes)
 				if (GetAttributeValue(attribute.Name) != attribute.Value)
 					matches = false;
-
 			return matches;
 		}
 
@@ -258,7 +239,6 @@ namespace DeltaEngine.Content.Xml
 				var root = new XElement(Name);
 				if (!string.IsNullOrEmpty(Value))
 					root.Value = Value;
-
 				XDocument doc = XDocumentHasHeader
 					? new XDocument(new XDeclaration("1.0", "utf-8", null)) : new XDocument();
 				doc.Add(root);
@@ -287,7 +267,6 @@ namespace DeltaEngine.Content.Xml
 			var root = new XElement(Name);
 			if (!string.IsNullOrEmpty(Value))
 				root.Value = Value;
-
 			AddXAttributes(root);
 			AddXChildren(root, doc);
 			return root;

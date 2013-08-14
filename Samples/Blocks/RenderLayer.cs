@@ -1,4 +1,4 @@
-namespace Blocks
+﻿namespace Blocks
 {
 	/// <summary>
 	/// The various rendering layers. Higher layers overdraw lower ones 

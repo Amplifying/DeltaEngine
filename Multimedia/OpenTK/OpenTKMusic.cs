@@ -1,19 +1,19 @@
-using System;
+﻿using System;
 using System.IO;
-using DeltaEngine.Core;
-using DeltaEngine.Logging;
+using DeltaEngine.Content;
+using DeltaEngine.Extensions;
 using DeltaEngine.Multimedia.OpenTK.Helpers;
 using System.Diagnostics;
-using DeltaEngine.Platforms;
+using DeltaEngine.Multimedia.MusicStreams;
 
 namespace DeltaEngine.Multimedia.OpenTK
 {
 	public class OpenTKMusic : Music
 	{
-		public OpenTKMusic(string filename, OpenTKSoundDevice device, Settings settings) : 
-			base(filename, device, settings)
+		public OpenTKMusic(string filename, OpenTKSoundDevice soundDevice, Settings settings) : 
+			base(filename, soundDevice, settings)
 		{
-			openAL = device;
+			openAL = soundDevice;
 			channelHandle = openAL.CreateChannel();
 			buffers = openAL.CreateBuffers(NumberOfBuffers);
 			bufferData = new byte[BufferSize];
@@ -53,30 +53,20 @@ namespace DeltaEngine.Multimedia.OpenTK
 				var stream = new MemoryStream();
 				fileData.CopyTo(stream);
 				stream.Seek(0, SeekOrigin.Begin);
-				if (IsOggStream(stream))
-					musicStream = new OggMusicStream(stream);
-				else
-					musicStream = new Mp3MusicStream(stream);
+				musicStream = new MusicStreamFactory().Load(stream, "Content/" + Name);
 				format = musicStream.Channels == 2 ? AudioFormat.Stereo16 : AudioFormat.Mono16;
 			}
 			catch (Exception ex)
 			{
-				Logger.Current.Error(ex);
+				Logger.Error(ex);
 				if (Debugger.IsAttached)
 					throw new MusicNotFoundOrAccessible(Name, ex);
 			}
 		}
 
-		private bool IsOggStream(MemoryStream stream)
-		{
-			byte[] magicBytes = new byte[3];
-			stream.Read(magicBytes, 0, magicBytes.Length);
-			stream.Seek(0, SeekOrigin.Begin);
-			return magicBytes [0] == 'O' && magicBytes [1] == 'g' && magicBytes [2] == 'g';
-		}
-
 		protected override void PlayNativeMusic(float volume)
 		{
+			musicStream.Rewind();
 			for (int index = 0; index < NumberOfBuffers; index++)
 				if (!Stream(buffers [index]))
 					break;
@@ -104,7 +94,7 @@ namespace DeltaEngine.Multimedia.OpenTK
 			return GetState() != ChannelState.Stopped;
 		}
 
-		protected override void Run()
+		public override void Run()
 		{
 			if (UpdateBuffersAndCheckFinished())
 				Stop();

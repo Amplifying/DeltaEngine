@@ -1,5 +1,5 @@
-using System;
-using DeltaEngine.Core;
+﻿using System;
+using DeltaEngine.Entities;
 
 namespace DeltaEngine.Input
 {
@@ -7,8 +7,12 @@ namespace DeltaEngine.Input
 	/// All input devices (keyboard, mouse, touch, gamepad) will be updated each frame as Runners.
 	/// Only available devices will be included into Commands and event trigger checks.
 	/// </summary>
-	public interface InputDevice : Runner, IDisposable
+	public abstract class InputDevice : UpdateBehavior, IDisposable
 	{
-		bool IsAvailable { get; }
+		protected InputDevice()
+			: base(Priority.First) {}
+
+		public abstract bool IsAvailable { get; protected set; }
+		public abstract void Dispose();
 	}
 }

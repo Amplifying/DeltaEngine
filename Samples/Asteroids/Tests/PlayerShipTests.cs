@@ -1,15 +1,14 @@
-using System;
-using DeltaEngine.Datatypes;
-using DeltaEngine.Physics2D;
+﻿using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
-using DeltaEngine.Rendering.ScreenSpaces;
+using DeltaEngine.ScreenSpaces;
 using NUnit.Framework;
 
 namespace Asteroids.Tests
 {
 	internal class PlayerShipTests : TestWithMocksOrVisually
 	{
-		private void InitPlayerShip()
+		[SetUp]
+		public void SetUp()
 		{
 			playerShip = new PlayerShip();
 		}
@@ -19,7 +18,6 @@ namespace Asteroids.Tests
 		[Test]
 		public void Accelarate()
 		{
-			InitPlayerShip();
 			Point originalVelocity = playerShip.Get<Velocity2D>().velocity;
 			playerShip.ShipAccelerate();
 			Assert.AreNotEqual(originalVelocity, playerShip.Get<Velocity2D>().velocity);
@@ -28,7 +26,6 @@ namespace Asteroids.Tests
 		[Test]
 		public void TurnChangesAngleCorrectly()
 		{
-			InitPlayerShip();
 			float originalAngle = playerShip.Rotation;
 			playerShip.SteerLeft();
 			Assert.Less(playerShip.Rotation, originalAngle);
@@ -40,29 +37,27 @@ namespace Asteroids.Tests
 		[Test]
 		public void FireRocket()
 		{
-			InitPlayerShip();
 			bool firedRocket = false;
-			playerShip.ProjectileFired += projectile => { firedRocket = true; };
+			playerShip.ProjectileFired += projectile =>
+			{
+				firedRocket = true;
+			};
 			playerShip.IsFiring = true;
-			resolver.AdvanceTimeAndExecuteRunners(1 / 0.003f);
+			AdvanceTimeAndUpdateEntities(1 / 0.003f);
 			Assert.IsTrue(firedRocket);
 		}
 
 		[Test]
 		public void HittingBordersTopLeft()
 		{
-			var screenspace = Resolve<ScreenSpace>();
-			InitPlayerShip();
-			playerShip.Set(new Rectangle(screenspace.TopLeft - new Point(0.1f, 0.1f),
+			playerShip.Set(new Rectangle(ScreenSpace.Current.TopLeft - new Point(0.1f, 0.1f),
 				PlayerShip.PlayerShipSize));
 		}
 
 		[Test]
 		public void HittingBordersBottomRight()
 		{
-			var screenspace = Resolve<ScreenSpace>();
-			InitPlayerShip();
-			playerShip.Set(new Rectangle(screenspace.BottomRight, PlayerShip.PlayerShipSize));
+			playerShip.Set(new Rectangle(ScreenSpace.Current.BottomRight, PlayerShip.PlayerShipSize));
 		}
 	}
 }

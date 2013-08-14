@@ -9,6 +9,52 @@
 	d:DataContext="{d:DesignInstance Type=helpers:DesignSampleItem, IsDesignTimeCreatable=True}"
 	d:DesignHeight="110" d:DesignWidth="520"
 	BorderBrush="Black" BorderThickness="0" Height="110">
+
+	<UserControl.Resources>
+
+		<Style TargetType="Label" x:Key="DeltaLabel">
+			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="Background" Value="#e2e2e2" />
+			<Setter Property="Foreground" Value="#FF5D5D5D" />
+		</Style>
+
+		<Style TargetType="TextBox" x:Key="DeltaTextBox">
+			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="Background" Value="#FFFBFBFB" />
+			<Setter Property="Foreground" Value="#FF5D5D5D" />
+			<Setter Property="BorderBrush" Value="{x:Null}" />
+		</Style>
+
+		<Style TargetType="ComboBox" x:Key="DeltaComboBox">
+			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="Background" Value="#FFFBFBFB" />
+			<Setter Property="Foreground" Value="#FF5D5D5D" />
+		</Style>
+
+		<Style TargetType="ListBox" x:Key="DeltaListBox">
+			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="Background" Value="#FFFBFBFB" />
+			<Setter Property="Foreground" Value="#FF5D5D5D" />
+		</Style>
+
+		<Style TargetType="Button" x:Key="DeltaButton">
+			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="Background" Value="#FF9C9C9C" />
+			<Setter Property="Foreground" Value="#FFFFFFFF" />
+		</Style>
+
+	</UserControl.Resources>
+
 	<Grid>
 		<Grid.Background>
 			<LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
@@ -34,8 +80,8 @@
 			Grid.Column="1" HorizontalAlignment="Left" Margin="0,29,0,0" Foreground="Silver" VerticalAlignment="Top" />
 		<TextBlock
 			Text="{Binding Path=Description}"
-			Grid.Column="1" HorizontalAlignment="Left" Margin="0,47,0,0" Foreground="White"
-			VerticalAlignment="Top" TextWrapping="Wrap" MaxWidth="400" FontWeight="Bold" FontSize="14" Background="#FFAEAEAE" />
+			Grid.Column="1" HorizontalAlignment="Left" Margin="0,47,0,0" Foreground="#FF898989"
+			VerticalAlignment="Top" TextWrapping="Wrap" MaxWidth="400" FontWeight="Bold" FontSize="14" />
 		<Button
 			Content="View source code"
 			Tag="{Binding Path=ProjectFilePath}"
@@ -43,8 +89,14 @@
 			Command="{Binding ElementName=SampleBrowserUserControl, Path=DataContext.OnViewButtonClicked}"
 			ToolTip="{Binding Path=ProjectFilePath}"
 			Grid.Column="1" Margin="0,0,8,57" VerticalAlignment="Bottom"
-			Width="153" FontSize="14" HorizontalAlignment="Right" FontFamily="Arial" FontWeight="Bold"
-			Foreground="#FFEBF5FF" Background="#FF4F4783" Height="43" />
+			Width="153" HorizontalAlignment="Right" Style="{StaticResource DeltaButton}" Height="43" FontWeight="Bold" >
+			<Button.Background>
+				<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+					<GradientStop Color="#FFA0A0A0" Offset="0"/>
+					<GradientStop Color="#FF8B8B8B" Offset="1"/>
+				</LinearGradientBrush>
+			</Button.Background>
+		</Button>
 		<Button
 			Content="Start"
 			Tag="{Binding Path=AssemblyFilePath}"
@@ -52,7 +104,13 @@
 			Command="{Binding ElementName=SampleBrowserUserControl, Path=DataContext.OnStartButtonClicked}"
 			ToolTip="{Binding Path=AssemblyFilePath}"
 			Grid.Column="1" Margin="0,0,8,8" VerticalAlignment="Bottom"
-			Width="153" FontSize="14" HorizontalAlignment="Right" FontFamily="Arial" FontWeight="Bold"
-			Foreground="#FFEBF5FF" Background="#FF453D7A" Height="43" />
+			Width="153" HorizontalAlignment="Right" Style="{StaticResource DeltaButton}" Height="43" FontWeight="Bold" >
+			<Button.Background>
+				<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+					<GradientStop Color="#FFA0A0A0" Offset="0"/>
+					<GradientStop Color="#FF8B8B8B" Offset="1"/>
+				</LinearGradientBrush>
+			</Button.Background>
+		</Button>
 	</Grid>
 </UserControl>

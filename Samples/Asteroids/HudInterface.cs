@@ -1,27 +1,27 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Rendering;
+using DeltaEngine.Entities;
 using DeltaEngine.Rendering.Fonts;
-using DeltaEngine.Rendering.ScreenSpaces;
+using DeltaEngine.ScreenSpaces;
 
 namespace Asteroids
 {
 	public class HudInterface
 	{
-		public HudInterface(ScreenSpace screenSpace)
+		public HudInterface()
 		{
-			hudFont = new Font("Tahoma30");
+			hudFont = ContentLoader.Load<FontXml>("Tahoma30");
 			ScoreDisplay = new FontText(hudFont, "0",
-				new Point(screenSpace.Viewport.Left + 0.02f, screenSpace.Viewport.Top + 0.08f));
+				new Rectangle(ScreenSpace.Current.Viewport.Left, ScreenSpace.Current.Viewport.Top, 0.1f,
+					0.05f));
 			ScoreDisplay.RenderLayer = (int)AsteroidsRenderLayer.UserInterface;
-			gameOverText = new FontText(hudFont, "", Point.Half);
+			gameOverText = new FontText(hudFont, "", Rectangle.FromCenter(0.5f, 0.5f, 0.8f, 0.4f));
 			gameOverText.RenderLayer = (int)AsteroidsRenderLayer.UserInterface;
-
 		}
 
-		private readonly Font hudFont;
+		private readonly FontXml hudFont;
 
 		public FontText ScoreDisplay { get; private set; }
 

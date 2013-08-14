@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -36,12 +36,12 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Core\DeltaEngine.Core.csproj">
-      <Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
-      <Name>DeltaEngine.Core</Name>
+    <ProjectReference Include="..\DeltaEngine.csproj">
+      <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
+      <Name>DeltaEngine</Name>
     </ProjectReference>
     <ProjectReference Include="..\Platforms\DeltaEngine.Platforms.csproj">
-      <Project>{bae8830e-5f62-48d6-b772-c4b1e8665fb3}</Project>
+      <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
       <Name>DeltaEngine.Platforms</Name>
     </ProjectReference>
   </ItemGroup>

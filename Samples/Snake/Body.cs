@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Rendering.Shapes;
@@ -27,6 +27,15 @@ namespace Snake
 
 		public List<FilledRect> BodyParts { get; private set; }
 		public Point Direction { get; set; }
+		public Point HeadPosition
+		{
+			get
+			{
+				if (BodyParts.Count == 0)
+					return Point.Half;
+				return BodyParts[0].Center;
+			}
+		}
 
 		private void PlaceSnakeHead()
 		{

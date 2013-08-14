@@ -1,24 +1,22 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
-using DeltaEngine.Graphics;
 using DeltaEngine.Physics2D;
-using DeltaEngine.Rendering;
-using DeltaEngine.Rendering.ScreenSpaces;
 using DeltaEngine.Rendering.Sprites;
 
 namespace ShadowShot
 {
 	public class PlayerShip : Sprite, IDisposable
 	{
-		public PlayerShip(Image image, Rectangle drawArea)
-			: base(image, drawArea)
+		public PlayerShip(Material material, Rectangle drawArea, Rectangle borders)
+			: base(material, drawArea)
 		{
-			timeLastShot = Time.Current.Milliseconds;
-			Add(new Velocity2D(Point.Zero, Constants.MaximumObjectVelocity));
+			timeLastShot = GlobalTime.Current.Milliseconds;
+			viewportBorders = borders;
+			Add(new Velocity2D.Data(Point.Zero, Constants.MaximumObjectVelocity));
 			Start<MovementHandler>();
 			Start<ProjectileHandler>();
 			RenderLayer = (int)Constants.RenderLayer.PlayerShip;
@@ -26,62 +24,58 @@ namespace ShadowShot
 		}
 
 		private float timeLastShot;
+		private Rectangle viewportBorders;
 
 		public void Accelerate(Point accelerateDirection)
 		{
-			var direction = new Point(accelerateDirection.X * Time.Current.Delta, accelerateDirection.Y);
-			Get<Velocity2D>().Accelerate(direction);
+			var direction = new Point(accelerateDirection.X * Time.Delta, accelerateDirection.Y);
+			Get<Velocity2D.Data>().Accelerate(direction);
 		}
 
-		private class MovementHandler : Behavior2D
+		private class MovementHandler : UpdateBehavior
 		{
-			public MovementHandler(ScreenSpace screen)
+			public override void Update(IEnumerable<Entity> entities)
 			{
-				this.screen = screen;
-				Filter = entity => entity is PlayerShip;
-			}
-
-			private readonly ScreenSpace screen;
-
-			public override void Handle(Entity2D entity)
-			{
-				var ship = (PlayerShip)entity;
-				var nextRect = CalculateRectAfterMove(ship);
-				MoveEntity(ship, nextRect);
-				var velocity2D = ship.Get<Velocity2D>();
-				velocity2D.velocity -= velocity2D.velocity * Constants.PlayerDecelFactor *
-					Time.Current.Delta;
-				ship.Set(velocity2D);
+				foreach (PlayerShip ship in entities)
+				{
+					var nextRect = CalculateRectAfterMove(ship);
+					MoveEntity(ship, nextRect);
+					var velocity2D = ship.Get<Velocity2D.Data>();
+					velocity2D.Velocity -= velocity2D.Velocity * Constants.PlayerDecelFactor * Time.Delta;
+					ship.Set(velocity2D);
+				}
 			}
 
 			private static Rectangle CalculateRectAfterMove(PlayerShip entity)
 			{
 				return
 					new Rectangle(
-						entity.Get<Rectangle>().TopLeft + entity.Get<Velocity2D>().velocity * Time.Current.Delta,
+						entity.Get<Rectangle>().TopLeft + entity.Get<Velocity2D.Data>().Velocity * Time.Delta,
 						entity.Get<Rectangle>().Size);
 			}
 
-			private void MoveEntity(Entity entity, Rectangle rect)
+			private static void MoveEntity(PlayerShip entity, Rectangle rect)
 			{
 				StopAtBorder(entity);
 				entity.Set(rect);
 			}
 
-			private void StopAtBorder(Entity entity)
+			private static void StopAtBorder(PlayerShip entity)
 			{
 				var rect = entity.Get<Rectangle>();
-				var vel = entity.Get<Velocity2D>();
-				if (rect.Left < screen.Viewport.Left)
+				var vel = entity.Get<Velocity2D.Data>();
+				if (rect.Left < entity.viewportBorders.Left)
 				{
-					vel.velocity.X = 0.02f;
-					rect.Left = screen.Viewport.Left;
+					vel.Accelerate(0);
+					vel.Accelerate(new Point(0.02f, 0));
+					rect.Left = entity.viewportBorders.Left;
 				}
 
-				if (rect.Right > screen.Viewport.Right)
+				if (rect.Right > entity.viewportBorders.Right)
 				{
-					vel.velocity.X = -0.02f;
-					rect.Right = screen.Viewport.Right;
+					vel.Accelerate(0);
+					vel.Accelerate(new Point(-0.02f, 0));
+					rect.Right = entity.viewportBorders.Right;
 				}
 
 				entity.Set(vel);
@@ -89,21 +83,18 @@ namespace ShadowShot
 			}
 		}
 
-		private class ProjectileHandler : Behavior2D
+		private class ProjectileHandler : UpdateBehavior
 		{
-			public ProjectileHandler()
+			public override void Update(IEnumerable<Entity> entities)
 			{
-				Filter = entity => entity is PlayerShip;
-			}
+				foreach (PlayerShip ship in entities)
+				{
+					foreach (Projectile projectile in ship.addProjectileList)
+						if (projectile.IsActive)
+							ship.ActiveProjectileList.Add(projectile);
 
-			public override void Handle(Entity2D entity)
-			{
-				var ship = entity as PlayerShip;
-				foreach (Projectile projectile in ship.addProjectileList)
-					if (projectile.IsActive)
-						ship.ActiveProjectileList.Add(projectile);
-
-				ship.addProjectileList.Clear();
+					ship.addProjectileList.Clear();
+				}
 			}
 		}
 
@@ -114,15 +105,16 @@ namespace ShadowShot
 
 		private void SpawnProjectile(Point point)
 		{
-			var projectile = new Projectile(ContentLoader.Load<Image>("projectile"), point);
+			var projectile = new Projectile(new Material(Shader.Position2DColorUv, "projectile"), point,
+				viewportBorders);
 			addProjectileList.Add(projectile);
 		}
 
 		public void Fire()
 		{
-			if (Time.Current.Milliseconds - 1 / PlayerCadance > timeLastShot)
+			if (GlobalTime.Current.Milliseconds - 1 / PlayerCadance > timeLastShot)
 			{
-				timeLastShot = Time.Current.Milliseconds;
+				timeLastShot = GlobalTime.Current.Milliseconds;
 				if (ProjectileFired != null)
 					ProjectileFired(DrawArea.Center);
 			}
@@ -132,7 +124,7 @@ namespace ShadowShot
 
 		public void Deccelerate()
 		{
-			Get<Velocity2D>().Accelerate(0.7f);
+			Get<Velocity2D.Data>().Accelerate(0.7f);
 		}
 
 		public void Dispose()

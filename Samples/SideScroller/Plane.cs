@@ -1,37 +1,34 @@
+﻿using System.Collections.Generic;
+using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
-using DeltaEngine.Physics2D;
-using DeltaEngine.Rendering;
+using DeltaEngine.Entities;
 using DeltaEngine.Rendering.Sprites;
 
 namespace SideScroller
 {
 	public abstract class Plane : Sprite
 	{
-		protected Plane(Image texture, Point initialPosition, Color color)
+		protected Plane(Material texture, Point initialPosition)
 			: base(texture, Rectangle.FromCenter(initialPosition, new Size(0.2f, 0.1f)))
 		{
 			Start<HitPointsHandler>();
 		}
 
 		internal float verticalDecelerationFactor, verticalAccelerationFactor;
-
 		protected const float MaximumSpeed = 2;
 		public int Hitpoints { get; protected set; }
 		internal bool defeated;
 
-		protected class HitPointsHandler : Behavior2D
+		protected class HitPointsHandler : UpdateBehavior
 		{
-			public HitPointsHandler()
+			public override void Update(IEnumerable<Entity> entities)
 			{
-				Filter = entity => entity is Plane;
-			}
-
-			public override void Handle(Entity2D entity)
-			{
-				var plane = entity as Plane;
-				if (plane.Hitpoints <= 0)
-					plane.defeated = true;
+				foreach (var entity in entities)
+				{
+					var plane = entity as Plane;
+					if (plane.Hitpoints <= 0)
+						plane.defeated = true;
+				}
 			}
 		}
 

@@ -1,53 +1,30 @@
-using DeltaEngine.Datatypes;
+﻿using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Rendering.Shapes
 {
 	/// <summary>
-	/// A filled solid color rectangle to be rendered
+	/// A filled solid color 2D rectangle to be rendered.
 	/// </summary>
-	public class FilledRect : Polygon
+	public class FilledRect : Polygon2D
 	{
 		public FilledRect(Rectangle drawArea, Color color)
 			: base(drawArea, color)
 		{
-			UpdateCorners(0.0f);
+			UpdateCorners();
 		}
 
-		private void UpdateCorners(float rotation)
+		private void UpdateCorners()
 		{
 			var existingPoints = Points;
 			existingPoints.Clear();
-			existingPoints.AddRange(DrawArea.GetRotatedRectangleCorners(Center, rotation));
+			existingPoints.AddRange(DrawArea.GetRotatedRectangleCorners(RotationCenter, Rotation));
 		}
 
-		public override float Rotation
+		protected override void NextUpdateStarted()
 		{
-			get { return GetWithDefault(0.0f); }
-			set
-			{
-				Set(value);
-				UpdateCorners(value);
-			}
-		}
-
-		public override Point Center
-		{
-			get { return base.Center; }
-			set
-			{
-				base.Center = value;
-				UpdateCorners(Rotation);
-			}
-		}
-
-		public override Rectangle DrawArea
-		{
-			get { return base.DrawArea; }
-			set
-			{
-				base.DrawArea = value;
-				UpdateCorners(Rotation);
-			}
+			base.NextUpdateStarted();
+			if (DidFootprintChange)
+				UpdateCorners();
 		}
 	}
 }

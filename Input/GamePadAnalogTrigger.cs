@@ -1,0 +1,33 @@
+﻿using System;
+using DeltaEngine.Commands;
+using DeltaEngine.Datatypes;
+using DeltaEngine.Extensions;
+
+namespace DeltaEngine.Input
+{
+	/// <summary>
+	/// Trigger implementation for Thumb Sticks and Triggers on controllers.
+	/// </summary>
+	public class GamePadAnalogTrigger : PositionTrigger
+	{
+		public GamePadAnalogTrigger(GamePadAnalog gamePadAnalog)
+			: base(Point.Unused)
+		{
+			Analog = gamePadAnalog;
+			Start<GamePad>();
+		}
+
+		public GamePadAnalog Analog { get; private set; }
+
+		public GamePadAnalogTrigger(string gamePadAnalog)
+			: base(Point.Unused)
+		{
+			if (String.IsNullOrEmpty(gamePadAnalog))
+				throw new CannotCreateGamePadStickTriggerWithoutGamePadStick();
+			Analog = gamePadAnalog.Convert<GamePadAnalog>();
+			Start<GamePad>();
+		}
+
+		public class CannotCreateGamePadStickTriggerWithoutGamePadStick : Exception {}
+	}
+}

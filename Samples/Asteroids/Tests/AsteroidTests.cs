@@ -1,4 +1,4 @@
-using System;
+﻿using DeltaEngine;
 using DeltaEngine.Core;
 using DeltaEngine.Platforms;
 using NUnit.Framework;
@@ -10,6 +10,7 @@ namespace Asteroids.Tests
 		[Test]
 		public void FractureAsteroid()
 		{
+			Resolve<Window>();
 			var asteroid = new Asteroid(new PseudoRandom(), new GameLogic());
 			asteroid.Fracture();
 			Assert.IsFalse(asteroid.IsActive);
@@ -18,6 +19,7 @@ namespace Asteroids.Tests
 		[Test]
 		public void ShowAsteroidsOfSeveralSizemodsAndFracture()
 		{
+			Resolve<Window>();
 			var randomizer = new PseudoRandom();
 			var gameLogic = new GameLogic();
 			var largeAsteroid = new Asteroid(randomizer, gameLogic);

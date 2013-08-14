@@ -1,5 +1,6 @@
-using DeltaEngine.Datatypes;
+﻿using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
+using DeltaEngine.Rendering;
 using NUnit.Framework;
 
 namespace DeltaEngine.Physics2D.Tests
@@ -9,58 +10,70 @@ namespace DeltaEngine.Physics2D.Tests
 		[SetUp]
 		public void InitializeVelocity()
 		{
-			velocity = new Velocity2D(Point.Zero, 5);
+			velocity = new Velocity2D.Data(Point.Zero, 5);
 		}
 
-		private Velocity2D velocity;
+		private Velocity2D.Data velocity;
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
+		public void ApplyUpdateWithVelocity()
+		{
+			var entity2D = new Entity2D(new Rectangle(0, 0, 1, 1));
+			entity2D.Add(velocity);
+			entity2D.Start<Velocity2D.PositionUpdate>();
+			var originalPosition = entity2D.Center;
+			entity2D.Get<Velocity2D.Data>().Accelerate(2.0f, 90.0f);
+			AdvanceTimeAndUpdateEntities();
+			Assert.AreNotEqual(originalPosition, entity2D.Center);
+		}
+
+		[Test, CloseAfterFirstFrame]
 		public void AccelerateByPoint()
 		{
 			velocity.Accelerate(Point.One);
-			Assert.AreEqual(Point.One, velocity.velocity);
+			Assert.AreEqual(Point.One, velocity.Velocity);
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void AccelerateByPointExceedingMaximum()
 		{
 			velocity.Accelerate(new Point(6, 0));
-			Assert.AreEqual(5, velocity.velocity.X);
-			Assert.AreEqual(0, velocity.velocity.Y);
+			Assert.AreEqual(5, velocity.Velocity.X);
+			Assert.AreEqual(0, velocity.Velocity.Y);
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void AccelerateByMagnitudeAngle()
 		{
 			velocity.Accelerate(4, 0);
-			Assert.AreEqual(-4, velocity.velocity.Y);
-			Assert.AreEqual(0, velocity.velocity.X);
+			Assert.AreEqual(-4, velocity.Velocity.Y);
+			Assert.AreEqual(0, velocity.Velocity.X);
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void AccelerateByMagnitudeAngleExceedingMaximum()
 		{
 			velocity.Accelerate(6, 0);
-			Assert.AreEqual(-5, velocity.velocity.Y);
-			Assert.AreEqual(0, velocity.velocity.X);
+			Assert.AreEqual(-5, velocity.Velocity.Y);
+			Assert.AreEqual(0, velocity.Velocity.X);
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void AccelerateByScalarFactor()
 		{
 			velocity.Accelerate(Point.One);
 			velocity.Accelerate(2);
-			Assert.AreEqual(2,velocity.velocity.X);
-			Assert.AreEqual(2,velocity.velocity.Y);
+			Assert.AreEqual(2, velocity.Velocity.X);
+			Assert.AreEqual(2, velocity.Velocity.Y);
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void AccelerateByScalarFactorExceedingMaximum()
 		{
 			velocity.Accelerate(Point.UnitX);
 			velocity.Accelerate(-7.0f);
-			Assert.AreEqual(-5,velocity.velocity.X);
-			Assert.AreEqual(0,velocity.velocity.Y);
+			Assert.AreEqual(-5, velocity.Velocity.X);
+			Assert.AreEqual(0, velocity.Velocity.Y);
 		}
 	}
 }

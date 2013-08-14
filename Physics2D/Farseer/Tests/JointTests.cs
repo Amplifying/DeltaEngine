@@ -1,10 +1,11 @@
-using System;
+﻿using System;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Platforms;
 using NUnit.Framework;
 
 namespace DeltaEngine.Physics2D.Farseer.Tests
 {
-	public class JointTests
+	public class JointTests : TestWithMocksOrVisually
 	{
 		[Test]
 		public void TestFixedAngleJoint()

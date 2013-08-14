@@ -1,24 +1,14 @@
-using DeltaEngine.Datatypes;
-using DeltaEngine.Rendering;
+﻿using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Scenes.UserInterfaces.Graphing
 {
 	/// <summary>
 	/// Automatically grows a graph so that all points are visible.
-	/// (Note that it won't shrink a graph back down when points are removed though)
+	/// (It won't shrink a graph back down when points are removed though.)
 	/// </summary>
-	public class AutogrowViewport : EventListener2D
+	internal class AutogrowViewport
 	{
-		public override void ReceiveMessage(Entity2D entity, object message)
-		{
-			var addPoint = message as Graph.PointAdded;
-			if (addPoint == null)
-				return;
-
-			ProcessAddedPoints((Graph)entity, addPoint.Point);
-		}
-
-		private void ProcessAddedPoints(Graph graph, Point point)
+		public void ProcessAddedPoint(Graph graph, Point point)
 		{
 			viewport = graph.Viewport;
 			DeriveExtremities();

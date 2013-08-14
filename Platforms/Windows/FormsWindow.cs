@@ -1,11 +1,15 @@
-using System;
+﻿using System;
 using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
-using DeltaEngine.Core;
+using DeltaEngine.Extensions;
+using DeltaEngine.ScreenSpaces;
+using SystemSize = System.Drawing.Size;
+using SystemPoint = System.Drawing.Point;
 using Color = DeltaEngine.Datatypes.Color;
 using Point = DeltaEngine.Datatypes.Point;
 using Size = DeltaEngine.Datatypes.Size;
-using SystemSize = System.Drawing.Size;
 
 namespace DeltaEngine.Platforms.Windows
 {
@@ -35,20 +39,22 @@ namespace DeltaEngine.Platforms.Windows
 				(int)settings.Resolution.Height);
 			form.MinimumSize = new SystemSize(1, 1);
 			form.Text = StackTraceExtensions.GetEntryName();
-			BackgroundColor = Color.Black;
+			BackgroundColor = Datatypes.Color.Black;
 			Icon appIcon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
 			if (appIcon != null)
 				form.Icon = appIcon;
 			form.SizeChanged += OnSizeChanged;
 			form.Show();
+			ScreenSpace.Current = new QuadraticScreenSpace(this);
 		}
 
-		public FormsWindow(Control panel)
+		protected FormsWindow(Control panel)
 		{
+			
 			this.panel = panel;
 		}
 
-		protected Control panel;
+		protected readonly Control panel;
 
 		private sealed class NativeMessageForm : Form
 		{
@@ -92,7 +98,7 @@ namespace DeltaEngine.Platforms.Windows
 		}
 
 		public Orientation Orientation { get; private set; }
-		public event Action<Size> ViewportSizeChanged;
+		public event Action<Datatypes.Size> ViewportSizeChanged;
 		public event Action<Orientation> OrientationChanged;
 
 		public string Title
@@ -106,36 +112,26 @@ namespace DeltaEngine.Platforms.Windows
 			get { return panel.Visible; }
 		}
 
-		public IntPtr Handle
+		public object Handle
 		{
 			get { return panel.IsDisposed ? IntPtr.Zero : panel.Handle; }
 		}
 
 		public Size ViewportPixelSize
 		{
-			get { return new Size(panel.ClientSize.Width, panel.ClientSize.Height); }
-			set { TotalPixelSize = value + (TotalPixelSize - ViewportPixelSize); }
+			get { return new Datatypes.Size(panel.ClientSize.Width, panel.ClientSize.Height); }
+			set { SetResolution(value + (TotalPixelSize - ViewportPixelSize)); }
 		}
 
 		public Size TotalPixelSize
 		{
-			get { return new Size(panel.Width, panel.Height); }
-			set { ResizeCentered(value.Width, value.Height); }
+			get { return new Datatypes.Size(panel.Width, panel.Height); }
 		}
-
-		protected virtual void ResizeCentered(float widthInPixels, float heightInPixels)
-		{
-			var xPosOffset = (int)((panel.Width - widthInPixels) / 2.0f);
-			var yPosOffset = (int)((panel.Height - heightInPixels) / 2.0f);
-			panel.Location = new System.Drawing.Point(panel.Location.X + xPosOffset,
-				panel.Location.Y + yPosOffset);
-			panel.Size = new System.Drawing.Size((int)widthInPixels, (int)heightInPixels);
-		}
-
+		
 		public Point PixelPosition
 		{
 			get { return new Point(panel.Location.X, panel.Location.Y); }
-			set { panel.Location = new System.Drawing.Point((int)value.X, (int)value.Y); }
+			set { panel.Location = new SystemPoint((int)value.X, (int)value.Y); }
 		}
 
 		public Color BackgroundColor
@@ -150,7 +146,7 @@ namespace DeltaEngine.Platforms.Windows
 		}
 		private Color color;
 
-		public virtual void SetFullscreen(Size setFullscreenViewportSize)
+		public virtual void SetFullscreen(Datatypes.Size setFullscreenViewportSize)
 		{
 			IsFullscreen = true;
 			rememberedWindowedSize = new Size(panel.Size.Width, panel.Size.Height);
@@ -160,8 +156,38 @@ namespace DeltaEngine.Platforms.Windows
 				form.TopMost = true;
 				form.StartPosition = FormStartPosition.Manual;
 				form.DesktopLocation = new System.Drawing.Point(0, 0);
+				form.WindowState = FormWindowState.Maximized;
+				form.FormBorderStyle = FormBorderStyle.None;
+				Cursor.Hide();
+				SetFullscreenNative(form.Handle, setFullscreenViewportSize);
 			}
 			SetResolution(setFullscreenViewportSize);
+		}
+
+		private Datatypes.Size rememberedWindowedSize;
+
+		private static void SetFullscreenNative(IntPtr hwnd, Size size)
+		{
+			 SetWindowPos(hwnd, IntPtr.Zero, 0, 0, (int)size.Width, (int)size.Height, 64);
+		}
+
+		[DllImport("user32.dll")]
+		private static extern void SetWindowPos(IntPtr hwnd, IntPtr hwndInsertAfter, int left, int top,
+			int width, int height, uint flags);
+
+		private void SetResolution(Datatypes.Size displaySize)
+		{
+			ResizeCentered(displaySize);
+			if (FullscreenChanged != null)
+				FullscreenChanged(displaySize, IsFullscreen);
+		}
+
+		protected virtual void ResizeCentered(Datatypes.Size newSizeInPixels)
+		{
+			var xOffset = (int)((panel.Width - newSizeInPixels.Width) / 2.0f);
+			var yOffset = (int)((panel.Height - newSizeInPixels.Height) / 2.0f);
+			panel.Location = new SystemPoint(panel.Location.X + xOffset, panel.Location.Y + yOffset);
+			panel.Size = new SystemSize((int)newSizeInPixels.Width, (int)newSizeInPixels.Height);
 		}
 
 		public void SetWindowed()
@@ -169,21 +195,16 @@ namespace DeltaEngine.Platforms.Windows
 			IsFullscreen = false;
 			var form = panel as Form;
 			if (form != null)
+			{
+				form.WindowState = FormWindowState.Normal;
 				form.FormBorderStyle = FormBorderStyle.Sizable;
+				Cursor.Show();
+			}
 			SetResolution(rememberedWindowedSize);
 		}
 
-		private Size rememberedWindowedSize;
-
-		private void SetResolution(Size displaySize)
-		{
-			TotalPixelSize = displaySize;
-			if (FullscreenChanged != null)
-				FullscreenChanged(displaySize, IsFullscreen);
-		}
-
 		public bool IsFullscreen { get; private set; }
-		public event Action<Size, bool> FullscreenChanged;
+		public event Action<Datatypes.Size, bool> FullscreenChanged;
 
 		public virtual bool IsClosing
 		{
@@ -207,33 +228,46 @@ namespace DeltaEngine.Platforms.Windows
 			}
 		}
 
-		public MessageBoxButton ShowMessageBox(string title, string message, MessageBoxButton buttons)
-		{
-			var buttonCombination = MessageBoxButtons.OK;
-			if ((buttons & MessageBoxButton.Cancel) != 0)
-				buttonCombination = MessageBoxButtons.OKCancel;
-			if ((buttons & MessageBoxButton.Ignore) != 0)
-				buttonCombination = MessageBoxButtons.AbortRetryIgnore;
-			var result = MessageBox.Show(panel, message, Title + " " + title, buttonCombination);
-			if (result == DialogResult.OK || result == DialogResult.Abort)
-				return MessageBoxButton.Okay;
-			return result == DialogResult.Ignore ? MessageBoxButton.Ignore : MessageBoxButton.Cancel;
-		}
-
 		private bool remDisabledShowCursor;
 
-		public virtual void Run()
+		public string ShowMessageBox(string caption, string message, string[] buttons)
+		{
+			var buttonCombination = MessageBoxButtons.OK;
+			if (buttons.Contains("Cancel"))
+				buttonCombination = MessageBoxButtons.OKCancel;
+			if (buttons.Contains("Ignore") || buttons.Contains("Abort") || buttons.Contains("Retry"))
+				buttonCombination = MessageBoxButtons.AbortRetryIgnore;
+			if (buttons.Contains("Yes") || buttons.Contains("No"))
+				buttonCombination = MessageBoxButtons.YesNo;
+			return MessageBox.Show(message, Title + " " + caption, buttonCombination).ToString();
+		}
+
+		/// <summary>
+		/// Clipboard.SetText must be executed on a STA thread, which we are not, create extra thread!
+		/// </summary>
+		public void CopyTextToClipboard(string text)
+		{
+			var staThread = new Thread(() => TrySetClipboardText(text));
+			staThread.SetApartmentState(ApartmentState.STA);
+			staThread.Start();
+		}
+
+		private static void TrySetClipboardText(string text)
+		{
+			try
+			{
+				Clipboard.SetText(text, TextDataFormat.Text);
+			}
+			catch (Exception)
+			{
+				Logger.Warning("Failed to set clipboard text: " + text);
+			}
+		}
+
+		public virtual void Present()
 		{
 			Application.DoEvents();
 		}
-
-		public void Present()
-		{
-			if (IsClosing && WindowClosing != null)
-				WindowClosing();
-		}
-
-		public event Action WindowClosing;
 
 		public void CloseAfterFrame()
 		{
@@ -246,6 +280,7 @@ namespace DeltaEngine.Platforms.Windows
 			if (form != null)
 				form.Close();
 			panel.Dispose();
+			ScreenSpace.Current = null;
 		}
 	}
 }

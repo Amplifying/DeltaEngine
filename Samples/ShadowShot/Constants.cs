@@ -1,4 +1,4 @@
-namespace ShadowShot
+﻿namespace ShadowShot
 {
 	/// <summary>
 	/// Collection of constants used during the game Asteroids

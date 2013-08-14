@@ -1,9 +1,9 @@
-namespace DeltaEngine.Entities
+﻿namespace DeltaEngine.Entities
 {
 	/// <summary>
-	/// Provides 5 priority levels for entity handling: First, High, Normal, Low and Last
+	/// Entity behaviors are processed in order from First priority to Last. Normal is the default.
 	/// </summary>
-	public enum Priority
+	public enum Priority : byte
 	{
 		First,
 		High,

@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 
 namespace DeltaEngine.Content
 {
 	/// <summary>
 	/// Simple factory to provide access to create content data on demand without any resolver.
-	/// Only Platforms is allowed to derive from this class.
+	/// Once the <see cref="Resolver"/> is started it will replace this functionality.
 	/// </summary>
 	public class ContentDataResolver
 	{
@@ -14,5 +14,12 @@ namespace DeltaEngine.Content
 		{
 			return Activator.CreateInstance(contentType, contentName) as ContentData;
 		}
+
+		public virtual ContentData Resolve(Type contentType, ContentCreationData data)
+		{
+			return Activator.CreateInstance(contentType, data) as ContentData;
+		}
+
+		public virtual void MakeSureResolverIsInitializedAndContentIsReady() {}
 	}
 }

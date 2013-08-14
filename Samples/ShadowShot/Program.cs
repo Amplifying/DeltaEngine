@@ -1,6 +1,6 @@
-using DeltaEngine.Input;
+﻿using DeltaEngine;
 using DeltaEngine.Platforms;
-using DeltaEngine.Rendering.ScreenSpaces;
+using DeltaEngine.ScreenSpaces;
 
 namespace ShadowShot
 {
@@ -8,7 +8,8 @@ namespace ShadowShot
 	{
 		public Program()
 		{
-			new Game(Resolve<ScreenSpace>(), Resolve<InputCommands>());
+
+			new Game(Resolve<Window>(),Resolve<ScreenSpace>());
 		}
 
 		public static void Main()

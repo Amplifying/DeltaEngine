@@ -1,5 +1,9 @@
-using DeltaEngine.Core;
+﻿using System;
+using System.Collections.Generic;
+using DeltaEngine.Commands;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Input
 {
@@ -11,45 +15,45 @@ namespace DeltaEngine.Input
 		public MouseHoldTrigger(Rectangle holdArea, float holdTime = DefaultHoldTime,
 			MouseButton button = MouseButton.Left)
 		{
-			this.holdArea = holdArea;
-			this.holdTime = holdTime;
-			this.button = button;
+			HoldArea = holdArea;
+			HoldTime = holdTime;
+			Button = button;
+			Start<Mouse>();
 		}
 
-		private readonly Rectangle holdArea;
-		private readonly float holdTime;
-		private readonly MouseButton button;
+		public Rectangle HoldArea { get; private set; }
+		public float HoldTime { get; private set; }
+		public MouseButton Button { get; private set; }
 		private const float DefaultHoldTime = 1.0f;
 
-		public override bool ConditionMatched(InputCommands input)
+		public MouseHoldTrigger(string holdAreaAndHoldTimeAndButton)
 		{
-			if (!input.Mouse.IsAvailable)
-				return false; //ncrunch: no coverage
-
-			if (input.Mouse.GetButtonState(button) == State.Pressing)
-				startPosition = input.Mouse.Position;
-
-			if (holdArea.Contains(startPosition) &&
-				input.Mouse.GetButtonState(button) == State.Pressed &&
-				lastPosition.DistanceTo(input.Mouse.Position) < 0.0025f)
-				return ProcessHover();
-
-			lastPosition = input.Mouse.Position;
-			elapsed = 0.0f;
-			return false;
+			var parameters = holdAreaAndHoldTimeAndButton.SplitAndTrim(new[] { ' ' });
+			if (parameters.Length < 4)
+				throw new CannotCreateMouseHoldTriggerWithoutHoldArea();
+			HoldArea = BuildStringForParemeter(parameters).Convert<Rectangle>();
+			HoldTime = parameters.Length > 4 ? parameters[4].Convert<float>() : DefaultHoldTime;
+			Button = parameters.Length > 5 ? parameters[5].Convert<MouseButton>() : MouseButton.Left;
+			Start<Mouse>();
 		}
 
-		private Point startPosition;
-		private Point lastPosition;
-		private float elapsed;
-
-		private bool ProcessHover()
+		private static string BuildStringForParemeter(IList<string> parameters)
 		{
-			if (elapsed >= holdTime)
+			return parameters[0] + " " + parameters[1] + " " + parameters[2] + " " + parameters[3];
+		}
+
+		public class CannotCreateMouseHoldTriggerWithoutHoldArea : Exception {}
+
+		public bool IsHovering()
+		{
+			if (Elapsed >= HoldTime)
 				return false;
-
-			elapsed += Time.Current.Delta;
-			return elapsed >= holdTime;
+			Elapsed += Time.Delta;
+			return Elapsed >= HoldTime;
 		}
+
+		public float Elapsed { get; set; }
+		public Point StartPosition { get; set; }
+		public Point LastPosition { get; set; }
 	}
 }

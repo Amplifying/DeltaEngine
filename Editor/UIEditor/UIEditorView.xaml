@@ -5,8 +5,31 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	mc:Ignorable="d"
-	d:DesignHeight="300" d:DesignWidth="300">
-	<Grid>
-		<Button Content="Draw Line in Viewport" Click="OnButtonClicked"></Button>
-	</Grid>
+	d:DesignHeight="800" d:DesignWidth="400">
+	<ScrollViewer>
+		<Grid Background="#FFF0F0F0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="12"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="9*"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="12"/>
+                <RowDefinition Height="177"/>
+                <RowDefinition Height="12"/>
+                <RowDefinition Height="199*"/>
+                <RowDefinition Height="12"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="295*"/>
+            </Grid.RowDefinitions>
+            <ComboBox Margin="1,0,0,0" ItemsSource="{Binding Path=ProjectList}"
+			          SelectedItem="{Binding Path=SelectedProject}" Grid.Row="1" Grid.Column="1" FontFamily="Arial" FontSize="16"/>
+			<ListBox Margin="1,0,0,0" ItemsSource="{Binding Path=UIImagesInList}"
+							 SelectedItem="{Binding Path=SelectedImageInList}" Grid.Row="3" Grid.Column="1" FontFamily="Arial" FontSize="18"/>
+			<ListBox Margin="1,0,10,0" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" FontFamily="Arial" FontSize="18"/>
+			<Button Margin="1,0,10,0" Content="Add Image" Click="AddImage" Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2" FontFamily="Arial" FontSize="16" FontWeight="Bold"/>
+        </Grid>
+	</ScrollViewer>
 </UserControl>

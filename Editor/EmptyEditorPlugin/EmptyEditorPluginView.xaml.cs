@@ -1,4 +1,4 @@
-using DeltaEngine.Editor.Common;
+﻿using DeltaEngine.Editor.Core;
 
 namespace DeltaEngine.Editor.EmptyEditorPlugin
 {
@@ -10,18 +10,12 @@ namespace DeltaEngine.Editor.EmptyEditorPlugin
 		public EmptyEditorPluginView()
 		{
 			InitializeComponent();
-			Loaded += (sender, args) => Init();
 		}
 
-		public EmptyEditorPluginView(Service service)
-			: this() {}
-
-		private void Init()
+		public void Init(Service service)
 		{
-			if (DataContext is EmptyEditorPluginViewModel)
-				return;
-
-			DataContext = new EmptyEditorPluginViewModel();
+			if (!(DataContext is EmptyEditorPluginViewModel))
+				DataContext = new EmptyEditorPluginViewModel();
 		}
 
 		public string ShortName
@@ -34,14 +28,9 @@ namespace DeltaEngine.Editor.EmptyEditorPlugin
 			get { return "Icons/New.png"; }
 		}
 
-		public EditorPluginCategory Category
+		public bool RequiresLargePane
 		{
-			get { return EditorPluginCategory.GettingStarted; }
-		}
-
-		public int Priority
-		{
-			get { return 1; }
+			get { return false; }
 		}
 	}
 }

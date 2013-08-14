@@ -1,47 +1,43 @@
-using System.Linq;
-using DeltaEngine.Core;
+﻿using System.Linq;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Platforms;
 using NUnit.Framework;
 
 namespace DeltaEngine.Physics2D.Farseer.Tests
 {
-	public class PhysicsTests
+	public class PhysicsTests : TestWithMocksOrVisually
 	{
-		[Test]
-		public void IsNotPausedOnCreation()
+		[SetUp]
+		public void SetUp()
 		{
-			var physics = new FarseerPhysics();
+			physics = new FarseerPhysics();
+		}
+
+		private FarseerPhysics physics;
+
+		[Test]
+		public void CheckDefaultValues()
+		{
 			Assert.IsFalse(physics.IsPaused);
-		}
-
-		[Test]
-		public void DefaultGravity()
-		{
-			var physics = new FarseerPhysics();
 			Assert.AreEqual(physics.Gravity, new Point(0f, 9.82f));
-		}
-
-		[Test]
-		public void Gravity()
-		{
-			var physics = new FarseerPhysics();
-			var gravity = Point.UnitY;
-			physics.Gravity = gravity;
-			Assert.AreEqual(physics.Gravity, gravity);
-		}
-
-		[Test]
-		public void NoBodiesOnCreation()
-		{
-			var physics = new FarseerPhysics();
 			Assert.AreEqual(0, physics.Bodies.Count());
 		}
 
 		[Test]
-		public void OneBody()
+		public void ChangeGravity()
 		{
-			var physics = new FarseerPhysics();
-			var body = physics.CreateRectangle(Size.One);
+			physics.Gravity = Point.UnitY;
+			Assert.AreEqual(Point.UnitY, physics.Gravity);
+		}
+
+		[Test]
+		public void CreateBody()
+		{
+			VerifyBodyIsCreated(physics.CreateRectangle(Size.One));
+		}
+
+		private void VerifyBodyIsCreated(PhysicsBody body)
+		{
 			Assert.IsNotNull(body);
 			Assert.AreEqual(1, physics.Bodies.Count());
 		}
@@ -49,27 +45,30 @@ namespace DeltaEngine.Physics2D.Farseer.Tests
 		[Test]
 		public void CreateEdge()
 		{
-			var physics = new FarseerPhysics();
-			var body = physics.CreateEdge(Point.Zero, Point.One);
-			Assert.IsNotNull(body);
+			VerifyBodyIsCreated(physics.CreateEdge(Point.Zero, Point.One));
 		}
 
 		[Test]
 		public void CreateEdgeMultiPoints()
 		{
-			var physics = new FarseerPhysics();
-			var body =
-				physics.CreateEdge(new[] { Point.Zero, Point.One, Point.Half, Point.UnitX, Point.UnitY });
-			Assert.IsNotNull(body);
+			VerifyBodyIsCreated(physics.CreateEdge(Points));
 		}
+
+		private static readonly Point[] Points = new[]
+		{ Point.Zero, Point.UnitX, Point.One, Point.UnitY };
 
 		[Test]
 		public void CreatePolygon()
 		{
-			var physics = new FarseerPhysics();
-			var body =
-				physics.CreatePolygon(new[] { Point.Zero, Point.One, Point.Half, Point.UnitX, Point.UnitY });
-			Assert.IsNotNull(body);
+			VerifyBodyIsCreated(physics.CreatePolygon(Points));
+		}
+
+		[Test]
+		public void CheckWorldIsSimulated()
+		{
+			var body = physics.CreateRectangle(Size.One);
+			AdvanceTimeAndUpdateEntities();
+			Assert.AreNotEqual(Point.Zero, body.Position);
 		}
 	}
 }

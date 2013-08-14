@@ -1,5 +1,6 @@
-using System;
+﻿using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("DeltaEngine.Networking")]
@@ -9,5 +10,11 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
 [assembly: Guid("41f5452e-61fe-4659-aabf-9c8872161818")]
-[assembly: AssemblyVersion("0.9.8.3")]
-[assembly: AssemblyFileVersion("0.9.8.3")]
+[assembly: AssemblyVersion("0.9.8.4")]
+[assembly: AssemblyFileVersion("0.9.8.4")]
+[assembly: InternalsVisibleTo("DeltaEngine.Content.Online.Tests")]
+[assembly: InternalsVisibleTo("DeltaEngine.Editor")]
+[assembly: InternalsVisibleTo("DeltaEngine.Editor.Tests")]
+[assembly: InternalsVisibleTo("DeltaEngine.Logging.Tests")]
+[assembly: InternalsVisibleTo("DeltaEngine.Networking.Tests")]
+[assembly: InternalsVisibleTo("DeltaEngine.Platforms")]

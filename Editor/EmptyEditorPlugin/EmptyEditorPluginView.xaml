@@ -6,7 +6,7 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:l="http://wpflocalizeextension.codeplex.com"
 	xmlns:plugin="clr-namespace:DeltaEngine.Editor.EmptyEditorPlugin"
-	l:ResxLocalizationProvider.DefaultAssembly="DeltaEngine.Editor.Common"
+	l:ResxLocalizationProvider.DefaultAssembly="DeltaEngine.Editor.Core"
 	l:ResxLocalizationProvider.DefaultDictionary="Resources"
 	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance Type=plugin:DesignButton, IsDesignTimeCreatable=True}"

@@ -1,8 +1,9 @@
-using DeltaEngine.Core;
+﻿using DeltaEngine.Commands;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Extensions;
 using DeltaEngine.Input;
-using DeltaEngine.Rendering.ScreenSpaces;
 using DeltaEngine.Rendering.Shapes;
+using DeltaEngine.ScreenSpaces;
 using NUnit.Framework;
 
 namespace DeltaEngine.Platforms.Tests
@@ -13,10 +14,11 @@ namespace DeltaEngine.Platforms.Tests
 		public void TestDrawAreaWhenChangingOrientationToPortrait()
 		{
 			new Ellipse(new Rectangle(0.7f, 0.7f, 0.1f, 0.1f), Color.Red);
-			RunCode = () =>
+			RunAfterFirstFrame(() =>
 			{
-				Window.ViewportPixelSize = new Size(480, 800);
-				var screen = Resolve<ScreenSpace>();
+				Resolve<Window>().ViewportPixelSize = new Size(480, 800);
+				var screen = ScreenSpace.Current;
+				Assert.AreEqual(typeof(QuadraticScreenSpace), screen.GetType());
 				var quadSize = screen.FromPixelSpace(new Point(0, 0));
 				ArePointsNearlyEqual(new Point(0.2f, 0f), quadSize);
 				quadSize = screen.FromPixelSpace(new Point(480, 800));
@@ -25,24 +27,25 @@ namespace DeltaEngine.Platforms.Tests
 				ArePointsNearlyEqual(Point.Zero, pixelSize);
 				pixelSize = screen.ToPixelSpace(new Point(0.8f, 1));
 				ArePointsNearlyEqual(new Point(480, 800), pixelSize);
-			};
-			Window.CloseAfterFrame();
+			});
 		}
 
 		private static void ArePointsNearlyEqual(Point expected, Point actual)
 		{
-			Assert.True(actual.X.IsNearlyEqual(expected.X));
-			Assert.True(actual.Y.IsNearlyEqual(expected.Y));
+			Assert.IsTrue(actual.X.IsNearlyEqual(expected.X),
+				"Actual: " + actual + ", Expected: " + expected);
+			Assert.IsTrue(actual.Y.IsNearlyEqual(expected.Y),
+				"Actual: " + actual + ", Expected: " + expected);
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void TestDrawAreaWhenChangingOrientationToLandscape()
 		{
 			new Ellipse(new Rectangle(0.7f, 0.7f, 0.1f, 0.1f), Color.Red);
-			RunCode = () =>
+			RunAfterFirstFrame(() =>
 			{
-				Window.ViewportPixelSize = new Size(800, 480);
-				var screen = Resolve<ScreenSpace>();
+				Resolve<Window>().ViewportPixelSize = new Size(800, 480);
+				var screen = ScreenSpace.Current;
 				var quadSize = screen.FromPixelSpace(new Point(0, 0));
 				ArePointsNearlyEqual(new Point(0f, 0.2f), quadSize);
 				quadSize = screen.FromPixelSpace(new Point(800, 480));
@@ -51,29 +54,27 @@ namespace DeltaEngine.Platforms.Tests
 				ArePointsNearlyEqual(Point.Zero, pixelSize);
 				pixelSize = screen.ToPixelSpace(new Point(1, 0.8f));
 				ArePointsNearlyEqual(new Point(800, 480), pixelSize);
-			};
-			Window.CloseAfterFrame();
+			});
 		}
 
 		[Test]
 		public void ChangeOrientaion()
 		{
 			var line = new Line2D(Point.Zero, Point.One, Color.Green);
-			Window.BackgroundColor = Color.Blue;
-			Input.Add(Key.A, key =>
-			{ Window.ViewportPixelSize = new Size(800, 480); });//ncrunch: no coverage
-			Input.Add(Key.B, key =>
-			{ Window.ViewportPixelSize = new Size(480, 800); }); //ncrunch: no coverage
-			RunCode = () =>
+			var window = Resolve<Window>();
+			window.BackgroundColor = Color.Blue;
+			new Command(() => window.ViewportPixelSize = new Size(800, 480)).Add(new KeyTrigger(Key.A));
+			new Command(() => window.ViewportPixelSize = new Size(480, 800)).Add(new KeyTrigger(Key.B));
+			RunAfterFirstFrame(() =>
 			{
-				var screen = Resolve<ScreenSpace>();
+				var screen = ScreenSpace.Current;
 				var startPosition = screen.Viewport.TopLeft;
 				var endPosition = screen.Viewport.BottomRight;
-				Window.Title = "Size: " + Window.ViewportPixelSize + " Start: " + startPosition +
+				window.Title = "Size: " + window.ViewportPixelSize + " Start: " + startPosition +
 					" End: " + endPosition;
 				line.StartPoint = startPosition;
 				line.EndPoint = endPosition;
-			};
+			});
 		}
 	}
 }

@@ -1,7 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Extensions;
 using FarseerPhysics.Collision.Shapes;
 using FarseerPhysics.Common;
 using FarseerPhysics.Dynamics;
@@ -25,11 +25,7 @@ namespace DeltaEngine.Physics2D.Farseer
 
 		public Point Position
 		{
-			get
-			{
-				var position = UnitConverter.Convert(UnitConverter.ToDisplayUnits(Body.Position));
-				return position;
-			}
+			get { return UnitConverter.Convert(UnitConverter.ToDisplayUnits(Body.Position)); }
 			set
 			{
 				Vector2 position = UnitConverter.Convert(value);
@@ -92,6 +88,7 @@ namespace DeltaEngine.Physics2D.Farseer
 				var vertices = new List<Point>();
 				foreach (var fixture in Body.FixtureList)
 					vertices.AddRange(GetShapeVerticesFromFixture(fixture, xf));
+
 				return vertices.ToArray();
 			}
 		}
@@ -114,14 +111,13 @@ namespace DeltaEngine.Physics2D.Farseer
 
 		private IEnumerable<Point> GetPolygonShapeVertices(PolygonShape polygon, Transform xf)
 		{
-			var vertexCount = polygon.Vertices.Count;
-			tempVertices = new Vector2[vertexCount];
+			int vertexCount = polygon.Vertices.Count;
+			var tempVertices = new Vector2[vertexCount];
 			for (int i = 0; i < vertexCount; ++i)
 				tempVertices[i] = MathUtils.Mul(ref xf, polygon.Vertices[i]);
+
 			return GetDrawVertices(tempVertices, vertexCount);
 		}
-
-		private Vector2[] tempVertices;
 
 		private IEnumerable<Point> GetDrawVertices(Vector2[] vertices, int vertexCount)
 		{
@@ -139,8 +135,8 @@ namespace DeltaEngine.Physics2D.Farseer
 
 		private IEnumerable<Point> GetEdgeShapeVertices(EdgeShape edge, Transform xf)
 		{
-			var v1 = MathUtils.Mul(ref xf, edge.Vertex1);
-			var v2 = MathUtils.Mul(ref xf, edge.Vertex2);
+			Vector2 v1 = MathUtils.Mul(ref xf, edge.Vertex1);
+			Vector2 v2 = MathUtils.Mul(ref xf, edge.Vertex2);
 
 			return new[]
 			{
@@ -157,20 +153,24 @@ namespace DeltaEngine.Physics2D.Farseer
 
 		private static CircleData CreateCircleData(CircleShape circle, Transform xf)
 		{
-			var circleData = new CircleData();
-			circleData.center = MathUtils.Mul(ref xf, circle.Position);
-			circleData.radius = circle.Radius;
-			circleData.circleSegments = 32;
-			circleData.increment = Math.PI * 2.0 / circleData.circleSegments;
-			circleData.theta = 0.0;
+			var circleData = new CircleData
+			{
+				center = MathUtils.Mul(ref xf, circle.Position),
+				radius = circle.Radius,
+				segments = CircleSegments,
+				increment = Math.PI * 2.0 / 32,
+				theta = 0.0
+			};
 			return circleData;
 		}
+
+		private const int CircleSegments = 32;
 
 		private struct CircleData
 		{
 			internal Vector2 center;
 			internal float radius;
-			internal int circleSegments;
+			internal int segments;
 			internal double increment;
 			internal double theta;
 		}
@@ -178,14 +178,12 @@ namespace DeltaEngine.Physics2D.Farseer
 		private Point[] CreateCircleVertexArray(CircleData circleData)
 		{
 			var vertices = new List<Point>();
-			for (int i = 0; i < circleData.circleSegments; i++)
+			for (int i = 0; i < circleData.segments; i++)
 			{
 				Vector2 v1 = CreateCircleVertexVectorV1(circleData);
 				Vector2 v2 = CreateCircleVertexVectorV2(circleData);
-
 				vertices.Add(UnitConverter.Convert(UnitConverter.ToDisplayUnits(v1)));
 				vertices.Add(UnitConverter.Convert(UnitConverter.ToDisplayUnits(v2)));
-
 				circleData.theta += circleData.increment;
 			}
 			return vertices.ToArray();

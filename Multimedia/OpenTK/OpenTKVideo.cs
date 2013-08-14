@@ -1,39 +1,33 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
-using DeltaEngine.Core;
-using DeltaEngine.Logging;
-using DeltaEngine.Multimedia.AviVideo;
+using DeltaEngine.Entities;
+using DeltaEngine.Extensions;
 using DeltaEngine.Multimedia.OpenTK.Helpers;
+using DeltaEngine.Multimedia.VideoStreams;
 using DeltaEngine.Rendering.Sprites;
+using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
-using DeltaEngine.Rendering.ScreenSpaces;
+using DeltaEngine.ScreenSpaces;
 
 namespace DeltaEngine.Multimedia.OpenTK
 {
 	public class OpenTKVideo : Video
 	{
-		public OpenTKVideo(string filename, Device device, OpenTKSoundDevice soundDevice, ScreenSpace 
-			screen) : base(filename, soundDevice)
+		public OpenTKVideo(string filename, OpenTKSoundDevice soundDevice) : base(filename, soundDevice)
 		{
 			openAL = soundDevice;
-			this.screen = screen;
 			channelHandle = openAL.CreateChannel();
 			buffers = openAL.CreateBuffers(NumberOfBuffers);
-			image = new VideoImage(device);
 		}
 
-		private readonly ScreenSpace screen;
-		private readonly VideoImage image;
+		private Image image;
 		private readonly OpenTKSoundDevice openAL;
 		private int channelHandle;
 		private int[] buffers;
 		private const int NumberOfBuffers = 4;
-		private VideoStream video;
-		private AudioStream audio;
+		private BaseVideoStream video;
 		private AudioFormat format;
-		private int lastFrameIndex = -1;
 		private Sprite surface;
 		private float elapsedSeconds;
 
@@ -41,7 +35,7 @@ namespace DeltaEngine.Multimedia.OpenTK
 		{
 			get
 			{
-				return (float)(video.CountFrames / video.FrameRate);
+				return video.LengthInSeconds;
 			}
 		}
 
@@ -57,14 +51,13 @@ namespace DeltaEngine.Multimedia.OpenTK
 		{
 			try
 			{
-				var aviManager = new AviFile("Content/" + Name + ".avi");
-				video = aviManager.GetVideoStream();
-				audio = aviManager.GetAudioStream();
-				format = audio.Channels == 2 ? AudioFormat.Stereo16 : AudioFormat.Mono16;
+				string filepath = "Content/" + Name + ".wmv";
+				video = new WmvVideoStream(filepath);
+				format = video.Channels == 2 ? AudioFormat.Stereo16 : AudioFormat.Mono16;
 			}
 			catch (Exception ex)
 			{
-				Logger.Current.Error(ex);
+				Logger.Error(ex);
 				if (Debugger.IsAttached)
 					throw new VideoNotFoundOrAccessible(Name, ex);
 			}
@@ -75,16 +68,17 @@ namespace DeltaEngine.Multimedia.OpenTK
 			base.DisposeData();
 			openAL.DeleteBuffers(buffers);
 			openAL.DeleteChannel(channelHandle);
+			video.Dispose();
 			video = null;
-			audio = null;
 		}
 
 		private bool Stream(int buffer)
 		{
 			try
 			{
-				byte[] bufferData = audio.GetStreamData();
-				openAL.BufferData(buffer, format, bufferData, bufferData.Length, audio.SamplesPerSecond);
+				byte[] bufferData = new byte[4096];
+				video.ReadMusicBytes(bufferData, bufferData.Length);
+				openAL.BufferData(buffer, format, bufferData, bufferData.Length, video.Samplerate);
 				openAL.QueueBufferInChannel(buffer, channelHandle);
 			}
 			catch
@@ -99,10 +93,11 @@ namespace DeltaEngine.Multimedia.OpenTK
 			if (surface != null)
 				surface.IsActive = false;
 
+			elapsedSeconds = 0;
 			surface = null;
 			openAL.Stop(channelHandle);
 			EmptyBuffers();
-			video.GetFrameClose();
+			video.Stop();
 		}
 
 		private void EmptyBuffers()
@@ -122,12 +117,12 @@ namespace DeltaEngine.Multimedia.OpenTK
 			return openAL.GetChannelState(channelHandle);
 		}
 
-		protected override void Run()
+		public override void Update()
 		{
 			if (GetState() == ChannelState.Paused)
 				return;
 
-			elapsedSeconds += Time.Current.Delta;
+			elapsedSeconds += Time.Delta;
 			bool isFinished = UpdateBuffersAndCheckFinished();
 			if (isFinished)
 			{
@@ -153,25 +148,30 @@ namespace DeltaEngine.Multimedia.OpenTK
 
 		protected override void PlayNativeVideo(float volume)
 		{
+			video.Rewind();
 			for (int index = 0; index < NumberOfBuffers; index++)
 				if (!Stream(buffers [index]))
 					break;
 
-			video.GetFrameOpen();
+			video.Play();
 			openAL.Play(channelHandle);
 			openAL.SetVolume(channelHandle, volume);
 			elapsedSeconds = 0f;
-			surface = new Sprite(image, screen.Viewport);
+			if (image == null)
+				image = ContentLoader.Create<Image>(new ImageCreationData(new Size(video.Width, 
+					video.Height)));
+
+			surface = new Sprite(new Material(ContentLoader.Load<Shader>(Shader.Position2DUv), image), 
+				ScreenSpace.Current.Viewport);
 		}
 
 		private void UpdateVideoTexture()
 		{
-			var frameIndex = (int)(PositionInSeconds * video.FrameRate);
-			if (lastFrameIndex >= frameIndex)
-				return;
-
-			lastFrameIndex = frameIndex;
-			image.UpdateTexture(video, frameIndex);
+			byte[] bytes = video.ReadImage(Time.Delta);
+			if (bytes != null)
+				image.Fill(bytes);
+			else
+				Stop();
 		}
 	}
 }

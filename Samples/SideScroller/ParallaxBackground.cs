@@ -1,28 +1,26 @@
-using DeltaEngine.Content;
-using DeltaEngine.Core;
+﻿using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
+using DeltaEngine.Entities;
 using DeltaEngine.Rendering;
-using DeltaEngine.Rendering.ScreenSpaces;
 using DeltaEngine.Rendering.Sprites;
+using DeltaEngine.ScreenSpaces;
 
 namespace SideScroller
 {
 	internal class ParallaxBackground : Entity2D
 	{
-		public ParallaxBackground(ScreenSpace screenSpace,
-			float baseScrollSpeed = 1)
+		public ParallaxBackground(float baseScrollSpeed = 1)
 			: base(Rectangle.Zero)
 		{
-			CreateLayers(screenSpace);
-			Start<ParallaxScroller>();
+			CreateLayers();
+			//Start<ParallaxScroller>();
 			BaseScrollSpeed = baseScrollSpeed;
 		}
 
-		private void CreateLayers(ScreenSpace screenSpace)
+		private void CreateLayers()
 		{
 			//layerAlpha = new BackgroundLayer(contentLoader, "BgLowest", screenSpace, 0.2f);
-			layerBeta = new BackgroundLayer("BgMiddle", screenSpace, 0.4f);
+			layerBeta = new BackgroundLayer("BgMiddle", 0.4f);
 			//layerGamma = new BackgroundLayer(contentLoader, "BgForemost", screenSpace,0.8f);
 		}
 
@@ -31,32 +29,31 @@ namespace SideScroller
 
 		internal class BackgroundLayer
 		{
-			public BackgroundLayer(string layerImageName,
-				ScreenSpace screenSpace, float factorToBaseSpeed)
+			public BackgroundLayer(string layerMaterialName, float factorToBaseSpeed)
 			{
 				FactorToBaseSpeed = factorToBaseSpeed;
-				this.screenSpace = screenSpace;
-				var layerImage = ContentLoader.Load<Image>(layerImageName);
-				var alphaDrawArea = new Rectangle(screenSpace.Viewport.TopLeft, screenSpace.Viewport.Size);
-				var betaDrawArea = new Rectangle(screenSpace.Viewport.TopRight, screenSpace.Viewport.Size);
-				SpriteAlpha = new Sprite(layerImage, alphaDrawArea);
-				SpriteBeta = new Sprite(layerImage, betaDrawArea);
+				var layerMaterial = new Material(Shader.Position2DColorUv, layerMaterialName);
+				var alphaDrawArea = new Rectangle(ScreenSpace.Current.Viewport.TopLeft,
+					ScreenSpace.Current.Viewport.Size);
+				var betaDrawArea = new Rectangle(ScreenSpace.Current.Viewport.TopRight,
+					ScreenSpace.Current.Viewport.Size);
+				SpriteAlpha = new Sprite(layerMaterial, alphaDrawArea);
+				SpriteBeta = new Sprite(layerMaterial, betaDrawArea);
 				SpriteAlpha.RenderLayer = (int)DefRenderLayer.Background + 1;
 				SpriteBeta.RenderLayer = (int)DefRenderLayer.Background + 1;
 			}
 
 			internal Sprite SpriteAlpha, SpriteBeta;
 			internal float FactorToBaseSpeed;
-			internal ScreenSpace screenSpace;
 
-			public void MoveLayer(float Offset)
+			public void MoveLayer(float offset)
 			{
-				var pointAlpha = GetFuturePointForLayer(SpriteAlpha.TopLeft, Offset);
-				var pointBeta = GetFuturePointForLayer(SpriteBeta.TopLeft, Offset);
+				var pointAlpha = GetFuturePointForLayer(SpriteAlpha.TopLeft, offset);
+				var pointBeta = GetFuturePointForLayer(SpriteBeta.TopLeft, offset);
 
-				if (pointAlpha.X < screenSpace.Viewport.Left)
+				if (pointAlpha.X < ScreenSpace.Current.Viewport.Left)
 					pointAlpha.X = pointBeta.X + SpriteBeta.Size.Width;
-				else if (pointBeta.X < screenSpace.Viewport.Left)
+				else if (pointBeta.X < ScreenSpace.Current.Viewport.Left)
 					pointBeta.X = pointAlpha.X + SpriteAlpha.Size.Width;
 
 				SpriteAlpha.TopLeft = pointAlpha;
@@ -65,25 +62,24 @@ namespace SideScroller
 
 			private Point GetFuturePointForLayer(Point currentPoint, float offset)
 			{
-				return new Point(currentPoint.X - offset * FactorToBaseSpeed * Time.Current.Delta,
-					currentPoint.Y);
+				return new Point(currentPoint.X - offset * FactorToBaseSpeed * Time.Delta, currentPoint.Y);
 			}
 		}
 
-		private class ParallaxScroller : Behavior2D
-		{
-			public ParallaxScroller()
-			{
-				Filter = entity => entity is ParallaxBackground;
-			}
+		//private class ParallaxScroller : Behavior2D
+		//{
+		//	public ParallaxScroller()
+		//	{
+		//		Filter = entity => entity is ParallaxBackground;
+		//	}
 
-			public override void Handle(Entity2D entity)
-			{
-				var background = entity as ParallaxBackground;
-				//background.layerAlpha.MoveLayer(background.BaseScrollSpeed);
-				background.layerBeta.MoveLayer(background.BaseScrollSpeed);
-				//background.layerGamma.MoveLayer(background.BaseScrollSpeed);
-			}
-		}
+		//	public override void Handle(Entity2D entity)
+		//	{
+		//		var background = entity as ParallaxBackground;
+		//		//background.layerAlpha.MoveLayer(background.BaseScrollSpeed);
+		//		background.layerBeta.MoveLayer(background.BaseScrollSpeed);
+		//		//background.layerGamma.MoveLayer(background.BaseScrollSpeed);
+		//	}
+		//}
 	}
 }

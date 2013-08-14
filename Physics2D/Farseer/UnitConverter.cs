@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using DeltaEngine.Datatypes;
 using FarseerPhysics.Common;
 using Microsoft.Xna.Framework;
@@ -46,9 +46,9 @@ namespace DeltaEngine.Physics2D.Farseer
 
 		public Vertices Convert(params Point[] vertices)
 		{
-			var fVertices = new Vertices(vertices.Length);
-			fVertices.AddRange(vertices.Select(t => ToSimUnits(Convert(t))));
-			return fVertices;
+			var farseerVertices = new Vertices(vertices.Length);
+			farseerVertices.AddRange(vertices.Select(t => ToSimUnits(Convert(t))));
+			return farseerVertices;
 		}
 	}
 }

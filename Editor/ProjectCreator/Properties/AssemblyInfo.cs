@@ -1,3 +1,4 @@
+﻿using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -6,12 +7,10 @@ using System.Windows;
 [assembly:
 	AssemblyDescription("Editor plugin to select the framework and create a Delta Engine project")
 ]
-[assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Delta Engine")]
 [assembly: AssemblyCopyright("Copyright � Delta Engine 2013")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
+[assembly: CLSCompliant(true)]
 [assembly:
 	ThemeInfo(ResourceDictionaryLocation.None, ResourceDictionaryLocation.SourceAssembly)]
 [assembly: AssemblyVersion("0.9.8.3")]

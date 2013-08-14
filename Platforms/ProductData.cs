@@ -1,4 +1,4 @@
-namespace DeltaEngine.Platforms
+﻿namespace DeltaEngine.Platforms
 {
 	/// <summary>
 	/// Product information, received by a market product information request.

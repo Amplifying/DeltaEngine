@@ -1,4 +1,4 @@
-namespace DeltaEngine.Multimedia.OpenTK.Helpers
+﻿namespace DeltaEngine.Multimedia.OpenTK.Helpers
 {
 	/// <summary>
 	/// All wave formats we're currently able to parse which is read from the fmt chunk.

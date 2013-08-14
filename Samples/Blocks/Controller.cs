@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using DeltaEngine.Core;
+using DeltaEngine;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Platforms;
+using DeltaEngine.Entities;
 using DeltaEngine.Rendering;
 
 namespace Blocks
@@ -103,7 +103,7 @@ namespace Blocks
 
 		private void Settle()
 		{
-			settling += FallSpeed * Time.Current.Delta;
+			settling += FallSpeed * Time.Delta;
 			if (settling < SettleTime)
 				return;
 
@@ -156,6 +156,8 @@ namespace Blocks
 
 		public void MoveBlockLeftIfPossible()
 		{
+			if(FallingBlock == null)
+				return;
 			FallingBlock.Left--;
 			if (Get<Grid>().IsValidPosition(FallingBlock))
 				Get<Soundbank>().BlockMoved.Play();
@@ -168,6 +170,8 @@ namespace Blocks
 
 		public void MoveBlockRightIfPossible()
 		{
+			if(FallingBlock == null)
+				return;
 			FallingBlock.Left++;
 			if (Get<Grid>().IsValidPosition(FallingBlock))
 				Get<Soundbank>().BlockMoved.Play();
@@ -190,18 +194,21 @@ namespace Blocks
 			}
 		}
 
-		internal class InteractionHandler : Behavior2D
+		internal class InteractionHandler : UpdateBehavior
 		{
-			public override void Handle(Entity2D entity)
+			public override void Update(IEnumerable<Entity> entities)
 			{
-				var controller = entity as Controller;
-				if (controller.FallingBlock == null)
-					controller.GetNewFallingBlock();
+				foreach (var entity in entities)
+				{
+					var controller = entity as Controller;
+					if (controller.FallingBlock == null)
+						controller.GetNewFallingBlock();
 
-				controller.MoveFallingBlock();
-				controller.UpdateElapsed();
-				if (controller.elapsed >= BlockMoveInterval)
-					controller.MoveBlock();
+					controller.MoveFallingBlock();
+					controller.UpdateElapsed();
+					if (controller.elapsed >= BlockMoveInterval)
+						controller.MoveBlock();
+				}
 			}
 		}
 
@@ -220,7 +227,7 @@ namespace Blocks
 		internal void UpdateElapsed()
 		{
 			if (isBlockMovingLeft || isBlockMovingRight)
-				elapsed += Time.Current.Delta;
+				elapsed += Time.Delta;
 			else
 				elapsed = 0;
 		}

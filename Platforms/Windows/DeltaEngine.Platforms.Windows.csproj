@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -36,55 +36,12 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Content\DeltaEngine.Content.csproj">
-      <Project>{F1B6345B-6F28-482F-9230-8F1D8674C28A}</Project>
-      <Name>DeltaEngine.Content</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Content\Online\DeltaEngine.Content.Online.csproj">
-      <Project>{68AA6280-09EF-4325-B5F8-B8A967004144}</Project>
-      <Name>DeltaEngine.Content.Online</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
-      <Project>{A8D386EA-D376-46EA-A721-2BA51426A721}</Project>
-      <Name>DeltaEngine.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Datatypes\DeltaEngine.Datatypes.csproj">
-      <Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
-      <Name>DeltaEngine.Datatypes</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Input\DeltaEngine.Input.csproj">
-      <Project>{cc65e69e-fafd-4c2b-85eb-5e57fd3af847}</Project>
-      <Name>DeltaEngine.Input</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Logging\Basic\DeltaEngine.Logging.Basic.csproj">
-      <Project>{03c2eb6a-826d-4d24-be10-244b20ccd1d8}</Project>
-      <Name>DeltaEngine.Logging.Basic</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Logging\DeltaEngine.Logging.csproj">
-      <Project>{e4440567-3d5d-4670-ab49-8163b18e302e}</Project>
-      <Name>DeltaEngine.Logging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Networking\DeltaEngine.Networking.csproj">
-      <Project>{5231706e-2955-43bf-9c06-291e12af5c5c}</Project>
-      <Name>DeltaEngine.Networking</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Networking\Sockets\DeltaEngine.Networking.Sockets.csproj">
-      <Project>{9e085ab9-b4de-4815-bd90-d975c75dfe94}</Project>
-      <Name>DeltaEngine.Networking.Sockets</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Physics2D\DeltaEngine.Physics2D.csproj">
-      <Project>{DC3AA434-09B9-43AD-8F43-431811FA054D}</Project>
-      <Name>DeltaEngine.Physics2D</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Physics2D\Farseer\DeltaEngine.Physics2D.Farseer.csproj">
-      <Project>{C983D137-8B7F-47BE-996E-894A3596DD06}</Project>
-      <Name>DeltaEngine.Physics2D.Farseer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
-      <Project>{bddb4aa4-5d31-43b3-9a3b-bf3030ede927}</Project>
-      <Name>DeltaEngine.Rendering</Name>
+    <ProjectReference Include="..\..\DeltaEngine.csproj">
+      <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
+      <Name>DeltaEngine</Name>
     </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Platforms.csproj">
       <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
@@ -93,9 +50,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="FormsWindow.cs" />
     <Compile Include="WindowsDisplayDevice.cs" />
-    <Compile Include="WindowsResolver.cs" />
+    <Compile Include="FormsWindow.cs" />
     <Compile Include="WindowsSystemInformation.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

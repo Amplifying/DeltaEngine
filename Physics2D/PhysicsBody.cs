@@ -1,4 +1,4 @@
-using DeltaEngine.Datatypes;
+﻿using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Physics2D
 {
@@ -13,10 +13,10 @@ namespace DeltaEngine.Physics2D
 		float Friction { get; set; }
 		float Rotation { get; set; }
 		Point LinearVelocity { get; set; }
+		Point[] LineVertices { get; }
 		void ApplyLinearImpulse(Point impulse);
 		void ApplyAngularImpulse(float impulse);
 		void ApplyTorque(float torque);
-		Point[] LineVertices { get; }
 		void Dispose();
 	}
 }

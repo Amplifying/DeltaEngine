@@ -1,9 +1,9 @@
-using System.IO;
+﻿using System.IO;
 
 namespace DeltaEngine.Content.Json
 {
 	/// <summary>
-	/// Allows to load json files from disk by utilizing the JsonNode parser.
+	/// Allows json files to be loaded from disk by utilizing the JsonNode parser.
 	/// </summary>
 	public class JsonFile
 	{

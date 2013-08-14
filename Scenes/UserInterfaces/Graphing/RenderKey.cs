@@ -1,83 +1,57 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Rendering;
+using DeltaEngine.Entities;
 using DeltaEngine.Rendering.Fonts;
 
 namespace DeltaEngine.Scenes.UserInterfaces.Graphing
 {
 	/// <summary>
-	/// Renders the key to the graph lines below the graph
+	/// Renders the key to the graph lines below the graph.
 	/// </summary>
-	public class RenderKey : EventListener2D
+	internal class RenderKey
 	{
-		public RenderKey()
+		public void Refresh(Graph graph)
 		{
-			font = new Font("Verdana12");
+			ClearOldKeyLabels();
+			if (graph.Visibility == Visibility.Show && Visibility == Visibility.Show)
+				CreateNewKeyLabels(graph);
 		}
 
-		private readonly Font font;
+		public Visibility Visibility { get; set; }
 
-		public override void ReceiveMessage(Entity2D graph, object message)
+		private void ClearOldKeyLabels()
 		{
-			if (!(message is ObserveEntity2D.HasChanged))
-				return;
-
-			var data = graph.Get<Graph.Data>();
-			ClearOldKeyLabels(data);
-			if (graph.Visibility == Visibility.Show)
-				CreateNewKeyLabels(graph, data);
+			foreach (FontText keyLabel in KeyLabels)
+				keyLabel.IsActive = false;
+			KeyLabels.Clear();
 		}
 
-		private void ClearOldKeyLabels(Graph.Data data)
-		{
-			foreach (FontText keyLabel in data.KeyLabels)
-				SendFontTextToPool(keyLabel);
+		public List<FontText> KeyLabels = new List<FontText>();
 
-			data.KeyLabels.Clear();
+		private void CreateNewKeyLabels(Graph graph)
+		{
+			for (int i = 0; i < graph.Lines.Count; i++)
+				if (graph.Lines[i].Key != "")
+					CreateKeyLabel(graph, i);
 		}
 
-		private void SendFontTextToPool(FontText keyLabel)
+		private void CreateKeyLabel(Graph graph, int index)
 		{
-			keyLabel.Visibility = Visibility.Hide;
-			fontTextPool.Add(keyLabel);
-		}
-
-		private readonly List<FontText> fontTextPool = new List<FontText>();
-
-		private void CreateNewKeyLabels(Entity2D entity, Graph.Data data)
-		{
-			for (int i = 0; i < data.Lines.Count; i++)
-				if (data.Lines[i].Key != "")
-					CreateKeyLabel(entity, data, i);
-		}
-
-		private void CreateKeyLabel(Entity2D entity, Graph.Data data, int index)
-		{
-			var keyLabel = PullFontTextFromPool();
 			int row = 1 + index / 6;
-			float borderHeight = entity.DrawArea.Height * Graph.Border;
-			float y = entity.DrawArea.Bottom + (4 * row) * borderHeight;
-			float borderWidth = entity.DrawArea.Width * Graph.Border;
-			float left = entity.DrawArea.Left + borderWidth;
+			float borderHeight = graph.DrawArea.Height * Graph.Border;
+			float y = graph.DrawArea.Bottom + (4 * row) * borderHeight;
+			float borderWidth = graph.DrawArea.Width * Graph.Border;
+			float left = graph.DrawArea.Left + borderWidth;
 			int column = index % 6;
-			float interval = (entity.DrawArea.Width - 2 * borderWidth) / 6;
+			float interval = (graph.DrawArea.Width - 2 * borderWidth) / 6;
 			float x = left + column * interval;
-			keyLabel.Text = data.Lines[index].Key;
-			keyLabel.SetPosition(new Point(x, y));
-			keyLabel.RenderLayer = entity.RenderLayer + RenderLayerOffset;
-			keyLabel.Color = data.Lines[index].Color;
-			keyLabel.Visibility = Visibility.Show;
-			data.KeyLabels.Add(keyLabel);
-		}
-
-		private FontText PullFontTextFromPool()
-		{
-			if (fontTextPool.Count == 0)
-				return new FontText(font, "", Point.Zero);
-
-			FontText keyLabel = fontTextPool[fontTextPool.Count - 1];
-			fontTextPool.RemoveAt(fontTextPool.Count - 1);
-			return keyLabel;
+			KeyLabels.Add(new FontText(graph.Lines[index].Key, new Rectangle(x, y, 1.0f, 1.0f))
+			{
+				RenderLayer = graph.RenderLayer + RenderLayerOffset,
+				Color = graph.Lines[index].Color,
+				HorizontalAlignment = HorizontalAlignment.Left,
+				VerticalAlignment = VerticalAlignment.Top
+			});
 		}
 
 		private const int RenderLayerOffset = 2;

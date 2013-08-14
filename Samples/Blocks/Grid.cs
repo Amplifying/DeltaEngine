@@ -1,8 +1,8 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using DeltaEngine.Core;
+using DeltaEngine;
+using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
 using DeltaEngine.Physics2D;
 using DeltaEngine.Rendering;
 using DeltaEngine.Rendering.Sprites;
@@ -88,7 +88,7 @@ namespace Blocks
 			if (content.DoBricksSplitInHalfWhenRowFull)
 				AddPairOfFallingBricks(brick);
 			else
-				AddFallingBrick(brick, brick.Image);
+				AddFallingBrick(brick, brick.Material);
 		}
 
 		private void AddPairOfFallingBricks(Brick brick)
@@ -99,21 +99,25 @@ namespace Blocks
 
 		private void AddTopFallingBrick(Sprite brick)
 		{
-			var filename = content.GetFilenameWithoutPrefix(brick.Image.Name);
+			var filename = content.GetFilenameWithoutPrefix(brick.Material.DiffuseMap.Name);
 			var image = content.Load<Image>(filename + "_Top");
-			AddFallingBrick(brick, image);
+			var shader = ContentLoader.Load<Shader>(Shader.Position2DColorUv);
+			var material = new Material(shader, image);
+			AddFallingBrick(brick, material);
 		}
 
 		private void AddBottomFallingBrick(Sprite brick)
 		{
-			var filename = content.GetFilenameWithoutPrefix(brick.Image.Name);
+			var filename = content.GetFilenameWithoutPrefix(brick.Material.DiffuseMap.Name);
 			var image = content.Load<Image>(filename + "_Bottom");
-			AddFallingBrick(brick, image);
+			var shader = ContentLoader.Load<Shader>(Shader.Position2DColorUv);
+			var material = new Material(shader, image);
+			AddFallingBrick(brick, material);
 		}
 
-		private static void AddFallingBrick(Entity2D brick, Image image)
+		private static void AddFallingBrick(Entity2D brick, Material material)
 		{
-			var fallingBrick = new Sprite(image, brick.DrawArea)
+			var fallingBrick = new Sprite(material, brick.DrawArea)
 			{
 				Color = brick.Color,
 				RenderLayer = (int)RenderLayer.FallingBrick,
@@ -126,7 +130,7 @@ namespace Blocks
 				Duration = 5.0f,
 				Gravity = new Point(0.0f, 2.0f)
 			});
-			fallingBrick.Start<SimplePhysics.Fall>();
+			fallingBrick.Start<SimplePhysics.Move>();
 		}
 
 		private void MoveBrickDown(int x, int y)
@@ -141,13 +145,13 @@ namespace Blocks
 
 		private static void AddZoomingBrick(Sprite brick)
 		{
-			var zoom = new Sprite(brick.Image, brick.DrawArea)
+			var zoom = new Sprite(brick.Material, brick.DrawArea)
 			{
 				Color = brick.Color,
 				RenderLayer = (int)RenderLayer.ZoomingBrick,
 			};
 			zoom.Add(new Transition.Duration(0.2f));
-			zoom.Add(new Transition.Size(brick.DrawArea.Size, 2 * brick.DrawArea.Size));
+			zoom.Add(new Transition.SizeRange(brick.DrawArea.Size, 2 * brick.DrawArea.Size));
 			zoom.Add(new Transition.FadingColor(brick.Color));
 			zoom.Start<FinalTransition>();
 		}

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -47,7 +47,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.IO.Abstractions">
-      <HintPath>..\packages\System.IO.Abstractions.1.4.0.64\lib\net35\System.IO.Abstractions.dll</HintPath>
+      <HintPath>..\packages\System.IO.Abstractions.1.4.0.65\lib\net35\System.IO.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Interactivity">
       <HintPath>..\packages\MvvmLightLibs.4.1.27.0\lib\net40\System.Windows.Interactivity.dll</HintPath>
@@ -60,9 +60,9 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\DeltaEngine.Editor.Common.csproj">
-      <Project>{FC0E9FDC-68E0-405E-BFC7-1F3523BD3EA7}</Project>
-      <Name>DeltaEngine.Editor.Common</Name>
+    <ProjectReference Include="..\Core\DeltaEngine.Editor.Core.csproj">
+      <Project>{C667C7FC-A1C7-4CBC-98C0-C97F776E4570}</Project>
+      <Name>DeltaEngine.Editor.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

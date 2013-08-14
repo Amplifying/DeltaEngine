@@ -1,7 +1,7 @@
-namespace DeltaEngine.Profiling
+﻿namespace DeltaEngine.Profiling
 {
 	/// <summary>
-	/// Takes some profile results and turns them into an informative summary
+	/// Takes some profile results and turns them into an informative summary.
 	/// </summary>
 	public class CodeProfilingResultsFormatter
 	{

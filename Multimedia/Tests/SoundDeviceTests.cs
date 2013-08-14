@@ -1,13 +1,13 @@
-using DeltaEngine.Content;
+﻿using DeltaEngine.Content;
+using DeltaEngine.Multimedia.Mocks;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.Mocks;
 using NUnit.Framework;
 
 namespace DeltaEngine.Multimedia.Tests
 {
 	public class SoundDeviceTests : TestWithMocksOrVisually
 	{
-		[Test, Category("Slow")]
+		[Test]
 		public void PlayMusicWhileOtherIsPlaying()
 		{
 			var music1 = ContentLoader.Load<Music>("DefaultMusic");
@@ -18,7 +18,7 @@ namespace DeltaEngine.Multimedia.Tests
 			Assert.False(MockMusic.MusicStopCalled);
 		}
 
-		[Test, Category("Slow"), Ignore]
+		[Test]
 		public void PlayVideoWhileOtherIsPlaying()
 		{
 			var video1 = ContentLoader.Load<Video>("DefaultVideo");
@@ -29,13 +29,29 @@ namespace DeltaEngine.Multimedia.Tests
 			Assert.False(MockVideo.VideoStopCalled);
 		}
 
-		[Test, Category("Slow"), Ignore]
+		[Test]
 		public void RunWithVideoAndMusic()
 		{
 			var video = ContentLoader.Load<Video>("DefaultVideo");
 			var music = ContentLoader.Load<Music>("DefaultMusic");
 			video.Play();
 			music.Play();
+		}
+
+		[Test]
+		public void PlayMusicAndVideo()
+		{
+			MockSoundDevice device = new MockSoundDevice();
+			var video1 = ContentLoader.Load<Video>("DefaultVideo");
+			var music1 = ContentLoader.Load<Music>("DefaultMusic");
+			Assert.False(MockVideo.VideoStopCalled);
+			Assert.False(MockMusic.MusicStopCalled);
+			device.RegisterCurrentVideo(video1);
+			device.RegisterCurrentMusic(music1);
+			Assert.IsTrue(device.IsActive);
+			Assert.IsTrue(device.IsInitialized);
+			device.RapidUpdate(0.3f);
+			device.Dispose();
 		}
 	}
 }

@@ -1,4 +1,4 @@
-namespace DeltaEngine.Input
+﻿namespace DeltaEngine.Input
 {
 	/// <summary>
 	/// The GamePad number to fetch input information from. We support up to 4 GamePads.

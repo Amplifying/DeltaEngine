@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace DeltaEngine.Networking
@@ -9,9 +9,8 @@ namespace DeltaEngine.Networking
 	public abstract class Server : IDisposable
 	{
 		public abstract void Start(int listenPort);
-		public abstract void Start(Client serverSocket);
 		public virtual bool IsRunning { get; protected set; }
-		public int ListenPort { get; protected set; }
+		public virtual int ListenPort { get; protected set; }
 		public int NumberOfConnectedClients
 		{
 			get { return connectedClients.Count; }
@@ -23,10 +22,8 @@ namespace DeltaEngine.Networking
 		{
 			client.Disconnected += () => OnClientDisconnected(client);
 			client.DataReceived += message => OnClientDataReceived(client, message);
-
 			lock (connectedClients)
 				connectedClients.Add(client);
-
 			if (ClientConnected != null)
 				ClientConnected(client);
 		}
@@ -35,7 +32,6 @@ namespace DeltaEngine.Networking
 		{
 			lock (connectedClients)
 				connectedClients.Remove(client);
-
 			if (ClientDisconnected != null)
 				ClientDisconnected(client);
 		}

@@ -1,4 +1,4 @@
-namespace DeltaEngine.Multimedia.OpenTK.Helpers
+﻿namespace DeltaEngine.Multimedia.OpenTK.Helpers
 {
 	/// <summary>
 	/// Audio formats depending on the number of channels and the bit-depth.

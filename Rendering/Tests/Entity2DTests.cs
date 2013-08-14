@@ -1,12 +1,20 @@
-using DeltaEngine.Core;
+﻿using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
+using DeltaEngine.Extensions;
+using DeltaEngine.Mocks;
 using NUnit.Framework;
 
 namespace DeltaEngine.Rendering.Tests
 {
 	public class Entity2DTests
 	{
+		[SetUp]
+		public void InitializeEntityRunner()
+		{
+			new MockEntitiesRunner(typeof(MockUpdateBehavior));
+		}
+
 		[Test]
 		public void CreateEntity2D()
 		{
@@ -14,7 +22,7 @@ namespace DeltaEngine.Rendering.Tests
 			Assert.AreEqual(DoubleSizedRectangle, entity.DrawArea);
 			Assert.AreEqual(Color.Green, entity.Color);
 			Assert.AreEqual(15, entity.Rotation);
-			Assert.AreEqual(Entity2D.DefaultRenderLayer, entity.RenderLayer);
+			Assert.AreEqual(DrawableEntity.DefaultRenderLayer, entity.RenderLayer);
 			Assert.AreEqual(Point.One, entity.Center);
 			Assert.AreEqual(new Size(2, 2), entity.Size);
 		}
@@ -22,14 +30,14 @@ namespace DeltaEngine.Rendering.Tests
 		private static readonly Rectangle DoubleSizedRectangle = new Rectangle(0, 0, 2, 2);
 
 		[Test]
-		public void AddEmptyComponent()
+		public void AddNewComponent()
 		{
 			var entity = new Entity2D(Rectangle.Zero);
 			Assert.AreEqual(Rectangle.Zero, entity.DrawArea);
 			Assert.AreEqual(Color.White, entity.Color);
-			Assert.AreEqual(1, entity.NumberOfComponents);
+			Assert.AreEqual(0, entity.NumberOfComponents);
 			entity.Add(Size.Zero);
-			Assert.AreEqual(2, entity.NumberOfComponents);
+			Assert.AreEqual(1, entity.NumberOfComponents);
 		}
 
 		[Test]
@@ -55,8 +63,8 @@ namespace DeltaEngine.Rendering.Tests
 			var entity = new Entity2D(Rectangle.One) { Color = Color.Blue };
 			entity.Color = Color.Teal;
 			Assert.AreEqual(Color.Teal, entity.Color);
-			entity.AlphaValue = 0.5f;
-			Assert.AreEqual(0.5f, entity.AlphaValue, 0.05f);
+			entity.Alpha = 0.5f;
+			Assert.AreEqual(0.5f, entity.Alpha, 0.05f);
 			entity.Rotation = MathExtensions.Pi;
 			Assert.AreEqual(MathExtensions.Pi, entity.Rotation);
 			entity.RenderLayer = 10;
@@ -83,12 +91,42 @@ namespace DeltaEngine.Rendering.Tests
 		public void SaveAndLoadFromMemoryStream()
 		{
 			var entity = new Entity2D(Rectangle.Zero);
-			var data = entity.SaveToMemoryStream();
+			var data = BinaryDataExtensions.SaveToMemoryStream(entity);
 			byte[] savedBytes = data.ToArray();
-			Assert.AreEqual(67, savedBytes.Length);
+			Assert.AreEqual(63, savedBytes.Length);
 			var loadedEntity = data.CreateFromMemoryStream() as Entity2D;
-			Assert.AreEqual(1, loadedEntity.NumberOfComponents);
+			Assert.AreEqual(0, loadedEntity.NumberOfComponents);
 			Assert.IsTrue(loadedEntity.IsActive);
+		}
+
+		[Test]
+		public void RotatedDrawAreaContainsWithNoRotation()
+		{
+			var entity = new Entity2D(new Rectangle(0.4f, 0.4f, 0.2f, 0.1f));
+			Assert.IsTrue(entity.RotatedDrawAreaContains(new Point(0.45f, 0.45f)));
+			Assert.IsTrue(entity.RotatedDrawAreaContains(new Point(0.55f, 0.45f)));
+			Assert.IsFalse(entity.RotatedDrawAreaContains(new Point(0.55f, 0.55f)));
+		}
+
+		[Test]
+		public void RotatedDrawAreaContainsRotatedAroundItsCenter()
+		{
+			var entity = new Entity2D(new Rectangle(0.4f, 0.4f, 0.2f, 0.1f)) { Rotation = 90 };
+			Assert.IsTrue(entity.RotatedDrawAreaContains(new Point(0.5f, 0.45f)));
+			Assert.IsTrue(entity.RotatedDrawAreaContains(new Point(0.55f, 0.55f)));
+			Assert.IsFalse(entity.RotatedDrawAreaContains(new Point(0.45f, 0.45f)));
+		}
+
+		[Test]
+		public void RotatedDrawAreaContainsRotatedAroundTheScreenCenter()
+		{
+			var entity = new Entity2D(new Rectangle(0.1f, 0.1f, 0.1f, 0.1f))
+			{
+				Rotation = 180,
+				RotationCenter = Point.Half
+			};
+			Assert.IsFalse(entity.RotatedDrawAreaContains(new Point(0.15f, 0.15f)));
+			Assert.IsTrue(entity.RotatedDrawAreaContains(new Point(0.85f, 0.85f)));
 		}
 	}
 }

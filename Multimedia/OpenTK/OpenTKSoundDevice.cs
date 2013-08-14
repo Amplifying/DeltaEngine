@@ -1,3 +1,4 @@
+﻿using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Multimedia.OpenTK.Helpers;
 using System;
@@ -17,14 +18,6 @@ namespace DeltaEngine.Multimedia.OpenTK
 
 		private IntPtr deviceHandle;
 		private readonly ContextHandle context;
-
-		public override bool IsInitialized
-		{
-			get
-			{
-				return deviceHandle != IntPtr.Zero;
-			}
-		}
 
 		public override void Dispose()
 		{

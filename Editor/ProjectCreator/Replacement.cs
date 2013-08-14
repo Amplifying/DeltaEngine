@@ -1,4 +1,4 @@
-namespace DeltaEngine.Editor.ProjectCreator
+﻿namespace DeltaEngine.Editor.ProjectCreator
 {
 	/// <summary>
 	/// Holds an old and a new string used for string replacements.

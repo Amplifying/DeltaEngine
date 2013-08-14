@@ -1,67 +1,68 @@
-using System;
-using DeltaEngine.Content;
-using DeltaEngine.Graphics;
+﻿using DeltaEngine;
 using DeltaEngine.Input;
+using DeltaEngine.Input.Mocks;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.Mocks;
-using DeltaEngine.Rendering.ScreenSpaces;
+using DeltaEngine.ScreenSpaces;
 using NUnit.Framework;
 
 namespace ShadowShot.Tests
 {
 	public class GameTests : TestWithMocksOrVisually
 	{
-		[Test]
-		public void DisplayGameWindow(Type resolver)
+		[SetUp]
+		public void SetUp()
 		{
-			var game = new Game(Resolve<ScreenSpace>(), Resolve<InputCommands>());
-			Assert.AreEqual(ContentLoader.Load<Image>("starfield"), game.Background.Image);
+			game = new Game(Resolve<Window>(),Resolve<ScreenSpace>());
+		}
+
+		private Game game;
+
+		[Test]
+		public void DisplayGameWindow()
+		{
 			Assert.AreEqual((int)Constants.RenderLayer.Background, game.Background.RenderLayer);
 		}
 
 		[Test]
 		public void CheckPlayerShipMoveLeft()
 		{
-			var game = new Game(Resolve<ScreenSpace>(), Resolve<InputCommands>());
 			var keyboard = Resolve<MockKeyboard>();
 			keyboard.SetKeyboardState(Key.A, State.Pressed);
-			resolver.AdvanceTimeAndExecuteRunners();
+			AdvanceTimeAndUpdateEntities();
 			keyboard.SetKeyboardState(Key.CursorLeft, State.Pressed);
-			resolver.AdvanceTimeAndExecuteRunners();
+			AdvanceTimeAndUpdateEntities();
 			keyboard.SetKeyboardState(Key.A, State.Pressing);
-			resolver.AdvanceTimeAndExecuteRunners();
+			AdvanceTimeAndUpdateEntities();
 			keyboard.SetKeyboardState(Key.CursorLeft, State.Pressing);
-			resolver.AdvanceTimeAndExecuteRunners();
+			AdvanceTimeAndUpdateEntities();
 		}
 
 		[Test]
 		public void CheckPlayerShipMoveRight()
 		{
-			var game = new Game(Resolve<ScreenSpace>(), Resolve<InputCommands>());
 			var keyboard = Resolve<MockKeyboard>();
 			keyboard.SetKeyboardState(Key.D, State.Pressed);
-			resolver.AdvanceTimeAndExecuteRunners();
+			AdvanceTimeAndUpdateEntities();
 			keyboard.SetKeyboardState(Key.CursorRight, State.Pressed);
-			resolver.AdvanceTimeAndExecuteRunners();
+			AdvanceTimeAndUpdateEntities();
 			keyboard.SetKeyboardState(Key.D, State.Pressing);
-			resolver.AdvanceTimeAndExecuteRunners();
+			AdvanceTimeAndUpdateEntities();
 			keyboard.SetKeyboardState(Key.CursorRight, State.Pressing);
-			resolver.AdvanceTimeAndExecuteRunners();
+			AdvanceTimeAndUpdateEntities();
 		}
 
 		[Test]
 		public void StopPlayerShipMovement()
 		{
-			var game = new Game(Resolve<ScreenSpace>(), Resolve<InputCommands>());
 			var keyboard = Resolve<MockKeyboard>();
 			keyboard.SetKeyboardState(Key.S, State.Pressed);
-			resolver.AdvanceTimeAndExecuteRunners();
+			AdvanceTimeAndUpdateEntities();
 			keyboard.SetKeyboardState(Key.CursorDown, State.Pressed);
-			resolver.AdvanceTimeAndExecuteRunners();
+			AdvanceTimeAndUpdateEntities();
 			keyboard.SetKeyboardState(Key.S, State.Pressing);
-			resolver.AdvanceTimeAndExecuteRunners();
+			AdvanceTimeAndUpdateEntities();
 			keyboard.SetKeyboardState(Key.CursorDown, State.Pressing);
-			resolver.AdvanceTimeAndExecuteRunners();
+			AdvanceTimeAndUpdateEntities();
 		}
 	}
 }

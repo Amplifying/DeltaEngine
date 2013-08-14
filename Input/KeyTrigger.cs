@@ -1,47 +1,34 @@
-using System;
+﻿using System;
+using DeltaEngine.Commands;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Input
 {
 	/// <summary>
 	/// Trigger implementation for Keyboard events.
 	/// </summary>
-	public class KeyTrigger : Trigger, IEquatable<KeyTrigger>
+	public class KeyTrigger : Trigger
 	{
-		public KeyTrigger(Key key, State state)
+		public KeyTrigger(Key key, State state = State.Pressing)
 		{
-			this.key = key;
-			this.state = state;
+			Key = key;
+			State = state;
+			Start<Keyboard>();
 		}
 
-		private Key key;
-		private State state;
+		public Key Key { get; internal set; }
+		public State State { get; internal set; }
 
-		public Key Key
+		public KeyTrigger(string keyAndState)
 		{
-			get { return key; }
-			set { key = value; }
+			var parameters = keyAndState.SplitAndTrim(new[] { ' ' });
+			if (parameters.Length == 0)
+				throw new CannotCreateKeyTriggerWithoutKey();
+			Key = parameters[0].Convert<Key>();
+			State = parameters.Length > 1 ? parameters[1].Convert<State>() : State.Pressing;
+			Start<Keyboard>();
 		}
 
-		public State State
-		{
-			get { return state; }
-			set { state = value; }
-		}
-
-		public override bool ConditionMatched(InputCommands input)
-		{
-			return input.keyboard.IsAvailable && input.keyboard.GetKeyState(key) == state;
-		}
-
-		public bool Equals(KeyTrigger other)
-		{
-			return other.key == key && other.state == state;
-		}
-
-		public override int GetHashCode()
-		{
-			//// ReSharper disable NonReadonlyFieldInGetHashCode
-			return ((int)key).GetHashCode() ^ ((int)state).GetHashCode();
-		}
+		public class CannotCreateKeyTriggerWithoutKey : Exception {}
 	}
 }

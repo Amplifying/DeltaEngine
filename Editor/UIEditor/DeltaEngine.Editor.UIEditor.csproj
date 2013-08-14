@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -11,6 +11,7 @@
     <AssemblyName>DeltaEngine.Editor.UIEditor</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -32,39 +33,44 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GalaSoft.MvvmLight.WPF4">
+      <HintPath>..\packages\MvvmLightLibs.4.1.27.0\lib\net40\GalaSoft.MvvmLight.WPF4.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Data" />
+    <Reference Include="System.IO.Abstractions">
+      <HintPath>..\packages\System.IO.Abstractions.1.4.0.65\lib\net35\System.IO.Abstractions.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
-      <Project>{A8D386EA-D376-46EA-A721-2BA51426A721}</Project>
-      <Name>DeltaEngine.Core</Name>
+    <ProjectReference Include="..\..\DeltaEngine.csproj">
+      <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
+      <Name>DeltaEngine %28DeltaEngine\DeltaEngine%29</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Datatypes\DeltaEngine.Datatypes.csproj">
-      <Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
-      <Name>DeltaEngine.Datatypes</Name>
+    <ProjectReference Include="..\..\Graphics\DeltaEngine.Graphics.csproj">
+      <Project>{8F701B0D-48B6-45CF-85E0-286BD53328BA}</Project>
+      <Name>DeltaEngine.Graphics</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Entities\DeltaEngine.Entities.csproj">
-      <Project>{C6BA144D-59B0-41B1-8682-B092B4EFBBB1}</Project>
-      <Name>DeltaEngine.Entities</Name>
+    <ProjectReference Include="..\..\Networking\Messages\DeltaEngine.Networking.Messages.csproj">
+      <Project>{74863E62-A568-4C0A-A37F-F04BFA8EB9DB}</Project>
+      <Name>DeltaEngine.Networking.Messages</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
       <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
       <Name>DeltaEngine.Rendering</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common\DeltaEngine.Editor.Common.csproj">
-      <Project>{FC0E9FDC-68E0-405E-BFC7-1F3523BD3EA7}</Project>
-      <Name>DeltaEngine.Editor.Common</Name>
+    <ProjectReference Include="..\Core\DeltaEngine.Editor.Core.csproj">
+      <Project>{C667C7FC-A1C7-4CBC-98C0-C97F776E4570}</Project>
+      <Name>DeltaEngine.Editor.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="UIEditorView.xaml">
@@ -74,9 +80,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UIEditorViewModel.cs" />
     <Compile Include="UIEditorView.xaml.cs">
       <DependentUpon>UIEditorView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>

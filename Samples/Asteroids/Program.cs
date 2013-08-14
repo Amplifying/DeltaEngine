@@ -1,6 +1,6 @@
-using DeltaEngine.Input;
+﻿using DeltaEngine;
 using DeltaEngine.Platforms;
-using DeltaEngine.Rendering.ScreenSpaces;
+using DeltaEngine.ScreenSpaces;
 
 namespace Asteroids
 {
@@ -8,7 +8,8 @@ namespace Asteroids
 	{
 		public Program()
 		{
-			new AsteroidsGame(Resolve<InputCommands>(),Resolve<ScreenSpace>());
+			new RelativeScreenSpace(Resolve<Window>());
+			new AsteroidsGame();
 		}
 
 		public static void Main()

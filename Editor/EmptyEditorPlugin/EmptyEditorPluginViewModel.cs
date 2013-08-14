@@ -1,5 +1,5 @@
-using System.Windows.Input;
-using DeltaEngine.Editor.Common.Properties;
+﻿using System.Windows.Input;
+using DeltaEngine.Editor.Core.Properties;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 

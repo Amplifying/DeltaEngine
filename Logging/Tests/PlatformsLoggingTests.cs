@@ -1,17 +1,19 @@
-using System;
-using DeltaEngine.Platforms;
+﻿using System;
 using NUnit.Framework;
 
 namespace DeltaEngine.Logging.Tests
 {
-	public class NetworkLoggingTests : TestWithMocksOrVisually
+	public class NetworkLoggingTests
 	{
 		[Test]
 		public void NetworkLoggingTest()
 		{
-			Logger.Current.Info("Testing network logging info");
-			Logger.Current.Warning("Testing network logging warning");
-			Assert.Throws<TestingNetworkError>(() => { throw new TestingNetworkError(); });
+			using (new ConsoleLogger())
+			{
+				Logger.Info("Testing network logging info");
+				Logger.Warning("Testing network logging warning");
+				Assert.Throws<TestingNetworkError>(() => { throw new TestingNetworkError(); });
+			}
 		}
 
 		private class TestingNetworkError : Exception
@@ -19,7 +21,7 @@ namespace DeltaEngine.Logging.Tests
 			public TestingNetworkError()
 				: base("Testing network logging error")
 			{
-				Logger.Current.Error(this);
+				Logger.Error(this);
 			}
 		}
 	}

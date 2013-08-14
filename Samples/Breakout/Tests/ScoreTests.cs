@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using DeltaEngine.Platforms;
 using NUnit.Framework;
 
@@ -12,7 +12,6 @@ namespace Breakout.Tests
 			var score = Resolve<Score>();
 			Assert.IsTrue(score.ToString().Contains("Score: 0"), score.ToString());
 			score.IncreasePoints();
-			Window.CloseAfterFrame();
 		}
 
 		[Test]
@@ -25,7 +24,6 @@ namespace Breakout.Tests
 			score.NextLevel();
 			Assert.AreEqual(2, score.Level);
 			Assert.IsFalse(isGameOver);
-			Window.CloseAfterFrame();
 		}
 
 		[Test]
@@ -39,7 +37,6 @@ namespace Breakout.Tests
 			score.NextLevel();
 			Assert.AreEqual(2, score.Level);
 			Assert.IsFalse(isGameOver);
-			Window.CloseAfterFrame();
 		}
 
 		[Test]
@@ -52,7 +49,6 @@ namespace Breakout.Tests
 			score.LifeLost();
 			score.LifeLost();
 			Assert.IsTrue(isGameOver);
-			Window.CloseAfterFrame();
 		}
 	}
 }

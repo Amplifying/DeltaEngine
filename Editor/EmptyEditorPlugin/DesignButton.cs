@@ -1,4 +1,4 @@
-namespace DeltaEngine.Editor.EmptyEditorPlugin
+﻿namespace DeltaEngine.Editor.EmptyEditorPlugin
 {
 	public class DesignButton
 	{

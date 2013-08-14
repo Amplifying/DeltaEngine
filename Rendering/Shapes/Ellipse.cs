@@ -1,14 +1,14 @@
-using System.Collections.Generic;
-using DeltaEngine.Core;
+﻿using System.Collections.Generic;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Rendering.Shapes
 {
 	/// <summary>
-	/// Renders a filled 2D ellipse shape
+	/// Renders a filled 2D ellipse shape.
 	/// </summary>
-	public class Ellipse : Polygon
+	public class Ellipse : Polygon2D
 	{
 		public Ellipse(Point center, float radiusX, float radiusY, Color color)
 			: this(Rectangle.FromCenter(center, new Size(2 * radiusX, 2 * radiusY)), color) {}
@@ -16,8 +16,7 @@ namespace DeltaEngine.Rendering.Shapes
 		public Ellipse(Rectangle drawArea, Color color)
 			: base(drawArea, color)
 		{
-			Add(new ObserveEntity2D.SavedProperties());
-			Start<ObserveEntity2D, UpdatePoints>();
+			Start<UpdatePoints>();
 		}
 
 		public float RadiusX
@@ -53,15 +52,15 @@ namespace DeltaEngine.Rendering.Shapes
 		/// <summary>
 		/// This recalculates the points of an Ellipse if they change
 		/// </summary>
-		public class UpdatePoints : EventListener2D
+		public class UpdatePoints : UpdateBehavior
 		{
-			public override void ReceiveMessage(Entity2D entity, object message)
+			public override void Update(IEnumerable<Entity> entities)
 			{
-				if (!(message is ObserveEntity2D.HasChanged))
-					return;
-
-				InitializeVariables(entity);
-				FormEllipsePoints(entity);
+				foreach (var entity in entities)
+				{
+					InitializeVariables((Entity2D)entity);
+					FormEllipsePoints(entity);
+				}
 			}
 
 			private void InitializeVariables(Entity2D entity)
@@ -93,6 +92,7 @@ namespace DeltaEngine.Rendering.Shapes
 			}
 
 			private const int MinPoints = 5;
+
 			private const int MaxPoints = 96;
 
 			private void FormEllipsePoints(Entity entity)

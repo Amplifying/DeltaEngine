@@ -1,5 +1,5 @@
-using DeltaEngine.Platforms.Mocks;
-using DeltaEngine.Rendering.ScreenSpaces;
+﻿using DeltaEngine.Platforms.Mocks;
+using DeltaEngine.ScreenSpaces;
 using NUnit.Framework;
 
 namespace DeltaEngine.Input.Windows.Tests
@@ -11,8 +11,8 @@ namespace DeltaEngine.Input.Windows.Tests
 		{
 			Assert.DoesNotThrow(delegate
 			{
-			  var counter = new MouseDeviceCounter();
-			  Assert.Greater(counter.GetNumberOfAvailableMice(), 0);
+				var counter = new MouseDeviceCounter();
+				Assert.Greater(counter.GetNumberOfAvailableMice(), 0);
 			});
 		}
 
@@ -27,8 +27,7 @@ namespace DeltaEngine.Input.Windows.Tests
 		{
 			var resolver = new MockResolver();
 			var window = resolver.Window;
-			var screen = new QuadraticScreenSpace(window);
-			var positionTranslater = new CursorPositionTranslater(window, screen);
+			var positionTranslater = new CursorPositionTranslater(window);
 			return new WindowsMouse(positionTranslater);
 		}
 	}

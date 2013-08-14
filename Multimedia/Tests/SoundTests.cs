@@ -1,6 +1,8 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Threading;
+using DeltaEngine.Commands;
 using DeltaEngine.Content;
+using DeltaEngine.Input;
 using DeltaEngine.Platforms;
 using NUnit.Framework;
 
@@ -15,6 +17,13 @@ namespace DeltaEngine.Multimedia.Tests
 		public void PlaySound()
 		{
 			ContentLoader.Load<Sound>("DefaultSound").Play();
+		}
+
+		[Test]
+		public void PlaySoundOnClick()
+		{
+			new Command(() => ContentLoader.Load<Sound>("DefaultSound").Play()).Add(
+				new MouseButtonTrigger());
 		}
 
 		[Test]

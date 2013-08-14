@@ -1,3 +1,4 @@
+﻿using System.Diagnostics;
 using DeltaEngine.Content;
 using DeltaEngine.Content.Xml;
 using DeltaEngine.Datatypes;
@@ -9,10 +10,10 @@ namespace DeltaEngine.Rendering.Tests.Fonts
 {
 	public class FontDataTests : TestWithMocksOrVisually
 	{
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void LoadFontData()
 		{
-			var fontData = new FontData(ContentLoader.Load<XmlContent>("Verdana12").Data);
+			var fontData = new FontDescription(ContentLoader.Load<XmlContent>("Verdana12").Data);
 			Assert.AreEqual("Verdana", fontData.FontFamilyName);
 			Assert.AreEqual(12, fontData.SizeInPoints);
 			Assert.AreEqual("AddOutline", fontData.Style);
@@ -22,51 +23,40 @@ namespace DeltaEngine.Rendering.Tests.Fonts
 			//Assert.AreEqual(95, fontData.GlyphDictionary.Count);
 			Assert.AreEqual(new Rectangle(0, 0, 1, 16), fontData.GlyphDictionary[' '].UV);
 			Assert.AreEqual(7.34875f, fontData.GlyphDictionary[' '].AdvanceWidth);
-			Window.CloseAfterFrame();
 		}
 
-		[Test]
-		public void LoadFromInvalidXmlDataThrows()
-		{
-			Assert.Throws<FontData.UnableToLoadFontDataWithoutValidXmlData>(() => new FontData(null));
-			Window.CloseAfterFrame();
-		}
-
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void GetGlyphDrawAreaAndUVs()
 		{
-			var fontData = new FontData(ContentLoader.Load<XmlContent>("Verdana12").Data);
-			fontData.Generate("");
+			var fontData = new FontDescription(ContentLoader.Load<XmlContent>("Verdana12").Data);
+			fontData.Generate("", HorizontalAlignment.Center);
 			Assert.AreEqual(0, fontData.Glyphs.Length);
-			fontData.Generate("\n");
+			fontData.Generate("\n", HorizontalAlignment.Center);
 			Assert.AreEqual(0, fontData.Glyphs.Length);
-			fontData.Generate(" ");
+			fontData.Generate(" ", HorizontalAlignment.Center);
 			Assert.AreEqual(1, fontData.Glyphs.Length);
 			GlyphDrawData glyphA = fontData.Glyphs[0];
 			Assert.AreEqual(glyphA.UV,
 				Rectangle.BuildUvRectangle(new Rectangle(0, 0, 1, 16), new Size(128, 128)));
 			Assert.AreEqual(new Rectangle(0, 0, 1, 16), glyphA.DrawArea);
-			Window.CloseAfterFrame();
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void GetGlyphsForMultilineText()
 		{
-			var fontData = new FontData(ContentLoader.Load<XmlContent>("Verdana12").Data);
-			fontData.Generate(" \n \n ");
+			var fontData = new FontDescription(ContentLoader.Load<XmlContent>("Verdana12").Data);
+			fontData.Generate(" \n \n ", HorizontalAlignment.Center);
 			Assert.AreEqual(3, fontData.Glyphs.Length);
-			Window.CloseAfterFrame();
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void ToStringTest()
 		{
-			var fontDataType = typeof(FontData);
+			var fontDataType = typeof(FontDescription);
 			var expected = fontDataType.Namespace + "." + fontDataType.Name +
 				", Font Family=Verdana, Font Size=12";
-			var fontData = new FontData(ContentLoader.Load<XmlContent>("Verdana12").Data);
+			var fontData = new FontDescription(ContentLoader.Load<XmlContent>("Verdana12").Data);
 			Assert.AreEqual(expected, fontData.ToString());
-			Window.CloseAfterFrame();
 		}
 	}
 }

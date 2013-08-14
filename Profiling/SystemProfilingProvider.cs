@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using DeltaEngine.Platforms;
 
 namespace DeltaEngine.Profiling
 {
 	/// <summary>
-	/// Derived classes implement system profiling - ie. RAM/CPU/etc. used over time
+	/// Derived classes implement system profiling - ie. RAM/CPU/etc. used over time.
 	/// </summary>
 	public interface SystemProfilingProvider
 	{

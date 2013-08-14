@@ -1,8 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using DeltaEngine.Content;
-using DeltaEngine.Platforms;
 
 namespace DeltaEngine.Multimedia
 {
@@ -19,11 +18,16 @@ namespace DeltaEngine.Multimedia
 
 		private readonly Settings settings;
 
+		protected override bool AllowCreationIfContentNotFound { get { return true; } }
+
 		public abstract float LengthInSeconds { get; }
 		public int NumberOfInstances
 		{
 			get { return internalInstances.Count + externalInstances.Count; }
 		}
+
+		private readonly List<SoundInstance> internalInstances = new List<SoundInstance>();
+		private readonly List<SoundInstance> externalInstances = new List<SoundInstance>();
 
 		public int NumberOfPlayingInstances
 		{
@@ -36,11 +40,19 @@ namespace DeltaEngine.Multimedia
 
 		protected override void DisposeData()
 		{
-			foreach (var instance in internalInstances.ToList())
-				Remove(instance);
+			foreach (var instance in internalInstances)
+				RemoveChannel(instance);
+			internalInstances.Clear();
+			foreach (var instance in externalInstances)
+				RemoveChannel(instance);
+			externalInstances.Clear();
+		}
 
-			foreach (var instance in externalInstances.ToList())
-				Remove(instance);
+		internal void Remove(SoundInstance instanceToRemove)
+		{
+			internalInstances.Remove(instanceToRemove);
+			externalInstances.Remove(instanceToRemove);
+			RemoveChannel(instanceToRemove);
 		}
 
 		public void Play()
@@ -56,19 +68,33 @@ namespace DeltaEngine.Multimedia
 		public void Play(float volume, float panning)
 		{
 			SoundInstance freeInstance = GetInternalNonPlayingInstance();
+			if (freeInstance == null)
+			{
+				if (!warnedAboutTooManyInstances)
+				{
+					warnedAboutTooManyInstances = true;
+					Logger.Warning("Too many SoundInstances of '" + this + "' have been started, will not " +
+						"create more and wait until they are free to use again.");
+				}
+				return;
+			}
 			freeInstance.Volume = volume;
 			freeInstance.Panning = panning;
 			freeInstance.Play();
 		}
 
+		private bool warnedAboutTooManyInstances;
+
 		private SoundInstance GetInternalNonPlayingInstance()
 		{
 			SoundInstance freeInstance = internalInstances.FirstOrDefault(i => !IsPlaying(i));
-			if (freeInstance != null)
+			if (freeInstance != null || internalInstances.Count >= MaxInstances)
 				return freeInstance;
 			createInternalInstance = true;
 			return CreateSoundInstance();
 		}
+
+		private const int MaxInstances = 12;
 
 		private bool createInternalInstance;
 
@@ -76,7 +102,6 @@ namespace DeltaEngine.Multimedia
 		{
 			var instance = new SoundInstance(this) { Volume = settings.SoundVolume };
 			Add(instance);
-
 			return instance;
 		}
 
@@ -86,7 +111,6 @@ namespace DeltaEngine.Multimedia
 		{
 			foreach (var instance in internalInstances)
 				instance.Stop();
-
 			foreach (var instance in externalInstances)
 				instance.Stop();
 		}
@@ -96,25 +120,14 @@ namespace DeltaEngine.Multimedia
 		protected abstract void CreateChannel(SoundInstance instanceToFill);
 		protected abstract void RemoveChannel(SoundInstance instanceToRemove);
 
-		private readonly List<SoundInstance> internalInstances = new List<SoundInstance>();
-		private readonly List<SoundInstance> externalInstances = new List<SoundInstance>();
-
 		internal void Add(SoundInstance instanceToAdd)
 		{
 			if (createInternalInstance)
 				internalInstances.Add(instanceToAdd);
 			else
 				externalInstances.Add(instanceToAdd);
-
 			createInternalInstance = false;
 			CreateChannel(instanceToAdd);
-		}
-
-		internal void Remove(SoundInstance instanceToRemove)
-		{
-			internalInstances.Remove(instanceToRemove);
-			externalInstances.Remove(instanceToRemove);
-			RemoveChannel(instanceToRemove);
 		}
 
 		public abstract bool IsPlaying(SoundInstance instance);

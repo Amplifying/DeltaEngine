@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
-using DeltaEngine.Core;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Datatypes
 {
@@ -10,7 +10,8 @@ namespace DeltaEngine.Datatypes
 	/// 4x4 Matrix from 16 floats, access happens via indexer, optimizations done in BuildService.
 	/// </summary>
 	[DebuggerDisplay("Matrix(Right={Right},\nUp={Up},\nFront={Front},\nTranslation={Translation})")]
-	public struct Matrix : IEquatable<Matrix>
+	public struct 
+		Matrix : IEquatable<Matrix>
 	{
 		public Matrix(params float[] values)
 			: this()
@@ -25,7 +26,6 @@ namespace DeltaEngine.Datatypes
 			{
 				if (index >= 0 && index < 16)
 					return GetValues[index];
-
 				throw new IndexOutOfRangeException();
 			}
 			set
@@ -111,6 +111,12 @@ namespace DeltaEngine.Datatypes
 		public Vector Translation
 		{
 			get { return new Vector(m41, m42, m43); }
+			set
+			{
+				m41 = value.X;
+				m42 = value.Y;
+				m43 = value.Z;
+			}
 		}
 
 		public static readonly Matrix Identity = 
@@ -154,36 +160,95 @@ namespace DeltaEngine.Datatypes
 				matrix[3], matrix[7], matrix[11], matrix[15]);
 		}
 
-		public static Matrix GenerateOrthographicProjection(Size size)
+		public static Matrix Invert(Matrix matrix)
+		{
+			var subFactors = new float[19];
+			subFactors[0] = matrix.m33 * matrix.m44 - matrix.m43 * matrix.m34;
+			subFactors[1] = matrix.m32 * matrix.m44 - matrix.m42 * matrix.m34;
+			subFactors[2] = matrix.m32 * matrix.m43 - matrix.m42 * matrix.m33;
+			subFactors[3] = matrix.m31 * matrix.m44 - matrix.m41 * matrix.m34;
+			subFactors[4] = matrix.m31 * matrix.m43 - matrix.m41 * matrix.m33;
+			subFactors[5] = matrix.m31 * matrix.m42 - matrix.m41 * matrix.m32;
+			subFactors[6] = matrix.m23 * matrix.m44 - matrix.m43 * matrix.m24;
+			subFactors[7] = matrix.m22 * matrix.m44 - matrix.m42 * matrix.m24;
+			subFactors[8] = matrix.m22 * matrix.m43 - matrix.m42 * matrix.m23;
+			subFactors[9] = matrix.m21 * matrix.m44 - matrix.m41 * matrix.m24;
+			subFactors[10] = matrix.m21 * matrix.m43 - matrix.m41 * matrix.m23;
+			subFactors[11] = matrix.m22 * matrix.m44 - matrix.m42 * matrix.m24;
+			subFactors[12] = matrix.m21 * matrix.m42 - matrix.m41 * matrix.m22;
+			subFactors[13] = matrix.m23 * matrix.m34 - matrix.m33 * matrix.m24;
+			subFactors[14] = matrix.m22 * matrix.m34 - matrix.m32 * matrix.m24;
+			subFactors[15] = matrix.m22 * matrix.m33 - matrix.m32 * matrix.m23;
+			subFactors[16] = matrix.m21 * matrix.m34 - matrix.m31 * matrix.m24;
+			subFactors[17] = matrix.m21 * matrix.m33 - matrix.m31 * matrix.m23;
+			subFactors[18] = matrix.m21 * matrix.m32 - matrix.m31 * matrix.m22;
+			var inverse = new Matrix(
+				+(matrix.m22 * subFactors[0] - matrix.m23 * subFactors[1] + matrix.m24 * subFactors[2]),
+				-(matrix.m12 * subFactors[0] - matrix.m13 * subFactors[1] + matrix.m14 * subFactors[2]),
+				+(matrix.m12 * subFactors[6] - matrix.m13 * subFactors[7] + matrix.m14 * subFactors[8]),
+				-(matrix.m12 * subFactors[13] - matrix.m13 * subFactors[14] + matrix.m14 * subFactors[15]),
+				-(matrix.m21 * subFactors[0] - matrix.m23 * subFactors[3] + matrix.m24 * subFactors[4]),
+				+(matrix.m11 * subFactors[0] - matrix.m13 * subFactors[3] + matrix.m14 * subFactors[4]),
+				-(matrix.m11 * subFactors[6] - matrix.m13 * subFactors[9] + matrix.m14 * subFactors[10]),
+				+(matrix.m11 * subFactors[13] - matrix.m13 * subFactors[16] + matrix.m14 * subFactors[17]),
+				+(matrix.m21 * subFactors[1] - matrix.m22 * subFactors[3] + matrix.m24 * subFactors[5]),
+				-(matrix.m11 * subFactors[1] - matrix.m12 * subFactors[3] + matrix.m14 * subFactors[5]),
+				+(matrix.m11 * subFactors[11] - matrix.m12 * subFactors[9] + matrix.m14 * subFactors[12]),
+				-(matrix.m11 * subFactors[14] - matrix.m12 * subFactors[16] + matrix.m14 * subFactors[18]),
+				-(matrix.m21 * subFactors[2] - matrix.m22 * subFactors[4] + matrix.m23 * subFactors[5]),
+				+(matrix.m11 * subFactors[2] - matrix.m12 * subFactors[4] + matrix.m13 * subFactors[5]),
+				-(matrix.m11 * subFactors[8] - matrix.m12 * subFactors[10] + matrix.m13 * subFactors[12]),
+				+(matrix.m11 * subFactors[15] - matrix.m12 * subFactors[17] + matrix.m13 * subFactors[18]));
+			float determinant = matrix.m11 * inverse.m11 + matrix.m12 * inverse.m21 +
+				matrix.m13 * inverse.m31 + matrix.m14 * inverse.m41;
+			inverse /= determinant;
+			return inverse;
+		}
+
+		public static Matrix CreatePerspective(float fieldOfView, float aspectRatio,
+			float nearPlaneDistance, float farPlaneDistance)
+		{
+			float focalLength = 1.0f / MathExtensions.Tan(fieldOfView * 0.5f);
+			float inverseDepth = 1.0f / (farPlaneDistance - nearPlaneDistance);
+			return new Matrix(
+				focalLength, 0.0f, 0.0f, 0.0f,
+				0.0f, focalLength / aspectRatio, 0.0f, 0.0f,
+				0.0f, 0.0f, -inverseDepth * (farPlaneDistance + nearPlaneDistance), -1.0f,
+				0.0f, 0.0f, -inverseDepth * (2.0f * farPlaneDistance * nearPlaneDistance), 0.0f);
+		}
+
+		public static Matrix CreateOrthoProjection(Size viewportSize)
 		{
 			return new Matrix(
-				2.0f / size.Width, 0, 0, 0,
-				0, 2.0f / -size.Height, 0, 0,
-				0, 0, -1, 0,
-				-1, 1, 0, 1);
+				2.0f / viewportSize.Width, 0.0f, 0.0f, 0.0f,
+				0.0f, 2.0f / -viewportSize.Height, 0.0f, 0.0f,
+				0.0f, 0.0f, -1.0f, 0.0f,
+				-1.0f, 1.0f, 0.0f, 1.0f);
+		}
+
+		public static Matrix CreateOrthoProjection(Size viewportSize, float nearPlane, float farPlane)
+		{
+			var invDepth = 1.0f / (farPlane - nearPlane);
+			return new Matrix(
+				2.0f / viewportSize.Width, 0.0f, 0.0f, 0.0f,
+				0.0f, 2.0f / viewportSize.Height, 0.0f, 0.0f,
+				0.0f, 0.0f, -2.0f * invDepth, 0.0f,
+				0.0f, 0.0f, -1.0f * (nearPlane + farPlane) * invDepth, 1.0f);
 		}
 
 		public static Matrix CreateLookAt(Vector cameraPosition, Vector cameraTarget, Vector cameraUp)
 		{
-			var direction = Vector.Normalize(cameraPosition - cameraTarget);
-			var upVector = ComputeUpVector(cameraUp, direction);
-			var right = Vector.Cross(direction, upVector);
+			var forward = Vector.Normalize(cameraTarget - cameraPosition);
+			var up = Vector.Normalize(cameraUp);
+			var side = Vector.Cross(forward, up);
+			up = Vector.Cross(side, forward);
 			return new Matrix(
-				upVector.X, right.X, direction.X, 0.0f,
-				upVector.Y, right.Y, direction.Y, 0.0f,
-				upVector.Z, right.Z, direction.Z, 0.0f,
-				-Vector.Dot(upVector, cameraPosition),
-				-Vector.Dot(right, cameraPosition),
-				-Vector.Dot(direction, cameraPosition), 1.0f);
-		}
-
-		private static Vector ComputeUpVector(Vector cameraUp, Vector forward)
-		{
-			var upVector = Vector.Normalize(Vector.Cross(cameraUp, forward));
-			if (upVector.LengthSquared == 0.0f)
-				upVector = Vector.UnitY;
-
-			return upVector;
+				side.X, up.X, -forward.X, 0.0f,
+				side.Y, up.Y, -forward.Y, 0.0f,
+				side.Z, up.Z, -forward.Z, 0.0f,
+				-Vector.Dot(side, cameraPosition),
+				-Vector.Dot(up, cameraPosition),
+				Vector.Dot(forward, cameraPosition), 1.0f);
 		}
 
 		public static Vector TransformNormal(Vector normal, Matrix matrix)
@@ -192,6 +257,16 @@ namespace DeltaEngine.Datatypes
 				normal.X * matrix.m11 + normal.Y * matrix.m21 + normal.Z * matrix.m31,
 				normal.X * matrix.m12 + normal.Y * matrix.m22 + normal.Z * matrix.m32,
 				normal.X * matrix.m13 + normal.Y * matrix.m23 + normal.Z * matrix.m33);
+		}
+
+		public static Vector TransformHomogeneousCoordinate(Vector coord, Matrix matrix)
+		{
+			var vector = new Vector(
+				coord.X * matrix.m11 + coord.Y * matrix.m21 + coord.Z * matrix.m31 + matrix.m41,
+				coord.X * matrix.m12 + coord.Y * matrix.m22 + coord.Z * matrix.m32 + matrix.m42,
+				coord.X * matrix.m13 + coord.Y * matrix.m23 + coord.Z * matrix.m33 + matrix.m43);
+			float w = coord.X * matrix.m14 + coord.Y * matrix.m24 + coord.Z * matrix.m34 + matrix.m44;
+			return vector / w;
 		}
 
 		public static Matrix CreateRotationX(float degrees)
@@ -228,6 +303,28 @@ namespace DeltaEngine.Datatypes
 		}
 
 		/// <summary>
+		/// Further details on how to compute matrix from quaternion:
+		/// http://renderfeather.googlecode.com/hg-history/034a1900d6e8b6c92440382658d2b01fc732c5de/Doc/optimized%2520Matrix%2520quaternion%2520conversion.pdf
+		/// </summary>
+		public static Matrix FromQuaternion(Quaternion quaternion)
+		{
+			float qxx = quaternion.X * quaternion.X;
+			float qyy = quaternion.Y * quaternion.Y;
+			float qzz = quaternion.Z * quaternion.Z;
+			float qxy = quaternion.X * quaternion.Y;
+			float qzw = quaternion.Z * quaternion.W;
+			float qxz = quaternion.X * quaternion.Z;
+			float qyw = quaternion.Y * quaternion.W;
+			float qyz = quaternion.Y * quaternion.Z;
+			float qxw = quaternion.X * quaternion.W;
+			return new Matrix(
+				1.0f - 2.0f * (qyy + qzz), 2.0f * (qxy + qzw), 2.0f * (qxz - qyw), 0.0f,
+				2.0f * (qxy - qzw), 1.0f - 2.0f * (qxx + qzz), 2.0f * (qyz + qxw), 0.0f,
+				2.0f * (qxz + qyw), 2.0f * (qyz - qxw), 1.0f - 2.0f * (qxx + qyy), 0.0f,
+				0.0f, 0.0f, 0.0f, 1.0f);
+		}
+
+		/// <summary>
 		/// More details how to calculate Matrix Determinants: http://en.wikipedia.org/wiki/Determinant
 		/// </summary>
 		public float GetDeterminant()
@@ -245,18 +342,6 @@ namespace DeltaEngine.Datatypes
 			return det11 - det12 + det13 - det14;
 		}
 
-		public static Matrix CreatePerspective(float fieldOfView, float aspectRatio,
-			float nearPlaneDistance, float farPlaneDistance)
-		{
-			float focalLength = 1.0f / MathExtensions.Tan(fieldOfView * 0.5f);
-			float oneOverDistance = -1.0f / (farPlaneDistance - nearPlaneDistance);
-			return new Matrix(
-				focalLength, 0.0f, 0.0f, 0.0f,
-				0.0f, focalLength / aspectRatio, 0.0f, 0.0f,
-				0.0f, 0.0f, oneOverDistance * (farPlaneDistance + nearPlaneDistance), -1.0f,
-				0.0f, 0.0f, oneOverDistance * (2.0f * farPlaneDistance * nearPlaneDistance), 0.0f);
-		}
-
 		public static bool operator ==(Matrix matrix1, Matrix matrix2)
 		{
 			return matrix1.Equals(matrix2);
@@ -267,7 +352,6 @@ namespace DeltaEngine.Datatypes
 			for (int i = 0; i < 16; i++)
 				if (!this[i].IsNearlyEqual(other[i]))
 					return false;
-
 			return true;
 		}
 
@@ -283,6 +367,16 @@ namespace DeltaEngine.Datatypes
 					return false;
 
 			return true;
+		}
+
+		public static Matrix operator /(Matrix matrix, float scalar)
+		{
+			var value = 1.0f / scalar;
+			return new Matrix(
+				matrix.m11 * value, matrix.m12 * value, matrix.m13 * value, matrix.m14 * value,
+				matrix.m21 * value, matrix.m22 * value, matrix.m23 * value, matrix.m24 * value,
+				matrix.m31 * value, matrix.m32 * value, matrix.m33 * value, matrix.m34 * value,
+				matrix.m41 * value, matrix.m42 * value, matrix.m43 * value, matrix.m44 * value);
 		}
 
 		public static Vector operator *(Matrix matrix, Vector vector)

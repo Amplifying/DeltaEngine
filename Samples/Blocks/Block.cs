@@ -1,11 +1,10 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using DeltaEngine.Core;
+using DeltaEngine;
+using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
-using DeltaEngine.Graphics;
-using DeltaEngine.Physics2D;
-using DeltaEngine.Platforms;
+using DeltaEngine.Extensions;
 
 namespace Blocks
 {
@@ -30,10 +29,12 @@ namespace Blocks
 			int numberOfBricks = content.AreFiveBrickBlocksAllowed
 				? GetNumberOfBricks() : NormalNumberOfBricks;
 			var image = content.Load<Image>("Block" + Randomizer.Current.Get(1, 8));
-			var newBrick = new Brick(image, Point.Zero, displayMode);
+			var shader = ContentLoader.Load<Shader>(Shader.Position2DColorUv);
+			var material = new Material(shader, image);
+			var newBrick = new Brick(material, Point.Zero, displayMode);
 			Bricks = new List<Brick> { newBrick };
 			for (int i = 1; i < numberOfBricks; i++)
-				AddBrick(Bricks[i - 1], image);
+				AddBrick(Bricks[i - 1], material);
 
 			ShiftToTopLeft();
 		}
@@ -46,15 +47,14 @@ namespace Blocks
 			return Randomizer.Current.Get() < 0.9f ? NormalNumberOfBricks : NormalNumberOfBricks + 1;
 		}
 
-		private void AddBrick(Brick lastBrick, Image image)
+		private void AddBrick(Brick lastBrick, Material material)
 		{
 			Brick newBrick;
 			do
-				newBrick = new Brick(image, lastBrick.Offset + GetRandomOffset(), displayMode)
+				newBrick = new Brick(material, lastBrick.Offset + GetRandomOffset(), displayMode)
 				{
 					IsActive = false
-				};
-			while (Bricks.Any(brick => brick.Offset == newBrick.Offset));
+				}; while (Bricks.Any(brick => brick.Offset == newBrick.Offset));
 
 			Bricks.Add(newBrick);
 			newBrick.IsActive = true;
@@ -137,7 +137,7 @@ namespace Blocks
 
 		public void UpdateBrickDrawAreas(float fallSpeed)
 		{
-			Top += MathExtensions.Min(fallSpeed * Time.Current.Delta, 1.0f);
+			Top += MathExtensions.Min(fallSpeed * Time.Delta, 1.0f);
 			foreach (var brick in Bricks)
 				brick.UpdateDrawArea();
 		}

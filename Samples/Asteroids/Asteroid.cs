@@ -1,7 +1,6 @@
+﻿using DeltaEngine;
 using DeltaEngine.Content;
-using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
 using DeltaEngine.Physics2D;
 using DeltaEngine.Rendering.Sprites;
 
@@ -14,8 +13,8 @@ namespace Asteroids
 	public class Asteroid : Sprite
 	{
 		public Asteroid(Randomizer randomizer, GameLogic gameLogic, int sizeModifier = 1)
-			: base(
-				ContentLoader.Load<Image>(AsteroidTextureName), CreateDrawArea(randomizer, sizeModifier))
+			: base(new Material(Shader.Position2DColorUv, "asteroid"),
+			CreateDrawArea(randomizer, sizeModifier))
 		{
 			this.gameLogic = gameLogic;
 			this.sizeModifier = sizeModifier;
@@ -27,12 +26,10 @@ namespace Asteroids
 				RotationSpeed = randomizer.Get(.1f, 50)
 			});
 
-			Add(0.0f);
-			Start<SimplePhysics.BounceOffScreenEdges>();
+			Start<SimplePhysics.Move>();
+			Start<SimplePhysics.BounceIfAtScreenEdge>();
 			Start<SimplePhysics.Rotate>();
 		}
-
-		private const string AsteroidTextureName = "asteroid";
 
 		private static Rectangle CreateDrawArea(Randomizer randomizer, int sizeModifier)
 		{

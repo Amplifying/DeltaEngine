@@ -1,18 +1,17 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
+using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
-using DeltaEngine.Graphics;
-using DeltaEngine.Physics2D;
-using DeltaEngine.Rendering;
-using DeltaEngine.Rendering.ScreenSpaces;
+using DeltaEngine.ScreenSpaces;
 
 namespace SideScroller
 {
 	public class EnemyPlane : Plane
 	{
-		public EnemyPlane(Image enemyTexture, Point initialPosition)
-			: base(enemyTexture, initialPosition, Color.Pink)
+		public EnemyPlane(Material enemyTexture, Point initialPosition)
+			: base(enemyTexture, initialPosition)
 		{
 			Hitpoints = 5;
 			verticalDecelerationFactor = 3.0f;
@@ -28,49 +27,16 @@ namespace SideScroller
 				Hitpoints--;
 		}
 
-		private class EnemyHandler : Behavior2D
+		private class EnemyHandler : UpdateBehavior
 		{
-			public EnemyHandler(ScreenSpace screenSpace)
-			{
-				this.screenSpace = screenSpace;
-				Filter = entity => entity is EnemyPlane;
-			}
-
-			private readonly ScreenSpace screenSpace;
-
-			public override void Handle(Entity2D entity)
-			{
-				var enemy = entity as EnemyPlane;
-
-				if (enemy.defeated)
-				{
-					enemy.AccelerateVertically(0.02f);
-					if (enemy.DrawArea.Top > screenSpace.Viewport.Bottom)
-						enemy.IsActive = false;
-				}
-				else
-					FireShotIfRightTime(enemy);
-
-				var newRect = CalculateRectAfterMove(enemy);
-				MoveEntity(enemy, newRect);
-				var velocity2D = enemy.Get<Velocity2D>();
-				velocity2D.velocity.Y -= velocity2D.velocity.Y * enemy.verticalDecelerationFactor *
-					Time.Current.Delta;
-				enemy.Set(velocity2D);
-				enemy.Rotation = RotationAccordingToVerticalSpeed(velocity2D.velocity);
-
-				if (enemy.DrawArea.Right < screenSpace.Viewport.Left)
-					entity.IsActive = false;
-			}
-
 			private static Rectangle CalculateRectAfterMove(Entity entity)
 			{
 				var pointAfterVerticalMovement =
 					new Point(
 						entity.Get<Rectangle>().TopLeft.X +
-							entity.Get<Velocity2D>().velocity.X * Time.Current.Delta,
+							entity.Get<Velocity2D>().velocity.X * Time.Delta,
 						entity.Get<Rectangle>().TopLeft.Y +
-							entity.Get<Velocity2D>().velocity.Y * Time.Current.Delta);
+							entity.Get<Velocity2D>().velocity.Y * Time.Delta);
 
 				return new Rectangle(pointAfterVerticalMovement, entity.Get<Rectangle>().Size);
 			}
@@ -87,10 +53,38 @@ namespace SideScroller
 
 			private static void FireShotIfRightTime(EnemyPlane entity)
 			{
-				if (entity.timeLastShot - Time.Current.Milliseconds > 1)
+				if (entity.timeLastShot - GlobalTime.Current.Milliseconds > 1)
 				{
-					entity.timeLastShot = Time.Current.Milliseconds;
+					entity.timeLastShot = GlobalTime.Current.Milliseconds;
 					entity.EnemyFiredShot(entity.Center);
+				}
+			}
+
+			public override void Update(IEnumerable<Entity> entities)
+			{
+				foreach (var entity in entities)
+				{
+					var enemy = entity as EnemyPlane;
+
+					if (enemy.defeated)
+					{
+						enemy.AccelerateVertically(0.02f);
+						if (enemy.DrawArea.Top > ScreenSpace.Current.Viewport.Bottom)
+							enemy.IsActive = false;
+					}
+					else
+						FireShotIfRightTime(enemy);
+
+					var newRect = CalculateRectAfterMove(enemy);
+					MoveEntity(enemy, newRect);
+					var velocity2D = enemy.Get<Velocity2D>();
+					velocity2D.velocity.Y -= velocity2D.velocity.Y * enemy.verticalDecelerationFactor *
+						Time.Delta;
+					enemy.Set(velocity2D);
+					enemy.Rotation = RotationAccordingToVerticalSpeed(velocity2D.velocity);
+
+					if (enemy.DrawArea.Right < ScreenSpace.Current.Viewport.Left)
+						entity.IsActive = false;
 				}
 			}
 		}

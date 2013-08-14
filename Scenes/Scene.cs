@@ -1,7 +1,7 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
-using DeltaEngine.Graphics;
 using DeltaEngine.Rendering.Sprites;
 
 namespace DeltaEngine.Scenes
@@ -15,7 +15,6 @@ namespace DeltaEngine.Scenes
 		{
 			if (!controls.Contains(control))
 				controls.Add(control);
-
 			control.IsActive = isShown;
 		}
 
@@ -37,7 +36,6 @@ namespace DeltaEngine.Scenes
 		{
 			foreach (Entity control in controls)
 				control.IsActive = true;
-
 			isShown = true;
 		}
 
@@ -45,7 +43,6 @@ namespace DeltaEngine.Scenes
 		{
 			foreach (Entity control in controls)
 				control.IsActive = false;
-
 			isShown = false;
 		}
 
@@ -53,17 +50,20 @@ namespace DeltaEngine.Scenes
 		{
 			foreach (Entity control in controls)
 				control.IsActive = false;
-
 			controls.Clear();
 		}
 
-		public void SetBackground(Image image)
+		public void SetBackground(string materialName)
 		{
-				if (background != null)
-					Remove(background);
+			SetBackground(new Material(Shader.Position2DColorUv, materialName));
+		}
 
-				background = new Sprite(image, Rectangle.One) { RenderLayer = int.MinValue };
-				Add(background);
+		public void SetBackground(Material material)
+		{
+			if (background != null)
+				Remove(background);
+			background = new Sprite(material, Rectangle.One) { RenderLayer = int.MinValue };
+			Add(background);
 		}
 
 		protected Sprite background;

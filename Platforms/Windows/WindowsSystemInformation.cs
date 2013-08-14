@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -6,7 +6,6 @@ using System.Management;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Logging;
 using Microsoft.Win32;
 
 namespace DeltaEngine.Platforms.Windows
@@ -23,7 +22,6 @@ namespace DeltaEngine.Platforms.Windows
 			{
 				if (availableRamCounter == null)
 					availableRamCounter = new PerformanceCounter("Memory", "Available Bytes");
-
 				return availableRamCounter.NextValue() / (1024.0f * 1024.0f);
 			}
 		}
@@ -41,7 +39,6 @@ namespace DeltaEngine.Platforms.Windows
 			{
 				if (cpuName == null)
 					FillCoreInfo();
-
 				return cpuName;
 			}
 		}
@@ -58,14 +55,25 @@ namespace DeltaEngine.Platforms.Windows
 			uint deviceNum = 0;
 			var gpuNames = new List<string>();
 			while (EnumDisplayDevices(null, deviceNum++, display, 0))
-				if (gpuNames.Contains(display.deviceString) == false &&
-					display.deviceString.Trim().Length > 0 && display.deviceString.Contains("RDP") == false)
+				if (IsRelevantDevice(display, gpuNames))
 					gpuNames.Add(display.deviceString);
-
 			gpuName = string.Concat(",", gpuNames);
 		}
-
+		
 		private float cpuSpeed;
+
+		private static bool IsRelevantDevice(WindowsDisplayDevice display, List<string> gpuNames)
+		{
+			return gpuNames.Contains(display.deviceString) == false &&
+				display.deviceString.Trim().Length > 0 && display.deviceString.Contains("RDP") == false;
+		}
+
+		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		private static extern bool EnumDisplayDevices(
+			[MarshalAs(UnmanagedType.LPTStr)] string lpDevice, uint iDevNum,
+			[In, Out] WindowsDisplayDevice lpDisplayDevice, uint dwFlags);
+
 		private string gpuName;
 
 		public override float CpuSpeed
@@ -74,7 +82,6 @@ namespace DeltaEngine.Platforms.Windows
 			{
 				if (cpuSpeed == 0.0f)
 					FillCoreInfo();
-
 				return cpuSpeed;
 			}
 		}
@@ -85,10 +92,8 @@ namespace DeltaEngine.Platforms.Windows
 			{
 				if (cpuUsageArray == null)
 					FormCpuUsageArray();
-
 				for (int index = 0; index < CoreCount; index++)
 					cpuUsageArray[index] = cpuUsageCounters[index].NextValue();
-
 				return cpuUsageArray;
 			}
 		}
@@ -111,7 +116,6 @@ namespace DeltaEngine.Platforms.Windows
 			{
 				if (gpuName == null)
 					FillCoreInfo();
-
 				return gpuName;
 			}
 		}
@@ -142,7 +146,6 @@ namespace DeltaEngine.Platforms.Windows
 			{
 				if (maxRam == 0.0f)
 					SetMaxRam();
-
 				return maxRam;
 			}
 		}
@@ -195,16 +198,10 @@ namespace DeltaEngine.Platforms.Windows
 			get { return "Windows"; }
 		}
 
-		public override string PlatformVersion
+		public override Version PlatformVersion
 		{
-			get { return Environment.OSVersion.Version.ToString(); }
+			get { return Environment.OSVersion.Version; }
 		}
-
-		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-		[return: MarshalAs(UnmanagedType.Bool)]
-		private static extern bool EnumDisplayDevices(
-			[MarshalAs(UnmanagedType.LPTStr)] string lpDevice, uint iDevNum,
-			[In, Out] WindowsDisplayDevice lpDisplayDevice, uint dwFlags);
 
 		public override bool SoundCardAvailable
 		{
@@ -212,7 +209,6 @@ namespace DeltaEngine.Platforms.Windows
 			{
 				if (cachedNumAudioDevices == -1)
 					cachedNumAudioDevices = (int)waveOutGetNumDevs();
-
 				return cachedNumAudioDevices > 0;
 			}
 		}
@@ -228,7 +224,6 @@ namespace DeltaEngine.Platforms.Windows
 			{
 				if (usedRamCounter == null)
 					TryToGetUsedRamCounter();
-
 				return usedRamCounter == null ? 0.0f : usedRamCounter.NextValue() / (1024.0f * 1024.0f);
 			}
 		}
@@ -243,7 +238,7 @@ namespace DeltaEngine.Platforms.Windows
 			}
 			catch (Exception ex)
 			{
-				Logger.Current.Warning("Unable to get used ram: " + ex);
+				Logger.Warning("Unable to get used ram: " + ex);
 			}
 		}
 

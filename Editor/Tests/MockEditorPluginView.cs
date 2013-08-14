@@ -1,26 +1,28 @@
-using DeltaEngine.Editor.Common;
+﻿using System;
+using DeltaEngine.Editor.Core;
 
 namespace DeltaEngine.Editor.Tests
 {
 	public class MockEditorPluginView : EditorPluginView
 	{
-		public MockEditorPluginView(Service service) {}
+		public void Init(Service service)
+		{
+			Console.WriteLine("MockEditorPlugin initialized");
+		}
 
 		public string ShortName
 		{
-			get { return "MockEditorPlugin"; }
+			get { return "Mock Plugin"; }
 		}
+
 		public string Icon
 		{
 			get { return "Mock.png"; }
 		}
-		public EditorPluginCategory Category
+
+		public bool RequiresLargePane
 		{
-			get { return EditorPluginCategory.Settings; }
-		}
-		public int Priority
-		{
-			get { return 3; }
+			get { return false; }
 		}
 	}
 }

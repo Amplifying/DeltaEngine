@@ -1,7 +1,6 @@
-using DeltaEngine.Input;
+﻿using DeltaEngine;
 using DeltaEngine.Multimedia;
 using DeltaEngine.Platforms;
-using DeltaEngine.Rendering.ScreenSpaces;
 
 namespace Blocks
 {
@@ -13,8 +12,7 @@ namespace Blocks
 		public Program()
 		{
 			var blocksContent = new FruitBlocksContent();
-			new Game(Resolve<ScreenSpace>(), Resolve<InputCommands>(), blocksContent,
-				Resolve<SoundDevice>());
+			new Game(Resolve<Window>(), blocksContent, Resolve<SoundDevice>());
 		}
 
 		public static void Main()

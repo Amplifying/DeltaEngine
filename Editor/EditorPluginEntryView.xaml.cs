@@ -1,4 +1,4 @@
-namespace DeltaEngine.Editor
+﻿namespace DeltaEngine.Editor
 {
 	public partial class EditorPluginEntryView
 	{

@@ -1,41 +1,37 @@
-using System;
+﻿using DeltaEngine;
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
 using DeltaEngine.Platforms;
-using DeltaEngine.Rendering.ScreenSpaces;
+using DeltaEngine.ScreenSpaces;
 using NUnit.Framework;
 
 namespace ShadowShot.Tests
 {
 	public class AsteroidsTests : TestWithMocksOrVisually
 	{
-		private void Initiliaze()
+		[SetUp]
+		public void SetUp()
 		{
-			Resolve<ScreenSpace>().Window.ViewportPixelSize = new Size(800, 800);
-			var image = ContentLoader.Load<Image>("asteroid");
+			Resolve<Window>().ViewportPixelSize = new Size(800, 800);
+			var image = new Material(Shader.Position2DColorUv, "asteroid");
 			var drawArea = Rectangle.FromCenter(new Point(0.5f, 0.1f), new Size(0.1f));
-			asteroid = new Asteroid(image, drawArea);
+			asteroid = new Asteroid(image, drawArea, Resolve<ScreenSpace>().Viewport.Bottom);
 		}
 		private Asteroid asteroid;
 
 		[Test]
-		public void CreateAsteroid(Type resolver)
+		public void CreateAsteroid()
 		{
-
-			Initiliaze();
 			Assert.AreEqual(new Point(0.5f, 0.1f), asteroid.DrawArea.Center);
 		}
 
 		[Test]
 		public void CheckAsteroidFreeFall()
 		{
-
-			Initiliaze();
-			resolver.AdvanceTimeAndExecuteRunners();
+			AdvanceTimeAndUpdateEntities();
 			Assert.LessOrEqual(0.1f, asteroid.DrawArea.Center.Y);
 			var changedY = asteroid.DrawArea.Center.Y;
-			resolver.AdvanceTimeAndExecuteRunners();
+			AdvanceTimeAndUpdateEntities();
 			Assert.LessOrEqual(changedY, asteroid.DrawArea.Center.Y);
 		}
 	}

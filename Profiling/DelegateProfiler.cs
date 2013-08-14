@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using DeltaEngine.Core;
 
 namespace DeltaEngine.Profiling
@@ -11,11 +11,11 @@ namespace DeltaEngine.Profiling
 		public DelegateProfiler(Action testDelegate, int iterations = 1000)
 		{
 			testDelegate();
-			float start = Time.Current.GetSecondsSinceStartToday();
+			float start = GlobalTime.Current.GetSecondsSinceStartToday();
 			for (int i = 0; i < iterations; i++)
 				testDelegate();
 
-			float elapsed = Time.Current.GetSecondsSinceStartToday() - start;
+			float elapsed = GlobalTime.Current.GetSecondsSinceStartToday() - start;
 			TotalDurationInMilliseconds = (int)(elapsed * 1000);
 			AverageDurationInNanoseconds = (int)(0.5f + elapsed * 1000000.0 / iterations);
 			AverageDurationInPicoseconds = (int)(0.5f + elapsed * 1000000000.0 / iterations);

@@ -1,0 +1,47 @@
+using DeltaEngine;
+using DeltaEngine.Content;
+using DeltaEngine.Datatypes;
+using DeltaEngine.Physics2D;
+using DeltaEngine.Rendering.Sprites;
+
+namespace $safeprojectname$
+{
+	public class Asteroid : Sprite
+	{
+		public Asteroid(Randomizer randomizer, GameLogic gameLogic, int sizeModifier = 1) : base(new 
+			Material(Shader.Position2DColorUv, "asteroid"), CreateDrawArea(randomizer, sizeModifier))
+		{
+			this.gameLogic = gameLogic;
+			this.sizeModifier = sizeModifier;
+			RenderLayer = (int)AsteroidsRenderLayer.Asteroids;
+			Add(new SimplePhysics.Data {
+				Gravity = Point.Zero,
+				Velocity = new Point(randomizer.Get(.03f, .15f), randomizer.Get(.03f, .15f)),
+				RotationSpeed = randomizer.Get(.1f, 50)
+			});
+			Start<SimplePhysics.Move>();
+			Start<SimplePhysics.BounceIfAtScreenEdge>();
+			Start<SimplePhysics.Rotate>();
+		}
+
+		private static Rectangle CreateDrawArea(Randomizer randomizer, int sizeModifier)
+		{
+			var randomPosition = new Point(randomizer.Get(-1, 1) > 0 ? 0.2f : 0.8f, randomizer.Get(-1, 
+				1) > 0 ? 0.2f : 0.8f);
+			var modifiedSize = new Size(.1f / sizeModifier);
+			return new Rectangle(randomPosition, modifiedSize);
+		}
+
+		public readonly int sizeModifier;
+		private readonly GameLogic gameLogic;
+
+		public void Fracture()
+		{
+			if (sizeModifier < 3)
+				gameLogic.CreateAsteroidsAtPosition(DrawArea.Center, sizeModifier + 1);
+
+			gameLogic.IncrementScore(1);
+			IsActive = false;
+		}
+	}
+}

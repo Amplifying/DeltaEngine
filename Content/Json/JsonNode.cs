@@ -1,5 +1,4 @@
-using System;
-using System.IO;
+﻿using System;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -7,7 +6,7 @@ using Newtonsoft.Json.Linq;
 namespace DeltaEngine.Content.Json
 {
 	/// <summary>
-	/// Provides json text parsing support without having to include the Newtonsoft Json yourself.
+	/// Provides json text parsing support without having to include Newtonsoft Json yourself.
 	/// </summary>
 	public class JsonNode
 	{
@@ -15,7 +14,6 @@ namespace DeltaEngine.Content.Json
 		{
 			if (String.IsNullOrEmpty(text))
 				throw new NeedValidText();
-
 			data = JObject.Parse(text);
 		}
 
@@ -38,8 +36,13 @@ namespace DeltaEngine.Content.Json
 			var node = data[nodeName];
 			if (node == null)
 				throw new NodeNotFound(nodeName);
-
 			return node.Value<T>();
+		}
+
+		public T GetOrDefault<T>(string nodeName, T defaultValue)
+		{
+			var node = data[nodeName];
+			return node != null ? node.Value<T>() : defaultValue;
 		}
 
 		public class NodeNotFound : Exception
@@ -59,7 +62,6 @@ namespace DeltaEngine.Content.Json
 			{
 				if (data is JArray)
 					return FindJsonArrayElement(arrayIndex);
-
 				return new JsonNode(data[arrayIndex]);
 			}
 		}

@@ -1,8 +1,6 @@
-using System;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: CLSCompliant(true)]
 [assembly: AssemblyTitle("Snake")]
 [assembly: AssemblyDescription("Delta Engine sample Snake Game")]
 [assembly: AssemblyCompany("Delta Engine")]

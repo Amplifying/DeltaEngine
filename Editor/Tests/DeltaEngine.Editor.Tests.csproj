@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -55,17 +55,33 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
-      <Project>{A8D386EA-D376-46EA-A721-2BA51426A721}</Project>
-      <Name>DeltaEngine.Core</Name>
+    <ProjectReference Include="..\..\Content\Online\DeltaEngine.Content.Online.csproj">
+      <Project>{68AA6280-09EF-4325-B5F8-B8A967004144}</Project>
+      <Name>DeltaEngine.Content.Online</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Common\DeltaEngine.Editor.Common.csproj">
-      <Project>{FC0E9FDC-68E0-405E-BFC7-1F3523BD3EA7}</Project>
-      <Name>DeltaEngine.Editor.Common</Name>
+    <ProjectReference Include="..\..\DeltaEngine.csproj">
+      <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
+      <Name>DeltaEngine %28DeltaEngine\DeltaEngine%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Networking\DeltaEngine.Networking.csproj">
+      <Project>{5231706E-2955-43BF-9C06-291E12AF5C5C}</Project>
+      <Name>DeltaEngine.Networking</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Networking\Messages\DeltaEngine.Networking.Messages.csproj">
+      <Project>{74863E62-A568-4C0A-A37F-F04BFA8EB9DB}</Project>
+      <Name>DeltaEngine.Networking.Messages</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\DeltaEngine.Editor.Core.csproj">
+      <Project>{C667C7FC-A1C7-4CBC-98C0-C97F776E4570}</Project>
+      <Name>DeltaEngine.Editor.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Editor.csproj">
       <Project>{4C0891C0-CE79-4A2D-919E-6F706B62C8EA}</Project>
       <Name>DeltaEngine.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Messages\DeltaEngine.Editor.Messages.csproj">
+      <Project>{E4BF1DFC-4753-42E8-AF9C-06B5B3E6748E}</Project>
+      <Name>DeltaEngine.Editor.Messages</Name>
     </ProjectReference>
     <ProjectReference Include="..\ProjectCreator\DeltaEngine.Editor.ProjectCreator.csproj">
       <Project>{369DC159-36A7-4523-80FD-81D8BEA37547}</Project>
@@ -77,9 +93,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="EditorContentLoaderTests.cs" />
     <Compile Include="EditorPluginLoaderTests.cs" />
     <Compile Include="EditorViewModelTests.cs" />
     <Compile Include="MockEditorPluginView.cs" />
+    <Compile Include="OnlineServiceTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

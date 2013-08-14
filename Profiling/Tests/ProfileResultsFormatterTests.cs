@@ -1,4 +1,4 @@
-using System.Threading;
+﻿using System.Threading;
 using DeltaEngine.Platforms;
 using NUnit.Framework;
 

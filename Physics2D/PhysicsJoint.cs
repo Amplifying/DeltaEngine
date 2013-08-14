@@ -1,4 +1,4 @@
-namespace DeltaEngine.Physics2D
+﻿namespace DeltaEngine.Physics2D
 {
 	/// <summary>
 	///  Represents a joint that attaches two bodies together.

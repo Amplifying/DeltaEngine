@@ -1,33 +1,41 @@
+﻿using DeltaEngine.Commands;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Input;
 using DeltaEngine.Platforms;
 using DeltaEngine.Profiling;
-using DeltaEngine.Rendering;
 
 namespace DeltaEngine.Scenes.UserInterfaces.Graphing
 {
 	/// <summary>
-	/// Draws an overlay showing code profiling information - eg. how long Rendering took to run
+	/// Draws an overlay showing code profiling information - eg. how long Rendering took to run.
 	/// </summary>
 	public abstract class CodeProfilingGraph : Graph
 	{
-		protected CodeProfilingGraph(ProfilingMode profilingMode)
+		protected CodeProfilingGraph(Rectangle drawArea, ProfilingMode profilingMode)
+			: base(drawArea)
 		{
 			this.profilingMode = profilingMode;
 			RenderLayer = int.MaxValue - 10;
+			// ReSharper disable DoNotCallOverridableMethodsInConstructor
 			Visibility = Visibility.Hide;
+			// ReSharper restore DoNotCallOverridableMethodsInConstructor
 			NumberOfPercentiles = 5;
 			MaximumNumberOfPoints = 100;
 			PercentileSuffix = "%";
 			CodeProfiler.Current.IsActive = true;
-			CodeProfiler.Current.Updated += Update;
-			Start<ToggleVisibility>();
+			CodeProfiler.Current.Updated += Updated;
+			new Command(ToggleVisibility).Add(new KeyTrigger(Key.F11));
 		}
 
 		private readonly ProfilingMode profilingMode;
 
-		private void Update()
+		private void ToggleVisibility()
+		{
+			Visibility = Visibility == Visibility.Show ? Visibility.Hide : Visibility.Show;
+		}
+
+		private void Updated()
 		{
 			if (Visibility == Visibility.Hide)
 				return;
@@ -64,28 +72,6 @@ namespace DeltaEngine.Scenes.UserInterfaces.Graphing
 		private static float GetSectionPercentage(CodeProfilingResults results, int index)
 		{
 			return 100.0f * results.Sections[index].TotalTime / results.TotalSectionTime;
-		}
-
-		public class ToggleVisibility : EventListener2D
-		{
-			public ToggleVisibility(InputCommands input)
-			{
-				input.Add(Key.F3, key => ToggleVisibilityForAllGraphs());
-			}
-
-			private void ToggleVisibilityForAllGraphs()
-			{
-				var graphs = EntitySystem.Current.GetEntitiesByHandler(this);
-				foreach (Entity graph in graphs)
-					graph.Set(GetToggledVisibility(graph.Get<Visibility>()));
-			}
-
-			private static Visibility GetToggledVisibility(Visibility currentVisibility)
-			{
-				return currentVisibility == Visibility.Show ? Visibility.Hide : Visibility.Show;
-			}
-
-			public override void ReceiveMessage(Entity2D entity, object message) {}
 		}
 	}
 }

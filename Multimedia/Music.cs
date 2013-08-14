@@ -1,6 +1,5 @@
+﻿using System;
 using DeltaEngine.Content;
-using System;
-using DeltaEngine.Platforms;
 
 namespace DeltaEngine.Multimedia
 {
@@ -39,9 +38,10 @@ namespace DeltaEngine.Multimedia
 		}
 		protected abstract void StopNativeMusic();
 		public abstract bool IsPlaying();
-		protected internal abstract void Run();
+		public abstract void Run();
 		public abstract float DurationInSeconds { get; }
 		public abstract float PositionInSeconds { get; }
+
 		protected override void DisposeData()
 		{
 			Stop();

@@ -1,44 +1,29 @@
-using DeltaEngine.Core;
+﻿using System.Collections.Generic;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Platforms;
 using DeltaEngine.Rendering.Shapes;
 using DeltaEngine.Scenes.UserInterfaces.Graphing;
 using NUnit.Framework;
-using Randomizer = DeltaEngine.Core.Randomizer;
 
 namespace DeltaEngine.Scenes.Tests.UserInterfaces.Graphing
 {
 	public class RemoveOldestPointsTests : TestWithMocksOrVisually
 	{
-		[Test]
-		public void RenderTenPointRandomScrollingGraphOfDollars()
+		[SetUp]
+		public void SetUp()
 		{
-			new FilledRect(Rectangle.One, Color.Gray) { RenderLayer = int.MinValue };
-			CreateGraphAndLine();
-			graph.PercentilePrefix = "$";
-			Assert.AreEqual(10, graph.MaximumNumberOfPoints);
-			RunCode = () =>
+			graph = new Graph(Center)
 			{
-				if (Time.Current.Delta > 0.1f || !Time.Current.CheckEvery(0.1f))
-					return;
-
-				line.AddValue(0.1f, Randomizer.Current.Get());
-			};
-		}
-
-		private void CreateGraphAndLine()
-		{
-			graph = new Graph
-			{
-				DrawArea = Center,
 				Viewport = Rectangle.One,
 				MaximumNumberOfPoints = 10,
-				NumberOfPercentiles = 2
+				NumberOfPercentiles = 2,
+				AxesVisibility = Visibility.Show,
+				PercentilesVisibility = Visibility.Show,
+				PercentileLabelsVisibility = Visibility.Show
 			};
-			graph.Start<RenderAxes>();
 			line = graph.CreateLine("", LineColor);
-			EntitySystem.Current.Run();
+			graph.Add(line);
 		}
 
 		private Graph graph;
@@ -47,22 +32,38 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Graphing
 		private static readonly Color LineColor = Color.Blue;
 
 		[Test]
+		public void RenderTenPointRandomScrollingGraphOfDollars()
+		{
+			new FilledRect(Rectangle.One, Color.Gray) { RenderLayer = int.MinValue };
+			graph.PercentilePrefix = "$";
+			Assert.AreEqual(10, graph.MaximumNumberOfPoints);
+			graph.Start<AddValueEverySecond>();
+		}
+
+		private class AddValueEverySecond : UpdateBehavior
+		{
+			public override void Update(IEnumerable<Entity> entities)
+			{
+				if (Time.CheckEvery(1.0f))
+					foreach (Entity entity in entities)
+						entity.Get<GraphLine>().AddValue(0.1f, Randomizer.Current.Get());
+			}
+		}
+
+		[Test, CloseAfterFirstFrame]
 		public void AddingPointDoesNotRemoveFirstPointIfUnderTheLimit()
 		{
-			CreateGraphAndLine();
 			graph.MaximumNumberOfPoints = 3;
 			line.AddPoint(new Point(1, 0));
 			line.AddPoint(new Point(2, 0));
 			Assert.AreEqual(2, line.points.Count);
 			line.AddPoint(new Point(3, 0));
 			Assert.AreEqual(3, line.points.Count);
-			Window.CloseAfterFrame();
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void AddingPointRemovesFirstPointIfOverTheLimit()
 		{
-			CreateGraphAndLine();
 			graph.MaximumNumberOfPoints = 3;
 			line.AddPoint(new Point(1, 0));
 			line.AddPoint(new Point(2, 0));
@@ -70,7 +71,6 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Graphing
 			Assert.AreEqual(3, line.points.Count);
 			line.AddPoint(new Point(4, 0));
 			Assert.AreEqual(3, line.points.Count);
-			Window.CloseAfterFrame();
 		}
 	}
 }

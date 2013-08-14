@@ -1,7 +1,9 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Input.Windows
 {
@@ -28,26 +30,6 @@ namespace DeltaEngine.Input.Windows
 		private readonly State[] states;
 
 		public override void Vibrate(float strength) {}
-
-		public unsafe override void Run()
-		{
-			uint index = GetJoystickByNumber();
-			JoyCaps caps;
-			joyGetDevCaps(index, out caps, joyCapsSize);
-			var info = new JoyInfoEx
-			{ Size = (uint)Marshal.SizeOf(typeof(JoyInfoEx)), Flags = (uint)JoystickDwFlags.JoyAll };
-			joyGetPosEx(index, &info);
-
-			UpdateAllButtons((JoystickButtons)info.Buttons);
-			UpdateDPadButtons(info.Pov);
-
-			triggerLeft = info.Zpos == 65407 ? 1 : 0;
-			triggerRight = info.Zpos == 127 ? 1 : 0;
-			xAxisLeft = ((info.Xpos - caps.wXmin) * (2f / (caps.wXmax - caps.wXmin))) - 1f;
-			yAxisLeft = ((info.Ypos - caps.wYmin) * (2f / (caps.wYmax - caps.wYmin))) - 1f;
-			xAxisRight = ((info.Upos - caps.wUmin) * (2f / (caps.wUmax - caps.wUmin))) - 1f;
-			yAxisRight = ((info.Rpos - caps.wRmin) * (2f / (caps.wRmax - caps.wRmin))) - 1f;
-		}
 
 		private float triggerLeft;
 		private float triggerRight;
@@ -107,6 +89,7 @@ namespace DeltaEngine.Input.Windows
 		public override bool IsAvailable
 		{
 			get { return GetPresence(GetJoystickByNumber()); }
+			protected set { }
 		}
 
 		private bool GetPresence(uint index)
@@ -245,6 +228,35 @@ namespace DeltaEngine.Input.Windows
 			JoyPov = 0x40,
 			JoyButtons = 0x80,
 			JoyAll = JoyX | JoyY | JoyZ | JoyR | JoyU | JoyV | JoyPov | JoyButtons
+		}
+
+		public override void Update(IEnumerable<Entity> entities)
+		{
+			Run();
+			base.Update(entities);
+		}
+
+		public unsafe void Run()
+		{
+			uint index = GetJoystickByNumber();
+			JoyCaps caps;
+			joyGetDevCaps(index, out caps, joyCapsSize);
+			var info = new JoyInfoEx
+			{
+				Size = (uint)Marshal.SizeOf(typeof(JoyInfoEx)),
+				Flags = (uint)JoystickDwFlags.JoyAll
+			};
+			joyGetPosEx(index, &info);
+
+			UpdateAllButtons((JoystickButtons)info.Buttons);
+			UpdateDPadButtons(info.Pov);
+
+			triggerLeft = info.Zpos == 65407 ? 1 : 0;
+			triggerRight = info.Zpos == 127 ? 1 : 0;
+			xAxisLeft = ((info.Xpos - caps.wXmin) * (2f / (caps.wXmax - caps.wXmin))) - 1f;
+			yAxisLeft = ((info.Ypos - caps.wYmin) * (2f / (caps.wYmax - caps.wYmin))) - 1f;
+			xAxisRight = ((info.Upos - caps.wUmin) * (2f / (caps.wUmax - caps.wUmin))) - 1f;
+			yAxisRight = ((info.Rpos - caps.wRmin) * (2f / (caps.wRmax - caps.wRmin))) - 1f;
 		}
 	}
 }

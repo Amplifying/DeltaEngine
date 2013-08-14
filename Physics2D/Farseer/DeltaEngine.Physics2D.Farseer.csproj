@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -39,16 +39,12 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Datatypes\DeltaEngine.Datatypes.csproj">
-      <Project>{460983ff-aa91-4e10-b70e-10d0bda15a58}</Project>
-      <Name>DeltaEngine.Datatypes</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
-      <Project>{a8d386ea-d376-46ea-a721-2ba51426a721}</Project>
-      <Name>DeltaEngine.Core</Name>
+    <ProjectReference Include="..\..\DeltaEngine.csproj">
+      <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
+      <Name>DeltaEngine</Name>
     </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Physics2D.csproj">
-      <Project>{dc3aa434-09b9-43ad-8f43-431811fa054d}</Project>
+      <Project>{DC3AA434-09B9-43AD-8F43-431811FA054D}</Project>
       <Name>DeltaEngine.Physics2D</Name>
     </ProjectReference>
   </ItemGroup>

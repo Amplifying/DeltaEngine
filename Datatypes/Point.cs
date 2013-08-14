@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
-using DeltaEngine.Core;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Datatypes
 {
@@ -10,7 +10,7 @@ namespace DeltaEngine.Datatypes
 	/// Represents a 2D vector, which is useful for screen positions (sprites, mouse, touch, etc.)
 	/// </summary>
 	[DebuggerDisplay("Point({X}, {Y})")]
-	public struct Point : IEquatable<Point>
+	public struct Point : IEquatable<Point>, Lerp<Point>
 	{
 		public Point(float x, float y)
 			: this()
@@ -25,7 +25,6 @@ namespace DeltaEngine.Datatypes
 			float[] components = pointAsString.SplitIntoFloats();
 			if (components.Length != 2)
 				throw new InvalidNumberOfComponents();
-
 			X = components[0];
 			Y = components[1];
 		}
@@ -146,8 +145,10 @@ namespace DeltaEngine.Datatypes
 			return other - this;
 		}
 
-		public void ReflectIfHittingBorder(Rectangle box, Rectangle borders)
+		public Point ReflectIfHittingBorder(Rectangle box, Rectangle borders)
 		{
+			if (box.Width >= borders.Width || box.Height >= borders.Height)
+				return this;
 			if (box.Left <= borders.Left)
 				X = X.Abs();
 			if (box.Right >= borders.Right)
@@ -156,13 +157,13 @@ namespace DeltaEngine.Datatypes
 				Y = Y.Abs();
 			if (box.Bottom >= borders.Bottom)
 				Y = -Y.Abs();
+			return this;
 		}
 
-		public static Point Lerp(Point point1, Point point2, float percentage)
+		[Pure]
+		public Point Lerp(Point other, float interpolation)
 		{
-			float x = MathExtensions.Lerp(point1.X, point2.X, percentage);
-			float y = MathExtensions.Lerp(point1.Y, point2.Y, percentage);
-			return new Point(x, y);
+			return new Point(X.Lerp(other.X, interpolation), Y.Lerp(other.Y, interpolation));
 		}
 
 		[Pure]

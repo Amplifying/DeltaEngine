@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
@@ -34,8 +34,7 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 
 		private static MockFileSystem CreateSolutionTemplateMock()
 		{
-			const string TemplateZipMockPath =
-				@"D:\Development\DeltaEngine\VisualStudioTemplates\Delta Engine\EmptyGame.zip";
+			const string TemplateZipMockPath = BasePath + @"\EmptyGame.zip";
 			var files = new Dictionary<string, MockFileData>();
 			files.Add(TemplateZipMockPath,
 				new MockFileData(File.ReadAllText(Path.Combine("NewDeltaEngineProject", "EmptyGame.zip"))));
@@ -44,27 +43,25 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 			return fileSystem;
 		}
 
+		private const string BasePath =
+			@"D:\Development\DeltaEngine\VisualStudioTemplates\Delta Engine";
+
 		private static IFileSystem CreateEmptyGameFileSystemMock(CsProject project,
 			VsTemplate template)
 		{
-			const string BasePath = @"D:\Development\DeltaEngine\VisualStudioTemplates\Delta Engine";
 			List<string> files =
 				GetMockFileDataFromZip(Path.Combine("NewDeltaEngineProject", "EmptyGame.zip"));
 			Assert.AreEqual(5, files.Count);
-			return
-				new MockFileSystem(new Dictionary<string, MockFileData>
-				{
-					{
-						Path.Combine(BasePath, "EmptyGame.zip"),
-						new MockFileData(File.ReadAllText(Path.Combine("NewDeltaEngineProject", "EmptyGame.zip")))
-					},
-					{ Path.Combine(BasePath, template.AssemblyInfo), files[3] },
-					{ Path.Combine(BasePath, template.Csproj), files[4] },
-					{ Path.Combine(BasePath, template.Ico), files[0] },
-					{ Path.Combine(BasePath, template.SourceCodeFiles[0]), files[2] },
-					{ Path.Combine(BasePath, template.SourceCodeFiles[1]), files[1] },
-					{ project.Location, new MockDirectoryData() }
-				});
+			var fileSystem = new Dictionary<string, MockFileData>();
+			fileSystem.Add(Path.Combine(BasePath, "EmptyGame.zip"),
+				new MockFileData(File.ReadAllText(Path.Combine("NewDeltaEngineProject", "EmptyGame.zip"))));
+			fileSystem.Add(Path.Combine(BasePath, template.AssemblyInfo), files[3]);
+			fileSystem.Add(Path.Combine(BasePath, template.Csproj), files[4]);
+			fileSystem.Add(Path.Combine(BasePath, template.Ico), files[0]);
+			fileSystem.Add(Path.Combine(BasePath, template.SourceCodeFiles[0]), files[2]);
+			fileSystem.Add(Path.Combine(BasePath, template.SourceCodeFiles[1]), files[1]);
+			fileSystem.Add(project.Location, new MockDirectoryData());
+			return new MockFileSystem(fileSystem);
 		}
 
 		private static List<string> GetMockFileDataFromZip(string pathToTemplate)

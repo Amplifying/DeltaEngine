@@ -1,5 +1,5 @@
-using DeltaEngine.Content;
-using DeltaEngine.Rendering;
+﻿using DeltaEngine.Content;
+using DeltaEngine.Entities;
 
 namespace Breakout.Tests
 {

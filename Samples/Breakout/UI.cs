@@ -1,23 +1,23 @@
-using DeltaEngine.Core;
+﻿using DeltaEngine;
+using DeltaEngine.Commands;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
 using DeltaEngine.Input;
 using DeltaEngine.Multimedia;
-using DeltaEngine.Platforms;
 
 namespace Breakout
 {
 	/// <summary>
 	/// Primes the window to respond to keyboard commands and launches the game
 	/// </summary>
-	public class UI : Runner
+	public class UI
 	{
-		public UI(Window window, InputCommands inputCommands, Game game, SoundDevice soundDevice)
+		public UI(Window window, Game game, SoundDevice soundDevice)
 		{
 			this.window = window;
-			this.window.WindowClosing += ()=>soundDevice.Dispose();
-			inputCommands.Add(Key.Escape, key=>window.Dispose());
-			inputCommands.Add(Key.F, key => window.SetFullscreen(new Size(1920, 1080)));
 			this.game = game;
+			new Command(() => window.Dispose()).Add(new KeyTrigger(Key.Escape, State.Pressed));
+			new Command(() => window.SetFullscreen(new Size(1920, 1080))).Add(new KeyTrigger(Key.F));
 		}
 
 		private readonly Window window;
@@ -25,7 +25,7 @@ namespace Breakout
 
 		public void Run()
 		{
-			if (Time.Current.CheckEvery(0.2f))
+			if (Time.CheckEvery(0.2f))
 				window.Title = "Breakout " + game.Score;
 		}
 	}

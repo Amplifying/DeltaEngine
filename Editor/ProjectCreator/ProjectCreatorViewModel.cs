@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
@@ -47,7 +47,7 @@ namespace DeltaEngine.Editor.ProjectCreator
 		public string Name
 		{
 			get { return Project.Name; }
-			private set
+			set
 			{
 				Project.Name = value;
 				RaisePropertyChanged("Name");
@@ -64,7 +64,7 @@ namespace DeltaEngine.Editor.ProjectCreator
 		public DeltaEngineFramework SelectedFramework
 		{
 			get { return Project.Framework; }
-			private set
+			set
 			{
 				Project.Framework = value;
 				RaisePropertyChanged("SelectedFramework");
@@ -81,7 +81,7 @@ namespace DeltaEngine.Editor.ProjectCreator
 		public string Location
 		{
 			get { return Project.Location; }
-			private set
+			set
 			{
 				Project.Location = value;
 				RaisePropertyChanged("Location");

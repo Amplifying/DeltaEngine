@@ -1,8 +1,11 @@
-using System;
+﻿using System;
 using System.Linq;
 
 namespace DeltaEngine.Platforms
 {
+	/// <summary>
+	/// Causes Autofac not to register this class to resolve to.
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]
 	public sealed class IgnoreForResolverAttribute : Attribute
 	{

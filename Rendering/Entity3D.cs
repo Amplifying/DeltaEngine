@@ -1,4 +1,4 @@
-using DeltaEngine.Datatypes;
+﻿using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 
 namespace DeltaEngine.Rendering
@@ -6,58 +6,63 @@ namespace DeltaEngine.Rendering
 	/// <summary>
 	/// Base entity for 3D objects.
 	/// </summary>
-	public class Entity3D : Entity
+	public class Entity3D : DrawableEntity
 	{
 		public Entity3D()
-			: this(new Transform()) { }
+			: this(Vector.Zero, Quaternion.Identity) {}
 
-		public Entity3D(Transform transform)
+		public Entity3D(Vector position, Quaternion orientation)
 		{
-			Add(transform);
-			Add(Visibility.Show);
-			Start<SortAndRender>();
+			Position = position;
+			Orientation = orientation;
 		}
 
-		public Vector Position
+		public Vector Position { get; set; }
+		public Quaternion Orientation { get; set; }
+
+		protected override void NextUpdateStarted()
 		{
-			get { return Get<Transform>().Position; }
-			set { Get<Transform>().Position = value; }
+			lastPosition = Position;
+			lastOrientation = Orientation;
+			base.NextUpdateStarted();
 		}
 
-		public Vector EulerAngles
+		private Vector lastPosition;
+		private Quaternion lastOrientation;
+
+		public override sealed T Get<T>()
 		{
-			get { return Get<Transform>().Angles; }
-			set { Get<Transform>().Angles = value; }
+			float interpolation = EntitiesRunner.CurrentDrawInterpolation;
+			if (EntitiesRunner.Current.State == UpdateDrawState.Draw && typeof(T) == typeof(Vector))
+				return (T)(object)lastPosition.Lerp(Position, interpolation);
+			if (EntitiesRunner.Current.State == UpdateDrawState.Draw && typeof(T) == typeof(Quaternion))
+				return (T)(object)lastOrientation.Lerp(Orientation, interpolation);
+			if (typeof(T) == typeof(Vector))
+				return (T)(object)Position;
+			if (typeof(T) == typeof(Quaternion))
+				return (T)(object)Orientation;
+			return base.Get<T>();
 		}
 
-		public Visibility Visibility
+		public override sealed bool Contains<T>()
 		{
-			get { return Get<Visibility>(); }
-			set { Set(value); }
+			return typeof(T) == typeof(Vector) || typeof(T) == typeof(Quaternion) || base.Contains<T>();
 		}
 
-		/// <summary>
-		/// Notifies attached listeners to render.
-		/// </summary>
-		class SortAndRender : Behavior3D
+		public override sealed Entity Add<T>(T component)
 		{
-			public SortAndRender()
-			{
-				Filter = entity => ((Entity3D)entity).Visibility == Visibility.Show;
-				Order = entity => ((Entity3D)entity).Position.Z;
-			}
+			if (typeof(T) == typeof(Vector) || typeof(T) == typeof(Quaternion))
+				throw new ComponentOfTheSameTypeAddedMoreThanOnce();
+			return base.Add(component);
+		}
 
-			public override void Handle(Entity3D entity)
-			{
-				entity.MessageAllListeners(new TimeToRender());
-			}
-
-			private class TimeToRender { }
-
-			public override Priority Priority
-			{
-				get { return Priority.High; }
-			}
+		public override sealed void Set<T>(T component)
+		{
+			if (typeof(T) == typeof(Vector))
+				Position = (Vector)(object)component;
+			if (typeof(T) == typeof(Quaternion))
+				Orientation = (Quaternion)(object)component;
+			base.Set(component);
 		}
 	}
 }

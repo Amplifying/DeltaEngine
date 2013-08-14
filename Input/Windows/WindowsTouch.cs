@@ -1,19 +1,19 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Platforms;
-using DeltaEngine.Rendering.ScreenSpaces;
+using DeltaEngine.Entities;
+using DeltaEngine.ScreenSpaces;
 
 namespace DeltaEngine.Input.Windows
 {
 	/// <summary>
 	/// Native Windows implementation of the Touch interface.
 	/// </summary>
-	public class WindowsTouch : Touch
+	public sealed class WindowsTouch : Touch
 	{
-		public WindowsTouch(Window window, ScreenSpace screen)
+		public WindowsTouch(Window window)
 		{
-			var positionTranslator = new CursorPositionTranslater(window, screen);
+			var positionTranslator = new CursorPositionTranslater(window);
 			touches = new TouchCollection(positionTranslator);
 			hook = new TouchHook(window);
 			IsAvailable = CheckIfWindows7OrHigher();
@@ -22,9 +22,9 @@ namespace DeltaEngine.Input.Windows
 		private readonly TouchHook hook;
 		private readonly TouchCollection touches;
 
-		public bool IsAvailable { get; protected set; }
+		public override bool IsAvailable { get; protected set; }
 
-		public void Dispose()
+		public override void Dispose()
 		{
 			hook.Dispose();
 		}
@@ -35,24 +35,25 @@ namespace DeltaEngine.Input.Windows
 			return version.Major >= 6 && version.Minor >= 1;
 		}
 
-		public Point GetPosition(int touchIndex)
+		public override Point GetPosition(int touchIndex)
 		{
 			return touches.locations[touchIndex];
 		}
 
-		public State GetState(int touchIndex)
+		public override State GetState(int touchIndex)
 		{
 			return touches.states[touchIndex];
 		}
-		
-		public void Run()
+
+		public override void Update(IEnumerable<Entity> entities)
 		{
-			if (IsAvailable == false)
-				return;
-			
+			//if (!IsAvailable)
+			//	return;
+
 			var newTouches = new List<NativeTouchInput>(hook.nativeTouches.ToArray());
 			touches.UpdateAllTouches(newTouches);
 			hook.nativeTouches.Clear();
+			base.Update(entities);
 		}
 	}
 }

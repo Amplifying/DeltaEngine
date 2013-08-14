@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -41,61 +41,27 @@
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Content\DeltaEngine.Content.csproj">
-      <Project>{F1B6345B-6F28-482F-9230-8F1D8674C28A}</Project>
-      <Name>DeltaEngine.Content</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Content\Json\DeltaEngine.Content.Json.csproj">
-      <Project>{F8411B87-8F40-4D86-A17D-939FEE017C56}</Project>
-      <Name>DeltaEngine.Content.Json</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Content\Xml\DeltaEngine.Content.Xml.csproj">
-      <Project>{138A40B5-3D80-4BA3-BD84-D82C151EE7FE}</Project>
-      <Name>DeltaEngine.Content.Xml</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
-      <Project>{A8D386EA-D376-46EA-A721-2BA51426A721}</Project>
-      <Name>DeltaEngine.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Datatypes\DeltaEngine.Datatypes.csproj">
-      <Project>{460983FF-AA91-4E10-B70E-10D0BDA15A58}</Project>
-      <Name>DeltaEngine.Datatypes</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Entities\DeltaEngine.Entities.csproj">
-      <Project>{c6ba144d-59b0-41b1-8682-b092b4efbbb1}</Project>
-      <Name>DeltaEngine.Entities</Name>
+    <ProjectReference Include="..\..\DeltaEngine.csproj">
+      <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
+      <Name>DeltaEngine</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Graphics\DeltaEngine.Graphics.csproj">
       <Project>{8F701B0D-48B6-45CF-85E0-286BD53328BA}</Project>
       <Name>DeltaEngine.Graphics</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Graphics\Mocks\DeltaEngine.Graphics.Mocks.csproj">
+      <Project>{F4D2EF4F-24F2-4D4A-BC93-78B0C5AD19A4}</Project>
+      <Name>DeltaEngine.Graphics.Mocks</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Input\DeltaEngine.Input.csproj">
-      <Project>{cc65e69e-fafd-4c2b-85eb-5e57fd3af847}</Project>
+      <Project>{CC65E69E-FAFD-4C2B-85EB-5E57FD3AF847}</Project>
       <Name>DeltaEngine.Input</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Logging\DeltaEngine.Logging.csproj">
-      <Project>{e4440567-3d5d-4670-ab49-8163b18e302e}</Project>
-      <Name>DeltaEngine.Logging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Multimedia\DeltaEngine.Multimedia.csproj">
-      <Project>{6016ABB8-05F5-4A07-8FBA-16576277DDE7}</Project>
-      <Name>DeltaEngine.Multimedia</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Networking\DeltaEngine.Networking.csproj">
-      <Project>{5231706e-2955-43bf-9c06-291e12af5c5c}</Project>
-      <Name>DeltaEngine.Networking</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Physics2D\DeltaEngine.Physics2D.csproj">
-      <Project>{DC3AA434-09B9-43AD-8F43-431811FA054D}</Project>
-      <Name>DeltaEngine.Physics2D</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Physics2D\Farseer\DeltaEngine.Physics2D.Farseer.csproj">
-      <Project>{C983D137-8B7F-47BE-996E-894A3596DD06}</Project>
-      <Name>DeltaEngine.Physics2D.Farseer</Name>
+    <ProjectReference Include="..\..\Mocks\DeltaEngine.Mocks.csproj">
+      <Project>{A5F4EF37-7B5F-4AAE-BFF2-C2D04DB805F7}</Project>
+      <Name>DeltaEngine.Mocks</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
       <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
@@ -109,9 +75,13 @@
       <Project>{BF968F20-246B-4F86-BB7B-377FD4B47A9F}</Project>
       <Name>DeltaEngine.Platforms.Mocks</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TestWithGLFW\DeltaEngine.TestWithGLFW.csproj">
-      <Project>{9892E4BA-9E69-4033-9B5E-B02561FC9C5E}</Project>
-      <Name>DeltaEngine.TestWithGLFW</Name>
+    <ProjectReference Include="Platforms\TestWithOpenTK20\DeltaEngine.TestWithOpenTK20.csproj">
+      <Project>{3A3D2E3E-FCD6-40A4-8F4E-36F3D173AB41}</Project>
+      <Name>DeltaEngine.TestWithOpenTK20</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Platforms\TestWithOpenTK20\DeltaEngine.TestWithOpenTK20.csproj">
+      <Project>{3A3D2E3E-FCD6-40A4-8F4E-36F3D173AB41}</Project>
+      <Name>DeltaEngine.TestWithOpenTK20</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -122,13 +92,12 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AssemblyCheckerTests.cs" />
+    <Compile Include="FileSettingsTests.cs" />
     <Compile Include="InAppPurchaseTests.cs" />
     <Compile Include="OrientationTests.cs" />
-    <Compile Include="ResolverTests.cs" />
-    <Compile Include="TimeWithMockResolverTests.cs" />
     <Compile Include="WindowsResolverTests.cs" />
     <Compile Include="SystemInformationTests.cs" />
-    <Compile Include="WindowTests.cs" />
+    <Compile Include="WindowVisualTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

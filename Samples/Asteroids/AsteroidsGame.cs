@@ -1,9 +1,7 @@
-using DeltaEngine.Content;
+﻿using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
-using DeltaEngine.Input;
-using DeltaEngine.Rendering.ScreenSpaces;
 using DeltaEngine.Rendering.Sprites;
+using DeltaEngine.ScreenSpaces;
 
 namespace Asteroids
 {
@@ -12,16 +10,17 @@ namespace Asteroids
 	/// </summary>
 	public class AsteroidsGame
 	{
-		public AsteroidsGame(InputCommands input, ScreenSpace screenSpace)
+		public AsteroidsGame()
 		{
-			controls = new GameControls(this, input);
+
+			controls = new GameControls(this);
 			score = 0;
 			SetUpBackground();
 			GameState = GameState.Playing;
 			GameLogic = new GameLogic();
 			SetUpEvents();
 			controls.SetControlsToState(GameState);
-			hudInterface = new HudInterface(screenSpace);
+			hudInterface = new HudInterface();
 		}
 
 		private void SetUpEvents()
@@ -40,9 +39,11 @@ namespace Asteroids
 		public GameState GameState;
 		public readonly HudInterface hudInterface;
 
-		private void SetUpBackground()
+		private static void SetUpBackground()
 		{
-			new Sprite(ContentLoader.Load<Image>("black-background"), new Rectangle(Point.Zero, new Size(1)));
+			var background = new Sprite(new Material(Shader.Position2DColorUv, "black-background"), 
+				new Rectangle(Point.Zero, new Size(1)));
+			background.RenderLayer = (int)AsteroidsRenderLayer.Background;
 		}
 
 		public void GameOver()
@@ -61,7 +62,6 @@ namespace Asteroids
 			hudInterface.SetIngameMode();
 			GameState = GameState.Playing;
 			controls.SetControlsToState(GameState);
-
 		}
 	}
 }

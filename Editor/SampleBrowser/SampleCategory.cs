@@ -1,4 +1,4 @@
-namespace DeltaEngine.Editor.SampleBrowser
+﻿namespace DeltaEngine.Editor.SampleBrowser
 {
 	public enum SampleCategory
 	{

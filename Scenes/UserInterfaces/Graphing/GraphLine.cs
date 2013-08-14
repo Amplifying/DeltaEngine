@@ -1,12 +1,11 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Rendering;
 using DeltaEngine.Rendering.Shapes;
 
 namespace DeltaEngine.Scenes.UserInterfaces.Graphing
 {
 	/// <summary>
-	/// A line on a graph: consists of a list of points and a list of lines connecting them
+	/// A line on a graph: consists of a list of points and a list of lines connecting them.
 	/// </summary>
 	public class GraphLine
 	{
@@ -27,6 +26,8 @@ namespace DeltaEngine.Scenes.UserInterfaces.Graphing
 			float x = points.Count == 0 ? -interval : points[points.Count - 1].X;
 			AddPoint(new Point(x + interval, value));
 		}
+
+		internal readonly List<Point> points = new List<Point>();
 
 		public void AddPoint(Point point)
 		{
@@ -65,12 +66,26 @@ namespace DeltaEngine.Scenes.UserInterfaces.Graphing
 			points.Add(point);
 			if (points.Count <= 1)
 				return;
-
 			var line = new Line2D(ToQuadratic(points[points.Count - 2], viewport, drawArea),
 				ToQuadratic(point, viewport, drawArea), Color);
 			line.Clip(clippingBounds);
 			lines.Add(line);
 		}
+
+		public Color Color
+		{
+			get { return color; }
+			set
+			{
+				color = value;
+				foreach (Line2D line in lines)
+					line.Color = color;
+				graph.RefreshKey();
+			}
+		}
+
+		private Color color = Color.Blue;
+		internal readonly List<Line2D> lines = new List<Line2D>();
 
 		private void AddPointToMiddle(Point point)
 		{
@@ -82,31 +97,16 @@ namespace DeltaEngine.Scenes.UserInterfaces.Graphing
 				}
 		}
 
-		internal readonly List<Point> points = new List<Point>();
-
 		private void InsertPointAt(Point point, int index)
 		{
 			if (index > 0)
 				MoveLineEndpoint(point, index);
-
 			var line = new Line2D(ToQuadratic(point, viewport, drawArea),
 				ToQuadratic(points[index], viewport, drawArea), Color);
 			line.Clip(clippingBounds);
 			lines.Insert(index, line);
 			points.Insert(index, point);
 		}
-
-		public Color Color
-		{
-			get { return color; }
-			set
-			{
-				color = value;
-				graph.Refresh();
-			}
-		}
-
-		private Color color = Color.Blue;
 
 		private void MoveLineEndpoint(Point point, int index)
 		{
@@ -115,18 +115,14 @@ namespace DeltaEngine.Scenes.UserInterfaces.Graphing
 			line.Clip(clippingBounds);
 		}
 
-		internal readonly List<Line2D> lines = new List<Line2D>();
-
 		public void RemoveAt(int index)
 		{
 			if (index > 0 && index < points.Count - 1)
 				lines[index - 1].EndPoint = lines[index].EndPoint;
-
 			if (index <= lines.Count - 1)
 				RemoveLine(index);
 			else
 				RemoveLine(index - 1);
-
 			points.RemoveAt(index);
 		}
 
@@ -139,57 +135,33 @@ namespace DeltaEngine.Scenes.UserInterfaces.Graphing
 		public void Clear()
 		{
 			points.Clear();
-			ClearGraphics();
-		}
-
-		internal void ClearGraphics()
-		{
 			foreach (Line2D line in lines)
-				SendLineToPool(line);
-
+				line.IsActive = false;
 			lines.Clear();
 		}
 
-		private void SendLineToPool(Line2D line)
-		{
-			line.Visibility = Visibility.Hide;
-			line2DPool.Add(line);
-		}
-
-		private readonly List<Line2D> line2DPool = new List<Line2D>();
-
 		public void Refresh()
 		{
-			ClearGraphics();
 			viewport = graph.Viewport;
 			drawArea = graph.DrawArea;
 			clippingBounds = Rectangle.FromCorners(
 				ToQuadratic(viewport.BottomLeft, viewport, drawArea),
 				ToQuadratic(viewport.TopRight, viewport, drawArea));
 			for (int i = 1; i < points.Count; i++)
-				CreateLine(i);
+				UpdateLine(i);
+			if (lines.Count > 0)
+				for (int i = lines.Count - 1; i >= points.Count - 1; i--)
+					RemoveLine(i);
 		}
 
-		private void CreateLine(int i)
+		private void UpdateLine(int i)
 		{
-			Line2D line = PullLineFromPool();
+			Line2D line = lines[i - 1];
 			line.StartPoint = ToQuadratic(points[i - 1], viewport, drawArea);
 			line.EndPoint = ToQuadratic(points[i], viewport, drawArea);
-			line.Color = Color;
 			line.RenderLayer = graph.RenderLayer + RenderLayerOffset;
-			line.Visibility = Visibility.Show;
+			line.Visibility = graph.Visibility;
 			line.Clip(clippingBounds);
-			lines.Add(line);
-		}
-
-		private Line2D PullLineFromPool()
-		{
-			if (line2DPool.Count == 0)
-				return new Line2D(Point.Zero, Point.Zero, Color.Black);
-
-			Line2D line = line2DPool[line2DPool.Count - 1];
-			line2DPool.RemoveAt(line2DPool.Count - 1);
-			return line;
 		}
 
 		private const int RenderLayerOffset = 3;
@@ -200,7 +172,7 @@ namespace DeltaEngine.Scenes.UserInterfaces.Graphing
 			set
 			{
 				key = value;
-				graph.Refresh();
+				graph.RefreshKey();
 			}
 		}
 

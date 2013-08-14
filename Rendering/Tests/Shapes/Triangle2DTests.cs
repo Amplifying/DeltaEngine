@@ -1,7 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Rendering.Shapes;
 using NUnit.Framework;
 
@@ -103,9 +103,9 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 		[Test]
 		public void SaveAndLoad()
 		{
-			var data = Triangle2D.Zero.SaveToMemoryStream();
+			var data = BinaryDataExtensions.SaveToMemoryStream(Triangle2D.Zero);
 			byte[] savedBytes = data.ToArray();
-			Assert.AreEqual(1 + "Triangle2D".Length + Triangle2D.SizeInBytes, savedBytes.Length);
+			Assert.AreEqual(1 + 4 + "Triangle2D".Length + Triangle2D.SizeInBytes, savedBytes.Length);
 			Assert.AreEqual("Triangle2D".Length, savedBytes[0]);
 			var reconstructed = data.CreateFromMemoryStream();
 			Assert.AreEqual(Triangle2D.Zero, reconstructed);

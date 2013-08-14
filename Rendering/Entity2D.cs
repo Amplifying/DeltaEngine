@@ -1,143 +1,166 @@
-using System.Collections.Generic;
-using DeltaEngine.Datatypes;
+﻿using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Rendering
 {
 	/// <summary>
 	/// 2D entities are the basis of all 2D renderables like lines, sprites etc.
 	/// </summary>
-	public class Entity2D : Entity
+	public class Entity2D : DrawableEntity
 	{
 		private Entity2D()
 			: this(Rectangle.Zero) {}
 
 		public Entity2D(Rectangle drawArea)
 		{
-			Add(drawArea);
-			Start<SortAndRender>();
+			DrawArea = drawArea;
 		}
 
-		public virtual Rectangle DrawArea
-		{
-			get { return Get<Rectangle>(); }
-			set { Set(value); }
-		}
+		public Rectangle DrawArea { get; set; }
 
 		public Point TopLeft
 		{
-			get { return Get<Rectangle>().TopLeft; }
-			set { Set(new Rectangle(value, Get<Rectangle>().Size)); }
+			get { return DrawArea.TopLeft; }
+			set { DrawArea = new Rectangle(value, DrawArea.Size); }
 		}
 
-		public virtual Point Center
+		public Point Center
 		{
-			get { return Get<Rectangle>().Center; }
-			set { Set(Rectangle.FromCenter(value, Get<Rectangle>().Size)); }
+			get { return DrawArea.Center; }
+			set { DrawArea = Rectangle.FromCenter(value, DrawArea.Size); }
 		}
 
 		public Size Size
 		{
-			get { return Get<Rectangle>().Size; }
-			set { Set(Rectangle.FromCenter(Get<Rectangle>().Center, value)); }
-		}
-
-		public Visibility Visibility
-		{
-			get { return GetWithDefault(Visibility.Show); }
-			set { Set(value); }
+			get { return DrawArea.Size; }
+			set { DrawArea = Rectangle.FromCenter(DrawArea.Center, value); }
 		}
 
 		public Color Color
 		{
-			get { return GetWithDefault(Color.White); }
-			set { Set(value); }
+			get { return base.Contains<Color>() ? base.Get<Color>() : DefaultColor; }
+			set { base.Set(value); }
 		}
 
-		public float AlphaValue
+		public Color DefaultColor = Color.White;
+
+		public float Alpha
 		{
 			get { return Color.AlphaValue; }
+			set { Color = new Color(Color, value); }
+		}
+
+		public float Rotation
+		{
+			get { return base.Contains<float>() ? base.Get<float>() : DefaultRotation; }
+			set { base.Set(value); }
+		}
+
+		private const float DefaultRotation = 0.0f;
+
+		public Point RotationCenter
+		{
+			get { return base.Contains<Point>() ? base.Get<Point>() : Get<Rectangle>().Center; }
+			set { base.Set(value); }
+		}
+
+		protected override void NextUpdateStarted()
+		{
+			DidFootprintChange = LastDrawArea != DrawArea || GetLastRotation() != Rotation ||
+				GetLastRotationCenter() != RotationCenter;
+			LastDrawArea = DrawArea;
+			base.NextUpdateStarted();
+		}
+
+		protected bool DidFootprintChange { get; private set; }
+		public Rectangle LastDrawArea { get; set; }
+
+		private float GetLastRotation()
+		{
+			object lastTickFloat = lastTickLerpComponents.Find(component => component is float);
+			return lastTickFloat == null ? DefaultRotation : (float)lastTickFloat;
+		}
+
+		private Point GetLastRotationCenter()
+		{
+			object lastTickPoint = lastTickLerpComponents.Find(component => component is Point);
+			return lastTickPoint == null ? LastDrawArea.Center : (Point)lastTickPoint;
+		}
+
+		public override sealed T Get<T>()
+		{
+			if (EntitiesRunner.Current.State == UpdateDrawState.Draw && typeof(T) == typeof(Rectangle))
+				return (T)(object)LastDrawArea.Lerp(DrawArea, EntitiesRunner.CurrentDrawInterpolation);
+			if (EntitiesRunner.Current.State == UpdateDrawState.Draw && typeof(T) == typeof(Color))
+				return (T)(object)LastColor.Lerp(Color, EntitiesRunner.CurrentDrawInterpolation);
+			if (EntitiesRunner.Current.State == UpdateDrawState.Draw && typeof(T) == typeof(float))
+				return (T)(object)GetLastRotation().Lerp(Rotation, EntitiesRunner.CurrentDrawInterpolation);
+			if (EntitiesRunner.Current.State == UpdateDrawState.Draw && typeof(T) == typeof(Point))
+				return (T)(object)GetLerpedRotationCenter();
+			if (typeof(T) == typeof(Rectangle))
+				return (T)(object)DrawArea;
+			if (typeof(T) == typeof(Color))
+				return (T)(object)Color;
+			if (typeof(T) == typeof(float))
+				return (T)(object)Rotation;
+			if (typeof(T) == typeof(Point))
+				return (T)(object)RotationCenter;
+			return base.Get<T>();
+		}
+
+		public Color LastColor
+		{
+			get
+			{
+				object lastTickColor = lastTickLerpComponents.Find(component => component is Color);
+				return lastTickColor == null ? DefaultColor : (Color)lastTickColor;
+			}
 			set
 			{
-				var color = Color;
-				Set(new Color(color.R, color.G, color.B, value));
+				for (int index = 0; index < lastTickLerpComponents.Count; index++)
+					if (lastTickLerpComponents[index] is Color)
+					{
+						lastTickLerpComponents[index] = value;
+						return;
+					}
+				lastTickLerpComponents.Add(value);
 			}
 		}
 
-		public virtual float Rotation
+		private Point GetLerpedRotationCenter()
 		{
-			get { return GetWithDefault(0.0f); }
-			set { Set(value); }
+			Point rotationCenter = base.Contains<Point>()
+				? (Point)components.Find(c => c is Point) : DrawArea.Center;
+			return GetLastRotationCenter().Lerp(rotationCenter, EntitiesRunner.CurrentDrawInterpolation);
 		}
 
-		public int RenderLayer
+		public override sealed bool Contains<T>()
 		{
-			get { return GetWithDefault(DefaultRenderLayer); }
-			set { Set(value); }
+			return typeof(T) == typeof(Rectangle) || typeof(T) == typeof(Color) ||
+				typeof(T) == typeof(float) || typeof(T) == typeof(Point) || typeof(T) == typeof(int) ||
+				base.Contains<T>();
 		}
 
-		public const int DefaultRenderLayer = 0;
+		public override sealed Entity Add<T>(T component)
+		{
+			if (typeof(T) == typeof(Rectangle) || typeof(T) == typeof(Color) ||
+				typeof(T) == typeof(float) || typeof(T) == typeof(Point) || typeof(T) == typeof(int))
+				throw new ComponentOfTheSameTypeAddedMoreThanOnce();
+			return base.Add(component);
+		}
+
+		public override sealed void Set<T>(T component)
+		{
+			if (typeof(T) == typeof(Rectangle))
+				DrawArea = (Rectangle)(object)component;
+			base.Set(component);
+		}
 
 		public bool RotatedDrawAreaContains(Point point)
 		{
-			var center = Contains<RotationCenter>() ? Get<RotationCenter>().Value : DrawArea.Center;
-			return DrawArea.Contains(point.RotateAround(center, -Rotation));
-		}
-
-		/// <summary>
-		/// Sorts all Entities into RenderLayer order; Then, for each, messages any listeners attached 
-		/// that it's time to render it.
-		/// </summary>
-		public class SortAndRender : BatchedBehavior2D
-		{
-			public SortAndRender()
-			{
-				Filter = entity => ((Entity2D)entity).Visibility == Visibility.Show;
-				Order = entity => GetSortKey((Entity2D)entity);
-			}
-
-			private static long GetSortKey(Entity2D entity)
-			{
-				long renderLayer = entity.RenderLayer;
-				long hashCode = entity.GetType().GetHashCode();
-				return renderLayer << 32 | hashCode;
-			}
-
-			public override void Handle(IEnumerable<Entity2D> entity2Ds)
-			{
-				isHandlingStarted = false;
-				foreach (Entity2D entity in entity2Ds)
-					ProcessEntity(entity);
-
-				if (!isHandlingStarted)
-					return;
-
-				EntitySystem.Current.MessageAllListeners(new RenderBatch());
-			}
-
-			private bool isHandlingStarted;
-
-			private void ProcessEntity(Entity2D entity)
-			{
-				long sortKey = GetSortKey(entity);
-				if (isHandlingStarted && sortKey != lastSortKey)
-					EntitySystem.Current.MessageAllListeners(new RenderBatch());
-
-				entity.MessageAllListeners(new AddToBatch());
-				lastSortKey = sortKey;
-				isHandlingStarted = true;
-			}
-
-			private long lastSortKey;
-
-			public class AddToBatch { }
-
-			public class RenderBatch { }
-
-			public override Priority Priority
-			{
-				get { return Priority.High; }
-			}
+			return DrawArea.Contains(Rotation == DefaultRotation
+				? point : point.RotateAround(RotationCenter, -Rotation));
 		}
 	}
 }

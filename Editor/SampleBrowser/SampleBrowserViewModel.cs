@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -45,7 +45,7 @@ namespace DeltaEngine.Editor.SampleBrowser
 		}
 
 		public List<string> AssembliesAvailable { get; private set; }
-		public string SelectedAssembly { get; private set; }
+		public string SelectedAssembly { get; set; }
 
 		private void RegisterCommands()
 		{

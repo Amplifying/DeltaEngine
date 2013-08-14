@@ -1,6 +1,6 @@
+﻿using DeltaEngine;
+using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
-using DeltaEngine.Platforms;
 using DeltaEngine.Rendering.Sprites;
 
 namespace Blocks
@@ -10,8 +10,8 @@ namespace Blocks
 	/// </summary>
 	public class Brick : Sprite
 	{
-		public Brick(Image image, Point offset, Orientation displayMode)
-			: base(image, Rectangle.Zero)
+		public Brick(Material material, Point offset, Orientation displayMode)
+			: base(material, Rectangle.Zero)
 		{
 			Offset = offset;
 			RenderLayer = (int)Blocks.RenderLayer.Grid;

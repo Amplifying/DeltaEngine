@@ -1,4 +1,4 @@
-namespace DeltaEngine.Scenes.Tests
+﻿namespace DeltaEngine.Scenes.Tests
 {
 	public static class Program
 	{

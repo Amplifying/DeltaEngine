@@ -1,4 +1,6 @@
+﻿using System.Collections.Generic;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
 using SysPoint = System.Drawing.Point;
 
 namespace DeltaEngine.Input.Windows
@@ -27,17 +29,12 @@ namespace DeltaEngine.Input.Windows
 		public override bool IsAvailable
 		{
 			get { return mouseCounter.GetNumberOfAvailableMice() > 0; }
+			protected set { }
 		}
 
 		public override void SetPosition(Point newPosition)
 		{
 			positionTranslater.SetCursorPosition(newPosition);
-		}
-
-		public override void Run()
-		{
-			UpdateMousePosition();
-			UpdateMouseValues();
 		}
 
 		private void UpdateMousePosition()
@@ -53,6 +50,13 @@ namespace DeltaEngine.Input.Windows
 			RightButton = hook.ProcessButtonQueue(RightButton, MouseButton.Right);
 			X1Button = hook.ProcessButtonQueue(X1Button, MouseButton.X1);
 			X2Button = hook.ProcessButtonQueue(X2Button, MouseButton.X2);
+		}
+
+		public override void Update(IEnumerable<Entity> entities)
+		{
+			UpdateMousePosition();
+			UpdateMouseValues();
+			base.Update(entities);
 		}
 	}
 }

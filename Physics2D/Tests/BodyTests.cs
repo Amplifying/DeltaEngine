@@ -1,4 +1,4 @@
-using DeltaEngine.Datatypes;
+﻿using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 using NUnit.Framework;
 
@@ -6,92 +6,88 @@ namespace DeltaEngine.Physics2D.Tests
 {
 	internal class BodyTests : TestWithMocksOrVisually
 	{
-		[Test]
-		public void CreateAndSetValues()
+		[SetUp]
+		public void SetUp()
 		{
-			var physics = Resolve<Physics>();
+			physics = Resolve<Physics>();
 			physics.Gravity = Point.UnitY;
-			Assert.AreEqual(Point.UnitY, physics.Gravity);
-			var physicsBody = physics.CreateRectangle(new Size(0.5f));
-			SetAndCheckLinearVelocity(physicsBody);
-			SetAndCheckRotation(physicsBody);
-			SetAndCheckPosition(physicsBody);
-			SetAndCheckStatic(physicsBody);
-			SetAndCheckRestitution(physicsBody);
-			SetAndCheckFriction(physicsBody);
+			body = physics.CreateRectangle(new Size(0.5f));
 		}
 
-		private static void SetAndCheckStatic(PhysicsBody physicsBody)
-		{
-			physicsBody.IsStatic = true;
-			Assert.IsTrue(physicsBody.IsStatic);
-		}
+		private Physics physics;
+		private PhysicsBody body; 
 
-		private static void SetAndCheckRotation(PhysicsBody physicsBody)
+		[Test]
+		public void ChangeLinearVelocity()
 		{
-			physicsBody.Rotation = 30;
-			Assert.AreEqual(30, physicsBody.Rotation);
-		}
-
-		private static void SetAndCheckPosition(PhysicsBody physicsBody)
-		{
-			physicsBody.Position = Point.Half;
-			Assert.AreEqual(Point.Half, physicsBody.Position);
-		}
-
-		private static void SetAndCheckRestitution(PhysicsBody physicsBody)
-		{
-			physicsBody.Restitution = 1;
-			Assert.AreEqual(1, physicsBody.Restitution);
-		}
-
-		private static void SetAndCheckFriction(PhysicsBody physicsBody)
-		{
-			physicsBody.Friction = 0.5f;
-			Assert.AreEqual(0.5f, physicsBody.Friction);
-		}
-
-		private static void SetAndCheckLinearVelocity(PhysicsBody physicsBody)
-		{
-			physicsBody.LinearVelocity = new Point(5, -5);
-			Assert.AreEqual(new Point(5, -5), physicsBody.LinearVelocity);
+			body.LinearVelocity = new Point(5, -5);
+			Assert.AreEqual(new Point(5, -5), body.LinearVelocity);
 		}
 
 		[Test]
-		public void TestApplyLinearImpulse()
+		public void ChangeRotation()
 		{
-			var body = Resolve<Physics>().CreateRectangle(new Size(45.0f, 45.0f));
-			Point originalPosition = body.Position;
+			body.Rotation = 90;
+			Assert.AreEqual(90,body.Rotation);
+		}
+
+		[Test]
+		public void ChangePosition()
+		{
+			body.Position = Point.One;
+			Assert.AreEqual(Point.One,body.Position);
+		}
+
+		[Test]
+		public void ChangeStatic()
+		{
+			body.IsStatic = true;
+			Assert.IsTrue(body.IsStatic);
+		}
+
+		[Test]
+		public void ChangeRestitution()
+		{
+			body.Restitution = 1;
+			Assert.AreEqual(1, body.Restitution);
+		}
+
+		[Test]
+		public void ChangeFriction()
+		{
+			body.Friction = 0.5f;
+			Assert.AreEqual(0.5f, body.Friction);
+		}
+
+		[Test]
+		public void ApplyLinearImpulse()
+		{
 			body.ApplyLinearImpulse(Point.Zero);
-			resolver.AdvanceTimeAndExecuteRunners();
-			Assert.AreNotEqual(originalPosition, body.Position);
+			AdvanceTimeAndUpdateEntities(0.1f);
+			Assert.AreNotEqual(Point.Zero, body.Position);
 		}
 
 		[Test]
-		public void TestApplyAngularImpulse()
+		public void ApplyAngularImpulse()
 		{
-			var body = Resolve<Physics>().CreateRectangle(new Size(45.0f, 45.0f));
-			float originalRotation = body.Rotation;
 			body.ApplyAngularImpulse(10.0f);
-			resolver.AdvanceTimeAndExecuteRunners();
-			Assert.AreNotEqual(originalRotation, body.Rotation);
+			AdvanceTimeAndUpdateEntities();
+			Assert.AreNotEqual(0.0f, body.Rotation);
 		}
 
 		[Test]
-		public void TestApplyTorque()
+		public void ApplyTorque()
 		{
-			var body = Resolve<Physics>().CreateRectangle(new Size(45.0f, 45.0f));
-			float originalRotation = body.Rotation;
 			body.ApplyTorque(10.0f);
-			resolver.AdvanceTimeAndExecuteRunners();
-			Assert.AreNotEqual(originalRotation, body.Rotation);
+			AdvanceTimeAndUpdateEntities();
+			Assert.AreNotEqual(0.0f, body.Rotation);
 		}
 
 		[Test]
 		public void CreateEdgeFromTwoSinglePoints()
 		{
 			Point[] edgePoints = { Point.Zero, Point.Half };
-			var edge = Resolve<Physics>().CreateEdge(Point.Zero, Point.Half);
+			var edge = physics.CreateEdge(Point.Zero, Point.Half);
 			Assert.AreEqual(edgePoints, edge.LineVertices);
 		}
 
@@ -99,29 +95,28 @@ namespace DeltaEngine.Physics2D.Tests
 		public void CreateEdgeFromPointArray()
 		{
 			Point[] edgePoints = { Point.Zero, Point.Half };
-			var edge = Resolve<Physics>().CreateEdge(edgePoints);
+			var edge = physics.CreateEdge(edgePoints);
 			Assert.AreEqual(edgePoints, edge.LineVertices);
 		}
 
 		[Test]
 		public void CreateCircleAndGetVertices()
 		{
-			var body = Resolve<Physics>().CreateCircle(0.5f);
-			Assert.IsNotEmpty(body.LineVertices);
+			var circle = physics.CreateCircle(0.5f);
+			Assert.IsNotEmpty(circle.LineVertices);
 		}
 
 		[Test]
 		public void CreatePolygonFromPoints()
 		{
 			Point[] polyPoints = { Point.Zero, Point.Half, Point.One, Point.UnitX };
-			var body = Resolve<Physics>().CreatePolygon(polyPoints);
-			Assert.IsNotEmpty(body.LineVertices);
+			var polygon = physics.CreatePolygon(polyPoints);
+			Assert.IsNotEmpty(polygon.LineVertices);
 		}
 
 		[Test]
 		public void DisposeBody()
 		{
-			var body = Resolve<Physics>().CreateRectangle(new Size(1));
 			body.Dispose();
 		}
 	}

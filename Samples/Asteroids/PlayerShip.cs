@@ -1,12 +1,12 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
-using DeltaEngine.Physics2D;
+using DeltaEngine.Entities;
 using DeltaEngine.Rendering;
-using DeltaEngine.Rendering.ScreenSpaces;
 using DeltaEngine.Rendering.Sprites;
+using DeltaEngine.ScreenSpaces;
 
 namespace Asteroids
 {
@@ -17,146 +17,148 @@ namespace Asteroids
 	public class PlayerShip : Sprite
 	{
 		public PlayerShip()
-			: base(
-				ContentLoader.Load<Image>(PlayerShipTextureName), new Rectangle(Point.Half, PlayerShipSize))
+			: base(new Material(Shader.Position2DColorUv, "ship1"), new Rectangle(Point.Half, PlayerShipSize))
 		{
 			Add(new Velocity2D(Point.Zero, MaximumPlayerVelocity));
 			Start<PlayerMovementHandler>();
 			Start<FullAutoFire>();
 			RenderLayer = (int)AsteroidsRenderLayer.Player;
-			projectileTexture = ContentLoader.Load<Image>(ProjectileTextureName);
+			projectileTexture = new Material(Shader.Position2DColorUv, "projectile");
 		}
 
-		private const string PlayerShipTextureName = "ship2";
+		private const string PlayerShipTextureName = "ship1";
 		public static readonly Size PlayerShipSize = new Size(.05f);
 		private const float MaximumPlayerVelocity = .5f;
-		private readonly Image projectileTexture;
+		private readonly Material projectileTexture;
 		private const string ProjectileTextureName = "projectile";
 
 		public void ShipAccelerate()
 		{
-			Get<Velocity2D>().Accelerate(PlayerAcceleration * Time.Current.Delta, Rotation);
+			Get<Velocity2D>().Accelerate(PlayerAcceleration * Time.Delta, Rotation);
 		}
 
 		private const float PlayerAcceleration = 1;
 
 		public void SteerLeft()
 		{
-			Rotation -= PlayerTurnSpeed * Time.Current.Delta;
+			Rotation -= PlayerTurnSpeed * Time.Delta;
 		}
 
 		public void SteerRight()
 		{
-			Rotation += PlayerTurnSpeed * Time.Current.Delta;
+			Rotation += PlayerTurnSpeed * Time.Delta;
 		}
 
 		private const float PlayerTurnSpeed = 160;
 
-		private class PlayerMovementHandler : Behavior2D
+		private class PlayerMovementHandler : UpdateBehavior
 		{
-			public PlayerMovementHandler(ScreenSpace screen)
+			public override void Update(IEnumerable<Entity> entities)
 			{
-				this.screen = screen;
+				foreach (var entity in entities)
+				{
+					var entity2D = entity as PlayerShip;
+					var nextRect = CalculateRectAfterMove(entity2D, Time.Delta);
+					MoveEntity(entity2D, nextRect);
+					var velocity2D = entity.Get<Velocity2D>();
+					velocity2D.velocity -= velocity2D.velocity * PlayerDecelFactor * Time.Delta;
+					entity.Set(velocity2D);
+				}
 			}
 
-			private readonly ScreenSpace screen;
-
-			public override void Handle(Entity2D entity)
-			{
-				var nextRect = CalculateRectAfterMove(entity);
-				MoveEntity(entity, nextRect);
-				var velocity2D = entity.Get<Velocity2D>();
-				velocity2D.velocity -= velocity2D.velocity * PlayerDecelFactor * Time.Current.Delta;
-				entity.Set(velocity2D);
-			}
 
 			private const float PlayerDecelFactor = 0.7f;
 
-			private static Rectangle CalculateRectAfterMove(Entity2D entity)
+			private static Rectangle CalculateRectAfterMove(Entity2D entity, float deltaT)
 			{
 				return
 					new Rectangle(
-						entity.DrawArea.TopLeft + entity.Get<Velocity2D>().velocity * Time.Current.Delta,
+						entity.DrawArea.TopLeft + entity.Get<Velocity2D>().velocity * deltaT,
 						entity.Size);
 			}
 
-			private void MoveEntity(Entity2D entity, Rectangle rect)
+			private static void MoveEntity(PlayerShip entity, Rectangle rect)
 			{
 				StopAtBorder(entity);
 				entity.Set(rect);
 			}
 
-			private void StopAtBorder(Entity2D entity)
+			private static void StopAtBorder(PlayerShip entity)
 			{
 				var drawArea = entity.DrawArea;
 				var vel = entity.Get<Velocity2D>();
-				CheckStopRightBorder(ref drawArea, vel);
-				CheckStopLeftBorder(ref drawArea, vel);
-				CheckStopTopBorder(ref drawArea, vel);
-				CheckStopBottomBorder(ref drawArea, vel);
+				var borders = ScreenSpace.Current.Viewport;
+				CheckStopRightBorder(ref drawArea, vel, borders);
+				CheckStopLeftBorder(ref drawArea, vel, borders);
+				CheckStopTopBorder(ref drawArea, vel, borders);
+				CheckStopBottomBorder(ref drawArea, vel, borders);
 				entity.Set(vel);
 				entity.Set(drawArea);
 			}
 
-			private void CheckStopRightBorder(ref Rectangle rect, Velocity2D vel)
+			private static void CheckStopRightBorder(ref Rectangle rect, Velocity2D vel, Rectangle borders)
 			{
-				if (rect.Right <= screen.Viewport.Right)
+				if (rect.Right <= borders.Right)
 					return;
 
 				vel.velocity.X = -0.02f;
-				rect.Right = screen.Viewport.Right;
+				rect.Right = borders.Right;
 			}
 
-			private void CheckStopLeftBorder(ref Rectangle rect, Velocity2D vel)
+			private static void CheckStopLeftBorder(ref Rectangle rect, Velocity2D vel, Rectangle borders)
 			{
-				if (rect.Left >= screen.Viewport.Left)
+				if (rect.Left >= borders.Left)
 					return;
 
 				vel.velocity.X = 0.02f;
-				rect.Left = screen.Viewport.Left;
+				rect.Left = borders.Left;
 			}
 
-			private void CheckStopTopBorder(ref Rectangle rect, Velocity2D vel)
+			private static void CheckStopTopBorder(ref Rectangle rect, Velocity2D vel, Rectangle borders)
 			{
-				if (rect.Top >= screen.Viewport.Top)
+				if (rect.Top >= borders.Top)
 					return;
 
 				vel.velocity.Y = 0.02f;
-				rect.Top = screen.Viewport.Top;
+				rect.Top = borders.Top;
 			}
 
-			private void CheckStopBottomBorder(ref Rectangle rect, Velocity2D vel)
+			private static void CheckStopBottomBorder(ref Rectangle rect, Velocity2D vel, Rectangle borders)
 			{
-				if (rect.Bottom <= screen.Viewport.Bottom)
+				if (rect.Bottom <= borders.Bottom)
 					return;
 
 				vel.velocity.Y = -0.02f;
-				rect.Bottom = screen.Viewport.Bottom;
+				rect.Bottom = borders.Bottom;
 			}
 		}
 
-		private class FullAutoFire : Behavior2D
+		private class FullAutoFire : UpdateBehavior
 		{
 			public FullAutoFire()
 			{
 				CadenceShotsPerSec = PlayerCadance;
-				timeLastShot = Time.Current.Milliseconds;
+				timeLastShot = GlobalTime.Current.Milliseconds;
 			}
 
 			private const float PlayerCadance = 0.003f;
 			private float CadenceShotsPerSec { get; set; }
 			private float timeLastShot;
 
-			public override void Handle(Entity2D entity)
+			public override void Update(IEnumerable<Entity> entities)
 			{
-				var ship = entity as PlayerShip;
-				if (!ship.IsFiring || !(Time.Current.Milliseconds - 1 / CadenceShotsPerSec > timeLastShot))
-					return;
+				foreach (var entity in entities)
+				{
+					var ship = entity as PlayerShip;
+					if (!ship.IsFiring || !(GlobalTime.Current.Milliseconds - 1 / CadenceShotsPerSec > timeLastShot))
+						return;
 
-				var projectile = new Projectile(ship.projectileTexture, ship.DrawArea.Center, ship.Rotation);
-				timeLastShot = Time.Current.Milliseconds;
-				if (ship.ProjectileFired != null)
-					ship.ProjectileFired.Invoke(projectile);
+					var projectile = new Projectile(ship.projectileTexture, ship.DrawArea.Center,
+						ship.Rotation);
+					timeLastShot = GlobalTime.Current.Milliseconds;
+					if (ship.ProjectileFired != null)
+						ship.ProjectileFired.Invoke(projectile);
+				}
 			}
 		}
 

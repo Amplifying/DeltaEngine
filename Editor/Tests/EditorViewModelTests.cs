@@ -1,9 +1,11 @@
-using System;
+﻿using System;
+using System.IO;
 using System.Threading;
 using System.Windows;
-using DeltaEngine.Editor.Common;
-using DeltaEngine.Editor.Common.Properties;
+using System.Windows.Media;
+using DeltaEngine.Editor.Core.Properties;
 using DeltaEngine.Editor.Helpers;
+using Microsoft.Win32;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.Tests
@@ -15,31 +17,38 @@ namespace DeltaEngine.Editor.Tests
 		[Test]
 		public void LoginWithInvalidApiKeyShouldFail()
 		{
-			var model = CreateModelAndTryToLoginWithEmptyApiKey();
-			model.OnApiKeyChanged.Execute("invalid");
+			var model = CreateModel();
+			model.ApiKey = "invalid";
 			model.OnLoginButtonClicked.Execute(null);
 			Thread.Sleep(200);
-			Assert.AreEqual(Resources.NotConnectedToDeltaEngine, model.Error);
+			Assert.AreEqual(Resources.ConnectionToDeltaEngineTimedOut, model.Error);
 		}
 
-		private static EditorViewModel CreateModelAndTryToLoginWithEmptyApiKey()
+		private static EditorViewModel CreateModel()
 		{
-			var model = new EditorViewModel(new EditorPluginLoader(".."));
-			model.OnApiKeyChanged.Execute("");
-			model.OnLoginButtonClicked.Execute(null);
-			Thread.Sleep(200);
-			return model;
+			return new EditorViewModel(new EditorPluginLoader(Path.Combine("..", "..", "..")));
 		}
 
 		[Test]
 		public void LoginWithValidApiKeyShouldPass()
 		{
-			var model = CreateModelAndTryToLoginWithEmptyApiKey();
-			Assert.AreEqual(Resources.ObtainApiKey, model.Error);
-			model.LoadApiKey();
+			var model = CreateModel();
+			Assert.AreEqual(Resources.EnterYourApiKey, model.Error);
 			model.OnLoginButtonClicked.Execute(null);
 			Thread.Sleep(200);
+			if (model.Error == Resources.GetApiKeyHere)
+				throw new LoginWithEditorToHaveValidApiKeyInRegistry();
 			Assert.AreEqual("", model.Error);
+		}
+
+		private class LoginWithEditorToHaveValidApiKeyInRegistry : Exception {}
+
+		[Test]
+		public void LogoutSetsApiKeyEmpty()
+		{
+			var model = CreateModel();
+			model.OnLogoutButtonClicked.Execute(null);
+			Assert.AreEqual("", model.ApiKey);
 		}
 
 		[Test]
@@ -49,12 +58,39 @@ namespace DeltaEngine.Editor.Tests
 			if (model.Error == "")
 			{
 				Assert.AreEqual(Visibility.Hidden, model.LoginPanelVisibility);
+				Assert.AreEqual(Visibility.Hidden, model.ErrorVisibility);
 				Assert.AreEqual(Visibility.Visible, model.EditorPanelVisibility);
 			}
 			else
 			{
 				Assert.AreEqual(Visibility.Visible, model.LoginPanelVisibility);
+				Assert.AreEqual(Visibility.Visible, model.ErrorVisibility);
 				Assert.AreEqual(Visibility.Hidden, model.EditorPanelVisibility);
+			}
+		}
+
+		private static EditorViewModel CreateModelAndTryToLoginWithEmptyApiKey()
+		{
+			var model = CreateModel();
+			model.ApiKey = "";
+			model.OnLoginButtonClicked.Execute(null);
+			Thread.Sleep(200);
+			return model;
+		}
+
+		[Test]
+		public void CheckErrorForegroundAndBackgroundColor()
+		{
+			var model = CreateModelAndTryToLoginWithEmptyApiKey();
+			if (model.Error == "")
+			{
+				Assert.AreEqual(Brushes.Black, model.ErrorForegroundColor);
+				Assert.AreEqual(Brushes.Transparent, model.ErrorBackgroundColor);
+			}
+			else
+			{
+				Assert.AreEqual(Brushes.Blue, model.ErrorForegroundColor);
+				Assert.AreEqual(Brushes.Transparent, model.ErrorBackgroundColor);
 			}
 		}
 
@@ -64,18 +100,24 @@ namespace DeltaEngine.Editor.Tests
 			var model = CreateModelAndTryToLoginWithEmptyApiKey();
 			var rememberKey = model.ApiKey;
 			Console.WriteLine("Current API Key from Registry: " + rememberKey);
-			model.OnApiKeyChanged.Execute("123");
+			model.ApiKey = "123";
 			model.SaveApiKey();
 			Assert.AreEqual("123", model.ApiKey);
-			model.OnApiKeyChanged.Execute(rememberKey);
+			model.ApiKey = rememberKey;
 			model.SaveApiKey();
 		}
 
 		[Test]
-		public void WebsiteWhereApiKeyCanBeObtainedShouldBeOpened()
+		public void GetAndSetProjectName()
 		{
 			var model = CreateModelAndTryToLoginWithEmptyApiKey();
-			model.OnGetApiKeyClicked.Execute(null);
+			var rememberProject = model.SelectedProject;
+			model.OnLogoutButtonClicked.Execute(null);
+			Assert.AreEqual(rememberProject, model.SelectedProject);
+			Assert.GreaterOrEqual(model.AvailableProjects.Count, 1);
+			Console.WriteLine("Current Project from Registry: " + rememberProject);
+			foreach (var project in model.AvailableProjects)
+				Console.Write(project + " ");
 		}
 
 		[Test]
@@ -85,18 +127,47 @@ namespace DeltaEngine.Editor.Tests
 			var model = new EditorViewModel(mockPlugins);
 			model.AddAllPlugins();
 			Assert.AreEqual(1, model.EditorPlugins.Count);
-			Assert.AreEqual("MockEditorPlugin", model.EditorPlugins[0].ShortName);
+			Assert.AreEqual("Mock Plugin", model.EditorPlugins[0].ShortName);
 			Assert.AreEqual("Mock.png", model.EditorPlugins[0].Icon);
-			Assert.AreEqual(EditorPluginCategory.Settings, model.EditorPlugins[0].Category);
 			Assert.AreEqual(typeof(MockEditorPluginView), model.EditorPlugins[0].GetType());
 		}
 
 		private static EditorPluginLoader GetEditorPluginLoaderMock()
 		{
-			var mockPlugins = new EditorPluginLoader("..");
+			var mockPlugins = new EditorPluginLoader(Path.Combine("..", "..", ".."));
 			mockPlugins.UserControlsType.Clear();
 			mockPlugins.UserControlsType.Add(typeof(MockEditorPluginView));
 			return mockPlugins;
+		}
+
+		[Test]
+		public void StartEditorFullscreenWhenNoRegistryKeyIsSetAndSaveStateInRegistry()
+		{
+			MakeSureToDeleteStartMaximizedRegistryEntry();
+			var mockPlugins = GetEditorPluginLoaderMock();
+			var model = new EditorViewModel(mockPlugins);
+			Assert.IsTrue(model.StartEditorMaximized);
+		}
+
+		private static void MakeSureToDeleteStartMaximizedRegistryEntry()
+		{
+			using (RegistryKey key = Registry.CurrentUser.OpenSubKey(RegistryPathForEditorValues, true))
+				if (key != null)
+					key.DeleteValue("StartMaximized", false);
+		}
+
+		private const string RegistryPathForEditorValues = @"Software\DeltaEngine\Editor";
+
+		[Test]
+		public void SaveAndLoadStartEditorFullscreenRegistryState()
+		{
+			MakeSureToDeleteStartMaximizedRegistryEntry();
+			var mockPlugins = GetEditorPluginLoaderMock();
+			var model = new EditorViewModel(mockPlugins);
+			model.StartEditorMaximized = false;
+			Assert.IsFalse(model.StartEditorMaximized);
+			model.StartEditorMaximized = true;
+			Assert.IsTrue(model.StartEditorMaximized);
 		}
 	}
 }

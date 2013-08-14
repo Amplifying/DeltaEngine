@@ -1,20 +1,20 @@
+﻿using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
 
 namespace DeltaEngine.Rendering.Particles
 {
 	public class ParticleEmitterData
 	{
-		public Image Image { get; set; }
-		public Point Position { get; set; }
-		public int SpawnIntervalMs { get; set; }
-		public long LastSpawnMs { get; set; }
-		public int ParticlesCreated { get; set; }
+		public float SpawnInterval { get; set; }
 		public float LifeTime { get; set; }
-		public ParticlePreset PresetLowerBounds { get; set; }
-		public ParticlePreset PresetUpperBounds { get; set; }
-		public bool HasSecondaryDirection { get; set; }
-		public bool HasSecondaryRotation { get; set; }
-		public bool HasSecondarySize { get; set; }
+		public int MaximumNumberOfParticles { get; set; }
+		public Point StartVelocity { get; set; }
+		public Point StartVelocityVariance { get; set; }
+		public Point Force { get; set; }
+		public Range<Size> Size { get; set; }
+		public float StartRotation { get; set; }
+		public float RotationForce { get; set; }
+		public Color StartColor { get; set; }
+		public Material ParticleMaterial { get; set; }
 	}
 }

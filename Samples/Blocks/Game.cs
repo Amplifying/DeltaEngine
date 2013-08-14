@@ -1,8 +1,9 @@
+﻿using DeltaEngine;
+using DeltaEngine.Commands;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
 using DeltaEngine.Multimedia;
-using DeltaEngine.Platforms;
-using DeltaEngine.Rendering.ScreenSpaces;
+using DeltaEngine.ScreenSpaces;
 
 namespace Blocks
 {
@@ -11,36 +12,33 @@ namespace Blocks
 	/// </summary>
 	public class Game
 	{
-		public Game(ScreenSpace screen, InputCommands input, BlocksContent content,
-			SoundDevice soundDevice)
+		public Game(Window window, BlocksContent content, SoundDevice soundDevice)
 		{
-			screen.Window.WindowClosing += soundDevice.Dispose;
-			this.screen = screen;
-			this.input = input;
+			this.window = window;
 			UserInterface = new UserInterface(content);
 			Controller = new Controller(DisplayMode, content);
-			screen.Window.ViewportSizeChanged += ShowCorrectSceneForAspect;
+			ScreenSpace.Current.ViewportSizeChanged +=
+				() => ShowCorrectSceneForAspect(window.ViewportPixelSize);
 			Initialize();
 		}
 
-		private readonly ScreenSpace screen;
-		private readonly InputCommands input;
 		public UserInterface UserInterface { get; private set; }
 		public Controller Controller { get; private set; }
+		private readonly Window window;
 
 		private void Initialize()
 		{
 			SetDisplayMode();
-			ShowCorrectSceneForAspect(screen.Window.ViewportPixelSize);
+			ShowCorrectSceneForAspect(window.ViewportPixelSize);
 			SetControllerEvents();
 			SetInputEvents();
 		}
 
 		private void SetDisplayMode()
 		{
-			screen.Window.ViewportPixelSize = new Size(700, 700);
-			screen.Window.Title = "Sample Blocks Game";
-			var aspectRatio = screen.Viewport.Aspect;
+			window.ViewportPixelSize = new Size(700, 700);
+			window.Title = "Sample Blocks Game";
+			var aspectRatio = ScreenSpace.Current.Viewport.Aspect;
 			DisplayMode = aspectRatio >= 1.0f
 				? Orientation.Landscape : Orientation.Portrait;
 		}
@@ -63,22 +61,35 @@ namespace Blocks
 
 		private void SetInputEvents()
 		{
+			CreateCommands();
 			SetKeyboardEvents();
 			SetMouseEvents();
 			SetTouchEvents();
 		}
 
+		private void CreateCommands()
+		{
+			commands = new Command[7];
+			commands[0] = new Command(() => StartMovingBlockLeft());
+			commands[1] = new Command(() => { Controller.isBlockMovingLeft = false; });
+			commands[2] = new Command(() => StartMovingBlockRight());
+			commands[3] = new Command(() => { Controller.isBlockMovingRight = false; });
+			commands[4] = new Command(() => Controller.RotateBlockAntiClockwiseIfPossible());
+			commands[5] = new Command(() => { Controller.IsFallingFast = true; });
+			commands[6] = new Command(() => { Controller.IsFallingFast = false; });
+		}
+
+		private Command[] commands;
+
 		private void SetKeyboardEvents()
 		{
-			input.Add(Key.CursorLeft, State.Pressing, key => StartMovingBlockLeft());
-			input.Add(Key.CursorLeft, State.Releasing, key => { Controller.isBlockMovingLeft = false; });
-			input.Add(Key.CursorRight, State.Pressing, key => StartMovingBlockRight());
-			input.Add(Key.CursorRight, State.Releasing,
-				key => { Controller.isBlockMovingRight = false; });
-			input.Add(Key.CursorUp, State.Pressing,
-				key => Controller.RotateBlockAntiClockwiseIfPossible());
-			input.Add(Key.CursorDown, State.Pressing, key => { Controller.IsFallingFast = true; });
-			input.Add(Key.CursorDown, State.Releasing, key => { Controller.IsFallingFast = false; });
+			commands[0].Add(new KeyTrigger(Key.CursorLeft));
+			commands[1].Add(new KeyTrigger(Key.CursorLeft, State.Releasing));
+			commands[2].Add(new KeyTrigger(Key.CursorRight));
+			commands[3].Add(new KeyTrigger(Key.CursorRight, State.Releasing));
+			commands[4].Add(new KeyTrigger(Key.CursorUp));
+			commands[5].Add(new KeyTrigger(Key.CursorDown));
+			commands[6].Add(new KeyTrigger(Key.CursorDown, State.Releasing));
 		}
 
 		private void StartMovingBlockLeft()
@@ -95,8 +106,8 @@ namespace Blocks
 
 		private void SetMouseEvents()
 		{
-			input.Add(MouseButton.Left, State.Pressing, mouse => Pressing(mouse.Position));
-			input.Add(MouseButton.Left, State.Releasing, mouse => { Controller.IsFallingFast = false; });
+			//input.Add(MouseButton.Left, State.Pressing, mouse => Pressing(mouse.Position));
+			//input.Add(MouseButton.Left, State.Releasing, mouse => { Controller.IsFallingFast = false; });
 		}
 
 		private void Pressing(Point position)
@@ -113,8 +124,8 @@ namespace Blocks
 
 		private void SetTouchEvents()
 		{
-			input.Add(State.Pressing, touch => Pressing(touch.GetPosition(0)));
-			input.Add(State.Releasing, touch => { Controller.IsFallingFast = false; });
+			//input.Add(State.Pressing, touch => Pressing(touch.GetPosition(0)));
+			//input.Add(State.Releasing, touch => { Controller.IsFallingFast = false; });
 		}
 	}
 }

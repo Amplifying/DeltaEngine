@@ -1,0 +1,54 @@
+﻿<UserControl
+	x:Class="DeltaEngine.Editor.AppBuilder.BuiltAppsListView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	mc:Ignorable="d" d:DesignHeight="300" d:DesignWidth="600"
+	xmlns:local="clr-namespace:DeltaEngine.Editor.AppBuilder"
+	d:DataContext="{d:DesignInstance local:DemoBuiltAppsListForDesigner, IsDesignTimeCreatable=true}"
+>
+	<Border BorderThickness="1" BorderBrush="Gray">
+	<ScrollViewer VerticalScrollBarVisibility="Visible" Background="White">
+		<ItemsControl Name="AppListControl" ItemsSource="{Binding Path=BuiltApps, Mode=OneWay}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="32" />
+							<ColumnDefinition Width="8" />
+							<ColumnDefinition Width="2*" />
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="12" />
+							<ColumnDefinition Width="80" />
+							<ColumnDefinition Width="12" />
+							<ColumnDefinition Width="140" />
+							<ColumnDefinition Width="12" />
+							<ColumnDefinition Width="70" />
+						</Grid.ColumnDefinitions>
+						<Image
+							Source="/DeltaEngine.Editor.AppBuilder;component/Images/BuildInfoIcon.png" Grid.Column="0" />
+						<TextBlock
+							Name="AppName" Text="{Binding Path=Name}" FontSize="14"
+							VerticalAlignment="Center" Grid.Column="2" />
+						<TextBlock
+							Name="PlatformName" Text="{Binding Path=Platform}" FontSize="14"
+							VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="3" />
+						<Button
+							Name="RebuildAppButton" Content="Rebuild" FontSize="14" Height="30" Grid.Column="5"
+							Click="OnRebuildAppClicked" IsEnabled="{Binding Path=IsSolutionPathAvailable}" />
+						<ComboBox
+							Name="DevicesComboBox" FontSize="14" Height="30" Grid.Column="7"
+							ItemsSource="{Binding Path=AvailableDevices}" SelectedIndex="0"
+							DisplayMemberPath="Name" HorizontalContentAlignment="Center"
+						/>
+						<Button
+							Name="LaunchAppButton" Content="Launch" FontSize="14" Height="30" Grid.Column="9"
+							Click="OnLaunchAppClicked" IsEnabled="{Binding Path=IsDeviceAvailable}" />
+					</Grid>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+	</ScrollViewer>
+	</Border>
+</UserControl>

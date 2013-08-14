@@ -1,5 +1,8 @@
-namespace DeltaEngine.Platforms.Mocks
+﻿namespace DeltaEngine.Platforms.Mocks
 {
+	/// <summary>
+	/// Mock in-app purchase used for unit testing.
+	/// </summary>
 	public class MockInAppPurchase : InAppPurchase
 	{
 		public override bool RequestProductInformationAsync(int[] productIds)

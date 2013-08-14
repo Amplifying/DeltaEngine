@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DeltaEngine.Datatypes;
 using SysDraw = System.Drawing;
 

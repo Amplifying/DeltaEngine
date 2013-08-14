@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using DeltaEngine.Commands;
 using DeltaEngine.Input;
 
 namespace Asteroids
@@ -8,64 +8,83 @@ namespace Asteroids
 	/// </summary>
 	public class GameControls
 	{
-		public GameControls(AsteroidsGame game, InputCommands input)
+		public GameControls(AsteroidsGame game)
 		{
 			this.game = game;
-			this.input = input;
+			controlCommands = new Command[5];
+			commandsInUse = 0;
 		}
 
-		private readonly InputCommands input;
-		private readonly List<Command> addedCommands = new List<Command>();
 		private readonly AsteroidsGame game;
+
+		private readonly Command[] controlCommands;
+		private int commandsInUse;
 
 		public void SetControlsToState(GameState state)
 		{
-			input.Clear();
-			addedCommands.Clear();
+			for (int i = 0; i < commandsInUse; i++)
+				controlCommands[i].IsActive = false;
+			commandsInUse = 0;
 			switch (state)
 			{
 			case GameState.Playing:
-				AddPlayerForward(input);
-				AddPlayerSteerLeft(input);
-				AddPlayerSteerRight(input);
-				AddPlayerFireAndHoldFire(input);
+				AddPlayerAccelerationControl();
+				AddPlayerSteerLeft();
+				AddPlayerSteerRight();
+				AddPlayerShootingControls();
 				break;
 			case GameState.GameOver:
-				AddRestartCommand(input);
+				AddRestartControl();
 				break;
 			default:
 				return;
 			}
 		}
 
-		private void AddPlayerForward(InputCommands input)
+		private void AddPlayerAccelerationControl()
 		{
-			addedCommands.Add(input.Add(Key.W, State.Pressed, key => PlayerForward()));
-			addedCommands.Add(input.Add(Key.W, State.Pressing, key => PlayerForward()));
-			addedCommands.Add(input.Add(Key.CursorUp, State.Pressed, key => PlayerForward()));
-			addedCommands.Add(input.Add(Key.CursorUp, State.Pressing, key => PlayerForward()));
+			controlCommands[0] = new Command(() => PlayerForward());
+			controlCommands[0].Add(new KeyTrigger(Key.W, State.Pressed));
+			controlCommands[0].Add(new KeyTrigger(Key.W));
+			controlCommands[0].Add(new KeyTrigger(Key.CursorUp, State.Pressed));
+			controlCommands[0].Add(new KeyTrigger(Key.CursorUp));
+			commandsInUse++;
 		}
 
-		private void AddPlayerSteerRight(InputCommands input)
+		private void AddPlayerSteerLeft()
 		{
-			addedCommands.Add(input.Add(Key.D, State.Pressed, key => PlayerSteerRight()));
-			addedCommands.Add(input.Add(Key.D, State.Pressing, key => PlayerSteerRight()));
-			addedCommands.Add(input.Add(Key.CursorRight, State.Pressed, key => PlayerSteerRight()));
-			addedCommands.Add(input.Add(Key.CursorRight, State.Pressing, key => PlayerSteerRight()));
+			controlCommands[1] = new Command(() => PlayerSteerLeft());
+			controlCommands[1].Add(new KeyTrigger(Key.A, State.Pressed));
+			controlCommands[1].Add(new KeyTrigger(Key.A));
+			controlCommands[1].Add(new KeyTrigger(Key.CursorLeft, State.Pressed));
+			controlCommands[1].Add(new KeyTrigger(Key.CursorLeft));
+			commandsInUse++;
 		}
 
-		private void AddPlayerSteerLeft(InputCommands input)
+		private void AddPlayerSteerRight()
 		{
-			addedCommands.Add(input.Add(Key.A, State.Pressed, key => PlayerSteerLeft()));
-			addedCommands.Add(input.Add(Key.A, State.Pressing, key => PlayerSteerLeft()));
-			addedCommands.Add(input.Add(Key.CursorLeft, State.Pressed, key => PlayerSteerLeft()));
-			addedCommands.Add(input.Add(Key.CursorLeft, State.Pressing, key => PlayerSteerLeft()));
+			controlCommands[2] = new Command(() => PlayerSteerRight());
+			controlCommands[2].Add(new KeyTrigger(Key.D, State.Pressed));
+			controlCommands[2].Add(new KeyTrigger(Key.D));
+			controlCommands[2].Add(new KeyTrigger(Key.CursorRight, State.Pressed));
+			controlCommands[2].Add(new KeyTrigger(Key.CursorRight));
+			commandsInUse++;
 		}
 
-		private void AddPlayerFireAndHoldFire(InputCommands input)
+		private void AddPlayerShootingControls()
 		{
-			addedCommands.Add(input.Add(Key.Space, State.Pressing, key => PlayerBeginFireing()));
-			addedCommands.Add(input.Add(Key.Space, State.Releasing, key => PlayerHoldFire()));
+			controlCommands[3] = new Command(() => PlayerBeginFireing());
+			controlCommands[3].Add(new KeyTrigger(Key.Space));
+			controlCommands[4] = new Command(() => PlayerHoldFire());
+			controlCommands[4].Add(new KeyTrigger(Key.Space, State.Releasing));
+			commandsInUse += 2;
+		}
+
+		private void AddRestartControl()
+		{
+			controlCommands[0] = new Command(() => game.RestartGame());
+			controlCommands[0].Add(new KeyTrigger(Key.Space, State.Releasing));
+			commandsInUse ++;
 		}
 
 		private void PlayerForward()
@@ -91,11 +110,6 @@ namespace Asteroids
 		private void PlayerHoldFire()
 		{
 			game.GameLogic.Player.IsFiring = false;
-		}
-
-		private void AddRestartCommand(InputCommands input)
-		{
-			input.Add(Key.Space, State.Pressing, key => {game.RestartGame(); });
 		}
 	}
 }

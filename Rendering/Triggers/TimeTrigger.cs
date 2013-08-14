@@ -1,20 +1,37 @@
-using DeltaEngine.Core;
+﻿using System.Collections.Generic;
+using System.Linq;
+using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 
 namespace DeltaEngine.Rendering.Triggers
 {
-	internal class TimeTrigger : Behavior2D
+	public class TimeTrigger : UpdateBehavior
 	{
-		public override void Handle(Entity2D entity)
+		public TimeTrigger() : base(Priority.High){}
+
+		public override void Update(IEnumerable<Entity> entities)
 		{
-			var data = entity.Get<TimeTriggerData>();
-			if (Time.Current.CheckEvery(data.Interval))
+			foreach (var entity in entities.OfType<Entity2D>())
+			{
+				var data = entity.Get<Data>();
+				if (!Time.CheckEvery(data.Interval))
+					continue;
 				entity.Color = entity.Color == data.FirstColor ? data.SecondColor : data.FirstColor;
+			}
 		}
 
-		public override Priority Priority
+		internal class Data
 		{
-			get { return Priority.High; }
+			public Data(Color firstColor, Color secondColor, float interval)
+			{
+				FirstColor = firstColor;
+				SecondColor = secondColor;
+				Interval = interval;
+			}
+
+			public Color FirstColor;
+			public Color SecondColor;
+			public float Interval;
 		}
 	}
 }

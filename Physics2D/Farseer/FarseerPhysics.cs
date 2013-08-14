@@ -1,5 +1,7 @@
-using DeltaEngine.Datatypes;
+﻿using DeltaEngine.Datatypes;
+using FarseerPhysics.Common;
 using FarseerPhysics.Dynamics;
+using FarseerPhysics.Dynamics.Joints;
 using FarseerPhysics.Factories;
 using Microsoft.Xna.Framework;
 
@@ -32,7 +34,7 @@ namespace DeltaEngine.Physics2D.Farseer
 
 		public override PhysicsBody CreateEdge(Point start, Point end)
 		{
-			var edge = BodyFactory.CreateEdge(world,
+			Body edge = BodyFactory.CreateEdge(world,
 				unitConverter.ToSimUnits(unitConverter.Convert(start)),
 				unitConverter.ToSimUnits(unitConverter.Convert(end)));
 			var body = new FarseerBody(edge) { UnitConverter = unitConverter };
@@ -44,9 +46,10 @@ namespace DeltaEngine.Physics2D.Farseer
 		public override PhysicsBody CreateEdge(params Point[] vertices)
 		{
 			var edge = new Body(world);
-			var fVertices = unitConverter.Convert(vertices);
-			for (int i = 0; i < fVertices.Count - 1; ++i)
-				FixtureFactory.AttachEdge(fVertices[i], fVertices[i + 1], edge);
+			Vertices farseerVertices = unitConverter.Convert(vertices);
+			for (int i = 0; i < farseerVertices.Count - 1; ++i)
+				FixtureFactory.AttachEdge(farseerVertices[i], farseerVertices[i + 1], edge);
+
 			var body = new FarseerBody(edge) { UnitConverter = unitConverter };
 			AddBody(body);
 			return body;
@@ -54,8 +57,8 @@ namespace DeltaEngine.Physics2D.Farseer
 
 		public override PhysicsBody CreatePolygon(params Point[] vertices)
 		{
-			var polygon = unitConverter.Convert(vertices);
-			var centroid = -polygon.GetCentroid();
+			Vertices polygon = unitConverter.Convert(vertices);
+			Vector2 centroid = -polygon.GetCentroid();
 			polygon.Translate(ref centroid);
 			Body body = BodyFactory.CreatePolygon(world, polygon, 1.0f);
 			var newBody = new FarseerBody(body) { UnitConverter = unitConverter };
@@ -65,7 +68,8 @@ namespace DeltaEngine.Physics2D.Farseer
 
 		public override PhysicsJoint CreateFixedAngleJoint(PhysicsBody body, float targetAngle)
 		{
-			var farseerJoint = JointFactory.CreateFixedAngleJoint(world, ((FarseerBody)body).Body);
+			FixedAngleJoint farseerJoint = JointFactory.CreateFixedAngleJoint(world,
+				((FarseerBody)body).Body);
 			farseerJoint.TargetAngle = targetAngle;
 			return new FarseerJoint(farseerJoint, body, body);
 		}
@@ -73,7 +77,7 @@ namespace DeltaEngine.Physics2D.Farseer
 		public override PhysicsJoint CreateAngleJoint(PhysicsBody bodyA, PhysicsBody bodyB,
 			float targetAngle)
 		{
-			var farseerJoint = JointFactory.CreateAngleJoint(world, ((FarseerBody)bodyA).Body,
+			AngleJoint farseerJoint = JointFactory.CreateAngleJoint(world, ((FarseerBody)bodyA).Body,
 				((FarseerBody)bodyB).Body);
 			farseerJoint.TargetAngle = targetAngle;
 			return new FarseerJoint(farseerJoint, bodyA, bodyB);
@@ -82,16 +86,15 @@ namespace DeltaEngine.Physics2D.Farseer
 		public override PhysicsJoint CreateRevoluteJoint(PhysicsBody bodyA, PhysicsBody bodyB,
 			Point anchor)
 		{
-			var farseerJoint = JointFactory.CreateRevoluteJoint(world, ((FarseerBody)bodyA).Body,
-				((FarseerBody)bodyB).Body, unitConverter.Convert(anchor));
+			RevoluteJoint farseerJoint = JointFactory.CreateRevoluteJoint(world,
+				((FarseerBody)bodyA).Body, ((FarseerBody)bodyB).Body, unitConverter.Convert(anchor));
 			return new FarseerJoint(farseerJoint, bodyA, bodyB);
 		}
 
 		public override PhysicsJoint CreateLineJoint(PhysicsBody bodyA, PhysicsBody bodyB, Point axis)
 		{
-			var farseerJoint = JointFactory.CreatePrismaticJoint(((FarseerBody)bodyA).Body,
-				((FarseerBody)bodyB).Body, ((FarseerBody)bodyB).Body.Position,
-				unitConverter.Convert(axis));
+			PrismaticJoint farseerJoint = JointFactory.CreatePrismaticJoint(((FarseerBody)bodyA).Body,
+				((FarseerBody)bodyB).Body, ((FarseerBody)bodyB).Body.Position, unitConverter.Convert(axis));
 			world.AddJoint(farseerJoint);
 			return new FarseerJoint(farseerJoint, bodyA, bodyB);
 		}

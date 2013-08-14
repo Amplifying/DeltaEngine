@@ -1,5 +1,4 @@
-using DeltaEngine.Platforms;
-using DeltaEngine.Rendering.ScreenSpaces;
+﻿using DeltaEngine.Platforms;
 using NUnit.Framework;
 
 namespace Asteroids.Tests
@@ -9,7 +8,7 @@ namespace Asteroids.Tests
 		[Test]
 		public void SetScore()
 		{
-			var hud = new HudInterface(Resolve<ScreenSpace>());
+			var hud = new HudInterface();
 			hud.SetScoreText(5);
 			Assert.AreEqual("5", hud.ScoreDisplay.Text);
 		}

@@ -1,4 +1,4 @@
-using DeltaEngine.Entities;
+﻿using DeltaEngine.Entities;
 
 namespace DeltaEngine.Rendering
 {

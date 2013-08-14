@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using DeltaEngine.Datatypes;
 
@@ -12,21 +12,13 @@ namespace DeltaEngine.Platforms
 	public abstract class SystemInformation
 	{
 		public abstract float AvailableRam { get; }
-
 		public abstract int CoreCount { get; }
-
 		public abstract string CpuName { get; }
-
 		public abstract float CpuSpeed { get; }
-
 		public abstract float[] CpuUsage { get; }
-
 		public abstract string GpuName { get; }
-
 		public abstract bool IsConsole { get; }
-
 		public abstract bool IsMobileDevice { get; }
-
 		public abstract bool IsTablet { get; }
 
 		public string Language
@@ -36,7 +28,6 @@ namespace DeltaEngine.Platforms
 				string englishName = CurrentCulture.EnglishName;
 				if (englishName.Contains(" "))
 					englishName = englishName.Substring(0, englishName.IndexOf(' '));
-
 				return englishName;
 			}
 		}
@@ -47,23 +38,14 @@ namespace DeltaEngine.Platforms
 		}
 
 		public abstract string MachineName { get; }
-
 		public abstract float MaxRam { get; }
-
 		public abstract Size MaxResolution { get; }
-
 		public abstract NetworkState NetworkState { get; }
-
 		public abstract string PlatformName { get; }
-
-		public abstract string PlatformVersion { get; }
-
+		public abstract Version PlatformVersion { get; }
 		public abstract bool SoundCardAvailable { get; }
-
 		public abstract float UsedRam { get; }
-
 		public abstract string Username { get; }
-
 		public abstract Version Version { get; }
 	}
 }

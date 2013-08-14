@@ -1,7 +1,11 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace DeltaEngine.Rendering.Fonts
 {
+	/// <summary>
+	/// Breaks a string into a list of lines each of which is a list of characters.
+	/// Also converts tabs to spaces and converts unsupported characters to question marks. 
+	/// </summary>
 	public class TextParser
 	{
 		public TextParser(Dictionary<char, Glyph> glyphDictionary,

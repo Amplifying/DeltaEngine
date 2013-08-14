@@ -1,15 +1,16 @@
-using System.Windows;
+﻿using System.Windows;
+using WpfWindow = System.Windows.Window;
 
 namespace DeltaEngine.Editor.Helpers
 {
 	internal class MaximizerForEmptyWindows
 	{
-		public MaximizerForEmptyWindows(Window window)
+		public MaximizerForEmptyWindows(WpfWindow window)
 		{
 			this.window = window;
 		}
 
-		private readonly Window window;
+		private readonly WpfWindow window;
 
 		public void ToggleMaximize()
 		{

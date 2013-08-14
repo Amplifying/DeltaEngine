@@ -1,47 +1,34 @@
-using System;
+﻿using System;
+using DeltaEngine.Commands;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Input
 {
 	/// <summary>
-	/// Trigger implementation for Mouse events.
+	/// Trigger implementation for GamePad Button events.
 	/// </summary>
-	public class GamePadButtonTrigger : Trigger, IEquatable<GamePadButtonTrigger>
+	public class GamePadButtonTrigger : Trigger
 	{
-		public GamePadButtonTrigger(GamePadButton button, State state)
+		public GamePadButtonTrigger(GamePadButton button, State state = State.Pressing)
 		{
-			this.button = button;
-			this.state = state;
+			Button = button;
+			State = state;
+			Start<GamePad>();
 		}
 
-		private GamePadButton button;
-		private State state;
+		public GamePadButton Button { get; internal set; }
+		public State State { get; internal set; }
 
-		public GamePadButton Button
+		public GamePadButtonTrigger(string buttonAndState)
 		{
-			get { return button; }
-			set { button = value; }
+			var parameters = buttonAndState.SplitAndTrim(new[] { ' ' });
+			if (parameters.Length == 0)
+				throw new CannotCreateGamePadTriggerWithoutKey();
+			Button = parameters[0].Convert<GamePadButton>();
+			State = parameters.Length > 1 ? parameters[1].Convert<State>() : State.Pressing;
+			Start<GamePad>();
 		}
 
-		public State State
-		{
-			get { return state; }
-			set { state = value; }
-		}
-
-		public override bool ConditionMatched(InputCommands input)
-		{
-			return input.gamePad.IsAvailable && input.gamePad.GetButtonState(button) == state;
-		}
-
-		public bool Equals(GamePadButtonTrigger other)
-		{
-			return other.button == button && other.state == state;
-		}
-
-		public override int GetHashCode()
-		{
-			//// ReSharper disable NonReadonlyFieldInGetHashCode
-			return ((int)button).GetHashCode() ^ ((int)state).GetHashCode();
-		}
+		public class CannotCreateGamePadTriggerWithoutKey : Exception {}
 	}
 }

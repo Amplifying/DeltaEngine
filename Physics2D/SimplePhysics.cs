@@ -1,8 +1,10 @@
-using DeltaEngine.Core;
+﻿using System;
+using System.Collections.Generic;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Rendering;
-using DeltaEngine.Rendering.ScreenSpaces;
+using DeltaEngine.Rendering.Sprites;
+using DeltaEngine.ScreenSpaces;
 
 namespace DeltaEngine.Physics2D
 {
@@ -20,50 +22,23 @@ namespace DeltaEngine.Physics2D
 			public float Duration { get; set; }
 			public float RotationSpeed { get; set; }
 			public Point Velocity { get; set; }
+			public Point UvVelocity { get; set; }
 			public Point Gravity { get; set; }
+			public Action Bounced { get; set; }
 		}
 
 		/// <summary>
 		/// Rotates an Entity2D every frame
 		/// </summary>
-		public class Rotate : Behavior2D
+		public class Rotate : UpdateBehavior
 		{
-			public override void Handle(Entity2D entity)
-			{
-				entity.Set(entity.Get<float>() + entity.Get<Data>().RotationSpeed * Time.Current.Delta);
-			}
+			public Rotate()
+				: base(Priority.First) {}
 
-			public override Priority Priority
+			public override void Update(IEnumerable<Entity> entities)
 			{
-				get { return Priority.First; }
-			}
-		}
-
-		/// <summary>
-		/// Bounces an Entity2D off the edges of the screen
-		/// </summary>
-		public class BounceOffScreenEdges : Behavior2D
-		{
-			public BounceOffScreenEdges(ScreenSpace screen)
-			{
-				this.screen = screen;
-			}
-
-			private readonly ScreenSpace screen;
-
-			public override void Handle(Entity2D entity)
-			{
-				var physics = entity.Get<Data>();
-				entity.DrawArea = new Rectangle(entity.TopLeft + physics.Velocity * Time.Current.Delta,
-					entity.Size);
-				Point velocity = physics.Velocity;
-				velocity.ReflectIfHittingBorder(entity.DrawArea, screen.Viewport);
-				physics.Velocity = velocity;
-			}
-
-			public override Priority Priority
-			{
-				get { return Priority.First; }
+				foreach (Entity2D entity in entities)
+					entity.Rotation += entity.Get<Data>().RotationSpeed * Time.Delta;
 			}
 		}
 
@@ -71,22 +46,66 @@ namespace DeltaEngine.Physics2D
 		/// Causes an Entity2D to move and fall under gravity.
 		/// When the duration is complete it removes the Entity from the Entity System
 		/// </summary>
-		public class Fall : Behavior2D
+		public class Move : UpdateBehavior
 		{
-			public override void Handle(Entity2D entity)
+			public Move()
+				: base(Priority.First) { }
+
+			public override void Update(IEnumerable<Entity> entities)
 			{
-				var physics = entity.Get<Data>();
-				physics.Velocity += physics.Gravity * Time.Current.Delta;
-				entity.Center += physics.Velocity * Time.Current.Delta;
-				entity.Rotation += physics.RotationSpeed * Time.Current.Delta;
-				physics.Elapsed += Time.Current.Delta;
+				foreach (Entity2D entity in entities)
+					UpdatePhysics(entity, entity.Get<Data>());
+			}
+
+			private static void UpdatePhysics(Entity2D entity, Data physics)
+			{
+				physics.Velocity += physics.Gravity * Time.Delta;
+				entity.Center += physics.Velocity * Time.Delta;
+				entity.Rotation += physics.RotationSpeed * Time.Delta;
+				physics.Elapsed += Time.Delta;
 				if (physics.Duration > 0.0f && physics.Elapsed >= physics.Duration)
 					entity.IsActive = false;
 			}
+		}
 
-			public override Priority Priority
+		/// <summary>
+		/// Changes the velocity of an entity if it is at a screen edge.
+		/// Is used in tandem with Move.
+		/// </summary>
+		public class BounceIfAtScreenEdge : UpdateBehavior
+		{
+			public BounceIfAtScreenEdge()
+				: base(Priority.High) {}
+
+			public override void Update(IEnumerable<Entity> entities)
 			{
-				get { return Priority.First; }
+				foreach (Entity2D entity in entities)
+				{
+					var physics = entity.Get<Data>();
+					var velocity = physics.Velocity;
+					physics.Velocity = physics.Velocity.ReflectIfHittingBorder(entity.DrawArea,
+						ScreenSpace.Current.Viewport);
+					if (physics.Velocity != velocity && entity.Get<Data>().Bounced != null)
+						entity.Get<Data>().Bounced();
+				}
+			}
+		}
+
+		public class MoveUv : UpdateBehavior
+		{
+			public MoveUv()
+				: base(Priority.First) {}
+
+			public override void Update(IEnumerable<Entity> entities)
+			{
+				foreach (Sprite sprite in entities)
+					UpdatePhysics(sprite, sprite.Get<Data>().UvVelocity);
+			}
+
+			private static void UpdatePhysics(Sprite sprite, Point velocity)
+			{
+				sprite.Coordinates =
+					new Sprite.SpriteCoordinates(sprite.Coordinates.UV.Move(velocity * Time.Delta));
 			}
 		}
 	}

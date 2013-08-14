@@ -1,4 +1,4 @@
-namespace Breakout.Tests
+﻿namespace Breakout.Tests
 {
 	internal static class Program
 	{

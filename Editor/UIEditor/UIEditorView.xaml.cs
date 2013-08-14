@@ -1,9 +1,6 @@
-using System.Windows;
-using DeltaEngine.Core;
-using DeltaEngine.Datatypes;
-using DeltaEngine.Editor.Common;
-using DeltaEngine.Rendering.Shapes;
-using Point = DeltaEngine.Datatypes.Point;
+﻿using System.Windows;
+using DeltaEngine.Editor.Core;
+using GalaSoft.MvvmLight.Messaging;
 
 namespace DeltaEngine.Editor.UIEditor
 {
@@ -15,31 +12,29 @@ namespace DeltaEngine.Editor.UIEditor
 		public UIEditorView()
 		{
 			InitializeComponent();
+			DataContext = new UIEditorViewModel();
 		}
 
-		public UIEditorView(Service service)
-			: this() {}
+		public void Init(Service service) {}
 
 		public string ShortName
 		{
-			get { return "UI Editor"; }
+			get { return "UI Screens"; }
 		}
+
 		public string Icon
 		{
 			get { return "Icons/UI.png"; }
 		}
-		public EditorPluginCategory Category
+
+		public bool RequiresLargePane
 		{
-			get { return EditorPluginCategory.Content; }
-		}
-		public int Priority
-		{
-			get { return 1; }
+			get { return false; }
 		}
 
-		private void OnButtonClicked(object sender, RoutedEventArgs e)
+		public void AddImage(object sender, RoutedEventArgs e)
 		{
-			new Line2D(new Point(0, 1), new Point(Time.Current.Milliseconds / 5000.0f, 0), Color.Yellow);
+			Messenger.Default.Send("AddImage", "AddImage");
 		}
 	}
 }

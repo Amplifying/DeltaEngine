@@ -1,14 +1,17 @@
-using System;
+﻿using System;
 using DeltaEngine.Core;
 
 namespace DeltaEngine.Profiling
 {
+	/// <summary>
+	/// Records system information polled during profiling for visual display or report.
+	/// </summary>
 	public class SystemProfilerSection : IComparable<SystemProfilerSection>
 	{
 		public SystemProfilerSection(string name)
 		{
 			Name = name;
-			TimeCreated = Time.Current.GetSecondsSinceStartToday();
+			TimeCreated = GlobalTime.Current.GetSecondsSinceStartToday();
 		}
 
 		public string Name { get; private set; }

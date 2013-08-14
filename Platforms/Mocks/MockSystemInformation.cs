@@ -1,36 +1,37 @@
-using System;
+﻿using System;
 using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Platforms.Mocks
 {
-	class MockSystemInformation : SystemInformation
+	/// <summary>
+	/// Mock system information used in unit testing when real information would be too slow
+	/// to obtain.
+	/// </summary>
+	public class MockSystemInformation : SystemInformation
 	{
 		public override float AvailableRam
 		{
-			get { return MockSystemInformationValue; }
+			get { return 1024; }
 		}
-
-		public const int MockSystemInformationValue = 123456;
-
 		public override int CoreCount
 		{
-			get { return MockSystemInformationValue; }
+			get { return 1; }
 		}
 		public override string CpuName
 		{
-			get { return "MockCpuName"; }
+			get { return "MockCpu"; }
 		}
 		public override float CpuSpeed
 		{
-			get { return MockSystemInformationValue; }
+			get { return 1000; }
 		}
 		public override float[] CpuUsage
 		{
-			get { return new float[] { MockSystemInformationValue }; }
+			get { return new float[] { 0 }; }
 		}
 		public override string GpuName
 		{
-			get { return "MockGpuName"; }
+			get { return "MockGpu"; }
 		}
 		public override bool IsConsole
 		{
@@ -50,11 +51,11 @@ namespace DeltaEngine.Platforms.Mocks
 		}
 		public override float MaxRam
 		{
-			get { return MockSystemInformationValue; }
+			get { return 1024; }
 		}
 		public override Size MaxResolution
 		{
-			get { return new Size(640, 360); }
+			get { return new Size(1920, 1080); }
 		}
 		public override NetworkState NetworkState
 		{
@@ -62,19 +63,19 @@ namespace DeltaEngine.Platforms.Mocks
 		}
 		public override string PlatformName
 		{
-			get { return "MockPlatformName"; }
+			get { return "Windows"; }
 		}
-		public override string PlatformVersion
+		public override Version PlatformVersion
 		{
-			get { return "MockPlatformVersion"; }
+			get { return new Version(8, 1); }
 		}
 		public override bool SoundCardAvailable
 		{
-			get { return false; }
+			get { return true; }
 		}
 		public override float UsedRam
 		{
-			get { return MockSystemInformationValue; }
+			get { return 148; }
 		}
 		public override string Username
 		{
@@ -82,9 +83,7 @@ namespace DeltaEngine.Platforms.Mocks
 		}
 		public override Version Version
 		{
-			get { return MockVersion; }
+			get { return new Version(0, 9, 8, 3); }
 		}
-
-		public static readonly Version MockVersion = new Version("1.2.3.4");
 	}
 }

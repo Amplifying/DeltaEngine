@@ -1,9 +1,12 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Rendering.Fonts
 {
+	/// <summary>
+	/// Wraps a string of text introducing line breaks between words where possible.
+	/// </summary>
 	public class TextWrapper
 	{
 		public TextWrapper(Dictionary<char, Glyph> glyphDictionary,
@@ -159,6 +162,7 @@ namespace DeltaEngine.Rendering.Fonts
 		{
 			while (++characterIndex < parsedLine.Count)
 				currentWord.Add(parsedLine[characterIndex]);
+
 			parsedLines.Insert(lineIndex + 1, currentWord);
 		}
 

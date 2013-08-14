@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -17,9 +17,12 @@ namespace DeltaEngine.Content
 			if (string.IsNullOrEmpty(contentName))
 				throw new ContentNameMissing();
 #if DEBUG
-			StackFrame[] frames = new StackTrace().GetFrames();
-			if (frames != null && frames.All(f => f.GetMethod().DeclaringType != typeof(ContentLoader)))
-				throw new MustBeCalledFromContentLoader();
+			if (!contentName.StartsWith("<Generated"))
+			{
+				StackFrame[] frames = new StackTrace().GetFrames();
+				if (frames != null && frames.All(f => f.GetMethod().DeclaringType != typeof(ContentLoader)))
+					throw new MustBeCalledFromContentLoader();
+			}
 #endif
 			Name = contentName;
 		}
@@ -29,6 +32,15 @@ namespace DeltaEngine.Content
 		public class MustBeCalledFromContentLoader : Exception {}
 
 		public string Name { get; private set; }
+
+		internal bool InternalAllowCreationIfContentNotFound
+		{
+			get { return AllowCreationIfContentNotFound; }
+		}
+		protected virtual bool AllowCreationIfContentNotFound
+		{
+			get { return false; }
+		}
 
 		public void Dispose()
 		{
@@ -42,11 +54,26 @@ namespace DeltaEngine.Content
 
 		internal void InternalLoad(Func<ContentData, Stream> getContentDataStream)
 		{
+			//if (!GetType().FullName.Contains(MetaData.Type.ToString()))
+			//	throw new DoesNotMatchMetaDataType(this);
 			using (var stream = getContentDataStream(this))
 				LoadData(stream);
 		}
 
+		private class DoesNotMatchMetaDataType : Exception
+		{
+			public DoesNotMatchMetaDataType(ContentData contentData)
+				: base(contentData + " does not match meta data type: " + contentData.MetaData.Type) { }
+		}
+
 		protected abstract void LoadData(Stream fileData);
+
+		public void InternalCreateDefault()
+		{
+			CreateDefault();
+		}
+
+		protected virtual void CreateDefault() {}
 
 		internal void FireContentChangedEvent()
 		{
@@ -57,5 +84,10 @@ namespace DeltaEngine.Content
 		protected Action ContentChanged;
 
 		public ContentMetaData MetaData { get; internal set; }
+
+		public override string ToString()
+		{
+			return GetType() + ": " + Name;
+		}
 	}
 }

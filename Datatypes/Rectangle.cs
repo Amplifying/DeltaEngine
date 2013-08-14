@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
-using DeltaEngine.Core;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Datatypes
 {
@@ -11,7 +11,7 @@ namespace DeltaEngine.Datatypes
 	/// Holds data for a rectangle by specifying its top left corner and the width and height.
 	/// </summary>
 	[DebuggerDisplay("Rectangle(Left={Left}, Top={Top}, Width={Width}, Height={Height})")]
-	public struct Rectangle : IEquatable<Rectangle>
+	public struct Rectangle : IEquatable<Rectangle>, Lerp<Rectangle>
 	{
 		public Rectangle(float left, float top, float width, float height)
 			: this()
@@ -36,7 +36,6 @@ namespace DeltaEngine.Datatypes
 			string[] componentStrings = rectangleAsString.Split(' ');
 			if (componentStrings.Length != 4)
 				throw new InvalidNumberOfComponents();
-
 			Left = componentStrings[0].Convert<float>();
 			Top = componentStrings[1].Convert<float>();
 			Width = componentStrings[2].Convert<float>();
@@ -47,6 +46,8 @@ namespace DeltaEngine.Datatypes
 
 		public static readonly Rectangle Zero = new Rectangle();
 		public static readonly Rectangle One = new Rectangle(Point.Zero, Size.One);
+		public static readonly Rectangle HalfCentered = Rectangle.FromCenter(Point.Half, Size.Half);
+		public static readonly Rectangle Unused = new Rectangle(Point.Unused, Size.Unused);
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Rectangle));
 
 		public float Right
@@ -96,10 +97,11 @@ namespace DeltaEngine.Datatypes
 			}
 		}
 
-		public static Rectangle Lerp(Rectangle rectangle1, Rectangle rectangle2, float percentage)
+		[Pure]
+		public Rectangle Lerp(Rectangle other, float interpolation)
 		{
-			return new Rectangle(Point.Lerp(rectangle1.TopLeft, rectangle2.TopLeft, percentage),
-				Size.Lerp(rectangle1.Size, rectangle2.Size, percentage));
+			return new Rectangle(TopLeft.Lerp(other.TopLeft, interpolation),
+				Size.Lerp(other.Size, interpolation));
 		}
 
 		public static Rectangle FromCenter(float x, float y, float width, float height)
@@ -181,7 +183,7 @@ namespace DeltaEngine.Datatypes
 
 		public override int GetHashCode()
 		{
-			//// ReSharper disable NonReadonlyFieldInGetHashCode
+			// ReSharper disable NonReadonlyFieldInGetHashCode
 			return Left.GetHashCode() ^ Top.GetHashCode() ^ Width.GetHashCode() ^ Height.GetHashCode();
 		}
 

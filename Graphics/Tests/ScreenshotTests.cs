@@ -1,6 +1,7 @@
-using System.Diagnostics;
-using DeltaEngine.Core;
+﻿using System.Diagnostics;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Extensions;
+using DeltaEngine.Graphics.Mocks;
 using DeltaEngine.Platforms;
 using NUnit.Framework;
 
@@ -11,15 +12,19 @@ namespace DeltaEngine.Graphics.Tests
 		[Test]
 		public void MakeScreenshotOfYellowBackground()
 		{
-			Window.BackgroundColor = Color.Yellow;
-			RunCode = () =>
+			Resolve<Window>().BackgroundColor = Color.Yellow;
+			RunAfterFirstFrame(() =>
 			{
 				Resolve<Device>().Present();
-				Resolve<ScreenshotCapturer>().MakeScreenshot("Test.png");
+				var capturer = Resolve<ScreenshotCapturer>();
+				capturer.MakeScreenshot(ScreenshotFileName);
 				if (!StackTraceExtensions.StartedFromNCrunch)
-					Process.Start("Test.png"); //ncrunch: no coverage
-			};
-			Window.CloseAfterFrame();
+					Process.Start(ScreenshotFileName); //ncrunch: no coverage
+				else
+					Assert.AreEqual(ScreenshotFileName, (capturer as MockScreenshotCapturer).LastFilename);
+			});
 		}
+
+		private const string ScreenshotFileName = "Test.png";
 	}
 }

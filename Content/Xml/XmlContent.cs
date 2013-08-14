@@ -1,8 +1,7 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Xml.Linq;
-using DeltaEngine.Logging;
 
 namespace DeltaEngine.Content.Xml
 {
@@ -24,10 +23,9 @@ namespace DeltaEngine.Content.Xml
 			}
 			catch (Exception ex)
 			{
-				Logger.Current.Error(ex);
+				Logger.Error(ex);
 				if (Debugger.IsAttached)
 					throw new XmlContentNotFound(Name, ex);
-
 				Data = new XmlData(Name);
 			}
 		}

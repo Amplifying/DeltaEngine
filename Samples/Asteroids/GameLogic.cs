@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
 using DeltaEngine.Rendering;
 
 namespace Asteroids
@@ -53,19 +53,22 @@ namespace Asteroids
 			IncreaseScore.Invoke(increase);
 		}
 
-		internal class GameLogicsHandler : Behavior2D
+		internal class GameLogicsHandler : UpdateBehavior
 		{
 			public GameLogicsHandler()
 			{
 				timeLastNewAsteroid = 0;
 			}
 
-			public override void Handle(Entity2D entity)
+			public override void Update(IEnumerable<Entity> entities)
 			{
-				var gameEntity = entity as GameLogic;
-				DoRemoveAndAddObjects(gameEntity);
-				CheckAsteroidCollisions(gameEntity);
-				CreateNewAsteroidIfNecessary(gameEntity);
+				foreach (var entity in entities)
+				{
+					var gameEntity = entity as GameLogic;
+					DoRemoveAndAddObjects(gameEntity);
+					CheckAsteroidCollisions(gameEntity);
+					CreateNewAsteroidIfNecessary(gameEntity);
+				}
 			}
 
 			private void DoRemoveAndAddObjects(GameLogic gameEntity)
@@ -120,11 +123,11 @@ namespace Asteroids
 
 			private void CreateNewAsteroidIfNecessary(GameLogic gameEntity)
 			{
-				if (Time.Current.Milliseconds - 1000 > timeLastNewAsteroid &&
+				if (GlobalTime.Current.Milliseconds - 1000 > timeLastNewAsteroid &&
 					gameEntity.ExistantAsteroids.Count <= MaximumAsteroids)
 				{
 					gameEntity.CreateRandomAsteroids(1);
-					timeLastNewAsteroid = Time.Current.Milliseconds;
+					timeLastNewAsteroid = GlobalTime.Current.Milliseconds;
 				}
 			}
 

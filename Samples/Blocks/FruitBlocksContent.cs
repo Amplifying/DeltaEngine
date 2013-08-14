@@ -1,6 +1,4 @@
-using DeltaEngine.Content;
-
-namespace Blocks
+﻿namespace Blocks
 {
 	/// <summary>
 	/// Loads FruitBlocks related content and settings

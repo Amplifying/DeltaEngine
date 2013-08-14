@@ -1,39 +1,26 @@
-using System;
+﻿using System;
+using DeltaEngine.Commands;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Input
 {
 	/// <summary>
-	/// Allows to detect when a simple touch happens.
+	/// Allows a simple touch to be detected.
 	/// </summary>
-	public class TouchPressTrigger : Trigger, IEquatable<TouchPressTrigger>
+	public class TouchPressTrigger : Trigger
 	{
-		public TouchPressTrigger(State state)
+		public TouchPressTrigger(State state = State.Pressing)
 		{
-			this.state = state;
+			State = state;
+			Start<Touch>();
 		}
 
-		private State state;
+		public State State { get; internal set; }
 
-		public State State
+		public TouchPressTrigger(string state)
 		{
-			get { return state; }
-			set { state = value; }
-		}
-
-		public override bool ConditionMatched(InputCommands input)
-		{
-			return input.Touch.GetState(0) == state;
-		}
-
-		public bool Equals(TouchPressTrigger other)
-		{
-			return other.state == state;
-		}
-
-		public override int GetHashCode()
-		{
-			//// ReSharper disable NonReadonlyFieldInGetHashCode
-			return ((int)state).GetHashCode();
+			State = String.IsNullOrEmpty(state) ? State.Pressing : state.Convert<State>();
+			Start<Touch>();
 		}
 	}
 }

@@ -1,28 +1,16 @@
-using System;
-using DeltaEngine.Content;
+﻿using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Physics2D;
 using DeltaEngine.Platforms;
 using NUnit.Framework;
-using DeltaEngine.Graphics;
 
 namespace SideScroller.Tests
 {
-	class PlaneTests : TestWithMocksOrVisually
+	internal class PlaneTests : TestWithMocksOrVisually
 	{
-		private void InitPlayerPlane(Image playerTexture)
-		{
-			playerPlane = new PlayerPlane(playerTexture, Point.Half);
-		}
-
-		private PlayerPlane playerPlane;
-		private const string PlaneTextureName = "testplane";
-
 		[Test]
 		public void FireShotEvent()
 		{
-
-			InitPlayerPlane(ContentLoader.Load<Image>(PlaneTextureName));
+			InitPlayerPlane();
 			bool shotfired = false;
 			playerPlane.PlayerFiredShot += point =>
 			{
@@ -30,14 +18,23 @@ namespace SideScroller.Tests
 				shotfired = true;
 			};
 			playerPlane.IsFireing = true;
-			resolver.AdvanceTimeAndExecuteRunners(0.2f);
+			AdvanceTimeAndUpdateEntities(0.2f);
 			Assert.IsTrue(shotfired);
 		}
+
+		private void InitPlayerPlane()
+		{
+			var material = new Material(Shader.Position2DColorUv, PlaneTextureName);
+			playerPlane = new PlayerPlane(material, Point.Half);
+		}
+
+		private PlayerPlane playerPlane;
+		private const string PlaneTextureName = "testplane";
 
 		[Test]
 		public void MovePlaneVertically()
 		{
-			InitPlayerPlane(ContentLoader.Load<Image>(PlaneTextureName));
+			InitPlayerPlane();
 			CheckMoveUp();
 			CheckMoveDown();
 			CheckStop();
@@ -47,7 +44,7 @@ namespace SideScroller.Tests
 		{
 			var originalYCoord = playerPlane.YPosition;
 			playerPlane.AccelerateVertically(1);
-			resolver.AdvanceTimeAndExecuteRunners();
+			AdvanceTimeAndUpdateEntities();
 			Assert.Greater(playerPlane.YPosition, originalYCoord);
 		}
 
@@ -55,7 +52,7 @@ namespace SideScroller.Tests
 		{
 			var originalYCoord = playerPlane.YPosition;
 			playerPlane.AccelerateVertically(-1);
-			resolver.AdvanceTimeAndExecuteRunners();
+			AdvanceTimeAndUpdateEntities();
 			Assert.Less(playerPlane.YPosition, originalYCoord);
 		}
 
@@ -64,30 +61,26 @@ namespace SideScroller.Tests
 			playerPlane.AccelerateVertically(3);
 			var originalSpeed = playerPlane.Get<Velocity2D>().velocity.Y;
 			playerPlane.StopVertically();
-			resolver.AdvanceTimeAndExecuteRunners();
+			AdvanceTimeAndUpdateEntities();
 			Assert.Less(playerPlane.Get<Velocity2D>().velocity.Y, originalSpeed);
 		}
 
 		[Test]
 		public void HittingTopBorder()
 		{
-			InitPlayerPlane(ContentLoader.Load<Image>(PlaneTextureName));
+			InitPlayerPlane();
 		}
 
 		[Test]
-		public void CreatePlayerPlane(Type resolver)
+		public void CreatePlayerPlane()
 		{
-			InitPlayerPlane(ContentLoader.Load<Image>(PlaneTextureName));
+			InitPlayerPlane();
 		}
 
 		[Test]
-		public void CreateEnemyPlane(Type resolver)
+		public void CreateEnemyPlane()
 		{
-			InitEnemyPlane(ContentLoader.Load<Image>(EnemyTextureName));
-		}
-
-		private void InitEnemyPlane(Image foeTexture)
-		{
+			var foeTexture = new Material(Shader.Position2DColorUv, EnemyTextureName);
 			new EnemyPlane(foeTexture, new Point(1.2f, 0.5f));
 		}
 

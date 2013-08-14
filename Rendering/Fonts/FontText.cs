@@ -1,27 +1,55 @@
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
+using DeltaEngine.Extensions;
 using DeltaEngine.Graphics;
-using DeltaEngine.Rendering.ScreenSpaces;
+using DeltaEngine.Graphics.Vertices;
+using DeltaEngine.ScreenSpaces;
 
 namespace DeltaEngine.Rendering.Fonts
 {
+	/// <summary>
+	/// Entity used to render text on screen. Can be aligned horizontally and vertically within
+	/// a draw area. Can also contain line breaks.
+	/// </summary>
 	public class FontText : Entity2D
 	{
-		public FontText(Font font, string text, Point position)
-			: base(Rectangle.FromCenter(position, Size.One))
+		public FontText(string text, Rectangle drawArea)
+			: this(FontXml.Default, text, drawArea) {}
+
+		public FontText(FontXml font, string text, Rectangle drawArea)
+			: base(drawArea)
 		{
 			this.text = text;
-			data = font.Data;
-			data.Generate(text);
-			Add(font.Image);
-			Add(data.Glyphs);
-			Add(data.DrawSize);
-			Start<Render>();
+			wasFontLoadedOk = font.WasLoadedOk;
+			if (wasFontLoadedOk)
+				RenderAsFontText(font);
+			else
+				RenderAsVectorText();
 		}
 
 		private string text;
-		private readonly FontData data;
+		private readonly bool wasFontLoadedOk;
+
+		private void RenderAsFontText(FontXml font)
+		{
+			description = font.Description;
+			description.Generate(text, HorizontalAlignment.Center);
+			Add(font.Material);
+			Add(description.Glyphs);
+			Add(description.DrawSize);
+			OnDraw<Render>();
+		}
+
+		private FontDescription description;
+
+		private void RenderAsVectorText()
+		{
+			Add(new VectorText.Data(text));
+			Start<VectorText.ProcessText>();
+			OnDraw<VectorText.Render>();
+		}
 
 		public string Text
 		{
@@ -29,127 +57,177 @@ namespace DeltaEngine.Rendering.Fonts
 			set
 			{
 				text = value;
-				UpdateText();
+				if (wasFontLoadedOk)
+					UpdateFontTextRendering();
+				else
+					Get<VectorText.Data>().Text = value;
 			}
 		}
 
-		private void UpdateText()
+		private void UpdateFontTextRendering()
 		{
 			Remove<GlyphDrawData[]>();
-			data.Generate(text);
-			Add(data.Glyphs);
-			Set(data.DrawSize);
+			description.Generate(text, HorizontalAlignment);
+			Add(description.Glyphs);
+			Set(description.DrawSize);
 		}
 
-		public void SetPosition(Point position)
+		public HorizontalAlignment HorizontalAlignment
 		{
-			Set(Rectangle.FromCenter(position, Size.One));
+			get
+			{
+				return Contains<HorizontalAlignment>()
+					? Get<HorizontalAlignment>() : HorizontalAlignment.Center;
+			}
+			set
+			{
+				Set(value);
+				if (wasFontLoadedOk)
+					UpdateFontTextRendering();
+			}
 		}
 
-		public class Render : EventListener2D
+		public VerticalAlignment VerticalAlignment
 		{
-			public Render(Drawing drawing, ScreenSpace screen)
+			get { return Contains<VerticalAlignment>() ? Get<VerticalAlignment>() : VerticalAlignment.Center; }
+			set
+			{
+				Set(value);
+				if (wasFontLoadedOk)
+					UpdateFontTextRendering();
+			}
+		}
+
+		public class Render : DrawBehavior
+		{
+			public Render(Drawing drawing)
 			{
 				this.drawing = drawing;
-				this.screen = screen;
-				drawingFonts = new Dictionary<Image, SpriteInfo>();
 			}
 
 			private readonly Drawing drawing;
-			private readonly ScreenSpace screen;
-			private readonly Dictionary<Image, SpriteInfo> drawingFonts;
 
-			public override void ReceiveMessage(Entity2D entity, object message)
+			public void Draw(IEnumerable<DrawableEntity> entities)
 			{
-				if (message is SortAndRender.AddToBatch)
-					AddToBatch(entity);
+				drawFontCount = 0;
+				foreach (var entity in entities)
+					AddToBatch((FontText)entity);
+				for (int i = 0; i < drawFontCount; i++)
+					drawing.Add(drawnFontTexts[i].material, drawnFontTexts[i].material.DiffuseMap.BlendMode,
+						drawnFontTexts[i].vertices, drawnFontTexts[i].indices, drawnFontTexts[i].verticesCount,
+						drawnFontTexts[i].indicesCount);
 			}
 
-			private void AddToBatch(Entity2D text)
+			private void AddToBatch(FontText text)
 			{
+				drawArea = text.Get<Rectangle>();
+				color = text.Get<Color>();
+				position = new Point(GetHorizontalPosition(text), GetVerticalPosition(text));
+				material = text.Get<Material>();
+				glyphs = text.Get<GlyphDrawData[]>();
+				AddVerticesAndIndices();
+			}
+
+			private Rectangle drawArea;
+			private Color color;
+			private Point position;
+			private Material material;
+			private GlyphDrawData[] glyphs;
+
+			private float GetHorizontalPosition(FontText text)
+			{
+				var alignment = text.HorizontalAlignment;
+				if (alignment == HorizontalAlignment.Left)
+					return ScreenSpace.Current.ToPixelSpaceRounded(drawArea.TopLeft).X;
 				var size = text.Get<Size>();
-				var position = screen.ToPixelSpaceRounded(text.DrawArea.Center) -
-					new Point((float)Math.Round(size.Width / 2), (float)Math.Round(size.Height / 2));
-				AddVerticesAndIndices(text.Get<GlyphDrawData[]>(), position, text.Color, text.Get<Image>());
+				if (alignment == HorizontalAlignment.Right)
+					return ScreenSpace.Current.ToPixelSpaceRounded(drawArea.TopRight).X - size.Width;
+				return ScreenSpace.Current.ToPixelSpaceRounded(drawArea.Center).X -
+					MathExtensions.Round(size.Width / 2);
 			}
 
-			private void AddVerticesAndIndices(GlyphDrawData[] glyphs, Point position, Color color,
-				Image image)
+			private float GetVerticalPosition(FontText text)
+			{
+				var alignment = text.VerticalAlignment;
+				if (alignment == VerticalAlignment.Top)
+					return ScreenSpace.Current.ToPixelSpaceRounded(drawArea.TopLeft).Y;
+				var size = text.Get<Size>();
+				if (alignment == VerticalAlignment.Bottom)
+					return ScreenSpace.Current.ToPixelSpaceRounded(drawArea.BottomLeft).Y - size.Height;
+				return ScreenSpace.Current.ToPixelSpaceRounded(drawArea.Center).Y -
+					MathExtensions.Round(size.Height / 2);
+			}
+
+			private void AddVerticesAndIndices()
 			{
 				foreach (GlyphDrawData glyph in glyphs)
-					AddVerticesAndIndicesForGlyph(glyph, position, color, image);
+					AddVerticesAndIndicesForGlyph(glyph);
 			}
 
-			private struct SpriteInfo
+			private void AddVerticesAndIndicesForGlyph(GlyphDrawData glyph)
 			{
-				public List<VertexPositionColorTextured> vertices;
-				public List<short> indices;
+				var fontVertices = GetFontVertices();
+				fontVertices.AddIndicesForGlyph();
+
+				fontVertices.AddVertex(new VertexPosition2DColorUV(position + glyph.DrawArea.TopLeft, color,
+					glyph.UV.TopLeft));
+				fontVertices.AddVertex(new VertexPosition2DColorUV(position + glyph.DrawArea.TopRight,
+					color, glyph.UV.TopRight));
+				fontVertices.AddVertex(new VertexPosition2DColorUV(position + glyph.DrawArea.BottomRight,
+					color, glyph.UV.BottomRight));
+				fontVertices.AddVertex(new VertexPosition2DColorUV(position + glyph.DrawArea.BottomLeft,
+					color, glyph.UV.BottomLeft));
 			}
 
-			private void AddVerticesAndIndicesForGlyph(GlyphDrawData glyph, Point position, Color color,
-				Image image)
+			private SpriteInfo GetFontVertices()
 			{
-				var newVertices = new List<VertexPositionColorTextured>
+				for (int i = 0; i < drawFontCount; i++)
+					if (drawnFontTexts[i].material.DiffuseMap == material.DiffuseMap &&
+						!drawnFontTexts[i].MaxVerticesExceeded())
+						return drawnFontTexts[i];
+
+				drawnFontTexts[drawFontCount++] = new SpriteInfo(material);
+				return drawnFontTexts[drawFontCount - 1];
+			}
+
+			private readonly SpriteInfo[] drawnFontTexts = new SpriteInfo[short.MaxValue];
+			private int drawFontCount;
+
+			private class SpriteInfo
+			{
+				public SpriteInfo(Material material)
 				{
-					new VertexPositionColorTextured(position + glyph.DrawArea.TopLeft, color, glyph.UV.TopLeft),
-					new VertexPositionColorTextured(position + glyph.DrawArea.TopRight, color,
-						glyph.UV.TopRight),
-					new VertexPositionColorTextured(position + glyph.DrawArea.BottomRight, color,
-						glyph.UV.BottomRight),
-					new VertexPositionColorTextured(position + glyph.DrawArea.BottomLeft, color,
-						glyph.UV.BottomLeft)
-				};
-				if (!drawingFonts.ContainsKey(image))
-					drawingFonts.Add(image,
-						new SpriteInfo { vertices = newVertices, indices = new List<short> { 0, 1, 2, 0, 2, 3 } });
-				else
-					AddNewVerticesToList(image, newVertices);
-			}
+					vertices = new VertexPosition2DColorUV[short.MaxValue * 4 / 6];
+					indices = new short[short.MaxValue];
+					this.material = material;
+					verticesCount = 0;
+					indicesCount = 0;
+				}
 
-			private void AddNewVerticesToList(Image image, List<VertexPositionColorTextured> newVertices)
-			{
-				SpriteInfo spriteInfo;
-				drawingFonts.TryGetValue(image, out spriteInfo);
-				AddIndicesForGlyph(spriteInfo);
-				foreach (var vertice in newVertices)
-					spriteInfo.vertices.Add(vertice);
-			}
+				public readonly Material material;
+				internal readonly VertexPosition2DColorUV[] vertices;
+				internal readonly short[] indices;
+				internal int verticesCount, indicesCount;
 
-			private static void AddIndicesForGlyph(SpriteInfo spriteInfo)
-			{
-				spriteInfo.indices.Add((short)spriteInfo.vertices.Count);
-				spriteInfo.indices.Add((short)(spriteInfo.vertices.Count + 1));
-				spriteInfo.indices.Add((short)(spriteInfo.vertices.Count + 2));
-				spriteInfo.indices.Add((short)spriteInfo.vertices.Count);
-				spriteInfo.indices.Add((short)(spriteInfo.vertices.Count + 2));
-				spriteInfo.indices.Add((short)(spriteInfo.vertices.Count + 3));
-			}
+				public void AddIndicesForGlyph()
+				{
+					indices[indicesCount++] = (short)verticesCount;
+					indices[indicesCount++] = (short)(verticesCount + 1);
+					indices[indicesCount++] = (short)(verticesCount + 2);
+					indices[indicesCount++] = (short)verticesCount;
+					indices[indicesCount++] = (short)(verticesCount + 2);
+					indices[indicesCount++] = (short)(verticesCount + 3);
+				}
 
-			public override void ReceiveMessage(object message)
-			{
-				if (!(message is SortAndRender.RenderBatch))
-					return;
+				public void AddVertex(VertexPosition2DColorUV vertex)
+				{
+					vertices[verticesCount++] = vertex;
+				}
 
-				foreach (var font in drawingFonts)
-					RenderGraphics(font.Key, font.Value.vertices, font.Value.indices);
-
-				drawingFonts.Clear();
-			}
-
-			private void RenderGraphics(Image image, List<VertexPositionColorTextured> vertices,
-				List<short> indices)
-			{
-				var vertexArray = new VertexPositionColorTextured[vertices.Count + 1];
-				for (int i = 0; i < vertices.Count; ++i)
-					vertexArray[i] = vertices[i];
-
-				var indicesArray = new short[indices.Count + 1];
-				for (int i = 0; i < indices.Count; ++i)
-					indicesArray[i] = indices[i];
-
-				drawing.EnableTexturing(image);
-				drawing.SetIndices(indicesArray, indicesArray.Length);
-				drawing.DrawVerticesForSprite(VerticesMode.Triangles, vertexArray);
+				public bool MaxVerticesExceeded()
+				{
+					return short.MaxValue * 4 / 6 - verticesCount < 4;
+				}
 			}
 		}
 	}

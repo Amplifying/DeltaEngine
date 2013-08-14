@@ -1,0 +1,228 @@
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using DeltaEngine.Content;
+using DeltaEngine.Datatypes;
+using DeltaEngine.Editor.ContentManager;
+using DeltaEngine.Editor.Core;
+using DeltaEngine.Entities;
+using DeltaEngine.Rendering.Sprites;
+using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Messaging;
+
+namespace DeltaEngine.Editor.ImageAnimationEditor
+{
+	internal class AnimationEditorViewModel : ViewModelBase
+	{
+		public AnimationEditorViewModel(Service service)
+		{
+			this.service = service;
+			metaDataCreator = new ContentMetaDataCreator(service);
+			LoadedImageList = new ObservableCollection<string>();
+			ImageList = new ObservableCollection<string>();
+			AnimationList = new ObservableCollection<string>();
+			Duration = 1;
+			SubImageSize = new Size(500, 500);
+			LoadImagesFromProject();
+			LoadAnimationsFromProject();
+			SetMessengers();
+		}
+
+		private readonly Service service;
+		private readonly ContentMetaDataCreator metaDataCreator;
+		public ObservableCollection<string> LoadedImageList { get; set; }
+		public ObservableCollection<string> ImageList { get; set; }
+		public ObservableCollection<string> AnimationList { get; set; }
+
+		private void LoadImagesFromProject()
+		{
+			LoadedImageList.Clear();
+			var foundContent = service.GetAllContentNamesByType(ContentType.Image);
+			foreach (string content in foundContent)
+				LoadedImageList.Add(content);
+			RaisePropertyChanged("BackgroundImageList");
+		}
+
+		private void LoadAnimationsFromProject()
+		{
+			AnimationList.Clear();
+			var foundImageAnimtaion = service.GetAllContentNamesByType(ContentType.ImageAnimation);
+			var foundSpriteSheetAnimtaion =
+				service.GetAllContentNamesByType(ContentType.SpriteSheetAnimation);
+			foreach (var imageAnimation in foundImageAnimtaion)
+				AnimationList.Add(imageAnimation);
+			foreach (var imageAnimation in foundSpriteSheetAnimtaion)
+				AnimationList.Add(imageAnimation);
+			RaisePropertyChanged("AnimtaionList");
+		}
+
+		private void SetMessengers()
+		{
+			Messenger.Default.Register<string>(this, "DeletingImage", DeleteImage);
+			Messenger.Default.Register<int>(this, "MoveImageUp", MoveImageUp);
+			Messenger.Default.Register<int>(this, "MoveImageDown", MoveImageDown);
+			Messenger.Default.Register<string>(this, "SaveAnimation", SaveAnimation);
+		}
+
+		private void DeleteImage(string image)
+		{
+			ImageList.Remove(image);
+			CreateNewAnimation();
+			RaisePropertyChanged("ImageList");
+		}
+
+		private void MoveImageUp(int imageIndex)
+		{
+			if (imageIndex == 0)
+				return;
+			var imageToMove = ImageList[imageIndex];
+			ImageList.RemoveAt(imageIndex);
+			ImageList.Insert(imageIndex - 1, imageToMove);
+			SelectedIndex = imageIndex - 1;
+			CreateNewAnimation();
+			RaisePropertyChanged("ImageList");
+		}
+
+		private void SaveAnimation(string obj)
+		{
+			if (ImageList.Count == 0 || string.IsNullOrEmpty(AnimationName))
+				return;
+			ContentMetaData contentMetaData;
+			var fileNameAndBytes = new Dictionary<string, byte[]>();
+			if (ImageList.Count == 1)
+			{
+				fileNameAndBytes.Add(AnimationName + ".SpriteSheetAnimation", null);
+				contentMetaData = metaDataCreator.CreateMetaDataFromSpriteSheetAnimation(AnimationName,
+					spriteSheetAnimation);
+			}
+			else
+			{
+				fileNameAndBytes.Add(AnimationName + ".ImageAnimation", null);
+				contentMetaData = metaDataCreator.CreateMetaDataFromImageAnimation(AnimationName, animation);
+			}
+			if (ContentLoader.Exists(AnimationName))
+			{
+				service.DeleteContent(AnimationName);
+				ContentLoader.RemoveResource(AnimationName);
+			}
+			service.UploadContent(contentMetaData, fileNameAndBytes);
+		}
+
+		public int SelectedIndex
+		{
+			get { return selectedIndex; }
+			set
+			{
+				selectedIndex = value;
+				RaisePropertyChanged("SelectedIndex");
+			}
+		}
+
+		private int selectedIndex;
+
+		private void MoveImageDown(int imageIndex)
+		{
+			if (imageIndex == ImageList.Count - 1)
+				return;
+			var imageToMove = ImageList[imageIndex];
+			ImageList.RemoveAt(imageIndex);
+			ImageList.Insert(imageIndex + 1, imageToMove);
+			SelectedIndex = imageIndex + 1;
+			CreateNewAnimation();
+			RaisePropertyChanged("ImageList");
+		}
+
+		public string SelectedImageToAdd
+		{
+			get { return selectedImageToAdd; }
+			set
+			{
+				ImageList.Add(value);
+				CreateNewAnimation();
+				RaisePropertyChanged("ImageList");
+			}
+		}
+
+		private void CreateNewAnimation()
+		{
+			EntitiesRunner.Current.Clear();
+			if (ImageList.Count == 1)
+				ShowSpritesheetAnimation();
+			if (ImageList.Count > 1)
+				ShowMultipleImageAnimation();
+		}
+
+		private void ShowSpritesheetAnimation()
+		{
+			spriteSheetAnimation = new SpriteSheetAnimation(ContentLoader.Load<Image>(ImageList[0]),
+				Duration, SubImageSize);
+			var material = new Material(Shader.Position2DUv, "") { SpriteSheet = spriteSheetAnimation };
+			new Sprite(material, new Rectangle(0.25f, 0.25f, 0.5f, 0.5f));
+		}
+
+		private SpriteSheetAnimation spriteSheetAnimation;
+
+		public float Duration
+		{
+			get { return duration; }
+			set
+			{
+				duration = value;
+				CreateNewAnimation();
+			}
+		}
+
+		private float duration;
+
+		public Size SubImageSize
+		{
+			get { return subImageSize; }
+			set
+			{
+				subImageSize = value;
+				CreateNewAnimation();
+			}
+		}
+
+		private Size subImageSize;
+
+		private void ShowMultipleImageAnimation()
+		{
+			var imagelist = new List<Image>();
+			foreach (var image in ImageList)
+				imagelist.Add(ContentLoader.Load<Image>(image));
+			animation = new ImageAnimation(imagelist.ToArray(), Duration);
+			new Sprite(new Material(Shader.Position2DUv, "") { Animation = animation },
+				new Rectangle(0.25f, 0.25f, 0.5f, 0.5f));
+		}
+
+		public string selectedImageToAdd;
+		private ImageAnimation animation;
+
+		public string AnimationName
+		{
+			get { return animtaionName; }
+			set
+			{
+				animtaionName = value;
+				if (ContentLoader.Exists(animtaionName, ContentType.ImageAnimation) ||
+					ContentLoader.Exists(animtaionName, ContentType.SpriteSheetAnimation))
+					CreateAnimtaionFromFile();
+			}
+		}
+
+		private string animtaionName;
+
+		private void CreateAnimtaionFromFile()
+		{
+			EntitiesRunner.Current.Clear();
+			ImageList.Clear();
+			var material = new Material(Shader.Position2DUv, animtaionName);
+			new Sprite(material, new Rectangle(0.25f, 0.25f, 0.5f, 0.5f));
+			if (material.Animation != null)
+				foreach (var image in material.Animation.Frames)
+					ImageList.Add(image.Name);
+			else
+				ImageList.Add(material.SpriteSheet.Image.Name);
+		}
+	}
+}

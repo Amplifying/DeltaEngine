@@ -1,7 +1,8 @@
-using DeltaEngine.Input;
+﻿using DeltaEngine;
+using DeltaEngine.Datatypes;
 using DeltaEngine.Multimedia;
 using DeltaEngine.Platforms;
-using DeltaEngine.Rendering.ScreenSpaces;
+using DeltaEngine.ScreenSpaces;
 
 namespace Breakout
 {
@@ -11,13 +12,9 @@ namespace Breakout
 	public class Program : App
 	{
 		public Program()
-		{			
-			new Background().RenderLayer = 0;
-			var input = Resolve<InputCommands>();
-			var score = new Score();
-			var window = Resolve<RelativeScreenSpace>().Window;
-			var game = new Game(new BallInLevel(new Paddle(input), input, new Level(score)), score);
-			new UI(window, input, game, Resolve<SoundDevice>());
+		{
+			Resolve<Settings>().UpdatesPerSecond = 60;
+			new Game(Resolve<Window>(), Resolve<SoundDevice>());
 		}
 
 		public static void Main()

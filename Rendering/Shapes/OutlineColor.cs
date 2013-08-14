@@ -1,11 +1,11 @@
-using DeltaEngine.Datatypes;
+﻿using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Rendering.Shapes
 {
 	/// <summary>
-	/// Stores the color of the outline to a shape
+	/// Stores the color of the outline to a 2D shape.
 	/// </summary>
-	public class OutlineColor
+	public class OutlineColor : Lerp<OutlineColor>
 	{
 		public OutlineColor(Color color)
 		{
@@ -13,23 +13,10 @@ namespace DeltaEngine.Rendering.Shapes
 		}
 
 		public Color Value { get; set; }
+
+		public OutlineColor Lerp(OutlineColor other, float interpolation)
+		{
+			return new OutlineColor(Value.Lerp(other.Value, interpolation));
+		}
 	}
-	/*TODO: would be nice to do
-	 * var ellipse = new Ellipse(Point.Half, Size.One, Color.Yellow);
-	 * ellipse.Add(new Outline(Color.Red));
-	 * 
-	 * with:
-	 * public class Outline : RenderableComponent
-	 * {
-	 *   public Outline(Color color)
-	 *   {
-	 *     Color = color;
-	 *   }
-	 *   
-	 *   public void Render(Drawing draw, ScreenSpace screen)
-	 *   {
-	 *     draw.DrawVertices(VerticesMode.Lines, GetLinePoints());
-	 *   }
-	 * }
-	 */
 }

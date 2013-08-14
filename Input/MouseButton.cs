@@ -1,4 +1,4 @@
-namespace DeltaEngine.Input
+﻿namespace DeltaEngine.Input
 {
 	/// <summary>
 	/// Normally we only care about left, middle or right mouse button clicks, rarely for the others.

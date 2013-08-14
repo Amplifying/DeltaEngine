@@ -1,12 +1,12 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
-using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Rendering.Shapes
 {
 	/// <summary>
-	/// Holds the three corners that define a triangle in 2D space
+	/// Holds the three corners that define a triangle in 2D space.
 	/// </summary>
 	public struct Triangle2D
 	{

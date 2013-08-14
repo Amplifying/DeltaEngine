@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using DeltaEngine.Core;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Editor.SampleBrowser
 {
@@ -112,7 +112,7 @@ namespace DeltaEngine.Editor.SampleBrowser
 				}
 				catch (ReflectionTypeLoadException ex)
 				{
-					Console.WriteLine("Failed to load " + file + ". LoaderExceptions: " +
+					Logger.Warning("Failed to load " + file + ". LoaderExceptions: " +
 						ex.LoaderExceptions.ToText());
 				}
 			}

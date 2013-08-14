@@ -1,24 +1,24 @@
-using DeltaEngine.Editor.Common;
+﻿using DeltaEngine.Editor.Core;
 
 namespace DeltaEngine.Editor.Helpers
 {
 	public class DesignEditorPlugin : EditorPluginView
 	{
+		public void Init(Service service) {}
+
 		public string ShortName
 		{
 			get { return "Test Plugin"; }
 		}
+
 		public string Icon
 		{
 			get { return "Icons/Content.png"; }
 		}
-		public EditorPluginCategory Category
+
+		public bool RequiresLargePane
 		{
-			get { return EditorPluginCategory.Content; }
-		}
-		public int Priority
-		{
-			get { return 1; }
+			get { return false; }
 		}
 	}
 }

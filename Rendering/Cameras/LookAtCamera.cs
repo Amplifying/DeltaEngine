@@ -1,43 +1,78 @@
-using DeltaEngine.Core;
-using DeltaEngine.Datatypes;
+﻿using DeltaEngine.Datatypes;
+using DeltaEngine.Extensions;
+using DeltaEngine.Graphics;
 
 namespace DeltaEngine.Rendering.Cameras
 {
 	/// <summary>
 	/// 3D camera that support setting of position and target.
 	/// </summary>
-	public class LookAtCamera : BaseCamera
+	public class LookAtCamera : Camera
 	{
-		public LookAtCamera()
-			: this(DefaultLookAtCamPosition, DefaultTargetPosition) { }
-
-		public static readonly Vector DefaultLookAtCamPosition = Vector.One * 4;// new Vector(0, 4, -3);
-		public static readonly Vector DefaultTargetPosition = Vector.Zero;
-
-		public LookAtCamera(Vector position, Vector target)
-			: base(position)
+		public LookAtCamera(Device device, Window window, Vector position, Vector target)
+			: base(device, window, position)
 		{
+			// ReSharper disable DoNotCallOverridableMethodsInConstructor
 			Target = target;
 		}
 
-		public override void Run()
+		public LookAtCamera(Device device, Window window, Vector position, Entity3D target)
+			: base(device, window, position)
 		{
-			const float RotationX = 30;
-			rotationY += RotationSpeed * Time.Current.Delta;
-			var rotationMatrix =
-				Matrix.CreateRotationX(RotationX) *
-				Matrix.CreateRotationY(rotationY);
-			var lookVector = new Vector(0, 0, Distance);
-			Position = Matrix.TransformNormal(lookVector, rotationMatrix);
-			base.Run();
+			entityTarget = target;
 		}
 
-		protected float Distance
+		private readonly Entity3D entityTarget;
+
+		public override Vector Target
+		{
+			get
+			{
+				if (entityTarget != null)
+					return entityTarget.Position;
+				return base.Target;
+			}
+		}
+
+		private void UpdateInternalState()
+		{
+			cameraRotation = new Vector(Rotation.X, Rotation.Y.Clamp(
+				MinPitchRotation, MaxPitchRotation), cameraRotation.Z);
+			var rotationY = Matrix.CreateRotationY(cameraRotation.Y);
+			var rotationX = Matrix.CreateRotationX(cameraRotation.X);
+			var rotationMatrix = rotationX * rotationY;
+			var lookVector = new Vector(0.0f, 0.0f, Distance);
+			Position = Vector.TransformNormal(lookVector, rotationMatrix);
+			Position = Position + Target;
+		}
+
+		public Vector Rotation
+		{
+			get { return cameraRotation; }
+			set
+			{
+				cameraRotation = value;
+				UpdateInternalState();
+			}
+		}
+
+		private Vector cameraRotation;
+		private const float MinPitchRotation = -90;
+		private const float MaxPitchRotation = 90;
+
+		public float Distance
 		{
 			get { return (Position - Target).Length; }
 		}
 
-		private float rotationY;
-		private const float RotationSpeed = 30;
+		public void Zoom(float amount)
+		{
+			var lookDirection = Target - Position;
+			var directionLength = lookDirection.Length;
+			if (amount > directionLength)
+				amount = directionLength - MathExtensions.Epsilon;
+			lookDirection /= directionLength;
+			Position = Position + lookDirection * amount;
+		}
 	}
 }

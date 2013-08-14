@@ -1,38 +1,59 @@
+﻿using System;
 using System.Collections.Generic;
 using DeltaEngine.Content;
+using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
-using DeltaEngine.Rendering.ScreenSpaces;
 
 namespace DeltaEngine.Rendering.Sprites
 {
 	/// <summary>
-	/// 2D sprite to be rendered, which is an image used as an Entity2D.
+	/// 2D sprite to be rendered, which is an image or animation or sprite sheet used as an Entity2D.
 	/// </summary>
 	public class Sprite : Entity2D
 	{
-		private Sprite()
-			: base(Rectangle.Zero) {}
+		public Sprite(Material material, Point position)
+			: this(material, Rectangle.FromCenter(position, material.RenderSize)) {}
 
-		public Sprite(string imageName, Rectangle drawArea)
-			: this(ContentLoader.Load<Image>(imageName), drawArea) {}
-
-		public Sprite(Image image, Rectangle drawArea)
+		public Sprite(Material material, Rectangle drawArea)
 			: base(drawArea)
 		{
-			Add(image);
-			Add(image.BlendMode);
-			Start<BatchRender>();
+			Add(material);
+			Add(material.DiffuseMap.BlendMode);
+			Add(new SpriteCoordinates(Rectangle.One));
+			if (material.DefaultColor != DefaultColor)
+				Color = material.DefaultColor;
+			OnDraw<SpriteBatchRenderer>();
+			if (material.Animation != null)
+				Start<UpdateImageAnimation>();
+			if (material.SpriteSheet != null)
+				Start<UpdateSpriteSheetAnimation>();
+			IsPlaying = true;
 		}
 
-		public Image Image
+		public struct SpriteCoordinates : Lerp<SpriteCoordinates>
 		{
-			get { return Get<Image>(); }
-			set
+			public SpriteCoordinates(Rectangle uv, FlipMode flipMode = FlipMode.None)
+				: this()
 			{
-				Set(value);
-				Set(value.BlendMode);
+				if (flipMode == FlipMode.Horizontal)
+					uv = new Rectangle(uv.Right, uv.Top, -uv.Width, uv.Height);
+				else if (flipMode == FlipMode.Vertical)
+					uv = new Rectangle(uv.Left, uv.Bottom, uv.Width, -uv.Height);
+				UV = uv;
 			}
+
+			public Rectangle UV { get; private set; }
+
+			public SpriteCoordinates Lerp(SpriteCoordinates other, float interpolation)
+			{
+				return new SpriteCoordinates(other.UV.Lerp(UV, interpolation));
+			}
+		}
+
+		public Material Material
+		{
+			get { return Get<Material>(); }
+			set { Set(value); }
 		}
 
 		public BlendMode BlendMode
@@ -41,120 +62,47 @@ namespace DeltaEngine.Rendering.Sprites
 			set { Set(value); }
 		}
 
-		/// <summary>
-		/// Responsible for rendering sprites in batches
-		/// </summary>
-		public class BatchRender : EventListener2D
+		public SpriteCoordinates Coordinates
 		{
-			public BatchRender(ScreenSpace screen, Drawing drawing)
+			get { return Get<SpriteCoordinates>(); }
+			set { Set(value); }
+		}
+
+		/// <summary>
+		/// Force a new uv for SpriteSheets without interpolation between last uv and current uv data.
+		/// </summary>
+		public void SetNewUV(Rectangle uv, FlipMode flipMode = FlipMode.None)
+		{
+			Coordinates = new SpriteCoordinates(uv, flipMode);
+			for (int index = 0; index < lastTickLerpComponents.Count; index++)
 			{
-				this.screen = screen;
-				this.drawing = drawing;
-				spriteDrawQueue = new List<SpriteDrawContext>();
-				verticesBatch = new List<VertexPositionColorTextured>();
-				indicesBatch = new List<short>();
-			}
-
-			private readonly ScreenSpace screen;
-			private readonly Drawing drawing;
-			private readonly List<SpriteDrawContext> spriteDrawQueue;
-			private readonly List<VertexPositionColorTextured> verticesBatch;
-			private readonly List<short> indicesBatch;
-
-			public override void ReceiveMessage(Entity2D entity, object message)
-			{
-				if (message is SortAndRender.AddToBatch)
-					BatchSprite(entity);
-			}
-
-			private void BatchSprite(Entity2D entity)
-			{
-				SpriteDrawContext sprite;
-				FillSpriteDrawContext(entity, out sprite);
-				spriteDrawQueue.Add(sprite);
-			}
-
-			private void FillSpriteDrawContext(Entity2D entity, out SpriteDrawContext drawContext)
-			{
-				var rotation = entity.Rotation;
-				var drawArea = entity.DrawArea;
-				var color = entity.Color;
-				var center = drawArea.Center;
-				var rotationCenter = entity.Contains<RotationCenter>()
-					? entity.Get<RotationCenter>().Value : center;
-
-				drawContext.texture = entity.Get<Image>();
-				drawContext.vertices = new[]
-				{
-					GetVertex(drawArea.TopLeft.RotateAround(rotationCenter, rotation), Point.Zero, color),
-					GetVertex(drawArea.TopRight.RotateAround(rotationCenter, rotation), Point.UnitX, color),
-					GetVertex(drawArea.BottomRight.RotateAround(rotationCenter, rotation), Point.One, color),
-					GetVertex(drawArea.BottomLeft.RotateAround(rotationCenter, rotation), Point.UnitY, color)
-				};
-			}
-
-			private struct SpriteDrawContext
-			{
-				public Image texture;
-				public VertexPositionColorTextured[] vertices;
-			}
-
-			private VertexPositionColorTextured GetVertex(Point position, Point uv, Color color)
-			{
-				return new VertexPositionColorTextured(screen.ToPixelSpaceRounded(position), color, uv);
-			}
-
-			public override void ReceiveMessage(object message)
-			{
-				if (!(message is SortAndRender.RenderBatch) || spriteDrawQueue.Count == 0)
-					return;
-
-				RenderBatchesByTexture();
-			}
-
-			private void RenderBatchesByTexture()
-			{
-				Image batchTexture = spriteDrawQueue[0].texture;
-				for (int pos = 0; pos < spriteDrawQueue.Count; ++pos)
-					batchTexture = BatchSpriteByTexture(spriteDrawQueue[pos], batchTexture);
-
-				RenderBatch(batchTexture);
-				spriteDrawQueue.Clear();
-			}
-
-			private Image BatchSpriteByTexture(SpriteDrawContext sprite, Image batchTexture)
-			{
-				Image currentTexture = sprite.texture;
-				if (currentTexture != batchTexture)
-				{
-					RenderBatch(currentTexture);
-					batchTexture = currentTexture;
-				}
-
-				QueueSpriteRenderData(sprite.vertices);
-				return batchTexture;
-			}
-
-			private void RenderBatch(Image texture)
-			{
-				drawing.EnableTexturing(texture);
-				drawing.SetIndices(indicesBatch.ToArray(), indicesBatch.Count);
-				drawing.DrawVerticesForSprite(VerticesMode.Triangles, verticesBatch.ToArray());
-				verticesBatch.Clear();
-				indicesBatch.Clear();
-			}
-
-			private void QueueSpriteRenderData(VertexPositionColorTextured[] vertices)
-			{
-				int verticesCount = verticesBatch.Count;
-				indicesBatch.Add((short)(verticesCount + 0));
-				indicesBatch.Add((short)(verticesCount + 1));
-				indicesBatch.Add((short)(verticesCount + 2));
-				indicesBatch.Add((short)(verticesCount + 0));
-				indicesBatch.Add((short)(verticesCount + 2));
-				indicesBatch.Add((short)(verticesCount + 3));
-				verticesBatch.AddRange(vertices);
+				object component = lastTickLerpComponents[index];
+				if (component is SpriteCoordinates)
+					lastTickLerpComponents[index] = new SpriteCoordinates(uv, flipMode);
 			}
 		}
+
+		public float Elapsed { get; set; }
+		public int CurrentFrame { get; set; }
+		public bool IsPlaying { get; set; }
+
+		public void Reset()
+		{
+			CurrentFrame = 0;
+			if (Material.Animation != null || Material.SpriteSheet != null)
+				while (Elapsed >= Material.Duration)
+					Elapsed -= Material.Duration;
+			else
+				Elapsed = 0.0f;
+		}
+
+		internal void InvokeAnimationEndedAndReset()
+		{
+			if (AnimationEnded != null)
+				AnimationEnded();
+			Reset();
+		}
+
+		public event Action AnimationEnded;
 	}
 }

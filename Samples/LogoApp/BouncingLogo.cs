@@ -1,29 +1,29 @@
-using DeltaEngine.Core;
+﻿using DeltaEngine;
+using DeltaEngine.Commands;
+using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Multimedia;
 using DeltaEngine.Physics2D;
 using DeltaEngine.Rendering.Sprites;
 
 namespace LogoApp
 {
 	/// <summary>
-	/// Colored Delta Engine logo which spins and bounces around the screen
+	/// Colored Delta Engine logo which spins and bounces around the screen plus input and sound.
 	/// </summary>
 	public class BouncingLogo : Sprite
 	{
 		public BouncingLogo()
-			: base("DeltaEngineLogo", LogoDrawArea)
+			: base(ContentLoader.Load<Material>("Logo"), Point.Half)
 		{
 			Color = Color.GetRandomColor();
-			Randomizer random = Randomizer.Current;
-			Rotation = random.Get(0, 360);
-			Add(new SimplePhysics.Data
-			{
-				RotationSpeed = random.Get(-50, 50),
-				Velocity = new Point(random.Get(-0.4f, 0.4f), random.Get(-0.4f, 0.4f))
-			});
-			Start<SimplePhysics.BounceOffScreenEdges, SimplePhysics.Rotate>();
+			this.StartRotating(random.Get(-50, 50));
+			this.StartBouncingOffScreenEdges(
+				new Point(random.Get(-0.4f, 0.4f), random.Get(-0.4f, 0.4f)), () => sound.Play(0.03f, 0.0f));
+			new Command("Click", position => Center = position);
 		}
 
-		private static readonly Rectangle LogoDrawArea = new Rectangle(0.4f, 0.4f, 0.15f, 0.15f);
+		private readonly Randomizer random = Randomizer.Current;
+		private readonly Sound sound = ContentLoader.Load<Sound>("BorderHit");
 	}
 }

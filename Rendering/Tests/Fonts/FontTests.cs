@@ -1,4 +1,4 @@
-using System;
+﻿using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
 using DeltaEngine.Rendering.Fonts;
@@ -10,48 +10,92 @@ namespace DeltaEngine.Rendering.Tests.Fonts
 {
 	internal class FontTests : TestWithMocksOrVisually
 	{
+		[SetUp]
+		public void SetUp()
+		{
+			verdana = FontXml.Default;
+			tahoma = ContentLoader.Load<FontXml>("Tahoma30");
+		}
+
+		private FontXml verdana;
+		private FontXml tahoma;
+
 		[Test, ApproveFirstFrameScreenshot]
 		public void DrawSmallFont()
 		{
-			new FontText(new Font("Verdana12"), "Hi there", Point.Half);
+			var text = new FontText(verdana, "Hi there", Rectangle.One);
+			Assert.AreEqual(3, text.NumberOfComponents);
+		}
+
+		/// <summary>
+		/// FontText has a font material, the glyphs and the draw size as components.
+		/// </summary>
+		[Test, CloseAfterFirstFrame]
+		public void FontTextHas3Components()
+		{
+			var text = new FontText(verdana, "Hi there", Rectangle.One);
+			Assert.AreEqual(3, text.NumberOfComponents);
+		}
+
+		/// <summary>
+		/// Lerp is used for its draw size, nothing else (material and glyphs are not lerped).
+		/// </summary>
+		[Test, CloseAfterFirstFrame]
+		public void FontTextShouldNeverHaveMoreThan2LerpComponents()
+		{
+			var text = new DerivedFontText(verdana, "Hi there", Rectangle.One);
+			AdvanceTimeAndUpdateEntities(1);
+			RunAfterFirstFrame(() => Assert.AreEqual(1, text.NumberOfLastTickLerpComponents));
+		}
+
+		private class DerivedFontText : FontText
+		{
+			public DerivedFontText(FontXml font, string text, Rectangle drawArea)
+				: base(font, text, drawArea) {}
+
+			public int NumberOfLastTickLerpComponents { get { return lastTickLerpComponents.Count; } }
 		}
 
 		[Test, ApproveFirstFrameScreenshot]
 		public void DrawBigFont()
 		{
-			new FontText(new Font("Tahoma30"), "Big Fonts rule!", Point.Half);
+			new FontText(tahoma, "Big Fonts rule!", Rectangle.One);
 		}
 
 		[Test, ApproveFirstFrameScreenshot]
 		public void DrawColoredFonts()
 		{
-			var font = new Font("Tahoma30");
-			new FontText(font, "Red Text", new Point(0.5f, 0.4f)) { Color = Color.Red };
-			new FontText(font, "Yellow", new Point(0.5f, 0.6f)) { Color = Color.Yellow };
+			new FontText(tahoma, "Red", Top) { Color = Color.Red };
+			new FontText(tahoma, "Yellow", Bottom) { Color = Color.Yellow };
 		}
+
+		private static readonly Rectangle Top = new Rectangle(0.5f, 0.4f, 0.0f, 0.0f);
+		private static readonly Rectangle Bottom = new Rectangle(0.5f, 0.6f, 0.0f, 0.0f);
 
 		[Test, ApproveFirstFrameScreenshot]
 		public void DrawFontAndLines()
 		{
-			new Line2D(Point.Zero, Point.One, Color.Red);
-			new FontText(new Font("Tahoma30"), "Delta Engine", new Point(0.5f, 0.4f));
-			new Line2D(Point.UnitX, Point.UnitY, Color.Red);
+			new Line2D(Point.Zero, Point.One, Color.Red) { RenderLayer = -1 };
+			new FontText(tahoma, "Delta Engine", Rectangle.One);
+			new Line2D(Point.UnitX, Point.UnitY, Color.Red) { RenderLayer = 1 };
 		}
 
 		[Test, ApproveFirstFrameScreenshot]
-		public void DrawFontAndSprite()
+		public void DrawFontOverSprite()
 		{
-			new Sprite("DeltaEngineLogo", screenCenter) { Color = Color.PaleGreen };
-			new FontText(new Font("Tahoma30"), "Delta Engine", new Point(0.5f, 0.4f));
+			new Sprite(new Material(Shader.Position2DUv, "DeltaEngineLogo"), Rectangle.HalfCentered)
+			{
+				Color = Color.PaleGreen,
+				RenderLayer = -1
+			};
+			new FontText(tahoma, "Delta Engine", Rectangle.One);
 		}
 
-		private readonly Rectangle screenCenter = Rectangle.FromCenter(Point.Half, Size.Half);
-
 		[Test, ApproveFirstFrameScreenshot]
-		public void Draw2DifferentFonts()
+		public void DrawTwoDifferentFonts()
 		{
-			new FontText(new Font("Tahoma30"), "Delta Engine", new Point(0.5f, 0.4f));
-			new FontText(new Font("Verdana12"), "Delta Engine", new Point(0.5f, 0.6f));
+			new FontText(tahoma, "Delta Engine", Top);
+			new FontText(verdana, "Delta Engine", Bottom);
 		}
 	}
 }

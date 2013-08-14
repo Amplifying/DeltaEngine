@@ -1,6 +1,7 @@
-using DeltaEngine.Input;
+﻿using System.IO;
+using DeltaEngine.Content;
+using DeltaEngine.Core;
 using DeltaEngine.Platforms;
-using DeltaEngine.Rendering.ScreenSpaces;
 using NUnit.Framework;
 
 namespace Asteroids.Tests
@@ -10,10 +11,26 @@ namespace Asteroids.Tests
 		[Test]
 		public void GameOver()
 		{
-			var game = new AsteroidsGame(Resolve<InputCommands>(), Resolve<ScreenSpace>());
+			var game = new AsteroidsGame();
 			game.GameOver();
 			Assert.AreEqual(GameState.GameOver, game.GameState);
 			Assert.IsFalse(game.GameLogic.Player.IsActive);
+		}
+
+		[Test, Ignore, CloseAfterFirstFrame]
+		public void CreateAsteroidsMaterials()
+		{
+			SaveMaterialWithNameAndImageName("PlayerMaterial", "ship1");
+			SaveMaterialWithNameAndImageName("AsteroidMaterial", "asteroid");
+			SaveMaterialWithNameAndImageName("BackgroundMaterial", "black-background");
+			SaveMaterialWithNameAndImageName("ProjectileMaterial", "projectile");
+		}
+
+		private static void SaveMaterialWithNameAndImageName(string materialName, string imageName)
+		{
+			var materialData = new Material(Shader.Position2DColorUv, imageName);
+			using (var file = File.Create(Path.Combine("Content", materialName + ".deltamaterial")))
+				BinaryDataExtensions.Save(materialData, new BinaryWriter(file));
 		}
 	}
 }

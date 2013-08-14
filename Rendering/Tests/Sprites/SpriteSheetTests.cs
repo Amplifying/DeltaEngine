@@ -1,4 +1,7 @@
+﻿using DeltaEngine.Content;
+using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
 using DeltaEngine.Platforms;
 using DeltaEngine.Rendering.Sprites;
 using NUnit.Framework;
@@ -10,49 +13,55 @@ namespace DeltaEngine.Rendering.Tests.Sprites
 	/// </summary>
 	public class SpriteSheetTests : TestWithMocksOrVisually
 	{
-		[Test]
+		[SetUp]
+		public void CreateMaterial()
+		{
+			material = new Material(Shader.Position2DUv, "SpriteSheetAnimation");
+		}
+
+		private Material material;
+
+		[Test, ApproveFirstFrameScreenshot]
+		public void RenderAnimatedSprite()
+		{
+			new Sprite(material, new Rectangle(0.4f, 0.4f, 0.2f, 0.2f));
+		}
+
+		[Test, CloseAfterFirstFrame]
 		public void CheckDurationFromMetaData()
 		{
-			var animation = new SpriteSheetAnimation("SpriteSheetAnimation", center);
-			Assert.AreEqual(5, animation.Duration);
-			Window.CloseAfterFrame();
+			var animation = new Sprite(material, center);
+			Assert.AreEqual(5, animation.Material.SpriteSheet.DefaultDuration);
+			Assert.AreEqual(5, animation.Material.Duration);
 		}
 
 		private readonly Rectangle center = Rectangle.FromCenter(Point.Half, new Size(0.2f, 0.2f));
 
 		[Test]
-		public void RenderAnimatedSprite()
+		public void CreateSpriteSheetAnimationWithNewTexture()
 		{
-			new SpriteSheetAnimation("SpriteSheetAnimation", new Rectangle(0.4f, 0.4f, 0.2f, 0.2f));
+			var customImage =
+				ContentLoader.Create<Image>(new ImageCreationData(new Size(8, 8))
+				{
+					BlendMode = BlendMode.Opaque
+				});
+			var colors = new Color[8 * 8];
+			for (int i = 0; i < 8 * 8; i++)
+				colors[i] = Color.GetRandomColor();
+			customImage.Fill(colors);
+			var newMaterial = new SpriteSheetAnimation(customImage, 2, new Size(2, 2)).CreateMaterial(
+				ContentLoader.Load<Shader>(Shader.Position2DUv));
+			new Sprite(newMaterial, new Rectangle(0.25f, 0.25f, 0.5f, 0.5f));
 		}
 
-		[Test]
-		public void TryToLoadAnimationFromUnavailableContentMetaDataThrows()
+		[Test, CloseAfterFirstFrame]
+		public void RenderingHiddenSpriteSheetAnimationDoesNotThrowException()
 		{
-			Assert.Throws<SpriteSheetData.WrongNumberOfChildrenForSpriteSheet>(
-				() => new SpriteSheetAnimation("UnavailableAnimation", center));
-			Window.CloseAfterFrame();
-		}
-
-		[Test]
-		public void AdvancingTillLastFrameGivesEvent()
-		{
-			var animation = new SpriteSheetAnimation("SpriteSheetAnimation", new Rectangle(0.4f, 0.4f, 0.2f, 0.2f));
-			bool endReached = false;
-			animation.FinalFrame += () => { endReached = true; };
-			resolver.AdvanceTimeAndExecuteRunners(animation.Duration);
-			Assert.IsTrue(endReached);
-		}
-
-		[Test]
-		public void FramesWillNotAdvanceIfIsPlayingFalse()
-		{
-			var animation = new SpriteSheetAnimation("SpriteSheetAnimation", new Rectangle(0.4f, 0.4f, 0.2f, 0.2f));
-			bool endReached = false;
-			animation.FinalFrame += () => { endReached = true; };
-			animation.IsPlaying = false;
-			resolver.AdvanceTimeAndExecuteRunners(animation.Duration);
-			Assert.IsFalse(endReached);
+			new Sprite(material, Rectangle.One)
+			{
+				Visibility = Visibility.Hide
+			};
+			Assert.DoesNotThrow(() => AdvanceTimeAndUpdateEntities());
 		}
 	}
 }

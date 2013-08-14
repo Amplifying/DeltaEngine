@@ -1,37 +1,54 @@
-using DeltaEngine.Core;
+﻿using System.Collections.Generic;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Rendering
 {
 	/// <summary>
 	/// Transitions the position, size, color and/or rotation of an Entity2D
 	/// </summary>
-	public class Transition : Behavior2D
+	public class Transition : UpdateBehavior
 	{
-		public override void Handle(Entity2D entity)
-		{
-			var duration = entity.GetOrCreate<Duration>();
-			if (duration.Elapsed >= duration.Value)
-				return;
+		public Transition() : base(Priority.Low) { }
 
-			var percentage = duration.Elapsed / duration.Value;
-			UpdateEntityColor(entity, percentage);
-			UpdateEntityOutlineColor(entity, percentage);
-			UpdateEntityPosition(entity, percentage);
-			UpdateEntitySize(entity, percentage);
-			UpdateEntityRotation(entity, percentage);
-			CheckForEndOfTransition(entity, duration);
+		public override void Update(IEnumerable<Entity> entities)
+		{
+			foreach (var entity in entities)
+			{
+				var duration = entity.Get<Duration>();
+				if (duration.Elapsed >= duration.Value)
+					continue;
+
+				var percentage = duration.Elapsed / duration.Value;
+				UpdateEntityColor((Entity2D)entity, percentage);
+				UpdateEntityTransition((Entity2D)entity, percentage);
+				UpdateEntityOutlineColor((Entity2D)entity, percentage);
+				UpdateEntityPosition((Entity2D)entity, percentage);
+				UpdateEntitySize((Entity2D)entity, percentage);
+				UpdateEntityRotation((Entity2D)entity, percentage);
+				CheckForEndOfTransition(entity, duration);
+			}		
 		}
 
 		private static void UpdateEntityColor(Entity2D entity, float percentage)
 		{
-			if (!entity.Contains<Color>())
+			if (!entity.Contains<ColorRange>())
 				return;
 
-			var transitionColor = entity.Get<Color>();
-			entity.Color = Datatypes.Color.Lerp(transitionColor.Start, transitionColor.End, percentage);
+			var transitionColor = entity.Get<ColorRange>();
+			entity.Color = transitionColor.Start.Lerp(transitionColor.End, percentage);
 		}
+
+		private static void UpdateEntityTransition(Entity2D entity, float percentage)
+		{
+			if (!entity.Contains<FadingColor>())
+				return;
+
+			var fadingColor = entity.Get<FadingColor>();
+			entity.Color = fadingColor.Start.Lerp(fadingColor.End, percentage);
+		}
+
 
 		private static void UpdateEntityOutlineColor(Entity2D entity, float percentage)
 		{
@@ -40,7 +57,7 @@ namespace DeltaEngine.Rendering
 
 			var transitionOutlineColor = entity.Get<OutlineColor>();
 			entity.Set(
-				new Shapes.OutlineColor(Datatypes.Color.Lerp(transitionOutlineColor.Start,
+				new Shapes.OutlineColor(transitionOutlineColor.Start.Lerp(
 					transitionOutlineColor.End, percentage)));
 		}
 
@@ -50,17 +67,17 @@ namespace DeltaEngine.Rendering
 				return;
 
 			var transitionPosition = entity.Get<Position>();
-			entity.Center = Point.Lerp(transitionPosition.Start, transitionPosition.End, percentage);
+			entity.Center = transitionPosition.Start.Lerp(transitionPosition.End, percentage);
 		}
 
 		private static void UpdateEntitySize(Entity2D entity, float percentage)
 		{
-			if (!entity.Contains<Size>())
+			if (!entity.Contains<SizeRange>())
 				return;
 
-			var transitionSize = entity.Get<Size>();
+			var transitionSize = entity.Get<SizeRange>();
 			var center = entity.Center;
-			entity.Size = Datatypes.Size.Lerp(transitionSize.Start, transitionSize.End, percentage);
+			entity.Size = transitionSize.Start.Lerp(transitionSize.End, percentage);
 			if (!entity.Contains<Position>())
 				entity.TopLeft = center - entity.Size / 2.0f;
 		}
@@ -71,29 +88,28 @@ namespace DeltaEngine.Rendering
 				return;
 
 			var transitionRotation = entity.Get<Rotation>();
-			entity.Rotation = MathExtensions.Lerp(transitionRotation.Start, transitionRotation.End,
-				percentage);
+			entity.Rotation = transitionRotation.Start.Lerp(transitionRotation.End, percentage);
 		}
 
 		private void CheckForEndOfTransition(Entity entity, Duration duration)
 		{
-			duration.Elapsed += Time.Current.Delta;
+			duration.Elapsed += Time.Delta;
 			if (duration.Elapsed < duration.Value)
+			{
+				entity.Set(duration);
 				return;
-
+			}
+			
 			RemoveTransitionComponents(entity);
-			entity.MessageAllListeners(new TransitionEnded());
 			EndTransition(entity);
 		}
-
-		public class TransitionEnded {}
 
 		protected virtual void EndTransition(Entity entity) {}
 
 		private static void RemoveTransitionComponents(Entity entity)
 		{
-			if (entity.Contains<Color>())
-				entity.Remove<Color>();
+			if (entity.Contains<ColorRange>())
+				entity.Remove<ColorRange>();
 
 			if (entity.Contains<OutlineColor>())
 				entity.Remove<OutlineColor>();
@@ -101,103 +117,105 @@ namespace DeltaEngine.Rendering
 			if (entity.Contains<Position>())
 				entity.Remove<Position>();
 
-			if (entity.Contains<Size>())
-				entity.Remove<Size>();
+			if (entity.Contains<SizeRange>())
+				entity.Remove<SizeRange>();
 
 			if (entity.Contains<Rotation>())
 				entity.Remove<Rotation>();
-		}
-
-		public override Priority Priority
-		{
-			get { return Priority.First; }
 		}
 
 		/// <summary>
 		/// Duration, Color, FadingColor, OutlineColor, Position, Rotation, Size are all Components
 		/// that can be added to an Entity undergoing a Transition
 		/// </summary>
-		public class Duration
+		public struct Duration
 		{
-			public Duration()
-				: this(1.0f) {}
-
 			public Duration(float duration)
+				: this()
 			{
 				Value = duration;
 			}
 
-			public float Value { get; set; }
-			public float Elapsed { get; set; }
+			public float Value { get; private set; }
+			public float Elapsed { get; internal set; }
 		}
 
-		public class Color
+		public struct ColorRange
 		{
-			public Color(Datatypes.Color startColor, Datatypes.Color endColor)
+			public ColorRange(Color startColor, Color endColor)
+				: this()
 			{
 				Start = startColor;
 				End = endColor;
 			}
 
-			public Datatypes.Color Start { get; set; }
-			public Datatypes.Color End { get; set; }
+			public Color Start { get; private set; }
+			public Color End { get; private set; }
 		}
 
-		public class FadingColor : Color
+		public struct FadingColor
 		{
-			public FadingColor()
-				: this(Datatypes.Color.White) {}
+			public FadingColor(Color startColor)
+				: this()
+			{
+				Start = startColor;
+				End = Color.Transparent(startColor);
+			}
 
-			public FadingColor(Datatypes.Color startColor)
-				: base(startColor, Datatypes.Color.Transparent(startColor)) {}
+			public Color Start { get; private set; }
+			public Color End { get; private set; }
 		}
 
-		public class OutlineColor
+		public struct OutlineColor
 		{
-			public OutlineColor(Datatypes.Color startColor, Datatypes.Color endColor)
+			public OutlineColor(Color startColor, Color endColor)
+				: this()
 			{
 				Start = startColor;
 				End = endColor;
 			}
 
-			public Datatypes.Color Start { get; set; }
-			public Datatypes.Color End { get; set; }
+			public Color Start { get; private set; }
+			public Color End { get; private set; }
 		}
 
-		public class Position
+		public struct Position
 		{
 			public Position(Point startPosition, Point endPosition)
+				: this()
 			{
 				Start = startPosition;
 				End = endPosition;
 			}
 
-			public Point Start { get; set; }
-			public Point End { get; set; }
+			public Point Start { get; private set; }
+			public Point End { get; private set; }
 		}
 
-		public class Rotation
+		public struct Rotation
 		{
 			public Rotation(float startRotation, float endRotation)
+				: this()
 			{
 				Start = startRotation;
 				End = endRotation;
 			}
 
-			public float Start { get; set; }
-			public float End { get; set; }
+			public float Start { get; private set; }
+			public float End { get; private set; }
 		}
 
-		public class Size
+		public struct SizeRange
 		{
-			public Size(Datatypes.Size startSize, Datatypes.Size endSize)
+			public SizeRange(Size startSize, Size endSize)
+				: this()
 			{
 				Start = startSize;
 				End = endSize;
 			}
 
-			public Datatypes.Size Start { get; set; }
-			public Datatypes.Size End { get; set; }
+			public Size Start { get; private set; }
+			public Size End { get; private set; }
 		}
 	}
 }

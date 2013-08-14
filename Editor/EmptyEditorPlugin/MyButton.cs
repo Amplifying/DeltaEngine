@@ -1,4 +1,4 @@
-using DeltaEngine.Editor.Common.Properties;
+﻿using DeltaEngine.Editor.Core.Properties;
 
 namespace DeltaEngine.Editor.EmptyEditorPlugin
 {

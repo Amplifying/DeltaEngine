@@ -1,15 +1,16 @@
-using System;
+﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
-using DeltaEngine.Core;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Datatypes
 {
 	/// <summary>
-	/// Holds the width and height of an object (e.g. a rectangle)
+	/// Holds the width and height of an object (e.g. a rectangle).
 	/// </summary>
 	[DebuggerDisplay("Size({Width}, {Height})")]
-	public struct Size : IEquatable<Size>
+	public struct Size : IEquatable<Size>, Lerp<Size>
 	{
 		public Size(float widthAndHeight)
 			: this(widthAndHeight, widthAndHeight) {}
@@ -30,7 +31,6 @@ namespace DeltaEngine.Datatypes
 			float[] components = sizeAsString.SplitIntoFloats();
 			if (components.Length != 2)
 				throw new InvalidNumberOfComponents();
-
 			Width = components[0];
 			Height = components[1];
 		}
@@ -40,13 +40,14 @@ namespace DeltaEngine.Datatypes
 		public static readonly Size Zero = new Size();
 		public static readonly Size One = new Size(1, 1);
 		public static readonly Size Half = new Size(0.5f, 0.5f);
+		public static readonly Size Unused = new Size(-1, -1);
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Size));
 		
-		public static Size Lerp(Size size1, Size size2, float percentage)
+		[Pure]
+		public Size Lerp(Size other, float interpolation)
 		{
-			float width = MathExtensions.Lerp(size1.Width, size2.Width, percentage);
-			float height = MathExtensions.Lerp(size1.Height, size2.Height, percentage);
-			return new Size(width, height);
+			return new Size(Width.Lerp(other.Width, interpolation),
+				Height.Lerp(other.Height, interpolation));
 		}
 
 		public float AspectRatio
@@ -66,7 +67,7 @@ namespace DeltaEngine.Datatypes
 
 		public static bool operator !=(Size s1, Size s2)
 		{
-			return s1.Equals(s2) == false;
+			return !s1.Equals(s2);
 		}
 
 		public static Size operator *(Size s1, Size s2)

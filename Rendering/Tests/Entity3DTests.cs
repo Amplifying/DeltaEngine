@@ -1,27 +1,44 @@
+﻿using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
+using DeltaEngine.Mocks;
+using DeltaEngine.Platforms;
 using NUnit.Framework;
-using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Rendering.Tests
 {
-	public class Entity3DTests
+	public class Entity3DTests : TestWithMocksOrVisually
 	{
+		[SetUp]
+		public void InitializeEntitiesRunner()
+		{
+			entities = new MockEntitiesRunner(typeof(MockUpdateBehavior));
+		}
+
+		private EntitiesRunner entities;
+
+		[TearDown]
+		public void DisposeEntitiesRunner()
+		{
+			entities.Dispose();
+		}
+
 		[Test]
 		public void CreateEntity3D()
 		{
 			var entity = new Entity3D();
 			Assert.AreEqual(Vector.Zero, entity.Position);
-			Assert.AreEqual(Vector.Zero, entity.EulerAngles);
+			Assert.AreEqual(Quaternion.Identity, entity.Orientation);
 			Assert.AreEqual(Visibility.Show, entity.Visibility);
 		}
 
 		[Test]
-		public void CreateEntity3DWithTransform()
+		public void CreateEntity3DPositionAndOrientation()
 		{
 			var position = new Vector(10.0f, -3.0f, 27.0f);
-			var eulerAngles = new Vector(90.0f, 10.0f, -30.0f);
-			var entity = new Entity3D(new Transform(position, eulerAngles));
+			var orientation = Quaternion.Identity;
+			var entity = new Entity3D(position, orientation);
 			Assert.AreEqual(position, entity.Position);
-			Assert.AreEqual(eulerAngles, entity.EulerAngles);
+			Assert.AreEqual(orientation, entity.Orientation);
 		}
 
 		[Test]
@@ -32,10 +49,10 @@ namespace DeltaEngine.Rendering.Tests
 		}
 
 		[Test]
-		public void SetEulerAnglesProperty()
+		public void SetOrientationProperty()
 		{
-			var entity = new Entity3D { EulerAngles = Vector.One };
-			Assert.AreEqual(Vector.One, entity.EulerAngles);
+			var entity = new Entity3D { Orientation = Quaternion.Identity };
+			Assert.AreEqual(Quaternion.Identity, entity.Orientation);
 		}
 
 		[Test]

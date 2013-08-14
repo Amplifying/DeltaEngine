@@ -1,15 +1,16 @@
+﻿using System;
 using DeltaEngine.Content;
-using System;
+using DeltaEngine.Entities;
 
 namespace DeltaEngine.Multimedia
 {
 	/// <summary>
 	/// Provides a way to load and play a video file.
 	/// </summary>
-	public abstract class Video : ContentData
+	public abstract class Video : ContentData, Updateable
 	{
-		protected Video(string filename, SoundDevice device)
-			: base(filename)
+		protected Video(string contentName, SoundDevice device)
+			: base(contentName)
 		{
 			this.device = device;
 		}
@@ -30,7 +31,7 @@ namespace DeltaEngine.Multimedia
 		}
 		protected abstract void StopNativeVideo();
 		public abstract bool IsPlaying();
-		protected internal abstract void Run();
+		public abstract void Update();
 		public abstract float DurationInSeconds { get; }
 		public abstract float PositionInSeconds { get; }
 		protected override void DisposeData()

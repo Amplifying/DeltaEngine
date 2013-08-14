@@ -1,5 +1,7 @@
-using DeltaEngine.Core;
+﻿using DeltaEngine.Commands;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Input
 {
@@ -11,35 +13,29 @@ namespace DeltaEngine.Input
 	{
 		public MouseHoverTrigger(float hoverTime = DefaultHoverTime)
 		{
-			this.hoverTime = hoverTime;
+			HoverTime = hoverTime;
+			Start<Mouse>();
 		}
 
-		private readonly float hoverTime;
+		public float HoverTime { get; private set; }
 		private const float DefaultHoverTime = 1.5f;
 
-		public override bool ConditionMatched(InputCommands input)
+		public MouseHoverTrigger(string hoverTime)
 		{
-			if (!input.Mouse.IsAvailable)
-				return false; //ncrunch: no coverage
-
-			if (lastPosition.DistanceTo(input.Mouse.Position) < 0.0025f)
-				return ProcessHover();
-
-			lastPosition = input.Mouse.Position;
-			elapsed = 0.0f;
-			return false;
+			var parameters = hoverTime.SplitAndTrim(new[] { ' ' });
+			HoverTime = parameters.Length == 1 ? parameters[0].Convert<float>() : DefaultHoverTime;
+			Start<Mouse>();
 		}
 
-		private Point lastPosition;
-		private float elapsed;
-
-		private bool ProcessHover()
+		public bool IsHovering()
 		{
-			if (elapsed >= hoverTime)
+			if (Elapsed >= HoverTime)
 				return false;
-
-			elapsed += Time.Current.Delta;
-			return elapsed >= hoverTime;
+			Elapsed += Time.Delta;
+			return Elapsed >= HoverTime;
 		}
+
+		public float Elapsed { get; set; }
+		public Point LastPosition { get; set; }
 	}
 }

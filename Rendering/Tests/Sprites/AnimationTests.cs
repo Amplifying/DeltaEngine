@@ -1,7 +1,8 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DeltaEngine.Content;
+using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
+using DeltaEngine.Entities;
 using DeltaEngine.Platforms;
 using DeltaEngine.Rendering.Sprites;
 using NUnit.Framework;
@@ -10,34 +11,54 @@ namespace DeltaEngine.Rendering.Tests.Sprites
 {
 	public class AnimationTests : TestWithMocksOrVisually
 	{
+		[SetUp]
+		public void CreateMaterial()
+		{
+			material = new Material(Shader.Position2DUv, "ImageAnimation");
+		}
+
+		private Material material;
+
 		[Test, ApproveFirstFrameScreenshot]
 		public void RenderAnimatedSprite()
 		{
-			new Animation("ImageAnimation", new Rectangle(0.4f, 0.4f, 0.2f, 0.2f));
+			new Sprite(material, Point.Half);
+		}
+
+		[Test]
+		public void RenderEarthSpriteSheet()
+		{
+			new Sprite(new Material(Shader.Position2DUv, "EarthSpriteSheet"), Point.Half);
+		}
+
+		[Test, ApproveFirstFrameScreenshot]
+		public void Render2AnimatedSpritesWithDifferentDuration()
+		{
+			new Sprite(material, new Rectangle(0.3f, 0.4f, 0.2f, 0.2f));
+			var material2 = new Material(Shader.Position2DUv, "ImageAnimation") { Duration = 1 };
+			new Sprite(material2, new Rectangle(0.55f, 0.4f, 0.2f, 0.2f));
 		}
 
 		[Test]
 		public void CheckAnimatedTime()
 		{
-			var animation = new Animation("ImageAnimation",
-				Rectangle.FromCenter(Point.Half, new Size(0.2f)));
-			RunCode = () =>
+			var animation = new Sprite(material, Point.Half);
+			RunAfterFirstFrame(() =>
 			{
 				float elapsed = animation.Elapsed;
 				var currentFrame = (int)elapsed % 3.0f;
 				Assert.AreEqual(currentFrame, animation.CurrentFrame);
-			};
+			});
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void CreateAnimatedSprite()
 		{
 			var images = CreateImages();
-			var animation = new Animation("ImageAnimation", center);
-			Assert.AreEqual(images, animation.Images);
-			Assert.AreEqual(images[0], animation.Image);
-			Assert.AreEqual(3, animation.Duration);
-			Window.CloseAfterFrame();
+			var animation = new Sprite(material, Point.Half);
+			Assert.AreEqual(images, animation.Material.Animation.Frames);
+			Assert.AreEqual(images[0], animation.Material.DiffuseMap);
+			Assert.AreEqual(3, animation.Material.Duration);
 		}
 
 		private static List<Image> CreateImages()
@@ -51,71 +72,94 @@ namespace DeltaEngine.Rendering.Tests.Sprites
 			return images;
 		}
 
-		private readonly Rectangle center = Rectangle.FromCenter(Point.Half, new Size(0.2f, 0.2f));
-
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void ChangeDuration()
 		{
-			var animation = new Animation("ImageAnimation", center) { Duration = 2 };
-			Assert.AreEqual(2, animation.Duration);
-			Window.CloseAfterFrame();
+			material.Duration = 2;
+			var animation = new Sprite(material, Point.Half);
+			Assert.AreEqual(3, animation.Material.Animation.DefaultDuration);
+			Assert.AreEqual(2, animation.Material.Duration);
 		}
 
-		[Test]
-		public void ResetZerosCurrentFrameAndElapsed()
+		[Test, CloseAfterFirstFrame]
+		public void ResetResetsCurrentFrameAndElapsed()
 		{
-			var animation = new Animation("ImageAnimation", center);
-			RunCode = () =>
+			var animation = new Sprite(material, Point.Half) { CurrentFrame = 3, Elapsed = 3.0f };
+			animation.Reset();
+			RunAfterFirstFrame(() =>
 			{
-				animation.Reset();
 				Assert.AreEqual(0, animation.CurrentFrame);
-				Assert.AreEqual(0, animation.Elapsed);
-			};
-			Window.CloseAfterFrame();
+				Assert.AreEqual(0.05f, animation.Elapsed);
+			});
 		}
 
 		[Test]
 		public void RenderThreeFrameAnimationButResetAfterSecondFrame()
 		{
-			Animation animation = new Animation("ImageAnimation", center);
-			RunCode = () =>
+			var animation = new Sprite(material, Point.Half);
+			RunAfterFirstFrame(() =>
 			{
 				if (animation.CurrentFrame != 2)
 					return;
-
 				animation.Reset();
 				Assert.AreEqual(0, animation.CurrentFrame);
 				Assert.AreEqual(0, animation.Elapsed);
-			};
+			});
 		}
 
-		[Test]
-		public void TryToLoadFromInvalidContentMetaDataThrows()
-		{
-			Assert.Throws<AnimationData.NoImagesForAnimationPresent>(
-				() => new Animation("UnavailableImageAnimation", center));
-			Window.CloseAfterFrame();
-		}
-
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void AdvancingTillLastFrameGivesEvent()
 		{
-			var animation = new Animation("ImageAnimation", center);
+			var animation = new Sprite(material, Point.Half);
 			bool endReached = false;
-			animation.FinalFrame += () => { endReached = true; };
-			resolver.AdvanceTimeAndExecuteRunners(animation.Duration);
-			Assert.IsTrue(endReached);
+			animation.AnimationEnded += () => { endReached = true; };
+			AdvanceTimeAndUpdateEntities(animation.Material.Duration + 0.1f);
+			Assert.IsTrue(endReached, animation.ToString());
 		}
 
 		[Test]
 		public void FramesWillNotAdvanceIfIsPlayingFalse()
 		{
-			var animation = new Animation("ImageAnimation", center);
+			var animation = new Sprite(material, Point.Half);
 			bool endReached = false;
-			animation.FinalFrame += () => { endReached = true; };
+			animation.AnimationEnded += () => { endReached = true; };
 			animation.IsPlaying = false;
-			resolver.AdvanceTimeAndExecuteRunners(animation.Duration);
+			AdvanceTimeAndUpdateEntities(animation.Material.Duration);
 			Assert.IsFalse(endReached);
+		}
+
+		[Test, ApproveFirstFrameScreenshot]
+		public void CreateAnimationWithNewTextures()
+		{
+			var imageList = new[]
+			{
+				CreateImageWithColor(Color.Red), CreateImageWithColor(Color.CornflowerBlue),
+				CreateImageWithColor(Color.Purple)
+			};
+			var newMaterial = new ImageAnimation(imageList, 3).CreateMaterial(
+				ContentLoader.Load<Shader>(Shader.Position2DUv));
+			new Sprite(newMaterial, new Rectangle(0.25f, 0.25f, 0.5f, 0.5f));
+		}
+
+		private static Image CreateImageWithColor(Color color)
+		{
+			var image = ContentLoader.Create<Image>(
+				new ImageCreationData(new Size(8, 8))
+				{
+					BlendMode = BlendMode.Opaque
+				});
+			var colors = new Color[8 * 8];
+			for (int i = 0; i < 8 * 8; i++)
+				colors[i] = color;
+			image.Fill(colors);
+			return image;
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void RenderingHiddenAnimationDoesNotThrowException()
+		{
+			new Sprite(material, Rectangle.One) { Visibility = Visibility.Hide };
+			Assert.DoesNotThrow(() => AdvanceTimeAndUpdateEntities());
 		}
 	}
 }

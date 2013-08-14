@@ -1,12 +1,13 @@
-using System;
+﻿using System;
 using DeltaEngine.Core;
 using DeltaEngine.Platforms;
+using ProfilingMode = DeltaEngine.Platforms.ProfilingMode;
 
 namespace DeltaEngine.Profiling
 {
 	/// <summary>
 	/// When this is polled, it logs whatever system information the Settings.ProfilingMode 
-	/// indicates
+	/// indicates.
 	/// </summary>
 	public class SystemProfiler : SystemProfilingProvider
 	{
@@ -50,7 +51,7 @@ namespace DeltaEngine.Profiling
 
 		public void Log(ProfilingMode profilingMode, SystemInformation systemInformation)
 		{
-			float time = Time.Current.GetSecondsSinceStartToday();
+			float time = GlobalTime.Current.GetSecondsSinceStartToday();
 			if (!IsActive || time - lastTimeProfiled < pollingInterval)
 				return;
 
@@ -67,7 +68,7 @@ namespace DeltaEngine.Profiling
 			SystemInformation systemInformation)
 		{
 			if (profilingMode.HasFlag(ProfilingMode.Fps))
-				GetProfilingResults(ProfilingMode.Fps).Log(Time.Current.Fps);
+				GetProfilingResults(ProfilingMode.Fps).Log(GlobalTime.Current.Fps);
 
 			if (profilingMode.HasFlag(ProfilingMode.AvailableRAM))
 				GetProfilingResults(ProfilingMode.AvailableRAM).Log(systemInformation.AvailableRam);

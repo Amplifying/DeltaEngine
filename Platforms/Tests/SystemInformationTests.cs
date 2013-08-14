@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using DeltaEngine.Datatypes;
 using NUnit.Framework;
 
@@ -6,7 +6,7 @@ namespace DeltaEngine.Platforms.Tests
 {
 	public class SystemInformationTests : TestWithMocksOrVisually
 	{
-		[SetUp]
+		[SetUp, CloseAfterFirstFrame]
 		public void SystemInfoSetup()
 		{
 			info = Resolve<SystemInformation>();
@@ -23,7 +23,7 @@ namespace DeltaEngine.Platforms.Tests
 		[Test]
 		public void CheckVersionIsCorrect()
 		{
-			Assert.IsTrue(info.Version.ToString() == "0.9.8.3" || info.Version.ToString() == "1.2.3.4");
+			Assert.GreaterOrEqual(info.Version, new Version("0.9.8.3"));
 		}
 
 		[Test]
@@ -37,20 +37,19 @@ namespace DeltaEngine.Platforms.Tests
 		public void CheckMachineNameMatchesEnvironment()
 		{
 			Assert.IsTrue(info.MachineName == Environment.MachineName ||
-				info.MachineName == "MockMachineName");
+				info.MachineName == "MockMachineName", info.MachineName);
 		}
 
 		[Test]
 		public void CheckPlatformNameIsWindows()
 		{
-			Assert.IsTrue(info.PlatformName == "Windows" || info.PlatformName == "MockPlatformName");
+			Assert.IsTrue(info.PlatformName == "Windows", info.PlatformName);
 		}
 
 		[Test]
 		public void CheckPlatformVersionMatchesEnvironment()
 		{
-			Assert.IsTrue(info.PlatformVersion == Environment.OSVersion.Version.ToString() ||
-				info.PlatformVersion == "MockPlatformVersion");
+			Assert.GreaterOrEqual(info.PlatformVersion, new Version(7, 0));
 		}
 
 		[Test]
@@ -66,7 +65,7 @@ namespace DeltaEngine.Platforms.Tests
 		{
 			var size = new Size(System.Windows.Forms.SystemInformation.PrimaryMonitorSize.Width,
 				System.Windows.Forms.SystemInformation.PrimaryMonitorSize.Height);
-			Assert.IsTrue(info.MaxResolution == size || info.MaxResolution == new Size(640, 360));
+			Assert.IsTrue(info.MaxResolution == size || info.MaxResolution == new Size(1920, 1080));
 		}
 
 		[Test]
@@ -78,6 +77,7 @@ namespace DeltaEngine.Platforms.Tests
 		[Test]
 		public void HasCpuName()
 		{
+			Assert.GreaterOrEqual(info.CoreCount, 1);
 			Assert.IsFalse(string.IsNullOrEmpty(info.CpuName));
 		}
 

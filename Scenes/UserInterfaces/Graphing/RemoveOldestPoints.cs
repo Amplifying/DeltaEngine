@@ -1,6 +1,4 @@
-using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
-using DeltaEngine.Rendering;
+﻿using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Scenes.UserInterfaces.Graphing
 {
@@ -8,39 +6,25 @@ namespace DeltaEngine.Scenes.UserInterfaces.Graphing
 	/// Restricts a graph to a limited number of points. Once more than that number are added
 	/// points are removed from the start of the graph and all points are shifted backwards.
 	/// </summary>
-	public class RemoveOldestPoints : EventListener2D
+	internal class RemoveOldestPoints
 	{
-		public override void ReceiveMessage(Entity2D entity, object message)
+		public void Process(Graph graph)
 		{
-			var addPoint = message as Graph.PointAdded;
-			if (addPoint != null)
-				RemoveOldestPointsIfNecessary(entity);
+			if (MaximumNumberOfPoints > 0)
+			foreach (GraphLine line in graph.Lines)
+				PrunePointsFromLine(line);
 		}
 
-		private void RemoveOldestPointsIfNecessary(Entity entity)
+		public int MaximumNumberOfPoints;
+
+		private void PrunePointsFromLine(GraphLine line)
 		{
-			var data = entity.Get<Graph.Data>();
-			int maximumNumberOfPoints = data.MaximumNumberOfPoints;
-			isRefreshNeeded = false;
-			foreach (GraphLine line in data.Lines)
-				PrunePointsFromLine(line, maximumNumberOfPoints);
-
-			if (isRefreshNeeded)
-				((Graph)entity).Refresh();
-		}
-
-		private bool isRefreshNeeded;
-
-		private void PrunePointsFromLine(GraphLine line, int maximumNumberOfPoints)
-		{
-			var numberOfPointsToRemove = line.points.Count - maximumNumberOfPoints;
+			var numberOfPointsToRemove = line.points.Count - MaximumNumberOfPoints;
 			if (numberOfPointsToRemove <= 0)
 				return;
-
 			for (int i = 0; i < numberOfPointsToRemove; i++)
 				RemoveFirstPointAndShiftOthersBack(line);
-
-			isRefreshNeeded = true;
+			line.Refresh();
 		}
 
 		private static void RemoveFirstPointAndShiftOthersBack(GraphLine line)

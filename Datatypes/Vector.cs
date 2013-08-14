@@ -1,11 +1,15 @@
-using System;
+﻿using System;
+using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
-using DeltaEngine.Core;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Datatypes
 {
+	/// <summary>
+	/// Specifies a position in 3D space (the 3D version of Point).
+	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	public struct Vector : IEquatable<Vector>
+	public struct Vector : IEquatable<Vector>, Lerp<Vector>
 	{
 		public Vector(float setX, float setY, float setZ)
 			: this()
@@ -33,7 +37,6 @@ namespace DeltaEngine.Datatypes
 			var floats = vectorAsString.SplitIntoFloats();
 			if (floats.Length != 3)
 				throw new InvalidNumberOfComponents();
-
 			X = floats[0];
 			Y = floats[1];
 			Z = floats[2];
@@ -74,9 +77,35 @@ namespace DeltaEngine.Datatypes
 				vector.Z * distanceInverse);
 		}
 
+		public void Normalize()
+		{
+			if (LengthSquared == 0.0f)
+				return;
+
+			float distanceInverse = 1.0f / MathExtensions.Sqrt(LengthSquared);
+			X *= distanceInverse;
+			Y *= distanceInverse;
+			Z *= distanceInverse;
+		}
+
+		public static Vector TransformNormal(Vector normal, Matrix matrix)
+		{
+			return new Vector(
+				(normal.X * matrix[0]) + (normal.Y * matrix[4]) + (normal.Z * matrix[8]),
+				(normal.X * matrix[1]) + (normal.Y * matrix[5]) + (normal.Z * matrix[9]),
+				(normal.X * matrix[2]) + (normal.Y * matrix[6]) + (normal.Z * matrix[10]));
+		}
+
 		public float LengthSquared
 		{
 			get { return X * X + Y * Y + Z * Z; }
+		}
+
+		[Pure]
+		public Vector Lerp(Vector other, float interpolation)
+		{
+			return new Vector(X.Lerp(other.X, interpolation), Y.Lerp(other.Y, interpolation),
+				Z.Lerp(other.Z, interpolation));
 		}
 
 		public static float AngleBetweenVectors(Vector vector1, Vector vector2)

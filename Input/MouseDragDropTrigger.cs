@@ -1,36 +1,44 @@
+﻿using System;
+using System.Collections.Generic;
+using DeltaEngine.Commands;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Input
 {
-	internal class MouseDragDropTrigger : Trigger
+	/// <summary>
+	/// Drag and Drop events with Mouse.
+	/// </summary>
+	public class MouseDragDropTrigger : Trigger
 	{
 		public MouseDragDropTrigger(Rectangle startArea, MouseButton button)
 		{
-			this.startArea = startArea;
-			this.button = button;
+			StartArea = startArea;
+			Button = button;
 			StartDragPosition = Point.Unused;
+			Start<Mouse>();
 		}
 
-		private readonly Rectangle startArea;
-		private readonly MouseButton button;
+		public Rectangle StartArea { get; private set; }
+		public MouseButton Button { get; private set; }
+		public Point StartDragPosition { get; set; }
 
-		public override bool ConditionMatched(InputCommands input)
+		public MouseDragDropTrigger(string startAreaAndButton)
 		{
-			if (startArea.Contains(input.Mouse.Position) &&
-				input.Mouse.GetButtonState(button) == State.Pressing)
-				StartDragPosition = input.Mouse.Position;
-			else if (StartDragPosition != Point.Unused &&
-				input.Mouse.GetButtonState(button) != State.Released)
-			{
-				if (StartDragPosition.DistanceTo(input.Mouse.Position) > 0.0025f)
-					return true;
-			}
-			else
-				StartDragPosition = Point.Unused;
-
-			return false;
+			var parameters = startAreaAndButton.SplitAndTrim(new[] { ' ' });
+			if (parameters.Length < 4)
+				throw new CannotCreateMouseDragDropTriggerWithoutStartArea();
+			StartArea = BuildParameterStringForRectangle(parameters).Convert<Rectangle>();
+			Button = parameters.Length > 4 ? parameters[4].Convert<MouseButton>() : MouseButton.Left;
+			StartDragPosition = Point.Unused;
+			Start<Mouse>();
 		}
 
-		public Point StartDragPosition { get; private set; }
+		private static string BuildParameterStringForRectangle(IList<string> parameters)
+		{
+			return parameters[0] + " " + parameters[1] + " " + parameters[2] + " " + parameters[3];
+		}
+
+		public class CannotCreateMouseDragDropTriggerWithoutStartArea : Exception {}
 	}
 }

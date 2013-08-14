@@ -1,47 +1,40 @@
-using System;
+﻿using System;
+using DeltaEngine.Commands;
+using DeltaEngine.Datatypes;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Input
 {
 	/// <summary>
-	/// Allows to track mouse button presses.
+	/// Allows mouse button presses to be tracked.
 	/// </summary>
-	public class MouseButtonTrigger : Trigger, IEquatable<MouseButtonTrigger>
+	public class MouseButtonTrigger : PositionTrigger
 	{
-		public MouseButtonTrigger(MouseButton button, State state)
+		public MouseButtonTrigger(State state)
+			: this(MouseButton.Left, state) {}
+
+		public MouseButtonTrigger(MouseButton button = MouseButton.Left, State state = State.Pressing)
+			: base(Point.Unused)
 		{
-			this.button = button;
-			this.state = state;
+			Button = button;
+			State = state;
+			Start<Mouse>();
 		}
 
-		private MouseButton button;
-		private State state;
-	
-		public MouseButton Button
+		public MouseButton Button { get; internal set; }
+		public State State { get; internal set; }
+
+		public MouseButtonTrigger(string buttonAndState)
+			: base(Point.Unused)
 		{
-			get { return button; }
-			set { button = value; }
-		}
-	
-		public State State
-		{
-			get { return state; }
-			set { state = value; }
+			var parameters = buttonAndState.SplitAndTrim(new[] { ' ' });
+			if (parameters.Length == 0)
+				throw new CannotCreateMouseButtonTriggerWithoutButton();
+			Button = parameters[0].Convert<MouseButton>();
+			State = parameters.Length > 1 ? parameters[1].Convert<State>() : State.Pressing;
+			Start<Mouse>();
 		}
 
-		public override bool ConditionMatched(InputCommands input)
-		{
-			return input.Mouse.IsAvailable && input.Mouse.GetButtonState(button) == state;
-		}
-
-		public bool Equals(MouseButtonTrigger other)
-		{
-			return other.button == button && other.state == state;
-		}
-
-		public override int GetHashCode()
-		{
-			//// ReSharper disable NonReadonlyFieldInGetHashCode
-			return ((int)button).GetHashCode() ^ ((int)state).GetHashCode();
-		}
+		public class CannotCreateMouseButtonTriggerWithoutButton : Exception {}
 	}
 }

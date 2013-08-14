@@ -1,267 +1,242 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Rendering;
-using DeltaEngine.Rendering.Fonts;
+using DeltaEngine.Entities;
 using DeltaEngine.Rendering.Shapes;
 
 namespace DeltaEngine.Scenes.UserInterfaces.Graphing
 {
 	/// <summary>
 	/// Renders a graph with one or more lines at a given scale.
-	/// Various behaviours can be added including autogrowing, autopruning and rendering axes
-	/// and percentiles
+	/// Various logic can be turned on and off including autogrowing, autopruning and 
+	/// rendering axes and percentiles.
 	/// </summary>
-	public class Graph : Entity2D
+	public class Graph : FilledRect, Updateable
 	{
-		public Graph()
-			: base(Rectangle.Zero)
-		{
-			Add(new ObserveEntity2D.SavedProperties());
-			Add(new FilledRect(Rectangle.Zero, HalfBlack));
-			Add(new Data());
-			Start<ObserveEntity2D, UpdateGraphics, RenderKey>();
-			Activated += Refresh;
-			Inactivated += InactivateEverything;
-		}
+		public Graph(Rectangle drawArea)
+			: base(drawArea, HalfBlack) {}
 
 		internal static readonly Color HalfBlack = new Color(0, 0, 0, 0.75f);
 
-		public class Data
+		public void Update()
 		{
-			public Data()
-			{
-				XAxis = new Line2D(Point.Zero, Point.Zero, Color.White) { Visibility = Visibility.Hide };
-				YAxis = new Line2D(Point.Zero, Point.Zero, Color.White) { Visibility = Visibility.Hide };
-				Lines = new List<GraphLine>();
-				Percentiles = new List<Line2D>();
-				PercentileColor = Color.Gray;
-				PercentilePrefix = "";
-				PercentileSuffix = "";
-				PercentileLabels = new List<FontText>();
-				PercentileLabelColor = Color.White;
-				KeyLabels = new List<FontText>();
-			}
-
-			public Rectangle Viewport { get; set; }
-			public Line2D XAxis { get; set; }
-			public Line2D YAxis { get; set; }
-			public List<GraphLine> Lines { get; private set; }
-			public int MaximumNumberOfPoints { get; set; }
-			public int NumberOfPercentiles { get; set; }
-			public List<Line2D> Percentiles { get; private set; }
-			public Color PercentileColor { get; set; }
-			public string PercentilePrefix { get; set; }
-			public string PercentileSuffix { get; set; }
-			public List<FontText> PercentileLabels { get; private set; }
-			public Color PercentileLabelColor { get; set; }
-			public List<FontText> KeyLabels { get; private set; }
-			public bool ArePercentileLabelsInteger { get; set; }
+			if (!DidFootprintChange)
+				return;
+			renderKey.Refresh(this);
+			renderAxes.Refresh(this);
+			renderPercentiles.Refresh(this);
+			renderPercentileLabels.Refresh(this);
+			foreach (GraphLine line in Lines)
+				line.Refresh();
 		}
 
-		public void Refresh()
+		private readonly RenderKey renderKey = new RenderKey();
+		private readonly RenderAxes renderAxes = new RenderAxes { Visibility = Visibility.Hide };
+
+		private readonly RenderPercentiles renderPercentiles = new RenderPercentiles
 		{
-			Get<ObserveEntity2D.SavedProperties>().IsRefreshRequired = true;
-		}
+			Visibility = Visibility.Hide
+		};
 
-		//TODO: Rethink InactivateEverything; Probably needs to return everything to its pools
-		private void InactivateEverything()
+		private readonly RenderPercentileLabels renderPercentileLabels = new RenderPercentileLabels
 		{
-			var data = Get<Data>();
-			InactivateAxes(data);
-			foreach (GraphLine line in data.Lines)
-				line.ClearGraphics();
+			Visibility = Visibility.Hide
+		};
 
-			foreach (Line2D line in data.Percentiles)
-				line.IsActive = false;
-
-			foreach (FontText percentileLabel in data.PercentileLabels)
-				percentileLabel.IsActive = false;
-
-			foreach (FontText keyLabel in data.KeyLabels)
-				keyLabel.IsActive = false;
-		}
-
-		private static void InactivateAxes(Data data)
-		{
-			data.XAxis.IsActive = false;
-			data.YAxis.IsActive = false;
-		}
-
-		private class UpdateGraphics : EventListener2D
-		{
-			public override void ReceiveMessage(Entity2D entity, object message)
-			{
-				if (!(message is ObserveEntity2D.HasChanged))
-					return;
-
-				graph = entity as Graph;
-				UpdateBackground();
-				UpdateLines();
-			}
-
-			private Graph graph;
-
-			private void UpdateBackground()
-			{
-				var background = graph.Get<FilledRect>();
-				background.DrawArea = graph.DrawArea;
-				background.RenderLayer = graph.RenderLayer;
-				background.Visibility = graph.Visibility;
-			}
-
-			private void UpdateLines()
-			{
-				var data = graph.Get<Data>();
-				foreach (GraphLine line in data.Lines)
-					line.ClearGraphics();
-
-				if (graph.Visibility == Visibility.Show)
-					foreach (GraphLine line in data.Lines)
-						line.Refresh();
-			}
-		}
-
-		internal const float Border = 0.025f;
-
-		public Rectangle Viewport
-		{
-			get { return Get<Data>().Viewport; }
-			set
-			{
-				var data = Get<Data>();
-				if (data.Viewport == value)
-					return;
-
-				Get<Data>().Viewport = value;
-				Refresh();
-			}
-		}
+		internal List<GraphLine> Lines = new List<GraphLine>();
 
 		public GraphLine CreateLine(string key, Color color)
 		{
 			var line = new GraphLine(this) { Key = key, Color = color };
-			Get<Data>().Lines.Add(line);
-			Refresh();
+			Lines.Add(line);
+			renderKey.Refresh(this);
 			return line;
 		}
 
 		public void RemoveLine(GraphLine line)
 		{
 			line.Clear();
-			Get<Data>().Lines.Remove(line);
-			Refresh();
+			Lines.Remove(line);
+			renderKey.Refresh(this);
 		}
-
-		public Color AxisColor
-		{
-			get { return Get<Data>().XAxis.Color; }
-			set
-			{
-				var data = Get<Data>();
-				data.XAxis.Color = value;
-				data.YAxis.Color = value;
-				Refresh();
-			}
-		}
-
-		public Color BackgroundColor
-		{
-			get { return Get<FilledRect>().Color; }
-			set
-			{
-				Get<FilledRect>().Color = value;
-				Refresh();
-			}
-		}
-
-		public Point Origin { get; set; }
 
 		internal void AddPoint(Point point)
 		{
-			MessageAllListeners(new PointAdded(point));
+			removeOldestPoints.Process(this);
+			if (IsAutogrowing)
+				autogrowViewport.ProcessAddedPoint(this, point);
 		}
 
-		public class PointAdded
+		public bool IsAutogrowing { get; set; }
+		private readonly AutogrowViewport autogrowViewport = new AutogrowViewport();
+		
+		internal void RefreshKey()
 		{
-			public PointAdded(Point point)
-			{
-				Point = point;
-			}
-
-			public Point Point { get; private set; }
+			renderKey.Refresh(this);
 		}
+
+		public Visibility AxesVisibility
+		{
+			get { return renderAxes.Visibility; }
+			set
+			{
+				if (renderAxes.Visibility == value)
+					return;
+				renderAxes.Visibility = value;
+				renderAxes.Refresh(this);
+			}
+		}
+
+		public Visibility PercentilesVisibility
+		{
+			get { return renderPercentiles.Visibility; }
+			set
+			{
+				if (renderPercentiles.Visibility == value)
+					return;
+				renderPercentiles.Visibility = value;
+				renderPercentiles.Refresh(this);
+			}
+		}
+
+		public Visibility PercentileLabelsVisibility
+		{
+			get { return renderPercentileLabels.Visibility; }
+			set
+			{
+				if (renderPercentileLabels.Visibility == value)
+					return;
+				renderPercentileLabels.Visibility = value;
+				renderPercentileLabels.Refresh(this);
+			}
+		}
+
+		public Rectangle Viewport
+		{
+			get { return viewport; }
+			set
+			{
+				if (viewport == value)
+					return;
+				viewport = value;
+				renderAxes.Refresh(this);
+				renderPercentileLabels.Refresh(this);
+				foreach (GraphLine line in Lines)
+					line.Refresh();
+			}
+		}
+		private Rectangle viewport;
+
+		public Color AxisColor
+		{
+			get { return renderAxes.XAxis.Color; }
+			set
+			{
+				renderAxes.XAxis.Color = value;
+				renderAxes.YAxis.Color = value;
+			}
+		}
+
+		public Point Origin
+		{
+			get { return origin; }
+			set
+			{
+				if (origin == value)
+					return;
+				origin = value;
+				renderAxes.Refresh(this);
+			}
+		}
+		private Point origin;
 
 		public int MaximumNumberOfPoints
 		{
-			get { return Get<Data>().MaximumNumberOfPoints; }
+			get { return removeOldestPoints.MaximumNumberOfPoints; }
 			set
 			{
-				Get<Data>().MaximumNumberOfPoints = value;
-				Start<RemoveOldestPoints>();
-				Refresh();
+				if (removeOldestPoints.MaximumNumberOfPoints == value)
+					return;
+				removeOldestPoints.MaximumNumberOfPoints = value;
+				removeOldestPoints.Process(this);
 			}
 		}
 
+		private readonly RemoveOldestPoints removeOldestPoints = new RemoveOldestPoints();
+
 		public int NumberOfPercentiles
 		{
-			get { return Get<Data>().NumberOfPercentiles; }
+			get { return renderPercentiles.NumberOfPercentiles; }
 			set
 			{
-				Get<Data>().NumberOfPercentiles = value;
-				Start<RenderPercentiles, RenderPercentileLabels>();
-				Refresh();
+				if (renderPercentiles.NumberOfPercentiles == value)
+					return;
+				renderPercentiles.NumberOfPercentiles = value;
+				renderPercentileLabels.NumberOfPercentiles = value;
+				renderPercentiles.Refresh(this);
+				renderPercentileLabels.Refresh(this);
 			}
 		}
 
 		public Color PercentileColor
 		{
-			get { return Get<Data>().PercentileColor; }
+			get { return renderPercentiles.PercentileColor; }
 			set
 			{
-				Get<Data>().PercentileColor = value;
-				Refresh();
+				if (renderPercentiles.PercentileColor == value)
+					return;
+				renderPercentiles.PercentileColor = value;
+				renderPercentiles.Refresh(this);
 			}
 		}
 
 		public string PercentilePrefix
 		{
-			get { return Get<Data>().PercentilePrefix; }
+			get { return renderPercentileLabels.PercentilePrefix; }
 			set
 			{
-				Get<Data>().PercentilePrefix = value;
-				Refresh();
+				if (renderPercentileLabels.PercentilePrefix == value)
+					return;
+				renderPercentileLabels.PercentilePrefix = value;
+				renderPercentileLabels.Refresh(this);
 			}
 		}
 
 		public string PercentileSuffix
 		{
-			get { return Get<Data>().PercentileSuffix; }
+			get { return renderPercentileLabels.PercentileSuffix; }
 			set
 			{
-				Get<Data>().PercentileSuffix = value;
-				Refresh();
+				if (renderPercentileLabels.PercentileSuffix == value)
+					return;
+				renderPercentileLabels.PercentileSuffix = value;
+				renderPercentileLabels.Refresh(this);
 			}
 		}
 
 		public Color PercentileLabelColor
 		{
-			get { return Get<Data>().PercentileLabelColor; }
+			get { return renderPercentileLabels.PercentileLabelColor; }
 			set
 			{
-				Get<Data>().PercentileLabelColor = value;
-				Refresh();
+				if (renderPercentileLabels.PercentileLabelColor == value)
+					return;
+				renderPercentileLabels.PercentileLabelColor = value;
+				renderPercentileLabels.Refresh(this);
 			}
 		}
 
 		public bool ArePercentileLabelsInteger
 		{
-			get { return Get<Data>().ArePercentileLabelsInteger; }
-			set { Get<Data>().ArePercentileLabelsInteger = value; }
+			get { return renderPercentileLabels.ArePercentileLabelsInteger; }
+			set
+			{
+				if (renderPercentileLabels.ArePercentileLabelsInteger == value)
+					return;
+				renderPercentileLabels.ArePercentileLabelsInteger = value;
+				renderPercentileLabels.Refresh(this);
+			}
 		}
 
-		protected List<GraphLine> Lines
-		{
-			get { return Get<Data>().Lines; }
-		}
+		internal const float Border = 0.025f;
 	}
 }

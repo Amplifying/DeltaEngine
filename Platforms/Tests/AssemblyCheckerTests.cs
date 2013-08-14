@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using DeltaEngine.Core;
+using DeltaEngine.Extensions;
 using NUnit.Framework;
 
 namespace DeltaEngine.Platforms.Tests
@@ -17,10 +17,8 @@ namespace DeltaEngine.Platforms.Tests
 		public void MakeSureToOnlyIncludeAllowedDeltaEngineAndUserAssemblies()
 		{
 			Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-			var assembliesAllowed = new List<string>();
-			foreach (Assembly assembly in assemblies.Where(assembly => assembly.IsAllowed()))
-				assembliesAllowed.Add(assembly.GetName().Name);
-
+			var assembliesAllowed =
+				assemblies.Where(assembly => assembly.IsAllowed()).Select(a => a.GetName().Name).ToList();
 			Assert.Greater(assembliesAllowed.Count, 0, "Assemblies: " + assembliesAllowed.ToText());
 		}
 	}

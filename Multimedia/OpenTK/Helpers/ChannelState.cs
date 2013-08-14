@@ -1,4 +1,4 @@
-namespace DeltaEngine.Multimedia.OpenTK.Helpers
+﻿namespace DeltaEngine.Multimedia.OpenTK.Helpers
 {
 	/// <summary>
 	/// Possible states of the channels.

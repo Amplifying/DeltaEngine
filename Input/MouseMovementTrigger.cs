@@ -1,3 +1,5 @@
+﻿using System;
+using DeltaEngine.Commands;
 using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Input
@@ -5,16 +7,22 @@ namespace DeltaEngine.Input
 	/// <summary>
 	/// Tracks any mouse movement, useful to update cursor positions or check hover states.
 	/// </summary>
-	public class MouseMovementTrigger : Trigger
+	public class MouseMovementTrigger : PositionTrigger
 	{
-		public override bool ConditionMatched(InputCommands input)
+		public MouseMovementTrigger()
+			: base(Point.Unused)
 		{
-			bool changedPosition = input.Mouse.IsAvailable &&
-				input.Mouse.Position != lastPosition && lastPosition != Point.Unused;
-			lastPosition = input.Mouse.Position;
-			return changedPosition;
+			Start<Mouse>();
 		}
 
-		private Point lastPosition = Point.Unused;
+		public MouseMovementTrigger(string empty)
+			: base(Point.Unused)
+		{
+			if (!String.IsNullOrEmpty(empty))
+				throw new MouseMovementTriggerHasNoParameters();
+			Start<Mouse>();
+		}
+
+		public class MouseMovementTriggerHasNoParameters : Exception {}
 	}
 }

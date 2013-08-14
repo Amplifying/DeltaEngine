@@ -1,8 +1,8 @@
-using System;
+﻿using DeltaEngine;
+using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
 using DeltaEngine.Platforms;
-using DeltaEngine.Rendering.ScreenSpaces;
+using DeltaEngine.ScreenSpaces;
 using NUnit.Framework;
 
 namespace Blocks.Tests
@@ -12,20 +12,25 @@ namespace Blocks.Tests
 	/// </summary>
 	public class BrickTests : TestWithMocksOrVisually
 	{
-		public void Initialize(ScreenSpace screen)
+		[SetUp]
+		public void SetUp()
 		{
-			displayMode = screen.Viewport.Aspect >= 1.0f ? Orientation.Landscape : Orientation.Portrait;
+			displayMode = ScreenSpace.Current.Viewport.Aspect >= 1.0f
+				? Orientation.Landscape : Orientation.Portrait;
 			content = new JewelBlocksContent();
+			var image = content.Load<Image>("Block1");
+			var shader = ContentLoader.Load<Shader>(Shader.Position2DColorUv);
+			material = new Material(shader, image);
 		}
 
 		private Orientation displayMode;
 		private JewelBlocksContent content;
+		private Material material;
 
 		[Test]
 		public void Constructor()
 		{
-			Initialize(Resolve<ScreenSpace>());
-			var brick = new Brick(content.Load<Image>("Block1"), Point.Half, displayMode);
+			var brick = new Brick(material, Point.Half, displayMode);
 			Assert.AreEqual(Point.Half, brick.Offset);
 		}
 
@@ -37,32 +42,23 @@ namespace Blocks.Tests
 		}
 
 		[Test]
-		public void Offset(Type resolver)
+		public void Offset()
 		{
-			Initialize(Resolve<ScreenSpace>());
-			var brick = new Brick(content.Load<Image>("Block1"), Point.Zero, displayMode)
-			{
-				Offset = Point.Half
-			};
+			var brick = new Brick(material, Point.Zero, displayMode) { Offset = Point.Half };
 			Assert.AreEqual(Point.Half, brick.Offset);
 		}
 
 		[Test]
-		public void TopLeft(Type resolver)
+		public void TopLeft()
 		{
-			Initialize(Resolve<ScreenSpace>());
-			var brick = new Brick(content.Load<Image>("Block1"), Point.Zero, displayMode)
-			{
-				TopLeftGridCoord = Point.Half
-			};
+			var brick = new Brick(material, Point.Zero, displayMode) { TopLeftGridCoord = Point.Half };
 			Assert.AreEqual(Point.Half, brick.TopLeftGridCoord);
 		}
 
 		[Test]
-		public void Position(Type resolver)
+		public void Position()
 		{
-			Initialize(Resolve<ScreenSpace>());
-			var brick = new Brick(content.Load<Image>("Block1"), new Point(0.1f, 0.2f), displayMode)
+			var brick = new Brick(material, new Point(0.1f, 0.2f), displayMode)
 			{
 				TopLeftGridCoord = new Point(0.4f, 0.8f)
 			};
@@ -70,22 +66,17 @@ namespace Blocks.Tests
 		}
 
 		[Test]
-		public void RenderBrick(Type resolver)
+		public void RenderBrick()
 		{
-			Initialize(Resolve<ScreenSpace>());
-			var image = content.Load<Image>("Block1");
-			var brick = new Brick(image, new Point(5, 5), displayMode);
+			var brick = new Brick(material, new Point(5, 5), displayMode);
 			brick.UpdateDrawArea();
 		}
 
 		[Test]
-		public void RenderBrickInPortrait(Type resolver)
+		public void RenderBrickInPortrait()
 		{
-			var screen = Resolve<ScreenSpace>();
-			Initialize(screen);
-			screen.Window.ViewportPixelSize = new Size(600, 800);
-			var image = content.Load<Image>("Block1");
-			var brick = new Brick(image, new Point(5, 5), displayMode);
+			Resolve<Window>().ViewportPixelSize = new Size(600, 800);
+			var brick = new Brick(material, new Point(5, 5), displayMode);
 			brick.UpdateDrawArea();
 		}
 	}

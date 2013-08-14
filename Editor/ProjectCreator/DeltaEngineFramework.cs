@@ -1,4 +1,4 @@
-namespace DeltaEngine.Editor.ProjectCreator
+﻿namespace DeltaEngine.Editor.ProjectCreator
 {
 	/// <summary>
 	/// Available Frameworks for Delta Engine projects.

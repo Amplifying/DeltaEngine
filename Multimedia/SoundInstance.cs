@@ -1,5 +1,5 @@
-using System;
-using DeltaEngine.Core;
+﻿using System;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Multimedia
 {

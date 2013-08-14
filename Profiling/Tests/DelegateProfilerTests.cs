@@ -1,6 +1,6 @@
-using System;
+﻿using System;
 using System.Threading;
-using DeltaEngine.Core;
+using DeltaEngine.Extensions;
 using NUnit.Framework;
 
 namespace DeltaEngine.Profiling.Tests

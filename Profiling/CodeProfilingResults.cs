@@ -1,18 +1,19 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DeltaEngine.Core;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Profiling
 {
 	/// <summary>
-	/// The results of a session of profiling
+	/// The results of a session of profiling.
 	/// </summary>
 	public class CodeProfilingResults
 	{
 		public CodeProfilingResults(List<CodeProfilerSection> sections)
 		{
 			Sections = sections;
-			TotalTime = Time.Current.GetSecondsSinceStartToday();
+			TotalTime = GlobalTime.Current.GetSecondsSinceStartToday();
 			TotalSectionTime = MathExtensions.Min(Sections.Sum(time => time.TotalTime), TotalTime);
 		}
 

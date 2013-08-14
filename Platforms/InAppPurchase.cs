@@ -1,4 +1,4 @@
-
+﻿
 namespace DeltaEngine.Platforms
 {
 	/// <summary>

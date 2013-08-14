@@ -1,8 +1,6 @@
-using System;
+﻿using DeltaEngine;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
 using DeltaEngine.Platforms;
-using DeltaEngine.Rendering.ScreenSpaces;
 using NUnit.Framework;
 
 namespace Snake.Tests
@@ -23,7 +21,7 @@ namespace Snake.Tests
 		public void CreateFirstChunk()
 		{
 			var chunk = new Chunk(gridSize, blockSize);
-			Assert.AreEqual(1, EntitySystem.Current.NumberOfEntities);
+			Assert.IsTrue(chunk.IsActive);
 			Assert.AreEqual(blockSize, chunk.Size.Width);
 			Assert.AreEqual(blockSize, chunk.Size.Height);
 			Assert.AreEqual(Color.Purple, chunk.Color);
@@ -36,8 +34,7 @@ namespace Snake.Tests
 		[Test]
 		public void DrawChunkAtRandomLocation()
 		{
-			var screenSpace = Resolve<ScreenSpace>();
-			screenSpace.Window.ViewportPixelSize = new Size(800, 600);
+			Resolve<Window>().ViewportPixelSize = new Size(800, 600);
 			var smallChunk = new Chunk(gridSize, blockSize);
 			smallChunk.SpawnAtRandomLocation();
 		}
@@ -45,8 +42,7 @@ namespace Snake.Tests
 		[Test]
 		public void CheckChunkSpawnWithinSnakeBody()
 		{
-			var screenSpace = Resolve<ScreenSpace>();
-			screenSpace.Window.ViewportPixelSize = new Size(200, 200);
+			Resolve<Window>().ViewportPixelSize = new Size(200, 200);
 			new Snake(gridSize);
 			new Chunk(gridSize, blockSize);
 		}

@@ -1,8 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
-using DeltaEngine.Core;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Datatypes
 {
@@ -10,7 +11,7 @@ namespace DeltaEngine.Datatypes
 	/// Color with a byte per component (red, green, blue, alpha), also provides float properties.
 	/// </summary>
 	[DebuggerDisplay("Color(R={R}, G={G}, B={B}, A={A})")]
-	public struct Color : IEquatable<Color>
+	public struct Color : IEquatable<Color>, Lerp<Color>
 	{
 		public Color(byte r, byte g, byte b, byte a = 255)
 			: this()
@@ -26,13 +27,13 @@ namespace DeltaEngine.Datatypes
 		public byte B { get; set; }
 		public byte A { get; set; }
 
-		public Color(float r, float g, float b, float a = 1.0f)
+		public Color(float redValue, float greenValue, float blueValue, float alphaValue = 1.0f)
 			: this()
 		{
-			R = (byte)(r.Clamp(0.0f, 1.0f) * 255);
-			G = (byte)(g.Clamp(0.0f, 1.0f) * 255);
-			B = (byte)(b.Clamp(0.0f, 1.0f) * 255);
-			A = (byte)(a.Clamp(0.0f, 1.0f) * 255);
+			R = (byte)(redValue.Clamp(0.0f, 1.0f) * 255);
+			G = (byte)(greenValue.Clamp(0.0f, 1.0f) * 255);
+			B = (byte)(blueValue.Clamp(0.0f, 1.0f) * 255);
+			A = (byte)(alphaValue.Clamp(0.0f, 1.0f) * 255);
 		}
 
 		public Color(string colorAsString)
@@ -41,7 +42,6 @@ namespace DeltaEngine.Datatypes
 			string[] components = colorAsString.SplitAndTrim(',', '(', ')');
 			if (components.Length != 4)
 				throw new InvalidNumberOfComponents();
-
 			R = FindComponentValue(components, "R");
 			G = FindComponentValue(components, "G");
 			B = FindComponentValue(components, "B");
@@ -55,7 +55,6 @@ namespace DeltaEngine.Datatypes
 			foreach (string component in components)
 				if (IsThisTheRightComponent(component, color))
 					return ComponentValue(component);
-
 			throw new InvalidNumberOfComponents();
 		}
 
@@ -63,7 +62,6 @@ namespace DeltaEngine.Datatypes
 		{
 			if (component.Length < 3 || component.IndexOf('=') < 0)
 				throw new InvalidNumberOfComponents();
-
 			return component.StartsWith(color + "=");
 		}
 
@@ -82,6 +80,12 @@ namespace DeltaEngine.Datatypes
 			public InvalidColorComponentValue(string message)
 				: base(message) {}
 		}
+
+		public Color(Color color, float alphaValue)
+			: this(color.RedValue, color.GreenValue, color.BlueValue, alphaValue) {}
+
+		public Color(Color color, byte a)
+			: this(color.R, color.G, color.B, a) {}
 
 		public float RedValue
 		{
@@ -120,6 +124,7 @@ namespace DeltaEngine.Datatypes
 		public static readonly Color Yellow = new Color(255, 255, 0);
 		public static readonly Color CornflowerBlue = new Color(100, 149, 237);
 		public static readonly Color LightBlue = new Color(0.65f, 0.795f, 1f);
+		public static readonly Color VeryLightGray = new Color(200, 200, 200);
 		public static readonly Color LightGray = new Color(165, 165, 165);
 		public static readonly Color DarkGray = new Color(89, 89, 89);
 		public static readonly Color DarkGreen = new Color(0, 100, 0);
@@ -129,7 +134,7 @@ namespace DeltaEngine.Datatypes
 
 		public static Color Transparent(Color color)
 		{
-			return new Color(color.R, color.G, color.B, 0);
+			return new Color(color, 0);
 		}
 
 		/// <summary>
@@ -149,12 +154,13 @@ namespace DeltaEngine.Datatypes
 			get { return B + (G << 8) + (R << 16) + (A << 24); }
 		}
 
-		public static Color Lerp(Color color1, Color color2, float percentage)
+		[Pure]
+		public Color Lerp(Color other, float interpolation)
 		{
-			var r = (byte)(MathExtensions.Lerp(color1.R, color2.R, percentage));
-			var g = (byte)(MathExtensions.Lerp(color1.G, color2.G, percentage));
-			var b = (byte)(MathExtensions.Lerp(color1.B, color2.B, percentage));
-			var a = (byte)(MathExtensions.Lerp(color1.A, color2.A, percentage));
+			var r = (byte)(MathExtensions.Lerp(R, other.R, interpolation));
+			var g = (byte)(MathExtensions.Lerp(G, other.G, interpolation));
+			var b = (byte)(MathExtensions.Lerp(B, other.B, interpolation));
+			var a = (byte)(MathExtensions.Lerp(A, other.A, interpolation));
 			return new Color(r, g, b, a);
 		}
 

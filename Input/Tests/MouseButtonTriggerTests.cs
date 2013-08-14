@@ -1,5 +1,8 @@
+﻿using DeltaEngine.Commands;
+using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.Mocks;
+using DeltaEngine.Rendering.Fonts;
+using DeltaEngine.Rendering.Shapes;
 using NUnit.Framework;
 
 namespace DeltaEngine.Input.Tests
@@ -7,51 +10,39 @@ namespace DeltaEngine.Input.Tests
 	public class MouseButtonTriggerTests : TestWithMocksOrVisually
 	{
 		[Test]
-		public void ConditionMatchedWithoutMouse()
+		public void PressLeftMouseButtonToCloseWindow()
 		{
-			var trigger = new MouseButtonTrigger(MouseButton.Right, State.Pressing);
-			Assert.False(trigger.ConditionMatched(Input));
+			new FontText(FontXml.Default, "Press Left Mouse Button to close window", Rectangle.One);
+			new Command(() => Resolve<Window>().CloseAfterFrame()).Add(new MouseButtonTrigger());
 		}
 
 		[Test]
-		public void ConditionMatched()
+		public void ClickAndHoldToShowRedEllipseAtMousePosition()
 		{
-			CheckIfTriggerConditionMatches(MouseButton.Left, State.Releasing);
-			CheckIfTriggerConditionMatches(MouseButton.Middle, State.Released);
-			CheckIfTriggerConditionMatches(MouseButton.Right, State.Pressing);
-			CheckIfTriggerConditionMatches(MouseButton.X1, State.Released);
-			CheckIfTriggerConditionMatches(MouseButton.X2, State.Released);
+			var ellipse = new Ellipse(new Rectangle(-0.1f, -0.1f, 0.1f, 0.1f), Color.Red);
+			new Command(position => ellipse.Center = position).Add(new MouseButtonTrigger(State.Pressed));
 		}
 
-		private void CheckIfTriggerConditionMatches(MouseButton button, State state)
+		[Test, CloseAfterFirstFrame]
+		public void Create()
 		{
-			var trigger = new MouseButtonTrigger(button, state);
-			Resolve<MockMouse>().SetButtonState(trigger.Button, trigger.State);
+			var trigger = new MouseButtonTrigger(MouseButton.Right, State.Pressed);
+			Assert.AreEqual(MouseButton.Right, trigger.Button);
+			Assert.AreEqual(State.Pressed, trigger.State);
+			Assert.AreEqual(MouseButton.Left, new MouseButtonTrigger().Button);
+			Assert.AreEqual(State.Pressing, new MouseButtonTrigger().State);
+			Assert.AreEqual(MouseButton.Left, new MouseButtonTrigger(State.Pressed).Button);
+			Assert.AreEqual(State.Pressed, new MouseButtonTrigger(State.Pressed).State);
 		}
 
-		[Test]
-		public void CheckForEquility()
+		[Test, CloseAfterFirstFrame]
+		public void CreateFromString()
 		{
-			var trigger = new MouseButtonTrigger(MouseButton.Left, State.Pressing);
-			var otherTrigger = new MouseButtonTrigger(MouseButton.Left, State.Released);
-			Assert.AreNotEqual(trigger, otherTrigger);
-			Assert.AreNotEqual(trigger.GetHashCode(), otherTrigger.GetHashCode());
-
-			var copyOfTrigger = new MouseButtonTrigger(MouseButton.Left, State.Pressing);
-			Assert.AreEqual(trigger, copyOfTrigger);
-			Assert.AreEqual(trigger.GetHashCode(), copyOfTrigger.GetHashCode());
-		}
-
-		[Test]
-		public void SetGetProperties()
-		{
-			var trigger = new MouseButtonTrigger(MouseButton.Left, State.Pressing);
-			trigger.Button = MouseButton.Right;
-			trigger.State = State.Pressed;
-			Assert.AreNotEqual(trigger.Button, MouseButton.Left);
-			Assert.AreNotEqual(trigger.State, State.Pressing);
-			Assert.AreEqual(trigger.Button, MouseButton.Right);
-			Assert.AreEqual(trigger.State, State.Pressed);
+			var trigger = new MouseButtonTrigger("Right Pressed");
+			Assert.AreEqual(MouseButton.Right, trigger.Button);
+			Assert.AreEqual(State.Pressed, trigger.State);
+			Assert.Throws<MouseButtonTrigger.CannotCreateMouseButtonTriggerWithoutButton>(
+				() => new MouseButtonTrigger(""));
 		}
 	}
 }

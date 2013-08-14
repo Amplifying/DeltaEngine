@@ -1,6 +1,6 @@
-using DeltaEngine.Input;
+﻿using DeltaEngine;
 using DeltaEngine.Platforms;
-using DeltaEngine.Rendering.ScreenSpaces;
+using DeltaEngine.ScreenSpaces;
 
 namespace Snake
 {
@@ -8,7 +8,7 @@ namespace Snake
 	{
 		public Program()
 		{
-			new SnakeGame(Resolve<ScreenSpace>(), Resolve<InputCommands>());
+			new SnakeGame(Resolve<Window>());
 		}
 
 		public static void Main()

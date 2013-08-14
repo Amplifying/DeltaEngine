@@ -1,6 +1,4 @@
-using DeltaEngine.Content;
-
-namespace Blocks
+﻿namespace Blocks
 {
 	/// <summary>
 	/// Loads JewelBlocks related content and settings

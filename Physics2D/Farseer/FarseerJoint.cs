@@ -1,4 +1,4 @@
-using FarseerPhysics.Dynamics.Joints;
+﻿using FarseerPhysics.Dynamics.Joints;
 
 namespace DeltaEngine.Physics2D.Farseer
 {
@@ -59,6 +59,7 @@ namespace DeltaEngine.Physics2D.Farseer
 					lineJoint.MotorEnabled = value;
 			}
 		}
+
 		public override float Frequency
 		{
 			get

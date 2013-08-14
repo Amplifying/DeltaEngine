@@ -1,5 +1,6 @@
-using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
+﻿using DeltaEngine.Core;
+using DeltaEngine.Networking.Messages;
+using DeltaEngine.Networking.Mocks;
 using NUnit.Framework;
 
 namespace DeltaEngine.Networking.Tests
@@ -9,9 +10,10 @@ namespace DeltaEngine.Networking.Tests
 		[Test]
 		public void ConnectToServer()
 		{
-			var server = new ServerMock();
-			using (var client = new ClientMock(server))
+			var server = new MockServer();
+			using (var client = new MockClient(server))
 			{
+				client.Connect("localhost", 1);
 				Assert.IsTrue(client.IsConnected);
 			}
 		}
@@ -19,7 +21,7 @@ namespace DeltaEngine.Networking.Tests
 		[Test]
 		public void SendTestMessageWithoutServerShouldNotCrash()
 		{
-			using (var client = new ClientMock(null))
+			using (var client = new MockClient(null))
 			{
 				Assert.IsFalse(client.IsConnected);
 				client.Send(new TextMessage(""));
@@ -29,26 +31,32 @@ namespace DeltaEngine.Networking.Tests
 		[Test]
 		public void ConvertBinaryDataToArray()
 		{
-			var server = new ServerMock();
-			Assert.IsNull(server.ReceivedMessage);
-			new ClientMock(server).Send(new TextMessage("Hi"));
-			var serverMessage = server.ReceivedMessage.ToBinaryData() as TextMessage;
-			byte[] byteArray = serverMessage.ToByteArrayWithLengthHeader();
-			const int LenghtOfNetworkMessage = 4;
+			var server = new MockServer();
+			Assert.IsNull(server.LastMessage);
+			var client = new MockClient(server);
+			client.Connect("localhost", 1);
+			client.Send(new TextMessage("Hi"));
+			var serverMessage = server.LastMessage as TextMessage;
+			byte[] byteArray = BinaryDataExtensions.ToByteArrayWithLengthHeader(serverMessage);
+			const int LenghtOfNetworkMessage = 1;
+			const int LenghtOfDataVersion = 4;
 			const int StringLenghtByte = 1;
 			const int StringIsNullBooleanByte = 1;
-			int classNameLenght = "TestMessage".Length + StringLenghtByte;
-			int textLenght = "Hi".Length + StringLenghtByte + StringIsNullBooleanByte;
-			Assert.AreEqual(LenghtOfNetworkMessage + classNameLenght + textLenght, byteArray.Length);
+			int classNameLength = "TestMessage".Length + StringLenghtByte;
+			int textLength = "Hi".Length + StringLenghtByte + StringIsNullBooleanByte;
+			Assert.AreEqual(
+				LenghtOfNetworkMessage + LenghtOfDataVersion + classNameLength + textLength,
+				byteArray.Length);
 		}
 
 		[Test]
 		public void SendTestMessageToServer()
 		{
-			var server = new ServerMock();
-			Assert.IsNull(server.ReceivedMessage);
-			new ClientMock(server).Send(new TextMessage("Hi"));
-			var serverMessage = server.ReceivedMessage.ToBinaryData() as TextMessage;
+			var server = new MockServer();
+			var client = new MockClient(server);
+			client.Connect("localhost", 1);
+			client.Send(new TextMessage("Hi"));
+			var serverMessage = server.LastMessage as TextMessage;
 			Assert.IsNotNull(serverMessage);
 			Assert.AreEqual("Hi", serverMessage.Text);
 		}
@@ -56,13 +64,14 @@ namespace DeltaEngine.Networking.Tests
 		[Test]
 		public void ReceiveCallback()
 		{
-			var server = new ServerMock();
-			using (var client = new ClientMock(server))
+			var server = new MockServer();
+			using (var client = new MockClient(server))
 			{
-				bool eventTriggered = false;
-				client.DataReceived += (binaryData) => eventTriggered = true;
-				client.Receive();
-				Assert.IsTrue(eventTriggered);
+				client.Connect("localhost", 1);
+				bool messageReceived = false;
+				client.DataReceived += message => messageReceived = true;
+				server.SendToAllClients(new TextMessage("Doesn't matter"));
+				Assert.IsTrue(messageReceived);
 			}
 		}
 	}

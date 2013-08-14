@@ -1,9 +1,12 @@
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
-using DeltaEngine.Rendering.ScreenSpaces;
+using DeltaEngine.Graphics.Vertices;
+using DeltaEngine.ScreenSpaces;
 
 namespace DeltaEngine.Rendering.Fonts
 {
@@ -15,87 +18,110 @@ namespace DeltaEngine.Rendering.Fonts
 		public VectorText(string text, Point position)
 			: base(Rectangle.FromCenter(position, new Size(0.05f)))
 		{
-			Add(CalculateLinePoints(text));
-			Start<Render>();
+			Add(new Data(text));
+			Start<ProcessText>();
+			OnDraw<Render>();
 		}
 
-		private List<Point> CalculateLinePoints(string text)
+		internal class Data
 		{
-			var points = new List<Point>();
-			caretPosition = new Point(-CharacterWidth * text.Length / 2, -CharacterWidth / 2);
-			foreach (char c in text)
-				CalculateCharLines(points, c);
+			public Data(string text)
+			{
+				Text = text;
+			}
 
-			return points;
+			public string Text
+			{
+				get { return text; }
+				set
+				{
+					text = value;
+					IsRefreshNeeded = true;
+				}
+			}
+
+			private string text;
+			public bool IsRefreshNeeded { get; set; }
+			public List<Point> LinePoints { get; set; }
 		}
 
-		private Point caretPosition = Point.Zero;
-		private const float CharacterWidth = 0.64f;
-
-		private void CalculateCharLines(List<Point> points, char c)
+		internal class ProcessText : UpdateBehavior, Filtered
 		{
-			if (!char.IsWhiteSpace(c))
-				points.AddRange(characterLines.GetPoints(c).Select(point => caretPosition + point));
+			public ProcessText()
+				: base(Priority.Last) {}
 
-			caretPosition.X += CharacterWidth;
+			public Func<Entity, bool> Filter
+			{
+				get { return entity => entity.Get<Data>().IsRefreshNeeded; }
+			}
+
+			public override void Update(IEnumerable<Entity> entities)
+			{
+				foreach (Data data in entities.Select(entity => entity.Get<Data>()))
+				{
+					data.LinePoints = CalculateLinePoints(data.Text);
+					data.IsRefreshNeeded = false;
+				}
+			}
+
+			private List<Point> CalculateLinePoints(string text)
+			{
+				var points = new List<Point>();
+				caretPosition = new Point(-CharacterWidth * text.Length / 2, -CharacterWidth / 2);
+				foreach (char c in text)
+					CalculateCharLines(points, c);
+				return points;
+			}
+
+			private Point caretPosition = Point.Zero;
+			private const float CharacterWidth = 0.64f;
+
+			private void CalculateCharLines(List<Point> points, char c)
+			{
+				if (!char.IsWhiteSpace(c))
+					points.AddRange(characterLines.GetPoints(c).Select(point => caretPosition + point));
+				caretPosition.X += CharacterWidth;
+			}
+
+			private readonly VectorCharacterLines characterLines = new VectorCharacterLines();
 		}
 
-		private readonly VectorCharacterLines characterLines = new VectorCharacterLines();
-
-		public class Render : EventListener2D
+		public class Render : DrawBehavior
 		{
-			public Render(Drawing drawing, ScreenSpace screen)
+			public Render(Drawing drawing)
 			{
 				this.drawing = drawing;
-				this.screen = screen;
-				vertices = new List<VertexPositionColor>();
+				material = new Material(Shader.Position2DColor, "");
 			}
 
 			private readonly Drawing drawing;
-			private readonly ScreenSpace screen;
-			private readonly List<VertexPositionColor> vertices;
+			private readonly Material material;
+			private readonly List<VertexPosition2DColor> vertices = new List<VertexPosition2DColor>();
 
-			public override void ReceiveMessage(Entity2D entity, object message)
+			public void Draw(IEnumerable<DrawableEntity> entities)
 			{
-				if (message is SortAndRender.AddToBatch)
-					AddToBatch(entity);
-			}
-
-			private void AddToBatch(Entity2D text)
-			{
-				var area = text.DrawArea;
-				AddLines(text.Get<List<Point>>(), area.Center, area.Height, text.Color);
-			}
-
-			private void AddLines(List<Point> points, Point position, float scale, Color color)
-			{
-				for (int num = 0; num < points.Count; num++)
-					vertices.Add(
-						new VertexPositionColor(screen.ToPixelSpaceRounded(points[num] * scale + position), color));
-			}
-
-			public override void ReceiveMessage(object message)
-			{
-				if (!(message is SortAndRender.RenderBatch) || vertices.Count == 0)
-					return;
-
-				DrawLines();
+				foreach (Entity2D entity in entities)
+					AddVertices(entity);
+				if (vertices.Count > 0)
+					drawing.AddLines(material, vertices.ToArray());
 				vertices.Clear();
 			}
 
-			private void DrawLines()
+			private void AddVertices(Entity2D entity)
 			{
-				var vertexArray = new VertexPositionColor[vertices.Count + 1];
-				for (int i = 0; i < vertices.Count; ++i)
-					vertexArray[i] = vertices[i];
-				drawing.DisableTexturing();
-				drawing.DrawVertices(VerticesMode.Lines, vertexArray);
+				var area = entity.DrawArea;
+				List<Point> linePoints = entity.Get<Data>().LinePoints;
+				for (int num = 0; num < linePoints.Count; num++)
+					vertices.Add(new VertexPosition2DColor(
+							ScreenSpace.Current.ToPixelSpaceRounded(linePoints[num] * area.Height + area.Center),
+							entity.Color));
 			}
+		}
 
-			public override Priority Priority
-			{
-				get { return Priority.Last; }
-			}
+		public string Text
+		{
+			get { return Get<Data>().Text; }
+			set { Get<Data>().Text = value; }
 		}
 	}
 }

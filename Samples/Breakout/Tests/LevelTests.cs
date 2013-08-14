@@ -1,9 +1,10 @@
-using System;
+﻿using System;
+using DeltaEngine;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
 using DeltaEngine.Input;
+using DeltaEngine.Input.Mocks;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.Mocks;
-using DeltaEngine.Rendering;
 using NUnit.Framework;
 
 namespace Breakout.Tests
@@ -20,7 +21,7 @@ namespace Breakout.Tests
 		public void ForceResolutionChange()
 		{
 			Resolve<Level>();
-			Window.ViewportPixelSize = new Size(400, 600);
+			Resolve<Window>().ViewportPixelSize = new Size(400, 600);
 		}
 
 		[Test]
@@ -69,14 +70,13 @@ namespace Breakout.Tests
 			}
 		}
 
-		[Test]
+		[Test,CloseAfterFirstFrame]
 		public void GetBrickAtScreenPosition(Type type)
 		{
 			var level = Resolve<Level>();
 			Assert.Null(level.GetBrickAt(0f, 0.6f));
 			Assert.Null(level.GetBrickAt(1f, 0f));
 			Assert.NotNull(level.GetBrickAt(0.25f, 0.25f));
-			Window.CloseAfterFrame();
 		}
 
 		[Test]
@@ -88,7 +88,6 @@ namespace Breakout.Tests
 			Assert.IsNull(level.GetBrickAt(0.5f, 0.25f));
 			Assert.IsNull(level.GetBrickAt(0.75f, 0.35f));
 			Assert.AreEqual(0, level.BricksLeft);
-			Window.CloseAfterFrame();
 		}
 
 		[Test]
@@ -101,7 +100,6 @@ namespace Breakout.Tests
 			brick.Visibility = Visibility.Hide;
 			Assert.AreEqual(3, level.BricksLeft);
 			Assert.IsNull(level.GetBrickAt(0.25f, 0.25f));
-			Window.CloseAfterFrame();
 		}
 
 		[Test]
@@ -110,7 +108,7 @@ namespace Breakout.Tests
 			var remBall = Resolve<TestBall>();
 			Resolve<Level>();
 			Resolve<MockKeyboard>().SetKeyboardState(Key.Space, State.Pressing);
-			resolver.AdvanceTimeAndExecuteRunners(0.1f);
+			AdvanceTimeAndUpdateEntities(0.1f);
 			if (remBall != null)
 				Assert.IsFalse(remBall.IsCurrentlyOnPaddle);
 		}

@@ -1,42 +1,47 @@
+﻿using System.Collections.Generic;
+using DeltaEngine;
+using DeltaEngine.Commands;
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
+using DeltaEngine.Entities;
 using DeltaEngine.Input;
-using DeltaEngine.Rendering.ScreenSpaces;
+using DeltaEngine.Rendering.Fonts;
 using DeltaEngine.Rendering.Sprites;
+using DeltaEngine.ScreenSpaces;
 
 namespace ShadowShot
 {
 	public class Game
 	{
-		public Game(ScreenSpace screen, InputCommands input)
+		public Game(Window window, ScreenSpace screenSpace)
 		{
-			this.screen = screen;
-			this.input = input;
+			this.window = window;
+			this.screenSpace = screenSpace;
 			InitializeGame();
 		}
 
-		private readonly ScreenSpace screen;
-		private readonly InputCommands input;
+		private readonly Window window;
+		private readonly ScreenSpace screenSpace;
 
 		private void InitializeGame()
 		{
+			if (restartCommand!=null && restartCommand.IsActive)
+				restartCommand.IsActive = false;
 			SetupPlayArea();
 			SetupShip();
 			SetupController();
-			new GameInputControls(input, Ship);
+			new GameInputControls(Ship);
 		}
 
 		private void SetupPlayArea()
 		{
-			screen.Window.ViewportPixelSize = new Size(1600, 900);
-			screen.Window.Title = "ShadowShot Game";
+			window.Title = "ShadowShot Game";
 			AddBackground();
 		}
 
 		private void AddBackground()
 		{
-			Background = new Sprite(ContentLoader.Load<Image>("starfield"), Rectangle.One);
+			Background = new Sprite(new Material(Shader.Position2DColorUv,"starfield"), Rectangle.One);
 			Background.RenderLayer = (int)Constants.RenderLayer.Background;
 		}
 
@@ -44,39 +49,33 @@ namespace ShadowShot
 
 		private void SetupShip()
 		{
-			var image = ContentLoader.Load<Image>("player");
-			ComputeSizeAndDrawArea(image);
-			var drawArea = Rectangle.FromCenter(drawAreaMidPoint, objectSize);
-			Ship = new PlayerShip(image, drawArea);
+			Rectangle viewport = ScreenSpace.Current.Viewport;
+			Ship = new PlayerShip(new Material(Shader.Position2DColorUv, "player"),
+				Rectangle.FromCenter(viewport.Right / 2, viewport.Bottom * 0.93f, 0.04f, 0.04f), viewport);
 		}
 
-		private Point drawAreaMidPoint;
-		private Size objectSize;
 		public PlayerShip Ship { get; private set; }
-
-		private void ComputeSizeAndDrawArea(Image image)
-		{
-			var offset = screen.Viewport.BottomRight.Y / 20;
-			drawAreaMidPoint = new Point(screen.Viewport.BottomRight.X / 2,
-				screen.Viewport.BottomRight.Y - offset);
-			objectSize = new Size(image.PixelSize.Width / screen.Window.TotalPixelSize.Width,
-				image.PixelSize.Height / (screen.Window.TotalPixelSize.Height * 2));
-		}
 
 		private void SetupController()
 		{
-			var image = ContentLoader.Load<Image>("asteroid");
-			ComputeSizeAndDrawArea(image);
-			Controller = new GameController(Ship, image, objectSize);
+			Controller = new GameController(Ship, new Material(Shader.Position2DColorUv, "asteroid"), objectSize,screenSpace);
 			Controller.ShipCollidedWithAsteroid += RestartGame;
 		}
+
+		private readonly Size objectSize = new Size(0.05f);
 
 		public GameController Controller { get; private set; }
 
 		public void RestartGame()
 		{
 			Controller.Dispose();
-			InitializeGame();
+			var gameOverMsg = new FontText("Game Over!\nPress Space or tap/click for restart!",
+				Rectangle.One);
+			restartCommand = new Command(() => { InitializeGame();
+																					gameOverMsg.IsActive = false;
+			}).Add(new KeyTrigger(Key.Space)).Add(new TouchTapTrigger()).Add(new MouseButtonTrigger());
 		}
+
+		private Command restartCommand;
 	}
 }

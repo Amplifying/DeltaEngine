@@ -1,45 +1,49 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
-using DeltaEngine.Graphics;
 using DeltaEngine.Rendering;
+using DeltaEngine.ScreenSpaces;
 
 namespace ShadowShot
 {
 	public class GameController : Entity2D, IDisposable
 	{
-		public GameController(PlayerShip playerShip, Image image, Size size)
+		public GameController(PlayerShip playerShip, Material material, Size size, ScreenSpace screenSpace)
 			:base(Rectangle.Zero)
 		{
+			this.screenSpace = screenSpace;
 			ship = playerShip;
-			asteroidImage = image;
+			asteroidMaterial = material;
 			asteroidSize = size;
 			Start<GameLogicHandler>();
 		}
 
 		private readonly PlayerShip ship;
-		private readonly Image asteroidImage;
+		private readonly Material asteroidMaterial;
 		private readonly Size asteroidSize;
+		private readonly ScreenSpace screenSpace;
 
-		private class GameLogicHandler : Behavior2D
+		private class GameLogicHandler : UpdateBehavior
 		{
 			public GameLogicHandler()
 			{
 				random = new PseudoRandom();
-				Filter = entity => entity is GameController;
 			}
 
 			private readonly PseudoRandom random;
 
-			public override void Handle(Entity2D entity)
+			public override void Update(IEnumerable<Entity> entities)
 			{
-				var gameController = entity as GameController;
-				DoAddAndRemoveAsteroids(gameController);
-				CreateRandomAsteroids(gameController);
-				CheckForShipAsteroidCollision(gameController);
-				CheckForProjectileAsteroidCollision(gameController);
+				foreach (GameController gameController in entities)
+				{
+					DoAddAndRemoveAsteroids(gameController);
+					CreateRandomAsteroids(gameController);
+					CheckForShipAsteroidCollision(gameController);
+					CheckForProjectileAsteroidCollision(gameController);
+				}
 			}
 
 			private static void DoAddAndRemoveAsteroids(GameController manager)
@@ -60,11 +64,11 @@ namespace ShadowShot
 
 			private void CreateRandomAsteroids(GameController manager)
 			{
-				if (random.Get() < Constants.AsteroidSpawnProbability * Time.Current.Delta)
+				if (random.Get() < Constants.AsteroidSpawnProbability * Time.Delta)
 					if (AsteroidsCount < Constants.MaximumAsteroids)
 					{
 						var drawArea = GetRandomDrawArea(manager);
-						manager.addAsteroidsList.Add(new Asteroid(manager.asteroidImage, drawArea));
+						manager.addAsteroidsList.Add(new Asteroid(manager.asteroidMaterial, drawArea, manager.screenSpace.Viewport.Bottom));
 						AsteroidsCount++;
 					}
 
@@ -104,16 +108,11 @@ namespace ShadowShot
 				foreach (var projectile in toRemove)
 					gameController.ship.ActiveProjectileList.Remove(projectile);
 			}
-
-			public override Priority Priority
-			{
-				get { return DeltaEngine.Entities.Priority.High; }
-			}
 		}
 
 		private readonly List<Asteroid> addAsteroidsList = new List<Asteroid>();
-		public List<Asteroid> ActiveAsteroidList = new List<Asteroid>();
-		public List<Asteroid> AsteroidRemoveList = new List<Asteroid>();
+		public readonly List<Asteroid> ActiveAsteroidList = new List<Asteroid>();
+		public readonly List<Asteroid> AsteroidRemoveList = new List<Asteroid>();
 		public event Action ShipCollidedWithAsteroid;
 
 		public void Dispose()

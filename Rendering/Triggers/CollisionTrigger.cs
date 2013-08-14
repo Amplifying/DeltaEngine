@@ -1,41 +1,59 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 
 namespace DeltaEngine.Rendering.Triggers
 {
-	internal class CollisionTrigger : Behavior2D
+	public class CollisionTrigger : UpdateBehavior
 	{
-		public override void Handle(Entity2D entity)
+		public CollisionTrigger() : base(Priority.High) { }
+
+		public override void Update(IEnumerable<Entity> entities)
 		{
-			var data = entity.Get<CollisionTriggerData>();
-			var foundEntities = GetEntitiesFromSearchTags(data);
-			foreach (var otherEntity in foundEntities)
-				if (entity != otherEntity)
-					entity.Set(IsEntityRectCollidingWithOtherEntityRect(entity, otherEntity)
-						? data.TriggeredColor : data.DefaultColor);
+			foreach (var entity in entities.OfType<Entity2D>())
+			{
+				var data = entity.Get<Data>();
+				var foundEntities = GetEntitiesFromSearchTags(data);
+				bool isColliding = false;
+				foreach (var otherEntity in foundEntities.OfType<Entity2D>())
+					if (entity != otherEntity && !isColliding)
+						isColliding = IsEntityRectCollidingWithOtherEntityRect(entity, otherEntity);
+				entity.Color = isColliding ? data.TriggeredColor : data.DefaultColor;
+			}
 		}
 
-		private static IEnumerable<Entity> GetEntitiesFromSearchTags(CollisionTriggerData data)
+		private static IEnumerable<Entity> GetEntitiesFromSearchTags(Data data)
 		{
 			var foundEntities = new List<Entity>();
 			foreach (var tag in data.SearchTags)
-				foreach (var foundEntity in EntitySystem.Current.GetEntitiesWithTag(tag))
+				foreach (var foundEntity in EntitiesRunner.Current.GetEntitiesWithTag(tag))
 					foundEntities.Add(foundEntity);
-
 			return foundEntities;
 		}
 
-		private static bool IsEntityRectCollidingWithOtherEntityRect(Entity entity,
-			Entity otherEntity)
+		private static bool IsEntityRectCollidingWithOtherEntityRect(Entity2D entity,
+			Entity2D otherEntity)
 		{
-			return entity.Get<Rectangle>().IsColliding(entity.GetWithDefault(0.0f),
-				otherEntity.Get<Rectangle>(), otherEntity.GetWithDefault(0.0f));
+			return entity.DrawArea.IsColliding(entity.Rotation, otherEntity.DrawArea,
+				otherEntity.Rotation);
 		}
 
-		public override Priority Priority
+		public class Data
 		{
-			get { return Priority.High; }
+			public Data(List<string> searchTags, Color triggeredColor, Color defaultColor)
+			{
+				SearchTags = searchTags;
+				TriggeredColor = triggeredColor;
+				DefaultColor = defaultColor;
+			}
+
+			public Data(Color triggeredColor, Color defaultColor) :
+				this(new List<string>(), triggeredColor, defaultColor) { }
+
+			public List<string> SearchTags { get; private set; }
+			public Color TriggeredColor { get; private set; }
+			public Color DefaultColor { get; private set; }
 		}
 	}
 }

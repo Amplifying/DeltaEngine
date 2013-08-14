@@ -1,8 +1,6 @@
-using System;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: CLSCompliant(true)]
 [assembly: AssemblyTitle("SideScroller")]
 [assembly: AssemblyDescription("Delta Engine SideScroller StarterKit")]
 [assembly: AssemblyCompany("Delta Engine")]

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using DeltaEngine.Content;
 
 namespace Blocks

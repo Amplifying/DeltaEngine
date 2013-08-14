@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -31,31 +31,22 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>AsteroidsIcon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System">
       <HintPath>..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\Profile\Client\System.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Content\DeltaEngine.Content.csproj">
-      <Project>{F1B6345B-6F28-482F-9230-8F1D8674C28A}</Project>
-      <Name>DeltaEngine.Content</Name>
+    <ProjectReference Include="..\..\Content\Xml\DeltaEngine.Content.Xml.csproj">
+      <Project>{138A40B5-3D80-4BA3-BD84-D82C151EE7FE}</Project>
+      <Name>DeltaEngine.Content.Xml</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
-      <Project>{A8D386EA-D376-46EA-A721-2BA51426A721}</Project>
-      <Name>DeltaEngine.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Datatypes\DeltaEngine.Datatypes.csproj">
-      <Project>{460983FF-AA91-4E10-B70E-10D0BDA15A58}</Project>
-      <Name>DeltaEngine.Datatypes</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Entities\DeltaEngine.Entities.csproj">
-      <Project>{C6BA144D-59B0-41B1-8682-B092B4EFBBB1}</Project>
-      <Name>DeltaEngine.Entities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Graphics\DeltaEngine.Graphics.csproj">
-      <Project>{8F701B0D-48B6-45CF-85E0-286BD53328BA}</Project>
-      <Name>DeltaEngine.Graphics</Name>
+    <ProjectReference Include="..\..\DeltaEngine.csproj">
+      <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
+      <Name>DeltaEngine</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Input\DeltaEngine.Input.csproj">
       <Project>{CC65E69E-FAFD-4C2B-85EB-5E57FD3AF847}</Project>
@@ -65,18 +56,20 @@
       <Project>{DC3AA434-09B9-43AD-8F43-431811FA054D}</Project>
       <Name>DeltaEngine.Physics2D</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Platforms\DeltaEngine.Platforms.csproj">
-      <Project>{bae8830e-5f62-48d6-b772-c4b1e8665fb3}</Project>
-      <Name>DeltaEngine.Platforms</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Platforms\WindowsOpenTK\DeltaEngine.WindowsOpenTK.csproj">
-      <Project>{cc943ae0-a1cc-4788-ac9b-01db3a0ebcd6}</Project>
-      <Name>DeltaEngine.WindowsOpenTK</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
       <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
       <Name>DeltaEngine.Rendering</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Platforms\WindowsOpenTK20\DeltaEngine.WindowsOpenTK20.csproj">
+      <Project>{4FDE0BC1-AF24-4A6D-AB73-A28833D41AC8}</Project>
+      <Name>DeltaEngine.WindowsOpenTK20</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AsteroidsIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -90,6 +83,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Projectile.cs" />
     <Compile Include="AsteroidsRenderLayer.cs" />
+    <Compile Include="Velocity2D.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

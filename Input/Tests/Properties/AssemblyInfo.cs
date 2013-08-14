@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -9,5 +9,5 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
 [assembly: Guid("4f6b7efb-a0f8-4ae8-8aef-6fdb369d0608")]
-[assembly: AssemblyVersion("0.9.8.3")]
-[assembly: AssemblyFileVersion("0.9.8.3")]
+[assembly: AssemblyVersion("0.9.8.4")]
+[assembly: AssemblyFileVersion("0.9.8.4")]

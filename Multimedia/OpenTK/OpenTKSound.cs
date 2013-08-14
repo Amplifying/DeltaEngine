@@ -1,10 +1,9 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
+using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Logging;
 using DeltaEngine.Multimedia.OpenTK.Helpers;
-using DeltaEngine.Platforms;
 
 namespace DeltaEngine.Multimedia.OpenTK
 {
@@ -29,7 +28,7 @@ namespace DeltaEngine.Multimedia.OpenTK
 			}
 			catch (Exception ex)
 			{
-				Logger.Current.Error(ex);
+				Logger.Error(ex);
 				if (Debugger.IsAttached)
 					throw new SoundNotFoundOrAccessible(Name, ex);
 			}
@@ -56,18 +55,20 @@ namespace DeltaEngine.Multimedia.OpenTK
 		protected int CreateNativeBuffer()
 		{
 			int newHandle = openAL.CreateBuffer();
+			if (newHandle <= 0)
+				throw new UnableToCreateSoundBufferOpenTKMightNotBeInitializedCorrectly();
 			openAL.BufferData(newHandle, soundData.Format, soundData.BufferData, 
 				soundData.BufferData.Length, soundData.SampleRate);
-
 			return newHandle;
 		}
 
+		public class UnableToCreateSoundBufferOpenTKMightNotBeInitializedCorrectly : Exception { }
+		
 		protected override void DisposeData()
 		{
 			base.DisposeData();
 			if(bufferHandle != InvalidHandle)
 				openAL.DeleteBuffer(bufferHandle);
-
 			bufferHandle = InvalidHandle;
 		}
 
@@ -81,9 +82,8 @@ namespace DeltaEngine.Multimedia.OpenTK
 		public override void PlayInstance(SoundInstance instanceToPlay)
 		{
 			var channelHandle = (int)instanceToPlay.Handle;
-			if(channelHandle == InvalidHandle)
+			if (channelHandle == InvalidHandle)
 				return;
-
 			openAL.SetVolume(channelHandle, instanceToPlay.Volume);
 			openAL.SetPosition(channelHandle, new Vector(instanceToPlay.Panning, 0.0f, 0.0f));
 			openAL.SetPitch(channelHandle, instanceToPlay.Pitch);
@@ -95,23 +95,25 @@ namespace DeltaEngine.Multimedia.OpenTK
 			var channelHandle = (int)instanceToStop.Handle;
 			if(channelHandle == InvalidHandle)
 				return;
-
 			openAL.Stop(channelHandle);
 		}
 
 		protected override void CreateChannel(SoundInstance instanceToAdd)
 		{
 			var channelHandle = openAL.CreateChannel();
+			if (channelHandle <= 0)
+				Logger.Error(new UnableToCreateSoundChannelOpenTKMightNotBeInitializedCorrectly());
 			openAL.AttachBufferToChannel(bufferHandle, channelHandle);
 			instanceToAdd.Handle = channelHandle;
 		}
+
+		public class UnableToCreateSoundChannelOpenTKMightNotBeInitializedCorrectly : Exception { }
 
 		protected override void RemoveChannel(SoundInstance instanceToRemove)
 		{
 			var channelHandle = (int)instanceToRemove.Handle;
 			if(channelHandle != InvalidHandle)
 				openAL.DeleteChannel(channelHandle);
-
 			instanceToRemove.Handle = InvalidHandle;
 		}
 

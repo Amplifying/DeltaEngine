@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Controls;
-using DeltaEngine.Core;
-using DeltaEngine.Editor.Common;
+using DeltaEngine.Editor.Core;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Editor.Helpers
 {
@@ -19,6 +19,7 @@ namespace DeltaEngine.Editor.Helpers
 			UserControlsType = new List<Type>();
 			CopyAllEditorPlugins(pluginBaseDirectory);
 			FindAllEditorPluginViews();
+			TryCopyAllEditorPluginContent(pluginBaseDirectory);
 		}
 
 		public List<Type> UserControlsType { get; private set; }
@@ -59,8 +60,15 @@ namespace DeltaEngine.Editor.Helpers
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine("Failed to copy " + sourceFile + " to editor directory: " + ex);
+				Logger.Error(new FailedToCopyFiles(
+					"Failed to copy " + sourceFile + " to editor directory", ex));
 			}
+		}
+
+		private class FailedToCopyFiles : Exception
+		{
+			public FailedToCopyFiles(string message, Exception inner)
+				: base(message, inner) {}
 		}
 
 		private void FindAllEditorPluginViews()
@@ -90,7 +98,7 @@ namespace DeltaEngine.Editor.Helpers
 			}
 			catch (ReflectionTypeLoadException ex)
 			{
-				Console.WriteLine("Failed to get EditorPluginViews from " + assembly + ": " +
+				Logger.Warning("Failed to get EditorPluginViews from " + assembly + ": " +
 					ex.LoaderExceptions.ToText());
 			}
 		}
@@ -101,6 +109,32 @@ namespace DeltaEngine.Editor.Helpers
 		}
 
 		private readonly string[] excludedEditorPlugins = new[]
-		{ "DeltaEngine.Editor.EmptyEditorPlugin.EmptyEditorPluginView" };
+		{
+			"DeltaEngine.Editor.EmptyEditorPlugin.EmptyEditorPluginView",
+			"DeltaEngine.Editor.UIEditor.UIEditorView"
+		};
+
+		private static void TryCopyAllEditorPluginContent(string pluginBaseDirectory)
+		{
+			var targetPath = Path.Combine(Directory.GetCurrentDirectory(), "Devices");
+			if (!Directory.Exists(targetPath))
+				Directory.CreateDirectory(targetPath);
+			var devicesContentDirectory = Path.Combine(pluginBaseDirectory, "Emulator", "Devices");
+			try
+			{
+				foreach (var file in Directory.GetFiles(devicesContentDirectory))
+					CopyIfFileIsNewer(file, Path.Combine(targetPath, Path.GetFileName(file)));
+			}
+			catch (Exception ex)
+			{
+				Logger.Error(new EmulatorContentNotFound("Devices content not found", ex));
+			}
+		}
+
+		private class EmulatorContentNotFound : Exception
+		{
+			public EmulatorContentNotFound(string message, Exception inner)
+				: base(message, inner) {}
+		}
 	}
 }

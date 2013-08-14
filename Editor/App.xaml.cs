@@ -1,4 +1,4 @@
-namespace DeltaEngine.Editor
+﻿namespace DeltaEngine.Editor
 {
 	/// <summary>
 	/// Entry point for the Editor

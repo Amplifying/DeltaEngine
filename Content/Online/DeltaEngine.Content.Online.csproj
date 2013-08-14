@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -32,21 +32,24 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\DeltaEngine.Core.csproj">
-      <Project>{A8D386EA-D376-46EA-A721-2BA51426A721}</Project>
-      <Name>DeltaEngine.Core</Name>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\DeltaEngine.csproj">
+      <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
+      <Name>DeltaEngine</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Networking\DeltaEngine.Networking.csproj">
       <Project>{5231706E-2955-43BF-9C06-291E12AF5C5C}</Project>
       <Name>DeltaEngine.Networking</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Networking\Sockets\DeltaEngine.Networking.Sockets.csproj">
-      <Project>{9E085AB9-B4DE-4815-BD90-D975C75DFE94}</Project>
-      <Name>DeltaEngine.Networking.Sockets</Name>
+    <ProjectReference Include="..\..\Networking\Messages\DeltaEngine.Networking.Messages.csproj">
+      <Project>{74863E62-A568-4C0A-A37F-F04BFA8EB9DB}</Project>
+      <Name>DeltaEngine.Networking.Messages</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DeltaEngine.Content.csproj">
-      <Project>{F1B6345B-6F28-482F-9230-8F1D8674C28A}</Project>
-      <Name>DeltaEngine.Content</Name>
+    <ProjectReference Include="..\Xml\DeltaEngine.Content.Xml.csproj">
+      <Project>{138A40B5-3D80-4BA3-BD84-D82C151EE7FE}</Project>
+      <Name>DeltaEngine.Content.Xml</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

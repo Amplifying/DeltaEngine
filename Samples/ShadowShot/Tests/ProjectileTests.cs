@@ -1,41 +1,36 @@
-using System;
+﻿using DeltaEngine;
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Entities;
-using DeltaEngine.Graphics;
 using DeltaEngine.Physics2D;
 using DeltaEngine.Platforms;
-using DeltaEngine.Rendering.ScreenSpaces;
+using DeltaEngine.ScreenSpaces;
 using NUnit.Framework;
 
 namespace ShadowShot.Tests
 {
 	public class ProjectileTests : TestWithMocksOrVisually
 	{
-		[Test]
-		public void CreateProjectileInScreen(Type resolver)
+		[SetUp]
+		public void SetUp()
 		{
-			Initilize();
+			Resolve<Window>().ViewportPixelSize = new Size(500, 500);
+			projectile = new Projectile(new Material(Shader.Position2DColorUv, "projectile"), Point.Half, Resolve<ScreenSpace>().Viewport);
+		}
+
+		private Projectile projectile;
+
+		[Test]
+		public void CreateProjectileInScreen()
+		{
 			//projectile.Size = new Size(0.05f, 0.1f);
 			projectile.Get<SimplePhysics.Data>().Velocity = Point.Zero;
-			Assert.AreEqual(1, EntitySystem.Current.NumberOfEntities);
+			Assert.IsTrue(projectile.IsActive);
 		}
-
-		private void Initilize()
-		{
-			Resolve<ScreenSpace>().Window.ViewportPixelSize = new Size(500, 500);
-			image = ContentLoader.Load<Image>("projectile");
-			projectile = new Projectile(image, Point.Half);
-		}
-
-		private Image image;
-		private Projectile projectile;
 
 		[Test]
 		public void MoveProjectileUp()
 		{
-			Initilize();
-			resolver.AdvanceTimeAndExecuteRunners();
+			AdvanceTimeAndUpdateEntities();
 			var newProjectileCenter = projectile.DrawArea.Center;
 			Assert.AreNotEqual(Point.Half, newProjectileCenter);
 		}
@@ -43,11 +38,10 @@ namespace ShadowShot.Tests
 		[Test]
 		public void MoveProjectileOutsideBorder()
 		{
-			Initilize();
-			resolver.AdvanceTimeAndExecuteRunners();
+			AdvanceTimeAndUpdateEntities();
 			var newProjectileCenter = projectile.DrawArea.Center;
 			Assert.AreNotEqual(Point.Half, newProjectileCenter);
-			resolver.AdvanceTimeAndExecuteRunners(5.0f);
+			AdvanceTimeAndUpdateEntities(5.0f);
 			newProjectileCenter = projectile.DrawArea.Center;
 			Assert.GreaterOrEqual(0.0f, newProjectileCenter.Y);
 			Assert.IsFalse(projectile.IsActive);
@@ -56,7 +50,6 @@ namespace ShadowShot.Tests
 		[Test]
 		public void DisposeProjectile()
 		{
-			Initilize();
 			projectile.Dispose();
 			Assert.IsFalse(projectile.IsActive);
 		}

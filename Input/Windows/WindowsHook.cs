@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 #pragma warning disable 612
 #pragma warning disable 618
@@ -9,18 +9,22 @@ namespace DeltaEngine.Input.Windows
 	/// This class is a wrapper around the Windows Message Hook pipeline, which is basically
 	/// the same as Application.DoEvents()
 	/// </summary>
-	public abstract class WindowsHook : IDisposable
+	public class WindowsHook : IDisposable
 	{
-		protected WindowsHook(int hookType)
+		public WindowsHook(int hookType, HandleProcMessage messageAction)
 		{
+			this.messageAction = messageAction;
 			int threadId = NativeMethods.GetCurrentThreadId();
 			nativeCallbackLifetimeInstance = MessageCallback;
-			hookHandle = NativeMethods.SetWindowsHookEx(hookType, nativeCallbackLifetimeInstance, 
+			hookHandle = NativeMethods.SetWindowsHookEx(hookType, nativeCallbackLifetimeInstance,
 				IntPtr.Zero, threadId);
 		}
 
-		private IntPtr hookHandle;
+		public delegate void HandleProcMessage(IntPtr wParam, IntPtr lParam, int msg);
+
+		protected HandleProcMessage messageAction;
 		private readonly NativeMethods.HookProc nativeCallbackLifetimeInstance;
+		private IntPtr hookHandle;
 
 		public virtual void Dispose()
 		{
@@ -32,16 +36,12 @@ namespace DeltaEngine.Input.Windows
 		private int MessageCallback(int messageCode, IntPtr wParam, IntPtr lParam)
 		{
 			if (messageCode == HcAction || messageCode == WMTouch)
-				HandleProcMessage(wParam, lParam, messageCode);
+				messageAction(wParam, lParam, messageCode);
 			return NativeMethods.CallNextHookEx(hookHandle, messageCode, wParam, lParam);
 		}
-		//ncrunch: no coverage end
 
 		private const int HcAction = 0;
 		internal const int WMTouch = 0x0240;
-
-		protected internal abstract void HandleProcMessage(IntPtr wParam, IntPtr lParam, int msg);
-
 		internal const int KeyboardHookId = 2;
 		internal const int MouseHookId = 7;
 	}

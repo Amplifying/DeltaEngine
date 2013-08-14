@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace DeltaEngine.Core
 {
@@ -6,7 +6,7 @@ namespace DeltaEngine.Core
 	/// Provides ticks for the Time class via the System.Diagnostics.Stopwatch class. This class is
 	/// usually the fallback if nothing else has been registered for Time.Current.
 	/// </summary>
-	public class StopwatchTime : Time
+	public class StopwatchTime : GlobalTime
 	{
 		private readonly Stopwatch timer = Stopwatch.StartNew();
 

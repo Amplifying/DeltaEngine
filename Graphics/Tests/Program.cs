@@ -1,18 +1,22 @@
-using DeltaEngine.Platforms;
+﻿using DeltaEngine.Platforms;
 
 namespace DeltaEngine.Graphics.Tests
 {
-	internal static class Program
+	public class Program : TestWithMocksOrVisually
 	{
 		public static void Main()
 		{
-			//new DrawingTests().ShowRedLine(TestWithAllFrameworks.OpenGL);
-			//new DrawingTests().DrawVertices(TestStarterWithAllFrameworks.Xna);
-			//new ImageTests().DrawImage(TestWithAllFrameworks.SlimDX);
-			var tests =new MeshTests();
-			tests.InitializeResolver();
-			tests.DrawRotatingIceTower();
-			tests.RunTestAndDisposeResolverWhenDone();
+			new Program().RunTest();
+		}
+
+		private void RunTest()
+		{
+			InitializeResolver();
+			new DrawingTests().DrawRedLine();
+			//new DrawingTests().DrawVertices();
+			//new ImageTests().DrawImage();
+			//new MeshTests().DrawRotatingIceTower();
+			RunTestAndDisposeResolverWhenDone();
 		}
 	}
 }

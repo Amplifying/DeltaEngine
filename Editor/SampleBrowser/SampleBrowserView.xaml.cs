@@ -1,5 +1,5 @@
-using System.Windows.Input;
-using DeltaEngine.Editor.Common;
+﻿using System.Windows.Input;
+using DeltaEngine.Editor.Core;
 
 namespace DeltaEngine.Editor.SampleBrowser
 {
@@ -11,13 +11,9 @@ namespace DeltaEngine.Editor.SampleBrowser
 		public SampleBrowserView()
 		{
 			InitializeComponent();
-			Loaded += (sender, args) => Init();
 		}
 
-		public SampleBrowserView(Service service)
-			: this() {}
-
-		private void Init()
+		public void Init(Service service)
 		{
 			if (DataContext is SampleBrowserViewModel)
 				return;
@@ -36,17 +32,15 @@ namespace DeltaEngine.Editor.SampleBrowser
 		{
 			get { return "Sample Browser"; }
 		}
+
 		public string Icon
 		{
-			get { return "Icons/Samples.png"; }
+			get { return "Icons/SampleBrowser.png"; }
 		}
-		public EditorPluginCategory Category
+
+		public bool RequiresLargePane
 		{
-			get { return EditorPluginCategory.GettingStarted; }
-		}
-		public int Priority
-		{
-			get { return 3; }
+			get { return true; }
 		}
 	}
 }

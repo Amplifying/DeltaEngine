@@ -1,6 +1,6 @@
-using DeltaEngine.Datatypes;
+﻿using DeltaEngine.Datatypes;
 using DeltaEngine.Platforms;
-using DeltaEngine.Rendering.ScreenSpaces;
+using DeltaEngine.ScreenSpaces;
 using NUnit.Framework;
 
 namespace DeltaEngine.Input.Windows.Tests
@@ -10,8 +10,8 @@ namespace DeltaEngine.Input.Windows.Tests
 		[Test]
 		public void GetClientPositionOnScreen()
 		{
-			var window = Resolve<ScreenSpace>().Window;
-			var translator = new CursorPositionTranslater(window, Resolve<ScreenSpace>());
+			var window = Resolve<Window>();
+			var translator = new CursorPositionTranslater(window);
 			var outsidePosition = Resolve<ScreenSpace>().FromPixelSpace(new Point(-10, -10));
 			var screenPos = translator.ToScreenPositionFromScreenSpace(outsidePosition);
 			Assert.IsTrue(screenPos.X < window.PixelPosition.X || screenPos.Y < window.PixelPosition.Y);
@@ -21,8 +21,7 @@ namespace DeltaEngine.Input.Windows.Tests
 		[Test]
 		public void ConvertPixelFromScreenPositionAndBack()
 		{
-			var positionTranslator = new CursorPositionTranslater(Resolve<ScreenSpace>().Window,
-				Resolve<ScreenSpace>());
+			var positionTranslator = new CursorPositionTranslater(Resolve<Window>());
 			var topLeftPixel = Point.Zero;
 			var outside = positionTranslator.FromScreenPositionToScreenSpace(topLeftPixel);
 			Assert.AreEqual(topLeftPixel, positionTranslator.ToScreenPositionFromScreenSpace(outside));

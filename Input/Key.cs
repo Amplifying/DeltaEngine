@@ -1,4 +1,4 @@
-namespace DeltaEngine.Input
+﻿namespace DeltaEngine.Input
 {
 	/// <summary>
 	/// All available Keyboard keys that can be used via the Keyboard class.
@@ -6,7 +6,7 @@ namespace DeltaEngine.Input
 	public enum Key
 	{
 		None = 0,
-		//// ReSharper disable UnusedMember.Global
+		// ReSharper disable UnusedMember.Global
 		Backspace = 8,
 		Tab = 9,
 		Enter = 13,

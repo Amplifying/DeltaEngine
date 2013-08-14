@@ -1,11 +1,13 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
+using DeltaEngine;
+using DeltaEngine.Commands;
 using DeltaEngine.Content;
-using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
+using DeltaEngine.Entities;
+using DeltaEngine.Extensions;
 using DeltaEngine.Input;
 using DeltaEngine.Multimedia;
-using DeltaEngine.Rendering;
 using DeltaEngine.Rendering.Sprites;
 
 namespace Breakout
@@ -15,14 +17,14 @@ namespace Breakout
 	/// </summary>
 	public class Ball : Sprite
 	{
-		public Ball(Paddle paddle, InputCommands inputCommands)
-			: base(ContentLoader.Load<Image>("Ball"), Rectangle.Zero)
+		public Ball(Paddle paddle)
+			: base(new Material(Shader.Position2DColorUv,"Ball"), Rectangle.Zero)
 		{
 			this.paddle = paddle;
 			fireBallSound = ContentLoader.Load<Sound>("PaddleBallStart");
 			collisionSound = ContentLoader.Load<Sound>("BallCollision");
 			UpdateOnPaddle();
-			RegisterFireBallCommand(inputCommands);
+			RegisterFireBallCommand();
 			Start<RunBall>();
 			RenderLayer = 5;
 		}
@@ -39,12 +41,14 @@ namespace Breakout
 
 		protected bool isOnPaddle;
 
-		private void RegisterFireBallCommand(InputCommands inputCommands)
+		private void RegisterFireBallCommand()
 		{
-			inputCommands.Add(Key.Space, State.Pressing, key => FireBallFromPaddle());
-			inputCommands.Add(MouseButton.Left, State.Pressing, mouse => FireBallFromPaddle());
-			inputCommands.Add(touch => FireBallFromPaddle());
-			inputCommands.Add(GamePadButton.A, State.Pressing, FireBallFromPaddle);
+			var command = new Command(FireBallFromPaddle);
+			command.Add(new KeyTrigger(Key.Space));
+			command.Add(new MouseButtonTrigger());
+			command.Add(new GamePadButtonTrigger(GamePadButton.A));
+			
+			//inputCommands.Add(touch => FireBallFromPaddle());
 		}
 
 		private void FireBallFromPaddle()
@@ -67,18 +71,21 @@ namespace Breakout
 			velocity = Point.Zero;
 		}
 
-		public class RunBall : EventListener2D
+		public class RunBall : UpdateBehavior
 		{
-			public override void ReceiveMessage(Entity2D entity, object message)
+			public override void Update(IEnumerable<Entity> entities)
 			{
-				var ball = (Ball)entity;
-				if (ball.isOnPaddle)
-					ball.UpdateOnPaddle();
-				else
-					ball.UpdateInFlight(Time.Current.Delta);
+				foreach (var entity in entities)
+				{
+					var ball = (Ball)entity;
+					if (ball.isOnPaddle)
+						ball.UpdateOnPaddle();
+					else
+						ball.UpdateInFlight(Time.Delta);
 
-				float aspect = 1;
-				ball.DrawArea = Rectangle.FromCenter(ball.Position, new Size(Height / aspect, Height));
+					const float Aspect = 1;
+					ball.DrawArea = Rectangle.FromCenter(ball.Position, new Size(Height / Aspect, Height));
+				}
 			}
 		}
 
@@ -119,18 +126,18 @@ namespace Breakout
 		{
 			switch (collisionSide)
 			{
-			case Direction.Left:
-				velocity.X = Math.Abs(velocity.X);
-				break;
-			case Direction.Top:
-				velocity.Y = Math.Abs(velocity.Y);
-				break;
-			case Direction.Right:
-				velocity.X = -Math.Abs(velocity.X);
-				break;
-			case Direction.Bottom:
-				velocity.Y = -Math.Abs(velocity.Y);
-				break;
+				case Direction.Left:
+					velocity.X = Math.Abs(velocity.X);
+					break;
+				case Direction.Top:
+					velocity.Y = Math.Abs(velocity.Y);
+					break;
+				case Direction.Right:
+					velocity.X = -Math.Abs(velocity.X);
+					break;
+				case Direction.Bottom:
+					velocity.Y = -Math.Abs(velocity.Y);
+					break;
 			}
 		}
 

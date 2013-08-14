@@ -1,10 +1,10 @@
-using System.Collections.Generic;
-using DeltaEngine.Core;
+﻿using System.Collections.Generic;
+using System.Linq;
+using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.Mocks;
 using DeltaEngine.Rendering.Shapes;
 using DeltaEngine.Rendering.Sprites;
 using NUnit.Framework;
@@ -23,7 +23,39 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 		public void RenderLineAndSprite()
 		{
 			new Line2D(Point.Zero, Point.One, Color.Red);
-			new Sprite("DeltaEngineLogo", Rectangle.FromCenter(Point.Half, new Size(0.1f)));
+			new Sprite(new Material(Shader.Position2DUv, "DeltaEngineLogo"),
+				Rectangle.FromCenter(Point.Half, new Size(0.1f)));
+		}
+
+		[Test]
+		public void RenderSingleRotatingLine()
+		{
+			AddRotatingLine(0);
+		}
+
+		private static void AddRotatingLine(int num)
+		{
+			var line = new Line2D(Point.Half, Point.Half, Color.Orange);
+			line.Rotation = num * 360 / 100.0f;
+			line.EndPoint = line.StartPoint + new Point(0.4f, 0).RotateAround(Point.Zero, line.Rotation);
+			line.Start<Rotate>();
+		}
+
+		private class Rotate : UpdateBehavior
+		{
+			public Rotate()
+				: base(Priority.First) {}
+
+			public override void Update(IEnumerable<Entity> entities)
+			{
+				foreach (var line in entities.OfType<Line2D>())
+				{
+					line.Rotation += 15 * Time.Delta;
+					var length = line.StartPoint.DistanceTo(line.EndPoint);
+					line.EndPoint = line.StartPoint +
+						new Point(length, 0).RotateAround(Point.Zero, line.Rotation);
+				}
+			}
 		}
 
 		[Test]
@@ -33,30 +65,15 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 				AddRotatingLine(num);
 		}
 
-		private static void AddRotatingLine(int num)
-		{
-			var line = new Line2D(Point.Half, new Point(0.5f, 0.0f), Color.Orange);
-			line.Rotation = num * 360 / 100.0f;
-			line.Start<Rotate>();
-		}
-
-		public class Rotate : Behavior2D
-		{
-			public override void Handle(Entity2D entity)
-			{
-				entity.Set(entity.Get<float>() + 10 * Time.Current.Delta);
-				var line = entity as Line2D;
-				if (line != null)
-					line.EndPoint = Point.Half + new Point(0.5f, 0).RotateAround(Point.Zero, line.Rotation);
-			}
-
-			public override Priority Priority
-			{
-				get { return Priority.First; }
-			}
-		}
-
 		[Test]
+		public void AddLineToEntitySystem()
+		{
+			new Line2D(Point.Zero, Point.One, Color.Red);
+			RunAfterFirstFrame(
+				() => Assert.AreEqual(2, Resolve<Drawing>().NumberOfDynamicVerticesDrawnThisFrame));
+		}
+
+		[Test, CloseAfterFirstFrame]
 		public void CreateLine()
 		{
 			var line = new Line2D(Point.Zero, Point.One, Color.Red);
@@ -64,10 +81,9 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 			Assert.AreEqual(Point.One, line.EndPoint);
 			Assert.AreEqual(Color.Red, line.Color);
 			Assert.AreEqual(2, line.Points.Count);
-			Window.CloseAfterFrame();
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void MoveLineViaItsEndPoints()
 		{
 			var line = new Line2D(Point.Zero, Point.Zero, Color.Red)
@@ -77,34 +93,23 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 			};
 			Assert.AreEqual(Point.Half, line.StartPoint);
 			Assert.AreEqual(Point.One, line.EndPoint);
-			Window.CloseAfterFrame();
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void MoveLineByAssigningListOfPoints()
 		{
 			var line = new Line2D(Point.Zero, Point.Zero, Color.Red);
 			line.Points = new List<Point> { Point.Half, Point.One };
 			Assert.AreEqual(Point.Half, line.StartPoint);
 			Assert.AreEqual(Point.One, line.EndPoint);
-			Window.CloseAfterFrame();
 		}
 
-		[Test]
-		public void AddLineToEntitySystem()
-		{
-			new Line2D(Point.Zero, Point.One, Color.Red);
-			RunCode = () => Assert.AreEqual(2, Resolve<Drawing>().NumberOfVerticesDrawn);
-			Window.CloseAfterFrame();
-		}
-
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void ChangeColor()
 		{
 			var line = new Line2D(Point.Zero, Point.One, Color.Red) { Color = Color.Green };
 			Assert.AreEqual(Color.Green, line.Color);
 			Assert.AreEqual(Color.Green, line.Get<Color>());
-			Window.CloseAfterFrame();
 		}
 
 		[Test]
@@ -161,20 +166,20 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 		{
 			new Line2D(new Point(0.2f, 0.2f), new Point(0.8f, 0.8f), Color.Red);
 			new Line2D(new Point(0.8f, 0.2f), new Point(0.2f, 0.8f), Color.Green);
-			RunCode = () => Assert.AreEqual(1, Resolve<Drawing>().NumberOfTimesDrawn);
-			Window.CloseAfterFrame();
+			RunAfterFirstFrame(
+				() => Assert.AreEqual(1, Resolve<Drawing>().NumberOfDynamicDrawCallsThisFrame));
 		}
 
 		[Test]
 		public void DrawingTwoLinesWithDifferentRenderLayersIssuesTwoDrawCalls()
 		{
-			new Line2D(new Point(0.2f, 0.2f), new Point(0.8f, 0.8f), Color.Red) { RenderLayer = 1 };
-			new Line2D(new Point(0.8f, 0.2f), new Point(0.2f, 0.8f), Color.Green) { RenderLayer = -1 };
-			RunCode = () => Assert.AreEqual(2, Resolve<Drawing>().NumberOfTimesDrawn);
-			Window.CloseAfterFrame();
+			new Line2D(new Point(0.2f, 0.2f), new Point(0.8f, 0.8f), Color.Red).RenderLayer = 1;
+			new Line2D(new Point(0.8f, 0.2f), new Point(0.2f, 0.8f), Color.Green).RenderLayer = -1;
+			RunAfterFirstFrame(
+				() => Assert.AreEqual(2, Resolve<Drawing>().NumberOfDynamicDrawCallsThisFrame));
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void LineInsideViewportIsNotClipped()
 		{
 			var line = new Line2D(new Point(0.4f, 0.4f), new Point(0.6f, 0.5f), Color.Red);
@@ -182,10 +187,9 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 			Assert.AreEqual(new Point(0.4f, 0.4f), line.StartPoint);
 			Assert.AreEqual(new Point(0.6f, 0.5f), line.EndPoint);
 			Assert.AreEqual(Visibility.Show, line.Visibility);
-			Window.CloseAfterFrame();
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void LineAboveViewportIsHidden()
 		{
 			var line = new Line2D(new Point(0.2f, -1.0f), new Point(0.6f, -1.5f), Color.Red);
@@ -193,10 +197,9 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 			Assert.AreEqual(new Point(0.2f, -1.0f), line.StartPoint);
 			Assert.AreEqual(new Point(0.6f, -1.5f), line.EndPoint);
 			Assert.AreEqual(Visibility.Hide, line.Visibility);
-			Window.CloseAfterFrame();
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void LineBelowViewportIsHidden()
 		{
 			var line = new Line2D(new Point(-0.2f, 2.0f), new Point(2.6f, 2.5f), Color.Red);
@@ -204,10 +207,9 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 			Assert.AreEqual(new Point(-0.2f, 2.0f), line.StartPoint);
 			Assert.AreEqual(new Point(2.6f, 2.5f), line.EndPoint);
 			Assert.AreEqual(Visibility.Hide, line.Visibility);
-			Window.CloseAfterFrame();
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void LineLeftOfViewportIsHidden()
 		{
 			var line = new Line2D(new Point(-0.2f, 0.0f), new Point(-0.6f, 1.0f), Color.Red);
@@ -215,10 +217,9 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 			Assert.AreEqual(new Point(-0.2f, 0.0f), line.StartPoint);
 			Assert.AreEqual(new Point(-0.6f, 1.0f), line.EndPoint);
 			Assert.AreEqual(Visibility.Hide, line.Visibility);
-			Window.CloseAfterFrame();
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void LineRightOfViewportIsHidden()
 		{
 			var line = new Line2D(new Point(1.2f, 0.5f), new Point(1.6f, 0.5f), Color.Red);
@@ -226,10 +227,9 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 			Assert.AreEqual(new Point(1.2f, 0.5f), line.StartPoint);
 			Assert.AreEqual(new Point(1.6f, 0.5f), line.EndPoint);
 			Assert.AreEqual(Visibility.Hide, line.Visibility);
-			Window.CloseAfterFrame();
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void LineNotCrossingViewportIsHidden()
 		{
 			var line = new Line2D(new Point(-1.0f, 0.2f), new Point(0.2f, -1.0f), Color.Red);
@@ -237,10 +237,9 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 			Assert.AreEqual(new Point(-1.0f, 0.2f), line.StartPoint);
 			Assert.AreEqual(new Point(0.2f, -1.0f), line.EndPoint);
 			Assert.AreEqual(Visibility.Hide, line.Visibility);
-			Window.CloseAfterFrame();
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void LineEnteringLeftEdgeIsClipped()
 		{
 			var line = new Line2D(new Point(-0.5f, 0.1f), new Point(0.5f, 0.2f), Color.Red);
@@ -248,10 +247,9 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 			Assert.AreEqual(new Point(0.0f, 0.15f), line.StartPoint);
 			Assert.AreEqual(new Point(0.5f, 0.2f), line.EndPoint);
 			Assert.AreEqual(Visibility.Show, line.Visibility);
-			Window.CloseAfterFrame();
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void LineExitingLeftEdgeIsClipped()
 		{
 			var line = new Line2D(new Point(0.5f, 0.4f), new Point(-0.5f, 0.4f), Color.Red);
@@ -259,10 +257,9 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 			Assert.AreEqual(new Point(0.5f, 0.4f), line.StartPoint);
 			Assert.AreEqual(new Point(0.25f, 0.4f), line.EndPoint);
 			Assert.AreEqual(Visibility.Show, line.Visibility);
-			Window.CloseAfterFrame();
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void LineEnteringRightEdgeIsClipped()
 		{
 			var line = new Line2D(new Point(0.5f, 0.4f), new Point(1.5f, 0.3f), Color.Red);
@@ -270,10 +267,9 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 			Assert.AreEqual(new Point(0.5f, 0.4f), line.StartPoint);
 			Assert.AreEqual(new Point(0.75f, 0.375f), line.EndPoint);
 			Assert.AreEqual(Visibility.Show, line.Visibility);
-			Window.CloseAfterFrame();
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void LineExitingRightEdgeIsClipped()
 		{
 			var line = new Line2D(new Point(1.5f, 0.1f), new Point(0.5f, 0.2f), Color.Red);
@@ -281,10 +277,9 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 			Assert.AreEqual(new Point(1.0f, 0.15f), line.StartPoint);
 			Assert.AreEqual(new Point(0.5f, 0.2f), line.EndPoint);
 			Assert.AreEqual(Visibility.Show, line.Visibility);
-			Window.CloseAfterFrame();
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void LineEnteringTopEdgeIsClipped()
 		{
 			var line = new Line2D(new Point(0.1f, -0.5f), new Point(0.2f, 0.5f), Color.Red);
@@ -292,10 +287,9 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 			Assert.AreEqual(new Point(0.15f, 0.0f), line.StartPoint);
 			Assert.AreEqual(new Point(0.2f, 0.5f), line.EndPoint);
 			Assert.AreEqual(Visibility.Show, line.Visibility);
-			Window.CloseAfterFrame();
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void LineExitingTopEdgeIsClipped()
 		{
 			var line = new Line2D(new Point(0.4f, 0.5f), new Point(0.3f, -0.5f), Color.Red);
@@ -303,10 +297,9 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 			Assert.AreEqual(new Point(0.4f, 0.5f), line.StartPoint);
 			Assert.AreEqual(new Point(0.375f, 0.25f), line.EndPoint);
 			Assert.AreEqual(Visibility.Show, line.Visibility);
-			Window.CloseAfterFrame();
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void LineEnteringBottomEdgeIsClipped()
 		{
 			var line = new Line2D(new Point(0.4f, 0.5f), new Point(0.3f, 1.5f), Color.Red);
@@ -314,10 +307,9 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 			Assert.AreEqual(new Point(0.4f, 0.5f), line.StartPoint);
 			Assert.AreEqual(new Point(0.375f, 0.75f), line.EndPoint);
 			Assert.AreEqual(Visibility.Show, line.Visibility);
-			Window.CloseAfterFrame();
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void LineExitingBottomEdgeIsClipped()
 		{
 			var line = new Line2D(new Point(0.1f, 1.5f), new Point(0.2f, 0.5f), Color.Red);
@@ -325,10 +317,9 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 			Assert.AreEqual(new Point(0.15f, 1.0f), line.StartPoint);
 			Assert.AreEqual(new Point(0.2f, 0.5f), line.EndPoint);
 			Assert.AreEqual(Visibility.Show, line.Visibility);
-			Window.CloseAfterFrame();
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void LineCrossingViewportIsClippedAtStartAndEnd()
 		{
 			var line = new Line2D(new Point(-1.0f, 0.4f), new Point(2.0f, 0.6f), Color.Red);
@@ -336,7 +327,13 @@ namespace DeltaEngine.Rendering.Tests.Shapes
 			Assert.AreEqual(new Point(0.25f, 0.4833f), line.StartPoint);
 			Assert.AreEqual(new Point(0.75f, 0.5167f), line.EndPoint);
 			Assert.AreEqual(Visibility.Show, line.Visibility);
-			Window.CloseAfterFrame();
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void RenderingHiddenLineDoesNotThrowException()
+		{
+			new Line2D(Point.Zero, Point.One, Color.White) { Visibility = Visibility.Hide };
+			Assert.DoesNotThrow(() => AdvanceTimeAndUpdateEntities());
 		}
 	}
 }

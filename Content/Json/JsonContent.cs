@@ -1,7 +1,10 @@
-using System.IO;
+﻿using System.IO;
 
 namespace DeltaEngine.Content.Json
 {
+	/// <summary>
+	/// Content data for Newtonsoft Json.
+	/// </summary>
 	public class JsonContent : ContentData
 	{
 		public JsonContent(string contentName)

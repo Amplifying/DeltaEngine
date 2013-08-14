@@ -1,51 +1,64 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DeltaEngine.Core;
-using DeltaEngine.Input;
+using DeltaEngine.Content;
+using DeltaEngine.Content.Xml;
+using DeltaEngine.Extensions;
+using DeltaEngine.Graphics;
 using DeltaEngine.Logging;
+using DeltaEngine.Content.Mocks;
+using DeltaEngine.Entities;
+using DeltaEngine.Graphics.Mocks;
+using DeltaEngine.Input.Mocks;
+using DeltaEngine.Mocks;
+using DeltaEngine.Multimedia.Mocks;
+using DeltaEngine.Networking.Mocks;
 using DeltaEngine.Physics2D.Farseer;
 using DeltaEngine.Rendering.Cameras;
-using DeltaEngine.Rendering.ScreenSpaces;
 
 namespace DeltaEngine.Platforms.Mocks
 {
 	/// <summary>
 	/// Special resolver for unit tests to mocks all the integration classes (Window, Device, etc.)
 	/// </summary>
-	public class MockResolver : AutofacStarter
+	public class MockResolver : AppRunner
 	{
 		public MockResolver()
 		{
 			new MockContentLoader(new AutofacContentDataResolver(this));
-			Time.Current = new MockTime();
-			RegisterMock(Time.Current);
-			Logger.Current = new MockLogger();
-			RegisterMock(Logger.Current);
+			settings = RegisterMock(new MockSettings());
+			entities = new EntitiesRunner(new AutofacHandlerResolver(this), settings);
+			RegisterMock(new MockGlobalTime());
+			RegisterMock(new MockLogger());
+			if (ExceptionExtensions.IsDebugMode)
+				RegisterMock(new ConsoleLogger());
 			Register<MockClient>();
-			RegisterSingleton<MockSettings>();
 			Window = RegisterMock(new MockWindow());
+			ContentIsReady += () => ContentLoader.Load<InputCommands>("DefaultCommands");
 			RegisterSingleton<MockInAppPurchase>();
-			var device = new MockDevice();
-			RegisterMock(device);
-			RegisterMock(new MockDrawing(device));
-			Register<MockImage>();
-			Register<MockMesh>();
-			RegisterSingleton<QuadraticScreenSpace>();
+			RegisterSingleton<MockDevice>();
+			RegisterSingleton<Drawing>();
 			RegisterSingleton<MockScreenshotCapturer>();
 			RegisterSingleton<LookAtCamera>();
 			RegisterSingleton<MockSoundDevice>();
-			Register<MockSound>();
-			Register<MockMusic>();
-			Register<MockVideo>();
 			RegisterSingleton<MockKeyboard>();
 			RegisterSingleton<MockMouse>();
 			RegisterSingleton<MockTouch>();
 			RegisterSingleton<MockGamePad>();
-			RegisterSingleton<InputCommands>();
-			RegisterSingleton<FarseerPhysics>();
 			RegisterSingleton<MockSystemInformation>();
-			RegisterSingleton<RelativeScreenSpace>();	
+			RegisterSingleton<FarseerPhysics>();
+			RegisterMediaTypes();
+		}
+
+		protected override sealed void RegisterMediaTypes()
+		{
+			base.RegisterMediaTypes();
+			Register<MockImage>();
+			Register<MockShader>();
+			Register<MockGeometry>();
+			Register<MockSound>();
+			Register<MockMusic>();
+			Register<MockVideo>();
 		}
 
 		public Window Window { get; private set; }

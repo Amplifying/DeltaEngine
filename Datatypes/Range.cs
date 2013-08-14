@@ -1,36 +1,24 @@
-using System;
-using DeltaEngine.Core;
-
-namespace DeltaEngine.Datatypes
+﻿namespace DeltaEngine.Datatypes
 {
-	public struct Range
+	/// <summary>
+	/// Interval of two values; Allows a random value in between to be obtained.
+	/// </summary>
+	public struct Range<T> where T:Lerp<T>
 	{
-		public Range(float minimum, float maximum)
+		public Range(T minimum, T maximum)
 			: this()
 		{
-			Minimum = minimum;
-			Maximum = maximum;
+			Start = minimum;
+			End = maximum;
 		}
 
-		public float Minimum { get; set; }
-		public float Maximum { get; set; }
+		public T Start { get; set; }
+		public T End { get; set; }
 
-		public Range(string sizeAsString)
-			: this()
+
+		public T GetRandomValue()
 		{
-			float[] components = sizeAsString.SplitIntoFloats();
-			if (components.Length != 2)
-				throw new InvalidNumberOfComponents();
-
-			Minimum = components[0];
-			Maximum = components[1];
-		}
-
-		public class InvalidNumberOfComponents : Exception { }
-
-		public float GetRandomValue()
-		{
-			return Randomizer.Current.Get(Minimum, Maximum);
+			return Start.Lerp(End, Randomizer.Current.Get());
 		}
 	}
 }

@@ -1,10 +1,11 @@
-using DeltaEngine.Core;
+﻿using System.Collections.Generic;
+using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
+using DeltaEngine.Entities;
+using DeltaEngine.Extensions;
 using DeltaEngine.Physics2D;
-using DeltaEngine.Rendering;
-using DeltaEngine.Rendering.ScreenSpaces;
 using DeltaEngine.Rendering.Sprites;
+using DeltaEngine.ScreenSpaces;
 
 namespace Asteroids
 {
@@ -13,8 +14,8 @@ namespace Asteroids
 	/// </summary>
 	public class Projectile : Sprite
 	{
-		public Projectile(Image texture, Point startPosition, float angle)
-			: base(texture, Rectangle.FromCenter(startPosition, new Size(.005f)))
+		public Projectile(Material texture, Point startPosition, float angle)
+			: base(texture, Rectangle.FromCenter(startPosition, new Size(.02f)))
 		{
 			Rotation = angle;
 			RenderLayer = (int)AsteroidsRenderLayer.Rockets;
@@ -30,37 +31,33 @@ namespace Asteroids
 
 		private const float ProjectileVelocity = .5f;
 
-		private class MoveAndDisposeOnBorderCollision : Behavior2D
+		private class MoveAndDisposeOnBorderCollision : UpdateBehavior
 		{
-			public MoveAndDisposeOnBorderCollision(ScreenSpace screen)
+			public override void Update(IEnumerable<Entity> entities)
 			{
-				this.screen = screen;
+				foreach (var entity in entities)
+				{
+					var projectile = entity as Projectile;
+					projectile.DrawArea = CalculateFutureDrawArea(projectile, Time.Delta);
+					if (ObjectHasCrossedScreenBorder(projectile.DrawArea, ScreenSpace.Current.Viewport))
+						projectile.IsActive = false;
+				}
 			}
 
-			private readonly ScreenSpace screen;
-
-			public override void Handle(Entity2D entity)
-			{
-				var projectile = entity as Projectile;
-				projectile.DrawArea = CalculateFutureDrawArea(projectile);
-				if (ObjectHasCrossedScreenBorder(projectile.DrawArea))
-					projectile.IsActive = false;
-			}
-
-			private static Rectangle CalculateFutureDrawArea(Projectile projectile)
+			private static Rectangle CalculateFutureDrawArea(Projectile projectile, float deltaT)
 			{
 				return
 					new Rectangle(
 						projectile.DrawArea.TopLeft +
-							projectile.Get<SimplePhysics.Data>().Velocity * Time.Current.Delta,
+							projectile.Get<SimplePhysics.Data>().Velocity * deltaT,
 						projectile.DrawArea.Size);
 			}
 
-			private bool ObjectHasCrossedScreenBorder(Rectangle objectArea)
+			private static bool ObjectHasCrossedScreenBorder(Rectangle objectArea, Rectangle borders)
 			{
-				return (objectArea.Right <= screen.Viewport.Left ||
-					objectArea.Left >= screen.Viewport.Right || objectArea.Bottom <= screen.Viewport.Top ||
-					objectArea.Top >= screen.Viewport.Bottom);
+				return (objectArea.Right <=borders.Left ||
+					objectArea.Left >= borders.Right || objectArea.Bottom <= borders.Top ||
+					objectArea.Top >= borders.Bottom);
 			}
 		}
 	}

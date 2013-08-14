@@ -1,7 +1,7 @@
-namespace DeltaEngine.Rendering.Sprites
+﻿namespace DeltaEngine.Rendering.Sprites
 {
 	/// <summary>
-	/// Specifies a sprite be rendered flipped horizontally or vertically.
+	/// Sprites can be rendered flipped horizontally or vertically.
 	/// </summary>
 	public enum FlipMode
 	{

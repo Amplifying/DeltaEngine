@@ -1,4 +1,4 @@
-using DeltaEngine.Core;
+﻿using System.Collections.Generic;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Rendering;
@@ -11,7 +11,8 @@ namespace Snake
 	/// </summary>
 	public class Snake : Entity2D
 	{
-		public Snake(int gridSize) : base(Rectangle.Zero)
+		public Snake(int gridSize)
+			: base(Rectangle.Zero)
 		{
 			Add(new Body(gridSize));
 			Start<SnakeHandler>();
@@ -28,22 +29,20 @@ namespace Snake
 			Stop<SnakeHandler>();
 		}
 
-		internal class SnakeHandler : Behavior2D
+		internal class SnakeHandler : UpdateBehavior
 		{
-			public override void Handle(Entity2D entity)
+			public override void Update(IEnumerable<Entity> entities)
 			{
-				if (!Time.Current.CheckEvery(0.15f))
-					return;
+				foreach (var entity in entities)
+				{
+					if (!Time.CheckEvery(0.15f))
+						return;
 
-				var body = entity.Get<Body>();
-				body.MoveBody();
-				body.CheckSnakeCollidesWithChunk();
-				body.CheckSnakeCollisionWithBorderOrItself();
-			}
-
-			public override Priority Priority
-			{
-				get { return Priority.Normal; }
+					var body = entity.Get<Body>();
+					body.MoveBody();
+					body.CheckSnakeCollidesWithChunk();
+					body.CheckSnakeCollisionWithBorderOrItself();
+				}
 			}
 		}
 	}

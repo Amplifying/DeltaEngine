@@ -1,3 +1,4 @@
+﻿using DeltaEngine.Commands;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
 
@@ -5,32 +6,36 @@ namespace ShadowShot
 {
 	public class GameInputControls
 	{
-		public GameInputControls(InputCommands input, PlayerShip ship)
+		public GameInputControls(PlayerShip ship)
 		{
-			this.input = input;
 			this.ship = ship;
 			SetupInputControls();
 		}
-
-		private readonly InputCommands input;
 		private readonly PlayerShip ship;
 
 		private void SetupInputControls()
 		{
-			input.Add(Key.A, State.Pressed, key => MoveLeft());
-			input.Add(Key.A, State.Pressing, key => MoveLeft());
-			input.Add(Key.CursorLeft, State.Pressed, key => MoveLeft());
-			input.Add(Key.CursorLeft, State.Pressing, key => MoveLeft());
-			input.Add(Key.D, State.Pressed, key => MoveRight());
-			input.Add(Key.D, State.Pressing, key => MoveRight());
-			input.Add(Key.CursorRight, State.Pressed, key => MoveRight());
-			input.Add(Key.CursorRight, State.Pressing, key => MoveRight());
-			input.Add(Key.S, State.Pressed, key => StopMovement());
-			input.Add(Key.S, State.Pressing, key => StopMovement());
-			input.Add(Key.CursorDown, State.Pressed, key => StopMovement());
-			input.Add(Key.CursorDown, State.Pressing, key => StopMovement());
-			input.Add(Key.Space, State.Pressed, key => FireWeapon());
-			input.Add(Key.Space, State.Pressing, key => FireWeapon());
+			var leftCommand = new Command(MoveLeft);
+			leftCommand.Add(new KeyTrigger(Key.A, State.Pressed));
+			leftCommand.Add(new KeyTrigger(Key.A));
+			leftCommand.Add(new KeyTrigger(Key.CursorLeft, State.Pressed));
+			leftCommand.Add(new KeyTrigger(Key.CursorLeft));
+
+			var rightCommand = new Command(MoveRight);
+			rightCommand.Add(new KeyTrigger(Key.D, State.Pressed));
+			rightCommand.Add(new KeyTrigger(Key.D));
+			rightCommand.Add(new KeyTrigger(Key.CursorRight, State.Pressed));
+			rightCommand.Add(new KeyTrigger(Key.CursorRight));
+
+			var stopCommand = new Command(StopMovement);
+			stopCommand.Add(new KeyTrigger(Key.S, State.Pressed));
+			stopCommand.Add(new KeyTrigger(Key.S));
+			stopCommand.Add(new KeyTrigger(Key.CursorDown, State.Pressed));
+			stopCommand.Add(new KeyTrigger(Key.CursorDown));
+
+			var fireCommand = new Command(FireWeapon);
+			fireCommand.Add(new KeyTrigger(Key.Space, State.Pressed));
+			fireCommand.Add(new KeyTrigger(Key.Space));
 		}
 
 		private void MoveLeft()

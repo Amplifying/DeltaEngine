@@ -1,8 +1,11 @@
+﻿using DeltaEngine;
+using DeltaEngine.Commands;
+using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
 using DeltaEngine.Rendering.Fonts;
-using DeltaEngine.Rendering.ScreenSpaces;
 using DeltaEngine.Rendering.Shapes;
+using DeltaEngine.ScreenSpaces;
 
 namespace Snake
 {
@@ -12,12 +15,12 @@ namespace Snake
 	/// </summary>
 	public class SnakeGame
 	{
-		public SnakeGame(ScreenSpace screen, InputCommands input)
+		public SnakeGame(Window window)
 		{
+			new RelativeScreenSpace(window);
 			gridSize = 25;
 			blockSize = 1.0f / gridSize;
-			this.screen = screen;
-			this.input = input;
+			this.window = window;
 			SetupPlayArea();
 			SetInput();
 			InitializeSnake();
@@ -26,14 +29,13 @@ namespace Snake
 
 		private readonly int gridSize;
 		private readonly float blockSize;
-		private readonly ScreenSpace screen;
-		private readonly InputCommands input;
+		private readonly Window window;
 
 		private void SetupPlayArea()
 		{
-			screen.Window.Title = "Snake - Let's go";
-			screen.Window.ViewportPixelSize = new Size(500, 500);
-			screen.Window.BackgroundColor = Color.Red;
+			window.Title = "Snake - Let's go";
+			//window.ViewportPixelSize = new Size(500, 500);
+			window.BackgroundColor = Color.Red;
 			new FilledRect(CalculateBackgroundDrawArea(), Color.Black);
 		}
 
@@ -45,10 +47,12 @@ namespace Snake
 
 		private void SetInput()
 		{
-			input.Add(Key.CursorLeft, State.Pressing, key => MoveLeft());
-			input.Add(Key.CursorRight, State.Pressing, key => MoveRight());
-			input.Add(Key.CursorUp, State.Pressing, key => MoveUp());
-			input.Add(Key.CursorDown, State.Pressing, key => MoveDown());
+			new Command(MoveLeft).Add(new KeyTrigger(Key.CursorLeft));
+			new Command(MoveRight).Add(new KeyTrigger(Key.CursorRight));
+			new Command(MoveUp).Add(new KeyTrigger(Key.CursorUp));
+			new Command(MoveDown).Add(new KeyTrigger(Key.CursorDown));
+			new Command(MoveAccordingToTouchPosition).Add(new TouchPressTrigger()).Add(
+				new MouseButtonTrigger());
 		}
 
 		public void MoveLeft()
@@ -60,6 +64,9 @@ namespace Snake
 
 		private Point GetDirection()
 		{
+			if (snakeBody.BodyParts.Count == 0)
+				return Point.Zero;
+
 			var snakeHead = snakeBody.BodyParts[0];
 			var partNextToSnakeHead = snakeBody.BodyParts[1];
 			var direction = new Point(snakeHead.DrawArea.Left - partNextToSnakeHead.DrawArea.Left,
@@ -87,6 +94,38 @@ namespace Snake
 				return;
 			snakeBody.Direction = new Point(0, blockSize);
 		}
+
+		private void MoveAccordingToTouchPosition(Point position)
+		{
+			var comparison = snakeBody.HeadPosition;
+			CheckTouchHorizontal(position,comparison);
+			CheckTouchVertical(position,comparison);
+		}
+
+		private void CheckTouchVertical(Point position, Point comparison)
+		{
+			if (GetDirection().X != 0)
+			{
+				var deltaY = position.Y - comparison.Y;
+				if (deltaY > 0)
+					MoveDown();
+				if (deltaY < 0)
+					MoveUp();
+			}
+		}
+
+		private void CheckTouchHorizontal(Point position, Point comparison)
+		{
+			if (GetDirection().Y != 0)
+			{
+				var deltaX = position.X - comparison.X;
+				if (deltaX > 0)
+					MoveRight();
+				if (deltaX < 0)
+					MoveLeft();
+			}
+		}
+
 
 		private void InitializeSnake()
 		{
@@ -119,7 +158,7 @@ namespace Snake
 			var tail = snakeBodyParts[snakeBodyParts.Count - 1].DrawArea.TopLeft;
 			var newBodyPart = new FilledRect(CalculateTrailDrawArea(trailingVector, tail), Color.Teal);
 			snakeBodyParts.Add(newBodyPart);
-			screen.Window.Title = "Snake - Length: " + snakeBodyParts.Count;
+			window.Title = "Snake - Length: " + snakeBodyParts.Count;
 		}
 
 		private Rectangle CalculateTrailDrawArea(Point trailingVector, Point tail)
@@ -138,14 +177,17 @@ namespace Snake
 		private void DisplayGameOverMessage()
 		{
 			Chunk.IsActive = false;
-			var fontGameOverText = new Font("Tahoma30");
-			var fontReplayText = new Font("Verdana12");
-			gameOverMsg = new FontText(fontGameOverText, "Game Over", Point.Half) { Color = Color.Red };
+			var fontGameOverText = ContentLoader.Load<FontXml>("Tahoma30");
+			var fontReplayText = ContentLoader.Load<FontXml>("Verdana12");
+			gameOverMsg = new FontText(fontGameOverText, "Game Over",
+				Rectangle.FromCenter(Point.Half, new Size(0.6f, 0.3f))) { Color = Color.Red };
 			restartMsg = new FontText(fontReplayText, "Do you want to continue (Y/N)",
-				new Point(0.5f, 0.7f)) { Color = Color.Yellow };
+				Rectangle.FromCenter(new Point(0.5f, 0.7f), new Size(0.6f, 0.3f))) { Color = Color.Yellow };
 
-			yesCommand = input.Add(Key.Y, State.Pressed, key => RestartGame());
-			noCommand = input.Add(Key.N, State.Pressed, key => CloseGame());
+			yesCommand = new Command(RestartGame);
+			yesCommand.Add(new KeyTrigger(Key.Y));
+			noCommand = new Command(CloseGame);
+			noCommand.Add(new KeyTrigger(Key.N));
 		}
 
 		private Command yesCommand;
@@ -155,8 +197,8 @@ namespace Snake
 
 		private void RestartGame()
 		{
-			input.Remove(yesCommand);
-			input.Remove(noCommand);
+			yesCommand.IsActive = false;
+			noCommand.IsActive = false;
 			gameOverMsg.IsActive = false;
 			restartMsg.IsActive = false;
 			InitializeSnake();
@@ -165,7 +207,7 @@ namespace Snake
 
 		private void CloseGame()
 		{
-			screen.Window.Dispose();
+			window.Dispose();
 		}
 
 		private void SpawnFirstChunk()

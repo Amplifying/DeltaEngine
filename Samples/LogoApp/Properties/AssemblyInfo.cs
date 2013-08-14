@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -7,7 +7,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCompany("Delta Engine")]
 [assembly: AssemblyCopyright("Copyright © Delta Engine 2012")]
 [assembly: ComVisible(false)]
-[assembly: CLSCompliant(true)]
 [assembly: Guid("4d33a50e-3aa2-4e7e-bc0c-4ef7b3d5e985")]
 [assembly: AssemblyVersion("0.9.8.3")]
 [assembly: AssemblyFileVersion("0.9.8.3")]

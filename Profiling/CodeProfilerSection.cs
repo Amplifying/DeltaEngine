@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using DeltaEngine.Core;
 
 namespace DeltaEngine.Profiling
@@ -11,7 +11,7 @@ namespace DeltaEngine.Profiling
 		public CodeProfilerSection(string name)
 		{
 			Name = name;
-			TimeCreated = Time.Current.GetSecondsSinceStartToday();
+			TimeCreated = GlobalTime.Current.GetSecondsSinceStartToday();
 		}
 
 		public string Name { get; private set; }
@@ -22,7 +22,7 @@ namespace DeltaEngine.Profiling
 			if (IsStarted)
 				throw new AlreadyStarted();
 
-			float time = Time.Current.GetSecondsSinceStartToday();
+			float time = GlobalTime.Current.GetSecondsSinceStartToday();
 			if (time - lastTimeProfiled < pollingInterval)
 				return;
 
@@ -42,7 +42,7 @@ namespace DeltaEngine.Profiling
 			if (!IsStarted)
 				return false;
 
-			TotalTime += Time.Current.GetSecondsSinceStartToday() - StartTime;
+			TotalTime += GlobalTime.Current.GetSecondsSinceStartToday() - StartTime;
 			Calls++;
 			IsStarted = false;
 			return true;

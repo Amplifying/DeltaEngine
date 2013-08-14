@@ -1,17 +1,78 @@
-using System;
+﻿using System;
+using System.IO;
+using DeltaEngine.Content;
+using DeltaEngine.Core;
+using DeltaEngine.Graphics.Vertices;
 
 namespace DeltaEngine.Graphics
 {
-	public abstract class Geometry : IDisposable
+	/// <summary>
+	/// Base class for GPU geometry data.
+	/// </summary>
+	public abstract class Geometry : ContentData
 	{
-		public abstract void CreateFrom(GeometryData data);
+		protected Geometry(string contentName)
+			: base(contentName) {}
+
+		protected Geometry(GeometryCreationData creationData)
+			: base("<GenerateGeometry>")
+		{
+			Format = creationData.Format;
+			verticesData = new byte[creationData.NumberOfVertices * Format.Stride];
+			indices = new short[creationData.NumberOfIndices];
+		}
+
+		public VertexFormat Format { get; private set; }
+		private byte[] verticesData;
+		private short[] indices;
+		public int NumberOfVertices
+		{
+			get { return verticesData.Length / Format.Stride; }
+		}
+		public int NumberOfIndices
+		{
+			get { return indices.Length; }
+		}
+
+		protected override void LoadData(Stream fileData)
+		{
+			if (fileData.Length == 0)
+				throw new EmptyGeometryFileGiven();
+			var loadedGeometry = new BinaryReader(fileData).Create() as Geometry;
+			Format = loadedGeometry.Format;
+			verticesData = loadedGeometry.verticesData;
+			indices = loadedGeometry.indices;
+			SetNativeData(verticesData, indices);
+		}
+
+		public class EmptyGeometryFileGiven : Exception {}
+
 		public abstract void Draw();
 
-		protected abstract void DisposeData();
-
-		public void Dispose()
+		public void SetData(Vertex[] setVertices, short[] setIndices)
 		{
-			DisposeData();
+			if (setVertices.Length != NumberOfVertices)
+				throw new InvalidNumberOfVertices(setVertices.Length, NumberOfVertices);
+			if (setIndices.Length != NumberOfIndices)
+				throw new InvalidNumberOfIndices(setIndices.Length, NumberOfIndices);
+			verticesData = BinaryDataExtensions.ToByteArray(setVertices);
+			indices = setIndices;
+			SetNativeData(verticesData, indices);
 		}
+
+		public class InvalidNumberOfVertices : Exception
+		{
+			public InvalidNumberOfVertices(int verticesPassedIn, int geometryVertices)
+				: base(
+					"verticesPassedIn=" + verticesPassedIn + ", " + geometryVertices + "geometryVertices") {}
+		}
+
+		public class InvalidNumberOfIndices : Exception
+		{
+			public InvalidNumberOfIndices(int indicesPassedIn, int geometryIndices)
+				: base("indicesPassedIn=" + indicesPassedIn + ", " + geometryIndices + "geometryIndices") {}
+		}
+
+		protected abstract void SetNativeData(byte[] vertexData, short[] indices);
 	}
 }

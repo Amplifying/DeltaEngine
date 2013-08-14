@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using DeltaEngine.Platforms;
 
 namespace DeltaEngine.Profiling
 {
 	/// <summary>
 	/// Derived classes implement profiling of code time - ie. how long a section of code
-	/// takes to run
+	/// takes to run.
 	/// </summary>
 	public interface CodeProfilingProvider
 	{

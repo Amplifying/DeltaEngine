@@ -1,45 +1,36 @@
-using DeltaEngine.Datatypes;
-using DeltaEngine.Rendering;
+﻿using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
 using DeltaEngine.Rendering.Shapes;
 
 namespace DeltaEngine.Scenes.UserInterfaces.Graphing
 {
 	/// <summary>
-	/// Renders a set of axes at the origin
+	/// Renders a set of axes at the origin.
 	/// </summary>
-	public class RenderAxes : EventListener2D
+	internal class RenderAxes
 	{
-		public override void ReceiveMessage(Entity2D entity, object message)
+		public void Refresh(Graph graph)
 		{
-			if (!(message is ObserveEntity2D.HasChanged))
-				return;
-
-			if (entity.Visibility == Visibility.Hide)
-				HideAxes((Graph)entity);
+			if (graph.Visibility == Visibility.Show && Visibility == Visibility.Show)
+				ShowAxes(graph);
 			else
-				ShowAxes((Graph)entity);
+				HideAxes();
 		}
 
-		private static void HideAxes(Graph graph)
-		{
-			var data = graph.Get<Graph.Data>();
-			data.XAxis.Visibility = Visibility.Hide;
-			data.YAxis.Visibility = Visibility.Hide;
-		}
+		public Visibility Visibility { get; set; }
 
 		private void ShowAxes(Graph graph)
 		{
 			renderLayer = graph.RenderLayer + RenderLayerOffset;
-			var data = graph.Get<Graph.Data>();
-			viewport = data.Viewport;
+			viewport = graph.Viewport;
 			drawArea = graph.DrawArea;
 			clippingBounds = Rectangle.FromCorners(
 				ToQuadratic(viewport.BottomLeft, viewport, drawArea),
 				ToQuadratic(viewport.TopRight, viewport, drawArea));
 			Point origin = graph.Origin;
-			SetAxis(data.XAxis, ToQuadratic(new Point(viewport.Left, origin.Y), viewport, drawArea),
+			SetAxis(XAxis, ToQuadratic(new Point(viewport.Left, origin.Y), viewport, drawArea),
 				ToQuadratic(new Point(viewport.Right, origin.Y), viewport, drawArea));
-			SetAxis(data.YAxis, ToQuadratic(new Point(origin.X, viewport.Top), viewport, drawArea),
+			SetAxis(YAxis, ToQuadratic(new Point(origin.X, viewport.Top), viewport, drawArea),
 				ToQuadratic(new Point(origin.X, viewport.Bottom), viewport, drawArea));
 		}
 
@@ -48,6 +39,16 @@ namespace DeltaEngine.Scenes.UserInterfaces.Graphing
 		private Rectangle viewport;
 		private Rectangle drawArea;
 		private Rectangle clippingBounds;
+
+		public readonly Line2D XAxis = new Line2D(Point.Zero, Point.Zero, Color.White)
+		{
+			Visibility = Visibility.Hide
+		};
+
+		public readonly Line2D YAxis = new Line2D(Point.Zero, Point.Zero, Color.White)
+		{
+			Visibility = Visibility.Hide
+		};
 
 		private static Point ToQuadratic(Point point, Rectangle viewport, Rectangle drawArea)
 		{
@@ -65,6 +66,12 @@ namespace DeltaEngine.Scenes.UserInterfaces.Graphing
 			axis.RenderLayer = renderLayer;
 			axis.Clip(clippingBounds);
 			axis.Visibility = Visibility.Show;
+		}
+
+		internal void HideAxes()
+		{
+			XAxis.Visibility = Visibility.Hide;
+			YAxis.Visibility = Visibility.Hide;
 		}
 	}
 }

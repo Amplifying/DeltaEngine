@@ -1,7 +1,6 @@
-using System;
+﻿using System;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Platforms;
-using DeltaEngine.Rendering.ScreenSpaces;
+using DeltaEngine.ScreenSpaces;
 using SysPoint = System.Drawing.Point;
 
 namespace DeltaEngine.Input.Windows
@@ -11,14 +10,12 @@ namespace DeltaEngine.Input.Windows
 	/// </summary>
 	public class CursorPositionTranslater
 	{
-		public CursorPositionTranslater(Window window, ScreenSpace screen)
+		public CursorPositionTranslater(Window window)
 		{
 			this.window = window;
-			this.screen = screen;
 		}
 
 		private readonly Window window;
-		private readonly ScreenSpace screen;
 
 		public void SetCursorPosition(Point newPosition)
 		{
@@ -33,10 +30,10 @@ namespace DeltaEngine.Input.Windows
 
 		internal Point ToScreenPositionFromScreenSpace(Point newPosition)
 		{
-			newPosition = screen.ToPixelSpace(newPosition);
+			newPosition = ScreenSpace.Current.ToPixelSpace(newPosition);
 			var newScreenPosition = ToSysPoint(newPosition);
-			if (window.Handle != IntPtr.Zero)
-				NativeMethods.ClientToScreen(window.Handle, ref newScreenPosition);
+			if ((IntPtr)window.Handle != IntPtr.Zero)
+				NativeMethods.ClientToScreen((IntPtr)window.Handle, ref newScreenPosition);
 
 			return FromSysPoint(newScreenPosition);
 		}
@@ -57,10 +54,9 @@ namespace DeltaEngine.Input.Windows
 		internal Point FromScreenPositionToScreenSpace(Point newPosition)
 		{
 			var screenPoint = ToSysPoint(newPosition);
-			if (window.Handle != IntPtr.Zero)
-				NativeMethods.ScreenToClient(window.Handle, ref screenPoint);
-
-			return screen.FromPixelSpace(FromSysPoint(screenPoint));
+			if ((IntPtr)window.Handle != IntPtr.Zero)
+				NativeMethods.ScreenToClient((IntPtr)window.Handle, ref screenPoint);
+			return ScreenSpace.Current.FromPixelSpace(FromSysPoint(screenPoint));
 		}
 	}
 }

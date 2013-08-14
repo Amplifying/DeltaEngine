@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 
@@ -235,17 +235,10 @@ namespace DeltaEngine.Content.Xml.Tests
 		public void GetAttributes()
 		{
 			XmlData root = CreateShallowTestXmlData();
-			Dictionary<string, string> attributes = root.Children[0].GetAttributes();
-			Assert.AreEqual("Value1", TryGetValue(attributes, "Attr1"));
-			Assert.AreEqual("Value2", TryGetValue(attributes, "Attr2"));
-			Assert.AreEqual(null, TryGetValue(attributes, "Attr3"));
-		}
-
-		private static string TryGetValue(IDictionary<string, string> attributes, string attribute)
-		{
-			string value;
-			attributes.TryGetValue(attribute, out value);
-			return value;
+			List<XmlAttribute> attributes = root.Children[0].Attributes;
+			Assert.AreEqual(2, attributes.Count);
+			Assert.AreEqual("Value1", attributes[0].Value);
+			Assert.AreEqual("Value2", attributes[1].Value);
 		}
 
 		[Test]
@@ -281,11 +274,12 @@ namespace DeltaEngine.Content.Xml.Tests
 			Assert.AreEqual(Root, root.ToXmlString());
 		}
 
-		private const string Root = @"<Root>
-  <Child1 Attr1=""Value1"" Attr2=""Value2"">Tom</Child1>
-  <Child2 Attr3=""Value3"" Attr4=""Value4"">
-    <Grandchild Attr5=""Value5"" />
-  </Child2>
-</Root>";
+		private const string Root =
+			"<Root>\r\n" +
+			"  <Child1 Attr1=\"Value1\" Attr2=\"Value2\">Tom</Child1>\r\n" +
+			"  <Child2 Attr3=\"Value3\" Attr4=\"Value4\">\r\n" +
+			"    <Grandchild Attr5=\"Value5\" />\r\n" +
+			"  </Child2>\r\n" +
+			"</Root>";
 	}
 }

@@ -1,7 +1,7 @@
-using System;
+﻿using System;
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
+using DeltaEngine.Entities;
 using DeltaEngine.Multimedia;
 using DeltaEngine.Rendering;
 using DeltaEngine.Rendering.Sprites;
@@ -15,16 +15,16 @@ namespace Breakout
 	{
 		public Level(Score score)
 		{
-			brickImage = ContentLoader.Load<Image>("Brick");
-			explosionImage = ContentLoader.Load<Image>("Explosion");
+			brickMaterial = new Material(Shader.Position2DColorUv, "Brick");
+			explosionMaterial = new Material(Shader.Position2DColorUv, "Explosion");
 			explosionSound = ContentLoader.Load<Sound>("BrickExplosion");
 			lostBallSound = ContentLoader.Load<Sound>("LostBall");
 			this.score = score;
 			Initialize();
 		}
 
-		private readonly Image brickImage;
-		private readonly Image explosionImage;
+		private readonly Material brickMaterial;
+		private readonly Material explosionMaterial;
 		private readonly Sound explosionSound;
 		private readonly Sound lostBallSound;
 		private readonly Score score;
@@ -50,7 +50,7 @@ namespace Breakout
 			for (int x = 0; x < rows; x++)
 				for (int y = 0; y < columns; y++)
 				{
-					bricks[x, y] = new Sprite(brickImage, GetBounds(x, y));
+					bricks[x, y] = new Sprite(brickMaterial, GetBounds(x, y));
 					bricks[x, y].Set(GetBrickColor(x, y));
 					bricks[x, y].RenderLayer = 5;
 				}
@@ -152,23 +152,22 @@ namespace Breakout
 		{
 			score.IncreasePoints();
 			brick.Visibility = Visibility.Hide;
-			CreateExplosion(collision);
+			//CreateExplosion(collision);
 			explosionSound.Play();
 		}
 
 		private void CreateExplosion(Point collision)
 		{
-			var explosion = new Sprite(explosionImage, Rectangle.FromCenter(collision, ExplosionSize));
-			explosion.Add(new Transition.Size(ExplosionSize, 2 * ExplosionSize));
-			explosion.Add(new Transition.FadingColor(Color.White));
-			explosion.Add(new Transition.Duration());
-			explosion.Start<FinalTransition>();
+			var explosion = new Sprite(explosionMaterial, Rectangle.FromCenter(collision, ExplosionSize));
+			explosion.Start<FinalTransition>().Add(new Transition.Duration()).Add(
+				new Transition.FadingColor(Color.White)).Add(new Transition.SizeRange(ExplosionSize,
+					2 * ExplosionSize));
 			explosion.RenderLayer = 6;
 		}
 
 		private static readonly Size ExplosionSize = new Size(0.1f, 0.1f);
 
-		public void LifeLost(Point ballLostPosition)
+		public void LifeLost()
 		{
 			score.LifeLost();
 			lostBallSound.Play();

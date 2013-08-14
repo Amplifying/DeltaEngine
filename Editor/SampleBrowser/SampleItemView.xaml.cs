@@ -1,4 +1,4 @@
-namespace DeltaEngine.Editor.SampleBrowser
+﻿namespace DeltaEngine.Editor.SampleBrowser
 {
 	/// <summary>
 	/// Template of an item in the SampleBrowser.

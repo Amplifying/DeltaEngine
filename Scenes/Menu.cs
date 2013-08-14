@@ -1,7 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Scenes.UserInterfaces;
+using DeltaEngine.Scenes.UserInterfaces.Controls;
 
 namespace DeltaEngine.Scenes
 {
@@ -37,9 +37,9 @@ namespace DeltaEngine.Scenes
 					ButtonSize.Height);
 		}
 
-		private readonly List<ActiveButton> buttons = new List<ActiveButton>();
+		private readonly List<InteractiveButton> buttons = new List<InteractiveButton>();
 
-		internal List<ActiveButton> Buttons
+		internal List<InteractiveButton> Buttons
 		{
 			get { return buttons; }
 		}
@@ -70,10 +70,15 @@ namespace DeltaEngine.Scenes
 
 		public void ClearMenuOptions()
 		{
-			foreach (ActiveButton button in buttons)
+			foreach (InteractiveButton button in buttons)
 				Remove(button);
 
 			buttons.Clear();
+		}
+		
+		public void AddMenuOption(Action clicked, string text = "")
+		{
+			AddMenuOption(Theme.Default, clicked,text);
 		}
 
 		public void AddMenuOption(Theme theme, Action clicked, string text = "")
@@ -84,7 +89,7 @@ namespace DeltaEngine.Scenes
 
 		private void AddButton(Theme theme, Action clicked, string text)
 		{
-			var button = new ActiveButton(theme, new Rectangle(Point.Zero, ButtonSize), text);
+			var button = new InteractiveButton(theme, new Rectangle(Point.Zero, ButtonSize), text);
 			button.Clicked += clicked;
 			button.RenderLayer = 10;
 			buttons.Add(button);

@@ -1,13 +1,13 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using DeltaEngine.Core;
-using DeltaEngine.Platforms;
+using ProfilingMode = DeltaEngine.Platforms.ProfilingMode;
 
 namespace DeltaEngine.Profiling
 {
 	/// <summary>
-	/// Allows classes and methods to be profiled as to how long they took to run
+	/// Allows classes and methods to be profiled as to how long they took to run.
 	/// </summary>
 	public class CodeProfiler : CodeProfilingProvider
 	{
@@ -115,7 +115,7 @@ namespace DeltaEngine.Profiling
 			if (!IsActive)
 				return;
 
-			float time = Time.Current.GetSecondsSinceStartToday();
+			float time = GlobalTime.Current.GetSecondsSinceStartToday();
 			if (ResetInterval == 0 || time - lastResetTime < ResetInterval)
 				return;
 

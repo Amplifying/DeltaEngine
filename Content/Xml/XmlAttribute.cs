@@ -1,4 +1,4 @@
-using DeltaEngine.Core;
+﻿using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Content.Xml
 {

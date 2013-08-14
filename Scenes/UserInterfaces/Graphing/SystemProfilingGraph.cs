@@ -1,27 +1,34 @@
+﻿using System.Collections.Generic;
+using DeltaEngine.Commands;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
+using DeltaEngine.Input;
 using DeltaEngine.Platforms;
 using DeltaEngine.Profiling;
-using DeltaEngine.Rendering;
 
 namespace DeltaEngine.Scenes.UserInterfaces.Graphing
 {
-	public abstract class SystemProfilingGraph : Graph
+	internal abstract class SystemProfilingGraph : Graph
 	{
-		protected SystemProfilingGraph(ProfilingMode profilingMode, Color color)
+		protected SystemProfilingGraph(Rectangle drawArea, ProfilingMode profilingMode, Color color)
+			: base(drawArea)
 		{
 			Add(profilingMode);
 			RenderLayer = int.MaxValue - 10;
+			// ReSharper disable DoNotCallOverridableMethodsInConstructor
 			Visibility = Visibility.Hide;
+			// ReSharper restore DoNotCallOverridableMethodsInConstructor
 			NumberOfPercentiles = 5;
 			MaximumNumberOfPoints = 100;
 			ArePercentileLabelsInteger = true;
 			CreateLine(profilingMode.ToString(), color);
-			Start<LogProfilingData, CodeProfilingGraph.ToggleVisibility>();
+			Start<LogProfilingData>();
 			SystemProfiler.Current.IsActive = true;
-			SystemProfiler.Current.Updated += Update;
+			SystemProfiler.Current.Updated += Updated;
+			new Command(ToggleVisibility).Add(new KeyTrigger(Key.F11));
 		}
 
-		private class LogProfilingData : Behavior2D
+		private class LogProfilingData : UpdateBehavior
 		{
 			public LogProfilingData(SystemInformation systemInformation)
 			{
@@ -30,21 +37,25 @@ namespace DeltaEngine.Scenes.UserInterfaces.Graphing
 
 			private readonly SystemInformation systemInformation;
 
-			public override void Handle(Entity2D entity)
+			public override void Update(IEnumerable<Entity> entities)
 			{
 				SystemProfiler.Current.Log(ProfilingMode.Fps | ProfilingMode.AvailableRAM,
 					systemInformation);
 			}
 		}
 
-		private void Update()
+		private void Updated()
 		{
 			if (Visibility == Visibility.Hide)
 				return;
-
 			SystemProfilerSection results =
 				SystemProfiler.Current.GetProfilingResults(Get<ProfilingMode>());
 			Lines[0].AddValue(results.TotalValue / results.Calls);
+		}
+
+		private void ToggleVisibility()
+		{
+			Visibility = Visibility == Visibility.Show ? Visibility.Hide : Visibility.Show;
 		}
 	}
 }

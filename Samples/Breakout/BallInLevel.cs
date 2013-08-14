@@ -1,6 +1,4 @@
-using DeltaEngine.Content;
-using DeltaEngine.Input;
-using DeltaEngine.Rendering.Sprites;
+﻿using DeltaEngine.Rendering.Sprites;
 
 namespace Breakout
 {
@@ -9,9 +7,8 @@ namespace Breakout
 	/// </summary>
 	public class BallInLevel : Ball
 	{
-		public BallInLevel(Paddle paddle, InputCommands inputCommands,
-			Level level)
-			: base(paddle, inputCommands)
+		public BallInLevel(Paddle paddle, Level level)
+			: base(paddle)
 		{
 			Level = level;
 		}
@@ -53,7 +50,7 @@ namespace Breakout
 
 		public override void ResetBall()
 		{
-			Level.LifeLost(Position);
+			Level.LifeLost();
 			base.ResetBall();
 		}
 	}

@@ -1,5 +1,5 @@
+﻿using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics;
 using DeltaEngine.Rendering.Fonts;
 using DeltaEngine.Rendering.Sprites;
 using DeltaEngine.Scenes;
@@ -26,7 +26,9 @@ namespace Blocks
 		private void AddBackground()
 		{
 			var image = content.Load<Image>("Background");
-			Add(new Sprite(image, Rectangle.One) { RenderLayer = Background });
+			var shader = ContentLoader.Load<Shader>(Shader.Position2DColorUv);
+			var material = new Material(shader, image);
+			Add(new Sprite(material, Rectangle.One) { RenderLayer = Background });
 		}
 
 		private const int Background = (int)RenderLayer.Background;
@@ -34,7 +36,9 @@ namespace Blocks
 		private void AddGrid()
 		{
 			var image = content.Load<Image>("Grid");
-			grid = new Sprite(image, GetGridDrawArea()) { RenderLayer = Background };
+			var shader = ContentLoader.Load<Shader>(Shader.Position2DColorUv);
+			var material = new Material(shader, image);
+			grid = new Sprite(material, GetGridDrawArea()) { RenderLayer = Background };
 			Add(grid);
 		}
 
@@ -57,19 +61,21 @@ namespace Blocks
 		private void AddScoreWindow()
 		{
 			var image = content.Load<Image>("ScoreWindow");
-			scoreWindow = new Sprite(image, GetScoreWindowDrawArea(image));
+			var shader = ContentLoader.Load<Shader>(Shader.Position2DColorUv);
+			var material = new Material(shader, image);
+			scoreWindow = new Sprite(material, GetScoreWindowDrawArea(material.DiffuseMap.PixelSize));
 			scoreWindow.RenderLayer = Background;
 			Add(scoreWindow);
 		}
 
 		private Sprite scoreWindow;
 
-		private static Rectangle GetScoreWindowDrawArea(Image image)
+		private static Rectangle GetScoreWindowDrawArea(Size size)
 		{
 			var left = Brick.OffsetLandscape.X + GridRenderLeftOffset;
 			var top = Brick.OffsetLandscape.Y - Brick.ZoomLandscape + ScoreRenderTopOffset;
 			const float Width = Grid.Width * Brick.ZoomLandscape + GridRenderWidthOffset;
-			var height = Width / image.PixelSize.AspectRatio;
+			var height = Width / size.AspectRatio;
 			return new Rectangle(left, top, Width, height);
 		}
 
@@ -77,7 +83,7 @@ namespace Blocks
 
 		private void AddScore()
 		{
-			Text = new FontText(new Font("Verdana12"), "", scoreWindow.Center)
+			Text = new FontText(ContentLoader.Load<FontXml>("Verdana12"), "", scoreWindow.DrawArea)
 			{
 				RenderLayer = (int)RenderLayer.Foreground
 			};
@@ -88,7 +94,7 @@ namespace Blocks
 		public void ResizeInterface()
 		{
 			grid.DrawArea = GetGridDrawArea();
-			scoreWindow.DrawArea = GetScoreWindowDrawArea(scoreWindow.Get<Image>());
+			scoreWindow.DrawArea = GetScoreWindowDrawArea(scoreWindow.Material.DiffuseMap.PixelSize);
 		}
 	}
 }

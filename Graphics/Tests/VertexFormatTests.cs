@@ -1,9 +1,40 @@
+﻿using DeltaEngine.Datatypes;
+using DeltaEngine.Graphics.Vertices;
 using NUnit.Framework;
 
 namespace DeltaEngine.Graphics.Tests
 {
 	public class VertexFormatTests
 	{
+		[Test]
+		public void VertexSizeInBytes()
+		{
+			Assert.AreEqual(VertexPosition2DUV.SizeInBytes, 16);
+			Assert.AreEqual(VertexPosition2DColor.SizeInBytes, 12);
+			Assert.AreEqual(VertexPosition2DColorUV.SizeInBytes, 20);
+			Assert.AreEqual(VertexPosition3DUV.SizeInBytes, 20);
+			Assert.AreEqual(VertexPosition3DColor.SizeInBytes, 16);
+			Assert.AreEqual(VertexPosition3DColorUV.SizeInBytes, 24);
+		}
+
+		[Test]
+		public void VertexPositionColorTextured2D()
+		{
+			var vertex = new VertexPosition3DColorUV(Point.Zero, Color.Red, Point.One);
+			Assert.AreEqual(vertex.Position, Vector.Zero);
+			Assert.AreEqual(vertex.Color, Color.Red);
+			Assert.AreEqual(vertex.UV, Point.One);
+		}
+
+		[Test]
+		public void VertexPositionColorTextured3D()
+		{
+			var vertex = new VertexPosition3DColorUV(Vector.UnitX, Color.Red, Point.One);
+			Assert.AreEqual(vertex.Position, Vector.UnitX);
+			Assert.AreEqual(vertex.Color, Color.Red);
+			Assert.AreEqual(vertex.UV, Point.One);
+		}
+
 		[Test]
 		public void VertexElementPosition3D()
 		{
@@ -54,6 +85,22 @@ namespace DeltaEngine.Graphics.Tests
 			var format = new VertexFormat(elements);
 			Assert.IsNull(format.GetElementFromType(VertexElementType.Color));
 			Assert.IsNotNull(format.GetElementFromType(VertexElementType.TextureUV));
+		}
+
+		[Test]
+		public void AreEqual()
+		{
+			var elements = new[] {
+				new VertexElement(VertexElementType.Position3D),
+				new VertexElement(VertexElementType.TextureUV) };
+			var format = new VertexFormat(elements);
+			Assert.IsTrue(VertexFormat.Position3DUv.Equals(format));
+			Assert.AreEqual(VertexFormat.Position3DUv, format);
+			Assert.IsTrue(VertexFormat.Position3DUv == format);
+			Assert.IsTrue(VertexFormat.Position2DUv.Equals(VertexFormat.Position2DUv));
+			Assert.IsFalse(VertexFormat.Position2DUv == VertexFormat.Position2DColor);
+			Assert.AreEqual(VertexFormat.Position2DUv, VertexFormat.Position2DUv);
+			Assert.AreNotEqual(VertexFormat.Position2DUv, VertexFormat.Position2DColor);
 		}
 	}
 }

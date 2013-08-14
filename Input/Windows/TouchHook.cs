@@ -1,8 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using DeltaEngine.Platforms;
 using DeltaEngine.Platforms.Windows;
 
 namespace DeltaEngine.Input.Windows
@@ -13,10 +12,11 @@ namespace DeltaEngine.Input.Windows
 	public class TouchHook : WindowsHook
 	{
 		public TouchHook(Window window)
-			: base(WMTouch)
+			: base(WMTouch, null)
 		{
+			messageAction = HandleTouchMessage;
 			nativeTouches = new List<NativeTouchInput>();
-			windowHandle = window.Handle;
+			windowHandle = (IntPtr)window.Handle;
 			NativeMethods.RegisterTouchWindow(windowHandle, 0);
 			RegisterNativeTouchEvent(window);
 		}
@@ -32,11 +32,11 @@ namespace DeltaEngine.Input.Windows
 			var formsWindow = window as FormsWindow;
 			formsWindow.NativeEvent += delegate(ref Message message)
 			{
-				HandleProcMessage(message.WParam, message.LParam, message.Msg);
+				messageAction(message.WParam, message.LParam, message.Msg);
 			};
 		}
 
-		protected internal override void HandleProcMessage(IntPtr wParam, IntPtr lParam, int msg)
+		private void HandleTouchMessage(IntPtr wParam, IntPtr lParam, int msg)
 		{
 			if(msg != WMTouch)
 				return;

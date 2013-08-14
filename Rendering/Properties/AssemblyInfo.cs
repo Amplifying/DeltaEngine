@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -10,6 +10,6 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
 [assembly: Guid("755a2b14-0da3-42d1-949c-5a3a2a341894")]
-[assembly: AssemblyVersion("0.9.8.3")]
-[assembly: AssemblyFileVersion("0.9.8.3")]
+[assembly: AssemblyVersion("0.9.8.4")]
+[assembly: AssemblyFileVersion("0.9.8.4")]
 [assembly: InternalsVisibleTo("DeltaEngine.Rendering.Tests")]

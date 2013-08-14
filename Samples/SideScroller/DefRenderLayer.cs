@@ -1,4 +1,4 @@
-namespace SideScroller
+﻿namespace SideScroller
 {
 	public enum DefRenderLayer
 	{

@@ -1,36 +1,57 @@
-using DeltaEngine.Datatypes;
+﻿using DeltaEngine.Datatypes;
+using DeltaEngine.Platforms;
 using DeltaEngine.Rendering.Shapes;
 using DeltaEngine.Scenes.UserInterfaces.Graphing;
 using NUnit.Framework;
 
 namespace DeltaEngine.Scenes.Tests.UserInterfaces.Graphing
 {
-	public class GraphLineTests
+	public class GraphLineTests : TestWithMocksOrVisually
 	{
-		[Test]
-		public void ChangeLineColor()
+		[SetUp]
+		public void SetUp()
 		{
-			var graph = new Graph();
+			graph = new Graph(Center) { Viewport = Rectangle.One };
+		}
+
+		private Graph graph;
+		private static readonly Rectangle Center = Rectangle.FromCenter(0.5f, 0.5f, 0.4f, 0.2f);
+
+		[Test, CloseAfterFirstFrame]
+		public void CheckLineColor()
+		{
 			var line = graph.CreateLine("", Color.Blue);
+			line.AddPoint(Point.Zero);
+			line.AddPoint(Point.One);
 			Assert.AreEqual(Color.Blue, line.Color);
+			Assert.AreEqual(Color.Blue, line.lines[0].Color);
 			line.Color = Color.Green;
 			Assert.AreEqual(Color.Green, line.Color);
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
+		public void ChangeLineColor()
+		{
+			var line = graph.CreateLine("", Color.Blue);
+			line.AddPoint(Point.Zero);
+			line.AddPoint(Point.One);
+			line.Color = Color.Green;
+			Assert.AreEqual(Color.Green, line.Color);
+			Assert.AreEqual(Color.Green, line.lines[0].Color);
+		}
+
+		[Test, CloseAfterFirstFrame]
 		public void ChangeLineKey()
 		{
-			var graph = new Graph();
 			var line = graph.CreateLine("ABC", Color.Blue);
 			Assert.AreEqual("ABC", line.Key);
 			line.Key = "DEF";
 			Assert.AreEqual("DEF", line.Key);
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void AddingFirstPointDoesntCreateALine()
 		{
-			var graph = new Graph();
 			var line = graph.CreateLine("", Color.Blue);
 			Assert.AreEqual(0, line.points.Count);
 			Assert.AreEqual(0, line.lines.Count);
@@ -39,7 +60,7 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Graphing
 			Assert.AreEqual(0, line.lines.Count);
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void TwoPointsDrawALine()
 		{
 			GraphLine line = CreateLineWithTwoPoints();
@@ -51,19 +72,17 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Graphing
 			Assert.AreEqual(LineColor, line.Color);
 		}
 
-		private static GraphLine CreateLineWithTwoPoints()
+		private GraphLine CreateLineWithTwoPoints()
 		{
-			var graph = new Graph { DrawArea = Center, Viewport = Rectangle.One };
 			var line = graph.CreateLine("", LineColor);
 			line.AddPoint(new Point(0.4f, 0.5f));
 			line.AddPoint(new Point(0.6f, 0.7f));
 			return line;
 		}
 
-		private static readonly Rectangle Center = Rectangle.FromCenter(0.5f, 0.5f, 0.4f, 0.2f);
 		private static readonly Color LineColor = Color.Blue;
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void AddThirdPointAtTheEnd()
 		{
 			GraphLine line = CreateLineWithTwoPoints();
@@ -75,7 +94,7 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Graphing
 			Assert.AreEqual(new Point(0.6143f, 0.5f), line2D.EndPoint);
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void AddThirdPointAtTheStart()
 		{
 			GraphLine line = CreateLineWithTwoPoints();
@@ -90,7 +109,7 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Graphing
 			Assert.AreEqual(new Point(0.538f, 0.462f), line1.EndPoint);
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void AddThirdPointInTheMiddle()
 		{
 			GraphLine line = CreateLineWithTwoPoints();
@@ -105,7 +124,7 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Graphing
 			Assert.AreEqual(new Point(0.538f, 0.462f), line1.EndPoint);
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void RemoveFirstPoint()
 		{
 			GraphLine line = CreateLineWithThreePoints();
@@ -118,9 +137,8 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Graphing
 			Assert.AreEqual(new Point(0.6143f, 0.519f), line.lines[0].EndPoint);
 		}
 
-		private static GraphLine CreateLineWithThreePoints()
+		private GraphLine CreateLineWithThreePoints()
 		{
-			var graph = new Graph { DrawArea = Center, Viewport = Rectangle.One };
 			var line = graph.CreateLine("", LineColor);
 			line.AddPoint(new Point(0.4f, 0.5f));
 			line.AddPoint(new Point(0.6f, 0.7f));
@@ -128,7 +146,7 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Graphing
 			return line;
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void RemoveMiddlePoint()
 		{
 			GraphLine line = CreateLineWithThreePoints();
@@ -141,7 +159,7 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Graphing
 			Assert.AreEqual(new Point(0.6143f, 0.519f), line.lines[0].EndPoint);
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void RemoveLastPoint()
 		{
 			GraphLine line = CreateLineWithThreePoints();
@@ -152,18 +170,7 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Graphing
 			Assert.AreEqual(new Point(0.538f, 0.462f), line.lines[0].EndPoint);
 		}
 
-		[Test]
-		public void ClearGraphicsRemovesAllLines()
-		{
-			GraphLine line = CreateLineWithTwoPoints();
-			Line2D line2D = line.lines[0];
-			Assert.IsTrue(line2D.IsActive);
-			line.ClearGraphics();
-			Assert.AreEqual(0, line.lines.Count);
-			Assert.AreEqual(2, line.points.Count);
-		}
-
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void ClearRemovesAllLinesAndClearsAllPoints()
 		{
 			GraphLine line = CreateLineWithTwoPoints();
@@ -174,7 +181,7 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Graphing
 			Assert.AreEqual(0, line.points.Count);
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void RefreshDoesNothingIfViewportDidntChange()
 		{
 			GraphLine line = CreateLineWithTwoPoints();
@@ -185,7 +192,7 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Graphing
 			Assert.AreEqual(end, line.lines[0].EndPoint);
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void RefreshUpdatesLinesIfViewportChanged()
 		{
 			GraphLine line = CreateLineWithTwoPoints();
@@ -195,7 +202,7 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Graphing
 			Assert.AreEqual(new Point(0.5952f, 0.4286f), line.lines[0].EndPoint);
 		}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void AddValueAddsToTheEnd()
 		{
 			GraphLine line = CreateLineWithTwoPoints();

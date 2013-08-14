@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -6,8 +6,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Delta Engine Windows Support Library for all common classes for Windows frameworks (OpenGL, DirectX and Xna)")]
 [assembly: AssemblyCompany("Delta Engine")]
 [assembly: AssemblyCopyright("Copyright � Delta Engine 2013")]
-[assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
+[assembly: ComVisible(false)]
 [assembly: Guid("a0620d89-dbdf-417e-8b7f-d108780c3a1f")]
-[assembly: AssemblyVersion("0.9.8.3")]
-[assembly: AssemblyFileVersion("0.9.8.3")]
+[assembly: AssemblyVersion("0.9.8.4")]
+[assembly: AssemblyFileVersion("0.9.8.4")]

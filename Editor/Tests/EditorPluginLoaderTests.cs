@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using System.IO;
-using DeltaEngine.Core;
 using DeltaEngine.Editor.Helpers;
 using DeltaEngine.Editor.ProjectCreator;
+using DeltaEngine.Extensions;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.Tests

@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using DeltaEngine.Core;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Input.Windows
 {
@@ -12,7 +12,10 @@ namespace DeltaEngine.Input.Windows
 	internal class MouseHook : WindowsHook
 	{
 		internal MouseHook()
-			: base(MouseHookId) {}
+			: base(MouseHookId, null)
+		{
+			messageAction = HandleMouseMessage;
+		}
 
 		public int ScrollWheelValue { get; private set; }
 
@@ -29,7 +32,7 @@ namespace DeltaEngine.Input.Windows
 		private readonly bool[] currentlyPressed = new bool[MouseButton.Left.GetCount()];
 		private readonly bool[] wasReleasedThisFrame = new bool[MouseButton.Left.GetCount()];
 
-		protected internal override void HandleProcMessage(IntPtr wParam, IntPtr lParam, int msg)
+		private void HandleMouseMessage(IntPtr wParam, IntPtr lParam, int msg)
 		{
 			var data = new int[6];
 			Marshal.Copy(lParam, data, 0, 6);
