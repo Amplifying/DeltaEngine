@@ -9,7 +9,7 @@ namespace DeltaEngine.Scenes.UserInterfaces.Controls
 	/// </summary>
 	public class Theme
 	{
-		internal static Theme Default
+		public static Theme Default
 		{
 			get { return defaultTheme ?? (defaultTheme = new Theme()); }
 		}
@@ -57,7 +57,7 @@ namespace DeltaEngine.Scenes.UserInterfaces.Controls
 		private void DefaultButtonAppearance()
 		{
 			Button = new Appearance("DefaultButtonBackground", Color.LightGray);
-			ButtonDisabled = new Appearance("DefaultButtonBackground", Color.Gray);
+			ButtonDisabled = new Appearance("DefaultButtonBackground", Color.Grey);
 			ButtonMouseover = new Appearance("DefaultButtonBackground");
 			ButtonPressed = new Appearance("DefaultButtonBackground", Color.LightBlue);
 		}
@@ -70,7 +70,7 @@ namespace DeltaEngine.Scenes.UserInterfaces.Controls
 		private void DefaultDropdownListAppearance()
 		{
 			DropdownListBox = new Appearance("DefaultLabel");
-			DropdownListBoxDisabled = new Appearance("DefaultLabel", Color.Gray);
+			DropdownListBoxDisabled = new Appearance("DefaultLabel", Color.Grey);
 		}
 
 		public Appearance DropdownListBox { get; set; }
@@ -79,8 +79,8 @@ namespace DeltaEngine.Scenes.UserInterfaces.Controls
 		private void DefaultRadioButtonAppearance()
 		{
 			RadioButtonBackground = new Appearance("DefaultLabel");
-			RadioButtonBackgroundDisabled = new Appearance("DefaultLabel", Color.Gray);
-			RadioButtonDisabled = new Appearance("DefaultRadiobuttonOff", Color.Gray);
+			RadioButtonBackgroundDisabled = new Appearance("DefaultLabel", Color.Grey);
+			RadioButtonDisabled = new Appearance("DefaultRadiobuttonOff", Color.Grey);
 			RadioButtonNotSelected = new Appearance("DefaultRadiobuttonOff");
 			RadioButtonNotSelectedMouseover = new Appearance("DefaultRadioButtonOffHover");
 			RadioButtonSelected = new Appearance("DefaultRadiobuttonOn");
@@ -98,9 +98,9 @@ namespace DeltaEngine.Scenes.UserInterfaces.Controls
 		private void DefaultScrollbarAppearance()
 		{
 			Scrollbar = new Appearance("DefaultButtonBackground");
-			ScrollbarDisabled = new Appearance("DefaultButtonBackground", Color.Gray);
+			ScrollbarDisabled = new Appearance("DefaultButtonBackground", Color.Grey);
 			ScrollbarPointer = new Appearance("DefaultButtonBackground", Color.LightGray);
-			ScrollbarPointerDisabled = new Appearance("DefaultButtonBackground", Color.Gray);
+			ScrollbarPointerDisabled = new Appearance("DefaultButtonBackground", Color.Grey);
 			ScrollbarPointerMouseover = new Appearance("DefaultButtonBackground");
 		}
 
@@ -113,7 +113,7 @@ namespace DeltaEngine.Scenes.UserInterfaces.Controls
 		private void DefaultSelectBoxAppearance()
 		{
 			SelectBox = new Appearance("DefaultLabel");
-			SelectBoxDisabled = new Appearance("DefaultLabel", Color.Gray);
+			SelectBoxDisabled = new Appearance("DefaultLabel", Color.Grey);
 		}
 
 		public Appearance SelectBox { get; set; }
@@ -122,9 +122,9 @@ namespace DeltaEngine.Scenes.UserInterfaces.Controls
 		private void DefaultSliderAppearance()
 		{
 			Slider = new Appearance("DefaultButtonBackground");
-			SliderDisabled = new Appearance("DefaultButtonBackground", Color.Gray);
+			SliderDisabled = new Appearance("DefaultButtonBackground", Color.Grey);
 			SliderPointer = new Appearance("DefaultSlider");
-			SliderPointerDisabled = new Appearance("DefaultSlider", Color.Gray);
+			SliderPointerDisabled = new Appearance("DefaultSlider", Color.Grey);
 			SliderPointerMouseover = new Appearance("DefaultSliderHover");
 		}
 
@@ -138,7 +138,7 @@ namespace DeltaEngine.Scenes.UserInterfaces.Controls
 		{
 			TextBox = new Appearance("DefaultLabel", Color.LightGray);
 			TextBoxFocussed = new Appearance("DefaultLabel");
-			TextBoxDisabled = new Appearance("DefaultLabel", Color.Gray);
+			TextBoxDisabled = new Appearance("DefaultLabel", Color.Grey);
 		}
 		
 		public Appearance TextBox { get; set; }

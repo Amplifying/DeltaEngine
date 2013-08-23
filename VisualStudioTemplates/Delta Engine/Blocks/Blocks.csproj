@@ -61,6 +61,15 @@
     <Reference Include="DeltaEngine.Rendering">
 	  <HintPath>$(DeltaEnginePath)\DeltaEngine.Rendering.dll</HintPath>
     </Reference>
+    <Reference Include="DeltaEngine.Rendering.Fonts">
+	  <HintPath>$(DeltaEnginePath)\DeltaEngine.Rendering.Fonts.dll</HintPath>
+    </Reference>
+    <Reference Include="DeltaEngine.Rendering.Particles">
+	  <HintPath>$(DeltaEnginePath)\DeltaEngine.Rendering.Particles.dll</HintPath>
+    </Reference>
+    <Reference Include="DeltaEngine.Rendering.Sprites">
+	  <HintPath>$(DeltaEnginePath)\DeltaEngine.Rendering.Sprites.dll</HintPath>
+    </Reference>
     <Reference Include="DeltaEngine.Scenes">
 	  <HintPath>$(DeltaEnginePath)\DeltaEngine.Scenes.dll</HintPath>
     </Reference>

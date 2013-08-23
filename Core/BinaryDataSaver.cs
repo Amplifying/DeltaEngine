@@ -34,7 +34,7 @@ namespace DeltaEngine.Core
 		{
 			if (data == null)
 				throw new NullReferenceException();
-			if (data is ContentData)
+			if (data is ContentData && !(data as ContentData).Name.StartsWith("<Generated"))
 			{
 				writer.Write((data as ContentData).Name);
 				return;

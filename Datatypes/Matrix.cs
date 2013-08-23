@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.InteropServices;
 using DeltaEngine.Extensions;
@@ -9,7 +10,7 @@ namespace DeltaEngine.Datatypes
 	/// <summary>
 	/// 4x4 Matrix from 16 floats, access happens via indexer, optimizations done in BuildService.
 	/// </summary>
-	[DebuggerDisplay("Matrix(Right={Right},\nUp={Up},\nFront={Front},\nTranslation={Translation})")]
+	[DebuggerDisplay("Matrix(Right={Right},\nUp={Up},\nForward={Forward},\nTranslation={Translation})")]
 	public struct 
 		Matrix : IEquatable<Matrix>
 	{
@@ -104,7 +105,7 @@ namespace DeltaEngine.Datatypes
 		{
 			get { return new Vector(m21, m22, m23); }
 		}
-		public Vector Front
+		public Vector Forward
 		{
 			get { return new Vector(m31, m32, m33); }
 		}
@@ -251,13 +252,13 @@ namespace DeltaEngine.Datatypes
 				Vector.Dot(forward, cameraPosition), 1.0f);
 		}
 
-		public static Vector TransformNormal(Vector normal, Matrix matrix)
+		public Vector TransformNormal(Vector normal)
 		{
-			return new Vector(
-				normal.X * matrix.m11 + normal.Y * matrix.m21 + normal.Z * matrix.m31,
-				normal.X * matrix.m12 + normal.Y * matrix.m22 + normal.Z * matrix.m32,
-				normal.X * matrix.m13 + normal.Y * matrix.m23 + normal.Z * matrix.m33);
+			return new Vector(normal.X * m11 + normal.Y * m21 + normal.Z * m31,
+				normal.X * m12 + normal.Y * m22 + normal.Z * m32,
+				normal.X * m13 + normal.Y * m23 + normal.Z * m33);
 		}
+
 
 		public static Vector TransformHomogeneousCoordinate(Vector coord, Matrix matrix)
 		{
@@ -327,6 +328,7 @@ namespace DeltaEngine.Datatypes
 		/// <summary>
 		/// More details how to calculate Matrix Determinants: http://en.wikipedia.org/wiki/Determinant
 		/// </summary>
+		[Pure]
 		public float GetDeterminant()
 		{
 			float det33X44 = this[15] * this[10] - this[14] * this[11];
@@ -382,12 +384,12 @@ namespace DeltaEngine.Datatypes
 		public static Vector operator *(Matrix matrix, Vector vector)
 		{
 			return new Vector(
-				vector.X * matrix.m11 + vector.Y * matrix.m21 + vector.Z * matrix.m13 + matrix.m41,
-				vector.X * matrix.m12 + vector.Y * matrix.m22 + vector.Z * matrix.m23 + matrix.m42,
+				vector.X * matrix.m11 + vector.Y * matrix.m21 + vector.Z * matrix.m31 + matrix.m41,
+				vector.X * matrix.m12 + vector.Y * matrix.m22 + vector.Z * matrix.m32 + matrix.m42,
 				vector.X * matrix.m13 + vector.Y * matrix.m23 + vector.Z * matrix.m33 + matrix.m43);
 		}
 
-		public static Matrix operator*(Matrix matrix1, Matrix matrix2)
+		public static Matrix operator *(Matrix matrix1, Matrix matrix2)
 		{
 			var result = new float[16];
 			for (int i = 0; i < 4; i++)

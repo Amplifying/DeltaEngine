@@ -57,17 +57,13 @@ namespace DeltaEngine.Multimedia
 
 		public void Play()
 		{
-			Play(settings.SoundVolume, 0.0f);
+			Play(settings.SoundVolume);
 		}
 
-		public void Play(float panning)
-		{
-			Play(settings.SoundVolume, panning);
-		}
-
-		public void Play(float volume, float panning)
+		public void Play(float volume, float panning = 0.0f)
 		{
 			SoundInstance freeInstance = GetInternalNonPlayingInstance();
+			//ncrunch: no coverage start
 			if (freeInstance == null)
 			{
 				if (!warnedAboutTooManyInstances)
@@ -78,6 +74,7 @@ namespace DeltaEngine.Multimedia
 				}
 				return;
 			}
+			//ncrunch: no coverage end
 			freeInstance.Volume = volume;
 			freeInstance.Panning = panning;
 			freeInstance.Play();

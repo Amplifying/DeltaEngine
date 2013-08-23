@@ -211,10 +211,10 @@ namespace DeltaEngine.Rendering.Sprites
 			public void Draw(Drawing draw)
 			{
 				if (verticesUvBatchIndex != 0)
-					draw.Add(material, blendMode, verticesUvBatch, indicesUvBatch, verticesUvBatchIndex,
+					draw.Add(material.Shader, material.DiffuseMap, verticesUvBatch, indicesUvBatch, verticesUvBatchIndex,
 						indicesUvIndex);
 				if (verticesUvColorBatchIndex != 0)
-					draw.Add(material, blendMode, verticesUvColorBatch, indicesUvColorBatch,
+					draw.Add(material.Shader, material.DiffuseMap, verticesUvColorBatch, indicesUvColorBatch,
 						verticesUvColorBatchIndex, indicesUvColorIndex);
 			}
 		}

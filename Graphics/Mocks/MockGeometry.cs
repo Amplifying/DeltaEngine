@@ -1,7 +1,4 @@
-﻿using System.IO;
-using DeltaEngine.Graphics.Vertices;
-
-namespace DeltaEngine.Graphics.Mocks
+﻿namespace DeltaEngine.Graphics.Mocks
 {
 	/// <summary>
 	/// Mock geometry used in unit tests.

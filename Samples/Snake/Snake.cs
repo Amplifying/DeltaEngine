@@ -23,7 +23,6 @@ namespace Snake
 			var body = Get<Body>();
 			foreach (var bodyPart in body.BodyParts)
 				bodyPart.IsActive = false;
-
 			Get<Body>().BodyParts.Clear();
 			Remove<Body>();
 			Stop<SnakeHandler>();
@@ -37,7 +36,6 @@ namespace Snake
 				{
 					if (!Time.CheckEvery(0.15f))
 						return;
-
 					var body = entity.Get<Body>();
 					body.MoveBody();
 					body.CheckSnakeCollidesWithChunk();

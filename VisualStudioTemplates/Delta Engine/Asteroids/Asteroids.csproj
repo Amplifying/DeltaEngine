@@ -53,6 +53,12 @@
     <Reference Include="DeltaEngine.Rendering">
 	  <HintPath>$(DeltaEnginePath)\DeltaEngine.Rendering.dll</HintPath>
     </Reference>
+    <Reference Include="DeltaEngine.Rendering.Fonts">
+	  <HintPath>$(DeltaEnginePath)\DeltaEngine.Rendering.Fonts.dll</HintPath>
+    </Reference>
+    <Reference Include="DeltaEngine.Rendering.Sprites">
+	  <HintPath>$(DeltaEnginePath)\DeltaEngine.Rendering.Sprites.dll</HintPath>
+    </Reference>
     <Reference Include="DeltaEngine.WindowsOpenTK20">
 	  <HintPath>$(DeltaEnginePath)\DeltaEngine.WindowsOpenTK20.dll</HintPath>
     </Reference>
@@ -66,10 +72,10 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Asteroid.cs" />
-    <Compile Include="AsteroidsGame.cs" />
-    <Compile Include="GameControls.cs" />
-    <Compile Include="GameLogic.cs" />
+    <Compile Include="Game.cs" />
+    <Compile Include="Controls.cs" />
     <Compile Include="GameState.cs" />
+    <Compile Include="InteractionLogics.cs" />
     <Compile Include="HudInterface.cs" />
     <Compile Include="PlayerShip.cs" />
     <Compile Include="Program.cs" />

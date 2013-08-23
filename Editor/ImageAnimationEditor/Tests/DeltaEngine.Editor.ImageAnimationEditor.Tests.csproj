@@ -33,6 +33,9 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GalaSoft.MvvmLight.WPF4">
+      <HintPath>..\..\packages\MvvmLightLibs.4.1.27.0\lib\net40\GalaSoft.MvvmLight.WPF4.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
     </Reference>
@@ -43,13 +46,17 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\DeltaEngine.csproj">
-      <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
-      <Name>DeltaEngine %28DeltaEngine\DeltaEngine%29</Name>
+    <ProjectReference Include="..\..\..\Platforms\TestWithOpenTK20\DeltaEngine.TestWithOpenTK20.csproj">
+      <Project>{3A3D2E3E-FCD6-40A4-8F4E-36F3D173AB41}</Project>
+      <Name>DeltaEngine.TestWithOpenTK20</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\DeltaEngine.Editor.Core.csproj">
       <Project>{C667C7FC-A1C7-4CBC-98C0-C97F776E4570}</Project>
       <Name>DeltaEngine.Editor.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Mocks\DeltaEngine.Editor.Mocks.csproj">
+      <Project>{2A38417D-2378-41F8-BCC6-A65E1894835A}</Project>
+      <Name>DeltaEngine.Editor.Mocks</Name>
     </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Editor.ImageAnimationEditor.csproj">
       <Project>{994FC0BF-C62A-4054-ADB5-C1A82489EE43}</Project>
@@ -61,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="AnimationEditorViewModelTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

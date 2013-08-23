@@ -108,5 +108,10 @@ namespace DeltaEngine.Extensions
 
 			return max - value < value - min ? max : min;
 		}
+
+		public static float InvSqrt(this float value)
+		{
+			return 1.0f / Sqrt(value);
+		}
 	}
 }

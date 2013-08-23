@@ -7,18 +7,13 @@ namespace DeltaEngine.Physics2D
 	/// <summary>
 	/// Main physics class used for performing simulations and creating bodies and shapes.
 	/// </summary>
-	public abstract class Physics : Entity
+	public abstract class Physics : Entity, RapidUpdateable
 	{
-		protected Physics()
-		{
-			Start<PhysicsUpdate>();
-		}
-
 		public abstract PhysicsBody CreateCircle(float radius);
 		public abstract PhysicsBody CreateRectangle(Size size);
-		public abstract PhysicsBody CreateEdge(Point start, Point end);
-		public abstract PhysicsBody CreateEdge(params Point[] vertices);
-		public abstract PhysicsBody CreatePolygon(params Point[] vertices);
+		public abstract PhysicsBody CreateEdge(Point startPoint, Point endPoint);
+		public abstract PhysicsBody CreateEdge(params Point[] points);
+		public abstract PhysicsBody CreatePolygon(params Point[] points);
 		public abstract PhysicsJoint CreateFixedAngleJoint(PhysicsBody body, float targetAngle);
 		public abstract PhysicsJoint CreateAngleJoint(PhysicsBody bodyA, PhysicsBody bodyB,
 			float targetAngle);
@@ -27,16 +22,10 @@ namespace DeltaEngine.Physics2D
 		public abstract PhysicsJoint CreateLineJoint(PhysicsBody bodyA, PhysicsBody bodyB, Point axis);
 		public abstract Point Gravity { get; set; }
 
-		private class PhysicsUpdate : UpdateBehavior
+		public void RapidUpdate(float timeStep)
 		{
-			public override void Update(IEnumerable<Entity> entities)
-			{
-				foreach (Physics entity in entities)
-				{
-					if (!entity.IsPaused)
-						entity.Simulate(Time.Delta);
-				}
-			}
+			if (!IsPaused)
+				Simulate(timeStep);
 		}
 
 		public bool IsPaused { get; set; }

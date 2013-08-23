@@ -3,7 +3,7 @@ using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Multimedia;
-using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.Particles;
 using DeltaEngine.Rendering.Sprites;
 
 namespace Breakout
@@ -16,15 +16,24 @@ namespace Breakout
 		public Level(Score score)
 		{
 			brickMaterial = new Material(Shader.Position2DColorUv, "Brick");
-			explosionMaterial = new Material(Shader.Position2DColorUv, "Explosion");
+			var explosionMaterial = new Material(Shader.Position2DColorUv, "Explosion");
 			explosionSound = ContentLoader.Load<Sound>("BrickExplosion");
 			lostBallSound = ContentLoader.Load<Sound>("LostBall");
+			explosionData = new ParticleEffectData
+			{
+				Color = new RangeGraph<Color>(Color.White, Color.TransparentWhite),
+				Size = new RangeGraph<Size>(ExplosionSize, ExplosionSize * 2),
+				ParticleMaterial = explosionMaterial,
+				MaximumNumberOfParticles = 1,
+				LifeTime = 0.6f,
+				SpawnInterval = -1
+			};
 			this.score = score;
 			Initialize();
 		}
 
 		private readonly Material brickMaterial;
-		private readonly Material explosionMaterial;
+		private ParticleEffectData explosionData;
 		private readonly Sound explosionSound;
 		private readonly Sound lostBallSound;
 		private readonly Score score;
@@ -152,17 +161,15 @@ namespace Breakout
 		{
 			score.IncreasePoints();
 			brick.Visibility = Visibility.Hide;
-			//CreateExplosion(collision);
+			CreateExplosion(collision);
 			explosionSound.Play();
 		}
 
 		private void CreateExplosion(Point collision)
 		{
-			var explosion = new Sprite(explosionMaterial, Rectangle.FromCenter(collision, ExplosionSize));
-			explosion.Start<FinalTransition>().Add(new Transition.Duration()).Add(
-				new Transition.FadingColor(Color.White)).Add(new Transition.SizeRange(ExplosionSize,
-					2 * ExplosionSize));
-			explosion.RenderLayer = 6;
+			var explosion = new ParticleEmitter(explosionData, collision);
+			explosion.RenderLayer = 16;
+			explosion.SpawnBurst(1,true);
 		}
 
 		private static readonly Size ExplosionSize = new Size(0.1f, 0.1f);

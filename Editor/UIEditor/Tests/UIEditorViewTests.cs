@@ -1,36 +1,21 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.IO.Abstractions;
-using System.IO.Abstractions.TestingHelpers;
+﻿using DeltaEngine.Editor.Mocks;
+using DeltaEngine.Platforms;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.UIEditor.Tests
 {
 	[Category("Slow")]
-	public class UIEditorViewTests
+	public class UIEditorViewTests : TestWithMocksOrVisually 
 	{
 		[SetUp]
 		public void SetUp()
 		{
-			contentPath = "Content";
-			var fileSystem =
-				new MockFileSystem(new Dictionary<string, MockFileData>
-				{
-					{
-						@"Content\DeltaEngineLogo.png",
-						new MockFileData(DataToString(Path.Combine(contentPath, @"DeltaEngineLogo.png")))
-					},
-				});
-			var uiEditor = new UIEditorViewModel();
+			uiEditor =
+				new UIEditorViewModel(new MockService("TestUser",
+					"DeltaEngine.Editor.ImageAnimationEditor.Tests"));
 		}
 
-		private static string DataToString(string path)
-		{
-			var fileSystem = new FileSystem();
-			return fileSystem.File.ReadAllText(path);
-		}
-
-		private string contentPath;
+		private UIEditorViewModel uiEditor;
 
 		[Test]
 		public void DrawImage()

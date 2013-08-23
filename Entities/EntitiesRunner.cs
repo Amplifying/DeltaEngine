@@ -225,7 +225,7 @@ namespace DeltaEngine.Entities
 			}
 		}
 
-		public UpdateDrawState State { get; private set; }
+		public UpdateDrawState State { get; internal set; }
 
 		private static void UpdateEntities(UpdateBehavior updateBehavior,
 			IEnumerable<Entity> entities)
@@ -355,7 +355,9 @@ namespace DeltaEngine.Entities
 
 		internal void ChangeEntityPriority(Entity entity, Priority priority)
 		{
-			prioritizedEntities[(int)entity.UpdatePriority].entities.Remove(entity);
+			if (!prioritizedEntities[(int)entity.UpdatePriority].entities.Remove(entity))
+				Logger.Warning("Unable to remove entity=" + entity + " from entity.UpdatePriority=" +
+					entity.UpdatePriority + " because it does not exist there. New priority=" + priority);
 			prioritizedEntities[(int)priority].entities.Add(entity);
 		}
 

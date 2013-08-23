@@ -1,4 +1,5 @@
 ﻿using DeltaEngine.Commands;
+using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
 using DeltaEngine.Rendering.Fonts;
@@ -9,7 +10,7 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 	{
 		public void PreviewContent(string contentName)
 		{
-			var font = new FontXml(contentName);
+			var font = ContentLoader.Load<FontXml>(contentName);
 			if (currentDisplayText != null)
 				currentDisplayText.IsActive = false;
 			currentDisplayText = new FontText(font, PreviewText,
@@ -24,14 +25,12 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 		}
 
 		private Point lastPanPosition = Point.Unused;
-		private FontText currentDisplayText;
+		public FontText currentDisplayText;
 
 		private void MoveFontText(Point mousePosition)
 		{
 			var relativePosition = mousePosition - lastPanPosition;
 			lastPanPosition = mousePosition;
-			if (relativePosition == Point.Zero)
-				return;
 			currentDisplayText.Center += relativePosition;
 		}
 

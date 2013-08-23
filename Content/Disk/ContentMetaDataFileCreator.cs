@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
+using DeltaEngine.Core;
 using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Content.Disk
@@ -26,7 +27,10 @@ namespace DeltaEngine.Content.Disk
 		{
 			filePath = xmlFilePath;
 			WriteMetaDataDocument();
-			return XDocument.Load(filePath);
+			var document = XDocument.Load(filePath);
+			document = new CompoundContentCreator().AddCompoundElementsToDocument(document);
+			document.Save(filePath);
+			return document;
 		}
 
 		private string filePath;
@@ -76,15 +80,17 @@ namespace DeltaEngine.Content.Disk
 		private void CreateContentMetaDataEntry(XmlWriter writer, string contentFile)
 		{
 			writer.WriteStartElement("ContentMetaData");
-			var contentType = ExtensionToType(Path.GetExtension(contentFile));
-			WriteAttribute(writer, "Name", Path.GetFileNameWithoutExtension(contentFile));
+			var contentType = ExtensionToType(contentFile);
+			var contentName = Path.GetFileNameWithoutExtension(contentFile);
+			WriteAttribute(writer, "Name", contentName);
 			WriteAttribute(writer, "Type", contentType.ToString());
 			WriteMetaData(writer, contentFile, contentType);
 			writer.WriteEndElement();
 		}
 
-		private static ContentType ExtensionToType(string extension)
+		private static ContentType ExtensionToType(string filePath)
 		{
+			var extension = Path.GetExtension(filePath);
 			switch (extension.ToLower())
 			{
 			case ".png":
@@ -103,7 +109,7 @@ namespace DeltaEngine.Content.Disk
 			case ".wmv":
 				return ContentType.Video;
 			case ".xml":
-				return ContentType.Xml;
+				return DetermineTypeForXmlFile(filePath);
 			case ".json":
 				return ContentType.Json;
 			case ".deltamesh":
@@ -122,6 +128,16 @@ namespace DeltaEngine.Content.Disk
 			throw new UnsupportedContentFileFoundCannotParseType(extension);
 		}
 
+		private static ContentType DetermineTypeForXmlFile(string filePath)
+		{
+			var xmlFile = XDocument.Load(filePath);
+			if (xmlFile.Root.Name.ToString().Equals("Font"))
+				return ContentType.FontXml;
+			if (xmlFile.Root.Name.ToString().Equals("DefaultCommands"))
+				return ContentType.InputCommand;
+			return ContentType.Xml;
+		}
+
 		private class UnsupportedContentFileFoundCannotParseType : Exception
 		{
 			public UnsupportedContentFileFoundCannotParseType(string extension)
@@ -132,7 +148,7 @@ namespace DeltaEngine.Content.Disk
 		{
 			var info = new FileInfo(contentFile);
 			WriteAttribute(writer, "LastTimeUpdated", info.LastWriteTime.ToString("u"));
-			WriteAttribute(writer, "PlatformFileId", --generatedPlatformFileId + "");
+			WriteAttribute(writer, "PlatformFileId", ++generatedPlatformFileId + "");
 			WriteAttribute(writer, "FileSize", "" + info.Length);
 			WriteAttribute(writer, "LocalFilePath", Path.GetFileName(contentFile));
 			if (type == ContentType.Image)
@@ -175,7 +191,8 @@ namespace DeltaEngine.Content.Disk
 			{
 				var bitmap = new Bitmap(filePath);
 				WriteAttribute(writer, "PixelSize", "(" + bitmap.Width + ", " + bitmap.Height + ")");
-				WriteAttribute(writer, "BlendMode", HasBitmapAlphaPixels(bitmap) ? "Normal" : "Opaque");
+				if (GetBlendMode(bitmap, filePath).ToString() != "Normal")
+					WriteAttribute(writer, "BlendMode", GetBlendMode(bitmap, filePath).ToString());
 			}
 			catch (Exception)
 			{
@@ -187,6 +204,23 @@ namespace DeltaEngine.Content.Disk
 		{
 			public UnknownImageFormatUnableToAquirePixelSize(string message)
 				: base(message) {}
+		}
+
+		private static BlendMode GetBlendMode(Bitmap bitmap, string filePath)
+		{
+			var mode = BlendMode.Opaque;
+			if (!filePath.EndsWith(".jpg") && HasBitmapAlphaPixels(bitmap))
+				mode = BlendMode.Normal;
+			string contentName = Path.GetFileNameWithoutExtension(filePath);
+			if (contentName.EndsWith("Additive"))
+				mode = BlendMode.Additive;
+			else if (contentName.EndsWith("AlphaTest"))
+				mode = BlendMode.AlphaTest;
+			else if (contentName.EndsWith("Subtractive"))
+				mode = BlendMode.Subtractive;
+			else if (contentName.EndsWith("LightEffect"))
+				mode = BlendMode.LightEffect;
+			return mode;
 		}
 
 		private static unsafe bool HasBitmapAlphaPixels(Bitmap bitmap)

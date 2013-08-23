@@ -17,10 +17,10 @@
 				<ProjectItem ReplaceParameters="true" TargetFileName="AsteroidsIcon.ico">AsteroidsIcon.ico</ProjectItem>
 				<ProjectItem ReplaceParameters="true" TargetFileName="app.config">app.config</ProjectItem>
 				<ProjectItem ReplaceParameters="true" TargetFileName="Asteroid.cs">Asteroid.cs</ProjectItem>
-				<ProjectItem ReplaceParameters="true" TargetFileName="AsteroidsGame.cs">AsteroidsGame.cs</ProjectItem>
-				<ProjectItem ReplaceParameters="true" TargetFileName="GameControls.cs">GameControls.cs</ProjectItem>
-				<ProjectItem ReplaceParameters="true" TargetFileName="GameLogic.cs">GameLogic.cs</ProjectItem>
+				<ProjectItem ReplaceParameters="true" TargetFileName="Game.cs">Game.cs</ProjectItem>
+				<ProjectItem ReplaceParameters="true" TargetFileName="Controls.cs">Controls.cs</ProjectItem>
 				<ProjectItem ReplaceParameters="true" TargetFileName="GameState.cs">GameState.cs</ProjectItem>
+				<ProjectItem ReplaceParameters="true" TargetFileName="InteractionLogics.cs">InteractionLogics.cs</ProjectItem>
 				<ProjectItem ReplaceParameters="true" TargetFileName="HudInterface.cs">HudInterface.cs</ProjectItem>
 				<ProjectItem ReplaceParameters="true" TargetFileName="PlayerShip.cs">PlayerShip.cs</ProjectItem>
 				<ProjectItem ReplaceParameters="true" TargetFileName="Program.cs">Program.cs</ProjectItem>

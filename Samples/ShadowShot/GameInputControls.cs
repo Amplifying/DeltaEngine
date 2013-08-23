@@ -1,4 +1,5 @@
-﻿using DeltaEngine.Commands;
+﻿using System;
+using DeltaEngine.Commands;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
 
@@ -15,27 +16,22 @@ namespace ShadowShot
 
 		private void SetupInputControls()
 		{
-			var leftCommand = new Command(MoveLeft);
-			leftCommand.Add(new KeyTrigger(Key.A, State.Pressed));
-			leftCommand.Add(new KeyTrigger(Key.A));
+			AddKeyMoveCommands();
+			AddFireCommand();
+			AddMouseTouchMovement();
+		}
+
+		private void AddKeyMoveCommands()
+		{
+			var leftCommand = new Command(MoveLeft).Add(new KeyTrigger(Key.CursorLeft));
 			leftCommand.Add(new KeyTrigger(Key.CursorLeft, State.Pressed));
-			leftCommand.Add(new KeyTrigger(Key.CursorLeft));
-
-			var rightCommand = new Command(MoveRight);
-			rightCommand.Add(new KeyTrigger(Key.D, State.Pressed));
-			rightCommand.Add(new KeyTrigger(Key.D));
+			leftCommand.Add(new KeyTrigger(Key.A, State.Pressed)).Add(new KeyTrigger(Key.A));
+			var rightCommand = new Command(MoveRight).Add(new KeyTrigger(Key.CursorRight));
 			rightCommand.Add(new KeyTrigger(Key.CursorRight, State.Pressed));
-			rightCommand.Add(new KeyTrigger(Key.CursorRight));
-
-			var stopCommand = new Command(StopMovement);
-			stopCommand.Add(new KeyTrigger(Key.S, State.Pressed));
-			stopCommand.Add(new KeyTrigger(Key.S));
+			rightCommand.Add(new KeyTrigger(Key.D, State.Pressed)).Add(new KeyTrigger(Key.D));
+			var stopCommand = new Command(StopMovement).Add(new KeyTrigger(Key.CursorDown));
 			stopCommand.Add(new KeyTrigger(Key.CursorDown, State.Pressed));
-			stopCommand.Add(new KeyTrigger(Key.CursorDown));
-
-			var fireCommand = new Command(FireWeapon);
-			fireCommand.Add(new KeyTrigger(Key.Space, State.Pressed));
-			fireCommand.Add(new KeyTrigger(Key.Space));
+			stopCommand.Add(new KeyTrigger(Key.S, State.Pressed)).Add(new KeyTrigger(Key.S));
 		}
 
 		private void MoveLeft()
@@ -53,9 +49,32 @@ namespace ShadowShot
 			ship.Deccelerate();
 		}
 
-		private void FireWeapon()
+		private void AddFireCommand()
 		{
-			ship.Fire();
+			var fireCommand = new Command(() => { ship.Fire(); });
+			fireCommand.Add(new KeyTrigger(Key.Space, State.Pressed)).Add(new KeyTrigger(Key.Space));
+			fireCommand.Add(new TouchPressTrigger());
+			fireCommand.Add(new MouseButtonTrigger(MouseButton.Left, State.Pressed)).Add(new MouseButtonTrigger());
+			fireCommand.Add(new TouchTapTrigger()).Add(new TouchPressTrigger(State.Pressed));
+		}
+
+		private void AddMouseTouchMovement()
+		{
+			var mouseMoveCommand = new Command(MouseControlledMovement);
+			mouseMoveCommand.Add(new MouseButtonTrigger()).Add(new MouseButtonTrigger(MouseButton.Left,
+				State.Pressed));
+			mouseMoveCommand.Add(new TouchTapTrigger()).Add(new TouchPressTrigger(State.Pressed));
+		}
+
+		private void MouseControlledMovement(Point position)
+		{
+			var distance = position.X - ship.Center.X;
+			if(Math.Abs (distance) < 0.05f)
+				StopMovement();
+			else if (distance > 0)
+				MoveRight();
+			else
+				MoveLeft();
 		}
 	}
 }

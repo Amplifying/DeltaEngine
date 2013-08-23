@@ -19,19 +19,7 @@ namespace DeltaEngine.Tests
 				Assert.AreEqual(0, logger.NumberOfRepeatedMessagesIgnored);
 			}
 		}
-
-		[Test]
-		public void LogInfoMessageTwiceDoesNotLogTwice()
-		{
-			using (var logger = new MockLogger())
-			{
-				Logger.Info("Hello");
-				Logger.Info("Hello");
-				Assert.AreEqual(1, logger.NumberOfMessages);
-				Assert.AreEqual(1, logger.NumberOfRepeatedMessagesIgnored);
-			}
-		}
-
+		
 		[Test]
 		public void LogWarning()
 		{

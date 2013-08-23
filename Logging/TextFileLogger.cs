@@ -31,7 +31,8 @@ namespace DeltaEngine.Logging
 			var logFile = new FileStream(filePath, FileMode.Create, FileAccess.Write,
 				FileShare.ReadWrite);
 			writer = new StreamWriter(logFile) { AutoFlush = true };
-			writer.WriteLine("Delta Engine Log " + DateTime.Now.GetIsoDateTime());
+			writer.WriteLine(AssemblyExtensions.GetTestNameOrProjectName() + " Log " +
+				DateTime.Now.GetIsoDateTime());
 			return writer;
 		}
 

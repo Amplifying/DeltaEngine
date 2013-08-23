@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using DeltaEngine.Entities;
 using DeltaEngine.Rendering;
-using DeltaEngine.ScreenSpaces;
 
 namespace DeltaEngine.Physics2D
 {
@@ -11,12 +10,7 @@ namespace DeltaEngine.Physics2D
 	public class AffixToPhysics : UpdateBehavior
 	{
 		public AffixToPhysics()
-			: base(Priority.First)
-		{
-			screen = ScreenSpace.Current;
-		}
-
-		private readonly ScreenSpace screen;
+			: base(Priority.Last) { }
 
 		public override void Update(IEnumerable<Entity> entities)
 		{
@@ -24,9 +18,9 @@ namespace DeltaEngine.Physics2D
 				UpdateCenterAndRotation(entity, entity.Get<PhysicsBody>());
 		}
 
-		private void UpdateCenterAndRotation(Entity2D entity, PhysicsBody body)
+		private static void UpdateCenterAndRotation(Entity2D entity, PhysicsBody body)
 		{
-			entity.Center = screen.FromPixelSpace(body.Position);
+			entity.Center = body.Position;
 			entity.Rotation = body.Rotation;
 		}
 	}

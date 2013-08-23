@@ -38,15 +38,6 @@ namespace DeltaEngine.Rendering.Shapes
 			List<Point> points = null;
 			if (entity.Contains<List<Point>>())
 				points = entity.Get<List<Point>>();
-			else if (entity is Entity2D)
-			{
-				points = new List<Point>();
-				var drawArea = (entity as Entity2D).DrawArea;
-				points.Add(drawArea.TopLeft);
-				points.Add(drawArea.TopRight);
-				points.Add(drawArea.BottomRight);
-				points.Add(drawArea.BottomLeft);
-			}
 			if (points == null || points.Count <= 1)
 				return;
 			lastPoint = points[points.Count - 1];

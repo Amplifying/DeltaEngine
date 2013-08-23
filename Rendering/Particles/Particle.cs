@@ -16,6 +16,7 @@ namespace DeltaEngine.Rendering.Particles
 		public float Rotation { get; internal set; }
 		public Point CurrentMovement { get; internal set; }
 		public float ElapsedTime { get; internal set; }
+		public Point Force { get; set; }
 		public Size Size { get; set; }
 		public Color Color { get; set; }
 		public bool IsActive { get; set; }
@@ -34,8 +35,8 @@ namespace DeltaEngine.Rendering.Particles
 				Size = Size.Lerp(other.Size, interpolation),
 				Color = Color.Lerp(other.Color, interpolation),
 				IsActive = IsActive && other.IsActive && ElapsedTime < other.ElapsedTime,
-				CurrentUV = CurrentUV.Lerp(other.CurrentUV,interpolation),
-				Image = Image
+				CurrentUV = CurrentUV.Lerp(other.CurrentUV, interpolation),
+				Image = other.Image
 			};
 		}
 
@@ -96,14 +97,14 @@ namespace DeltaEngine.Rendering.Particles
 					CurrentUV.BottomLeft);
 		}
 
-		public bool UpdateIfStillActive(ParticleEmitterCreator creator)
+		public bool UpdateIfStillActive(ParticleEffectData data)
 		{
 			ElapsedTime += Time.Delta;
-			if (ElapsedTime > creator.LifeTime)
+			if (ElapsedTime > data.LifeTime)
 				return IsActive = false;
-			CurrentMovement += creator.Force * Time.Delta;
+			CurrentMovement += Force * Time.Delta;
 			Position += CurrentMovement * Time.Delta;
-			Rotation += creator.RotationForce;
+			Rotation += data.RotationForce.GetRandomValue() * Time.Delta;
 			return true;
 		}
 	}

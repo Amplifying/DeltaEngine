@@ -68,18 +68,22 @@ namespace DeltaEngine.Input
 		private bool IsMouseDragTriggered(MouseDragTrigger trigger)
 		{
 			if (GetButtonState(trigger.Button) == State.Pressing)
-				trigger.DrawArea = new Rectangle(Position, Size.Zero);
-			else if (trigger.DrawArea != Rectangle.Unused &&
+				trigger.StartPosition = Position;
+			else if (trigger.StartPosition != Point.Unused &&
 				GetButtonState(trigger.Button) != State.Released)
 			{
-				if (trigger.DrawArea.TopLeft.DistanceTo(Position) > PositionEpsilon)
+				if (trigger.StartPosition.DistanceTo(Position) > PositionEpsilon)
 				{
-					trigger.DrawArea = Rectangle.FromCorners(trigger.DrawArea.TopLeft, Position);
+					trigger.Position = Position;
+					trigger.DoneDragging = GetButtonState(trigger.Button) == State.Releasing;
 					return true;
 				}
 			}
 			else
-				trigger.DrawArea = Rectangle.Unused;
+			{
+				trigger.StartPosition = Point.Unused;
+				trigger.DoneDragging = false;
+			}
 			return false;
 		}
 
@@ -104,9 +108,9 @@ namespace DeltaEngine.Input
 		{
 			if (GetButtonState(trigger.Button) == State.Pressing)
 				trigger.StartPosition = Position;
+			trigger.Position = Position;
 			if (CheckHoverState(trigger))
 				return trigger.IsHovering();
-			trigger.LastPosition = Position;
 			trigger.Elapsed = 0.0f;
 			return false;
 		}
@@ -115,7 +119,7 @@ namespace DeltaEngine.Input
 		{
 			return trigger.HoldArea.Contains(trigger.StartPosition) &&
 				GetButtonState(trigger.Button) == State.Pressed &&
-				trigger.LastPosition.DistanceTo(Position) < PositionEpsilon;
+				trigger.StartPosition.DistanceTo(Position) < PositionEpsilon;
 		}
 
 		private bool IsMouseHoverTriggered(MouseHoverTrigger trigger)

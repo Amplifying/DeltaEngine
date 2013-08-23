@@ -74,5 +74,19 @@ namespace DeltaEngine.Networking.Tests
 				Assert.IsTrue(messageReceived);
 			}
 		}
+		
+		[Test]
+		public void ClientIsDisconnected()
+		{
+			var server = new MockServer();
+			var client = new MockClient(server);
+			bool isConnected = false;
+			client.Connected += () => isConnected = true;
+			client.Disconnected += () => isConnected = false;
+			client.Connect("localhost", 1);
+			Assert.IsTrue(isConnected);
+			client.Dispose();
+			Assert.IsFalse(isConnected);
+		}
 	}
 }

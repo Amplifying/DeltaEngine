@@ -19,7 +19,7 @@ namespace DeltaEngine.Physics2D.Farseer.Tests
 		public void CheckDefaultValues()
 		{
 			Assert.IsFalse(physics.IsPaused);
-			Assert.AreEqual(physics.Gravity, new Point(0f, 9.82f));
+			Assert.AreEqual(new Point(0.0f, 98.2f), physics.Gravity);
 			Assert.AreEqual(0, physics.Bodies.Count());
 		}
 

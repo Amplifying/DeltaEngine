@@ -1,8 +1,9 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 
 namespace DeltaEngine.Content.Json.Tests
 {
-	class JsonNodeTests
+	internal class JsonNodeTests
 	{
 		[Test]
 		public void ReadJsonWithChildrenNodes()
@@ -20,7 +21,7 @@ namespace DeltaEngine.Content.Json.Tests
 			Assert.AreEqual(3, json.NumberOfNodes);
 			Assert.IsTrue(json.Get<bool>("Flag"));
 			Assert.AreEqual(1.23f, json.Get<float>("SomeNumber"));
-			Assert.AreEqual("blub", json.Get<string>("Text"));
+			Assert.AreEqual("blub", json.GetOrDefault<string>("Text", ""));
 		}
 
 		[Test]
@@ -50,7 +51,7 @@ namespace DeltaEngine.Content.Json.Tests
 		{
 			var json = new JsonNode("{ \"arrayData\":[1, 2, 3] }");
 			Assert.AreEqual(1, json.NumberOfNodes);
-			Assert.AreEqual(new[] {1, 2, 3}, json["arrayData"].GetIntArray());
+			Assert.AreEqual(new[] { 1, 2, 3 }, json["arrayData"].GetIntArray());
 		}
 
 		[Test]
@@ -63,5 +64,20 @@ namespace DeltaEngine.Content.Json.Tests
 			Assert.AreEqual(new[] { 1, 1 }, layers[0]["sky"].GetIntArray());
 			Assert.AreEqual(new[] { 0, 0 }, layers[1]["ground"].GetIntArray());
 		}
-	}
+
+		[Test]
+		public void GetStringOfNode()
+		{
+			var json = new JsonNode("{ \"layers\":[ { \"sky\":[1, 1] }, { \"ground\":[0, 0] } ] }");
+			var nodeString = json.ToString();
+			Assert.IsFalse(string.IsNullOrEmpty(nodeString));
+		}
+
+		[Test]
+		public void GivingUnexistantIndexThrows()
+		{
+			var json = new JsonNode("{ \"layers\":[ { \"sky\":[1, 1] }, { \"ground\":[0, 0] } ] }");
+			Assert.Throws<IndexOutOfRangeException>(() => { var nodeValue = json["layers"][3]; });
+		}
+}
 }

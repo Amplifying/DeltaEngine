@@ -5,6 +5,7 @@ using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Physics2D;
 using DeltaEngine.Rendering;
+using DeltaEngine.Rendering.Particles;
 using DeltaEngine.Rendering.Sprites;
 
 namespace $safeprojectname$
@@ -14,9 +15,19 @@ namespace $safeprojectname$
 		public Grid(BlocksContent content)
 		{
 			this.content = content;
+			zoomBrickData = new ParticleEffectData {
+				LifeTime = 0.2f,
+				Color = new RangeGraph<Color>(Color.White, Color.TransparentWhite),
+				MaximumNumberOfParticles = 10,
+				SpawnInterval = -1,
+				StartVelocity = new RangeGraph<Point>(Point.Zero, Point.Zero),
+				StartPosition = new RangeGraph<Point>(Point.Zero, Point.Zero),
+				StartRotation = new ValueRange(0, 0)
+			};
 		}
 
 		private readonly BlocksContent content;
+		private ParticleEffectData zoomBrickData;
 
 		public int AffixBlock(Block block)
 		{
@@ -138,16 +149,13 @@ namespace $safeprojectname$
 			bricks [x, y].UpdateDrawArea();
 		}
 
-		private static void AddZoomingBrick(Sprite brick)
+		private void AddZoomingBrick(Sprite brick)
 		{
-			var zoom = new Sprite(brick.Material, brick.DrawArea) {
-				Color = brick.Color,
-				RenderLayer = (int)RenderLayer.ZoomingBrick,
-			};
-			zoom.Add(new Transition.Duration(0.2f));
-			zoom.Add(new Transition.SizeRange(brick.DrawArea.Size, 2 * brick.DrawArea.Size));
-			zoom.Add(new Transition.FadingColor(brick.Color));
-			zoom.Start<FinalTransition>();
+			zoomBrickData.ParticleMaterial = brick.Material;
+			zoomBrickData.Size = new RangeGraph<Size>(brick.Size, brick.Size * 2);
+			var zoomBrickEmitter = new ParticleEmitter(zoomBrickData, brick.Center);
+			zoomBrickEmitter.RenderLayer = 16;
+			zoomBrickEmitter.SpawnBurst(1, true);
 		}
 
 		public bool IsValidPosition(Block block)

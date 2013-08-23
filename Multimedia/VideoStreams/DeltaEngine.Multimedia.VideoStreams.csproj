@@ -42,7 +42,9 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -53,7 +55,17 @@
     <Compile Include="Avi\AviFile.cs" />
     <Compile Include="Avi\AviStream.cs" />
     <Compile Include="BaseVideoStream.cs" />
+    <Compile Include="VideoStreamFactory.cs" />
+    <Compile Include="VlcVideoStream.cs" />
     <Compile Include="Avi\VideoStream.cs" />
+    <Compile Include="Vlc\BitmapFormat.cs" />
+    <Compile Include="Vlc\ChromaType.cs" />
+    <Compile Include="Vlc\BasicMedia.cs" />
+    <Compile Include="Vlc\Memory.cs" />
+    <Compile Include="Vlc\MemoryRenderer.cs" />
+    <Compile Include="Vlc\VideoPlayer.cs" />
+    <Compile Include="Vlc\MediaPlayerFactory.cs" />
+    <Compile Include="Vlc\MediaState.cs" />
     <Compile Include="WmvVideoStream.cs" />
     <Compile Include="Wmv\AsfImageLoader.cs" />
   </ItemGroup>

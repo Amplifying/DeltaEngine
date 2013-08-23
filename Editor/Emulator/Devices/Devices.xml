@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <Devices>
 	<Device>
 		<Type>Default</Type>
@@ -27,7 +26,7 @@
 		<ImageFile>Windows8RT_1366x768</ImageFile>
 		<ScreenPoint>62,62</ScreenPoint>
 		<ScreenSize>690,400</ScreenSize>
-		<CanRotate>0</CanRotate>
+		<CanRotate>1</CanRotate>
 		<CanScale>1</CanScale>
 		<DefaultScaleIndex>0</DefaultScaleIndex>
 	</Device>
@@ -37,7 +36,7 @@
 		<ImageFile>WP8EmulatorScreenshot</ImageFile>
 		<ScreenPoint>36,72</ScreenPoint>
 		<ScreenSize>480,820</ScreenSize>
-		<CanRotate>0</CanRotate>
+		<CanRotate>1</CanRotate>
 		<CanScale>1</CanScale>
 		<DefaultScaleIndex>0</DefaultScaleIndex>
 	</Device>
@@ -47,7 +46,7 @@
 		<ImageFile>AndroidGoogleNexus4_768x1280</ImageFile>
 		<ScreenPoint>20,98</ScreenPoint>
 		<ScreenSize>386,648</ScreenSize>
-		<CanRotate>0</CanRotate>
+		<CanRotate>1</CanRotate>
 		<CanScale>1</CanScale>
 		<DefaultScaleIndex>0</DefaultScaleIndex>
 	</Device>
@@ -57,7 +56,7 @@
 		<ImageFile>AndroidGoogleNexusS_480x800</ImageFile>
 		<ScreenPoint>42,157</ScreenPoint>
 		<ScreenSize>480,820</ScreenSize>
-		<CanRotate>0</CanRotate>
+		<CanRotate>1</CanRotate>
 		<CanScale>1</CanScale>
 		<DefaultScaleIndex>0</DefaultScaleIndex>
 	</Device>
@@ -67,7 +66,7 @@
 		<ImageFile>AndroidNexus7Tablet_1280x800</ImageFile>
 		<ScreenPoint>60,60</ScreenPoint>
 		<ScreenSize>660,420</ScreenSize>
-		<CanRotate>0</CanRotate>
+		<CanRotate>1</CanRotate>
 		<CanScale>1</CanScale>
 		<DefaultScaleIndex>0</DefaultScaleIndex>
 	</Device>
@@ -77,7 +76,7 @@
 		<ImageFile>AndroidNexus10Tablet_2560x1600</ImageFile>
 		<ScreenPoint>80,86</ScreenPoint>
 		<ScreenSize>1282,804</ScreenSize>
-		<CanRotate>0</CanRotate>
+		<CanRotate>1</CanRotate>
 		<CanScale>1</CanScale>
 		<DefaultScaleIndex>0</DefaultScaleIndex>
 	</Device>
@@ -87,7 +86,7 @@
 		<ImageFile>AsusTransformerPadInfinityTablet_1920x1200</ImageFile>
 		<ScreenPoint>84,92</ScreenPoint>
 		<ScreenSize>980,600</ScreenSize>
-		<CanRotate>0</CanRotate>
+		<CanRotate>1</CanRotate>
 		<CanScale>1</CanScale>
 		<DefaultScaleIndex>0</DefaultScaleIndex>
 	</Device>
@@ -97,7 +96,7 @@
 		<ImageFile>iPhone3GS_320x480</ImageFile>
 		<ScreenPoint>30,117</ScreenPoint>
 		<ScreenSize>320,480</ScreenSize>
-		<CanRotate>0</CanRotate>
+		<CanRotate>1</CanRotate>
 		<CanScale>1</CanScale>
 		<DefaultScaleIndex>0</DefaultScaleIndex>
 	</Device>
@@ -107,7 +106,7 @@
 		<ImageFile>iPhone4_640x960</ImageFile>
 		<ScreenPoint>60,251</ScreenPoint>
 		<ScreenSize>642,964</ScreenSize>
-		<CanRotate>0</CanRotate>
+		<CanRotate>1</CanRotate>
 		<CanScale>1</CanScale>
 		<DefaultScaleIndex>0</DefaultScaleIndex>
 	</Device>
@@ -117,7 +116,7 @@
 		<ImageFile>iPhone5_640x1136</ImageFile>
 		<ScreenPoint>50,226</ScreenPoint>
 		<ScreenSize>660,1180</ScreenSize>
-		<CanRotate>0</CanRotate>
+		<CanRotate>1</CanRotate>
 		<CanScale>1</CanScale>
 		<DefaultScaleIndex>0</DefaultScaleIndex>
 	</Device>
@@ -127,7 +126,7 @@
 		<ImageFile>iPad_1024x768</ImageFile>
 		<ScreenPoint>60,52</ScreenPoint>
 		<ScreenSize>515,385</ScreenSize>
-		<CanRotate>0</CanRotate>
+		<CanRotate>1</CanRotate>
 		<CanScale>1</CanScale>
 		<DefaultScaleIndex>0</DefaultScaleIndex>
 	</Device>
@@ -137,7 +136,7 @@
 		<ImageFile>iPad3_2048x1536</ImageFile>
 		<ScreenPoint>117,114</ScreenPoint>
 		<ScreenSize>1028,774</ScreenSize>
-		<CanRotate>0</CanRotate>
+		<CanRotate>1</CanRotate>
 		<CanScale>1</CanScale>
 		<DefaultScaleIndex>0</DefaultScaleIndex>
 	</Device>

@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace DeltaEngine.Editor.InputEditor.Tests
 {
+	[Category("Slow")]
 	internal class InputKeyAndButtonEditorTests : TestWithMocksOrVisually
 	{
 		[SetUp]

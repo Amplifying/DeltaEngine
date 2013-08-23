@@ -34,7 +34,6 @@ namespace Snake
 		private void SetupPlayArea()
 		{
 			window.Title = "Snake - Let's go";
-			//window.ViewportPixelSize = new Size(500, 500);
 			window.BackgroundColor = Color.Red;
 			new FilledRect(CalculateBackgroundDrawArea(), Color.Black);
 		}
@@ -126,7 +125,6 @@ namespace Snake
 			}
 		}
 
-
 		private void InitializeSnake()
 		{
 			Snake = new Snake(gridSize);
@@ -183,7 +181,6 @@ namespace Snake
 				Rectangle.FromCenter(Point.Half, new Size(0.6f, 0.3f))) { Color = Color.Red };
 			restartMsg = new FontText(fontReplayText, "Do you want to continue (Y/N)",
 				Rectangle.FromCenter(new Point(0.5f, 0.7f), new Size(0.6f, 0.3f))) { Color = Color.Yellow };
-
 			yesCommand = new Command(RestartGame);
 			yesCommand.Add(new KeyTrigger(Key.Y));
 			noCommand = new Command(CloseGame);
@@ -207,7 +204,7 @@ namespace Snake
 
 		private void CloseGame()
 		{
-			window.Dispose();
+			window.CloseAfterFrame();
 		}
 
 		private void SpawnFirstChunk()

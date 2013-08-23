@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using DeltaEngine.Content.Xml;
 using DeltaEngine.Datatypes;
@@ -47,8 +46,8 @@ namespace DeltaEngine.Rendering.Fonts
 			glyph.PrecomputedFontMapUV = Rectangle.BuildUvRectangle(glyph.UV, fontMapSize);
 			GlyphDictionary.Add(character, glyph);
 		}
-
-		private void LoadKerning(XmlData kerningData)
+		//ncrunch: no coverage start
+		public void LoadKerning(XmlData kerningData)
 		{
 			char firstChar = kerningData.GetAttributeValue("First", '\0');
 			char secondChar = kerningData.GetAttributeValue("Second", '\0');
@@ -61,7 +60,7 @@ namespace DeltaEngine.Rendering.Fonts
 			if (GlyphDictionary.TryGetValue(firstChar, out glyph))
 				glyph.Kernings.Add(secondChar, kerningDistance);
 		}
-
+		//ncrunch: no coverage end
 		public string FontFamilyName
 		{
 			get { return data.GetAttributeValue("Family", "Verdana"); }

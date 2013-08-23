@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace DeltaEngine.Editor.AppBuilder.Tests
 {
-	[Category("Slow")]
+	[Category("Slow"), Ignore]
 	public class WindowsDeviceTests
 	{
 		[TestFixtureSetUp]

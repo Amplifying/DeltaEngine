@@ -20,6 +20,12 @@ namespace DeltaEngine.Multimedia.Tests
 		}
 
 		[Test]
+		public void PlaySoundVerySilent()
+		{
+			ContentLoader.Load<Sound>("DefaultSound").Play(0.1f);
+		}
+
+		[Test]
 		public void PlaySoundOnClick()
 		{
 			new Command(() => ContentLoader.Load<Sound>("DefaultSound").Play()).Add(
@@ -166,6 +172,13 @@ namespace DeltaEngine.Multimedia.Tests
 			//ncrunch: no coverage start
 			Assert.Throws<ContentLoader.ContentNotFound>(
 				() => ContentLoader.Load<Sound>("UnavailableSound"));
+		}
+
+		[Test]
+		public void GetAllowCreationIfContentNotFound()
+		{
+			Assert.IsTrue(
+				ContentLoader.Load<Sound>("DefaultSound").InternalAllowCreationIfContentNotFound);
 		}
 	}
 }

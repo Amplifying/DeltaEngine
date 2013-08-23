@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using DeltaEngine.Content;
+using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
@@ -20,9 +21,9 @@ namespace DeltaEngine.Editor.MaterialEditor
 			ColorList = new Dictionary<string, Color>();
 			ColorStringList = new ObservableCollection<string>();
 			MaterialList = new ObservableCollection<string>();
-			LoadImageAndShaderLists();
-			LoadColors();
-			LoadMaterials();
+			BlendModeList = new ObservableCollection<string>();
+			RenderStyleList = new ObservableCollection<string>();
+			FillLists();
 		}
 
 		public Material NewMaterial { get; set; }
@@ -30,8 +31,19 @@ namespace DeltaEngine.Editor.MaterialEditor
 		public ObservableCollection<string> ImageList { get; set; }
 		public ObservableCollection<string> ShaderList { get; set; }
 		public ObservableCollection<string> MaterialList { get; set; }
+		public ObservableCollection<string> BlendModeList { get; set; }
+		public ObservableCollection<string> RenderStyleList { get; set; }
 		private readonly Dictionary<string, Color> ColorList;
 		public ObservableCollection<string> ColorStringList { get; set; }
+
+		private void FillLists()
+		{
+			LoadImageAndShaderLists();
+			LoadColors();
+			LoadMaterials();
+			FillListWithBlendModes();
+			FillListWithRenderSize();
+		}
 
 		private void LoadImageAndShaderLists()
 		{
@@ -103,13 +115,57 @@ namespace DeltaEngine.Editor.MaterialEditor
 			RaisePropertyChanged("MaterialList");
 		}
 
+		private void FillListWithBlendModes()
+		{
+			Array enumValues = Enum.GetValues(typeof(BlendMode));
+			foreach (var value in enumValues)
+				BlendModeList.Add(Enum.GetName(typeof(BlendMode), value));
+			SelectedBlendMode = BlendMode.Normal.ToString();
+		}
+
+		private void FillListWithRenderSize()
+		{
+			Array enumValues = Enum.GetValues(typeof(RenderSize));
+			foreach (var value in enumValues)
+				RenderStyleList.Add(Enum.GetName(typeof(RenderSize), value));
+			SelectedRenderSize = RenderSize.PixelBased.ToString();
+		}
+
+		public string SelectedRenderSize
+		{
+			get { return selectedRenderSize; }
+			set
+			{
+				selectedRenderSize = value;
+				CreateNewMaterial();
+			}
+		}
+
+		private string selectedRenderSize;
+
+		public string SelectedBlendMode
+		{
+			get { return selectedBlendMode; }
+			set
+			{
+				selectedBlendMode = value;
+				CreateNewMaterial();
+			}
+		}
+
+		private string selectedBlendMode;
+
 		private void CreateNewMaterial()
 		{
 			if (SelectedShader == null || SelectedImage == null || SelectedColor == null)
 				return;
 			NewMaterial = new Material(SelectedShader, SelectedImage);
 			NewMaterial.DefaultColor = ColorList[selectedColor];
+			NewMaterial.SetRenderSize(
+				(RenderSize)Enum.Parse(typeof(RenderSize), selectedRenderSize, true));
 			EntitiesRunner.Current.Clear();
+			NewMaterial.DiffuseMap.BlendMode =
+				(BlendMode)Enum.Parse(typeof(BlendMode), SelectedBlendMode);
 			new Sprite(NewMaterial, Rectangle.FromCenter(new Point(0.5f, 0.5f), new Size(0.5f, 0.5f)));
 		}
 

@@ -2,19 +2,17 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
 using AvalonDock.Layout;
-using DeltaEngine.Content;
-using DeltaEngine.Datatypes;
 using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Emulator;
 using DeltaEngine.Editor.Helpers;
+using DeltaEngine.Platforms.Windows;
 using OpenTKApp = DeltaEngine.Platforms.App;
 
 namespace DeltaEngine.Editor
@@ -38,7 +36,15 @@ namespace DeltaEngine.Editor
 			maximizer = new MaximizerForEmptyWindows(this);
 			StartInitialPlugin(typeof(EmulatorControl));
 			StartInitialPlugin(typeof(ContentManagerView));
-			StartOpenTKViewportAndBlock();
+			try
+			{
+				StartOpenTKViewportAndBlock();
+			}
+			catch (Exception ex)
+			{
+				Logger.Error(ex);
+				MessageBox.Show("Failed to initialize: " + ex, "Delta Engine Editor - Fatal Error");
+			}
 		}
 
 		private void SetWindowedOrFullscreen(object sender, RoutedEventArgs e)
@@ -142,7 +148,6 @@ namespace DeltaEngine.Editor
 			if (DesignerProperties.GetIsInDesignMode(this))
 				return;
 			var window = TryGetViewport(viewModel.EditorPlugins);
-			window.BackgroundColor = Color.Black;
 			ElementHost.EnableModelessKeyboardInterop(this);
 			StartViewportAndWaitUntilWindowIsClosed(window);
 		}
@@ -156,7 +161,7 @@ namespace DeltaEngine.Editor
 
 		private class EngineViewportNotLoaded : Exception {}
 
-		private void StartViewportAndWaitUntilWindowIsClosed(Window window)
+		private void StartViewportAndWaitUntilWindowIsClosed(FormsWindow window)
 		{
 			Closing += (sender, args) => window.Dispose();
 			window.ViewportSizeChanged += size => InvalidateVisual();

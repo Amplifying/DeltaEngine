@@ -154,6 +154,14 @@ namespace DeltaEngine.Tests.Datatypes
 		}
 
 		[Test]
+		public void Length()
+		{
+			Assert.AreEqual(3, new Size(0, 3).Length);
+			Assert.AreEqual(3, new Size(3, 0).Length);
+			Assert.AreEqual(5, new Size(3, 4).Length);
+		}
+
+		[Test]
 		public void Lerp()
 		{
 			var size1 = new Size(10, 20);

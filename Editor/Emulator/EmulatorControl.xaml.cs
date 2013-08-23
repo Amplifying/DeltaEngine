@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using DeltaEngine.Editor.Core;
 
@@ -73,17 +74,21 @@ namespace DeltaEngine.Editor.Emulator
 
 		private void SetEmulatorImageAndSize()
 		{
-			deviceImage.Image = Image.FromFile(GetImageFilename(selectedDevice));
-			deviceImage.Size = new Size((int)(deviceImage.Image.Size.Width * scale),
-				(int)(deviceImage.Image.Size.Height * scale));
+			deviceImage.Image = Image.FromStream(GetImageFilestream(selectedDevice));
+			if (orientationPortrait)
+				deviceImage.Size = new Size((int)(deviceImage.Image.Size.Width * scale),
+					(int)(deviceImage.Image.Size.Height * scale));
+			else
+				deviceImage.Size = new Size((int)(deviceImage.Image.Size.Height * scale),
+					(int)(deviceImage.Image.Size.Width * scale));
 			MinWidth = deviceImage.Size.Width;
 			MinHeight = deviceImage.Size.Height;
 		}
 
-		private string GetImageFilename(int deviceIndex)
+		private Stream GetImageFilestream(int deviceIndex)
 		{
-			return "Devices\\" + devices[deviceIndex].ImageFile +
-				(orientationPortrait ? ".png" : "r.png");
+			var imageFilename = "Devices." + devices[deviceIndex].ImageFile + ".png";
+			return EmbeddedResoucesLoader.GetEmbeddedResourceStream(imageFilename);
 		}
 
 		private void SetScreenLocationAndSize()
@@ -104,6 +109,7 @@ namespace DeltaEngine.Editor.Emulator
 
 		private void SetLandscapeScreenLocationAndSize()
 		{
+			deviceImage.Image.RotateFlip(RotateFlipType.Rotate270FlipNone);
 			Screen.Location = new Point((int)(devices[selectedDevice].ScreenPoint.Y * scale),
 				(int)(devices[selectedDevice].ScreenPoint.X * scale));
 			Screen.Size = new Size((int)(devices[selectedDevice].ScreenSize.Height * scale),

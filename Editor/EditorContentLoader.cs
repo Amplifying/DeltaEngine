@@ -49,9 +49,9 @@ namespace DeltaEngine.Editor
 			connection.Send(new UpdateContent(contentMetaData, fileList.ToArray()));
 		}
 
-		public void Delete(string contentName)
+		public void Delete(string contentName, bool deleteSubContent)
 		{
-			connection.Send(new DeleteContent(contentName));
+			connection.Send(new DeleteContent(contentName, deleteSubContent));
 		}
 
 		public ContentType? GetTypeOfContent(string content)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Extensions;
@@ -50,6 +51,7 @@ namespace DeltaEngine.Commands
 		private static IEnumerable<Trigger> LoadTriggersForCommand(string commandName)
 		{
 			Trigger[] loadedTriggers;
+			ContentLoader.Exists("DefaultCommands");
 			if (RegisteredCommands.Current.TryGetValue(commandName, out loadedTriggers))
 				return loadedTriggers;
 			throw new CommandNameWasNotRegistered();
@@ -64,10 +66,10 @@ namespace DeltaEngine.Commands
 			UpdatePriority = Priority.First;
 		}
 
-		public Command(string commandName, Action<Rectangle> drawAreaAction)
+		public Command(string commandName, Action<Point, Point, bool> dragAction)
 		{
 			triggers.AddRange(LoadTriggersForCommand(commandName));
-			this.drawAreaAction = drawAreaAction;
+			this.dragAction = dragAction;
 			UpdatePriority = Priority.First;
 		}
 
@@ -85,13 +87,13 @@ namespace DeltaEngine.Commands
 
 		private readonly Action<Point> positionAction;
 
-		public Command(Action<Rectangle> drawAreaAction)
+		public Command(Action<Point, Point, bool> dragAction)
 		{
-			this.drawAreaAction = drawAreaAction;
+			this.dragAction = dragAction;
 			UpdatePriority = Priority.First;
 		}
 
-		private readonly Action<Rectangle> drawAreaAction;
+		private readonly Action<Point, Point, bool> dragAction;
 
 		public Command Add(Trigger trigger)
 		{
@@ -101,23 +103,54 @@ namespace DeltaEngine.Commands
 
 		private readonly List<Trigger> triggers = new List<Trigger>();
 
+		public const string Click = "Click";
+		public const string DoubleClick = "DoubleClick";
+		public const string Hold = "Hold";
+		public const string Drag = "Drag";
+		public const string Flick = "Flick";
+		public const string Pinch = "Pinch";
+		public const string Rotate = "Rotate";
+		public const string DualDrag = "DualDrag";
+		public const string MiddleClick = "MiddleClick";
+		public const string RightClick = "RightClick";
+		public const string MoveLeft = "MoveLeft";
+		public const string MoveRight = "MoveRight";
+		public const string MoveUp = "MoveUp";
+		public const string MoveDown = "MoveDown";
+		/// <summary>
+		/// Allows to move left, right, up or down using ASDW or the cursor keys or an onscreen stick.
+		/// </summary>
+		public const string MoveDirectly = "MoveDirectly";
+		/// <summary>
+		/// Rotate in 3D space, normally bound to the mouse, game pad thumb stick or onscreen stick.
+		/// </summary>
+		public const string RotateDirectly = "RotateDirectly";
+		/// <summary>
+		/// Go back one screen, normally unbound except if scene allows it. Right click or back button.
+		/// </summary>
+		public const string Back = "Back";
+		/// <summary>
+		/// Exits whole application (or scene) if supported. Mostly handled by the platform (Alt+F4).
+		/// </summary>
+		public const string Exit = "Exit";
+
 		public void Update()
 		{
 			Trigger invokedTrigger = triggers.Find(t => t.WasInvoked);
 			if (invokedTrigger == null)
 				return;
 			var positionTrigger = invokedTrigger as PositionTrigger;
-			var drawAreaTrigger = invokedTrigger as DrawAreaTrigger;
+			var dragTrigger = invokedTrigger as DragTrigger;
 			if (positionAction != null && positionTrigger != null)
 				positionAction(positionTrigger.Position);
-			else if (drawAreaAction != null && drawAreaTrigger != null)
-				drawAreaAction(drawAreaTrigger.DrawArea);
+			else if (dragAction != null && dragTrigger != null)
+				dragAction(dragTrigger.StartPosition, dragTrigger.Position, dragTrigger.DoneDragging);
 			else if (action != null)
 				action();
 			else if (positionAction != null)
 				positionAction(Point.Half);
-			else if (drawAreaAction != null)
-				drawAreaAction(Rectangle.One);
+			else if (dragAction != null)
+				dragAction(Point.Half, Point.Half, false);
 		}
 
 		public List<Trigger> GetTriggers()

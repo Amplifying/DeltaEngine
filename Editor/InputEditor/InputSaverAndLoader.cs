@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Abstractions;
 using System.Xml.Linq;
 using DeltaEngine.Commands;
 using DeltaEngine.Content.Xml;

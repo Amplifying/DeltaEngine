@@ -11,7 +11,6 @@ namespace DeltaEngine.Input
 	public class GamePadAnalogTrigger : PositionTrigger
 	{
 		public GamePadAnalogTrigger(GamePadAnalog gamePadAnalog)
-			: base(Point.Unused)
 		{
 			Analog = gamePadAnalog;
 			Start<GamePad>();
@@ -20,7 +19,6 @@ namespace DeltaEngine.Input
 		public GamePadAnalog Analog { get; private set; }
 
 		public GamePadAnalogTrigger(string gamePadAnalog)
-			: base(Point.Unused)
 		{
 			if (String.IsNullOrEmpty(gamePadAnalog))
 				throw new CannotCreateGamePadStickTriggerWithoutGamePadStick();

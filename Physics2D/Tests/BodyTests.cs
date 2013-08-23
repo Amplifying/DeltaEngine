@@ -15,7 +15,7 @@ namespace DeltaEngine.Physics2D.Tests
 		}
 
 		private Physics physics;
-		private PhysicsBody body; 
+		private PhysicsBody body;
 
 		[Test]
 		public void ChangeLinearVelocity()
@@ -28,14 +28,14 @@ namespace DeltaEngine.Physics2D.Tests
 		public void ChangeRotation()
 		{
 			body.Rotation = 90;
-			Assert.AreEqual(90,body.Rotation);
+			Assert.AreEqual(90, body.Rotation);
 		}
 
 		[Test]
 		public void ChangePosition()
 		{
 			body.Position = Point.One;
-			Assert.AreEqual(Point.One,body.Position);
+			Assert.AreEqual(Point.One, body.Position);
 		}
 
 		[Test]

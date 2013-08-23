@@ -7,8 +7,10 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 	{
 		public void PreviewContent(string contentName)
 		{
-			var video = ContentLoader.Load<Video>(contentName);
+			video = ContentLoader.Load<Video>(contentName);
 			video.Play();
 		}
+
+		public Video video;
 	}
 }

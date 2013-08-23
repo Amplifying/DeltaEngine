@@ -38,14 +38,14 @@ namespace DeltaEngine.Physics2D
 			entity.Start<SimplePhysics.Move>();
 		}
 
-		public static void StartMovingUv(this Sprite entity, Point velocity)
+		public static void StartMovingUv(this Sprite sprite, Point velocity)
 		{
-			AddSimplePhysicsDataIfNeeded(entity);
-			entity.Get<SimplePhysics.Data>().UvVelocity = velocity;
-			entity.Start<SimplePhysics.MoveUv>();
+			AddSimplePhysicsDataIfNeeded(sprite);
+			sprite.Get<SimplePhysics.Data>().UvVelocity = velocity;
+			sprite.Start<SimplePhysics.MoveUv>();
 		}
 
-		public static void StartBouncingOffScreenEdges(this Sprite entity, Point velocity,
+		public static void StartBouncingOffScreenEdges(this Entity2D entity, Point velocity,
 			Action bounced)
 		{
 			AddSimplePhysicsDataIfNeeded(entity);
@@ -53,6 +53,12 @@ namespace DeltaEngine.Physics2D
 			entity.Get<SimplePhysics.Data>().Bounced = bounced;
 			entity.Start<SimplePhysics.Move>();
 			entity.Start<SimplePhysics.BounceIfAtScreenEdge>();
+		}
+
+		public static void AffixToPhysics(this Entity2D entity, PhysicsBody body)
+		{
+			entity.Add(body);
+			entity.Start<AffixToPhysics>();
 		}
 	}
 }

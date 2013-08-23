@@ -1,4 +1,5 @@
 ﻿using DeltaEngine.Editor.Core;
+using DeltaEngine.Editor.Mocks;
 using DeltaEngine.Platforms;
 using NUnit.Framework;
 
@@ -9,7 +10,7 @@ namespace DeltaEngine.Editor.ParticleEditor.Tests
 		[SetUp]
 		public void SetUpParticleEditor()
 		{
-			particleEditor = new ParticleEditorViewModel(Resolve<Service>());
+			particleEditor = new ParticleEditorViewModel(new MockService("TestName", "TestProject"));
 		}
 
 		private ParticleEditorViewModel particleEditor;
@@ -17,9 +18,9 @@ namespace DeltaEngine.Editor.ParticleEditor.Tests
 		[Test]
 		public void IfChangingMaxNumberOfParticlesThenRemoveAllParticles()
 		{
+			particleEditor.SelectedMaterial = "TestMaterial";
+			particleEditor.ParticleName = "TestParticle";
 			Assert.AreEqual(500,particleEditor.MaxNumbersOfParticles);
-			AdvanceTimeAndUpdateEntities(1f);
-			Assert.GreaterOrEqual(particleEditor.emitter.NumberOfActiveParticles, 80);
 			particleEditor.MaxNumbersOfParticles = 20;
 			Assert.AreEqual(0, particleEditor.emitter.NumberOfActiveParticles);
 		}

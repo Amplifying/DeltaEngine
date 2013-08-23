@@ -5,7 +5,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 {
 	public class AdbPathProviderTests
 	{
-		[Test]
+		[Test, Category("Slow")]
 		public void FindAdbPath()
 		{
 			DeleteSupportFolderForTestIfExists();

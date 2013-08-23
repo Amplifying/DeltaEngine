@@ -23,7 +23,6 @@ namespace DeltaEngine.Content.Json
 		}
 
 		public class NeedValidText : Exception {}
-
 		private readonly JToken data;
 
 		public int NumberOfNodes
@@ -72,7 +71,6 @@ namespace DeltaEngine.Content.Json
 			foreach (var element in data)
 				if (counter++ == arrayIndex)
 					return new JsonNode(element);
-
 			throw new IndexOutOfRangeException();
 		}
 

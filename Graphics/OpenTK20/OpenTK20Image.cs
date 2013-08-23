@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using DeltaEngine.Content;
+using DeltaEngine.Core;
 using Color = DeltaEngine.Datatypes.Color;
 using Image = DeltaEngine.Content.Image;
 using Size = DeltaEngine.Datatypes.Size;
@@ -34,7 +35,7 @@ namespace DeltaEngine.Graphics.OpenTK20
 
 		public int Handle { get; private set; }
 
-		private class UnableToCreateOpenGLTexture : Exception { }
+		private class UnableToCreateOpenGLTexture : Exception {}
 
 		private OpenTK20Image(ImageCreationData data, OpenTK20Device device)
 			: base(data)
@@ -56,9 +57,11 @@ namespace DeltaEngine.Graphics.OpenTK20
 		private void LoadBitmap(Bitmap bitmap)
 		{
 			device.BindTexture(Handle);
+			WarnAboutWrongAlphaFormat(bitmap.PixelFormat == PixelFormat.Format32bppArgb);
 			var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height),
-				ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-			device.LoadTexture(new Size(bitmap.Width, bitmap.Height), data.Scan0);
+				ImageLockMode.ReadOnly, bitmap.PixelFormat);
+			device.LoadTexture(new Size(bitmap.Width, bitmap.Height), data.Scan0,
+				bitmap.PixelFormat == PixelFormat.Format32bppArgb);
 			bitmap.UnlockBits(data);
 		}
 
@@ -67,7 +70,7 @@ namespace DeltaEngine.Graphics.OpenTK20
 			if (PixelSize.Width * PixelSize.Height != colors.Length)
 				throw new InvalidNumberOfColors(PixelSize);
 			device.BindTexture(Handle);
-			device.LoadTexture(PixelSize, Color.GetBytesFromArray(colors));
+			device.LoadTexture(PixelSize, Color.GetBytesFromArray(colors), true);
 		}
 
 		public override void Fill(byte[] colors)
@@ -75,7 +78,7 @@ namespace DeltaEngine.Graphics.OpenTK20
 			if (PixelSize.Width * PixelSize.Height * 4 != colors.Length)
 				throw new InvalidNumberOfBytes(PixelSize);
 			device.BindTexture(Handle);
-			device.LoadTexture(PixelSize, colors);
+			device.LoadTexture(PixelSize, colors, true);
 		}
 
 		protected override sealed void SetSamplerState()

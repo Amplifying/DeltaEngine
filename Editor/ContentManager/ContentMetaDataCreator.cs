@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Xml.Linq;
 using DeltaEngine.Content;
 using DeltaEngine.Editor.Core;
 
@@ -24,9 +25,8 @@ namespace DeltaEngine.Editor.ContentManager
 		{
 			var contentMetaData = new ContentMetaData();
 			contentMetaData.Name = Path.GetFileNameWithoutExtension(filePath);
-			contentMetaData.Type = ExtensionToType(Path.GetExtension(filePath));
+			contentMetaData.Type = ExtensionToType(filePath);
 			contentMetaData.LastTimeUpdated = File.GetLastWriteTime(filePath);
-			contentMetaData.Language = "en";
 			contentMetaData.LocalFilePath = Path.GetFileName(filePath);
 			contentMetaData.PlatformFileId = 0;
 			contentMetaData.FileSize = (int)new FileInfo(filePath).Length;
@@ -35,8 +35,9 @@ namespace DeltaEngine.Editor.ContentManager
 			return contentMetaData;
 		}
 
-		private static ContentType ExtensionToType(string extension)
+		private static ContentType ExtensionToType(string filePath)
 		{
+			var extension = Path.GetExtension(filePath);
 			switch (extension.ToLower())
 			{
 			case ".png":
@@ -57,7 +58,7 @@ namespace DeltaEngine.Editor.ContentManager
 			case ".wmv":
 				return ContentType.Video;
 			case ".xml":
-				return ContentType.Xml;
+				return DetermineTypeForXmlFile(filePath);
 			case ".json":
 				return ContentType.Json;
 			case ".deltamesh":
@@ -70,6 +71,16 @@ namespace DeltaEngine.Editor.ContentManager
 				return ContentType.Material;
 			}
 			throw new UnsupportedContentFileFoundCannotParseType(extension);
+		}
+
+		private static ContentType DetermineTypeForXmlFile(string filePath)
+		{
+			var xmlFile = XDocument.Load(filePath);
+			if (xmlFile.Root.Name.ToString().Equals("Font"))
+				return ContentType.FontXml;
+			if (xmlFile.Root.Name.ToString().Equals("DefaultCommands"))
+				return ContentType.InputCommand;
+			return ContentType.Xml;
 		}
 
 		private class UnsupportedContentFileFoundCannotParseType : Exception
@@ -85,7 +96,8 @@ namespace DeltaEngine.Editor.ContentManager
 			{
 				var bitmap = new Bitmap(filePath);
 				metaData.Values.Add("PixelSize", "(" + bitmap.Width + "," + bitmap.Height + ")");
-				metaData.Values.Add("BlendMode", HasBitmapAlphaPixels(bitmap) ? "Normal" : "Opaque");
+				if (!HasBitmapAlphaPixels(bitmap))
+					metaData.Values.Add("BlendMode", "Opaque");
 			}
 			catch (Exception)
 			{
@@ -150,7 +162,6 @@ namespace DeltaEngine.Editor.ContentManager
 			contentMetaData.Name = animationName;
 			contentMetaData.Type = ContentType.SpriteSheetAnimation;
 			contentMetaData.LastTimeUpdated = DateTime.Now;
-			contentMetaData.Language = "en";
 			contentMetaData.PlatformFileId = 0;
 			contentMetaData.Values.Add("DefaultDuration",
 				spriteSheetAnimation.DefaultDuration.ToString());
@@ -166,7 +177,6 @@ namespace DeltaEngine.Editor.ContentManager
 			contentMetaData.Type = ContentType.ParticleEffect;
 			contentMetaData.LocalFilePath = particleName + ".deltaparticle";
 			contentMetaData.LastTimeUpdated = DateTime.Now;
-			contentMetaData.Language = "en";
 			contentMetaData.PlatformFileId = 0;
 			contentMetaData.FileSize = byteArray.Length;
 			return contentMetaData;
@@ -178,9 +188,9 @@ namespace DeltaEngine.Editor.ContentManager
 			contentMetaData.Name = materialName;
 			contentMetaData.Type = ContentType.Material;
 			contentMetaData.LastTimeUpdated = DateTime.Now;
-			contentMetaData.Language = "en";
 			contentMetaData.PlatformFileId = 0;
 			contentMetaData.Values.Add("ShaderName", material.Shader.Name);
+			contentMetaData.Values.Add("BlendMode", material.DiffuseMap.BlendMode.ToString());
 			if (material.Animation != null)
 				contentMetaData.Values.Add("ImageOrAnimationName", material.Animation.Name);
 			else if (material.SpriteSheet != null)

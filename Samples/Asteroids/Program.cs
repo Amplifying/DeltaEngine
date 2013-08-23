@@ -1,6 +1,4 @@
-﻿using DeltaEngine;
-using DeltaEngine.Platforms;
-using DeltaEngine.ScreenSpaces;
+﻿using DeltaEngine.Platforms;
 
 namespace Asteroids
 {
@@ -8,8 +6,7 @@ namespace Asteroids
 	{
 		public Program()
 		{
-			new RelativeScreenSpace(Resolve<Window>());
-			new AsteroidsGame();
+			new Game();
 		}
 
 		public static void Main()

@@ -16,7 +16,7 @@ namespace Breakout
 		{
 			this.window = window;
 			this.game = game;
-			new Command(() => window.Dispose()).Add(new KeyTrigger(Key.Escape, State.Pressed));
+			new Command(window.CloseAfterFrame).Add(new KeyTrigger(Key.Escape, State.Pressed));
 			new Command(() => window.SetFullscreen(new Size(1920, 1080))).Add(new KeyTrigger(Key.F));
 		}
 

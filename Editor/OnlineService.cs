@@ -111,9 +111,9 @@ namespace DeltaEngine.Editor
 			editorContent.Upload(metaData, optionalFileData);
 		}
 
-		public void DeleteContent(string contentName)
+		public void DeleteContent(string contentName, bool deleteSubContent = false)
 		{
-			editorContent.Delete(contentName);
+			editorContent.Delete(contentName, deleteSubContent);
 		}
 	}
 }

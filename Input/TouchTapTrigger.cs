@@ -11,5 +11,7 @@ namespace DeltaEngine.Input
 		{
 			Start<Touch>();
 		}
+
+		public State LastState { get; set; }
 	}
 }

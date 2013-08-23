@@ -14,7 +14,7 @@ namespace DeltaEngine.Multimedia.VideoStreams
 		float LengthInSeconds { get; }
 
 		int ReadMusicBytes(byte[] buffer, int length);
-		byte[] ReadImage(float delta);
+		byte[] ReadImageRgbaColors(float delta);
 		void Rewind();
 		void Play();
 		void Stop();

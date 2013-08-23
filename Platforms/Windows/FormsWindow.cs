@@ -50,8 +50,8 @@ namespace DeltaEngine.Platforms.Windows
 
 		protected FormsWindow(Control panel)
 		{
-			
 			this.panel = panel;
+			BackgroundColor = Datatypes.Color.Black;
 		}
 
 		protected readonly Control panel;

@@ -61,8 +61,8 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Controls
 			public override void Update(IEnumerable<Entity> entities)
 			{
 				foreach (Tilemap tileMap in entities)
-					tileMap.Get<FontText>().Text = "Delta: " + tileMap.State.DragDelta + "\nDragArea:" +
-						tileMap.State.DragArea;
+					tileMap.Get<FontText>().Text = "Delta: " + tileMap.State.DragDelta + "\nDragStart:" +
+						tileMap.State.DragStart + "\nDragEnd:" + tileMap.State.DragEnd;
 			}
 		}
 		//ncrunch: no coverage end

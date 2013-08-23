@@ -4,8 +4,10 @@ using NUnit.Framework;
 
 namespace DeltaEngine.Networking.Tests.Tcp
 {
+	[Ignore]
 	public class NetworkExtensionsTests
 	{
+		//ncrunch: no coverage start
 		[Test]
 		public void TestToEndPointWithExternalAddress()
 		{

@@ -13,7 +13,6 @@ namespace DeltaEngine.Editor.Core
 			string solutionDirectory = Path.GetDirectoryName(slnFilePath);
 			string relativeProjectDirectory = Path.GetDirectoryName(searchedProject.FilePath);
 			directoryWithCode = Path.Combine(solutionDirectory, relativeProjectDirectory);
-
 			CollectProjectFilesToPack();
 		}
 
@@ -23,7 +22,6 @@ namespace DeltaEngine.Editor.Core
 		{
 			if (!Directory.Exists(directoryWithCode))
 				throw new DirectoryDoesNotExist(directoryWithCode);
-
 			CollectedFilesToPack = GetRelevantFiles();
 		}
 
@@ -40,7 +38,6 @@ namespace DeltaEngine.Editor.Core
 			foreach (string filePath in GetAllFiles(directoryWithCode))
 				if (IsNecessaryFile(filePath))
 					filePathList.Add(filePath);
-
 			return filePathList;
 		}
 

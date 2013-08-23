@@ -1,26 +1,19 @@
-﻿using System;
+﻿using DeltaEngine.Content;
+using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
+using DeltaEngine.Rendering.Sprites;
+using DeltaEngine.ScreenSpaces;
+using System;
 using System.Diagnostics;
 using System.IO;
-using DeltaEngine.Entities;
 using DeltaEngine.Extensions;
 using DeltaEngine.Multimedia.OpenTK.Helpers;
 using DeltaEngine.Multimedia.VideoStreams;
-using DeltaEngine.Rendering.Sprites;
-using DeltaEngine.Content;
-using DeltaEngine.Datatypes;
-using DeltaEngine.ScreenSpaces;
 
 namespace DeltaEngine.Multimedia.OpenTK
 {
 	public class OpenTKVideo : Video
 	{
-		public OpenTKVideo(string filename, OpenTKSoundDevice soundDevice) : base(filename, soundDevice)
-		{
-			openAL = soundDevice;
-			channelHandle = openAL.CreateChannel();
-			buffers = openAL.CreateBuffers(NumberOfBuffers);
-		}
-
 		private Image image;
 		private readonly OpenTKSoundDevice openAL;
 		private int channelHandle;
@@ -47,12 +40,43 @@ namespace DeltaEngine.Multimedia.OpenTK
 			}
 		}
 
+		public OpenTKVideo(string filename, OpenTKSoundDevice soundDevice)
+			: base(filename,soundDevice)
+		{
+			channelHandle = openAL.CreateChannel();
+			buffers = openAL.CreateBuffers(NumberOfBuffers);
+			openAL = soundDevice;
+		}
+
+		protected override void PlayNativeVideo(float volume)
+		{
+			video.Rewind();
+			for (int index = 0; index < NumberOfBuffers; index++)
+				if (!Stream(buffers[index]))
+					break;
+			video.Play();
+			openAL.Play(channelHandle);
+			openAL.SetVolume(channelHandle, volume);
+			elapsedSeconds = 0f;
+			if (image == null)
+				image = ContentLoader.Create<Image>(new ImageCreationData(new Size(video.Width, video.Height)));
+			surface = new Sprite(new Material(ContentLoader.Load<Shader>(Shader.Position2DUv), image), ScreenSpace.Current.Viewport);
+		}
+
+		private void UpdateVideoTexture()
+		{
+			byte[] rgbaColors = video.ReadImageRgbaColors(Time.Delta);
+			if (rgbaColors != null)
+				image.Fill(rgbaColors);
+			else
+				Stop();
+		}
+
 		protected override void LoadData(Stream fileData)
 		{
 			try
 			{
-				string filepath = "Content/" + Name + ".wmv";
-				video = new WmvVideoStream(filepath);
+				video = new VideoStreamFactory().Load(fileData, "Content/" + Name);
 				format = video.Channels == 2 ? AudioFormat.Stereo16 : AudioFormat.Mono16;
 			}
 			catch (Exception ex)
@@ -92,7 +116,6 @@ namespace DeltaEngine.Multimedia.OpenTK
 		{
 			if (surface != null)
 				surface.IsActive = false;
-
 			elapsedSeconds = 0;
 			surface = null;
 			openAL.Stop(channelHandle);
@@ -112,16 +135,10 @@ namespace DeltaEngine.Multimedia.OpenTK
 			return GetState() != ChannelState.Stopped;
 		}
 
-		private ChannelState GetState()
-		{
-			return openAL.GetChannelState(channelHandle);
-		}
-
 		public override void Update()
 		{
 			if (GetState() == ChannelState.Paused)
 				return;
-
 			elapsedSeconds += Time.Delta;
 			bool isFinished = UpdateBuffersAndCheckFinished();
 			if (isFinished)
@@ -134,6 +151,11 @@ namespace DeltaEngine.Multimedia.OpenTK
 				openAL.Play(channelHandle);
 		}
 
+		private ChannelState GetState()
+		{
+			return openAL.GetChannelState(channelHandle);
+		}
+
 		private bool UpdateBuffersAndCheckFinished()
 		{
 			int processed = openAL.GetNumberOfBuffersProcesed(channelHandle);
@@ -144,34 +166,6 @@ namespace DeltaEngine.Multimedia.OpenTK
 					return true;
 			}
 			return false;
-		}
-
-		protected override void PlayNativeVideo(float volume)
-		{
-			video.Rewind();
-			for (int index = 0; index < NumberOfBuffers; index++)
-				if (!Stream(buffers [index]))
-					break;
-
-			video.Play();
-			openAL.Play(channelHandle);
-			openAL.SetVolume(channelHandle, volume);
-			elapsedSeconds = 0f;
-			if (image == null)
-				image = ContentLoader.Create<Image>(new ImageCreationData(new Size(video.Width, 
-					video.Height)));
-
-			surface = new Sprite(new Material(ContentLoader.Load<Shader>(Shader.Position2DUv), image), 
-				ScreenSpace.Current.Viewport);
-		}
-
-		private void UpdateVideoTexture()
-		{
-			byte[] bytes = video.ReadImage(Time.Delta);
-			if (bytes != null)
-				image.Fill(bytes);
-			else
-				Stop();
 		}
 	}
 }

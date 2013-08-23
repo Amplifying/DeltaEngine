@@ -28,6 +28,16 @@ namespace DeltaEngine.Multimedia.Tests
 			ContentLoader.Load<Music>("DefaultMusic").Play(0.5f);			
 		}
 
+		[Test]
+		public void TestIfPLayingMusic()
+		{
+			var music = ContentLoader.Load<Music>("DefaultMusic");
+			music.Play();
+			Assert.IsTrue(music.IsPlaying());
+			Assert.AreEqual(4.13f, music.DurationInSeconds);
+			Assert.AreEqual(1.0f, music.PositionInSeconds);
+		}
+
 		[Test, Ignore]
 		public void PlayMusicOnClick()
 		{

@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
 using DeltaEngine.Content;
 using DeltaEngine.Content.Mocks;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Extensions;
-using DeltaEngine.Graphics.Mocks;
 using DeltaEngine.Mocks;
 using NUnit.Framework;
 
@@ -347,47 +346,95 @@ namespace DeltaEngine.Tests.Core
 		public void CreateInstanceOfTypeWithCtorParamsShouldThrowException()
 		{
 			Assert.Throws<MissingMethodException>(() =>
-				BinaryDataLoader.TryCreateAndLoad(typeof(ClassThatRequiresCtorParams),
+				BinaryDataLoader.TryCreateAndLoad(typeof(ClassThatRequiresConstructorParameter),
 				new BinaryReader(new MemoryStream()), new Version(0, 0)));
 		}
 
-		private class ClassThatRequiresCtorParams //ncrunch: no coverage start
+		private class ClassThatRequiresConstructorParameter
 		{
-			public ClassThatRequiresCtorParams(string parameter) {}
-		} //ncrunch: no coverage end
+			//ncrunch: no coverage start 
+			public ClassThatRequiresConstructorParameter(string parameter)
+			{
+				Assert.NotNull(parameter);
+			}
+			//ncrunch: no coverage end
+		}
 
 		[Test]
-		public void Nothing()
+		public void TestLoadContentType()
 		{
 			var stream = new MemoryStream();
 			var writer = new BinaryWriter(stream);
-			writer.Write("Carlos");
-			stream.Position = 0;
+			const string ContentName = "SomeXml";
+			writer.Write(ContentName);
 			ContentLoader.current = new MockContentLoader(new ContentDataResolver());
+			stream.Position = 0;
 			var reader = new BinaryReader(stream);
-			BinaryDataLoader.TryCreateAndLoad(typeof(MyContentType), reader, new Version(0, 0));
+			object returnedContentType = BinaryDataLoader.TryCreateAndLoad(typeof(MockXmlContentType),
+				reader, Assembly.GetExecutingAssembly().GetName().Version);
+			var content = returnedContentType as MockXmlContentType;
+			Assert.IsNotNull(content);
+			Assert.AreEqual(ContentName, content.Name);
 		}
 
-		private class MyContentType : ContentData  //ncrunch: no coverage start 
+		private class MockXmlContentType : ContentData
 		{
-			public MyContentType(string contentName)
+			//ncrunch: no coverage start
+			public MockXmlContentType(string contentName)
 				: base(contentName) {}
 
 			protected override void DisposeData() {}
-			protected override void LoadData(Stream fileData) {}
-		} //ncrunch: no coverage end
+			protected override void LoadData(Stream fileData) { }
+			//ncrunch: no coverage end
+		}
 
 		[Test]
-		public void ReadNumberOver255()
+		public void WriteAndReadNumberMostlyBelow255ThatIsReallyBelow255()
 		{
-			var stream = new MemoryStream();
-			var writer = new BinaryWriter(stream);
-			writer.Write((byte)255);
+			var data = new MemoryStream();
+			var writer = new BinaryWriter(data);
+			const int NumberBelow255 = 123456;
+			writer.WriteNumberMostlyBelow255(NumberBelow255);
+			data.Position = 0;
+			var reader = new BinaryReader(data);
+			Assert.AreEqual(NumberBelow255, reader.ReadNumberMostlyBelow255());
+		}
+
+		[Test]
+		public void WriteAndReadNumberMostlyBelow255WithANumberOver255()
+		{
+			var data = new MemoryStream();
+			var writer = new BinaryWriter(data);
 			const int NumberOver255 = 123456;
-			writer.Write(NumberOver255);
-			stream.Position = 0;
-			var reader = new BinaryReader(stream);
+			writer.WriteNumberMostlyBelow255(NumberOver255);
+			data.Position = 0;
+			var reader = new BinaryReader(data);
 			Assert.AreEqual(NumberOver255, reader.ReadNumberMostlyBelow255());
+		}
+
+		[Test]
+		public void ThrowExceptionOnSavingAnInvalidObject()
+		{
+			Assert.Throws<NullReferenceException>(
+				() =>BinaryDataSaver.TrySaveData(null, typeof(object), null));
+		}
+
+		[Test]
+		public void SaveContentData()
+		{
+			new MockContentLoader(new ContentDataResolver());
+			var xmlContent = ContentLoader.Load<MockXmlContent>("XmlData");
+			using (var dataWriter = new BinaryWriter(new MemoryStream()))
+				BinaryDataSaver.TrySaveData(xmlContent, typeof(MockXmlContent), dataWriter);
+		}
+
+		[Test]
+		public void ThrowExceptionOnSavingAnUnsupportedStream()
+		{
+			using (var otherStreamThanMemory = new BufferedStream(new MemoryStream()))
+			using (var dataWriter = new BinaryWriter(otherStreamThanMemory))
+				Assert.Throws<BinaryDataSaver.UnableToSave>(
+					() => BinaryDataSaver.TrySaveData(otherStreamThanMemory, typeof(object), dataWriter));
 		}
 	}
 }

@@ -11,10 +11,10 @@ namespace Asteroids.Tests
 		[Test]
 		public void GameOver()
 		{
-			var game = new AsteroidsGame();
+			var game = new Game();
 			game.GameOver();
 			Assert.AreEqual(GameState.GameOver, game.GameState);
-			Assert.IsFalse(game.GameLogic.Player.IsActive);
+			Assert.IsFalse(game.InteractionLogics.Player.IsActive);
 		}
 
 		[Test, Ignore, CloseAfterFirstFrame]

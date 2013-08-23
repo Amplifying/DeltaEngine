@@ -114,7 +114,7 @@ namespace DeltaEngine.Datatypes
 		public static readonly Color TransparentWhite = Transparent(White);
 		public static readonly Color Blue = new Color(0, 0, 255);
 		public static readonly Color Cyan = new Color(0, 255, 255);
-		public static readonly Color Gray = new Color(128, 128, 128);
+		public static readonly Color Grey = new Color(128, 128, 128);
 		public static readonly Color Green = new Color(0, 255, 0);
 		public static readonly Color Orange = new Color(255, 165, 0);
 		public static readonly Color Pink = new Color(255, 192, 203);

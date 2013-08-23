@@ -30,9 +30,15 @@ namespace DeltaEngine.Content
 
 		public static Content Load<Content>(string contentName) where Content : ContentData
 		{
-			if (Path.HasExtension(contentName))
-				throw new ContentNameShouldNotHaveExtension();
+			if (!IsGeneratedContentName(contentName))
+				if (Path.HasExtension(contentName))
+					throw new ContentNameShouldNotHaveExtension();
 			return Load(typeof(Content), contentName) as Content;
+		}
+
+		private static bool IsGeneratedContentName(string contentName)
+		{
+			return contentName.StartsWith("<Generated");
 		}
 
 		public class ContentNameShouldNotHaveExtension : Exception {}
@@ -41,8 +47,10 @@ namespace DeltaEngine.Content
 		{
 			if (current == null)
 				throw new NoContentLoaderWasInitialized();
+			if (current.resolver == null)
+				throw new NoContentResolverWasSet();
 			current.resolver.MakeSureResolverIsInitializedAndContentIsReady();
-			if (contentName.StartsWith("<Generated"))
+			if (IsGeneratedContentName(contentName))
 				return current.resolver.Resolve(contentType, contentName);
 			if (!current.resources.ContainsKey(contentName))
 				return current.LoadAndCacheContent(contentType, contentName);
@@ -52,22 +60,25 @@ namespace DeltaEngine.Content
 			return current.LoadAndCacheContent(contentType, contentName);
 		}
 
-		public class NoContentLoaderWasInitialized : Exception {}
+		internal class NoContentLoaderWasInitialized : Exception {}
+		private class NoContentResolverWasSet : Exception {}
 
 		public static bool Exists(string contentName)
+		{
+			return CurrentLoaderGetMetaData(contentName) != null;
+		}
+
+		private static ContentMetaData CurrentLoaderGetMetaData(string contentName)
 		{
 			if (current == null)
 				throw new NoContentLoaderWasInitialized();
 			current.resolver.MakeSureResolverIsInitializedAndContentIsReady();
-			return current.GetMetaData(contentName) != null;
+			return current.GetMetaData(contentName);
 		}
 
 		public static bool Exists(string contentName, ContentType type)
 		{
-			if (current == null)
-				throw new NoContentLoaderWasInitialized();
-			current.resolver.MakeSureResolverIsInitializedAndContentIsReady();
-			var metaData = current.GetMetaData(contentName);
+			var metaData = CurrentLoaderGetMetaData(contentName);
 			return metaData != null && metaData.Type == type;
 		}
 
@@ -91,13 +102,16 @@ namespace DeltaEngine.Content
 			if (contentData.MetaData != null)
 				contentData.InternalLoad(GetContentDataStream);
 			else if (contentData.InternalAllowCreationIfContentNotFound)
-			{
-				if (!current.GetType().Name.StartsWith("Mock"))
-					Logger.Warning("Content not found: " + contentData);
-				contentData.InternalCreateDefault();
-			}
+				LoadContentDefaultDataWhenNotFound(contentData);
 			else
 				throw new ContentNotFound(contentData.Name);
+		}
+
+		private static void LoadContentDefaultDataWhenNotFound(ContentData contentData)
+		{
+			if (!current.GetType().Name.StartsWith("Mock"))
+				Logger.Warning("Content not found: " + contentData); // ncrunch: no coverage
+			contentData.InternalCreateDefault();
 		}
 
 		public class ContentNotFound : Exception
@@ -110,7 +124,7 @@ namespace DeltaEngine.Content
 		{
 			if (String.IsNullOrEmpty(content.MetaData.LocalFilePath))
 				return Stream.Null;
-			var filePath = Path.Combine(contentPath, content.MetaData.LocalFilePath);
+			string filePath = Path.Combine(contentPath, content.MetaData.LocalFilePath);
 			try
 			{
 				return File.OpenRead(filePath);

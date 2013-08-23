@@ -23,7 +23,7 @@ namespace DeltaEngine.Content.Online.Tests
 			using (var loader = new DeveloperOnlineContentLoader(connection))
 			{
 				loader.resolver = new ContentDataResolver();
-				for (int timeoutMs = 1000; timeoutMs > 0 && !ready; timeoutMs -= 10)
+				for (int timeoutMs = 5000; timeoutMs > 0 && !ready; timeoutMs -= 10)
 					Thread.Sleep(10);
 				Assert.IsTrue(Directory.Exists("Content"));
 				Assert.IsTrue(ContentLoader.Exists("DeltaEngineLogo"));

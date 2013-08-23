@@ -15,6 +15,6 @@ namespace DeltaEngine.Editor.Core
 		IEnumerable<string> GetAllContentNamesByType(ContentType type);
 		ContentType? GetTypeOfContent(string content);
 		void UploadContent(ContentMetaData metaData, Dictionary<string, byte[]> optionalFileData = null);
-		void DeleteContent(string selectedContent);
+		void DeleteContent(string selectedContent, bool deleteSubContent = false);
 	}
 }

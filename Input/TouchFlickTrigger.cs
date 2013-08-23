@@ -7,7 +7,7 @@ namespace DeltaEngine.Input
 	/// </summary>
 	public class TouchFlickTrigger : Trigger
 	{
-		public TouchFlickTrigger()
+		public TouchFlickTrigger(string parameter = "")
 		{
 			Start<Touch>();
 		}

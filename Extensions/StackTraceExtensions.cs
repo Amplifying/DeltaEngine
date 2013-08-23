@@ -109,6 +109,8 @@ namespace DeltaEngine.Extensions
 			//ncrunch: no coverage start (these lines can only be reached from production code)
 			foreach (StackFrame frame in frames.Where(frame => frame.GetMethod().Name == "Main"))
 				return GetNamespaceName(frame);
+			if (IsRunningAsWindowsService(frames))
+				return GetNamespaceNameForWindowsService(frames.ToList());
 			throw new ExecutingAssemblyOrNamespaceNotFound();
 			//ncrunch: no coverage end
 		}
@@ -121,7 +123,7 @@ namespace DeltaEngine.Extensions
 		private static string GetNamespaceNameFromClassName(string fullClassName)
 		{
 			var result = System.IO.Path.GetFileNameWithoutExtension(fullClassName);
-			if (result.Contains(".Tests."))
+			while (result.Contains(".Tests."))
 				result = System.IO.Path.GetFileNameWithoutExtension(result);
 			return result;
 		}
@@ -132,6 +134,18 @@ namespace DeltaEngine.Extensions
 		{
 			var classType = frame.GetMethod().DeclaringType;
 			return classType != null ? classType.Namespace : "";
+		}
+
+		private static bool IsRunningAsWindowsService(IEnumerable<StackFrame> frames)
+		{
+			return frames.Any(frame => frame.GetMethod().Name == "ServiceQueuedMainCallback");
+		}
+
+		private static string GetNamespaceNameForWindowsService(List<StackFrame> frames)
+		{
+			var index = Array.FindIndex(frames.ToArray(),
+				frame => frame.GetMethod().Name == "ServiceQueuedMainCallback");
+			return frames[index - 1].GetMethod().DeclaringType.Namespace;
 		}
 
 		public static string GetClassName(this IEnumerable<StackFrame> frames)

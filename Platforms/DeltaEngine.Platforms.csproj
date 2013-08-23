@@ -42,10 +42,6 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Content\Disk\DeltaEngine.Content.Disk.csproj">
-      <Project>{EE9847E1-9C76-4ACE-B531-D3EA84F7D741}</Project>
-      <Name>DeltaEngine.Content.Disk</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Content\Online\DeltaEngine.Content.Online.csproj">
       <Project>{68AA6280-09EF-4325-B5F8-B8A967004144}</Project>
       <Name>DeltaEngine.Content.Online</Name>

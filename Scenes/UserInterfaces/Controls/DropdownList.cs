@@ -90,5 +90,11 @@ namespace DeltaEngine.Scenes.UserInterfaces.Controls
 					selectBox.Visibility = Visibility.Hide;
 			}
 		}
+
+		public int MaxDisplayCount
+		{
+			get { return selectBox.MaxDisplayCount; }
+			set { selectBox.MaxDisplayCount = value; }
+		}
 	}
 }

@@ -40,7 +40,12 @@ namespace DeltaEngine.Editor.ContentManager
 
 		private void DeleteSelectedImage(object sender, RoutedEventArgs e)
 		{
-			Messenger.Default.Send("DeleteContent", "DeletingContent");
+			Messenger.Default.Send(false, "DeleteContent");
+		}
+
+		private void DeleteSelectedImageAnimation(object sender, RoutedEventArgs e)
+		{
+			Messenger.Default.Send(true, "DeleteContent");
 		}
 
 		public string ShortName

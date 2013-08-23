@@ -1,6 +1,5 @@
 ﻿using System;
 using DeltaEngine.Commands;
-using DeltaEngine.Datatypes;
 using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Input
@@ -14,7 +13,6 @@ namespace DeltaEngine.Input
 			: this(MouseButton.Left, state) {}
 
 		public MouseButtonTrigger(MouseButton button = MouseButton.Left, State state = State.Pressing)
-			: base(Point.Unused)
 		{
 			Button = button;
 			State = state;
@@ -25,7 +23,6 @@ namespace DeltaEngine.Input
 		public State State { get; internal set; }
 
 		public MouseButtonTrigger(string buttonAndState)
-			: base(Point.Unused)
 		{
 			var parameters = buttonAndState.SplitAndTrim(new[] { ' ' });
 			if (parameters.Length == 0)

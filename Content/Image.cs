@@ -44,10 +44,15 @@ namespace DeltaEngine.Content
 
 		public Size PixelSize { get; private set; }
 		private static readonly Size DefaultTextureSize = new Size(4, 4);
-		public BlendMode BlendMode { get; private set; }
+		public BlendMode BlendMode { get; set; }
 		public bool UseMipmaps { get; private set; }
 		public bool AllowTiling { get; private set; }
 		public bool DisableLinearFiltering { get; private set; }
+
+		protected bool HasAlpha
+		{
+			get { return BlendMode == BlendMode.Normal || BlendMode == BlendMode.AlphaTest; }
+		}
 
 		private void TryLoadImage(Stream fileData)
 		{
@@ -61,11 +66,21 @@ namespace DeltaEngine.Content
 				if (!Debugger.IsAttached)
 					CreateDefault();
 				else
-					throw;
+					throw; // ncrunch: no coverage
 			}
 		}
 
 		protected abstract void LoadImage(Stream fileData);
+
+		protected void WarnAboutWrongAlphaFormat(bool imageHasAlphaFormat)
+		{
+			if (HasAlpha && !imageHasAlphaFormat)
+				Logger.Warning("Image '" + Name +
+					"' is supposed to have alpha pixels, but the image pixel format is not using alpha.");
+			else if (!HasAlpha && imageHasAlphaFormat)
+				Logger.Warning("Image '" + Name +
+					"' is supposed to have no alpha pixels, but the image pixel format is using alpha.");
+		}
 
 		protected override void CreateDefault()
 		{
@@ -84,7 +99,7 @@ namespace DeltaEngine.Content
 				: base(pixelSize.Width + "*" + pixelSize.Height) {}
 		}
 
-		public abstract void Fill(byte[] colors);
+		public abstract void Fill(byte[] rgbaColors);
 
 		public class InvalidNumberOfBytes : Exception
 		{

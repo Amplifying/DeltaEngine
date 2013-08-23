@@ -63,48 +63,56 @@
 		/// </summary>
 		ParticleEffect = 12,
 		/// <summary>
-		/// Font content, just a .xml file, which was generated from a true type font.
+		/// Just a true type font
 		/// </summary>
 		Font = 13,
+		/// <summary>
+		/// Font content, just a .xml file, which was generated from a true type font.
+		/// </summary>
+		FontXml = 14,
 		/// <summary>
 		/// Camera content, stores the initial camera position, rotation and values plus optionally a
 		/// camera path this camera should follow.
 		/// </summary>
-		Camera = 14,
+		Camera = 15,
 		/// <summary>
 		/// Sound file for sound playback, just a .wav file on most platforms.
 		/// </summary>
-		Sound = 15,
+		Sound = 16,
 		/// <summary>
 		/// Music file for playing in the background or even use streaming. .mp3 or .ogg file.
 		/// </summary>
-		Music = 16,
+		Music = 17,
 		/// <summary>
 		/// Video file for multimedia. Supports .mp4 and other video formats.
 		/// </summary>
-		Video = 17,
+		Video = 18,
 		/// <summary>
 		/// Helper content type for .DeltaCollision file types. Can be used for both 3D collision meshes
 		/// and for 2D collision meshes in Physics. 3D Collision meshes are usually imported from a low
 		/// polygon variation of a model. 2D Collisions are imported from images (detecting outlines).
 		/// </summary>
-		PhysicsCollision = 18,
+		PhysicsCollision = 19,
 		/// <summary>
 		/// Xml files for game specific content or whatever else you need.
 		/// </summary>
-		Xml = 19,
+		Xml = 20,
 		/// <summary>
 		/// Json files for game specific content, if you are a JavaScript freak.
 		/// </summary>
-		Json = 20,
+		Json = 21,
 		/// <summary>
 		/// You can store trigger data here directly and use it with Actors in Levels.
 		/// </summary>
-		Trigger = 21,
+		Trigger = 22,
 		/// <summary>
 		/// You can store all actor properties dynamically here and reconstruct them when loading!
 		/// </summary>
-		Actor = 22,
+		Actor = 23,
+		/// <summary>
+		/// Input commands for a game or whatever else you need
+		/// </summary>
+		InputCommand = 24,
 		/// <summary>
 		/// Just store the file entry, this can be used for any file (binary makes most sense). All the
 		/// logic to load and use this file has to be done by the application.

@@ -12,10 +12,12 @@ namespace DeltaEngine.Editor.UIEditor
 		public UIEditorView()
 		{
 			InitializeComponent();
-			DataContext = new UIEditorViewModel();
 		}
 
-		public void Init(Service service) {}
+		public void Init(Service service)
+		{
+			DataContext = new UIEditorViewModel(service);
+		}
 
 		public string ShortName
 		{
@@ -35,6 +37,11 @@ namespace DeltaEngine.Editor.UIEditor
 		public void AddImage(object sender, RoutedEventArgs e)
 		{
 			Messenger.Default.Send("AddImage", "AddImage");
+		}
+
+		private void RemoveImage(object sender, RoutedEventArgs e)
+		{
+			Messenger.Default.Send("RemoveSprite", "RemoveSprite");
 		}
 	}
 }

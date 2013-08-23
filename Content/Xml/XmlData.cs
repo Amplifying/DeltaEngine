@@ -210,11 +210,7 @@ namespace DeltaEngine.Content.Xml
 
 		public bool RemoveChild(XmlData child)
 		{
-			if (!Children.Contains(child))
-				return false;
-
-			Children.Remove(child);
-			return true;
+			return Children.Remove(child);
 		}
 
 		public void RemoveAttribute(string attributeName)

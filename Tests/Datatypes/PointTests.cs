@@ -163,18 +163,25 @@ namespace DeltaEngine.Tests.Datatypes
 		}
 
 		[Test]
-		public void ReflectIfHittingBorder()
+		public void ReflectIfHittingBorderAtCorners()
 		{
 			var direction = Point.One;
-			var areaInsideBorders = new Rectangle(Point.Half, Size.Zero);
 			var borders = Rectangle.One;
-			direction.ReflectIfHittingBorder(areaInsideBorders, borders);
-			Assert.AreEqual(Point.One, direction);
 			var bottomRightArea = new Rectangle(Point.One, Size.Half);
 			direction.ReflectIfHittingBorder(bottomRightArea, borders);
 			Assert.AreEqual(-Point.One, direction);
 			var topLeftArea = new Rectangle(Point.Zero, Size.Zero);
 			direction.ReflectIfHittingBorder(topLeftArea, borders);
+			Assert.AreEqual(Point.One, direction);
+		}
+
+		[Test]
+		public void PointInsideBordersHasNoReflection()
+		{
+			var direction = Point.One;
+			var areaInsideBorders = new Rectangle(Point.Half, Size.One * 2);
+			var borders = Rectangle.One;
+			direction.ReflectIfHittingBorder(areaInsideBorders, borders);
 			Assert.AreEqual(Point.One, direction);
 		}
 
@@ -207,18 +214,15 @@ namespace DeltaEngine.Tests.Datatypes
 		[Test]
 		public void Normalize()
 		{
-			var point = new Point(0.3f, -0.4f);
-			point.Normalize();
+			var point = Point.Normalize(new Point(0.3f, -0.4f));
 			Assert.AreEqual(new Point(0.6f, -0.8f), point);
 		}
 
 		[Test]
 		public void DotProduct()
 		{
-			var point1 = new Point(1, 1);
-			point1.Normalize();
-			var point2 = new Point(-1, 1);
-			point2.Normalize();
+			var point1 = Point.Normalize(new Point(1, 1));
+			var point2 = Point.Normalize(new Point(-1, 1));
 			Assert.AreEqual(0.0f, point1.DotProduct(point2));
 			Assert.AreEqual(0.7071f, point1.DotProduct(Point.UnitY), 0.0001f);
 		}

@@ -7,7 +7,7 @@ namespace DeltaEngine.Input
 	/// </summary>
 	public class TouchPinchTrigger : Trigger
 	{
-		public TouchPinchTrigger()
+		public TouchPinchTrigger(string parameter = "")
 		{
 			Start<Touch>();
 		}

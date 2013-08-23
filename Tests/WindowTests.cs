@@ -51,10 +51,15 @@ namespace DeltaEngine.Tests
 			Assert.IsFalse(window.IsFullscreen);
 			bool fullscreenChangedWasCalled = false;
 			window.FullscreenChanged += (size, b) => fullscreenChangedWasCalled = true;
-			window.SetFullscreen(newFullscreenSize);
+			SetFullscreenWindow(newFullscreenSize);
 			Assert.IsTrue(window.IsFullscreen);
 			Assert.AreEqual(newFullscreenSize, window.TotalPixelSize);
 			Assert.IsTrue(fullscreenChangedWasCalled);
+		}
+
+		private void SetFullscreenWindow(Size newFullscreenSize)
+		{
+			window.SetFullscreen(newFullscreenSize);
 		}
 
 		[Test]

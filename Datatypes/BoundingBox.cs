@@ -14,7 +14,7 @@ namespace DeltaEngine.Datatypes
 			Max = max;
 		}
 
-		public Vector Min { get; set; }
-		public Vector Max { get; set; }
+		public Vector Min;
+		public Vector Max;
 	}
 }

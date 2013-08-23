@@ -40,7 +40,7 @@ namespace DeltaEngine.Platforms
 
 		protected readonly List<Type> alreadyRegisteredTypes = new List<Type>();
 
-		protected class UnableToRegisterMoreTypesAppAlreadyStarted : Exception { }
+		protected class UnableToRegisterMoreTypesAppAlreadyStarted : Exception {}
 
 		public void RegisterSingleton<T>()
 		{
@@ -97,7 +97,7 @@ namespace DeltaEngine.Platforms
 
 		private ContainerBuilder builder = new ContainerBuilder();
 
-		internal protected void RegisterInstance(object instance)
+		protected internal void RegisterInstance(object instance)
 		{
 			var registration =
 				builder.RegisterInstance(instance).SingleInstance().AsSelf().AsImplementedInterfaces();
@@ -170,10 +170,13 @@ namespace DeltaEngine.Platforms
 			foreach (Assembly assembly in assemblies)
 				if (!AssemblyExtensions.IsPlatformAssembly(assembly.GetName().Name))
 				{
-					RegisterAllTypesInAssembly<InstanceType>(assembly, false);
-					RegisterAllTypesInAssembly<UpdateType>(assembly, true);
-					RegisterAllTypesInAssembly<DrawType>(assembly, true);
-					RegisterAllTypesInAssembly(assembly);
+					Type[] assemblyTypes = TryToGetAssemblyTypes(assembly);
+					if (assemblyTypes == null)
+						continue;
+					RegisterAllTypesInAssembly<InstanceType>(assemblyTypes, false);
+					RegisterAllTypesInAssembly<UpdateType>(assemblyTypes, true);
+					RegisterAllTypesInAssembly<DrawType>(assemblyTypes, true);
+					RegisterAllTypesInAssembly(assemblyTypes);
 				}
 		}
 
@@ -195,21 +198,57 @@ namespace DeltaEngine.Platforms
 				}
 			foreach (var assembly in loadedAssemblies)
 				if (assembly.IsAllowed() && !AssemblyExtensions.IsPlatformAssembly(assembly.GetName().Name))
-					LoadDependentAssemblies(assembly, assemblies);
+					TryLoadDependentAssemblies(assembly, assemblies);
 			return assemblies;
+		}
+
+		private static void TryLoadDependentAssemblies(Assembly assembly, List<Assembly> assemblies)
+		{
+			try
+			{
+				LoadDependentAssemblies(assembly, assemblies);
+			}
+			catch (FileNotFoundException exception)
+			{
+				throw new DependentAssemblieNotFound(assembly, exception);
+			}
 		}
 
 		private static void LoadDependentAssemblies(Assembly assembly, List<Assembly> assemblies)
 		{
 			foreach (var dependency in assembly.GetReferencedAssemblies())
-				if (dependency.IsAllowed() && !dependency.Name.EndsWith(".Mocks") && 
+				if (dependency.IsAllowed() && !dependency.Name.EndsWith(".Mocks") &&
 					assemblies.All(loaded => dependency.Name != loaded.GetName().Name))
 					assemblies.Add(Assembly.Load(dependency));
 		}
 
-		private void RegisterAllTypesInAssembly<T>(Assembly assembly, bool registerAsSingleton)
+		private class DependentAssemblieNotFound : Exception
 		{
-			Type[] assemblyTypes = assembly.GetTypes();
+			public DependentAssemblieNotFound(Assembly assembly, FileNotFoundException exception)
+				: base("Dependency \"" + exception.FileName + "\" for assembly \"" + assembly.FullName +
+				"\" not found") { }
+		}
+
+		private static Type[] TryToGetAssemblyTypes(Assembly assembly)
+		{
+			try
+			{
+				return assembly.GetTypes();
+			}
+			catch (Exception ex)
+			{
+				string errorText = ex.ToString();
+				var loaderError = ex as ReflectionTypeLoadException;
+				if (loaderError != null)
+					foreach (var error in loaderError.LoaderExceptions)
+						errorText += "\n\n" + error;
+				Logger.Warning("Failed to load types from " + assembly.GetName().Name + ": " + errorText);
+				return null;
+			}
+		}
+
+		private void RegisterAllTypesInAssembly<T>(Type[] assemblyTypes, bool registerAsSingleton)
+		{
 			foreach (Type type in assemblyTypes)
 				if (typeof(T).IsAssignableFrom(type) && IsTypeResolveable(type))
 					if (registerAsSingleton)
@@ -243,9 +282,8 @@ namespace DeltaEngine.Platforms
 			return type.FullName.Contains("`1");
 		}
 
-		private void RegisterAllTypesInAssembly(Assembly assembly)
+		private void RegisterAllTypesInAssembly(Type[] assemblyTypes)
 		{
-			var assemblyTypes = assembly.GetTypes();
 			foreach (Type type in assemblyTypes)
 				if (IsTypeResolveable(type) && !alreadyRegisteredTypes.Contains(type))
 				{
@@ -311,11 +349,12 @@ namespace DeltaEngine.Platforms
 			var exceptionText = StackTraceExtensions.FormatExceptionIntoClickableMultilineText(ex);
 			var window = Resolve<Window>();
 			window.CopyTextToClipboard(exceptionText);
-			if (window.ShowMessageBox("Fatal Initialization Error",
-				"Unable to resolve class " + baseType + "\n" +
-					(ExceptionExtensions.IsDebugMode ? exceptionText : ex.GetType().Name + " " + ex.Message) +
-					"\n\nMessage was logged and copied to the clipboard. Click Ignore to try to continue.",
-				new[] { "Ignore", "Abort" }) == "Ignore")
+			if (
+				window.ShowMessageBox("Fatal Initialization Error",
+					"Unable to resolve class " + baseType + "\n" +
+						(ExceptionExtensions.IsDebugMode ? exceptionText : ex.GetType().Name + " " + ex.Message) +
+						"\n\nMessage was logged and copied to the clipboard. Click Ignore to try to continue.",
+					new[] { "Ignore", "Abort" }) == "Ignore")
 				return;
 			Dispose();
 			if (!StackTraceExtensions.StartedFromNCrunch)

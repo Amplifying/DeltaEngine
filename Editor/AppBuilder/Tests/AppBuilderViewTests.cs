@@ -3,7 +3,6 @@ using System.Windows.Input;
 using ApprovalTests.Reporters;
 using ApprovalTests.Wpf;
 using DeltaEngine.Editor.Core;
-using DeltaEngine.Editor.Messages;
 using NUnit.Framework;
 using WpfWindow = System.Windows.Window;
 
@@ -70,21 +69,26 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		{
 			var service = new MockBuildService();
 			var appBuilderView = CreateViewWithInitialiedViewModel(service);
+			AppBuilderViewModel viewModel = appBuilderView.ViewModel;
 			var window = CreateTestWindow(appBuilderView);
-			window.MouseDoubleClick += (sender, e) => FireAppBuildMessagesOnMouseDoubleClick(e, service);
+			window.MouseDoubleClick += (sender, e) => FireAppBuildMessagesOnMouseDoubleClick(e, viewModel);
 			window.ShowDialog();
 		}
 
 		private static void FireAppBuildMessagesOnMouseDoubleClick(MouseButtonEventArgs e,
-			MockBuildService service)
+			AppBuilderViewModel viewModel)
 		{
 			if (e.LeftButton != MouseButtonState.Released)
-				service.ReceiveData(new AppBuildResult("MockProject", PlatformName.Windows)
-				{
-					PackageFileName = "MockProject.app",
-				});
+				SelectProjectToBuild(viewModel, "Blocks");
 			else if (e.RightButton != MouseButtonState.Released)
-				service.ReceiveData(new AppBuildFailed("Demo message for failed build of a project"));
+				SelectProjectToBuild(viewModel, "DeltaEngine");
+			viewModel.BuildPressed.Execute(null);
+		}
+
+		private static void SelectProjectToBuild(AppBuilderViewModel viewModel, string projectName)
+		{
+			viewModel.SelectedSolutionProject =
+				viewModel.AvailableProjectsInSelectedSolution.Find(p => p.Title == projectName);
 		}
 	}
 }

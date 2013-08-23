@@ -15,7 +15,7 @@ namespace DeltaEngine.Physics2D.Tests
 		}
 
 		private Physics physics;
-		private PhysicsBody body; 
+		private PhysicsBody body;
 
 		[Test]
 		public void CreateFixedAngleJoint()

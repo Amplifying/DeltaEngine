@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Globalization;
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
@@ -27,8 +26,6 @@ namespace $safeprojectname$
 			get;
 			private set;
 		}
-
-		public List<FontText> metaInfoTexts = new List<FontText>();
 
 		public void SetScoreText(int score)
 		{

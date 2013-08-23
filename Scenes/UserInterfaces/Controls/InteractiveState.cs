@@ -15,12 +15,12 @@ namespace DeltaEngine.Scenes.UserInterfaces.Controls
 		public bool CanHaveFocus { get; set; }
 		public bool HasFocus { get; set; }
 		public bool WantsFocus { get; set; }
-		public Point DragDelta { get; set; }
-		public Rectangle DragArea
+		public Point DragStart { get; set; }
+		public Point DragEnd { get; set; }
+		public Point DragDelta
 		{
-			get { return dragArea; }
-			set { dragArea = value; }
+			get { return DragEnd - DragStart; }
 		}
-		private Rectangle dragArea = Rectangle.Unused;
+		public bool DragDone { get; set; }
 	}
 }

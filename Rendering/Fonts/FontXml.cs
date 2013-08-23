@@ -20,18 +20,19 @@ namespace DeltaEngine.Rendering.Fonts
 		}
 
 		private const string DefaultFontName = "Verdana12";
-
+		//ncrunch: no coverage start
 		protected override bool AllowCreationIfContentNotFound
 		{
 			get { return true; }
 		}
-
+		//ncrunch: no coverage end
 		protected override void LoadData(Stream fileData)
 		{
 			base.LoadData(fileData);
 			InitializeDescriptionAndMaterial();
 		}
 
+		//ncrunch: no coverage start
 		private void InitializeDescriptionAndMaterial()
 		{
 			if (Data == null || Data.Children.Count == 0)
@@ -60,7 +61,7 @@ namespace DeltaEngine.Rendering.Fonts
 			Data = ContentLoader.Load<XmlContent>(DefaultFontName).Data;
 			InitializeDescriptionAndMaterial();
 		}
-
+		//ncrunch: no coverage end
 		public class DefaultFontContentNotFound : Exception {}
 
 		protected override void DisposeData() {}

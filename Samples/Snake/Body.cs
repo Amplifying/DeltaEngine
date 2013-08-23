@@ -102,7 +102,6 @@ namespace Snake
 		{
 			if (SnakeCollidesWithBorderOrItself == null)
 				return; //ncrunch: no coverage
-
 			var snakeHead = BodyParts[0];
 			if (SnakeCollidesWithItself(snakeHead) || SnakeCollidesWithBorders(snakeHead))
 				SnakeCollidesWithBorderOrItself();
@@ -113,7 +112,6 @@ namespace Snake
 			for (int count = 3; count < BodyParts.Count; count++)
 				if (snakeHead.DrawArea.TopLeft == BodyParts[count].DrawArea.TopLeft)
 					return true;
-
 			return false;
 		}
 
@@ -124,7 +122,6 @@ namespace Snake
 				snakeHead.DrawArea.Left > 1 - blockSize - 0.01f ||
 				snakeHead.DrawArea.Top > 1 - blockSize - 0.01f))
 				return true;
-
 			return false;
 		}
 

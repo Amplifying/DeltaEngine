@@ -75,8 +75,8 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Controls
 		{
 			slider.IsEnabled = false;
 			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(Color.Gray, slider.Color);
-			Assert.AreEqual(Color.Gray, slider.Pointer.Color);
+			Assert.AreEqual(Color.Grey, slider.Color);
+			Assert.AreEqual(Color.Grey, slider.Pointer.Color);
 		}
 
 		[Test, ApproveFirstFrameScreenshot]
@@ -124,7 +124,7 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Controls
 		public void ValidatePointerSize()
 		{
 			var pointer = new Material(Shader.Position2DColorUv, "DefaultSlider");
-			var width = pointer.RenderSize.AspectRatio * 0.1f;
+			var width = pointer.MaterialRenderSize.AspectRatio * 0.1f;
 			var pointerSize = new Size(width, 0.1f);
 			Assert.AreEqual(pointerSize, slider.Pointer.DrawArea.Size);
 		}
@@ -189,6 +189,16 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Controls
 			slider.Start<Spin>();
 			new Command(point => slider.DrawArea = Rectangle.FromCenter(point, slider.DrawArea.Size)).
 				Add(new MouseMovementTrigger());
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void VerifyValueChangedEvent()
+		{
+			int sliderValue = -1;
+			slider.ValueChanged += value => sliderValue = value;
+			var position = new Point(0.42f, 0.52f);
+			DragMouse(position);
+			Assert.AreEqual(slider.Value, sliderValue);
 		}
 	}
 }

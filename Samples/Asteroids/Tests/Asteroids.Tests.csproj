@@ -59,21 +59,25 @@
       <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
       <Name>DeltaEngine.Platforms</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Platforms\TestWithOpenTK20\DeltaEngine.TestWithOpenTK20.csproj">
-      <Project>{3A3D2E3E-FCD6-40A4-8F4E-36F3D173AB41}</Project>
-      <Name>DeltaEngine.TestWithOpenTK20</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Platforms\WindowsOpenTK20\DeltaEngine.WindowsOpenTK20.csproj">
-      <Project>{4FDE0BC1-AF24-4A6D-AB73-A28833D41AC8}</Project>
-      <Name>DeltaEngine.WindowsOpenTK20</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Rendering\DeltaEngine.Rendering.csproj">
       <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
       <Name>DeltaEngine.Rendering</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Rendering\Fonts\DeltaEngine.Rendering.Fonts.csproj">
+      <Project>{4A00FD90-FF7B-4250-9CBC-B6855130090B}</Project>
+      <Name>DeltaEngine.Rendering.Fonts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Rendering\Sprites\DeltaEngine.Rendering.Sprites.csproj">
+      <Project>{FCA7BAAA-3F6E-4CA3-B354-C34AF4F1BDDD}</Project>
+      <Name>DeltaEngine.Rendering.Sprites</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Asteroids.csproj">
       <Project>{6BA7DE2F-0323-428F-9318-6A163B182F0C}</Project>
       <Name>Asteroids</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Platforms\TestWithOpenTK20\DeltaEngine.TestWithOpenTK20.csproj">
+      <Project>{3A3D2E3E-FCD6-40A4-8F4E-36F3D173AB41}</Project>
+      <Name>DeltaEngine.TestWithOpenTK20</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

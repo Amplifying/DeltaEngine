@@ -10,9 +10,11 @@ namespace DeltaEngine.Platforms
 {
 	internal class OpenTK20Resolver : AppRunner
 	{
+		private readonly string[] nativeDllsNeeded = { "openal32.dll", "wrap_oal.dll" };
+
 		public OpenTK20Resolver()
 		{
-			MakeSureOpenTKDllsAreAvailable();
+			MakeSureOpenALDllsAreAvailable();
 			RegisterCommonEngineSingletons();
 			RegisterSingleton<FormsWindow>();
 			RegisterSingleton<WindowsSystemInformation>();
@@ -39,7 +41,7 @@ namespace DeltaEngine.Platforms
 			Register<OpenTKVideo>();
 		}
 
-		private void MakeSureOpenTKDllsAreAvailable()
+		private void MakeSureOpenALDllsAreAvailable()
 		{
 			if (AreNativeDllsMissing())
 				TryCopyNativeDlls();
@@ -50,8 +52,6 @@ namespace DeltaEngine.Platforms
 			return nativeDllsNeeded.Any(nativeDll => !File.Exists(nativeDll));
 		}
 
-		private readonly string[] nativeDllsNeeded = { "openal32.dll", "wrap_oal.dll" };
-
 		private void TryCopyNativeDlls()
 		{
 			try
@@ -60,7 +60,7 @@ namespace DeltaEngine.Platforms
 			}
 			catch (Exception ex)
 			{
-				throw new FailedToCopyNativeOpenTKDllFiles("Please install OpenTK, can't find dlls!", ex);
+				throw new FailedToCopyNativeOpenALDllFiles("Please install OpenAL, can't find dlls!", ex);
 			}
 		}
 
@@ -74,9 +74,7 @@ namespace DeltaEngine.Platforms
 					break;
 			}
 			foreach (var nativeDll in nativeDllsNeeded)
-				File.Copy(
-					Path.Combine(path, "packages", "OpenTKWithOpenAL.1.1.1160.61462", "NativeBinaries", "x86",
-						nativeDll), nativeDll, true);
+				File.Copy(Path.Combine(path, "packages", "OpenTKWithOpenAL.1.1.1160.61462", "NativeBinaries", "x86", nativeDll), nativeDll, true);
 		}
 
 		private static bool IsPackagesDirectory(string path)
@@ -84,15 +82,17 @@ namespace DeltaEngine.Platforms
 			return Directory.Exists(Path.Combine(path, "packages"));
 		}
 
-		private class FailedToCopyNativeOpenTKDllFiles : Exception
-		{
-			public FailedToCopyNativeOpenTKDllFiles(string message, Exception innerException)
-				: base(message, innerException) { }
-		}
-
 		public void RegisterFormsWindow(FormsWindow initializedWpfForumsWindow)
 		{
 			RegisterInstance(initializedWpfForumsWindow);
+		}
+
+		private class FailedToCopyNativeOpenALDllFiles : Exception
+		{
+			public FailedToCopyNativeOpenALDllFiles(string message, Exception innerException)
+				: base(message,innerException)
+			{
+			}
 		}
 	}
 }

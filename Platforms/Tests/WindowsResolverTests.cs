@@ -45,8 +45,7 @@ namespace DeltaEngine.Platforms.Tests
 		[Test, Category("Slow")]
 		public void RegisterRenderableObject()
 		{
-			using (var window = new MockWindow())
-			using (var device = new MockDevice(window))
+			using (var device = new MockDevice(new MockWindow()))
 			{
 				device.Clear();
 				device.Present();

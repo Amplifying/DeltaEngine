@@ -83,8 +83,8 @@ namespace $safeprojectname$
 		public void RestartGame()
 		{
 			Controller.Dispose();
-			var gameOverMsg = new FontText("Game Over!\nPress Space or tap/click for restart!", 
-				Rectangle.One);
+			var gameOverMsg = new FontText(FontXml.Default, "Game Over!\nPress Space or tap/click for " +
+				"restart!", Rectangle.One);
 
 			restartCommand = new Command(() => 
 			{

@@ -15,8 +15,8 @@ namespace $safeprojectname$
 			Color = Color.GetRandomColor();
 			this.StartRotating(random.Get(-50, 50));
 			this.StartBouncingOffScreenEdges(new Point(random.Get(-0.4f, 0.4f), random.Get(-0.4f, 
-				0.4f)), () => sound.Play(0.03f, 0.0f));
-			new Command("Click", position => Center = position);
+				0.4f)), () => sound.Play(0.03f));
+			new Command(Command.Click, position => Center = position);
 		}
 
 		private readonly Randomizer random = Randomizer.Current;

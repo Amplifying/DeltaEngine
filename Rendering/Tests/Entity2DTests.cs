@@ -83,8 +83,50 @@ namespace DeltaEngine.Rendering.Tests
 			Assert.AreEqual(Rectangle.One, entity.Get<Rectangle>());
 			entity.Set(5.0f);
 			Assert.AreEqual(5.0f, entity.Get<float>());
+			entity.Set(Point.One);
+			Assert.AreEqual(Point.One, entity.Get<Point>());
 			entity.RenderLayer = -10;
 			Assert.AreEqual(-10, entity.RenderLayer);
+		}
+
+		[Test]
+		public void CannotAddTheSameTypeOfComponentTwice()
+		{
+			var entity = new Entity2D(Rectangle.Zero);
+			Assert.Throws<Entity.ComponentOfTheSameTypeAddedMoreThanOnce>(() => entity.Add(Rectangle.One));
+		}
+
+		[Test]
+		public void LastColorAddsColorComponentIfNotAddedBefore()
+		{
+			var entity = new Entity2D(Rectangle.Zero);
+			entity.LastColor = Color.Red;
+			Assert.AreEqual(Color.Red, entity.LastColor);
+		}
+
+		[Test]
+		public void LastColorReplacesColorComponentValue()
+		{
+			var entity = new Entity2D(Rectangle.Zero) { Color = Color.Red };
+			Assert.AreEqual(Color.Red, entity.LastColor);
+			entity.LastColor = Color.Blue;
+			Assert.AreEqual(Color.Blue, entity.LastColor);
+		}
+
+		[Test]
+		public void GetComponentValuesInDrawState()
+		{
+			var entity = new Entity2D(Rectangle.One)
+			{
+				Color = Color.Red,
+				Rotation = 1.0f,
+				RotationCenter = Point.One
+			};
+			EntitiesRunner.Current.State = UpdateDrawState.Draw;
+			Assert.AreEqual(entity.DrawArea, entity.Get<Rectangle>());
+			Assert.AreEqual(entity.Color, entity.Get<Color>());
+			Assert.AreEqual(entity.Rotation, entity.Get<float>());
+			Assert.AreEqual(entity.RotationCenter, entity.Get<Point>());
 		}
 
 		[Test]
@@ -127,6 +169,7 @@ namespace DeltaEngine.Rendering.Tests
 			};
 			Assert.IsFalse(entity.RotatedDrawAreaContains(new Point(0.15f, 0.15f)));
 			Assert.IsTrue(entity.RotatedDrawAreaContains(new Point(0.85f, 0.85f)));
+			EntitiesRunner.Current.UpdateAndDrawAllEntities(() => {});
 		}
 	}
 }

@@ -34,14 +34,8 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GalaSoft.MvvmLight.Extras.WPF4">
-      <HintPath>..\packages\MvvmLightLibs.4.1.27.0\lib\net40\GalaSoft.MvvmLight.Extras.WPF4.dll</HintPath>
-    </Reference>
     <Reference Include="GalaSoft.MvvmLight.WPF4">
       <HintPath>..\packages\MvvmLightLibs.4.1.27.0\lib\net40\GalaSoft.MvvmLight.WPF4.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Practices.ServiceLocation">
-      <HintPath>..\packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Smartdevice.Connectivity">
       <HintPath>..\packages\Smartdevice.Connectivity.10.0.0.0\lib\NET40\Microsoft.Smartdevice.Connectivity.dll</HintPath>
@@ -50,9 +44,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime">
       <HintPath>C:\Windows\Microsoft.NET\Framework\v4.0.30319\System.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Windows.Interactivity">
-      <HintPath>..\packages\MvvmLightLibs.4.1.27.0\lib\net40\System.Windows.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
@@ -69,10 +60,6 @@
     <ProjectReference Include="..\..\DeltaEngine.csproj">
       <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
       <Name>DeltaEngine %28DeltaEngine\DeltaEngine%29</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Networking\DeltaEngine.Networking.csproj">
-      <Project>{5231706E-2955-43BF-9C06-291E12AF5C5C}</Project>
-      <Name>DeltaEngine.Networking</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Networking\DeltaEngine.Networking.csproj">
       <Project>{5231706E-2955-43BF-9C06-291E12AF5C5C}</Project>

@@ -12,9 +12,12 @@ namespace DeltaEngine.Input.Tests
 		public void DragMouseToCreateRectangles()
 		{
 			var rectangle = new FilledRect(Rectangle.Unused, Color.GetRandomColor());
-			new Command(dragArea => rectangle.DrawArea = dragArea).Add(new MouseDragTrigger());
-			new Command(() => rectangle = new FilledRect(Rectangle.Unused, Color.GetRandomColor())).Add(
-				new MouseButtonTrigger(MouseButton.Left, State.Releasing));
+			new Command((start, end, done) =>
+			{
+				rectangle.DrawArea = Rectangle.FromCorners(start, end);
+				if (done)
+					rectangle = new FilledRect(Rectangle.Unused, Color.GetRandomColor());
+			}).Add(new MouseDragTrigger());
 		}
 
 		[Test, CloseAfterFirstFrame]

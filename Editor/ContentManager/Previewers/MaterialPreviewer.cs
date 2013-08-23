@@ -6,7 +6,7 @@ using DeltaEngine.Rendering.Sprites;
 
 namespace DeltaEngine.Editor.ContentManager.Previewers
 {
-	class MaterialPreviewer : ContentPreview
+	public class MaterialPreviewer : ContentPreview
 	{
 		public void PreviewContent(string contentName)
 		{
@@ -18,7 +18,7 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 			SetImageCommands();
 		}
 
-		private Sprite currentDisplaySprite;
+		public Sprite currentDisplaySprite;
 
 		private void SetImageCommands()
 		{
@@ -35,8 +35,6 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 		{
 			var relativePosition = mousePosition - lastPanPosition;
 			lastPanPosition = mousePosition;
-			if (relativePosition == Point.Zero)
-				return;
 			currentDisplaySprite.Center += relativePosition;
 		}
 
@@ -46,8 +44,7 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 		{
 			var relativePosition = mousePosition - lastScalePosition;
 			lastScalePosition = mousePosition;
-			if (relativePosition == Point.Zero)
-				return;
+
 			currentDisplaySprite.Size =
 				new Size(
 					currentDisplaySprite.Size.Width + (currentDisplaySprite.Size.Width * relativePosition.Y),

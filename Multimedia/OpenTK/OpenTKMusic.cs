@@ -10,15 +10,6 @@ namespace DeltaEngine.Multimedia.OpenTK
 {
 	public class OpenTKMusic : Music
 	{
-		public OpenTKMusic(string filename, OpenTKSoundDevice soundDevice, Settings settings) : 
-			base(filename, soundDevice, settings)
-		{
-			openAL = soundDevice;
-			channelHandle = openAL.CreateChannel();
-			buffers = openAL.CreateBuffers(NumberOfBuffers);
-			bufferData = new byte[BufferSize];
-		}
-
 		private OpenTKSoundDevice openAL;
 		private int channelHandle;
 		private int[] buffers;
@@ -46,6 +37,15 @@ namespace DeltaEngine.Multimedia.OpenTK
 			}
 		}
 
+		public OpenTKMusic(string filename, OpenTKSoundDevice soundDevice, Settings settings)
+			: base(filename,soundDevice,settings)
+		{
+			openAL = soundDevice;
+			channelHandle = openAL.CreateChannel();
+			buffers = openAL.CreateBuffers(NumberOfBuffers);
+			bufferData = new byte[BufferSize];
+		}
+
 		protected override void LoadData(Stream fileData)
 		{
 			try
@@ -68,9 +68,8 @@ namespace DeltaEngine.Multimedia.OpenTK
 		{
 			musicStream.Rewind();
 			for (int index = 0; index < NumberOfBuffers; index++)
-				if (!Stream(buffers [index]))
+				if (!Stream(buffers[index]))
 					break;
-
 			openAL.Play(channelHandle);
 			openAL.SetVolume(channelHandle, volume);
 			playStartTime = DateTime.Now;
@@ -82,11 +81,12 @@ namespace DeltaEngine.Multimedia.OpenTK
 			EmptyBuffers();
 		}
 
-		private void EmptyBuffers()
+		protected override void DisposeData()
 		{
-			int queued = openAL.GetNumberOfBuffersQueued(channelHandle);
-			while (queued-- > 0)
-				openAL.UnqueueBufferFromChannel(channelHandle);
+			base.DisposeData();
+			openAL.DeleteBuffers(buffers);
+			openAL.DeleteChannel(channelHandle);
+			musicStream = null;
 		}
 
 		public override bool IsPlaying()
@@ -98,8 +98,16 @@ namespace DeltaEngine.Multimedia.OpenTK
 		{
 			if (UpdateBuffersAndCheckFinished())
 				Stop();
-			else if (!IsPlaying())
-				openAL.Play(channelHandle);
+			else
+				if (!IsPlaying())
+					openAL.Play(channelHandle);
+		}
+
+		private void EmptyBuffers()
+		{
+			int queued = openAL.GetNumberOfBuffersQueued(channelHandle);
+			while (queued-- > 0)
+				openAL.UnqueueBufferFromChannel(channelHandle);
 		}
 
 		private ChannelState GetState()
@@ -126,7 +134,6 @@ namespace DeltaEngine.Multimedia.OpenTK
 				int bytesRead = musicStream.Read(bufferData, BufferSize);
 				if (bytesRead == 0)
 					return false;
-
 				openAL.BufferData(buffer, format, bufferData, bytesRead, musicStream.Samplerate);
 				openAL.QueueBufferInChannel(buffer, channelHandle);
 			}
@@ -135,14 +142,6 @@ namespace DeltaEngine.Multimedia.OpenTK
 				return false;
 			}
 			return true;
-		}
-
-		protected override void DisposeData()
-		{
-			base.DisposeData();
-			openAL.DeleteBuffers(buffers);
-			openAL.DeleteChannel(channelHandle);
-			musicStream = null;
 		}
 	}
 }

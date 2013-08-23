@@ -29,7 +29,7 @@ namespace SideScroller.Tests
 		}
 
 		private PlayerPlane playerPlane;
-		private const string PlaneTextureName = "testplane";
+		private const string PlaneTextureName = "PlayerPlane";
 
 		[Test]
 		public void MovePlaneVertically()
@@ -84,6 +84,6 @@ namespace SideScroller.Tests
 			new EnemyPlane(foeTexture, new Point(1.2f, 0.5f));
 		}
 
-		private const string EnemyTextureName = "testplaneFlip";
+		private const string EnemyTextureName = "EnemyPlane";
 	}
 }

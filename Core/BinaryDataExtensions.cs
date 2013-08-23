@@ -95,7 +95,7 @@ namespace DeltaEngine.Core
 			{
 				shortName = type.FullName;
 				if (TypeMap.ContainsKey(shortName))
-					return;
+					return; //ncrunch: no coverage
 			}
 			ShortNames.Add(type, shortName);
 			TypeMap.Add(shortName, type);
@@ -168,7 +168,7 @@ namespace DeltaEngine.Core
 			throw new UnknownMessageTypeReceived(shortName); //ncrunch: no coverage
 		}
 
-		internal class NotEnoughDataLeftInStream : Exception
+		public class NotEnoughDataLeftInStream : Exception
 		{
 			public NotEnoughDataLeftInStream(long length)
 				: base("Length=" + length) {}
@@ -178,13 +178,13 @@ namespace DeltaEngine.Core
 		{
 			return new Version(r.ReadByte(), r.ReadByte(), r.ReadByte(), r.ReadByte());
 		}
-		//ncrunch: no coverage start
+
 		public class UnknownMessageTypeReceived : Exception
 		{
 			public UnknownMessageTypeReceived(string message)
 				: base(message) {}
 		}
-		//ncrunch: no coverage end
+
 		public static MemoryStream SaveToMemoryStream(object binaryData)
 		{
 			var data = new MemoryStream();

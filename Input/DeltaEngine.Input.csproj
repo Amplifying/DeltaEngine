@@ -42,6 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="MouseDoubleClickTrigger.cs" />
+    <Compile Include="TouchDragDropTrigger.cs" />
     <Compile Include="MouseTapTrigger.cs" />
     <Compile Include="TouchPositionTrigger.cs" />
     <Compile Include="TouchMovementTrigger.cs" />
@@ -50,6 +52,7 @@
     <Compile Include="TouchDragTrigger.cs" />
     <Compile Include="TouchFlickTrigger.cs" />
     <Compile Include="TouchDoubleTapTrigger.cs" />
+    <Compile Include="TouchRotateTrigger.cs" />
     <Compile Include="TouchTapTrigger.cs" />
     <Compile Include="KeyboardControllable.cs" />
     <Compile Include="TouchMessage.cs" />

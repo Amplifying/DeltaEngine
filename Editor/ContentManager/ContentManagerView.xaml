@@ -59,13 +59,13 @@
 			<ColumnDefinition Width="30" />
 			<ColumnDefinition Width="12" />
 			<ColumnDefinition />
-			<ColumnDefinition Width="30"/>
+			<ColumnDefinition Width="30" />
 			<ColumnDefinition Width="12" />
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="12" />
-			<RowDefinition Height="30"/>
-			<RowDefinition Height="12"/>
+			<RowDefinition Height="30" />
+			<RowDefinition Height="12" />
 			<RowDefinition Height="30" />
 			<RowDefinition Height="14" />
 			<RowDefinition Height="28" />
@@ -80,7 +80,8 @@
 			Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="4">
 			<ListBox.ContextMenu>
 				<ContextMenu>
-					<MenuItem Header="Delete" Click="DeleteSelectedImage"></MenuItem>
+					<MenuItem Header="Delete" Click="DeleteSelectedImage" />
+					<MenuItem Header="Delete all images in animation" Click="DeleteSelectedImageAnimation" IsEnabled="{Binding Path=IsAnimation}"/>
 				</ContextMenu>
 			</ListBox.ContextMenu>
 		</ListBox>
@@ -97,8 +98,8 @@
 		<Button Content="?" Grid.Column="4" Grid.Row="1" Style="{StaticResource DeltaButton}" FontSize="20" FontWeight="Bold">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-					<GradientStop Color="#FFA0A0A0" Offset="0"/>
-					<GradientStop Color="#FF8B8B8B" Offset="1"/>
+					<GradientStop Color="#FFA0A0A0" Offset="0" />
+					<GradientStop Color="#FF8B8B8B" Offset="1" />
 				</LinearGradientBrush>
 			</Button.Background>
 		</Button>

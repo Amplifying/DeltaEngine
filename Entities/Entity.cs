@@ -193,6 +193,11 @@ namespace DeltaEngine.Entities
 			return tags.Contains(tag);
 		}
 
+		public List<string> GetTags()
+		{
+			return tags;
+		}
+
 		public override string ToString()
 		{
 			return (IsActive ? "" : "<Inactive> ") + GetType().Name +

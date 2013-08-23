@@ -8,28 +8,30 @@
 	d:DesignHeight="800" d:DesignWidth="400">
 	<ScrollViewer>
 		<Grid Background="#FFF0F0F0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="12"/>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="12"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="9*"/>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="12"/>
-                <RowDefinition Height="177"/>
-                <RowDefinition Height="12"/>
-                <RowDefinition Height="199*"/>
-                <RowDefinition Height="12"/>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="295*"/>
-            </Grid.RowDefinitions>
-            <ComboBox Margin="1,0,0,0" ItemsSource="{Binding Path=ProjectList}"
-			          SelectedItem="{Binding Path=SelectedProject}" Grid.Row="1" Grid.Column="1" FontFamily="Arial" FontSize="16"/>
-			<ListBox Margin="1,0,0,0" ItemsSource="{Binding Path=UIImagesInList}"
-							 SelectedItem="{Binding Path=SelectedImageInList}" Grid.Row="3" Grid.Column="1" FontFamily="Arial" FontSize="18"/>
-			<ListBox Margin="1,0,10,0" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" FontFamily="Arial" FontSize="18"/>
-			<Button Margin="1,0,10,0" Content="Add Image" Click="AddImage" Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2" FontFamily="Arial" FontSize="16" FontWeight="Bold"/>
-        </Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="12"/>
+				<ColumnDefinition Width="180*"/>
+				<ColumnDefinition Width="12*"/>
+				<ColumnDefinition Width="180*"/>
+				<ColumnDefinition Width="12"/>
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="9*"/>
+				<RowDefinition Height="200"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="200"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="295*"/>
+			</Grid.RowDefinitions>
+			<ListBox Margin="1,0,0,0" ItemsSource="{Binding Path=ContentImageListList}"
+							 SelectedItem="{Binding Path=SelectedImageInList}" Grid.Row="1" Grid.Column="1" 
+							 FontFamily="Arial" FontSize="18" Grid.ColumnSpan="3"/>
+			<ListBox Margin="1,0,10,0" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" FontFamily="Arial" 
+							 FontSize="18" SelectedItem="{Binding Path=SelectedSpriteNameInList}"
+							 ItemsSource="{Binding Path=UIImagesInList}" SelectedIndex="{Binding Path=SpriteListIndex}"/>
+			<Button Content="Add Image" Click="AddImage" Grid.Row="5" Grid.Column="1" FontFamily="Arial" FontSize="16" FontWeight="Bold"/>
+			<Button Content="Remove Image" Click="RemoveImage" Grid.Row="5" Grid.Column="3" FontFamily="Arial" FontSize="16" FontWeight="Bold"/>
+		</Grid>
 	</ScrollViewer>
 </UserControl>

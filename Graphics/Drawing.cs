@@ -106,6 +106,13 @@ namespace DeltaEngine.Graphics
 		/// Adds presorted material DrawableEntities calls. Rendering happens after all vertices have
 		/// been added at the end of the frame in <see cref="DrawEverythingInCurrentLayer"/>.
 		/// </summary>
+		public void Add<T>(Shader shader, Image image, T[] vertices, short[] indices = null,
+			int numberOfVerticesUsed = 0, int numberOfIndicesUsed = 0) where T : struct, Vertex
+		{
+			GetDrawBuffer(shader, image.BlendMode).Add(image, vertices, indices, numberOfVerticesUsed,
+				numberOfIndicesUsed);
+		}
+
 		public void Add<T>(Material material, BlendMode blendMode, T[] vertices,
 			short[] indices = null, int numberOfVerticesUsed = 0, int numberOfIndicesUsed = 0)
 			where T : struct, Vertex

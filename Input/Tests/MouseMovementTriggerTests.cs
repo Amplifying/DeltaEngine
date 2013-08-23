@@ -35,14 +35,14 @@ namespace DeltaEngine.Input.Tests
 		public void Create()
 		{
 			var trigger = new MouseMovementTrigger();
-			Assert.AreEqual(Point.Unused, trigger.Position);
+			Assert.AreEqual(Point.Zero, trigger.Position);
 		}
 
 		[Test, CloseAfterFirstFrame]
 		public void CreateFromString()
 		{
 			var trigger = new MouseMovementTrigger("");
-			Assert.AreEqual(Point.Unused, trigger.Position);
+			Assert.AreEqual(Point.Zero, trigger.Position);
 			Assert.Throws<MouseMovementTrigger.MouseMovementTriggerHasNoParameters>(
 				() => new MouseMovementTrigger("a"));
 		}

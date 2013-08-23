@@ -40,28 +40,15 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Content\Xml\DeltaEngine.Content.Xml.csproj">
-      <Project>{138A40B5-3D80-4BA3-BD84-D82C151EE7FE}</Project>
-      <Name>DeltaEngine.Content.Xml</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\DeltaEngine.csproj">
       <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
       <Name>DeltaEngine %28DeltaEngine\DeltaEngine%29</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Networking\Messages\DeltaEngine.Networking.Messages.csproj">
-      <Project>{74863E62-A568-4C0A-A37F-F04BFA8EB9DB}</Project>
-      <Name>DeltaEngine.Networking.Messages</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
-      <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
-      <Name>DeltaEngine.Rendering</Name>
     </ProjectReference>
     <ProjectReference Include="..\Core\DeltaEngine.Editor.Core.csproj">
       <Project>{C667C7FC-A1C7-4CBC-98C0-C97F776E4570}</Project>

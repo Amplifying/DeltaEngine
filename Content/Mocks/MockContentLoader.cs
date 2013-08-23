@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using DeltaEngine.Commands;
 using DeltaEngine.Content.Xml;
 using DeltaEngine.Extensions;
 
@@ -89,41 +91,99 @@ namespace DeltaEngine.Content.Mocks
 		private static XmlFile CreateInputCommandXml()
 		{
 			var inputSettings = new XmlData("InputSettings");
-			var exit = new XmlData("Command").AddAttribute("Name", "Exit");
-			exit.AddChild("KeyTrigger", "Escape");
-			inputSettings.AddChild(exit);
-			var click = new XmlData("Command").AddAttribute("Name", "Click");
-			click.AddChild("KeyTrigger", "Space");
-			click.AddChild("MouseButtonTrigger", "Left");
-			click.AddChild("TouchPressTrigger", "");
-			click.AddChild("GamePadButtonTrigger", "A");
-			inputSettings.AddChild(click);
-			var moveLeft = new XmlData("Command").AddAttribute("Name", "MoveLeft");
-			moveLeft.AddChild("KeyTrigger", "CursorLeft Pressed");
-			moveLeft.AddChild("KeyTrigger", "A");
-			moveLeft.AddChild("GamePadAnalogTrigger", "LeftThumbStick");
-			inputSettings.AddChild(moveLeft);
-			var moveRight = new XmlData("Command").AddAttribute("Name", "MoveRight");
-			moveRight.AddChild("KeyTrigger", "CursorRight Pressed");
-			moveRight.AddChild("KeyTrigger", "D");
-			moveRight.AddChild("GamePadAnalogTrigger", "RightThumbStick");
-			inputSettings.AddChild(moveRight);
-			var moveDirectly = new XmlData("Command").AddAttribute("Name", "MoveDirectly");
-			moveDirectly.AddChild("MousePositionTrigger", "Left");
-			moveDirectly.AddChild(new XmlData("TouchPressTrigger"));
-			inputSettings.AddChild(moveDirectly);
+			AddToInputCommandXml(inputSettings, Command.Exit, new MockCommand("KeyTrigger", "Escape"));
+			AddToInputCommandsXml(inputSettings, Command.Click,
+				new List<MockCommand>
+				{
+					new MockCommand("KeyTrigger", "Space"),
+					new MockCommand("MouseButtonTrigger", "Left"),
+					new MockCommand("TouchPressTrigger", ""),
+					new MockCommand("GamePadButtonTrigger", "A")
+				});
+			AddToInputCommandXml(inputSettings, Command.MiddleClick,
+				new MockCommand("MouseButtonTrigger", "Middle"));
+			AddToInputCommandXml(inputSettings, Command.RightClick,
+				new MockCommand("MouseButtonTrigger", "Right"));
+			AddToInputCommandsXml(inputSettings, Command.MoveLeft,
+				new List<MockCommand>
+				{
+					new MockCommand("KeyTrigger", "CursorLeft Pressed"),
+					new MockCommand("KeyTrigger", "A"),
+					new MockCommand("GamePadAnalogTrigger", "LeftThumbStick")
+				});
+			AddToInputCommandsXml(inputSettings, Command.MoveRight,
+				new List<MockCommand>
+				{
+					new MockCommand("KeyTrigger", "CursorRight Pressed"),
+					new MockCommand("KeyTrigger", "D"),
+					new MockCommand("GamePadAnalogTrigger", "RightThumbStick")
+				});
+			AddToInputCommandXml(inputSettings, Command.MoveUp,
+				new MockCommand("KeyTrigger", "CursorUp Pressed"));
+			AddToInputCommandXml(inputSettings, Command.MoveDown,
+				new MockCommand("KeyTrigger", "CursorDown Pressed"));
+			AddToInputCommandsXml(inputSettings, Command.MoveDirectly,
+				new List<MockCommand>
+				{
+					new MockCommand("MousePositionTrigger", "Left"),
+					new MockCommand("TouchPressTrigger", "")
+				});
+			AddToInputCommandXml(inputSettings, Command.RotateDirectly,
+				new MockCommand("GamePadAnalogTrigger", "RightThumbStick"));
+			AddToInputCommandXml(inputSettings, Command.Back,
+				new MockCommand("KeyTrigger", "Backspace Pressed"));
+			AddToInputCommandXml(inputSettings, Command.Drag,
+				new MockCommand("MouseDragTrigger", "Left Pressed"));
+			AddToInputCommandXml(inputSettings, Command.Flick, new MockCommand("TouchFlickTrigger", ""));
+			AddToInputCommandXml(inputSettings, Command.Pinch, new MockCommand("TouchPinchTrigger", ""));
+			AddToInputCommandXml(inputSettings, Command.Hold, new MockCommand("TouchHoldTrigger", ""));
+			AddToInputCommandXml(inputSettings, Command.DoubleClick,
+				new MockCommand("MouseDoubleClickTrigger", "Left"));
+			AddToInputCommandXml(inputSettings, Command.Rotate, new MockCommand("TouchRotateTrigger", ""));
 			return new XmlFile(inputSettings);
 		}
 
-		protected override ContentMetaData GetMetaData(string contentName, Type contentClassType = null)
+		private static void AddToInputCommandXml(XmlData inputSettings, string commandName,
+			MockCommand command)
 		{
-			if (contentName.Equals("UnavailableImage"))
+			var entry = new XmlData("Command").AddAttribute("Name", commandName);
+			entry.AddChild(command.Trigger, command.Command);
+			inputSettings.AddChild(entry);
+		}
+
+		private struct MockCommand
+		{
+			public MockCommand(string trigger, string command)
+			{
+				Trigger = trigger;
+				Command = command;
+			}
+
+			public readonly string Trigger;
+			public readonly string Command;
+		}
+
+		private static void AddToInputCommandsXml(XmlData inputSettings, string commandName,
+			IEnumerable<MockCommand> commands)
+		{
+			var entry = new XmlData("Command").AddAttribute("Name", commandName);
+			foreach (var command in commands)
+				entry.AddChild(command.Trigger, command.Command);
+			inputSettings.AddChild(entry);
+		}
+
+		protected override ContentMetaData GetMetaData(string contentName,
+			Type contentClassType = null)
+		{
+			if (contentName.StartsWith("Unavailable"))
 				return null;
 			ContentType contentType = ConvertClassTypeToContentType(contentClassType);
 			if (contentType == ContentType.Material)
 				return CreateMaterialMetaData(contentName);
 			if (contentName.Contains("SpriteSheet") || contentType == ContentType.SpriteSheetAnimation)
 				return CreateSpriteSheetAnimationMetaData(contentName);
+			if (contentName == "ImageAnimationNoImages")
+				return CreateImageAnimationNoImagesMetaData(contentName);
 			if (contentName == "ImageAnimation" || contentType == ContentType.ImageAnimation)
 				return CreateImageAnimationMetaData(contentName);
 			if (contentType == ContentType.Image)
@@ -152,8 +212,15 @@ namespace DeltaEngine.Content.Mocks
 		private static ContentMetaData CreateMaterialMetaData(string name)
 		{
 			var metaData = new ContentMetaData { Name = name, Type = ContentType.Material };
-			metaData.Values.Add("ShaderName", "Position2DUv");
-			metaData.Values.Add("ImageOrAnimationName", "DeltaEngineLogo");
+			if (!name.Contains("NoShader"))
+				metaData.Values.Add("ShaderName", "Position2DUv");
+			if (!name.Contains("NoImage"))
+				if (name.Contains("ImageAnimation"))
+					metaData.Values.Add("ImageOrAnimationName", "ImageAnimation");
+				else if (name.Contains("SpriteSheet"))
+					metaData.Values.Add("ImageOrAnimationName", "SpriteSheet");
+				else
+					metaData.Values.Add("ImageOrAnimationName", "DeltaEngineLogo");
 			return metaData;
 		}
 
@@ -170,6 +237,14 @@ namespace DeltaEngine.Content.Mocks
 		{
 			var metaData = new ContentMetaData { Name = name, Type = ContentType.ImageAnimation };
 			metaData.Values.Add("ImageNames", "ImageAnimation01,ImageAnimation02,ImageAnimation03");
+			metaData.Values.Add("DefaultDuration", "3");
+			return metaData;
+		}
+
+		private static ContentMetaData CreateImageAnimationNoImagesMetaData(string name)
+		{
+			var metaData = new ContentMetaData { Name = name, Type = ContentType.ImageAnimation };
+			metaData.Values.Add("ImageNames", "");
 			metaData.Values.Add("DefaultDuration", "3");
 			return metaData;
 		}

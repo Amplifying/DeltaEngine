@@ -66,10 +66,6 @@
       <Project>{8F701B0D-48B6-45CF-85E0-286BD53328BA}</Project>
       <Name>DeltaEngine.Graphics</Name>
     </ProjectReference>
-    <ProjectReference Include="Platforms\TestWithOpenTK20\DeltaEngine.TestWithOpenTK20.csproj">
-      <Project>{3A3D2E3E-FCD6-40A4-8F4E-36F3D173AB41}</Project>
-      <Name>DeltaEngine.TestWithOpenTK20</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Platforms\TestWithOpenTK20\DeltaEngine.TestWithOpenTK20.csproj">
       <Project>{3A3D2E3E-FCD6-40A4-8F4E-36F3D173AB41}</Project>
       <Name>DeltaEngine.TestWithOpenTK20</Name>

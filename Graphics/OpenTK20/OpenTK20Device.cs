@@ -1,37 +1,27 @@
 ﻿using System;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Graphics.Vertices;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Platform;
+using DeltaEngine.Graphics.Vertices;
 
 namespace DeltaEngine.Graphics.OpenTK20
 {
 	public sealed class OpenTK20Device : Device
 	{
-		public OpenTK20Device(Window window) : base(window)
-		{
-			windowInfo = Utilities.CreateWindowsWindowInfo((IntPtr)window.Handle);
-			CreateContext();
-		}
-
 		private readonly IWindowInfo windowInfo;
-
-		public GraphicsContext Context
-		{
-			get;
-			private set;
-		}
-
 		private BlendMode currentBlendMode = BlendMode.Opaque;
 		private bool isTexturingEnabled;
 		public const int InvalidHandle = -1;
 
-		public override CircularBuffer CreateCircularBuffer(ShaderWithFormat shader, BlendMode 
-			blendMode, VerticesMode drawMode = VerticesMode.Triangles)
+		public GraphicsContext Context { get; private set; }
+
+		public OpenTK20Device(Window window)
+			: base(window)
 		{
-			return new OpenTK20CircularBuffer(this, shader, blendMode, drawMode);
+			windowInfo = Utilities.CreateWindowsWindowInfo((IntPtr)window.Handle);
+			CreateContext();
 		}
 
 		private void CreateContext()
@@ -43,7 +33,7 @@ namespace DeltaEngine.Graphics.OpenTK20
 			Context.LoadAll();
 			var version = GL.GetString(StringName.Version);
 			var extensions = GL.GetString(StringName.Extensions);
-			var majorVersion = int.Parse(version [0] + "");
+			var majorVersion = int.Parse(version[0] + "");
 			if (majorVersion < 3 || string.IsNullOrEmpty(extensions))
 				throw new OpenGLVersionDoesNotSupportShaders();
 		}
@@ -53,7 +43,6 @@ namespace DeltaEngine.Graphics.OpenTK20
 			var color = window.BackgroundColor;
 			if (color.A == 0)
 				return;
-
 			GL.ClearColor(color.RedValue, color.GreenValue, color.BlueValue, color.AlphaValue);
 			GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 		}
@@ -72,7 +61,6 @@ namespace DeltaEngine.Graphics.OpenTK20
 		{
 			if (currentBlendMode == blendMode)
 				return;
-
 			currentBlendMode = blendMode;
 			switch (blendMode)
 			{
@@ -117,15 +105,13 @@ namespace DeltaEngine.Graphics.OpenTK20
 			int bufferHandle;
 			GL.GenBuffers(1, out bufferHandle);
 			GL.BindBuffer(BufferTarget.ArrayBuffer, bufferHandle);
-			GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)sizeInBytes, IntPtr.Zero, 
-				GetBufferMode(mode));
+			GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)sizeInBytes, IntPtr.Zero, GetBufferMode(mode));
 			return bufferHandle;
 		}
 
 		private static BufferUsageHint GetBufferMode(OpenTK20BufferMode mode)
 		{
-			return mode == OpenTK20BufferMode.Static ? BufferUsageHint.StaticDraw : mode == 
-				OpenTK20BufferMode.Dynamic ? BufferUsageHint.DynamicDraw : BufferUsageHint.StreamDraw;
+			return mode == OpenTK20BufferMode.Static ? BufferUsageHint.StaticDraw : mode == OpenTK20BufferMode.Dynamic ? BufferUsageHint.DynamicDraw : BufferUsageHint.StreamDraw;
 		}
 
 		public void BindVertexBuffer(int bufferHandle)
@@ -133,11 +119,9 @@ namespace DeltaEngine.Graphics.OpenTK20
 			GL.BindBuffer(BufferTarget.ArrayBuffer, bufferHandle);
 		}
 
-		public void LoadVertexData<T>(int offset, T[] vertices, int vertexDataSizeInBytes) where T : 
-			struct
+		public void LoadVertexData<T>(int offset, T[] vertices, int vertexDataSizeInBytes) where T : struct
 		{
-			GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offset, (IntPtr)vertexDataSizeInBytes, 
-				vertices);
+			GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)offset, (IntPtr)vertexDataSizeInBytes, vertices);
 		}
 
 		public int CreateIndexBuffer(int sizeInBytes, OpenTK20BufferMode mode)
@@ -145,8 +129,7 @@ namespace DeltaEngine.Graphics.OpenTK20
 			int bufferHandle;
 			GL.GenBuffers(1, out bufferHandle);
 			GL.BindBuffer(BufferTarget.ElementArrayBuffer, bufferHandle);
-			GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)sizeInBytes, IntPtr.Zero, 
-				GetBufferMode(mode));
+			GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)sizeInBytes, IntPtr.Zero, GetBufferMode(mode));
 			return bufferHandle;
 		}
 
@@ -157,8 +140,7 @@ namespace DeltaEngine.Graphics.OpenTK20
 
 		public void LoadIndices(int offset, short[] indices, int indexDataSizeInBytes)
 		{
-			GL.BufferSubData(BufferTarget.ElementArrayBuffer, (IntPtr)offset, 
-				(IntPtr)(indexDataSizeInBytes), indices);
+			GL.BufferSubData(BufferTarget.ElementArrayBuffer, (IntPtr)offset, (IntPtr)(indexDataSizeInBytes), indices);
 		}
 
 		public void DeleteBuffer(int bufferHandle)
@@ -180,7 +162,6 @@ namespace DeltaEngine.Graphics.OpenTK20
 		{
 			if (isTexturingEnabled)
 				return;
-
 			isTexturingEnabled = true;
 			GL.Enable(EnableCap.Texture2D);
 		}
@@ -189,7 +170,6 @@ namespace DeltaEngine.Graphics.OpenTK20
 		{
 			if (isTexturingEnabled)
 				return;
-
 			isTexturingEnabled = false;
 			GL.Disable(EnableCap.Texture2D);
 		}
@@ -206,16 +186,14 @@ namespace DeltaEngine.Graphics.OpenTK20
 			GL.BindTexture(TextureTarget.Texture2D, glHandle);
 		}
 
-		public void LoadTexture(Size size, IntPtr data)
+		public void LoadTexture(Size size, IntPtr data, bool hasAlpha)
 		{
-			GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, (int)size.Width, 
-				(int)size.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, data);
+			GL.TexImage2D(TextureTarget.Texture2D, 0, hasAlpha ? PixelInternalFormat.Rgba : PixelInternalFormat.Rgb, (int)size.Width, (int)size.Height, 0, hasAlpha ? PixelFormat.Bgra : PixelFormat.Bgr, PixelType.UnsignedByte, data);
 		}
 
-		public void LoadTexture(Size size, byte[] data)
+		public void LoadTexture(Size size, byte[] data, bool hasAlpha)
 		{
-			GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, (int)size.Width, 
-				(int)size.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, data);
+			GL.TexImage2D(TextureTarget.Texture2D, 0, hasAlpha ? PixelInternalFormat.Rgba : PixelInternalFormat.Rgb, (int)size.Width, (int)size.Height, 0, hasAlpha ? PixelFormat.Bgra : PixelFormat.Bgr, PixelType.UnsignedByte, data);
 		}
 
 		public void DeleteTexture(int glHandle)
@@ -223,8 +201,7 @@ namespace DeltaEngine.Graphics.OpenTK20
 			GL.DeleteTextures(1, ref glHandle);
 		}
 
-		public void SetTextureSamplerState(bool disableLinearFiltering = false, bool allowTiling = 
-			false)
+		public void SetTextureSamplerState(bool disableLinearFiltering = false, bool allowTiling = false)
 		{
 			var minFilter = disableLinearFiltering ? TextureMinFilter.Nearest : TextureMinFilter.Linear;
 			var magFilter = disableLinearFiltering ? TextureMagFilter.Nearest : TextureMagFilter.Linear;
@@ -260,9 +237,7 @@ namespace DeltaEngine.Graphics.OpenTK20
 		{
 			int shader = GL.CreateShader(shaderType);
 			int codeLength = code.Length;
-			GL.ShaderSource(shader, 1, new[] {
-				code
-			}, ref codeLength);
+			GL.ShaderSource(shader, 1, new [] { code }, ref codeLength);
 			GL.CompileShader(shader);
 			return shader;
 		}
@@ -282,21 +257,16 @@ namespace DeltaEngine.Graphics.OpenTK20
 			return GL.GetAttribLocation(programHandle, attributeName);
 		}
 
-		public void DefineVertexAttributeWithFloats(int attributeLocation, int 
-			numberOfFloatComponents, int vertexTotalSize, int attributeOffsetInVertex)
+		public void DefineVertexAttributeWithFloats(int attributeLocation, int numberOfFloatComponents, int vertexTotalSize, int attributeOffsetInVertex)
 		{
 			GL.EnableVertexAttribArray(attributeLocation);
-			GL.VertexAttribPointer(attributeLocation, numberOfFloatComponents, 
-				VertexAttribPointerType.Float, false, vertexTotalSize, (IntPtr)attributeOffsetInVertex);
+			GL.VertexAttribPointer(attributeLocation, numberOfFloatComponents, VertexAttribPointerType.Float, false, vertexTotalSize, (IntPtr)attributeOffsetInVertex);
 		}
 
-		public void DefineVertexAttributeWithBytes(int attributeLocation, int numberOfByteComponents, 
-			int vertexTotalSize, int attributeOffsetInVertex)
+		public void DefineVertexAttributeWithBytes(int attributeLocation, int numberOfByteComponents, int vertexTotalSize, int attributeOffsetInVertex)
 		{
 			GL.EnableVertexAttribArray(attributeLocation);
-			GL.VertexAttribPointer(attributeLocation, numberOfByteComponents, 
-				VertexAttribPointerType.UnsignedByte, true, vertexTotalSize, 
-					(IntPtr)attributeOffsetInVertex);
+			GL.VertexAttribPointer(attributeLocation, numberOfByteComponents, VertexAttribPointerType.UnsignedByte, true, vertexTotalSize, (IntPtr)attributeOffsetInVertex);
 		}
 
 		public void SetUniformValue(int location, int value)
@@ -311,8 +281,7 @@ namespace DeltaEngine.Graphics.OpenTK20
 
 		public void DrawTriangles(int indexOffsetInBytes, int numberOfIndicesToRender)
 		{
-			GL.DrawElements(BeginMode.Triangles, numberOfIndicesToRender, 
-				DrawElementsType.UnsignedShort, (IntPtr)indexOffsetInBytes);
+			GL.DrawElements(BeginMode.Triangles, numberOfIndicesToRender, DrawElementsType.UnsignedShort, (IntPtr)indexOffsetInBytes);
 		}
 
 		public void DrawLines(int vertexOffset, int verticesCount)
@@ -322,9 +291,14 @@ namespace DeltaEngine.Graphics.OpenTK20
 
 		public void ReadPixels(Rectangle frame, byte[] bufferToStoreData)
 		{
-			GL.ReadPixels((int)frame.Left, (int)frame.Top, (int)frame.Width, (int)frame.Height, 
-				PixelFormat.Rgb, PixelType.UnsignedByte, bufferToStoreData);
+			GL.ReadPixels((int)frame.Left, (int)frame.Top, (int)frame.Width, (int)frame.Height, PixelFormat.Rgb, PixelType.UnsignedByte, bufferToStoreData);
 		}
+
+		public override CircularBuffer CreateCircularBuffer(ShaderWithFormat shader, BlendMode blendMode, VerticesMode drawMode = VerticesMode.Triangles)
+		{
+			return new OpenTK20CircularBuffer(this, shader, blendMode, drawMode);
+		}
+
 		private class OpenGLVersionDoesNotSupportShaders : Exception
 		{
 		}

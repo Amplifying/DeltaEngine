@@ -71,17 +71,16 @@ namespace DeltaEngine.Graphics.Tests
 			Assert.AreEqual(new Size(128, 128), image.PixelSize);
 		}
 
-		//ncrunch: no coverage start
 		[Test]
 		public void ShouldThrowIfImageNotLoadedWithDebuggerAttached()
 		{
+			//ncrunch: no coverage start
 			if (Debugger.IsAttached)
 				Assert.Throws<ContentLoader.ContentNotFound>(
 					() => ContentLoader.Load<Image>("UnavailableImage"));
+			//ncrunch: no coverage end
 			RunTestAndDisposeResolverWhenDone();
 		}
-
-		//ncrunch: no coverage end
 
 		[Test, ApproveFirstFrameScreenshot]
 		public void DrawDefaultTexture()

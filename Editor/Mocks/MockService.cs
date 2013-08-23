@@ -31,22 +31,30 @@ namespace DeltaEngine.Editor.Mocks
 
 		public IEnumerable<string> GetAllContentNames()
 		{
-			return new List<string>();
+			var list = new List<string>();
+			list.Add("Test1");
+			list.Add("Test2");
+			return list;
 		}
 
 		public IEnumerable<string> GetAllContentNamesByType(ContentType type)
 		{
-			return new List<string>();
+			var list = new List<string>();
+			list.Add("Test1");
+			list.Add("Test2");
+			return list;
 		}
 
 		public ContentType? GetTypeOfContent(string content)
 		{
+			if ("TestUser" == content)
+				return null;
 			return ContentType.Image;
 		}
 
 		public void UploadContent(ContentMetaData metaData,
 			Dictionary<string, byte[]> optionalFileData = null) {}
 
-		public void DeleteContent(string selectedContent) {}
+		public void DeleteContent(string selectedContent, bool deleteSubContent) { }
 	}
 }

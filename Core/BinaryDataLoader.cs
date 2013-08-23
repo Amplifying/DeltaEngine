@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using DeltaEngine.Content;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Core
 {
@@ -21,13 +22,13 @@ namespace DeltaEngine.Core
 			{
 				return CreateAndLoadTopLevelType(typeToCreate, reader, dataVersion);
 			}
-			catch (TypeLoadException ex)
+			catch (TypeLoadException ex) //ncrunch: no coverage start
 			{
 				throw new Exception(
 					"Failed to load inner type of '" + typeToCreate + "' (Version " + dataVersion + "). " +
-						"Your data might be outdated '" + subTypeToCreate + "'. Try to delete your local content",
+					"Your data might be outdated '" + subTypeToCreate + "'. Try to delete your local content",
 					ex);
-			}
+			} //ncrunch: no coverage end
 			catch (MissingMethodException ex)
 			{
 				throw new MissingMethodException(
@@ -36,8 +37,8 @@ namespace DeltaEngine.Core
 			}
 			catch (Exception ex)
 			{
-				throw new Exception("Failed to load '" + typeToCreate + "' (Version " + dataVersion + ").",
-					ex);
+				throw new Exception(
+					"Failed to load '" + typeToCreate + "' (Version " + dataVersion + ").", ex);
 			}
 		}
 
@@ -46,7 +47,8 @@ namespace DeltaEngine.Core
 		{
 			topLevelTypeToCreate = typeToCreate;
 			nestingDepth = 0;
-			if (dataVersion != null && typeToCreate.Assembly.GetName().Version != dataVersion)
+			if (ExceptionExtensions.IsDebugMode && dataVersion != null &&
+				typeToCreate.Assembly.GetName().Version != dataVersion)
 				Logger.Warning("Version " + dataVersion + " of data to load is different from the type " +
 					"to be created: " + typeToCreate + " (" + typeToCreate.Assembly.GetName().Version + ")");
 			return CreateAndLoad(typeToCreate, reader);
@@ -90,7 +92,8 @@ namespace DeltaEngine.Core
 			{
 				var contentName = reader.ReadString();
 				data = ContentLoader.Load(type, contentName);
-				return;
+				if (!contentName.StartsWith("<Generated"))
+					return;
 			}
 			if (type.IsEnum)
 			{

@@ -38,10 +38,7 @@ namespace Asteroids.Tests
 		public void FireRocket()
 		{
 			bool firedRocket = false;
-			playerShip.ProjectileFired += projectile =>
-			{
-				firedRocket = true;
-			};
+			playerShip.ProjectileFired += () => { firedRocket = true; };
 			playerShip.IsFiring = true;
 			AdvanceTimeAndUpdateEntities(1 / 0.003f);
 			Assert.IsTrue(firedRocket);
@@ -50,14 +47,13 @@ namespace Asteroids.Tests
 		[Test]
 		public void HittingBordersTopLeft()
 		{
-			playerShip.Set(new Rectangle(ScreenSpace.Current.TopLeft - new Point(0.1f, 0.1f),
-				PlayerShip.PlayerShipSize));
+			playerShip.Set(new Rectangle(ScreenSpace.Current.TopLeft - new Point(0.1f, 0.1f), new Size(.05f)));
 		}
 
 		[Test]
 		public void HittingBordersBottomRight()
 		{
-			playerShip.Set(new Rectangle(ScreenSpace.Current.BottomRight, PlayerShip.PlayerShipSize));
+			playerShip.Set(new Rectangle(ScreenSpace.Current.BottomRight, new Size(.05f)));
 		}
 	}
 }

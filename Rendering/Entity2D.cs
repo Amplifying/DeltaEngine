@@ -14,10 +14,11 @@ namespace DeltaEngine.Rendering
 
 		public Entity2D(Rectangle drawArea)
 		{
-			DrawArea = drawArea;
+			LastDrawArea = DrawArea = drawArea;
 		}
 
 		public Rectangle DrawArea { get; set; }
+		public Rectangle LastDrawArea { get; set; }
 
 		public Point TopLeft
 		{
@@ -74,7 +75,6 @@ namespace DeltaEngine.Rendering
 		}
 
 		protected bool DidFootprintChange { get; private set; }
-		public Rectangle LastDrawArea { get; set; }
 
 		private float GetLastRotation()
 		{

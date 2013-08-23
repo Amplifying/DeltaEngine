@@ -3,12 +3,27 @@ using DeltaEngine.Commands;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Mocks;
+using DeltaEngine.Platforms.Mocks;
 using NUnit.Framework;
 
 namespace DeltaEngine.Tests.Commands
 {
 	public class CommandTests
 	{
+		[SetUp]
+		public void InitializeResolver()
+		{
+			resolver = new MockResolver();
+		}
+
+		private MockResolver resolver;
+
+		[TearDown]
+		public void RunTestAndDisposeResolverWhenDone()
+		{
+			resolver.Dispose();
+		}
+
 		[Test]
 		public void CreateCommandWithManualTrigger()
 		{
@@ -28,7 +43,8 @@ namespace DeltaEngine.Tests.Commands
 			Assert.AreEqual(0.0f, pos);
 		}
 
-		private void InvokingTriggerOnceWithMultipleRunsOnlyCausesOneAction(MockEntitiesRunner entities)
+		private void InvokingTriggerOnceWithMultipleRunsOnlyCausesOneAction(
+			MockEntitiesRunner entities)
 		{
 			customTrigger.Invoke();
 			entities.RunEntities();
@@ -40,7 +56,7 @@ namespace DeltaEngine.Tests.Commands
 		[Test]
 		public void UnableToRegisterCommandWithoutNameOrTriggers()
 		{
-			Assert.Throws<ArgumentNullException>(()=>Command.Register("", null));
+			Assert.Throws<ArgumentNullException>(() => Command.Register("", null));
 			Assert.Throws<Command.UnableToRegisterCommandWithoutTriggers>(
 				() => Command.Register("a", null));
 		}
@@ -58,8 +74,8 @@ namespace DeltaEngine.Tests.Commands
 		public void CommandNameMustBeRegisteredToCreateANewCommand()
 		{
 			new MockEntitiesRunner(typeof(MockUpdateBehavior));
-			Assert.Throws<Command.CommandNameWasNotRegistered>(() =>
-				new Command("UnregisteredCommand", (Action)null));
+			Assert.Throws<Command.CommandNameWasNotRegistered>(
+				() => new Command("UnregisteredCommand", (Action)null));
 		}
 
 		[Test]
@@ -92,7 +108,7 @@ namespace DeltaEngine.Tests.Commands
 			var trigger = new MockTrigger();
 			Command.Register(CommandName, trigger);
 			actionPerformed = false;
-			new Command(CommandName, (Rectangle rectangle) => actionPerformed = true);
+			new Command(CommandName, (start, end, dragDone) => actionPerformed = true);
 			AssertActionPerformed(trigger, entities);
 		}
 

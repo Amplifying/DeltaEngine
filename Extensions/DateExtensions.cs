@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace DeltaEngine.Extensions
 {
@@ -25,11 +26,13 @@ namespace DeltaEngine.Extensions
 
 		public static DateTime Parse(string dateString)
 		{
-			if (dateString.Contains(" "))
-				return GetDateTimeFromString(dateString);
+			string trimmedDateString = dateString != null ? dateString.Trim() : "";
+			if (trimmedDateString.Length == 0)
+				return DateTime.MinValue;
 			try
 			{
-				return TryParseDate(dateString);
+				return trimmedDateString.Contains(" ")
+					? GetDateTimeFromString(trimmedDateString) : TryParseDate(trimmedDateString);
 			}
 			catch
 			{
@@ -37,67 +40,53 @@ namespace DeltaEngine.Extensions
 			}
 		}
 
-		private static DateTime TryParseDate(string dateString)
+		private static DateTime TryParseDate(string trimmedDateString)
 		{
-			DateTime returnDate = DateTime.MinValue;
-			string[] parts = dateString.SplitAndTrim('.');
-			if (parts.Length >= 3)
-				returnDate = new DateTime(Convert.ToInt32(parts[2]), Convert.ToInt32(parts[1]),
-					Convert.ToInt32(parts[0]));
-			else if (parts.Length == 1)
-			{
-				parts = dateString.SplitAndTrim('-');
-				if (parts.Length >= 3)
-					returnDate = new DateTime(Convert.ToInt32(parts[0]), Convert.ToInt32(parts[1]),
-						Convert.ToInt32(parts[2]));
-				else
-				{
-					parts = dateString.SplitAndTrim('/');
-					if (parts.Length >= 3)
-						returnDate = new DateTime(Convert.ToInt32(parts[2]), Convert.ToInt32(parts[0]),
-							Convert.ToInt32(parts[1]));
-					else
-						returnDate = new DateTime(Convert.ToInt32(parts[0]), 1, 1);
-				}
-			}
-			return returnDate;
+			string[] dateParts = trimmedDateString.SplitAndTrim('.');
+			if (dateParts.Length >= 3)
+				return GetPureDate(dateParts[2], dateParts[1], dateParts[0]);
+			dateParts = trimmedDateString.SplitAndTrim('-');
+			if (dateParts.Length >= 3)
+				return GetPureDate(dateParts[0], dateParts[1], dateParts[2]);
+			dateParts = trimmedDateString.SplitAndTrim('/');
+			return dateParts.Length >= 3
+				? GetPureDate(dateParts[2], dateParts[0], dateParts[1]) : GetPureDate(dateParts[0]);
 		}
+
+		private static DateTime GetPureDate(string year, string month = "1", string day = "1")
+		{
+			if (year.Length < NumberOfYearDigits && day.Length < NumberOfYearDigits)
+			{
+				return GetDateTimeForFormattedCurrentTimeString(day, month, year);
+			}
+			return new DateTime(Convert.ToInt32(year), Convert.ToInt32(month), Convert.ToInt32(day));
+		}
+
+		private static DateTime GetDateTimeForFormattedCurrentTimeString(string year, string month,
+			string day)
+		{
+			return new DateTime(Convert.ToInt32("20" + year), (int)Enum.Parse(typeof(Months), month),
+				Convert.ToInt32(day));
+		}
+
+		private const int NumberOfYearDigits = 4;
 
 		private static DateTime GetDateTimeFromString(string dateTimeString)
 		{
-			if (dateTimeString.Trim().Length == 0)
-				return DateTime.Now;
-			try
-			{
-				return TryParseDateTime(dateTimeString);
-			}
-			catch
-			{
-				DateTime date;
-				DateTime.TryParse(dateTimeString, out date);
-				return date;
-			}
-		}
-
-		private static DateTime TryParseDateTime(string dateTimeString)
-		{
 			string[] dateAndTime = dateTimeString.Split(new[] { ' ', ':' });
 			DateTime date = Parse(dateAndTime[0]);
-			if (dateAndTime.Length == 5)
-			{
-				if (dateAndTime[4].Contains("PM"))
-					date = ConvertToTime(date, dateAndTime, 12);
-			}
-			else if (dateAndTime.Length >= 3)
-				date = ConvertToTime(date, dateAndTime);
+			if (dateAndTime.Length == 5 && dateAndTime[4].Contains("PM"))
+				return ConvertToTime(date, dateAndTime, 12);
+			if (dateAndTime.Length >= 3)
+				return ConvertToTime(date, dateAndTime);
 			return date;
 		}
 
-		private static DateTime ConvertToTime(DateTime date, string[] dateAndTime, int addForPm = 0)
+		private static DateTime ConvertToTime(DateTime date, IList<string> dateAndTime, int addForPm = 0)
 		{
 			date = date.AddHours(Convert.ToInt32(dateAndTime[1]) + Convert.ToInt32(addForPm));
 			date = date.AddMinutes(Convert.ToInt32(dateAndTime[2]));
-			if (dateAndTime.Length >= 4)
+			if (dateAndTime.Count >= 4)
 				date = date.AddSeconds(Convert.ToInt32(dateAndTime[3].Replace("Z", "")));
 			return date;
 		}
@@ -105,6 +94,22 @@ namespace DeltaEngine.Extensions
 		public static bool IsDateNewer(DateTime newerDate, DateTime olderDate)
 		{
 			return newerDate.CompareTo(olderDate) > 0;
+		}
+
+		private enum Months
+		{
+			Jan = 1,
+			Feb = 2,
+			Mar = 3,
+			Apr = 4,
+			May = 5,
+			Jun = 6,
+			Jul = 7,
+			Aug = 8,
+			Sep = 9,
+			Oct = 10,
+			Nov = 11,
+			Dec = 12
 		}
 	}
 }

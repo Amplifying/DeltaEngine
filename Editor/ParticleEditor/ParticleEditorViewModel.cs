@@ -34,30 +34,25 @@ namespace DeltaEngine.Editor.ParticleEditor
 
 		private void SetUpStartEmitterData()
 		{
-			EmitterCreator = new ParticleEmitterCreator
+			EmitterData = new ParticleEffectData
 			{
 				SpawnInterval = 0.01f,
 				LifeTime = 1,
-				Force = new Point(0, 0),
-				StartVelocity = new Point(0, -0.3f),
-				StartVelocityVariance = new Point(0.1f, 0),
-				Size = new Range<Size>(new Size(0.01f, 0.01f), new Size(0, 0)),
-				MaximumNumberOfParticles = 500,
-				StartColor = Color.White,
-				StartRotation = 0,
-				RotationForce = 0
+				StartVelocity = new RangeGraph<Point>(new Point(0, -0.3f), new Point(0, -0.3f)),
+				Size = new RangeGraph<Size>(new Size(0.01f, 0.01f), new Size(0, 0)),
+				MaximumNumberOfParticles = 500
 			};
 			RaisePropertyChanged("EmitterCreator");
 		}
 
-		public ParticleEmitterCreator EmitterCreator { get; set; }
+		public ParticleEffectData EmitterData { get; set; }
 
 		private void CreateParticle()
 		{
 			EntitiesRunner.Current.Clear();
-			if (EmitterCreator.ParticleMaterial == null)
+			if (EmitterData.ParticleMaterial == null)
 				return;
-			emitter = new ParticleEmitter(EmitterCreator, position);
+			emitter = new ParticleEmitter(EmitterData, position);
 		}
 
 		public ParticleEmitter emitter;
@@ -103,7 +98,7 @@ namespace DeltaEngine.Editor.ParticleEditor
 				RaisePropertyChanged("SelectedMaterial");
 				if (emitter != null)
 					emitter.IsActive = false;
-				EmitterCreator.ParticleMaterial = ContentLoader.Load<Material>(value);
+				EmitterData.ParticleMaterial = ContentLoader.Load<Material>(value);
 				RaisePropertyChanged("EmitterData");
 				CreateParticle();
 			}
@@ -113,20 +108,19 @@ namespace DeltaEngine.Editor.ParticleEditor
 
 		public int MaxNumbersOfParticles
 		{
-			get { return EmitterCreator.MaximumNumberOfParticles; }
+			get { return EmitterData.MaximumNumberOfParticles; }
 			set
 			{
 				if (emitter != null)
 					emitter.IsActive = false;
-				EmitterCreator.MaximumNumberOfParticles = value;
+				EmitterData.MaximumNumberOfParticles = value;
 				CreateParticle();
 			}
 		}
 
 		public void Save()
 		{
-			var emitterData = FIllEmitterData();
-			var bytes = BinaryDataExtensions.ToByteArrayWithTypeInformation(emitterData);
+			var bytes = BinaryDataExtensions.ToByteArrayWithTypeInformation(EmitterData);
 			var fileNameAndBytes = new Dictionary<string, byte[]>();
 			fileNameAndBytes.Add(ParticleName + ".deltaparticle", bytes);
 			ContentMetaData contentMetaData = metaDataCreator.CreateMetaDataFromParticle(ParticleName,
@@ -146,7 +140,7 @@ namespace DeltaEngine.Editor.ParticleEditor
 			{
 				particleName = value;
 				if (ContentLoader.Exists(ParticleName, ContentType.ParticleEffect))
-					EmitterCreator = ContentLoader.Load<ParticleEmitterCreator>(particleName);
+					EmitterData = ContentLoader.Load<ParticleEffectData>(particleName);
 				CreateParticle();
 				RaisePropertyChanged("EmitterData");
 				RaisePropertyChanged("SelectedMaterial");
@@ -154,21 +148,5 @@ namespace DeltaEngine.Editor.ParticleEditor
 		}
 
 		private string particleName;
-
-		private ParticleEmitterData FIllEmitterData()
-		{
-			var emitterData = new ParticleEmitterData();
-			emitterData.SpawnInterval = EmitterCreator.SpawnInterval;
-			emitterData.Force = EmitterCreator.Force;
-			emitterData.LifeTime = EmitterCreator.LifeTime;
-			emitterData.MaximumNumberOfParticles = EmitterCreator.MaximumNumberOfParticles;
-			emitterData.ParticleMaterial = EmitterCreator.ParticleMaterial;
-			emitterData.Size = EmitterCreator.Size;
-			emitterData.StartColor = EmitterCreator.StartColor;
-			emitterData.StartRotation = EmitterCreator.StartRotation;
-			emitterData.StartVelocity = EmitterCreator.StartVelocity;
-			emitterData.StartVelocityVariance = EmitterCreator.StartVelocityVariance;
-			return emitterData;
-		}
 	}
 }

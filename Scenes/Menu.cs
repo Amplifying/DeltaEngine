@@ -72,7 +72,6 @@ namespace DeltaEngine.Scenes
 		{
 			foreach (InteractiveButton button in buttons)
 				Remove(button);
-
 			buttons.Clear();
 		}
 		

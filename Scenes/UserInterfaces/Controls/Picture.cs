@@ -1,5 +1,4 @@
 ﻿using DeltaEngine.Datatypes;
-using DeltaEngine.Rendering.Fonts;
 
 namespace DeltaEngine.Scenes.UserInterfaces.Controls
 {

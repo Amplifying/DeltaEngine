@@ -21,7 +21,7 @@ namespace DeltaEngine.Scenes.UserInterfaces.Controls
 
 		private Rectangle GetSelectorDrawArea()
 		{
-			float aspectRatio = theme.RadioButtonNotSelected.Material.RenderSize.AspectRatio;
+			float aspectRatio = theme.RadioButtonNotSelected.Material.MaterialRenderSize.AspectRatio;
 			var size = new Size(aspectRatio * DrawArea.Height, DrawArea.Height);
 			return new Rectangle(DrawArea.TopLeft, size);
 		}

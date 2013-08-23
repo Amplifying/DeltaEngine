@@ -42,7 +42,7 @@ namespace DeltaEngine.Rendering.Cameras
 			var rotationX = Matrix.CreateRotationX(cameraRotation.X);
 			var rotationMatrix = rotationX * rotationY;
 			var lookVector = new Vector(0.0f, 0.0f, Distance);
-			Position = Vector.TransformNormal(lookVector, rotationMatrix);
+			Position = rotationMatrix.TransformNormal(lookVector);
 			Position = Position + Target;
 		}
 

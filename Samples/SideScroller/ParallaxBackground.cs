@@ -65,21 +65,5 @@ namespace SideScroller
 				return new Point(currentPoint.X - offset * FactorToBaseSpeed * Time.Delta, currentPoint.Y);
 			}
 		}
-
-		//private class ParallaxScroller : Behavior2D
-		//{
-		//	public ParallaxScroller()
-		//	{
-		//		Filter = entity => entity is ParallaxBackground;
-		//	}
-
-		//	public override void Handle(Entity2D entity)
-		//	{
-		//		var background = entity as ParallaxBackground;
-		//		//background.layerAlpha.MoveLayer(background.BaseScrollSpeed);
-		//		background.layerBeta.MoveLayer(background.BaseScrollSpeed);
-		//		//background.layerGamma.MoveLayer(background.BaseScrollSpeed);
-		//	}
-		//}
 	}
 }

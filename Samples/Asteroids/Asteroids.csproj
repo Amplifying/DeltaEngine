@@ -60,6 +60,14 @@
       <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
       <Name>DeltaEngine.Rendering</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Rendering\Fonts\DeltaEngine.Rendering.Fonts.csproj">
+      <Project>{4A00FD90-FF7B-4250-9CBC-B6855130090B}</Project>
+      <Name>DeltaEngine.Rendering.Fonts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Rendering\Sprites\DeltaEngine.Rendering.Sprites.csproj">
+      <Project>{FCA7BAAA-3F6E-4CA3-B354-C34AF4F1BDDD}</Project>
+      <Name>DeltaEngine.Rendering.Sprites</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Platforms\WindowsOpenTK20\DeltaEngine.WindowsOpenTK20.csproj">
       <Project>{4FDE0BC1-AF24-4A6D-AB73-A28833D41AC8}</Project>
       <Name>DeltaEngine.WindowsOpenTK20</Name>
@@ -74,10 +82,10 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Asteroid.cs" />
-    <Compile Include="AsteroidsGame.cs" />
-    <Compile Include="GameControls.cs" />
-    <Compile Include="GameLogic.cs" />
+    <Compile Include="Game.cs" />
+    <Compile Include="Controls.cs" />
     <Compile Include="GameState.cs" />
+    <Compile Include="InteractionLogics.cs" />
     <Compile Include="HudInterface.cs" />
     <Compile Include="PlayerShip.cs" />
     <Compile Include="Program.cs" />

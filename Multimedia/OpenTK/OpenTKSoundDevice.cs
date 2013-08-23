@@ -1,14 +1,17 @@
-﻿using DeltaEngine.Content;
+﻿using System;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Multimedia.OpenTK.Helpers;
-using System;
 using OpenTK;
 using OpenTK.Audio.OpenAL;
+using DeltaEngine.Content;
 
 namespace DeltaEngine.Multimedia.OpenTK
 {
 	public sealed class OpenTKSoundDevice : SoundDevice
 	{
+		private IntPtr deviceHandle;
+		private readonly ContextHandle context;
+
 		public OpenTKSoundDevice()
 		{
 			deviceHandle = Alc.OpenDevice("");
@@ -16,15 +19,11 @@ namespace DeltaEngine.Multimedia.OpenTK
 			Alc.MakeContextCurrent(context);
 		}
 
-		private IntPtr deviceHandle;
-		private readonly ContextHandle context;
-
 		public override void Dispose()
 		{
 			base.Dispose();
 			if (deviceHandle == IntPtr.Zero)
 				return;
-
 			Alc.DestroyContext(context);
 			Alc.CloseDevice(deviceHandle);
 			deviceHandle = IntPtr.Zero;
@@ -50,8 +49,7 @@ namespace DeltaEngine.Multimedia.OpenTK
 			AL.DeleteBuffers(bufferHandles);
 		}
 
-		public void BufferData(int bufferHandle, AudioFormat format, byte[] data, int length, int 
-			sampleRate)
+		public void BufferData(int bufferHandle, AudioFormat format, byte[] data, int length, int sampleRate)
 		{
 			AL.BufferData(bufferHandle, AudioFormatToALFormat(format), data, length, sampleRate);
 		}

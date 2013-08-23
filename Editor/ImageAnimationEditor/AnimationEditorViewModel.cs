@@ -11,7 +11,7 @@ using GalaSoft.MvvmLight.Messaging;
 
 namespace DeltaEngine.Editor.ImageAnimationEditor
 {
-	internal class AnimationEditorViewModel : ViewModelBase
+	public class AnimationEditorViewModel : ViewModelBase
 	{
 		public AnimationEditorViewModel(Service service)
 		{
@@ -63,14 +63,14 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 			Messenger.Default.Register<string>(this, "SaveAnimation", SaveAnimation);
 		}
 
-		private void DeleteImage(string image)
+		public void DeleteImage(string image)
 		{
 			ImageList.Remove(image);
 			CreateNewAnimation();
 			RaisePropertyChanged("ImageList");
 		}
 
-		private void MoveImageUp(int imageIndex)
+		public void MoveImageUp(int imageIndex)
 		{
 			if (imageIndex == 0)
 				return;
@@ -82,7 +82,7 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 			RaisePropertyChanged("ImageList");
 		}
 
-		private void SaveAnimation(string obj)
+		public void SaveAnimation(string obj)
 		{
 			if (ImageList.Count == 0 || string.IsNullOrEmpty(AnimationName))
 				return;
@@ -119,7 +119,7 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 
 		private int selectedIndex;
 
-		private void MoveImageDown(int imageIndex)
+		public void MoveImageDown(int imageIndex)
 		{
 			if (imageIndex == ImageList.Count - 1)
 				return;
@@ -151,10 +151,10 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 				ShowMultipleImageAnimation();
 		}
 
-		private void ShowSpritesheetAnimation()
+		public void ShowSpritesheetAnimation()
 		{
-			spriteSheetAnimation = new SpriteSheetAnimation(ContentLoader.Load<Image>(ImageList[0]),
-				Duration, SubImageSize);
+			spriteSheetAnimation = new SpriteSheetAnimation(new SpriteSheetAnimationCreationData(
+				ContentLoader.Load<Image>(ImageList[0]), Duration, SubImageSize)); 
 			var material = new Material(Shader.Position2DUv, "") { SpriteSheet = spriteSheetAnimation };
 			new Sprite(material, new Rectangle(0.25f, 0.25f, 0.5f, 0.5f));
 		}
@@ -200,23 +200,23 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 
 		public string AnimationName
 		{
-			get { return animtaionName; }
+			get { return animationName; }
 			set
 			{
-				animtaionName = value;
-				if (ContentLoader.Exists(animtaionName, ContentType.ImageAnimation) ||
-					ContentLoader.Exists(animtaionName, ContentType.SpriteSheetAnimation))
+				animationName = value;
+				if (ContentLoader.Exists(animationName, ContentType.ImageAnimation) ||
+					ContentLoader.Exists(animationName, ContentType.SpriteSheetAnimation))
 					CreateAnimtaionFromFile();
 			}
 		}
 
-		private string animtaionName;
+		private string animationName;
 
-		private void CreateAnimtaionFromFile()
+		public void CreateAnimtaionFromFile()
 		{
 			EntitiesRunner.Current.Clear();
 			ImageList.Clear();
-			var material = new Material(Shader.Position2DUv, animtaionName);
+			var material = new Material(Shader.Position2DUv, animationName);
 			new Sprite(material, new Rectangle(0.25f, 0.25f, 0.5f, 0.5f));
 			if (material.Animation != null)
 				foreach (var image in material.Animation.Frames)

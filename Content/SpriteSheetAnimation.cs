@@ -13,12 +13,12 @@ namespace DeltaEngine.Content
 		public SpriteSheetAnimation(string contentName)
 			: base(contentName) {}
 
-		public SpriteSheetAnimation(Image imageName, float duration, Size subImageSize)
+		public SpriteSheetAnimation(SpriteSheetAnimationCreationData creationData)
 			: base("<GeneratedSpriteSheetAnimation>")
 		{
-			Image = imageName;
-			DefaultDuration = duration;
-			SubImageSize = subImageSize;
+			Image = creationData.Image;
+			DefaultDuration = creationData.DefaultDuration;
+			SubImageSize = creationData.SubImageSize;
 			CreateUVs();
 		}
 

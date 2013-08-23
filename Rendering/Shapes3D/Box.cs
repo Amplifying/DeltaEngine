@@ -2,20 +2,17 @@
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
 using DeltaEngine.Graphics.Vertices;
+using DeltaEngine.Rendering.Models;
 
 namespace DeltaEngine.Rendering.Shapes3D
 {
 	/// <summary>
 	/// Entity 3D representing a simple box.
 	/// </summary>
-	public class Box : Model
+	public class Box : Mesh
 	{
 		public Box(Vector size, Color color)
-			: base(CreateBoxData(size, color), new Material(Shader.Position3DColor, ""))
-		{
-			Add(color);
-			OnDraw<GeometryRender>();
-		}
+			: base(CreateBoxData(size, color), new Material(Shader.Position3DColor, "")) {}
 
 		private static Geometry CreateBoxData(Vector size, Color color)
 		{

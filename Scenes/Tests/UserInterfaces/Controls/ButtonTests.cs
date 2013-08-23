@@ -18,6 +18,8 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Controls
 		{
 			button = new Button(Center, "Click Me");
 			InitializeMouse();
+			InitializeTouch();
+			AdvanceTimeAndUpdateEntities();
 		}
 
 		private Button button;
@@ -26,13 +28,18 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Controls
 		private void InitializeMouse()
 		{
 			mouse = Resolve<Mouse>() as MockMouse;
-			if (mouse == null)
-				return; //ncrunch: no coverage
-			mouse.SetPosition(Point.Zero);
-			AdvanceTimeAndUpdateEntities();
+			if (mouse != null)
+				mouse.SetPosition(Point.Zero);
 		}
 
 		private MockMouse mouse;
+
+		private void InitializeTouch()
+		{
+			var touch = Resolve<Touch>() as MockTouch;
+			if (touch != null)
+				touch.SetTouchState(0, State.Released, Point.Zero);
+		}
 
 		[Test, ApproveFirstFrameScreenshot]
 		public void RenderButtonWithRelativePosition()
@@ -146,7 +153,21 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Controls
 			Assert.IsFalse(clicked);
 			Assert.IsFalse(button.State.IsInside);
 			Assert.AreEqual(Point.Zero, button.State.RelativePointerPosition);
-			Assert.AreEqual(Color.Gray, button.Color);
+			Assert.AreEqual(Color.Grey, button.Color);
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void HiddenControlDoesNotRespondToClick()
+		{
+			if (mouse == null)
+				return; //ncrunch: no coverage
+			button.Visibility = Visibility.Hide;
+			bool clicked = false;
+			button.Clicked += () => clicked = true;
+			PressAndReleaseMouse(new Point(0.53f, 0.52f), new Point(0.53f, 0.52f));
+			Assert.IsFalse(clicked);
+			Assert.IsFalse(button.State.IsInside);
+			Assert.AreEqual(Point.Zero, button.State.RelativePointerPosition);
 		}
 
 		[Test]

@@ -1,4 +1,5 @@
-﻿using DeltaEngine.Datatypes;
+﻿using System;
+using DeltaEngine.Datatypes;
 using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Scenes.UserInterfaces.Controls
@@ -48,16 +49,25 @@ namespace DeltaEngine.Scenes.UserInterfaces.Controls
 			if (!State.IsPressed)
 				return;
 			float percentage = State.RelativePointerPosition.X.Clamp(0.0f, 1.0f);
-			float aspectRatio = Pointer.Material.RenderSize.AspectRatio;
+			float aspectRatio = Pointer.Material.MaterialRenderSize.AspectRatio;
 			float unusable = aspectRatio / DrawArea.Aspect;
 			float expandedPercentage = ((percentage - 0.5f) * (1.0f + unusable) + 0.5f).Clamp(0.0f, 1.0f);
 			Value = (int)(MinValue + expandedPercentage * (MaxValue - MinValue));
+			if (Value == lastPointerValue)
+				return;
+			lastPointerValue = Value;
+			if (ValueChanged != null)
+				ValueChanged(Value);
 		}
+
+		private int lastPointerValue = -999;
+
+		public Action<int> ValueChanged;
 
 		protected override void UpdatePointerDrawArea()
 		{
 			Rectangle drawArea = DrawArea;
-			float aspectRatio = Pointer.Material.RenderSize.AspectRatio;
+			float aspectRatio = Pointer.Material.MaterialRenderSize.AspectRatio;
 			var size = new Size(aspectRatio * drawArea.Height, drawArea.Height);
 			float percentage = (Value - MinValue) / (float)(MaxValue - MinValue);
 			var leftCenter = new Point(drawArea.Left + size.Width / 2, drawArea.Center.Y);

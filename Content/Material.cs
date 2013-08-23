@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.ScreenSpaces;
 
@@ -44,10 +45,10 @@ namespace DeltaEngine.Content
 				DiffuseMap = ContentLoader.Load<Image>(imageOrAnimationName);
 		}
 
-		private class UnableToCreateMaterialWithoutValidShaderName : Exception {}
+		public class UnableToCreateMaterialWithoutValidShaderName : Exception {}
 
 		public Shader Shader { get; private set; }
-		public Image DiffuseMap { get; internal set; }
+		public Image DiffuseMap { get; set; }
 		public Color DefaultColor { get; set; }
 
 		/// <summary>
@@ -93,17 +94,49 @@ namespace DeltaEngine.Content
 		/// It is calculated from the DiffuseMap.PixelSize and the default content resolution, i.e.
 		/// a 100x200 pixel image will be displayed aspect ratio correct relative to the window size.
 		/// </summary>
-		public Size RenderSize
+		public Size MaterialRenderSize
 		{
 			get
-			{ 
+			{
 				var size = new Size(0.5f);
 				if (spriteSheet != null)
-					size = ScreenSpace.Current.FromPixelSpace(spriteSheet.SubImageSize);
+					size = SetRenderSize(spriteSheet.SubImageSize);
 				else if (DiffuseMap != null)
-					size = ScreenSpace.Current.FromPixelSpace(DiffuseMap.PixelSize);
+					size = SetRenderSize(DiffuseMap.PixelSize);
 				return size;
+				//100,100 -> 1000,1000: PixelBased:100,100 pixels (0.1,0.1 quad)
+				//100,100 -> 1000,1000: Size800X480:100/800=125/1000,100/800=125/1000
+				//var pixelSize = DiffuseMap.PixelSize;
+				//var quadSize800X480 = new Size(800);
+				//Settings settings = new FileSettings();
+				//var quadSizeSettings =
+				//	new Size(settings.Resolution.Width > settings.Resolution.Height
+				//		? settings.Resolution.Width : settings.Resolution.Height);
+				//return pixelSize / quadSize800X480;
 			}
+		}
+
+		private Size SetRenderSize(Size pixelSize)
+		{
+			if (renderSize == RenderSize.PixelBased)
+				pixelSize = ScreenSpace.Current.FromPixelSpace(pixelSize);
+			else if (renderSize == RenderSize.Size800X480)
+				pixelSize = ScreenSpace.Current.FromPixelSpace(pixelSize / new Size(800));
+			else if (renderSize == RenderSize.Size1024X720)
+				pixelSize = ScreenSpace.Current.FromPixelSpace(pixelSize / new Size(1024));
+			else if (renderSize == RenderSize.Size1280X720)
+				pixelSize = ScreenSpace.Current.FromPixelSpace(pixelSize / new Size(1280));
+			else if (renderSize == RenderSize.Size1920X1080)
+				pixelSize = ScreenSpace.Current.FromPixelSpace(pixelSize / new Size(1920));
+			//else if (renderSize == RenderSizes.SettingsBased)
+			//{
+			//	Settings settings = new FileSettings();
+			//	var quadSizeSettings =
+			//			new Size(settings.Resolution.Width > settings.Resolution.Height
+			//				? settings.Resolution.Width : settings.Resolution.Height);
+			//	pixelSize = ScreenSpace.Current.FromPixelSpace(pixelSize / quadSizeSettings);
+			//}
+			return pixelSize;
 		}
 
 		protected override void LoadData(Stream fileData)
@@ -122,6 +155,16 @@ namespace DeltaEngine.Content
 				SpriteSheet = ContentLoader.Load<SpriteSheetAnimation>(imageOrAnimationName);
 			else
 				DiffuseMap = ContentLoader.Load<Image>(imageOrAnimationName);
+			if (DiffuseMap != null)
+				try
+				{
+					DiffuseMap.BlendMode =
+						(BlendMode)Enum.Parse(typeof(BlendMode), MetaData.Get("BlendMode", ""));
+				}
+				catch (Exception)
+				{
+						DiffuseMap.BlendMode = BlendMode.Normal;
+				}
 		}
 
 		protected override void DisposeData() {}
@@ -132,5 +175,12 @@ namespace DeltaEngine.Content
 				DefaultColor + (Animation != null ? ", Animation=" + Animation : "") +
 				(SpriteSheet != null ? ", SpriteSheet=" + SpriteSheet : "");
 		}
+
+		public void SetRenderSize(RenderSize size)
+		{
+			renderSize = size;
+		}
+
+		private RenderSize renderSize = RenderSize.PixelBased;
 	}
 }

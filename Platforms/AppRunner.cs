@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using DeltaEngine.Content;
 using DeltaEngine.Content.Online;
@@ -84,6 +83,8 @@ namespace DeltaEngine.Platforms
 				Thread.Sleep(10);
 				timeout -= 10;
 			}
+			if (!(ContentLoader.current is DeveloperOnlineContentLoader))
+				return;
 			if (ContentLoader.HasValidContentForStartup())
 			{
 				(ContentLoader.current as DeveloperOnlineContentLoader).OnLoadContentMetaData();
@@ -154,8 +155,7 @@ namespace DeltaEngine.Platforms
 			if (alreadyCheckedContentManagerReady)
 				return;
 			alreadyCheckedContentManagerReady = true;
-			if (instancesToDispose.Any(instance => instance is DeveloperOnlineContentLoader) &&
-				!ContentLoader.HasValidContentForStartup())
+			if (ContentLoader.current is DeveloperOnlineContentLoader && !IsEditorContentLoader())
 				WaitUntilContentFromOnlineServiceIsReady();
 			if (ContentIsReady != null)
 				ContentIsReady();
@@ -163,16 +163,28 @@ namespace DeltaEngine.Platforms
 
 		private bool alreadyCheckedContentManagerReady;
 
+		private static bool IsEditorContentLoader()
+		{
+			return ContentLoader.current.GetType().FullName == "DeltaEngine.Editor.EditorContentLoader";
+		}
+
 		private void WaitUntilContentFromOnlineServiceIsReady()
 		{
-			Logger.Info("No content available. Waiting until OnlineService sends it to us ...");
 			while (!onlineServiceReadyReceived)
 			{
 				if (failedToGetContent)
 					throw new FailedToLoadAnyContentUnableToInitializeApp();
 				Thread.Sleep(10);
+				if (onlineServiceReadyReceived || !(ContentLoader.current is DeveloperOnlineContentLoader))
+					return;
+				if (warnedAlready)
+					continue;
+				Logger.Info("No content available. Waiting until OnlineService sends it to us ...");
+				warnedAlready = true;
 			}
 		}
+
+		private bool warnedAlready;
 
 		private class FailedToLoadAnyContentUnableToInitializeApp : Exception { }
 

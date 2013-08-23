@@ -90,19 +90,20 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Controls
 			public override void Update(IEnumerable<Entity> entities)
 			{
 				foreach (Label label in entities)
-					label.Color = label.DrawArea.IsColliding(0.0f, label.State.DragArea, 0.0f)
-						? Color.Red : Color.Blue;
+					label.Color = label.DrawArea.Contains(label.State.DragStart) ? Color.Red : Color.Blue;
 			}
 		}
-
 		//ncrunch: no coverage end
 
 		private static void CreateRubberBand()
 		{
 			var rectangle = new FilledRect(Rectangle.Unused, TransparentWhite);
-			new Command(dragArea => rectangle.DrawArea = dragArea).Add(new MouseDragTrigger());
-			new Command(() => rectangle.DrawArea = Rectangle.Unused).Add(
-				new MouseButtonTrigger(State.Releasing));
+			new Command((start, end, done) =>
+			{
+				rectangle.DrawArea = Rectangle.FromCorners(start, end);
+				if (done)
+					rectangle.DrawArea = Rectangle.Unused;
+			}).Add(new MouseDragTrigger()).Add(new TouchDragTrigger());
 		}
 
 		private static readonly Color TransparentWhite = new Color(1.0f, 1.0f, 1.0f, 0.3f);
@@ -127,7 +128,6 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Controls
 				}
 			}
 		}
-
 		//ncrunch: no coverage end
 
 		[Test]

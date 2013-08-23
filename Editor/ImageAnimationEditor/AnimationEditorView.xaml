@@ -78,6 +78,8 @@
 			<RowDefinition Height="12" />
 			<RowDefinition Height="30" />
 			<RowDefinition Height="12" />
+			<RowDefinition Height="40"/>
+			<RowDefinition Height="12"/>
 			<RowDefinition Height="40" />
 			<RowDefinition Height="9" />
 		</Grid.RowDefinitions>
@@ -93,7 +95,7 @@
 		</ListBox>
 		<ComboBox Grid.Column="1" Grid.Row="7" Grid.ColumnSpan="4" ItemsSource="{Binding Path=LoadedImageList}" Style="{StaticResource DeltaComboBox}"
 		          SelectedItem="{Binding Path=SelectedImageToAdd}" />
-		<Button Grid.Column="3" Grid.Row="9" Content="Up ↑" Click="MoveImageUp" Style="{StaticResource DeltaButton}" HorizontalAlignment="Right" Width="60" Margin="0,0,37.667,0" Foreground="White" >
+		<Button Grid.Column="3" Grid.Row="9" Content="Up ↑" Click="MoveImageUp" Style="{StaticResource DeltaButton}" HorizontalAlignment="Right" Width="60" Margin="0,0,38,0" Foreground="White" >
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
 					<GradientStop Color="#FFA0A0A0" Offset="0"/>
@@ -138,5 +140,6 @@
 				</LinearGradientBrush>
 			</Button.Background>
 		</Button>
+		<Button Content="Delete" Grid.Column="1" Margin="0,11,0,0" Grid.Row="15" Style="{StaticResource DeltaButton}" FontWeight="Bold" HorizontalAlignment="Left" Width="75"/>
 	</Grid>
 </UserControl>

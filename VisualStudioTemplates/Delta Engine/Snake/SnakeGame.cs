@@ -215,7 +215,7 @@ namespace $safeprojectname$
 
 		private void CloseGame()
 		{
-			window.Dispose();
+			window.CloseAfterFrame();
 		}
 
 		private void SpawnFirstChunk()

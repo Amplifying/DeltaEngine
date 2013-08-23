@@ -59,8 +59,12 @@ namespace DeltaEngine.Physics2D.Farseer
 
 		public Point LinearVelocity
 		{
-			get { return new Point(Body.LinearVelocity.X, Body.LinearVelocity.Y); }
-			set { Body.LinearVelocity = new Vector2(value.X, value.Y); }
+			get { return UnitConverter.Convert(UnitConverter.ToDisplayUnits(Body.LinearVelocity)); }
+			set
+			{
+				Vector2 velocity = UnitConverter.Convert(value);
+				Body.LinearVelocity = UnitConverter.ToSimUnits(velocity);
+			}
 		}
 
 		public void ApplyLinearImpulse(Point impulse)
@@ -88,7 +92,6 @@ namespace DeltaEngine.Physics2D.Farseer
 				var vertices = new List<Point>();
 				foreach (var fixture in Body.FixtureList)
 					vertices.AddRange(GetShapeVerticesFromFixture(fixture, xf));
-
 				return vertices.ToArray();
 			}
 		}
@@ -115,7 +118,6 @@ namespace DeltaEngine.Physics2D.Farseer
 			var tempVertices = new Vector2[vertexCount];
 			for (int i = 0; i < vertexCount; ++i)
 				tempVertices[i] = MathUtils.Mul(ref xf, polygon.Vertices[i]);
-
 			return GetDrawVertices(tempVertices, vertexCount);
 		}
 

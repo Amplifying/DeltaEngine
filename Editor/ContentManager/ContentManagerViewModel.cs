@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
@@ -7,7 +8,6 @@ using DeltaEngine.Datatypes;
 using DeltaEngine.Editor.ContentManager.Previewers;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Entities;
-using DeltaEngine.Rendering.Fonts;
 using DeltaEngine.Rendering.Sprites;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
@@ -38,15 +38,26 @@ namespace DeltaEngine.Editor.ContentManager
 
 		private void SetMessenger()
 		{
-			Messenger.Default.Register<string>(this, "DeletingContent", DeleteContentFromList);
+			Messenger.Default.Register<bool>(this, "DeleteContent", DeleteContentFromList);
 			Messenger.Default.Register<IDataObject>(this, "AddContent", DropContent);
 		}
 
-		public void DeleteContentFromList(string msg)
+		public void DeleteContentFromList(bool deleteSubContent)
 		{
-			service.DeleteContent(selectedContent);
+			service.DeleteContent(selectedContent, deleteSubContent);
 		}
 
+		public bool IsAnimation
+		{
+			get
+			{
+				var contentType = service.GetTypeOfContent(selectedContent);
+				return contentType == ContentType.ImageAnimation ||
+					contentType == ContentType.SpriteSheetAnimation || contentType == ContentType.Material;
+			}
+		}
+
+		//ncrunch: no coverage start
 		public void DropContent(IDataObject dropObject)
 		{
 			if (!IsFile(dropObject))
@@ -77,6 +88,8 @@ namespace DeltaEngine.Editor.ContentManager
 			service.UploadContent(contentMetaData, fileNameAndBytes);
 		}
 
+		//ncrunch: no coverage end
+
 		private const int MaximumFileSize = 16777216;
 
 		public void RefreshContentList()
@@ -90,7 +103,7 @@ namespace DeltaEngine.Editor.ContentManager
 
 		public ObservableCollection<string> ContentList { get; set; }
 
-		private void RefreshBackgroundImageList()
+		public void RefreshBackgroundImageList()
 		{
 			BackgroundImageList.Clear();
 			var foundContent = service.GetAllContentNamesByType(ContentType.Image);
@@ -110,6 +123,7 @@ namespace DeltaEngine.Editor.ContentManager
 				ClearEntitiesExceptCamera();
 				CheckTypeOfContent();
 				DrawBackground();
+				RaisePropertyChanged("IsAnimation");
 			}
 		}
 		private string selectedContent;
@@ -121,7 +135,14 @@ namespace DeltaEngine.Editor.ContentManager
 			var type = service.GetTypeOfContent(selectedContent);
 			if (type == null)
 				return;
-			new ContentViewer().Viewer(selectedContent, (ContentType)type);
+			try
+			{
+				new ContentViewer().Viewer(selectedContent, (ContentType)type);
+			}
+			catch (Exception ex)
+			{
+				Logger.Error(ex);
+			}
 		}
 
 		public string SelectedBackgroundImage

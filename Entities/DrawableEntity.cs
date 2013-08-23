@@ -24,6 +24,11 @@ namespace DeltaEngine.Entities
 
 		public virtual Visibility Visibility { get; set; }
 
+		public void ToggleVisibility()
+		{
+			Visibility = Visibility == Visibility.Show ? Visibility.Hide : Visibility.Show;	
+		}
+
 		/// <summary>
 		/// Each Entity2D uses a RenderLayer, which will determine the sorting for rendering.
 		/// </summary>
@@ -113,11 +118,11 @@ namespace DeltaEngine.Entities
 						}
 						return ret;
 					}
-				}
+				}//ncrunch: no coverage 
 			throw new ListWithLerpElementsForInterpolationWasNotFound(typeof(T));
 		}
 
-		private class ListWithLerpElementsForInterpolationWasNotFound : Exception
+		public class ListWithLerpElementsForInterpolationWasNotFound : Exception
 		{
 			public ListWithLerpElementsForInterpolationWasNotFound(Type type)
 				: base(type.ToString()) {}
@@ -140,11 +145,11 @@ namespace DeltaEngine.Entities
 								EntitiesRunner.CurrentDrawInterpolation);
 						return ret;
 					}
-				}
+				}//ncrunch: no coverage 
 			throw new ArrayWithLerpElementsForInterpolationWasNotFound(typeof(T));
 		}
 
-		private class ArrayWithLerpElementsForInterpolationWasNotFound : Exception
+		public class ArrayWithLerpElementsForInterpolationWasNotFound : Exception
 		{
 			public ArrayWithLerpElementsForInterpolationWasNotFound(Type type)
 				: base(type.ToString()) { }

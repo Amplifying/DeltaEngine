@@ -24,5 +24,21 @@ namespace DeltaEngine.Extensions
 		{
 			return string.Join(", ", texts);
 		}
+
+		public static Value GetWithDefault<Key, Value>(Dictionary<Key, object> dict, Key key)
+		{
+			if (dict.ContainsKey(key) == false)
+				return default(Value);
+			Value result;
+			try
+			{
+				result = (Value)dict[key];
+			}
+			catch
+			{
+				result = default(Value);
+			}
+			return result;
+		}
 	}
 }

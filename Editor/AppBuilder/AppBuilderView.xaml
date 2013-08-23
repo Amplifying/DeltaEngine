@@ -153,6 +153,7 @@
 			Name="LaunchButton" FontSize="18" Grid.Column="7" Style="{StaticResource DeltaButton}"
 			ToolTip="Builds the current specified code for the selected Platform."
 			Command="{Binding Path=BuildPressed}" FontFamily="Bebas" Foreground="White" FontWeight="Bold"
+			IsEnabled="{Binding Path=IsBuildActionExecutable}"
 			TextOptions.TextHintingMode="Fixed" Grid.Row="3" Grid.RowSpan="7" BorderBrush="{x:Null}" Grid.ColumnSpan="2">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">

@@ -54,16 +54,16 @@ namespace DeltaEngine.Content
 
 		internal void InternalLoad(Func<ContentData, Stream> getContentDataStream)
 		{
-			//if (!GetType().FullName.Contains(MetaData.Type.ToString()))
-			//	throw new DoesNotMatchMetaDataType(this);
+			if (!GetType().FullName.Contains(MetaData.Type.ToString()))
+				throw new DoesNotMatchMetaDataType(this);
 			using (var stream = getContentDataStream(this))
 				LoadData(stream);
 		}
 
-		private class DoesNotMatchMetaDataType : Exception
+		public class DoesNotMatchMetaDataType : Exception
 		{
 			public DoesNotMatchMetaDataType(ContentData contentData)
-				: base(contentData + " does not match meta data type: " + contentData.MetaData.Type) { }
+				: base(contentData + " does not match meta data type: " + contentData.MetaData.Type) {}
 		}
 
 		protected abstract void LoadData(Stream fileData);

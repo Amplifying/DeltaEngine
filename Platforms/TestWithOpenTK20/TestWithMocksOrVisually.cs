@@ -40,6 +40,8 @@ namespace DeltaEngine.Platforms
 			if (StackTraceExtensions.StartedFromProgramMain ||
 				TestContext.CurrentContext.Result.Status == TestStatus.Passed)
 				resolver.Run();
+			else
+				resolver.Dispose();
 		}
 
 		protected T Resolve<T>() where T : class

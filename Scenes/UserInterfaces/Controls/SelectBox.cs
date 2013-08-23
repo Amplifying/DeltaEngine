@@ -30,7 +30,7 @@ namespace DeltaEngine.Scenes.UserInterfaces.Controls
 		}
 
 		internal readonly List<FontText> texts = new List<FontText>();
-		private readonly Scrollbar scrollbar;
+		protected readonly Scrollbar scrollbar;
 		private List<object> values;
 		private Rectangle firstLineDrawArea;
 		private int maxDisplayCount;

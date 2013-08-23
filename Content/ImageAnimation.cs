@@ -21,13 +21,15 @@ namespace DeltaEngine.Content
 			DefaultDuration = duration;
 		}
 
-		private class NoImagesGivenNeedAtLeastOne : Exception {}
+		public class NoImagesGivenNeedAtLeastOne : Exception {}
 
 		public Image[] Frames { get; private set; }
 		public float DefaultDuration { get; private set; }
 		
 		protected override void DisposeData()
 		{
+			if (Frames == null)
+				return;
 			foreach (Image frame in Frames)
 				frame.Dispose();
 		}

@@ -5,7 +5,6 @@ using System.Globalization;
 using System.IO;
 using DeltaEngine.Content;
 using DeltaEngine.Editor.Core;
-using DeltaEngine.Networking.Messages;
 using GalaSoft.MvvmLight;
 
 namespace DeltaEngine.Editor.SpriteFontCreator

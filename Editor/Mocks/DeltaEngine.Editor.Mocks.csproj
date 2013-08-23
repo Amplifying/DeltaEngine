@@ -35,21 +35,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.IO.Abstractions">
-      <HintPath>..\packages\System.IO.Abstractions.1.4.0.65\lib\net35\System.IO.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Content\Disk\DeltaEngine.Content.Disk.csproj">
-      <Project>{EE9847E1-9C76-4ACE-B531-D3EA84F7D741}</Project>
-      <Name>DeltaEngine.Content.Disk</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Content\Xml\DeltaEngine.Content.Xml.csproj">
-      <Project>{138A40B5-3D80-4BA3-BD84-D82C151EE7FE}</Project>
-      <Name>DeltaEngine.Content.Xml</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\DeltaEngine.csproj">
       <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
       <Name>DeltaEngine %28DeltaEngine\DeltaEngine%29</Name>

@@ -11,7 +11,7 @@ namespace Asteroids.Tests
 		public void FractureAsteroid()
 		{
 			Resolve<Window>();
-			var asteroid = new Asteroid(new PseudoRandom(), new GameLogic());
+			var asteroid = new Asteroid(new PseudoRandom(), new InteractionLogics());
 			asteroid.Fracture();
 			Assert.IsFalse(asteroid.IsActive);
 		}
@@ -21,7 +21,7 @@ namespace Asteroids.Tests
 		{
 			Resolve<Window>();
 			var randomizer = new PseudoRandom();
-			var gameLogic = new GameLogic();
+			var gameLogic = new InteractionLogics();
 			var largeAsteroid = new Asteroid(randomizer, gameLogic);
 			new Asteroid(randomizer, gameLogic, 2);
 			new Asteroid(randomizer, gameLogic, 3);

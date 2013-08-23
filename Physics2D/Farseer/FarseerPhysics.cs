@@ -20,8 +20,11 @@ namespace DeltaEngine.Physics2D.Farseer
 			return body;
 		}
 
-		private readonly World world = new World(new Vector2(0f, 9.82f));
-		private readonly UnitConverter unitConverter = new UnitConverter(64f);
+		private readonly World world =
+			new World(new Vector2(0.0f, DefaultGravity * SimUnitsToDisplayUnits));
+		private const float DefaultGravity = 0.982f;
+		private const float SimUnitsToDisplayUnits = 100.0f;
+		private readonly UnitConverter unitConverter = new UnitConverter(SimUnitsToDisplayUnits);
 
 		public override PhysicsBody CreateRectangle(Size size)
 		{
@@ -32,21 +35,21 @@ namespace DeltaEngine.Physics2D.Farseer
 			return body;
 		}
 
-		public override PhysicsBody CreateEdge(Point start, Point end)
+		public override PhysicsBody CreateEdge(Point startPoint, Point endPoint)
 		{
 			Body edge = BodyFactory.CreateEdge(world,
-				unitConverter.ToSimUnits(unitConverter.Convert(start)),
-				unitConverter.ToSimUnits(unitConverter.Convert(end)));
+				unitConverter.ToSimUnits(unitConverter.Convert(startPoint)),
+				unitConverter.ToSimUnits(unitConverter.Convert(endPoint)));
 			var body = new FarseerBody(edge) { UnitConverter = unitConverter };
 			AddBody(body);
 			body.IsStatic = true;
 			return body;
 		}
 
-		public override PhysicsBody CreateEdge(params Point[] vertices)
+		public override PhysicsBody CreateEdge(params Point[] points)
 		{
 			var edge = new Body(world);
-			Vertices farseerVertices = unitConverter.Convert(vertices);
+			Vertices farseerVertices = unitConverter.Convert(points);
 			for (int i = 0; i < farseerVertices.Count - 1; ++i)
 				FixtureFactory.AttachEdge(farseerVertices[i], farseerVertices[i + 1], edge);
 
@@ -55,9 +58,9 @@ namespace DeltaEngine.Physics2D.Farseer
 			return body;
 		}
 
-		public override PhysicsBody CreatePolygon(params Point[] vertices)
+		public override PhysicsBody CreatePolygon(params Point[] points)
 		{
-			Vertices polygon = unitConverter.Convert(vertices);
+			Vertices polygon = unitConverter.Convert(points);
 			Vector2 centroid = -polygon.GetCentroid();
 			polygon.Translate(ref centroid);
 			Body body = BodyFactory.CreatePolygon(world, polygon, 1.0f);

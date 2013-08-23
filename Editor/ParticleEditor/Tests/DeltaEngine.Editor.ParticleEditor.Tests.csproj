@@ -33,41 +33,19 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GalaSoft.MvvmLight.Extras.WPF4">
-      <HintPath>..\..\packages\MvvmLightLibs.4.1.27.0\lib\net40\GalaSoft.MvvmLight.Extras.WPF4.dll</HintPath>
-    </Reference>
     <Reference Include="GalaSoft.MvvmLight.WPF4">
       <HintPath>..\..\packages\MvvmLightLibs.4.1.27.0\lib\net40\GalaSoft.MvvmLight.WPF4.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Practices.ServiceLocation">
-      <HintPath>..\..\packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Windows.Interactivity">
-      <HintPath>..\..\packages\MvvmLightLibs.4.1.27.0\lib\net40\System.Windows.Interactivity.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\DeltaEngine.csproj">
       <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
       <Name>DeltaEngine %28DeltaEngine\DeltaEngine%29</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Mocks\DeltaEngine.Mocks.csproj">
-      <Project>{A5F4EF37-7B5F-4AAE-BFF2-C2D04DB805F7}</Project>
-      <Name>DeltaEngine.Mocks</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Platforms\DeltaEngine.Platforms.csproj">
-      <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
-      <Name>DeltaEngine.Platforms</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Platforms\TestWithOpenTK20\DeltaEngine.TestWithOpenTK20.csproj">
       <Project>{3A3D2E3E-FCD6-40A4-8F4E-36F3D173AB41}</Project>
@@ -77,9 +55,17 @@
       <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
       <Name>DeltaEngine.Rendering</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Rendering\Particles\DeltaEngine.Rendering.Particles.csproj">
+      <Project>{BECE691C-BAC6-434B-B1F9-4D8653922585}</Project>
+      <Name>DeltaEngine.Rendering.Particles</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Core\DeltaEngine.Editor.Core.csproj">
       <Project>{C667C7FC-A1C7-4CBC-98C0-C97F776E4570}</Project>
       <Name>DeltaEngine.Editor.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Mocks\DeltaEngine.Editor.Mocks.csproj">
+      <Project>{2A38417D-2378-41F8-BCC6-A65E1894835A}</Project>
+      <Name>DeltaEngine.Editor.Mocks</Name>
     </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Editor.ParticleEditor.csproj">
       <Project>{D8876C43-C02F-441A-BD6A-36C0422AB56E}</Project>

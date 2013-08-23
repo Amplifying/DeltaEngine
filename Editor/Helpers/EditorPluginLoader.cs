@@ -19,7 +19,6 @@ namespace DeltaEngine.Editor.Helpers
 			UserControlsType = new List<Type>();
 			CopyAllEditorPlugins(pluginBaseDirectory);
 			FindAllEditorPluginViews();
-			TryCopyAllEditorPluginContent(pluginBaseDirectory);
 		}
 
 		public List<Type> UserControlsType { get; private set; }
@@ -109,32 +108,6 @@ namespace DeltaEngine.Editor.Helpers
 		}
 
 		private readonly string[] excludedEditorPlugins = new[]
-		{
-			"DeltaEngine.Editor.EmptyEditorPlugin.EmptyEditorPluginView",
-			"DeltaEngine.Editor.UIEditor.UIEditorView"
-		};
-
-		private static void TryCopyAllEditorPluginContent(string pluginBaseDirectory)
-		{
-			var targetPath = Path.Combine(Directory.GetCurrentDirectory(), "Devices");
-			if (!Directory.Exists(targetPath))
-				Directory.CreateDirectory(targetPath);
-			var devicesContentDirectory = Path.Combine(pluginBaseDirectory, "Emulator", "Devices");
-			try
-			{
-				foreach (var file in Directory.GetFiles(devicesContentDirectory))
-					CopyIfFileIsNewer(file, Path.Combine(targetPath, Path.GetFileName(file)));
-			}
-			catch (Exception ex)
-			{
-				Logger.Error(new EmulatorContentNotFound("Devices content not found", ex));
-			}
-		}
-
-		private class EmulatorContentNotFound : Exception
-		{
-			public EmulatorContentNotFound(string message, Exception inner)
-				: base(message, inner) {}
-		}
+		{ "DeltaEngine.Editor.EmptyEditorPlugin.EmptyEditorPluginView" };
 	}
 }

@@ -12,11 +12,11 @@ namespace Asteroids
 	/// </summary>
 	public class Asteroid : Sprite
 	{
-		public Asteroid(Randomizer randomizer, GameLogic gameLogic, int sizeModifier = 1)
+		public Asteroid(Randomizer randomizer, InteractionLogics interactionLogics, int sizeModifier = 1)
 			: base(new Material(Shader.Position2DColorUv, "asteroid"),
 			CreateDrawArea(randomizer, sizeModifier))
 		{
-			this.gameLogic = gameLogic;
+			this.interactionLogics = interactionLogics;
 			this.sizeModifier = sizeModifier;
 			RenderLayer = (int)AsteroidsRenderLayer.Asteroids;
 			Add(new SimplePhysics.Data
@@ -25,7 +25,6 @@ namespace Asteroids
 				Velocity = new Point(randomizer.Get(.03f, .15f), randomizer.Get(.03f, .15f)),
 				RotationSpeed = randomizer.Get(.1f, 50)
 			});
-
 			Start<SimplePhysics.Move>();
 			Start<SimplePhysics.BounceIfAtScreenEdge>();
 			Start<SimplePhysics.Rotate>();
@@ -40,14 +39,13 @@ namespace Asteroids
 		}
 
 		public readonly int sizeModifier;
-		private readonly GameLogic gameLogic;
+		private readonly InteractionLogics interactionLogics;
 
 		public void Fracture()
 		{
 			if (sizeModifier < 3)
-				gameLogic.CreateAsteroidsAtPosition(DrawArea.Center, sizeModifier + 1);
-
-			gameLogic.IncrementScore(1);
+				interactionLogics.CreateAsteroidsAtPosition(DrawArea.Center, sizeModifier + 1);
+			interactionLogics.IncrementScore(1);
 			IsActive = false;
 		}
 	}

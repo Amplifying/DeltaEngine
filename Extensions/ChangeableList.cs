@@ -26,7 +26,7 @@ namespace DeltaEngine.Extensions
 		public T this[int index]
 		{
 			get { return data[index]; }
-			set { data[index] = value; }
+			set { data[index] = value; } //ncrunch: no coverage 
 		}
 
 		public int Count
@@ -67,9 +67,10 @@ namespace DeltaEngine.Extensions
 				int index = IndexOf(item);
 				if (index >= 0)
 					elementsToBeRemoved.Add(item);
+				else
+					return elementsToBeAdded.Remove(item);
 				return index >= 0;
 			}
-
 			return data.Remove(item);
 		}
 

@@ -6,7 +6,6 @@ using DeltaEngine.Entities;
 using DeltaEngine.Input;
 using DeltaEngine.Input.Mocks;
 using DeltaEngine.Platforms;
-using DeltaEngine.Rendering.Fonts;
 using DeltaEngine.Rendering.Sprites;
 using DeltaEngine.Scenes.UserInterfaces.Controls;
 using NUnit.Framework;
@@ -25,7 +24,7 @@ namespace DeltaEngine.Scenes.Tests
 		private Scene scene;
 		private Material material;
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void AddingControlAddsToListOfControls()
 		{
 			Assert.AreEqual(0, scene.Controls.Count);
@@ -37,7 +36,7 @@ namespace DeltaEngine.Scenes.Tests
 
 		private class EmptyControl : Entity {}
 
-		[Test]
+		[Test, CloseAfterFirstFrame]
 		public void AddingControlTwiceOnlyAddsItOnce()
 		{
 			var control = new EmptyControl();
@@ -112,23 +111,14 @@ namespace DeltaEngine.Scenes.Tests
 		[Test, CloseAfterFirstFrame]
 		public void ControlsDontRespondToInputWhenSceneIsHidden()
 		{
-			var button = CreateHiddenSceneWithButton();
-			bool pressed = false;
-			button.Clicked += () => pressed = true;
+			var button = CreateButton();
+			scene.Add(button);
+			scene.Hide();
 			SetMouseState(State.Pressing, Point.Half);
-			Assert.IsFalse(pressed);
 			Assert.AreEqual(NormalColor, button.Color);
 		}
 
 		private static readonly Color NormalColor = Color.LightGray;
-
-		private Button CreateHiddenSceneWithButton()
-		{
-			var button = CreateButton();
-			scene.Add(button);
-			scene.Hide();
-			return button;
-		}
 
 		private static Button CreateButton()
 		{
@@ -149,6 +139,27 @@ namespace DeltaEngine.Scenes.Tests
 			Resolve<MockMouse>().SetPosition(position);
 			Resolve<MockMouse>().SetButtonState(MouseButton.Left, state);
 			AdvanceTimeAndUpdateEntities();
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void ControlsDontRespondToInputWhenInBackground()
+		{
+			var button = CreateButton();
+			scene.Add(button);
+			scene.ToBackground();
+			SetMouseState(State.Pressing, Point.Half);
+			Assert.AreEqual(NormalColor, button.Color);
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void ControlsRespondToInputWhenBroughtBackToForeground()
+		{
+			var button = CreateButton();
+			scene.Add(button);
+			scene.ToBackground();
+			scene.ToForeground();
+			SetMouseState(State.Pressing, Point.Half);
+			Assert.AreEqual(PressedColor, button.Color);
 		}
 
 		[Test]
@@ -198,17 +209,6 @@ namespace DeltaEngine.Scenes.Tests
 			var button = CreateButton();
 			button.Clicked += () => scene.SetBackground("SimpleMainMenuBackground");
 			scene.Add(button);
-		}
-
-		[Test]
-
-		public void AddingInactiveControlToActiveScene()
-		{
-			var scene = new Scene();
-			var button = CreateButton();
-			button.IsActive = false;
-			scene.Add(button);
-			//Assert.IsFalse(button.IsActive);
 		}
 	}
 }

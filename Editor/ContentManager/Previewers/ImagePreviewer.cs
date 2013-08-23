@@ -15,14 +15,12 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 			var aspectRatio = imageSize.Height / imageSize.Width;
 			if (currentDisplaySprite != null)
 				currentDisplaySprite.IsActive = false;
-			currentDisplaySprite =
-				new Sprite(
-					new Material(Shader.Position2DUv, contentName),
-					Rectangle.FromCenter(new Point(0.5f, 0.5f), new Size(0.5f, 0.5f * aspectRatio)));
+			currentDisplaySprite = new Sprite(new Material(Shader.Position2DUv, contentName),
+				Rectangle.FromCenter(new Point(0.5f, 0.5f), new Size(0.5f, 0.5f * aspectRatio)));
 			SetImageCommands();
 		}
 
-		private Sprite currentDisplaySprite;
+		public Sprite currentDisplaySprite;
 
 		private void SetImageCommands()
 		{
@@ -35,23 +33,19 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 
 		private Point lastPanPosition = Point.Unused;
 
-		private void MoveImage(Point mousePosition)
+		public void MoveImage(Point mousePosition)
 		{
 			var relativePosition = mousePosition - lastPanPosition;
 			lastPanPosition = mousePosition;
-			if (relativePosition == Point.Zero)
-				return;
 			currentDisplaySprite.Center += relativePosition;
 		}
 
 		private Point lastScalePosition = Point.Unused;
 
-		private void ScaleImage(Point mousePosition)
+		public void ScaleImage(Point mousePosition)
 		{
 			var relativePosition = mousePosition - lastScalePosition;
 			lastScalePosition = mousePosition;
-			if (relativePosition == Point.Zero)
-				return;
 			currentDisplaySprite.Size =
 				new Size(
 					currentDisplaySprite.Size.Width + (currentDisplaySprite.Size.Width * relativePosition.Y),

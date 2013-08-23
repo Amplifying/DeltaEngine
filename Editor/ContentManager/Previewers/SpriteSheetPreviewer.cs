@@ -15,7 +15,7 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 			SetImageCommands();
 		}
 
-		private Sprite currentDisplayAnimation;
+		public Sprite currentDisplayAnimation;
 
 		private void SetImageCommands()
 		{
@@ -32,8 +32,6 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 		{
 			var relativePosition = mousePosition - lastPanPosition;
 			lastPanPosition = mousePosition;
-			if (relativePosition == Point.Zero)
-				return;
 			currentDisplayAnimation.Center += relativePosition;
 		}
 
@@ -43,8 +41,6 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 		{
 			var relativePosition = mousePosition - lastScalePosition;
 			lastScalePosition = mousePosition;
-			if (relativePosition == Point.Zero)
-				return;
 			currentDisplayAnimation.Size =
 				new Size(
 					currentDisplayAnimation.Size.Width +

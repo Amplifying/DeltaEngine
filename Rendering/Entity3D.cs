@@ -8,13 +8,13 @@ namespace DeltaEngine.Rendering
 	/// </summary>
 	public class Entity3D : DrawableEntity
 	{
-		public Entity3D()
-			: this(Vector.Zero, Quaternion.Identity) {}
+		public Entity3D(Vector position)
+			: this(position, Quaternion.Identity) {}
 
 		public Entity3D(Vector position, Quaternion orientation)
 		{
-			Position = position;
-			Orientation = orientation;
+			lastPosition = Position = position;
+			lastOrientation = Orientation = orientation;
 		}
 
 		public Vector Position { get; set; }

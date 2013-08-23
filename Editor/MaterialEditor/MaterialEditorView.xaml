@@ -54,7 +54,7 @@
 	</UserControl.Resources>
 
 	<Grid>
-		<Grid Background="#FFF0F0F0">
+		<Grid Background="#FFF0F0F0" Margin="0,10,0,-10">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="12" />
 				<RowDefinition Height="30" />
@@ -63,6 +63,8 @@
 				<RowDefinition Height="12" />
 				<RowDefinition Height="30" />
 				<RowDefinition Height="12" />
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
 				<RowDefinition Height="30" />
 				<RowDefinition Height="12" />
 				<RowDefinition Height="30" />
@@ -75,7 +77,9 @@
 				<RowDefinition Height="12" />
 				<RowDefinition Height="30" />
 				<RowDefinition Height="12" />
-				<RowDefinition Height="410" />
+				<RowDefinition Height="40" />
+				<RowDefinition Height="40" />
+				<RowDefinition Height="370.667"/>
 			</Grid.RowDefinitions>
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="12" />
@@ -89,20 +93,29 @@
 			<Label Content="Image" Grid.Column="1" Grid.Row="5" Style="{StaticResource DeltaLabel}" />
 			<ComboBox Grid.Column="3" Grid.Row="5" Style="{StaticResource DeltaComboBox}" ItemsSource="{Binding Path=ImageList}"
 			          SelectedItem="{Binding Path=SelectedImage}" Grid.ColumnSpan="2" />
-			<Label Content="Shader" Grid.Column="1" Grid.Row="9" Style="{StaticResource DeltaLabel}" />
-			<ComboBox Grid.Column="3" Grid.Row="9" Style="{StaticResource DeltaComboBox}"
+			<Label Content="Shader" Grid.Column="1" Grid.Row="13" Style="{StaticResource DeltaLabel}" Margin="3,0,5,0" Grid.ColumnSpan="2" />
+			<ComboBox Grid.Column="3" Grid.Row="13" Style="{StaticResource DeltaComboBox}"
 			          ItemsSource="{Binding Path=ShaderList}"
-			          SelectedItem="{Binding Path=SelectedShader}" Grid.ColumnSpan="2" />
+			          SelectedItem="{Binding Path=SelectedShader}" Grid.ColumnSpan="3" Margin="2,0,10,0" />
 			<ComboBox Grid.Column="3" Grid.Row="3" ItemsSource="{Binding Path=MaterialList}"
 			          Text="{Binding Path=MaterialName}" IsEditable="true" FontFamily="Arial"
 			          FontSize="16" Foreground="#FF5D5D5D" Name="LoadedMaterialList" Grid.ColumnSpan="2" />
-			<Label Content="Default Color" Grid.Column="1" Grid.Row="13" Style="{StaticResource DeltaLabel}" />
-			<ComboBox Grid.Column="3" Grid.Row="13" Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="2"
+			<Label Content="Default Color" Grid.Column="1" Grid.Row="17" Style="{StaticResource DeltaLabel}" />
+			<ComboBox Grid.Column="3" Grid.Row="17" Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="2"
 			          ItemsSource="{Binding Path=ColorStringList}" SelectedItem="{Binding Path=SelectedColor}" />
-			<Label Content="Animation" Grid.Column="1" Grid.Row="15" Style="{StaticResource DeltaLabel}" />
-			<ComboBox Grid.Column="3" Grid.Row="15" Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="2" />
+			<Label Content="Animation" Grid.Column="1" Grid.Row="19" Style="{StaticResource DeltaLabel}" Margin="3,0,5,0" Grid.ColumnSpan="2" />
+			<ComboBox Grid.Column="3" Grid.Row="19" Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="2" />
 			<Label Content="Name" Grid.Column="1" Grid.Row="3" Style="{StaticResource DeltaLabel}" />
-			<Button Content="Upload New Image" Grid.Column="1" Grid.Row="7" Grid.ColumnSpan="4"
+			<Button Content="Upload New Image" Grid.Column="1" Grid.Row="11" Grid.ColumnSpan="4"
+			        Style="{StaticResource DeltaButton}" HorizontalAlignment="Right" Width="276" Margin="0,2,0,10" Grid.RowSpan="2">
+				<Button.Background>
+					<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+						<GradientStop Color="#FFA0A0A0" Offset="0" />
+						<GradientStop Color="#FF8B8B8B" Offset="1" />
+					</LinearGradientBrush>
+				</Button.Background>
+			</Button>
+			<Button Content="Create new Shader" Grid.Column="1" Grid.Row="15" Grid.ColumnSpan="4"
 			        Style="{StaticResource DeltaButton}" HorizontalAlignment="Right" Width="276">
 				<Button.Background>
 					<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -111,17 +124,8 @@
 					</LinearGradientBrush>
 				</Button.Background>
 			</Button>
-			<Button Content="Create new Shader" Grid.Column="1" Grid.Row="11" Grid.ColumnSpan="4"
-			        Style="{StaticResource DeltaButton}" HorizontalAlignment="Right" Width="276">
-				<Button.Background>
-					<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-						<GradientStop Color="#FFA0A0A0" Offset="0" />
-						<GradientStop Color="#FF8B8B8B" Offset="1" />
-					</LinearGradientBrush>
-				</Button.Background>
-			</Button>
-			<Button Content="Create new Animation" Grid.Column="1" Grid.Row="17" Grid.ColumnSpan="4"
-			        Style="{StaticResource DeltaButton}" HorizontalAlignment="Right" Width="276">
+			<Button Content="Create new Animation" Grid.Column="1" Grid.Row="21" Grid.ColumnSpan="4"
+			        Style="{StaticResource DeltaButton}" HorizontalAlignment="Right" Width="276" Margin="0,0,0,10">
 				<Button.Background>
 					<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
 						<GradientStop Color="#FFA0A0A0" Offset="0" />
@@ -130,7 +134,7 @@
 				</Button.Background>
 			</Button>
 			<Button Content="?" Grid.Column="4" Grid.Row="1" Style="{StaticResource DeltaButton}" HorizontalAlignment="Right"
-			        Width="28" FontSize="20" FontWeight="Bold">
+			        Width="30" FontSize="20" FontWeight="Bold">
 				<Button.Background>
 					<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
 						<GradientStop Color="#FFA0A0A0" Offset="0" />
@@ -138,16 +142,23 @@
 					</LinearGradientBrush>
 				</Button.Background>
 			</Button>
-		</Grid>
-		<Button Style="{StaticResource DeltaButton}" Content="Save" Click="SaveMaterial" Margin="0,398,11,0"
-		        HorizontalAlignment="Right" Width="100" FontSize="22" FontWeight="Bold" Height="40" VerticalAlignment="Top">
-			<Button.Background>
-				<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-					<GradientStop Color="#FFA6A6A6" Offset="0" />
-					<GradientStop Color="#FF979797" Offset="1" />
-				</LinearGradientBrush>
-			</Button.Background>
-		</Button>
 
+			<Button Style="{StaticResource DeltaButton}" Content="Save" Click="SaveMaterial"
+		        HorizontalAlignment="Right" Width="100" FontSize="22" FontWeight="Bold" Height="40" VerticalAlignment="Top" Grid.ColumnSpan="2" Grid.Column="3" Grid.Row="22">
+				<Button.Background>
+					<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+						<GradientStop Color="#FFA6A6A6" Offset="0" />
+						<GradientStop Color="#FF979797" Offset="1" />
+					</LinearGradientBrush>
+				</Button.Background>
+			</Button>
+			<Button Content="Delete" Grid.Column="1" Grid.Row="22" Style="{StaticResource DeltaButton}" HorizontalAlignment="Left" Width="95" FontWeight="Bold"/>
+			<Label Content="Blend Mode" Grid.Row="7" Grid.Column="1" Style="{StaticResource DeltaLabel}"/>
+			<ComboBox Grid.ColumnSpan="2" Grid.Column="3" Grid.Row="7" Style="{StaticResource DeltaComboBox}" ItemsSource="{Binding Path=BlendModeList}" SelectedItem="{Binding Path=SelectedBlendMode}"/>
+
+			<Label Content="RenderSize" Grid.Row="9" Grid.Column="1" Style="{StaticResource DeltaLabel}"/>
+			<ComboBox Grid.ColumnSpan="2" Grid.Column="3" Grid.Row="9" Style="{StaticResource DeltaComboBox}" ItemsSource="{Binding Path=RenderStyleList}" SelectedItem="SelectedRenderSize"/>
+
+		</Grid>
 	</Grid>
 </UserControl>

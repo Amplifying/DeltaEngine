@@ -73,8 +73,7 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Controls
 		[Test, CloseAfterFirstFrame]
 		public void NoValuesThrowsException()
 		{
-			Assert.Throws<SelectBox.MustBeAtLeastOneValue>(
-				() => new DropdownList(Rectangle.Zero, null));
+			Assert.Throws<SelectBox.MustBeAtLeastOneValue>(() => new DropdownList(Rectangle.Zero, null));
 			Assert.Throws<SelectBox.MustBeAtLeastOneValue>(
 				() => new DropdownList(Rectangle.Zero, new List<object>()));
 		}
@@ -221,6 +220,13 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Controls
 			new Command(
 				point => dropdownList.DrawArea = Rectangle.FromCenter(point, dropdownList.DrawArea.Size)).
 				Add(new MouseMovementTrigger());
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void ChangeMaxDisplayCount()
+		{
+			dropdownList.MaxDisplayCount = 4;
+			Assert.AreEqual(4, dropdownList.MaxDisplayCount);
 		}
 	}
 }

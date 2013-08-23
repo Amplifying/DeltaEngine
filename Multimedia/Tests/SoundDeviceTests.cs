@@ -39,9 +39,20 @@ namespace DeltaEngine.Multimedia.Tests
 		}
 
 		[Test]
+		public void TestIfPLayingMusic()
+		{
+			var video = ContentLoader.Load<Video>("DefaultVideo");
+			video.Play();
+			Assert.IsTrue(video.IsPlaying());
+			Assert.AreEqual(3.33333325f, video.DurationInSeconds);
+			Assert.AreEqual(1.0f, video.PositionInSeconds);
+		}
+
+		[Test]
 		public void PlayMusicAndVideo()
 		{
 			MockSoundDevice device = new MockSoundDevice();
+			Assert.IsTrue(device.IsInitialized);
 			var video1 = ContentLoader.Load<Video>("DefaultVideo");
 			var music1 = ContentLoader.Load<Music>("DefaultMusic");
 			Assert.False(MockVideo.VideoStopCalled);

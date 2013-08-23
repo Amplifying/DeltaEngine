@@ -39,27 +39,10 @@ namespace ShadowShot
 			{
 				foreach (GameController gameController in entities)
 				{
-					DoAddAndRemoveAsteroids(gameController);
 					CreateRandomAsteroids(gameController);
 					CheckForShipAsteroidCollision(gameController);
 					CheckForProjectileAsteroidCollision(gameController);
 				}
-			}
-
-			private static void DoAddAndRemoveAsteroids(GameController manager)
-			{
-				foreach (Asteroid asteroid in manager.addAsteroidsList)
-					manager.ActiveAsteroidList.Add(asteroid);
-
-				manager.addAsteroidsList.Clear();
-
-				foreach (Asteroid asteroid in manager.AsteroidRemoveList)
-				{
-					manager.ActiveAsteroidList.Remove(asteroid);
-					asteroid.IsActive = false;
-				}
-
-				manager.AsteroidRemoveList.Clear();
 			}
 
 			private void CreateRandomAsteroids(GameController manager)
@@ -68,7 +51,7 @@ namespace ShadowShot
 					if (AsteroidsCount < Constants.MaximumAsteroids)
 					{
 						var drawArea = GetRandomDrawArea(manager);
-						manager.addAsteroidsList.Add(new Asteroid(manager.asteroidMaterial, drawArea, manager.screenSpace.Viewport.Bottom));
+						new Asteroid(manager.asteroidMaterial, drawArea, manager.screenSpace.Viewport.Bottom);
 						AsteroidsCount++;
 					}
 
@@ -85,7 +68,7 @@ namespace ShadowShot
 
 			private static void CheckForShipAsteroidCollision(GameController gameController)
 			{
-				foreach (Asteroid asteroid in gameController.ActiveAsteroidList)
+				foreach (Asteroid asteroid in EntitiesRunner.Current.GetEntitiesOfType<Asteroid>())
 					if (gameController.ship.DrawArea.IsColliding(0.0f, asteroid.DrawArea, 0.0f))
 						if (gameController.ShipCollidedWithAsteroid != null)
 							gameController.ShipCollidedWithAsteroid();
@@ -96,13 +79,13 @@ namespace ShadowShot
 				var toRemove = new List<Projectile>();
 				foreach (Projectile projectile in gameController.ship.ActiveProjectileList)
 					if (projectile.IsActive)
-						foreach (Asteroid asteroid in gameController.ActiveAsteroidList)
+						foreach (Asteroid asteroid in EntitiesRunner.Current.GetEntitiesOfType<Asteroid>())
 							if (asteroid.IsActive)
 								if (asteroid.DrawArea.IsColliding(0.0f, projectile.DrawArea, 0.0f))
 								{
 									projectile.IsActive = false;
 									toRemove.Add(projectile);
-									gameController.AsteroidRemoveList.Add(asteroid);
+									asteroid.IsActive = false;
 								}
 
 				foreach (var projectile in toRemove)
@@ -110,20 +93,13 @@ namespace ShadowShot
 			}
 		}
 
-		private readonly List<Asteroid> addAsteroidsList = new List<Asteroid>();
-		public readonly List<Asteroid> ActiveAsteroidList = new List<Asteroid>();
-		public readonly List<Asteroid> AsteroidRemoveList = new List<Asteroid>();
 		public event Action ShipCollidedWithAsteroid;
 
 		public void Dispose()
 		{
 			ship.Dispose();
-			AsteroidRemoveList.AddRange(addAsteroidsList);
-			AsteroidRemoveList.AddRange(ActiveAsteroidList);
-
-			foreach (Asteroid asteroid in AsteroidRemoveList)
-				asteroid.Dispose();
-
+			foreach (var asteroid in EntitiesRunner.Current.GetEntitiesOfType<Asteroid>())
+				asteroid.IsActive = false;
 			Stop<GameLogicHandler>();
 			IsActive = false;
 		}

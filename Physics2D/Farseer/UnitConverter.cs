@@ -10,28 +10,28 @@ namespace DeltaEngine.Physics2D.Farseer
 	/// </summary>
 	internal class UnitConverter
 	{
-		public UnitConverter(float displayUnitsPerSimUnit)
+		public UnitConverter(float displayUnitsToSimUnits)
 		{
-			displayUnitsToSimUnitsRatio = displayUnitsPerSimUnit;
-			simUnitsToDisplayUnitsRatio = 1 / displayUnitsPerSimUnit;
+			this.displayUnitsToSimUnits = displayUnitsToSimUnits;
+			simUnitsToDisplayUnits = 1.0f / displayUnitsToSimUnits;
 		}
 
-		private readonly float displayUnitsToSimUnitsRatio;
-		private readonly float simUnitsToDisplayUnitsRatio;
+		private readonly float displayUnitsToSimUnits;
+		private readonly float simUnitsToDisplayUnits;
 
 		public Vector2 ToDisplayUnits(Vector2 simUnits)
 		{
-			return simUnits * displayUnitsToSimUnitsRatio;
+			return simUnits * simUnitsToDisplayUnits;
 		}
 
 		public float ToSimUnits(float displayUnits)
 		{
-			return displayUnits * simUnitsToDisplayUnitsRatio;
+			return displayUnits * displayUnitsToSimUnits;
 		}
 
 		public Vector2 ToSimUnits(Vector2 displayUnits)
 		{
-			return displayUnits * simUnitsToDisplayUnitsRatio;
+			return displayUnits * displayUnitsToSimUnits;
 		}
 
 		public Point Convert(Vector2 value)

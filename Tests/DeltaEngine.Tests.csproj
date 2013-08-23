@@ -68,7 +68,15 @@
       <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
       <Name>DeltaEngine.Platforms</Name>
     </ProjectReference>
-    <ProjectReference Include="Platforms\TestWithOpenTK20\DeltaEngine.TestWithOpenTK20.csproj">
+    <ProjectReference Include="..\Platforms\Mocks\DeltaEngine.Platforms.Mocks.csproj">
+      <Project>{BF968F20-246B-4F86-BB7B-377FD4B47A9F}</Project>
+      <Name>DeltaEngine.Platforms.Mocks</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Rendering\DeltaEngine.Rendering.csproj">
+      <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
+      <Name>DeltaEngine.Rendering</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Platforms\TestWithOpenTK20\DeltaEngine.TestWithOpenTK20.csproj">
       <Project>{3A3D2E3E-FCD6-40A4-8F4E-36F3D173AB41}</Project>
       <Name>DeltaEngine.TestWithOpenTK20</Name>
     </ProjectReference>
@@ -80,12 +88,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Commands\CommandTests.cs" />
     <Compile Include="Content\MockContentLoaderTests.cs" />
+    <Compile Include="Content\MockImageTests.cs" />
+    <Compile Include="Content\MaterialRenderSizeTests.cs" />
     <Compile Include="Core\BinaryDataExtensionsTests.cs" />
     <Compile Include="Core\BinaryDataLoadSaveTests.cs" />
+    <Compile Include="Datatypes\BoundingBoxTests.cs" />
+    <Compile Include="Datatypes\BoundingSphereTests.cs" />
     <Compile Include="Datatypes\DatatypesLoadSaveTests.cs" />
     <Compile Include="Datatypes\PlaneTests.cs" />
     <Compile Include="Datatypes\RayTests.cs" />
     <Compile Include="Entities\CreatingEntitiesTests.cs" />
+    <Compile Include="Entities\DrawableEntityTest.cs" />
     <Compile Include="Entities\FilteredEntitiesTests.cs" />
     <Compile Include="Entities\TimeTests.cs" />
     <Compile Include="Entities\UpdateAndDrawThreadsTests.cs" />

@@ -6,6 +6,14 @@ namespace DeltaEngine.Tests.Extensions
 {
 	public class ArrayExtensionsTests
 	{
+		[SetUp]
+		public void SetUp()
+		{
+			dictionary = new Dictionary<string, object> { { "int", 1 }, { "string", "string" } };
+		}
+
+		private Dictionary<string, object> dictionary;
+
 		[Test]
 		public void Contains()
 		{
@@ -34,6 +42,27 @@ namespace DeltaEngine.Tests.Extensions
 		{
 			var texts = new List<string> { "Hi", "there", "whats", "up?" };
 			Assert.AreEqual("Hi, there, whats, up?", texts.ToText());
+		}
+
+		[Test]
+		public void GetWithDefaultReturnsDefaultIfNotInDictionary()
+		{
+			int result = ArrayExtensions.GetWithDefault<string, int>(dictionary, "Missing");
+			Assert.AreEqual(0, result);
+		}
+
+		[Test]
+		public void GetWithDefaultReturnsValueIfFound()
+		{
+			int result = ArrayExtensions.GetWithDefault<string, int>(dictionary, "int");
+			Assert.AreEqual(1, result);
+		}
+
+		[Test]
+		public void GetWithDefaultReturnsDefaultIfValueIsWrongType()
+		{
+			int result = ArrayExtensions.GetWithDefault<string, int>(dictionary, "string");
+			Assert.AreEqual(0, result);
 		}
 	}
 }

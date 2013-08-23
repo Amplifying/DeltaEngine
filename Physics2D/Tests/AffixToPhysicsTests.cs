@@ -1,34 +1,47 @@
 ﻿using DeltaEngine.Datatypes;
+using DeltaEngine.Physics2D.Farseer;
 using DeltaEngine.Platforms;
 using DeltaEngine.Rendering.Shapes;
-using DeltaEngine.ScreenSpaces;
 using NUnit.Framework;
 
 namespace DeltaEngine.Physics2D.Tests
 {
 	internal class AffixToPhysicsTests : TestWithMocksOrVisually
 	{
+		[SetUp]
+		public void SetUp()
+		{
+			physics = new FarseerPhysics();
+		}
+
+		private Physics physics;
+
 		[Test]
 		public void FallingWhiteCircle()
 		{
-			Resolve<Window>();
-			CreateFloor(Resolve<Physics>());
-			var circle = new Ellipse(Point.Half, 0.02f, 0.02f, Color.White);
-			var physicsbody = Resolve<Physics>().CreateCircle(0.02f);
-			physicsbody.Position = ScreenSpace.Current.ToPixelSpace(Point.Half);
-			physicsbody.Restitution = 0.9f;
-			physicsbody.Friction = 0.9f;
-			circle.Add(physicsbody);
-			circle.Start<AffixToPhysics>();
+			CreateFloor();
+			CreateCircle();
 		}
 
-		private static void CreateFloor(Physics physics)
+		private void CreateFloor()
 		{
-			physics.CreateEdge(new[]
-			{
-				ScreenSpace.Current.ToPixelSpace(new Point(0.0f, 0.75f)),
-				ScreenSpace.Current.ToPixelSpace(new Point(1.0f, 0.75f))
-			}).IsStatic = true;
+			var startPoint = new Point(0.0f, 0.7f);
+			var endPoint = new Point(1.0f, 0.65f);
+			new Line2D(startPoint, endPoint, Color.Blue);
+			physics.CreateEdge(startPoint, endPoint);
 		}
+
+		private void CreateCircle()
+		{
+			PhysicsBody physicsCircle = physics.CreateCircle(Radius);
+			physicsCircle.Position = Center;
+			physicsCircle.LinearVelocity = new Point(0.1f, 0.0f);
+			physicsCircle.Restitution = 0.85f;
+			physicsCircle.Friction = 0.9f;
+			new Ellipse(Center, Radius, Radius, Color.White).AffixToPhysics(physicsCircle);
+		}
+
+		private const float Radius = 0.02f;
+		private static readonly Point Center = Point.Half;
 	}
 }

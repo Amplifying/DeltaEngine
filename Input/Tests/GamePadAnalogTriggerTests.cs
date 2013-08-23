@@ -37,7 +37,7 @@ namespace DeltaEngine.Input.Tests
 		{
 			var trigger = new GamePadAnalogTrigger(GamePadAnalog.RightThumbStick);
 			Assert.AreEqual(GamePadAnalog.RightThumbStick, trigger.Analog);
-			Assert.AreEqual(Point.Unused, trigger.Position);
+			Assert.AreEqual(Point.Zero, trigger.Position);
 		}
 
 		[Test, CloseAfterFirstFrame]
@@ -45,7 +45,7 @@ namespace DeltaEngine.Input.Tests
 		{
 			var trigger = new GamePadAnalogTrigger("RightTrigger");
 			Assert.AreEqual(GamePadAnalog.RightTrigger, trigger.Analog);
-			Assert.AreEqual(Point.Unused, trigger.Position);
+			Assert.AreEqual(Point.Zero, trigger.Position);
 			Assert.Throws<GamePadAnalogTrigger.CannotCreateGamePadStickTriggerWithoutGamePadStick>(
 				() => new GamePadAnalogTrigger(""));
 		}

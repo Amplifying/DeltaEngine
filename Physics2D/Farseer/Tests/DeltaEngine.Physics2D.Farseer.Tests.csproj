@@ -51,10 +51,6 @@
       <Project>{C983D137-8B7F-47BE-996E-894A3596DD06}</Project>
       <Name>DeltaEngine.Physics2D.Farseer</Name>
     </ProjectReference>
-    <ProjectReference Include="Platforms\TestWithOpenTK20\DeltaEngine.TestWithOpenTK20.csproj">
-      <Project>{3A3D2E3E-FCD6-40A4-8F4E-36F3D173AB41}</Project>
-      <Name>DeltaEngine.TestWithOpenTK20</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Platforms\TestWithOpenTK20\DeltaEngine.TestWithOpenTK20.csproj">
       <Project>{3A3D2E3E-FCD6-40A4-8F4E-36F3D173AB41}</Project>
       <Name>DeltaEngine.TestWithOpenTK20</Name>

@@ -15,8 +15,8 @@ namespace DeltaEngine.Rendering.Fonts
 	/// </summary>
 	public class FontText : Entity2D
 	{
-		public FontText(string text, Rectangle drawArea)
-			: this(FontXml.Default, text, drawArea) {}
+		public FontText(FontXml font, string text, Point centerPosition)
+			: this(font, text, Rectangle.FromCenter(centerPosition, new Size(0.3f, 0.1f))) {}
 
 		public FontText(FontXml font, string text, Rectangle drawArea)
 			: base(drawArea)
@@ -113,7 +113,7 @@ namespace DeltaEngine.Rendering.Fonts
 				foreach (var entity in entities)
 					AddToBatch((FontText)entity);
 				for (int i = 0; i < drawFontCount; i++)
-					drawing.Add(drawnFontTexts[i].material, drawnFontTexts[i].material.DiffuseMap.BlendMode,
+					drawing.Add(drawnFontTexts[i].material.Shader, drawnFontTexts[i].material.DiffuseMap,
 						drawnFontTexts[i].vertices, drawnFontTexts[i].indices, drawnFontTexts[i].verticesCount,
 						drawnFontTexts[i].indicesCount);
 			}

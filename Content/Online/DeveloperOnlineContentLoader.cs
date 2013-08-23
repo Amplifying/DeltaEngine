@@ -73,7 +73,7 @@ namespace DeltaEngine.Content.Online
 				ParseXmlNode(node);
 		}
 
-		private static ContentMetaData ParseContentMetaData(IEnumerable<XmlAttribute> attributes)
+		private static ContentMetaData ParseContentMetaData(List<XmlAttribute> attributes)
 		{
 			var data = new ContentMetaData();
 			foreach (var attribute in attributes)
@@ -102,11 +102,15 @@ namespace DeltaEngine.Content.Online
 					break;
 				}
 			if (string.IsNullOrEmpty(data.Name))
-				throw new InvalidContentMetaDataNameIsAlwaysNeeded();
+				throw new InvalidContentMetaDataNameIsAlwaysNeeded(attributes.ToText());
 			return data;
 		}
 
-		public class InvalidContentMetaDataNameIsAlwaysNeeded : Exception {}
+		public class InvalidContentMetaDataNameIsAlwaysNeeded : Exception
+		{
+			public InvalidContentMetaDataNameIsAlwaysNeeded(string message)
+				: base(message) {}
+		}
 
 		protected readonly Dictionary<string, ContentMetaData> metaData =
 			new Dictionary<string, ContentMetaData>(StringComparer.OrdinalIgnoreCase);
@@ -131,7 +135,18 @@ namespace DeltaEngine.Content.Online
 			if (newProject.Permissions == ProjectPermissions.None)
 				throw new NoPermissionToUseProject(newProject.ProjectName);
 			ProjectName = newProject.ProjectName;
+			RemoveContentDirectoryIfFromOtherProject();
 			connection.Send(new CheckProjectContent(GetCurrentContentMetaData()));
+		}
+
+		private void RemoveContentDirectoryIfFromOtherProject()
+		{
+			var contentMetaDataProjectName = XmlFile.Root.GetAttributeValue("Name");
+			if (contentMetaDataProjectName == ProjectName)
+				return;
+			file = null;
+			if (Directory.Exists(contentPath))
+				Directory.Delete(contentPath, true);
 		}
 
 		private string GetCurrentContentMetaData()

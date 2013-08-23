@@ -91,6 +91,10 @@
       <Project>{C983D137-8B7F-47BE-996E-894A3596DD06}</Project>
       <Name>DeltaEngine.Physics2D.Farseer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Rendering\Cameras\DeltaEngine.Rendering.Cameras.csproj">
+      <Project>{F5992CBF-8E17-4EB0-B483-F1DE7993C416}</Project>
+      <Name>DeltaEngine.Rendering.Cameras</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
       <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
       <Name>DeltaEngine.Rendering</Name>

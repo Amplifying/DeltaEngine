@@ -87,8 +87,8 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Controls
 		{
 			scrollbar.IsEnabled = false;
 			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(Color.Gray, scrollbar.Color);
-			Assert.AreEqual(Color.Gray, scrollbar.Pointer.Color);
+			Assert.AreEqual(Color.Grey, scrollbar.Color);
+			Assert.AreEqual(Color.Grey, scrollbar.Pointer.Color);
 		}
 
 		[Test, ApproveFirstFrameScreenshot]

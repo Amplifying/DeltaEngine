@@ -1,6 +1,6 @@
 ﻿namespace DeltaEngine.Input
 {
-	/// <summary>
+	/// <summary>0
 	/// GamePads feature lots of buttons, but most commonly A, B, X, Y are used for Triggers.
 	/// </summary>
 	public enum GamePadButton

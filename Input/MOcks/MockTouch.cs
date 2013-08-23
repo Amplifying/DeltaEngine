@@ -15,8 +15,8 @@ namespace DeltaEngine.Input.Mocks
 		}
 
 		public override bool IsAvailable { get; protected set; }
-		private static Point position;
-		internal static State[] TouchStates;
+		private Point position;
+		internal readonly State[] TouchStates;
 		private const int MaxNumberOfTouchIndices = 10;
 
 		public override void Dispose()
@@ -29,7 +29,7 @@ namespace DeltaEngine.Input.Mocks
 			return position;
 		}
 
-		public static void SetTouchState(int touchIndex, State state, Point newTouchPosition)
+		public void SetTouchState(int touchIndex, State state, Point newTouchPosition)
 		{
 			position = newTouchPosition;
 			TouchStates[touchIndex] = state;

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Globalization;
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
@@ -22,10 +21,7 @@ namespace Asteroids
 		}
 
 		private readonly FontXml hudFont;
-
 		public FontText ScoreDisplay { get; private set; }
-
-		public List<FontText> metaInfoTexts = new List<FontText>();
 
 		public void SetScoreText(int score)
 		{

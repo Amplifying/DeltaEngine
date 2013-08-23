@@ -19,6 +19,6 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 		}
 
 		private FontXml verdana;
-		private Music music;
+		public Music music;
 	}
 }

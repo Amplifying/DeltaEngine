@@ -37,9 +37,6 @@
       <HintPath>..\packages\MvvmLightLibs.4.1.27.0\lib\net40\GalaSoft.MvvmLight.WPF4.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.IO.Abstractions">
-      <HintPath>..\packages\System.IO.Abstractions.1.4.0.65\lib\net35\System.IO.Abstractions.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml" />
@@ -52,17 +49,21 @@
       <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
       <Name>DeltaEngine %28DeltaEngine\DeltaEngine%29</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Graphics\DeltaEngine.Graphics.csproj">
-      <Project>{8F701B0D-48B6-45CF-85E0-286BD53328BA}</Project>
-      <Name>DeltaEngine.Graphics</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Networking\Messages\DeltaEngine.Networking.Messages.csproj">
-      <Project>{74863E62-A568-4C0A-A37F-F04BFA8EB9DB}</Project>
-      <Name>DeltaEngine.Networking.Messages</Name>
+    <ProjectReference Include="..\..\Input\DeltaEngine.Input.csproj">
+      <Project>{CC65E69E-FAFD-4C2B-85EB-5E57FD3AF847}</Project>
+      <Name>DeltaEngine.Input</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
       <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
       <Name>DeltaEngine.Rendering</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Rendering\Sprites\DeltaEngine.Rendering.Sprites.csproj">
+      <Project>{FCA7BAAA-3F6E-4CA3-B354-C34AF4F1BDDD}</Project>
+      <Name>DeltaEngine.Rendering.Sprites</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Scenes\DeltaEngine.Scenes.csproj">
+      <Project>{75BB4C75-DE36-47B3-9910-10EA8E8973B7}</Project>
+      <Name>DeltaEngine.Scenes</Name>
     </ProjectReference>
     <ProjectReference Include="..\Core\DeltaEngine.Editor.Core.csproj">
       <Project>{C667C7FC-A1C7-4CBC-98C0-C97F776E4570}</Project>

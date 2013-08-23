@@ -62,6 +62,8 @@ namespace DeltaEngine.Graphics
 			EnableDepthTest();
 		}
 
+		public class Set3DModeHasNoDelegatesRegistered : Exception {}
+
 		public event Action OnSet3DMode;
 		public abstract void EnableDepthTest();
 		public abstract void Dispose();

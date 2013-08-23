@@ -51,10 +51,6 @@
       <Project>{68AA6280-09EF-4325-B5F8-B8A967004144}</Project>
       <Name>DeltaEngine.Content.Online</Name>
     </ProjectReference>
-    <ProjectReference Include="Platforms\TestWithOpenTK20\DeltaEngine.TestWithOpenTK20.csproj">
-      <Project>{3A3D2E3E-FCD6-40A4-8F4E-36F3D173AB41}</Project>
-      <Name>DeltaEngine.TestWithOpenTK20</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

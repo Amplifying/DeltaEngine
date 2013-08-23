@@ -23,6 +23,10 @@ namespace DeltaEngine.Input
 				TryInvokeTriggerOfType<TouchPressTrigger>(entity, IsTouchPressTriggered);
 				TryInvokeTriggerOfType<TouchMovementTrigger>(entity, IsTouchMovementTriggered);
 				TryInvokeTriggerOfType<TouchPositionTrigger>(entity, IsTouchPositionTriggered);
+				TryInvokeTriggerOfType<TouchTapTrigger>(entity, IsTouchTapTriggered);
+				TryInvokeTriggerOfType<TouchDragTrigger>(entity, IsTouchDragTriggered);
+				TryInvokeTriggerOfType<TouchDragDropTrigger>(entity, IsTouchDragDropTriggered);
+				TryInvokeTriggerOfType<TouchHoldTrigger>(entity, IsTouchHoldTriggered);
 			}
 		}
 
@@ -54,6 +58,73 @@ namespace DeltaEngine.Input
 				trigger.Position != Point.Unused;
 			trigger.Position = GetPosition(0);
 			return isButton && hasPositionChanged;
+		}
+
+		private bool IsTouchTapTriggered(TouchTapTrigger trigger)
+		{
+			bool wasJustStartedPressing = trigger.LastState == State.Pressing;
+			State currentState = GetState(0);
+			var isNowReleased = currentState == State.Releasing;
+			trigger.LastState = currentState;
+			return isNowReleased && wasJustStartedPressing;
+		}
+
+		private bool IsTouchDragTriggered(TouchDragTrigger trigger)
+		{
+			if (GetState(0) == State.Pressing)
+				trigger.StartPosition = GetPosition(0);
+			else if (trigger.StartPosition != Point.Unused &&
+				GetState(0) != State.Released)
+			{
+				if (trigger.StartPosition.DistanceTo(GetPosition(0)) > PositionEpsilon)
+				{
+					trigger.Position = GetPosition(0);
+					trigger.DoneDragging = GetState(0) == State.Releasing;
+					return true;
+				}
+			}
+			else
+			{
+				trigger.StartPosition = Point.Unused;
+				trigger.DoneDragging = false;
+			}
+			return false;
+		}
+
+
+		private const float PositionEpsilon = 0.0025f;
+
+		private bool IsTouchDragDropTriggered(TouchDragDropTrigger trigger)
+		{
+			var position = GetPosition(0);
+			if (trigger.StartArea.Contains(position) && GetState(0) == State.Pressing)
+				trigger.StartDragPosition = position;
+			else if (trigger.StartDragPosition != Point.Unused && GetState(0) != State.Released)
+			{
+				if (trigger.StartDragPosition.DistanceTo(position) > PositionEpsilon)
+					return true;
+			}
+			else
+				trigger.StartDragPosition = Point.Unused;
+			return false;
+		}
+
+		private bool IsTouchHoldTriggered(TouchHoldTrigger trigger)
+		{
+			var position = GetPosition(0);
+			if (GetState(0) == State.Pressing)
+				trigger.StartPosition = position;
+			if (CheckHoverState(trigger, position))
+				return trigger.IsHovering();
+			trigger.LastPosition = position;
+			trigger.Elapsed = 0.0f;
+			return false;
+		}
+
+		private bool CheckHoverState(TouchHoldTrigger trigger, Point position)
+		{
+			return trigger.HoldArea.Contains(trigger.StartPosition) && GetState(0) == State.Pressed &&
+				trigger.LastPosition.DistanceTo(position) < PositionEpsilon;
 		}
 	}
 }

@@ -46,6 +46,12 @@
     <Reference Include="DeltaEngine.Rendering">
 	  <HintPath>$(DeltaEnginePath)\DeltaEngine.Rendering.dll</HintPath>
     </Reference>
+    <Reference Include="DeltaEngine.Rendering.Particles">
+	  <HintPath>$(DeltaEnginePath)\DeltaEngine.Rendering.Particles.dll</HintPath>
+    </Reference>
+    <Reference Include="DeltaEngine.Rendering.Sprites">
+	  <HintPath>$(DeltaEnginePath)\DeltaEngine.Rendering.Sprites.dll</HintPath>
+    </Reference>
     <Reference Include="DeltaEngine.WindowsOpenTK20">
 	  <HintPath>$(DeltaEnginePath)\DeltaEngine.WindowsOpenTK20.dll</HintPath>
     </Reference>

@@ -13,10 +13,11 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 		{
 			verdana = ContentLoader.Load<FontXml>("Verdana12");
 			new FontText(verdana, "Play", Rectangle.One);
-			var sound = ContentLoader.Load<Sound>(contentName);
+			sound = ContentLoader.Load<Sound>(contentName);
 			new Command(() => sound.Play(1)).Add(new MouseButtonTrigger());
 		}
 
 		private FontXml verdana;
+		public Sound sound;
 	}
 }

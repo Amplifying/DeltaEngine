@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("DeltaEngine.Editor.Core")]
@@ -11,3 +12,4 @@ using System.Runtime.InteropServices;
 [assembly: Guid("7d01900e-4041-4fc9-8edd-4016d4146805")]
 [assembly: AssemblyVersion("0.9.8.3")]
 [assembly: AssemblyFileVersion("0.9.8.3")]
+[assembly: InternalsVisibleTo("DeltaEngine.Editor.Core.Tests")]

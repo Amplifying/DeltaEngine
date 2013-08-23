@@ -37,7 +37,7 @@ namespace DeltaEngine.Scenes.UserInterfaces.Controls
 		private Rectangle GetButtonDrawArea(int position)
 		{
 			float height = DrawArea.Height / (buttons.Count);
-			float aspectRatio = theme.RadioButtonBackground.Material.RenderSize.AspectRatio;
+			float aspectRatio = theme.RadioButtonBackground.Material.MaterialRenderSize.AspectRatio;
 			float width = height * aspectRatio;
 			var d = new Rectangle(DrawArea.Left, DrawArea.Top + position * height, width, height);
 			return d;

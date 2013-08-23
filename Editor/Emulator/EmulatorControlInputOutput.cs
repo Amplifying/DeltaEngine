@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using DeltaEngine.Editor.Core;
 using Microsoft.Win32;
 
 namespace DeltaEngine.Editor.Emulator
@@ -47,7 +48,8 @@ namespace DeltaEngine.Editor.Emulator
 
 		private void LoadDeviceInfoList()
 		{
-			XElement xmlFile = XElement.Load("Devices\\Devices.xml");
+			var xmlStream = EmbeddedResoucesLoader.GetEmbeddedResourceStream("Devices.Devices.xml");
+			XElement xmlFile = XElement.Load(xmlStream);
 			IEnumerable<XElement> xmlDevices = xmlFile.Elements();
 			var deviceCount = (from category in xmlFile.Descendants("Device") select category).Count();
 			devices = new Device[deviceCount];

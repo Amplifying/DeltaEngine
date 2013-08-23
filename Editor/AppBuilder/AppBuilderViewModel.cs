@@ -23,7 +23,7 @@ namespace DeltaEngine.Editor.AppBuilder
 			MessagesListViewModel = new AppBuildMessagesListViewModel();
 			AppListViewModel = new BuiltAppsListViewModel();
 			AppListViewModel.RebuildRequest += OnAppRebuildRequest;
-			BuildPressed = new RelayCommand(OnBuildExecuted, CanBuildExecuted);
+			BuildPressed = new RelayCommand(OnBuildExecuted);
 			BrowsePressed = new RelayCommand<string>(OnBrowseUserSolutionPathExecuted);
 			service.DataReceived += OnServiceMessageReceived;
 			RequestSupportedPlatforms();
@@ -42,18 +42,24 @@ namespace DeltaEngine.Editor.AppBuilder
 			TrySendBuildRequestToServer(app.SolutionFilePath, app.Name, app.Platform);
 		}
 
-		private void TrySendBuildRequestToServer(string solutionFilePath, string projectNameInSolution,
-			PlatformName platform)
+		private void TrySendBuildRequestToServer(string solutionFilePath,
+			string projectNameInSolution, PlatformName platform)
 		{
 			try
 			{
-				SendBuildRequestToServer(solutionFilePath, projectNameInSolution, platform);
 				codeSolutionPathOfBuildingApp = UserSolutionPath;
+				RaisePropertyChangedForIsBuildActionExecutable();
+				SendBuildRequestToServer(solutionFilePath, projectNameInSolution, platform);
 			}
 			catch (Exception ex)
 			{
-				MessagesListViewModel.AddMessage(GetErrorMessage(ex));
+				OnAppBuildMessageRecieved(GetErrorMessage(ex));
 			}
+		}
+
+		private void RaisePropertyChangedForIsBuildActionExecutable()
+		{
+			RaisePropertyChanged("IsBuildActionExecutable");
 		}
 
 		private void SendBuildRequestToServer(string solutionFilePath, string projectNameInSolution,
@@ -111,6 +117,7 @@ namespace DeltaEngine.Editor.AppBuilder
 			{
 				selectedSolutionProject = value;
 				RaisePropertyChanged("SelectedSolutionProject");
+				RaisePropertyChangedForIsBuildActionExecutable();
 				DetermineEntryPointsOfProject();
 			}
 		}
@@ -127,8 +134,28 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		public List<string> AvailableEntryPointsInSelectedProject { get; set; }
 		private const string DefaultEntryPoint = "Program.Main";
-		public string SelectedEntryPoint { get; set; }
-		public PlatformName SelectedPlatform { get; set; }
+
+		public string SelectedEntryPoint
+		{
+			get { return selectedEntryPoint; }
+			set
+			{
+				selectedEntryPoint = value;
+				RaisePropertyChangedForIsBuildActionExecutable();
+			}
+		}
+		private string selectedEntryPoint;
+
+		public PlatformName SelectedPlatform
+		{
+			get { return selectedPlatform; }
+			set
+			{
+				selectedPlatform = value;
+				RaisePropertyChangedForIsBuildActionExecutable();
+			}
+		}
+		private PlatformName selectedPlatform;
 
 		private AppBuildMessage GetErrorMessage(Exception ex)
 		{
@@ -144,27 +171,6 @@ namespace DeltaEngine.Editor.AppBuilder
 		{
 			TrySendBuildRequestToServer(UserSolutionPath, SelectedSolutionProject.Title,
 				SelectedPlatform);
-		}
-
-		protected bool CanBuildExecuted()
-		{
-			return IsUserProjectPathValid() && IsUserSelectedEntryPointValid() &&
-				IsSelectedPlatformValid() && codeSolutionPathOfBuildingApp == null;
-		}
-
-		private bool IsUserProjectPathValid()
-		{
-			return File.Exists(UserSolutionPath);
-		}
-
-		private bool IsUserSelectedEntryPointValid()
-		{
-			return SelectedEntryPoint == DefaultEntryPoint;
-		}
-
-		private bool IsSelectedPlatformValid()
-		{
-			return SupportedPlatforms.Any(supportedPlatform => SelectedPlatform == supportedPlatform);
 		}
 
 		private void OnBrowseUserSolutionPathExecuted(string newUserProjectPath)
@@ -192,15 +198,23 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		private void OnAppBuildMessageRecieved(AppBuildMessage receivedMessage)
 		{
-			if (receivedMessage.Type != AppBuildMessageType.BuildInfo)
-				MessagesListViewModel.AddMessage(receivedMessage);
+			if (receivedMessage.Type == AppBuildMessageType.BuildInfo)
+				return;
+			MessagesListViewModel.AddMessage(receivedMessage);
+			AllowBuildingAppsAgain();
+		}
+
+		private void AllowBuildingAppsAgain()
+		{
+			codeSolutionPathOfBuildingApp = null;
+			RaisePropertyChangedForIsBuildActionExecutable();
 		}
 
 		private void OnAppBuildResultRecieved(AppBuildResult receivedBuildResult)
 		{
 			AppInfo appInfo = receivedBuildResult.ToAppInfo(AppListViewModel.AppStorageDirectory);
 			appInfo.SolutionFilePath = codeSolutionPathOfBuildingApp;
-			codeSolutionPathOfBuildingApp = null;
+			AllowBuildingAppsAgain();
 			TriggerBuiltAppRecieved(appInfo, receivedBuildResult.PackageFileData);
 		}
 
@@ -214,7 +228,7 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		private void OnAppBuildFailedRecieved(AppBuildFailed buildFailedMessage)
 		{
-			codeSolutionPathOfBuildingApp = null;
+			AllowBuildingAppsAgain();
 			TriggerAppBuildFailedRecieved(buildFailedMessage);
 		}
 
@@ -231,6 +245,30 @@ namespace DeltaEngine.Editor.AppBuilder
 			SupportedPlatforms = new[] { PlatformName.Windows, };
 			SelectedPlatform = PlatformName.Windows;
 			Service.Send(new SupportedPlatformsRequest());
+		}
+
+		public bool IsBuildActionExecutable
+		{
+			get
+			{
+				return IsUserProjectPathValid && IsUserSelectedEntryPointValid && IsSelectedPlatformValid &&
+					codeSolutionPathOfBuildingApp == null;
+			}
+		}
+
+		private bool IsUserProjectPathValid
+		{
+			get { return File.Exists(UserSolutionPath); }
+		}
+
+		private bool IsUserSelectedEntryPointValid
+		{
+			get { return SelectedEntryPoint == DefaultEntryPoint; }
+		}
+
+		private bool IsSelectedPlatformValid
+		{
+			get { return SupportedPlatforms.Any(supportedPlatform => SelectedPlatform == supportedPlatform); }
 		}
 	}
 }

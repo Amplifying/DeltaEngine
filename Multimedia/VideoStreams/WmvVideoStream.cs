@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Runtime.InteropServices;
 using AsfMojo.File;
 using AsfMojo.Media;
@@ -75,12 +76,12 @@ namespace DeltaEngine.Multimedia.VideoStreams
 			asf = null;
 		}
 
-		public byte[] ReadImage(float delta)
+		public byte[] ReadImageRgbaColors(float delta)
 		{
 			Bitmap conversionBmp = video.GetImageData(delta);
 			if (conversionBmp == null)
 				return null;
-			byte[] result = new byte[Width * Height * 4];
+			var result = new byte[Width * Height * 4];
 			BitmapData bitmapData = conversionBmp.LockBits(new Rectangle(0, 0, Width, Height),
 				ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
 			Marshal.Copy(bitmapData.Scan0, result, 0, result.Length);
@@ -90,5 +91,13 @@ namespace DeltaEngine.Multimedia.VideoStreams
 
 		public void Play() {}
 		public void Stop() {}
+
+		public static bool IsWmvStream(Stream stream)
+		{
+			byte[] magicBytes = new byte[3];
+			stream.Read(magicBytes, 0, magicBytes.Length);
+			stream.Seek(0, SeekOrigin.Begin);
+			return magicBytes[0] == 48 && magicBytes[1] == 38 && magicBytes[2] == 178;
+		}
 	}
 }

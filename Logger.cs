@@ -87,10 +87,10 @@ namespace DeltaEngine
 
 		private void WriteMessage(MessageType type, string message)
 		{
-			if (message != LastMessage)
+			//if (message != LastMessage)
 				Write(type, message);
-			else
-				NumberOfRepeatedMessagesIgnored++;
+			//else
+			//	NumberOfRepeatedMessagesIgnored++;
 			LastMessage = message;
 		}
 

@@ -1,6 +1,7 @@
 ﻿using DeltaEngine;
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Entities;
 using DeltaEngine.Platforms;
 using NUnit.Framework;
 
@@ -12,16 +13,16 @@ namespace Asteroids.Tests
 		public void InitGameLogic()
 		{
 			Resolve<Window>();
-			gameLogic = new GameLogic();
+			interactionLogics = new InteractionLogics();
 		}
 
-		private GameLogic gameLogic;
+		private InteractionLogics interactionLogics;
 
 		[Test]
 		public void AsteroidCreatedWhenTimeReached()
 		{
 			AdvanceTimeAndUpdateEntities(1.1f);
-			Assert.GreaterOrEqual(gameLogic.ExistantAsteroids.Count, 2);
+			Assert.GreaterOrEqual(EntitiesRunner.Current.GetEntitiesOfType<Asteroid>().Count, 2);
 		}
 
 		[Test]
@@ -29,8 +30,8 @@ namespace Asteroids.Tests
 		{
 			var projectile = new Projectile(new Material(Shader.Position2DColorUv, "DeltaEngineLogo"),
 				Point.Half, 0);
-			gameLogic.ExistantProjectiles.Add(projectile);
-			gameLogic.CreateAsteroidsAtPosition(Point.Half, 1, 1);
+			EntitiesRunner.Current.GetEntitiesOfType<Projectile>().Add(projectile);
+			interactionLogics.CreateAsteroidsAtPosition(Point.Half, 1, 1);
 			AdvanceTimeAndUpdateEntities(0.2f);
 			Assert.IsFalse(projectile.IsActive);
 		}
@@ -39,12 +40,12 @@ namespace Asteroids.Tests
 		public void PlayerShipAndAsteroidCollidingResultsInGameOver()
 		{
 			bool gameOver = false;
-			gameLogic.GameOver += () =>
+			interactionLogics.GameOver += () =>
 			{
 				gameOver = true;
 			};
-			gameLogic.Player.Set(new Rectangle(Point.Half, PlayerShip.PlayerShipSize));
-			gameLogic.CreateAsteroidsAtPosition(Point.Half, 1, 1);
+			interactionLogics.Player.Set(new Rectangle(Point.Half, new Size(.05f)));
+			interactionLogics.CreateAsteroidsAtPosition(Point.Half, 1, 1);
 			AdvanceTimeAndUpdateEntities(0.2f);
 			Assert.IsTrue(gameOver);
 		}

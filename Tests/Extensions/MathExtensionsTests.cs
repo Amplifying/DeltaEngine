@@ -137,5 +137,13 @@ namespace DeltaEngine.Tests.Extensions
 			Assert.AreEqual(648, 650.GetNearestMultiple(8));
 			Assert.AreEqual(1235, 1267.GetNearestMultiple(65));
 		}
+
+		[Test]
+		public void InvSqrt()
+		{
+			Assert.AreEqual(0.5f, 4.0f.InvSqrt());
+			Assert.AreEqual(0.1f, 100.0f.InvSqrt());
+			Assert.AreEqual(10.0f, 0.01f.InvSqrt());
+		}
 	}
 }

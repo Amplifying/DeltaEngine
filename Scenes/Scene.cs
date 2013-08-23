@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
 using DeltaEngine.Rendering.Sprites;
+using DeltaEngine.Scenes.UserInterfaces.Controls;
 
 namespace DeltaEngine.Scenes
 {
@@ -46,6 +48,18 @@ namespace DeltaEngine.Scenes
 			isShown = false;
 		}
 
+		public void ToBackground()
+		{
+			foreach (Control control in controls.OfType<Control>())
+				control.Stop<Interact>();
+		}
+
+		public void ToForeground()
+		{
+			foreach (Control control in controls.OfType<Control>())
+				control.Start<Interact>();
+		}
+
 		public virtual void Clear()
 		{
 			foreach (Entity control in controls)
@@ -53,9 +67,9 @@ namespace DeltaEngine.Scenes
 			controls.Clear();
 		}
 
-		public void SetBackground(string materialName)
+		public void SetBackground(string imageName)
 		{
-			SetBackground(new Material(Shader.Position2DColorUv, materialName));
+			SetBackground(new Material(Shader.Position2DColorUv, imageName));
 		}
 
 		public void SetBackground(Material material)

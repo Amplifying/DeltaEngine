@@ -15,6 +15,8 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Controls
 		{
 			button = new InteractiveButton(Center, "Click Me");
 			InitializeMouse();
+			InitializeTouch();
+			AdvanceTimeAndUpdateEntities();
 		}
 
 		private InteractiveButton button;
@@ -24,13 +26,18 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Controls
 		private void InitializeMouse()
 		{
 			mouse = Resolve<Mouse>() as MockMouse;
-			if (mouse == null)
-				return; //ncrunch: no coverage
-			mouse.SetPosition(Point.Zero);
-			AdvanceTimeAndUpdateEntities();
+			if (mouse != null)
+				mouse.SetPosition(Point.Zero);
 		}
 
 		private MockMouse mouse;
+
+		private void InitializeTouch()
+		{
+			var touch = Resolve<Touch>() as MockTouch;
+			if (touch != null)
+				touch.SetTouchState(0, State.Released, Point.Zero);
+		}
 
 		[Test, ApproveFirstFrameScreenshot]
 		public void RenderInteractiveButton() {}
@@ -40,7 +47,7 @@ namespace DeltaEngine.Scenes.Tests.UserInterfaces.Controls
 		{
 			button.IsEnabled = false;
 			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(Color.Gray, button.Color);
+			Assert.AreEqual(Color.Grey, button.Color);
 		}
 
 		[Test, CloseAfterFirstFrame]

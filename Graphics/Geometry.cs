@@ -18,16 +18,16 @@ namespace DeltaEngine.Graphics
 			: base("<GenerateGeometry>")
 		{
 			Format = creationData.Format;
-			verticesData = new byte[creationData.NumberOfVertices * Format.Stride];
+			vertices = new byte[creationData.NumberOfVertices * Format.Stride];
 			indices = new short[creationData.NumberOfIndices];
 		}
 
 		public VertexFormat Format { get; private set; }
-		private byte[] verticesData;
+		private byte[] vertices;
 		private short[] indices;
 		public int NumberOfVertices
 		{
-			get { return verticesData.Length / Format.Stride; }
+			get { return vertices.Length / Format.Stride; }
 		}
 		public int NumberOfIndices
 		{
@@ -38,14 +38,22 @@ namespace DeltaEngine.Graphics
 		{
 			if (fileData.Length == 0)
 				throw new EmptyGeometryFileGiven();
-			var loadedGeometry = new BinaryReader(fileData).Create() as Geometry;
+			var loadedGeometry = new BinaryReader(fileData).Create() as GeometryData;
 			Format = loadedGeometry.Format;
-			verticesData = loadedGeometry.verticesData;
-			indices = loadedGeometry.indices;
-			SetNativeData(verticesData, indices);
+			vertices = loadedGeometry.VerticesData;
+			indices = loadedGeometry.Indices;
+			SetNativeData(vertices, indices);
 		}
 
 		public class EmptyGeometryFileGiven : Exception {}
+
+		public class GeometryData
+		{
+			public VertexFormat Format;
+			public int NumberOfVertices;
+			public byte[] VerticesData;
+			public short[] Indices;
+		}
 
 		public abstract void Draw();
 
@@ -55,9 +63,9 @@ namespace DeltaEngine.Graphics
 				throw new InvalidNumberOfVertices(setVertices.Length, NumberOfVertices);
 			if (setIndices.Length != NumberOfIndices)
 				throw new InvalidNumberOfIndices(setIndices.Length, NumberOfIndices);
-			verticesData = BinaryDataExtensions.ToByteArray(setVertices);
+			vertices = BinaryDataExtensions.ToByteArray(setVertices);
 			indices = setIndices;
-			SetNativeData(verticesData, indices);
+			SetNativeData(vertices, indices);
 		}
 
 		public class InvalidNumberOfVertices : Exception

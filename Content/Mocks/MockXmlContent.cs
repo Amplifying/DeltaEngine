@@ -51,5 +51,11 @@ namespace DeltaEngine.Content.Mocks
 			character.AddAttribute("Character", (char)i);
 			character.AddAttribute("Lines", "(0,0)-(1,1)");
 		}
+
+		protected override void CreateDefault()
+		{
+			base.CreateDefault();
+			Data = new XmlData("Default");
+		}
 	}
 }

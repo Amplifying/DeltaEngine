@@ -37,6 +37,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="DeltaEngine.Content.Xml">
+	  <HintPath>$(DeltaEnginePath)\DeltaEngine.Content.Xml.dll</HintPath>
+    </Reference>
     <Reference Include="DeltaEngine">
 	  <HintPath>$(DeltaEnginePath)\DeltaEngine.dll</HintPath>
     </Reference>
@@ -51,6 +54,15 @@
     </Reference>
     <Reference Include="DeltaEngine.Rendering">
 	  <HintPath>$(DeltaEnginePath)\DeltaEngine.Rendering.dll</HintPath>
+    </Reference>
+    <Reference Include="DeltaEngine.Rendering.Fonts">
+	  <HintPath>$(DeltaEnginePath)\DeltaEngine.Rendering.Fonts.dll</HintPath>
+    </Reference>
+    <Reference Include="DeltaEngine.Rendering.Particles">
+	  <HintPath>$(DeltaEnginePath)\DeltaEngine.Rendering.Particles.dll</HintPath>
+    </Reference>
+    <Reference Include="DeltaEngine.Rendering.Sprites">
+	  <HintPath>$(DeltaEnginePath)\DeltaEngine.Rendering.Sprites.dll</HintPath>
     </Reference>
     <Reference Include="DeltaEngine.WindowsOpenTK20">
 	  <HintPath>$(DeltaEnginePath)\DeltaEngine.WindowsOpenTK20.dll</HintPath>

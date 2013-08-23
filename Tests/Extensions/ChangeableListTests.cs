@@ -1,4 +1,5 @@
-﻿using DeltaEngine.Extensions;
+﻿using System.Collections.Generic;
+using DeltaEngine.Extensions;
 using NUnit.Framework;
 
 namespace DeltaEngine.Tests.Extensions
@@ -67,6 +68,50 @@ namespace DeltaEngine.Tests.Extensions
 				}
 				break;
 			}
+		}
+
+		[Test]
+		public void GetEmulatorAndResetAndClearIt()
+		{
+			var list = new ChangeableList<int> { 1, 3, 5 };
+			Assert.IsFalse(list.IsReadOnly);
+			var emulator = list.GetEnumerator();
+			Assert.AreEqual(emulator.Current, 0);
+			emulator.MoveNext();
+			emulator.MoveNext();
+			emulator.MoveNext();
+			emulator.MoveNext();
+			emulator.Reset();
+			list.Clear();
+		}
+
+		[Test]
+		public void ConvertChangebleListToArray()
+		{
+			var list = new ChangeableList<int> { 1, 3, 5 };
+			var array = list.ToArray();
+			Assert.AreEqual(new[] { 1, 3, 5 }, array);
+		}
+
+		[Test]
+		public void RemoveItemFromList()
+		{
+			var list = new ChangeableList<int> { 1, 3, 5 };
+			list.RemoveAt(1);
+			Assert.AreEqual(new List<int>() { 1, 5 }, list);
+		}
+
+		[Test]
+		public void RemoveItemFromListFromEnumerationDepth()
+		{
+			var list = new ChangeableList<int> { 1, 3 };
+			var emulator = list.GetEnumerator();
+			emulator.MoveNext();
+			emulator.MoveNext();
+			emulator.MoveNext();
+			emulator.Reset();
+			list.RemoveAt(1);
+			Assert.AreEqual(new List<int>() { 1, 3 }, list);
 		}
 	}
 }

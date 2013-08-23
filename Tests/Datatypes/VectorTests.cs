@@ -82,11 +82,24 @@ namespace DeltaEngine.Tests.Datatypes
 		}
 
 		[Test]
-		public void Normalize()
+		public void NormalizeOfAnyVector()
 		{
 			var vector = new Vector(1.0f, 2.0f, -3.0f);
+			Assert.AreNotEqual(1.0f, vector.Length);
 			vector.Normalize();
 			Assert.AreEqual(1.0f, vector.LengthSquared, MathExtensions.Epsilon);
+			vector = Vector.UnitX;
+			vector.Normalize();
+			Assert.AreEqual(1.0f, vector.Length, MathExtensions.Epsilon);
+		}
+
+		[Test]
+		public void NormalizeOfUnitVectorIsNotNecessary()
+		{
+			var vector = Vector.UnitX;
+			Assert.AreEqual(1.0f, vector.Length, MathExtensions.Epsilon);
+			vector.Normalize();
+			Assert.AreEqual(1.0f, vector.Length, MathExtensions.Epsilon);
 		}
 
 		[Test]
@@ -198,6 +211,13 @@ namespace DeltaEngine.Tests.Datatypes
 			var v = new Vector(2.23f, 3.45f, 0.59f);
 			string vectorAsString = v.ToString();
 			Assert.AreEqual(v, new Vector(vectorAsString));
+		}
+
+		[Test]
+		public void TransformNormal()
+		{
+			var matrix = new Matrix(2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1);
+			Assert.AreEqual(new Vector(2, 4, 0), new Vector(1, 2, 3).TransformNormal(matrix));
 		}
 	}
 }

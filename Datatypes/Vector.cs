@@ -79,7 +79,7 @@ namespace DeltaEngine.Datatypes
 
 		public void Normalize()
 		{
-			if (LengthSquared == 0.0f)
+			if (LengthSquared == 0.0f || LengthSquared == 1.0f)
 				return;
 
 			float distanceInverse = 1.0f / MathExtensions.Sqrt(LengthSquared);
@@ -88,12 +88,9 @@ namespace DeltaEngine.Datatypes
 			Z *= distanceInverse;
 		}
 
-		public static Vector TransformNormal(Vector normal, Matrix matrix)
+		public Vector TransformNormal(Matrix matrix)
 		{
-			return new Vector(
-				(normal.X * matrix[0]) + (normal.Y * matrix[4]) + (normal.Z * matrix[8]),
-				(normal.X * matrix[1]) + (normal.Y * matrix[5]) + (normal.Z * matrix[9]),
-				(normal.X * matrix[2]) + (normal.Y * matrix[6]) + (normal.Z * matrix[10]));
+			return matrix.TransformNormal(this);
 		}
 
 		public float LengthSquared

@@ -185,16 +185,16 @@ namespace DeltaEngine.Datatypes
 		[Pure]
 		public float RotationTo(Point target)
 		{
-			var normal = (this - target).Normalize();
+			var normal = Normalize(this - target);
 			return MathExtensions.Atan2(normal.Y, normal.X);
 		}
 
-		public Point Normalize()
+		public static Point Normalize(Point point)
 		{
-			var length = (float)Math.Sqrt(X * X + Y * Y);
-			X /= length;
-			Y /= length;
-			return this;
+			var length = (float)Math.Sqrt(point.X * point.X + point.Y * point.Y);
+			point.X /= length;
+			point.Y /= length;
+			return point;
 		}
 
 		[Pure]

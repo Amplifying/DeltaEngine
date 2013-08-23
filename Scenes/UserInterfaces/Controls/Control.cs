@@ -83,14 +83,12 @@ namespace DeltaEngine.Scenes.UserInterfaces.Controls
 
 		private void EnableControl()
 		{
-			Start<Interact>();
 			foreach (Child child in children.Where(c => c.Control != null))
 				child.Control.IsEnabled = child.WasEnabled;
 		}
 
 		private void DisableControl()
 		{
-			Stop<Interact>();
 			foreach (Child child in children.Where(c => c.Control != null))
 			{
 				child.WasEnabled = child.Control.IsEnabled;
