@@ -26,6 +26,22 @@ namespace DeltaEngine.Editor.Core.Tests
 			Assert.AreNotEqual(0, packer.CollectedFilesToPack.Count);
 		}
 
+		[Test]
+		public void ExpectExceptionWhenPackDirectoryWithoutCode()
+		{
+			const string Folder = "ExpectExceptionWhenPackEmptyFolder";
+			try
+			{
+				Directory.CreateDirectory(Folder);
+				Assert.Throws<CodePacker.NoCodeAvailableToPack>(() => new CodePacker(Folder));
+			}
+			finally
+			{
+				if (Directory.Exists(Folder))
+					Directory.Delete(Folder);
+			}
+		}
+
 		private static CodePacker GetCodePackerWithBuilderTestsData()
 		{
 			string solutionFilePath = PathExtensions.GetEngineSolutionFilePath();

@@ -7,12 +7,21 @@ namespace DeltaEngine.Editor.Core
 	public class CodePacker
 	{
 		public CodePacker(string slnFilePath, string projectNameInSolution)
+			: this(GetCodeDirectoryOfProject(slnFilePath, projectNameInSolution)) {}
+
+		private static string GetCodeDirectoryOfProject(string slnFilePath,
+			string projectNameInSolution)
 		{
 			var solutionLoader = new SolutionFileLoader(slnFilePath);
 			ProjectEntry searchedProject = solutionLoader.GetCSharpProject(projectNameInSolution);
 			string solutionDirectory = Path.GetDirectoryName(slnFilePath);
 			string relativeProjectDirectory = Path.GetDirectoryName(searchedProject.FilePath);
-			directoryWithCode = Path.Combine(solutionDirectory, relativeProjectDirectory);
+			return Path.Combine(solutionDirectory, relativeProjectDirectory);
+		}
+
+		public CodePacker(string directoryWithCode)
+		{
+			this.directoryWithCode = directoryWithCode;
 			CollectProjectFilesToPack();
 		}
 
@@ -23,11 +32,14 @@ namespace DeltaEngine.Editor.Core
 			if (!Directory.Exists(directoryWithCode))
 				throw new DirectoryDoesNotExist(directoryWithCode);
 			CollectedFilesToPack = GetRelevantFiles();
+			if (CollectedFilesToPack.Count == 0)
+				throw new NoCodeAvailableToPack();
 		}
 
 		public class DirectoryDoesNotExist : Exception
 		{
-			public DirectoryDoesNotExist(string directory) : base(directory) { }
+			public DirectoryDoesNotExist(string directory)
+				: base(directory) {}
 		}
 
 		public List<string> CollectedFilesToPack { get; private set; }
@@ -68,6 +80,8 @@ namespace DeltaEngine.Editor.Core
 				filePath.EndsWith(".cachefile") || filePath.EndsWith(".pch") ||
 				filePath.Contains(".ncrunch") || filePath.Contains(@"\Tests\");
 		}
+
+		public class NoCodeAvailableToPack : Exception { }
 
 		public byte[] GetPackedData()
 		{

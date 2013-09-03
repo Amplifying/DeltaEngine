@@ -161,7 +161,7 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		private AppBuildMessage GetErrorMessage(Exception ex)
 		{
-			string errorMessage = "Failed to send BuildRequest to server because " + ex.Message;
+			string errorMessage = "Failed to send BuildRequest to server because " + ex;
 			return new AppBuildMessage(errorMessage)
 			{
 				Filename = Path.GetFileName(UserSolutionPath),
@@ -207,6 +207,7 @@ namespace DeltaEngine.Editor.AppBuilder
 				Logger.Info(receivedMessage.Text);
 				return;
 			}
+			Logger.Warning(receivedMessage.Text);
 			MessagesListViewModel.AddMessage(receivedMessage);
 			AllowBuildingAppsAgain();
 		}

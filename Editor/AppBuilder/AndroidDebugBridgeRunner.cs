@@ -33,7 +33,7 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		private ProcessRunner CreateAdbProcess(string arguments)
 		{
-			return new ProcessRunner(adbProvider.GetAdbPath(), arguments);
+			return new ProcessRunner(adbProvider.GetAdbPath(), arguments, 15 * 1000);
 		}
 
 		private static bool IsDeviceName(string devicesRequestMessage)
