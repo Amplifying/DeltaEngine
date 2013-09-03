@@ -5,33 +5,276 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	mc:Ignorable="d"
-	d:DesignHeight="800" d:DesignWidth="400">
+	d:DesignHeight="1600" d:DesignWidth="300" MinWidth="300">
+
+	<UserControl.Resources>
+
+		<Style TargetType="Label" x:Key="DeltaLabel">
+			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="Background" Value="#e2e2e2" />
+			<Setter Property="Foreground" Value="#FF5D5D5D" />
+		</Style>
+
+		<Style TargetType="TextBox" x:Key="DeltaTextBox">
+			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="Background" Value="#FFFBFBFB" />
+			<Setter Property="Foreground" Value="#FF5D5D5D" />
+			<Setter Property="BorderBrush" Value="{x:Null}" />
+		</Style>
+
+		<Style TargetType="ComboBox" x:Key="DeltaComboBox">
+			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="Background" Value="#FFFBFBFB" />
+			<Setter Property="Foreground" Value="#FF5D5D5D" />
+		</Style>
+
+		<Style TargetType="ListBox" x:Key="DeltaListBox">
+			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="Background" Value="#FFFBFBFB" />
+			<Setter Property="Foreground" Value="#FF5D5D5D" />
+		</Style>
+
+		<Style TargetType="Button" x:Key="DeltaButton">
+			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="Background" Value="#FF9C9C9C" />
+			<Setter Property="Foreground" Value="#FFFFFFFF" />
+		</Style>
+
+		<Style TargetType="RadioButton" x:Key="DeltaRadioButton">
+			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="Foreground" Value="#FF5D5D5D" />
+		</Style>
+
+	</UserControl.Resources>
+
 	<ScrollViewer>
-		<Grid Background="#FFF0F0F0">
+		<Grid Background="#FFF0F0F0" Height="1600">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="12"/>
-				<ColumnDefinition Width="180*"/>
-				<ColumnDefinition Width="12*"/>
-				<ColumnDefinition Width="180*"/>
+				<ColumnDefinition Width="12"/>
+				<ColumnDefinition Width="44.5"/>
+				<ColumnDefinition Width="8"/>
+				<ColumnDefinition Width="76*"/>
+				<ColumnDefinition Width="8"/>
+				<ColumnDefinition Width="73"/>
+				<ColumnDefinition Width="8"/>
+				<ColumnDefinition Width="30*"/>
+				<ColumnDefinition Width="30"/>
 				<ColumnDefinition Width="12"/>
 			</Grid.ColumnDefinitions>
 			<Grid.RowDefinitions>
-				<RowDefinition Height="9*"/>
-				<RowDefinition Height="200"/>
-				<RowDefinition Height="12"/>
-				<RowDefinition Height="200"/>
 				<RowDefinition Height="12"/>
 				<RowDefinition Height="30"/>
-				<RowDefinition Height="295*"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="20"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="18"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="18"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="18"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12.667"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="10"/>
+				<RowDefinition Height="30"/>
+				<RowDefinition Height="12"/>
 			</Grid.RowDefinitions>
-			<ListBox Margin="1,0,0,0" ItemsSource="{Binding Path=ContentImageListList}"
-							 SelectedItem="{Binding Path=SelectedImageInList}" Grid.Row="1" Grid.Column="1" 
-							 FontFamily="Arial" FontSize="18" Grid.ColumnSpan="3"/>
-			<ListBox Margin="1,0,10,0" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" FontFamily="Arial" 
-							 FontSize="18" SelectedItem="{Binding Path=SelectedSpriteNameInList}"
-							 ItemsSource="{Binding Path=UIImagesInList}" SelectedIndex="{Binding Path=SpriteListIndex}"/>
-			<Button Content="Add Image" Click="AddImage" Grid.Row="5" Grid.Column="1" FontFamily="Arial" FontSize="16" FontWeight="Bold"/>
-			<Button Content="Remove Image" Click="RemoveImage" Grid.Row="5" Grid.Column="3" FontFamily="Arial" FontSize="16" FontWeight="Bold"/>
+			<Button Content="?" Grid.Column="9" Grid.Row="1" Style="{StaticResource DeltaButton}" ToolTip="Help" FontWeight="Bold"/>
+			<Label Content="‡‡ Grid Properties" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="9" FontFamily="Arial"
+					       Background="#FFACACAC" FontSize="18" Foreground="White" FontWeight="Bold"/>
+			<Label Content="Toolbox" Grid.Column="1" Grid.Row="9" Grid.ColumnSpan="9" FontFamily="Arial"
+					       Background="#FFACACAC" FontSize="18" Foreground="White" FontWeight="Bold"/>
+			<Label Content="Object Properties" Grid.Column="1" Grid.Row="21" Grid.ColumnSpan="9" FontFamily="Arial"
+					       Background="#FFACACAC" FontSize="18" Foreground="White" FontWeight="Bold"/>
+			<Button
+			FontSize="18" Style="{StaticResource DeltaButton}"
+			ToolTip="Button"
+			Grid.Row="11" Margin="0,0,28,0" Grid.ColumnSpan="2" Grid.Column="1">
+				<Button.Background>
+					<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+						<GradientStop Color="#FFB2B2B2" Offset="0" />
+						<GradientStop Color="#FF8B8B8B" Offset="1" />
+					</LinearGradientBrush>
+				</Button.Background>
+				<Image Height="20" Width="20" Source="../Images/UIEditor/CreateButton.png" Stretch="Fill"/>
+			</Button>
+
+			<Button
+			Click="AddImage"
+			FontSize="18" Style="{StaticResource DeltaButton}"
+			ToolTip="Image"
+			Grid.Row="11" Margin="24,0,0,0" Grid.ColumnSpan="2" Grid.Column="2">
+				<Button.Background>
+					<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+						<GradientStop Color="#FFB2B2B2" Offset="0" />
+						<GradientStop Color="#FF8B8B8B" Offset="1" />
+					</LinearGradientBrush>
+				</Button.Background>
+				<Image Height="20" Width="20" Source="../Images/UIEditor/ImageButton.png" Stretch="Fill"/>
+			</Button>
+
+			<RadioButton Content="Show Grid" Grid.Column="1" HorizontalAlignment="Left" Grid.Row="7" VerticalAlignment="Top" Height="30" Width="258" Style="{StaticResource DeltaRadioButton}" Margin="1,0,0,0" Grid.ColumnSpan="9" ToolTip="Show/Hide Grid"/>
+			<RadioButton Content="Snap" Grid.Column="6" HorizontalAlignment="Left" Grid.Row="7" VerticalAlignment="Top" Height="30" Width="130" Style="{StaticResource DeltaRadioButton}" Grid.ColumnSpan="4" Margin="2,0,0,0" ToolTip="Snap Elements to Grid"/>
+			<Label Content="Rows" Grid.Column="1" Grid.Row="5" Style="{StaticResource DeltaLabel}" Grid.ColumnSpan="2"/>
+			<Label Content="Columns" Grid.Column="6" Grid.Row="5" Style="{StaticResource DeltaLabel}"/>
+			<TextBox Grid.Column="4" Grid.Row="5" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}"/>
+			<TextBox Grid.ColumnSpan="2" Grid.Column="8" Grid.Row="5" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}"/>
+			<Label Content="Tree View" Grid.Column="1" HorizontalAlignment="Left" Grid.Row="17" Grid.ColumnSpan="9" Width="259" FontFamily="Arial"
+					       Background="#FFACACAC" FontSize="18" Foreground="White" FontWeight="Bold" Margin="0,0,0,10" Grid.RowSpan="2"/>
+			<ListBox Grid.ColumnSpan="9" Grid.Row="19" Margin="1,0,0,0" Grid.Column="1" ItemsSource="{Binding Path=UIImagesInList}"/>
+			<Label Content="Alignment" Grid.Column="2" Grid.Row="29" Grid.ColumnSpan="8" FontFamily="Arial"
+					       Background="#FFC9C8C8" FontSize="18" Foreground="White"/>
+			<Label Content="Horizontal" Grid.Column="2" Grid.Row="31" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}" HorizontalAlignment="Left" Width="107"/>
+			<Label Grid.ColumnSpan="3" Content="Vertical" Grid.Column="2" Grid.Row="33" Style="{StaticResource DeltaLabel}" HorizontalAlignment="Left" Width="107"/>
+			<ComboBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="31"/>
+			<ComboBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="33"/>
+			<Label Content="Margin Bottom" Grid.Column="2" Grid.Row="35" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}" HorizontalAlignment="Left" Width="107"/>
+			<Label Content="Margin Top" Grid.Column="2" Grid.Row="37" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}" HorizontalAlignment="Left" Width="107"/>
+			<Label Content="Margin Left" Grid.Column="2" Grid.Row="39" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}" HorizontalAlignment="Left" Width="107"/>
+			<Label Content="Margin Right" Grid.Column="2" Grid.Row="41" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}" HorizontalAlignment="Left" Width="107"/>
+			<TextBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="35" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}"/>
+			<TextBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="37" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}"/>
+			<TextBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="39" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}"/>
+			<TextBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="41" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}"/>
+			<Label Content="Name" Grid.Column="1" Grid.Row="23" Grid.ColumnSpan="2" Style="{StaticResource DeltaLabel}" Margin="1,0,0,0"/>
+			<TextBox Grid.ColumnSpan="6" Grid.Column="4" Height="30" Grid.Row="23" TextWrapping="Wrap" VerticalAlignment="Top" Style="{StaticResource DeltaTextBox}"/>
+			<Label Content="Layer" Grid.Column="1" Margin="1,0,0,0" Grid.Row="27" VerticalAlignment="Top" Height="30" Grid.ColumnSpan="2" Style="{StaticResource DeltaLabel}"/>
+			<TextBox Grid.ColumnSpan="5" Grid.Column="4" Grid.Row="27" TextWrapping="Wrap" Text="0" Style="{StaticResource DeltaTextBox}"/>
+			<Button Content="▲" Grid.Column="9" Grid.Row="27" HorizontalAlignment="Right" Width="20" Height="15" VerticalAlignment="Top" Foreground="White" FontFamily="Arial" FontSize="10" FontWeight="Bold">
+				<Button.Background>
+					<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+						<GradientStop Color="#FFA0A0A0" Offset="0"/>
+						<GradientStop Color="#FF8B8B8B" Offset="1"/>
+					</LinearGradientBrush>
+				</Button.Background>
+			</Button>
+			<Button Content="▼" Grid.Column="9" HorizontalAlignment="Left" Margin="10,15,0,0" Grid.Row="27" VerticalAlignment="Top" Width="20" Height="15" Foreground="White" FontFamily="Arial" FontSize="10" FontWeight="Bold">
+				<Button.Background>
+					<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+						<GradientStop Color="#FFA0A0A0" Offset="0"/>
+						<GradientStop Color="#FF8B8B8B" Offset="1"/>
+					</LinearGradientBrush>
+				</Button.Background>
+			</Button>
+			<Label Content="Width" Grid.Column="1" Grid.Row="25" Margin="1,0,0,0" Grid.ColumnSpan="2" Style="{StaticResource DeltaLabel}"/>
+			<TextBox Grid.Column="4" Grid.Row="25" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}"/>
+			<Label Content="Height" Grid.Column="6" Grid.Row="25" Style="{StaticResource DeltaLabel}"/>
+			<TextBox Grid.ColumnSpan="2" Grid.Column="8" Grid.Row="25" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}"/>
+			<Label Content="Material" Grid.Column="2" Grid.Row="43" Grid.ColumnSpan="8" FontFamily="Arial"
+					       Background="#FFC9C8C8" FontSize="18" Foreground="White"/>
+			<Label Content="Default" Grid.Column="2" Grid.Row="45" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}"/>
+			<Label Content="Hovered" Grid.Column="2" Grid.Row="47" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}"/>
+			<Label Content="Pressed" Grid.Column="2" Grid.Row="49" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}"/>
+			<Label Content="Disabled" Grid.Column="2" Grid.Row="51" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}"/>
+			<ComboBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="45" Style="{StaticResource DeltaComboBox}"/>
+			<ComboBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="47" Style="{StaticResource DeltaComboBox}"/>
+			<ComboBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="49" Style="{StaticResource DeltaComboBox}"/>
+			<ComboBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="51" Style="{StaticResource DeltaComboBox}"/>
+			<Button Grid.ColumnSpan="8" Content="Create Material" Grid.Column="2" Grid.Row="53" Style="{StaticResource DeltaButton}">
+				<Button.Background>
+					<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+						<GradientStop Color="#FFA0A0A0" Offset="0"/>
+						<GradientStop Color="#FF8B8B8B" Offset="1"/>
+					</LinearGradientBrush>
+				</Button.Background>
+			</Button>
+			<Label Content="Text" Grid.Column="2" Grid.Row="55" Grid.ColumnSpan="8" FontFamily="Arial"
+					       Background="#FFC9C8C8" FontSize="18" Foreground="White"/>
+			<Label Content="Font" Grid.Column="2" Grid.Row="57" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}"/>
+			<Label Content="Text" Grid.Column="2" Grid.Row="61" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}"/>
+			<ComboBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="57"/>
+			<Button Grid.ColumnSpan="8" Content="Create Font" Grid.Column="2" Grid.Row="59" Style="{StaticResource DeltaButton}">
+				<Button.Background>
+					<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+						<GradientStop Color="#FFA0A0A0" Offset="0"/>
+						<GradientStop Color="#FF8B8B8B" Offset="1"/>
+					</LinearGradientBrush>
+				</Button.Background>
+			</Button>
+			<TextBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="61" TextWrapping="Wrap" Text="Text goes here" Style="{StaticResource DeltaTextBox}"/>
+			<Button Grid.ColumnSpan="4" Content="Save" Grid.Column="6" Grid.Row="63" Style="{StaticResource DeltaButton}" FontSize="22" FontWeight="Bold" Grid.RowSpan="2">
+				<Button.Background>
+					<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+						<GradientStop Color="#FFA0A0A0" Offset="0"/>
+						<GradientStop Color="#FF8B8B8B" Offset="1"/>
+					</LinearGradientBrush>
+				</Button.Background>
+			</Button>
+			<Button Grid.ColumnSpan="3" Content="Delete" Grid.Column="2" Margin="0,0,22,0" Grid.Row="64" Style="{StaticResource DeltaButton}" FontWeight="Bold">
+				<Button.Background>
+					<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+						<GradientStop Color="#FFA0A0A0" Offset="0"/>
+						<GradientStop Color="#FF8B8B8B" Offset="1"/>
+					</LinearGradientBrush>
+				</Button.Background>
+			</Button>
+			<Label Grid.ColumnSpan="2" Content="Name" Margin="1,0,0,0" Grid.Row="15" Grid.Column="1" Style="{StaticResource DeltaLabel}"/>
+			<Label Content="UI Scene" Grid.Column="1" Margin="3,0,10,0" Grid.Row="13" Grid.ColumnSpan="10" FontFamily="Arial"
+					       Background="#FFACACAC" FontSize="18" Foreground="White" FontWeight="Bold"/>
+			<ComboBox Grid.ColumnSpan="6" Grid.Column="4" Grid.Row="15" IsEditable="True" Margin="2,0,0,0"/>
 		</Grid>
 	</ScrollViewer>
 </UserControl>

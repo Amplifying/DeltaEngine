@@ -6,6 +6,7 @@ using DeltaEngine.ScreenSpaces;
 using System;
 using System.Diagnostics;
 using System.IO;
+using DeltaEngine.Core;
 using DeltaEngine.Extensions;
 using DeltaEngine.Multimedia.OpenTK.Helpers;
 using DeltaEngine.Multimedia.VideoStreams;
@@ -40,8 +41,8 @@ namespace DeltaEngine.Multimedia.OpenTK
 			}
 		}
 
-		public OpenTKVideo(string filename, OpenTKSoundDevice soundDevice)
-			: base(filename,soundDevice)
+		protected OpenTKVideo(string contentName, OpenTKSoundDevice soundDevice)
+			: base(contentName,soundDevice)
 		{
 			channelHandle = openAL.CreateChannel();
 			buffers = openAL.CreateBuffers(NumberOfBuffers);

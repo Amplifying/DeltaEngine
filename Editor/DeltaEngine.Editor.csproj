@@ -32,9 +32,6 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>DeltaEngineIcon.ico</ApplicationIcon>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AvalonDock">
       <HintPath>packages\AvalonDock.2.0.1746\lib\net40\AvalonDock.dll</HintPath>
@@ -81,6 +78,10 @@
       <Project>{74863E62-A568-4C0A-A37F-F04BFA8EB9DB}</Project>
       <Name>DeltaEngine.Networking.Messages</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Platforms\DeltaEngine.Platforms.csproj">
+      <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
+      <Name>DeltaEngine.Platforms</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Platforms\WindowsOpenTK20\DeltaEngine.WindowsOpenTK20.csproj">
       <Project>{4FDE0BC1-AF24-4A6D-AB73-A28833D41AC8}</Project>
       <Name>DeltaEngine.WindowsOpenTK20</Name>
@@ -125,22 +126,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="DeltaEngineIcon.ico" />
-    <Resource Include="Icons\Content.png" />
-    <Resource Include="Icons\Font.png" />
-    <Resource Include="Icons\ImageAnimation.png" />
-    <Resource Include="Icons\Level.png" />
-    <Resource Include="Icons\Material.png" />
-    <Resource Include="Icons\MeshAnimation.png" />
-    <Resource Include="Icons\Model.png" />
-    <Resource Include="Icons\ParticleEffect.png" />
-    <Resource Include="Icons\Shader.png" />
-    <Resource Include="Icons\Start.png" />
-    <Resource Include="Icons\Trigger.png" />
-    <Resource Include="Icons\Emulator.png" />
-    <Resource Include="Icons\UI.png" />
-    <Resource Include="Icons\Account.png" />
-    <Resource Include="Icons\Input.png" />
     <Resource Include="Images\EditorBackground.png" />
     <Resource Include="Images\ExitButton.png" />
     <Resource Include="Images\MaximizeWindowButton.png" />
@@ -148,10 +133,82 @@
     <Resource Include="Images\ExitButtonHover.png" />
     <Resource Include="Images\MaximizeWindowButtonHover.png" />
     <Resource Include="Images\MinimizeWindowButtonHover.png" />
-    <Resource Include="Icons\ProjectCreator.png" />
     <Resource Include="Images\WelcomeDeltaLogo.png" />
-    <Resource Include="Icons\AppBuilder.png" />
-    <Resource Include="Icons\SampleBrowser.png" />
+    <Resource Include="Images\Remove.png" />
+    <Resource Include="Images\Search.png" />
+    <Resource Include="Images\AppBuilder\BuildErrorIcon.png" />
+    <Resource Include="Images\AppBuilder\BuildInfoIcon.png" />
+    <Resource Include="Images\AppBuilder\BuildWarningIcon.png" />
+    <Resource Include="Images\AppBuilder\StartBuildIcon.png" />
+    <Resource Include="Images\ContentTypes\Actor.png" />
+    <Resource Include="Images\ContentTypes\Camera.png" />
+    <Resource Include="Images\ContentTypes\Font.png" />
+    <Resource Include="Images\ContentTypes\Geometry.png" />
+    <Resource Include="Images\ContentTypes\Image.png" />
+    <Resource Include="Images\ContentTypes\ImageAnimation.png" />
+    <Resource Include="Images\ContentTypes\InputCommand.png" />
+    <Resource Include="Images\ContentTypes\Json.png" />
+    <Resource Include="Images\ContentTypes\JustStore.png" />
+    <Resource Include="Images\ContentTypes\Level.png" />
+    <Resource Include="Images\ContentTypes\Material.png" />
+    <Resource Include="Images\ContentTypes\Mesh.png" />
+    <Resource Include="Images\ContentTypes\MeshAnimation.png" />
+    <Resource Include="Images\ContentTypes\Model.png" />
+    <Resource Include="Images\ContentTypes\Music.png" />
+    <Resource Include="Images\ContentTypes\ParticleEmitter.png" />
+    <Resource Include="Images\ContentTypes\Scene.png" />
+    <Resource Include="Images\ContentTypes\Shader.png" />
+    <Resource Include="Images\ContentTypes\Sound.png" />
+    <Resource Include="Images\ContentTypes\SpriteSheetAnimation.png" />
+    <Resource Include="Images\ContentTypes\Trigger.png" />
+    <Resource Include="Images\ContentTypes\UIScreen.png" />
+    <Resource Include="Images\ContentTypes\UITheme.png" />
+    <Resource Include="Images\ContentTypes\Video.png" />
+    <Resource Include="Images\ContentTypes\Xml.png" />
+    <Resource Include="Images\ParticleEditor\GraphButton.png" />
+    <Resource Include="Images\ParticleEditor\RangeButton.png" />
+    <Resource Include="Images\Plugins\Account.png" />
+    <Resource Include="Images\Plugins\AppBuilder.png" />
+    <Resource Include="Images\Plugins\Content.png" />
+    <Resource Include="Images\Plugins\Emulator.png" />
+    <Resource Include="Images\Plugins\Font.png" />
+    <Resource Include="Images\Plugins\ImageAnimation.png" />
+    <Resource Include="Images\Plugins\Input.png" />
+    <Resource Include="Images\Plugins\Level.png" />
+    <Resource Include="Images\Plugins\Material.png" />
+    <Resource Include="Images\Plugins\MeshAnimation.png" />
+    <Resource Include="Images\Plugins\Model.png" />
+    <Resource Include="Images\Plugins\ParticleEffect.png" />
+    <Resource Include="Images\Plugins\ProjectCreator.png" />
+    <Resource Include="Images\Plugins\SampleBrowser.png" />
+    <Resource Include="Images\Plugins\Shader.png" />
+    <Resource Include="Images\Plugins\Start.png" />
+    <Resource Include="Images\Plugins\Trigger.png" />
+    <Resource Include="Images\Plugins\UI.png" />
+    <Resource Include="Images\UIEditor\CreateButton.png" />
+    <Resource Include="Images\UIEditor\ImageButton.png" />
+    <Resource Include="DeltaEngine.Editor.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Images\Emulators\AndroidGoogleNexus4_768x1280.png" />
+    <EmbeddedResource Include="Images\Emulators\AndroidGoogleNexusS_480x800.png" />
+    <EmbeddedResource Include="Images\Emulators\AndroidNexus10Tablet_2560x1600.png" />
+    <EmbeddedResource Include="Images\Emulators\AndroidNexus7Tablet_1280x800.png" />
+    <EmbeddedResource Include="Images\Emulators\AsusTransformerPadInfinityTablet_1920x1200.png" />
+    <EmbeddedResource Include="Images\Emulators\Devices.xml" />
+    <EmbeddedResource Include="Images\Emulators\iPad3_2048x1536.png" />
+    <EmbeddedResource Include="Images\Emulators\iPad_1024x768.png" />
+    <EmbeddedResource Include="Images\Emulators\iPhone3GS_320x480.png" />
+    <EmbeddedResource Include="Images\Emulators\iPhone4_640x960.png" />
+    <EmbeddedResource Include="Images\Emulators\iPhone5_640x1136.png" />
+    <EmbeddedResource Include="Images\Emulators\TV_1024x600.png" />
+    <EmbeddedResource Include="Images\Emulators\TV_1280x720.png" />
+    <EmbeddedResource Include="Images\Emulators\TV_1920x1080.png" />
+    <EmbeddedResource Include="Images\Emulators\W8Emulator1080p.png" />
+    <EmbeddedResource Include="Images\Emulators\W8Emulator768p.png" />
+    <EmbeddedResource Include="Images\Emulators\Windows8RT_1366x768.png" />
+    <EmbeddedResource Include="Images\Emulators\WindowsPhone8_720x1280.png" />
+    <EmbeddedResource Include="Images\Emulators\WP8EmulatorScreenshot.png" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">

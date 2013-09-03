@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using DeltaEngine.Editor.Core;
+using DeltaEngine.Editor.Messages;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.AppBuilder.Tests
@@ -12,15 +12,15 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		public void GetEmulatorDeviceAndSampleAppInfo()
 		{
 			firstDevice = GetFirstAvailableDevice();
-			sampleApp = "LogoApp".TryGetAlreadyBuiltApp(PlatformName.Android);
+			sampleApp = AppBuilderTestingExtensions.TryGetAlreadyBuiltApp("LogoApp",
+				PlatformName.Android);
 		}
 
 		private Device firstDevice;
 
 		private static Device GetFirstAvailableDevice()
 		{
-			var deviceFinder = new AndroidDeviceFinder();
-			return deviceFinder.GetAvailableDevices().FirstOrDefault();
+			return AndroidDeviceFinder.GetAvailableDevices().FirstOrDefault();
 		}
 
 		private AppInfo sampleApp;

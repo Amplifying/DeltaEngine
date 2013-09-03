@@ -76,27 +76,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Devices\AndroidGoogleNexus4_768x1280.png" />
-    <EmbeddedResource Include="Devices\AndroidGoogleNexusS_480x800.png" />
-    <EmbeddedResource Include="Devices\AndroidNexus10Tablet_2560x1600.png" />
-    <EmbeddedResource Include="Devices\AndroidNexus7Tablet_1280x800.png" />
-    <EmbeddedResource Include="Devices\AsusTransformerPadInfinityTablet_1920x1200.png" />
-    <EmbeddedResource Include="Devices\Devices.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Devices\iPad3_2048x1536.png" />
-    <EmbeddedResource Include="Devices\iPad_1024x768.png" />
-    <EmbeddedResource Include="Devices\iPhone3GS_320x480.png" />
-    <EmbeddedResource Include="Devices\iPhone4_640x960.png" />
-    <EmbeddedResource Include="Devices\iPhone5_640x1136.png" />
-    <EmbeddedResource Include="Devices\TV_1024x600.png" />
-    <EmbeddedResource Include="Devices\TV_1280x720.png" />
-    <EmbeddedResource Include="Devices\TV_1920x1080.png" />
-    <EmbeddedResource Include="Devices\W8Emulator1080p.png" />
-    <EmbeddedResource Include="Devices\W8Emulator768p.png" />
-    <EmbeddedResource Include="Devices\Windows8RT_1366x768.png" />
-    <EmbeddedResource Include="Devices\WindowsPhone8_720x1280.png" />
-    <EmbeddedResource Include="Devices\WP8EmulatorScreenshot.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />

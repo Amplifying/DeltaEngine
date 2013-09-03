@@ -28,7 +28,7 @@ namespace DeltaEngine.Editor.SpriteFontCreator
 
 		public string Icon
 		{
-			get { return "Icons/Font.png"; }
+			get { return "Images/Plugins/Font.png"; }
 		}
 
 		public bool RequiresLargePane

@@ -3,6 +3,7 @@ using System.Windows.Input;
 using ApprovalTests.Reporters;
 using ApprovalTests.Wpf;
 using DeltaEngine.Editor.Core;
+using DeltaEngine.Editor.Messages;
 using NUnit.Framework;
 using WpfWindow = System.Windows.Window;
 
@@ -50,8 +51,10 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			var appBuilderView = CreateViewAndViewModelViaMockService();
 			var window = CreateTestWindow(appBuilderView);
 			var viewModel = appBuilderView.ViewModel;
-			viewModel.AppListViewModel.AddApp("My favorite app".AsMockAppInfo(PlatformName.Windows));
-			viewModel.AppListViewModel.AddApp("My mobile app".AsMockAppInfo(PlatformName.WindowsPhone7));
+			viewModel.AppListViewModel.AddApp(
+				AppBuilderTestingExtensions.GetMockAppInfo("My favorite app", PlatformName.Windows));
+			viewModel.AppListViewModel.AddApp(AppBuilderTestingExtensions.GetMockAppInfo(
+				"My mobile app", PlatformName.WindowsPhone7));
 			window.ShowDialog();
 		}
 

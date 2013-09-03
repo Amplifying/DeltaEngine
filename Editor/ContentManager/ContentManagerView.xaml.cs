@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Windows;
-using DeltaEngine.Content;
 using DeltaEngine.Editor.Core;
 using GalaSoft.MvvmLight.Messaging;
 
@@ -40,7 +38,10 @@ namespace DeltaEngine.Editor.ContentManager
 
 		private void DeleteSelectedImage(object sender, RoutedEventArgs e)
 		{
-			Messenger.Default.Send(false, "DeleteContent");
+			IList<ContentView> contentList = new List<ContentView>();
+			foreach (var content in ImageList.SelectedItems)
+				contentList.Add((ContentView)content);
+			Messenger.Default.Send(contentList, "DeleteContent");
 		}
 
 		private void DeleteSelectedImageAnimation(object sender, RoutedEventArgs e)
@@ -55,7 +56,7 @@ namespace DeltaEngine.Editor.ContentManager
 
 		public string Icon
 		{
-			get { return "Icons/Content.png"; }
+			get { return "Images/Plugins/Content.png"; }
 		}
 
 		public bool RequiresLargePane

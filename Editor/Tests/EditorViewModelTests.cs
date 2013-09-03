@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Media;
 using DeltaEngine.Editor.Core.Properties;
 using DeltaEngine.Editor.Helpers;
+using DeltaEngine.Mocks;
 using Microsoft.Win32;
 using NUnit.Framework;
 
@@ -26,7 +27,8 @@ namespace DeltaEngine.Editor.Tests
 
 		private static EditorViewModel CreateModel()
 		{
-			return new EditorViewModel(new EditorPluginLoader(Path.Combine("..", "..", "..")));
+			return new EditorViewModel(new EditorPluginLoader(Path.Combine("..", "..", "..")),
+				new MockSettings());
 		}
 
 		[Test]
@@ -124,7 +126,7 @@ namespace DeltaEngine.Editor.Tests
 		public void CreateEditorPluginEntryFromLoadedPlugins()
 		{
 			var mockPlugins = GetEditorPluginLoaderMock();
-			var model = new EditorViewModel(mockPlugins);
+			var model = new EditorViewModel(mockPlugins, new MockSettings());
 			model.AddAllPlugins();
 			Assert.AreEqual(1, model.EditorPlugins.Count);
 			Assert.AreEqual("Mock Plugin", model.EditorPlugins[0].ShortName);
@@ -145,7 +147,7 @@ namespace DeltaEngine.Editor.Tests
 		{
 			MakeSureToDeleteStartMaximizedRegistryEntry();
 			var mockPlugins = GetEditorPluginLoaderMock();
-			var model = new EditorViewModel(mockPlugins);
+			var model = new EditorViewModel(mockPlugins, new MockSettings());
 			Assert.IsTrue(model.StartEditorMaximized);
 		}
 
@@ -163,7 +165,7 @@ namespace DeltaEngine.Editor.Tests
 		{
 			MakeSureToDeleteStartMaximizedRegistryEntry();
 			var mockPlugins = GetEditorPluginLoaderMock();
-			var model = new EditorViewModel(mockPlugins);
+			var model = new EditorViewModel(mockPlugins, new MockSettings());
 			model.StartEditorMaximized = false;
 			Assert.IsFalse(model.StartEditorMaximized);
 			model.StartEditorMaximized = true;

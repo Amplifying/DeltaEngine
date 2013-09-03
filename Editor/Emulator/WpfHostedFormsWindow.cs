@@ -20,7 +20,7 @@ namespace DeltaEngine.Editor.Emulator
 			dispatcher = emulatorControl.ViewportHost.Dispatcher;
 			this.window = window;
 			emulatorControl.ViewportHost.SizeChanged += OnHostControlSizeChanged;
-			ScreenSpace.Current = new QuadraticScreenSpace(this);
+			new QuadraticScreenSpace(this);
 		}
 
 		private static Panel GetEmulatorControlPanel(EmulatorControl emulatorControl)

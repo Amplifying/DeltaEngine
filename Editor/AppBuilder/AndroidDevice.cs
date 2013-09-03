@@ -1,4 +1,6 @@
-﻿namespace DeltaEngine.Editor.AppBuilder
+﻿using DeltaEngine.Core;
+
+namespace DeltaEngine.Editor.AppBuilder
 {
 	/// <summary>
 	/// Represents a Android device (emulator or real connected one) that provides the functionality
@@ -12,6 +14,7 @@
 			AdbId = deviceInfo.AdbDeviceId;
 			state = deviceInfo.DeviceState;
 			Name = adbRunner.GetDeviceName(AdbId);
+			Logger.Info("\t" + this);
 		}
 
 		private readonly AndroidDebugBridgeRunner adbRunner;
@@ -30,8 +33,8 @@
 			get { return state == ConnectedState; }
 		}
 
-		// The value for the disconnected state is "offline"
 		private const string ConnectedState = "device";
+		private const string DisconnectedState = "offline";
 
 		public bool IsAppInstalled(AppInfo app)
 		{

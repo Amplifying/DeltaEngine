@@ -1,5 +1,4 @@
-﻿using DeltaEngine.Editor.Core;
-using DeltaEngine.Editor.Mocks;
+﻿using DeltaEngine.Editor.Mocks;
 using DeltaEngine.Platforms;
 using NUnit.Framework;
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
+using DeltaEngine.Core;
 using DeltaEngine.Editor.Mocks;
 using DeltaEngine.Logging;
 

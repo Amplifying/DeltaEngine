@@ -12,12 +12,13 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 			viewers.Add(ContentType.SpriteSheetAnimation, new SpriteSheetPreviewer());
 			viewers.Add(ContentType.Material, new MaterialPreviewer());
 			//viewers.Add(ContentType.Mesh, new MeshPreviewer((DefaultCamera)camera));
-			viewers.Add(ContentType.ParticleEffect, new ParticlePreviewer());
+			viewers.Add(ContentType.ParticleEmitter, new ParticlePreviewer());
 			viewers.Add(ContentType.Font, new FontPreviewer());
 			viewers.Add(ContentType.Sound, new SoundPreviewer());
 			viewers.Add(ContentType.Music, new MusicPreviewer());
 			viewers.Add(ContentType.Video, new VideoPreviewer());
 			viewers.Add(ContentType.Xml, new XmlPreviewer());
+			viewers.Add(ContentType.Scene, new UIPreview());
 		}
 
 		private readonly Dictionary<ContentType, ContentPreview> viewers =

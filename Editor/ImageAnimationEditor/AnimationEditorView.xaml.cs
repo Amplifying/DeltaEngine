@@ -26,7 +26,7 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 
 		public string Icon
 		{
-			get { return "Icons/ImageAnimation.png"; }
+			get { return "Images/Plugins/ImageAnimation.png"; }
 		}
 
 		public bool RequiresLargePane

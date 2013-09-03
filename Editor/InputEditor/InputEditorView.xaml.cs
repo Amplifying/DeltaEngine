@@ -26,7 +26,7 @@ namespace DeltaEngine.Editor.InputEditor
 
 		public string Icon
 		{
-			get { return "Icons/Input.png"; }
+			get { return "Images/Plugins/Input.png"; }
 		}
 
 		public bool RequiresLargePane

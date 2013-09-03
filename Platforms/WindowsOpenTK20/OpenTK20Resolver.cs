@@ -74,7 +74,7 @@ namespace DeltaEngine.Platforms
 					break;
 			}
 			foreach (var nativeDll in nativeDllsNeeded)
-				File.Copy(Path.Combine(path, "packages", "OpenTKWithOpenAL.1.1.1160.61462", "NativeBinaries", "x86", nativeDll), nativeDll, true);
+				File.Copy(Path.Combine(path, "packages", "OpenTKWithOpenAL.1.1.1161.61462", "NativeBinaries", "x86", nativeDll), nativeDll, true);
 		}
 
 		private static bool IsPackagesDirectory(string path)

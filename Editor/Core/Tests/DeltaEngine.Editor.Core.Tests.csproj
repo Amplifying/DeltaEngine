@@ -40,6 +40,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\DeltaEngine.csproj">
+      <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
+      <Name>DeltaEngine %28DeltaEngine\DeltaEngine%29</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Editor.Core.csproj">
       <Project>{C667C7FC-A1C7-4CBC-98C0-C97F776E4570}</Project>
       <Name>DeltaEngine.Editor.Core</Name>
@@ -49,13 +53,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="EmbeddedResources\HelloWorld.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CodePackerTests.cs" />
     <Compile Include="CodeUnpackerTests.cs" />
-    <Compile Include="EmbeddedResoucesLoaderTests.cs" />
+    <Compile Include="PlatformNameTests.cs" />
+    <Compile Include="EmbeddedResourcesLoaderTests.cs" />
     <Compile Include="PathExtensionsTests.cs" />
     <Compile Include="ProcessRunnerTests.cs" />
     <Compile Include="ProjectEntryTests.cs" />

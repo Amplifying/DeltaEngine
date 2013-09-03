@@ -1,5 +1,4 @@
-﻿using DeltaEngine.Editor.Core;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace DeltaEngine.Editor.Messages.Tests
 {

@@ -52,7 +52,6 @@ namespace DeltaEngine.Editor.Emulator
 			selectedDevice = deviceIndex;
 			for (int i = 0; i < devices.Length; i++)
 				menuDeviceDevices[i].Checked = false;
-
 			menuDeviceDevices[deviceIndex].Checked = true;
 			menuOrientation.Visible = devices[deviceIndex].CanRotate;
 			menuScale.Visible = devices[deviceIndex].CanScale;
@@ -87,8 +86,8 @@ namespace DeltaEngine.Editor.Emulator
 
 		private Stream GetImageFilestream(int deviceIndex)
 		{
-			var imageFilename = "Devices." + devices[deviceIndex].ImageFile + ".png";
-			return EmbeddedResoucesLoader.GetEmbeddedResourceStream(imageFilename);
+			var imageFilename = "Images.Emulators." + devices[deviceIndex].ImageFile + ".png";
+			return EmbeddedResourcesLoader.GetEmbeddedResourceStream(imageFilename);
 		}
 
 		private void SetScreenLocationAndSize()
@@ -123,7 +122,6 @@ namespace DeltaEngine.Editor.Emulator
 			scale = Int32.Parse(scalePercentage) * 0.01f;
 			for (int i = 0; i < NumberOfScales; i++)
 				menuScaleScales[i].Checked = false;
-
 			menuScaleScales[scaleIndex].Checked = true;
 		}
 
@@ -136,12 +134,12 @@ namespace DeltaEngine.Editor.Emulator
 
 		public string ShortName
 		{
-			get { return "Emulator"; }
+			get { return "Viewport"; }
 		}
 
 		public string Icon
 		{
-			get { return "Icons/Emulator.png"; }
+			get { return "Images/Plugins/Emulator.png"; }
 		}
 
 		public bool RequiresLargePane

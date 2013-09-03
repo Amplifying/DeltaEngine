@@ -17,7 +17,7 @@ namespace DeltaEngine.Editor.InputEditor.Tests
 
 		private InputEditorViewModel inputModel;
 
-		[Test, STAThread]
+		[Test, STAThread, CloseAfterFirstFrame]
 		public void ChangeStateValueOfTrigger()
 		{
 			AddTriggerToList();
@@ -40,7 +40,7 @@ namespace DeltaEngine.Editor.InputEditor.Tests
 			Assert.AreEqual(1, inputModel.availableCommands.NumberOfCommands);
 		}
 
-		[Test, STAThread]
+		[Test, STAThread, CloseAfterFirstFrame]
 		public void ChangeStateForMouseTrigger()
 		{
 			AddTriggerToList();
@@ -50,7 +50,7 @@ namespace DeltaEngine.Editor.InputEditor.Tests
 			Assert.AreEqual("Pressing", trigger.State.ToString());
 		}
 
-		[Test, STAThread]
+		[Test, STAThread, CloseAfterFirstFrame]
 		public void ChangeStateForGamepadTrigger()
 		{
 			AddTriggerToList();
@@ -60,7 +60,7 @@ namespace DeltaEngine.Editor.InputEditor.Tests
 			Assert.AreEqual("Pressing", trigger.State.ToString());
 		}
 
-		[Test, STAThread]
+		[Test, STAThread, CloseAfterFirstFrame]
 		public void ChangeStateForTouchpadTrigger()
 		{
 			AddTriggerToList();

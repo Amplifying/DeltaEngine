@@ -1,10 +1,8 @@
-﻿using DeltaEngine.Editor.Core;
-
-namespace DeltaEngine.Editor.Messages
+﻿namespace DeltaEngine.Editor.Messages
 {
 	public sealed class SupportedPlatformsResult
 	{
-		private SupportedPlatformsResult() { }
+		private SupportedPlatformsResult() {}
 
 		public SupportedPlatformsResult(PlatformName[] platforms)
 		{

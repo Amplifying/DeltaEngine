@@ -23,13 +23,14 @@ namespace DeltaEngine.Editor.Tests
 			var connection = OnlineServiceConnection.CreateForEditor();
 			EditorContentLoader contentLoader = null;
 			connection.Connected += () => GetProjectsAndLogin(connection);
+			connection.TimedOut += () => { throw new ConnectionTimedOut(); };
 			connection.DataReceived += message =>
 			{
 				messagesReceived.Add(message);
 				if (message is SetProject)
 					contentLoader = new EditorContentLoader(connection, message as SetProject);
 			};
-			connection.ConnectToOnlineService(() => { throw new ConnectionTimedOut(); });
+			connection.Connect("deltaengine.net", 800);
 			Thread.Sleep(3000);
 			CheckConnection(connection);
 			CheckContentLoader(contentLoader);
@@ -77,14 +78,17 @@ namespace DeltaEngine.Editor.Tests
 			Assert.AreEqual(DefaultImages + 1, contentLoader.GetAllNamesByType(ContentType.Image).Count);
 		}
 
-		private const int DefaultContentFiles = 10;
+		private const int DefaultContentFiles = 11;
 		private const int DefaultImages = 1;
 
 		private static void CheckAndWriteMessages(List<object> messages)
 		{
 			foreach (var message in messages)
 				Console.WriteLine(message);
-			Assert.AreEqual(16, messages.Count);
+			Assert.AreEqual(UpdateContentMessages + AdditionalMessages, messages.Count);
 		}
+
+		private const int UpdateContentMessages = 14;
+		private const int AdditionalMessages = 4;
 	}
 }

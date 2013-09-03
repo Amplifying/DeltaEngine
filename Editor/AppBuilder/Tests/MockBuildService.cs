@@ -56,7 +56,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 				int startTime = Environment.TickCount;
 				while ((Environment.TickCount - startTime) < waitingTimeInMs)
 					Thread.Sleep(0);
-				service.ReceiveData(GetBuiltResult());
+				service.DataReceived(GetBuiltResult());
 			}
 
 			private object GetBuiltResult()
@@ -77,16 +77,13 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		{
 			if (message is AppBuildRequest)
 				OnHandleBuildRequest((AppBuildRequest)message);
+			if (message is SupportedPlatformsRequest)
+				DataReceived(new SupportedPlatformsResult(new[] { PlatformName.Android, PlatformName.Web, }));
 		}
 
 		private void OnHandleBuildRequest(AppBuildRequest userBuildRequest)
 		{
 			resultBuilder.BuildApp(userBuildRequest);
-		}
-
-		public void ReceiveData(object fakedReceivedData)
-		{
-			DataReceived(fakedReceivedData);
 		}
 
 		public void ChangeContent()
@@ -96,8 +93,8 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 
 		public void ReceiveSomeTestMessages()
 		{
-			ReceiveData("A BuildWarning".AsBuildTestWarning());
-			ReceiveData("A BuildError".AsBuildTestError());
+			DataReceived(AppBuilderTestingExtensions.AsBuildTestWarning("A BuildWarning"));
+			DataReceived(AppBuilderTestingExtensions.AsBuildTestError("A BuildError"));
 		}
 
 		public IEnumerable<string> GetAllContentNames()
@@ -119,7 +116,5 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			Dictionary<string, byte[]> optionalFileData = null) {}
 
 		public void DeleteContent(string selectedContent, bool deleteSubContent = false) {}
-
-
 	}
 }

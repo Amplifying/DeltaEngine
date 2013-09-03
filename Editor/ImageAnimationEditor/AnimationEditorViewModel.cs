@@ -88,6 +88,15 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 				return;
 			ContentMetaData contentMetaData;
 			var fileNameAndBytes = new Dictionary<string, byte[]>();
+			contentMetaData = SaveImageAnimationOrSpriteSheetAnimation(fileNameAndBytes);
+			if (ContentLoader.Exists(AnimationName))
+				ReplaceOldContent();
+			service.UploadContent(contentMetaData, fileNameAndBytes);
+		}
+
+		private ContentMetaData SaveImageAnimationOrSpriteSheetAnimation(Dictionary<string, byte[]> fileNameAndBytes)
+		{
+			ContentMetaData contentMetaData;
 			if (ImageList.Count == 1)
 			{
 				fileNameAndBytes.Add(AnimationName + ".SpriteSheetAnimation", null);
@@ -99,12 +108,13 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 				fileNameAndBytes.Add(AnimationName + ".ImageAnimation", null);
 				contentMetaData = metaDataCreator.CreateMetaDataFromImageAnimation(AnimationName, animation);
 			}
-			if (ContentLoader.Exists(AnimationName))
-			{
-				service.DeleteContent(AnimationName);
-				ContentLoader.RemoveResource(AnimationName);
-			}
-			service.UploadContent(contentMetaData, fileNameAndBytes);
+			return contentMetaData;
+		}
+
+		private void ReplaceOldContent()
+		{
+			service.DeleteContent(AnimationName);
+			ContentLoader.RemoveResource(AnimationName);
 		}
 
 		public int SelectedIndex
@@ -133,7 +143,6 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 
 		public string SelectedImageToAdd
 		{
-			get { return selectedImageToAdd; }
 			set
 			{
 				ImageList.Add(value);
@@ -195,7 +204,6 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 				new Rectangle(0.25f, 0.25f, 0.5f, 0.5f));
 		}
 
-		public string selectedImageToAdd;
 		private ImageAnimation animation;
 
 		public string AnimationName

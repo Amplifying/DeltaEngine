@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using DeltaEngine.Editor.Core;
+using DeltaEngine.Editor.Messages;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.AppBuilder.Tests
@@ -14,7 +15,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			string packageFilePathOfSample = Path.Combine(PathExtensions.GetDeltaEngineDirectory(), "..",
 				"DeltaEngineServices", "GeneratedCode", "LogoAppSetup.exe");
 			sampleApp = AppInfoExtensions.CreateAppInfo(packageFilePathOfSample, PlatformName.Windows,
-				new Guid("4d33a50e-3aa2-4e7e-bc0c-4ef7b3d5e985"));
+				new Guid("4d33a50e-3aa2-4e7e-bc0c-4ef7b3d5e985"), DateTime.Now);
 			device = new WindowsDevice();
 		}
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Input;
+using DeltaEngine.Core;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Messages;
 using GalaSoft.MvvmLight;
@@ -26,11 +27,10 @@ namespace DeltaEngine.Editor.AppBuilder
 			BuildPressed = new RelayCommand(OnBuildExecuted);
 			BrowsePressed = new RelayCommand<string>(OnBrowseUserSolutionPathExecuted);
 			service.DataReceived += OnServiceMessageReceived;
-			RequestSupportedPlatforms();
+			Service.Send(new SupportedPlatformsRequest());
 		}
 
 		public PlatformName[] SupportedPlatforms { get; private set; }
-
 		public Service Service { get; private set; }
 		public AppBuildMessagesListViewModel MessagesListViewModel { get; set; }
 		public BuiltAppsListViewModel AppListViewModel { get; set; }
@@ -99,8 +99,10 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		private static bool IsSampleProject(ProjectEntry project)
 		{
-			return !project.Title.EndsWith(".Tests") && !project.Title.StartsWith("DeltaEngine.") &&
-				!project.Title.StartsWith("Empty");
+			//currently tested and supported apps, will be extended to all soon
+			return project.Title == "LogoApp" || project.Title == "GhostWars";
+			/*return !project.Title.EndsWith(".Tests") && !project.Title.StartsWith("DeltaEngine.") &&
+				!project.Title.StartsWith("Empty");*/
 		}
 
 		private ProjectEntry FindUserProjectInSolution()
@@ -169,6 +171,8 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		protected void OnBuildExecuted()
 		{
+			Logger.Info("Build Request sent");
+			MessagesListViewModel.ClearMessages();
 			TrySendBuildRequestToServer(UserSolutionPath, SelectedSolutionProject.Title,
 				SelectedPlatform);
 		}
@@ -199,7 +203,10 @@ namespace DeltaEngine.Editor.AppBuilder
 		private void OnAppBuildMessageRecieved(AppBuildMessage receivedMessage)
 		{
 			if (receivedMessage.Type == AppBuildMessageType.BuildInfo)
+			{
+				Logger.Info(receivedMessage.Text);
 				return;
+			}
 			MessagesListViewModel.AddMessage(receivedMessage);
 			AllowBuildingAppsAgain();
 		}
@@ -212,7 +219,9 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		private void OnAppBuildResultRecieved(AppBuildResult receivedBuildResult)
 		{
-			AppInfo appInfo = receivedBuildResult.ToAppInfo(AppListViewModel.AppStorageDirectory);
+			AppInfo appInfo = AppInfoExtensions.CreateAppInfo(
+				Path.Combine(AppListViewModel.AppStorageDirectory, receivedBuildResult.PackageFileName),
+				receivedBuildResult.Platform, receivedBuildResult.PackageGuid, DateTime.Now);
 			appInfo.SolutionFilePath = codeSolutionPathOfBuildingApp;
 			AllowBuildingAppsAgain();
 			TriggerBuiltAppRecieved(appInfo, receivedBuildResult.PackageFileData);
@@ -240,13 +249,6 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		public event Action<AppBuildFailed> AppBuildFailedRecieved;
 
-		private void RequestSupportedPlatforms()
-		{
-			SupportedPlatforms = new[] { PlatformName.Windows, };
-			SelectedPlatform = PlatformName.Windows;
-			Service.Send(new SupportedPlatformsRequest());
-		}
-
 		public bool IsBuildActionExecutable
 		{
 			get
@@ -268,7 +270,12 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		private bool IsSelectedPlatformValid
 		{
-			get { return SupportedPlatforms.Any(supportedPlatform => SelectedPlatform == supportedPlatform); }
+			get
+			{
+				if (SupportedPlatforms == null)
+					return false;
+				return SupportedPlatforms.Any(supportedPlatform => SelectedPlatform == supportedPlatform);
+			}
 		}
 	}
 }

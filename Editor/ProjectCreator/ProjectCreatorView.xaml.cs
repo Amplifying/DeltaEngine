@@ -14,9 +14,15 @@ namespace DeltaEngine.Editor.ProjectCreator
 		{
 			InitializeComponent();
 			DataContext = viewModel;
+			this.viewModel = viewModel;
 		}
 
-		public void Init(Service service) {}
+		private readonly ProjectCreatorViewModel viewModel;
+
+		public void Init(Service service)
+		{
+			viewModel.Service = service;
+		}
 
 		public string ShortName
 		{
@@ -25,7 +31,7 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		public string Icon
 		{
-			get { return "Icons/ProjectCreator.png"; }
+			get { return "Images/Plugins/ProjectCreator.png"; }
 		}
 
 		public bool RequiresLargePane

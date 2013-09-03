@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
@@ -203,15 +204,27 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 			return filesToCheck.All(file => CompareFileInFileSystem(fs1, fs2, path + file));
 		}
 
-		private static bool CompareFileInFileSystem(IFileSystem fs1, IFileSystem fs2, string file)
+		private static bool CompareFileInFileSystem(IFileSystem fs1, IFileSystem fs2, string filePath)
 		{
-			return FileEquals(fs1.File.ReadAllLines(file), fs2.File.ReadAllLines(file));
+			return FileEquals(fs1.File.ReadAllLines(filePath), fs2.File.ReadAllLines(filePath), filePath);
 		}
 
-		private static bool FileEquals(IList<string> file1, IList<string> file2)
+		private static bool FileEquals(IList<string> file1, IList<string> file2, string filePath)
 		{
-			return file1.Count == file2.Count &&
-				!file1.Where((t, i) => t != file2[i] && !file2[i].Contains("Guid")).Any();
+			if (file1.Count != file2.Count)
+			{
+				Console.WriteLine("Number of lines are unequal: " + Path.GetFileName(filePath));
+				return false;
+			}
+			for (int i = 0; i < file1.Count; i++)
+				if (file1[i] != file2[i] && !file2[i].Contains("Guid") &&
+					!file2[i].Contains("AssemblyVersion") && !file2[i].Contains("AssemblyFileVersion"))
+				{
+					Console.WriteLine("Difference in line " + (i + 1) + ":");
+					Console.WriteLine("Expected: " + file1[i] + "\nActual:   " + file2[i]);
+					return false;
+				}
+			return true;
 		}
 	}
 }

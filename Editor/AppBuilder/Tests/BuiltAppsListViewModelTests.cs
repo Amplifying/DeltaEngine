@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
-using DeltaEngine.Editor.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using DeltaEngine.Editor.Messages;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.AppBuilder.Tests
@@ -23,9 +26,19 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		[Test]
 		public void AddValidBuiltApp()
 		{
-			Assert.AreEqual(0, appListViewModel.NumberOfBuiltApps);
-			appListViewModel.AddApp("TestApp".AsMockAppInfo(PlatformName.Windows));
-			Assert.AreEqual(1, appListViewModel.NumberOfBuiltApps);
+			int oldNumberOfBuiltApps = appListViewModel.NumberOfBuiltApps;
+			appListViewModel.AddApp(AppBuilderTestingExtensions.GetMockAppInfo("TestApp",
+				PlatformName.Windows));
+			Assert.AreEqual(oldNumberOfBuiltApps + 1, appListViewModel.NumberOfBuiltApps);
+		}
+
+		[Test]
+		public void IfApkFileExistOneAndroidPackageShouldBeInTheList()
+		{
+			if (!Directory.Exists(appListViewModel.AppStorageDirectory))
+				return;
+			Assert.True(appListViewModel.BuiltApps.Any(app => app.Platform == PlatformName.Android));
+			Assert.True(appListViewModel.BuiltApps.Any(app => app.Platform == PlatformName.Web));
 		}
 
 		[Test]
@@ -40,7 +53,9 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		private void AddMockAppInfoAndSaveWithDummyData(BuiltAppsListViewModel viewModel)
 		{
 			string folder = appListViewModel.AppStorageDirectory;
-			appListViewModel.AddApp("TestApp".AsMockAppInfo(PlatformName.Windows, folder), new byte[] { 1 });
+			appListViewModel.AddApp(
+				AppBuilderTestingExtensions.GetMockAppInfo("TestApp", PlatformName.Windows, folder),
+				new byte[] { 1 });
 		}
 
 		[Test, Category("Slow")]

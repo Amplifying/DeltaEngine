@@ -4,6 +4,8 @@ using System.IO.Abstractions;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using DeltaEngine.Editor.Core;
+using DeltaEngine.Editor.Messages;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 
@@ -96,13 +98,18 @@ namespace DeltaEngine.Editor.ProjectCreator
 				new FileSystem());
 			projectCreator.CreateProject();
 			if (projectCreator.HaveTemplateFilesBeenCopiedToLocation())
+			{
+				Service.Send(new CreateProject(projectCreator.Project.Name));
 				MessageBox.Show("Project has successfully been created.", "Project created");
+			}
 			else
 				MessageBox.Show(
-					"Project has not been created." +
+					"Project has not been created. " +
 						"Please make sure the specified location and the VisualStudioTemplates are available.",
 					"Error");
 		}
+
+		public Service Service { get; set; }
 
 		private bool CanCreateProject()
 		{

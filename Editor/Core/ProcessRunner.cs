@@ -33,7 +33,6 @@ namespace DeltaEngine.Editor.Core
 				SetupStartInfo();
 				SetupProcessAndRun();
 			}
-
 			nativeProcess = null;
 		}
 
@@ -57,7 +56,6 @@ namespace DeltaEngine.Editor.Core
 			using (outputWaitHandle = new AutoResetEvent(false))
 			using (errorWaitHandle = new AutoResetEvent(false))
 				AttachToOutputStreamAndRunNativeProcess();
-
 			errorWaitHandle = null;
 			outputWaitHandle = null;
 		}
@@ -79,10 +77,8 @@ namespace DeltaEngine.Editor.Core
 				outputWaitHandle.Set();
 				return;
 			}
-
 			if (StandardOutputEvent != null)
 				StandardOutputEvent(e.Data);
-
 			Output += e.Data;
 		}
 
@@ -95,10 +91,8 @@ namespace DeltaEngine.Editor.Core
 				errorWaitHandle.Set();
 				return;
 			}
-
 			if (ErrorOutputEvent != null)
 				ErrorOutputEvent(e.Data);
-
 			Errors += e.Data;
 		}
 
@@ -117,18 +111,14 @@ namespace DeltaEngine.Editor.Core
 		{
 			if (!outputWaitHandle.WaitOne(timeoutInMs))
 				throw new StandardOutputHasTimedOutException();
-
 			if (!errorWaitHandle.WaitOne(timeoutInMs))
 				throw new ErrorOutputHasTimedOutException();
-
 			if (!nativeProcess.WaitForExit(timeoutInMs))
 				throw new ProcessHasTimedOutException();
 		}
 
 		public class StandardOutputHasTimedOutException : Exception {}
-
 		public class ErrorOutputHasTimedOutException : Exception {}
-
 		public class ProcessHasTimedOutException : Exception {}
 
 		private void CheckExitCode()

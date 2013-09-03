@@ -16,7 +16,7 @@ namespace DeltaEngine.Editor.InputEditor.Tests
 
 		private InputEditorViewModel inputModel;
 
-		[Test, STAThread]
+		[Test, STAThread, CloseAfterFirstFrame]
 		public void ChangeKeyValueOfTrigger()
 		{
 			AddTriggerToList();
@@ -38,7 +38,7 @@ namespace DeltaEngine.Editor.InputEditor.Tests
 			Assert.AreEqual(1, inputModel.availableCommands.NumberOfCommands);
 		}
 
-		[Test, STAThread]
+		[Test, STAThread, CloseAfterFirstFrame]
 		public void ChangeMouseButtonValueOfTrigger()
 		{
 			AddTriggerToList();
@@ -47,7 +47,7 @@ namespace DeltaEngine.Editor.InputEditor.Tests
 			Assert.AreEqual("Right", inputModel.TriggerList[0].TriggerKey.SelectedItem);
 		}
 
-		[Test, STAThread]
+		[Test, STAThread, CloseAfterFirstFrame]
 		public void ChangeGamepadButtonValueOfTrigger()
 		{
 			AddTriggerToList();
@@ -56,7 +56,7 @@ namespace DeltaEngine.Editor.InputEditor.Tests
 			Assert.AreEqual("B", inputModel.TriggerList[0].TriggerKey.SelectedItem);
 		}
 
-		[Test, STAThread]
+		[Test, STAThread, CloseAfterFirstFrame]
 		public void Change2ValuesOfKeyTriggerToSameKey()
 		{
 			AddTriggerToList();
@@ -67,7 +67,7 @@ namespace DeltaEngine.Editor.InputEditor.Tests
 			Assert.AreEqual("BackSpace", inputModel.TriggerList[1].TriggerKey.SelectedItem);
 		}
 
-		[Test, STAThread]
+		[Test, STAThread, CloseAfterFirstFrame]
 		public void Change2ValuesOfMouseButtonTriggerToSameKey()
 		{
 			AddTriggerToList();
@@ -80,7 +80,7 @@ namespace DeltaEngine.Editor.InputEditor.Tests
 			Assert.AreEqual("Middle", inputModel.TriggerList[1].TriggerKey.SelectedItem);
 		}
 
-		[Test, STAThread]
+		[Test, STAThread, CloseAfterFirstFrame]
 		public void Change2ValuesOfGamePadTriggerToSameKey()
 		{
 			AddTriggerToList();

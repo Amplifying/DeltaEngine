@@ -26,7 +26,7 @@ namespace DeltaEngine.Editor.UIEditor
 
 		public string Icon
 		{
-			get { return "Icons/UI.png"; }
+			get { return "Images/Plugins/UI.png"; }
 		}
 
 		public bool RequiresLargePane
@@ -42,6 +42,11 @@ namespace DeltaEngine.Editor.UIEditor
 		private void RemoveImage(object sender, RoutedEventArgs e)
 		{
 			Messenger.Default.Send("RemoveSprite", "RemoveSprite");
+		}
+
+		private void SaveUI(object sender, RoutedEventArgs e)
+		{
+			Messenger.Default.Send("SaveUI", "SaveUI");
 		}
 	}
 }

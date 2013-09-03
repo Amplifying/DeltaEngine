@@ -9,7 +9,6 @@ namespace DeltaEngine.Editor.Core
 		{
 			if (packedCodeData == null || packedCodeData.Length == 0)
 				throw new NoPackedDataSpecified();
-
 			packedData = packedCodeData;
 		}
 
@@ -48,7 +47,6 @@ namespace DeltaEngine.Editor.Core
 			string fileDirectory = Path.GetDirectoryName(finalFilePath);
 			if (!Directory.Exists(fileDirectory))
 				Directory.CreateDirectory(fileDirectory);
-
 			File.WriteAllBytes(finalFilePath, fileData);
 		}
 	}

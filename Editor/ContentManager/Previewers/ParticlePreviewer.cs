@@ -10,7 +10,9 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 	{
 		public void PreviewContent(string contentName)
 		{
-			var particleEmitterData = ContentLoader.Load<ParticleEffectData>(contentName);
+			var particleEmitterData = ContentLoader.Load<ParticleEmitterData>(contentName);
+			particleEmitterData.StartPosition = new RangeGraph<Point>(new Point(0.25f, 0.25f),
+				new Point(0.25f, 0.25f));
 			currentDisplayParticle = new ParticleEmitter(particleEmitterData, Point.Half);
 			SetImageCommands();
 		}
@@ -43,8 +45,10 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 			lastScalePosition = mousePosition;
 			currentDisplayParticle.Size =
 				new Size(
-					currentDisplayParticle.Size.Width + (currentDisplayParticle.Size.Width * relativePosition.Y),
-					currentDisplayParticle.Size.Height + (currentDisplayParticle.Size.Height * relativePosition.Y));
+					currentDisplayParticle.Size.Width +
+						(currentDisplayParticle.Size.Width * relativePosition.Y),
+					currentDisplayParticle.Size.Height +
+						(currentDisplayParticle.Size.Height * relativePosition.Y));
 		}
 	}
 }

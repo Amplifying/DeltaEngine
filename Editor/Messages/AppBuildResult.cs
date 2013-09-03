@@ -1,5 +1,4 @@
 ﻿using System;
-using DeltaEngine.Editor.Core;
 
 namespace DeltaEngine.Editor.Messages
 {

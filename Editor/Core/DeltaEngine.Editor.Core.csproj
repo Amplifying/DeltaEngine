@@ -37,7 +37,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\DeltaEngine.csproj">
       <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
-      <Name>DeltaEngine %28DeltaEngine\DeltaEngine%29</Name>
+      <Name>DeltaEngine</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -53,9 +53,8 @@
     <Compile Include="CodeUnpacker.cs" />
     <Compile Include="ContentMetaDataWithFile.cs" />
     <Compile Include="EditorPluginView.cs" />
-    <Compile Include="EmbeddedResoucesLoader.cs" />
+    <Compile Include="EmbeddedResourcesLoader.cs" />
     <Compile Include="PathExtensions.cs" />
-    <Compile Include="PlatformName.cs" />
     <Compile Include="ProcessRunner.cs" />
     <Compile Include="ProjectEntry.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

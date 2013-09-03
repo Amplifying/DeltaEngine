@@ -28,7 +28,7 @@ namespace DeltaEngine.Editor.ParticleEditor
 
 		public string Icon
 		{
-			get { return "Icons/ParticleEffect.png"; }
+			get { return "Images/Plugins/ParticleEffect.png"; }
 		}
 
 		public bool RequiresLargePane

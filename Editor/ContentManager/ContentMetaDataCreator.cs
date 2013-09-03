@@ -57,14 +57,19 @@ namespace DeltaEngine.Editor.ContentManager
 			case ".avi":
 			case ".wmv":
 				return ContentType.Video;
+
 			case ".xml":
 				return DetermineTypeForXmlFile(filePath);
 			case ".json":
 				return ContentType.Json;
+			case ".fbx":
+			case ".obj":
+			case ".dae":
+				return ContentType.Model;
 			case ".deltamesh":
 				return ContentType.Mesh;
 			case ".deltaparticle":
-				return ContentType.ParticleEffect;
+				return ContentType.ParticleEmitter;
 			case ".deltashader":
 				return ContentType.Shader;
 			case ".deltamaterial":
@@ -136,33 +141,40 @@ namespace DeltaEngine.Editor.ContentManager
 			ImageAnimation animation)
 		{
 			var contentMetaData = new ContentMetaData();
-			contentMetaData.Name = animationName;
+			SetDefaultValues(contentMetaData, animationName);
 			contentMetaData.Type = ContentType.ImageAnimation;
-			contentMetaData.LastTimeUpdated = DateTime.Now;
-			contentMetaData.Language = "en";
-			contentMetaData.PlatformFileId = 0;
 			contentMetaData.Values.Add("DefaultDuration", animation.DefaultDuration.ToString());
 			string images = "";
 			for (int index = 0; index < animation.Frames.Length; index++)
-			{
-				var image = animation.Frames[index];
-				if (images == "")
-					images += (image.Name);
-				else
-					images += (", " + image.Name);
-			}
+				images = AddImageToMetaData(animation, index, images);
 			contentMetaData.Values.Add("ImageNames", images);
 			return contentMetaData;
+		}
+
+		private static void SetDefaultValues(ContentMetaData contentMetaData, string name)
+		{
+			contentMetaData.Name = name;
+			contentMetaData.LastTimeUpdated = DateTime.Now;
+			contentMetaData.PlatformFileId = 0;
+			contentMetaData.Language = "en";
+		}
+
+		private static string AddImageToMetaData(ImageAnimation animation, int index, string images)
+		{
+			var image = animation.Frames[index];
+			if (images == "")
+				images += (image.Name);
+			else
+				images += (", " + image.Name);
+			return images;
 		}
 
 		public ContentMetaData CreateMetaDataFromSpriteSheetAnimation(string animationName,
 			SpriteSheetAnimation spriteSheetAnimation)
 		{
 			var contentMetaData = new ContentMetaData();
-			contentMetaData.Name = animationName;
+			SetDefaultValues(contentMetaData, animationName);
 			contentMetaData.Type = ContentType.SpriteSheetAnimation;
-			contentMetaData.LastTimeUpdated = DateTime.Now;
-			contentMetaData.PlatformFileId = 0;
 			contentMetaData.Values.Add("DefaultDuration",
 				spriteSheetAnimation.DefaultDuration.ToString());
 			contentMetaData.Values.Add("SubImageSize", spriteSheetAnimation.SubImageSize.ToString());
@@ -173,11 +185,9 @@ namespace DeltaEngine.Editor.ContentManager
 		public ContentMetaData CreateMetaDataFromParticle(string particleName, byte[] byteArray)
 		{
 			var contentMetaData = new ContentMetaData();
-			contentMetaData.Name = particleName;
-			contentMetaData.Type = ContentType.ParticleEffect;
+			SetDefaultValues(contentMetaData, particleName);
+			contentMetaData.Type = ContentType.ParticleEmitter;
 			contentMetaData.LocalFilePath = particleName + ".deltaparticle";
-			contentMetaData.LastTimeUpdated = DateTime.Now;
-			contentMetaData.PlatformFileId = 0;
 			contentMetaData.FileSize = byteArray.Length;
 			return contentMetaData;
 		}
@@ -185,10 +195,8 @@ namespace DeltaEngine.Editor.ContentManager
 		public ContentMetaData CreateMetaDataFromMaterial(string materialName, Material material)
 		{
 			var contentMetaData = new ContentMetaData();
-			contentMetaData.Name = materialName;
+			SetDefaultValues(contentMetaData, materialName);
 			contentMetaData.Type = ContentType.Material;
-			contentMetaData.LastTimeUpdated = DateTime.Now;
-			contentMetaData.PlatformFileId = 0;
 			contentMetaData.Values.Add("ShaderName", material.Shader.Name);
 			contentMetaData.Values.Add("BlendMode", material.DiffuseMap.BlendMode.ToString());
 			if (material.Animation != null)
@@ -198,6 +206,16 @@ namespace DeltaEngine.Editor.ContentManager
 			else
 				contentMetaData.Values.Add("ImageOrAnimationName", material.DiffuseMap.Name);
 			contentMetaData.Values.Add("Color", material.DefaultColor.ToString());
+			return contentMetaData;
+		}
+
+		public ContentMetaData CreateMetaDataFromUI(string uiName, byte[] byteArray)
+		{
+			var contentMetaData = new ContentMetaData();
+			SetDefaultValues(contentMetaData, uiName);
+			contentMetaData.Type = ContentType.Scene;
+			contentMetaData.LocalFilePath = uiName + ".deltaUI";
+			contentMetaData.FileSize = byteArray.Length;
 			return contentMetaData;
 		}
 	}

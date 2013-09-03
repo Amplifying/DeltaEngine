@@ -10,9 +10,9 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		public void AddDifferentMessages()
 		{
 			var messagesList = new AppBuildMessagesListViewModel();
-			messagesList.AddMessage("A test warning for this test".AsBuildTestWarning());
-			messagesList.AddMessage("A test error for this test".AsBuildTestError());
-			messagesList.AddMessage("Just another test error for this test".AsBuildTestError());
+			messagesList.AddMessage(AppBuilderTestingExtensions.AsBuildTestWarning("A test warning for this test"));
+			messagesList.AddMessage(AppBuilderTestingExtensions.AsBuildTestError("A test error for this test"));
+			messagesList.AddMessage(AppBuilderTestingExtensions.AsBuildTestError("Just another test error for this test"));
 			Assert.AreEqual(1, messagesList.Warnings.Count);
 			Assert.AreEqual("1 Warning", messagesList.TextOfWarningCount);
 			Assert.AreEqual(2, messagesList.Errors.Count);
@@ -31,8 +31,8 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		private static AppBuildMessagesListViewModel GetViewModelWithOneMessageForEachType()
 		{
 			var messagesList = new AppBuildMessagesListViewModel();
-			messagesList.AddMessage("Test warning".AsBuildTestWarning());
-			messagesList.AddMessage("Test error".AsBuildTestError());
+			messagesList.AddMessage(AppBuilderTestingExtensions.AsBuildTestWarning("Test warning"));
+			messagesList.AddMessage(AppBuilderTestingExtensions.AsBuildTestError("Test error"));
 			return messagesList;
 		}
 
@@ -65,6 +65,14 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			DateTime timeStampOfFirstElement = messages[0].MessageData.TimeStamp;
 			for (int i = 1; i < messages.Count; i++)
 				Assert.IsTrue(messages[i].MessageData.TimeStamp >= timeStampOfFirstElement);
+		}
+
+		[Test]
+		public void ClearMessages()
+		{
+			AppBuildMessagesListViewModel messagesList = GetViewModelWithOneMessageForEachType();
+			messagesList.ClearMessages();
+			Assert.AreEqual(0, messagesList.MessagesMatchingCurrentFilter.Count);
 		}
 	}
 }

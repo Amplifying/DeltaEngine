@@ -60,6 +60,7 @@ namespace DeltaEngine.Graphics.OpenTK20
 
 		protected override void DrawChunk(Chunk chunk)
 		{
+			shader.BindVertexDeclaration();
 			if (UsesIndexBuffer)
 			{
 				if (chunk.Texture != null)

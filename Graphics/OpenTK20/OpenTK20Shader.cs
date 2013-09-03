@@ -1,5 +1,6 @@
 ﻿using System;
 using DeltaEngine.Content;
+using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 
 namespace DeltaEngine.Graphics.OpenTK20
@@ -9,7 +10,7 @@ namespace DeltaEngine.Graphics.OpenTK20
 	/// </summary>
 	public class OpenTK20Shader : ShaderWithFormat
 	{
-		public OpenTK20Shader(string contentName, OpenTK20Device device)
+		protected OpenTK20Shader(string contentName, OpenTK20Device device)
 			: base(contentName)
 		{
 			this.device = device;
@@ -30,6 +31,7 @@ namespace DeltaEngine.Graphics.OpenTK20
 			if (programHandle == OpenTK20Device.InvalidHandle)
 				throw new UnableToCreateOpenGLShader();
 			LoadAttributeLocations();
+			LoadUniformLocations();
 		}
 
 		private int programHandle;
@@ -52,24 +54,33 @@ namespace DeltaEngine.Graphics.OpenTK20
 		private const string AttributePrefix = "a";
 		private int[] attributeLocations;
 
+		private void LoadUniformLocations()
+		{
+			diffuseTextureUniformLocation = device.GetShaderUniformLocation(programHandle, "Texture");
+			modelViewProjectionMatrixLocation = device.GetShaderUniformLocation(programHandle,
+				"ModelViewProjection");
+		}
+
+		private int diffuseTextureUniformLocation;
+		private int modelViewProjectionMatrixLocation;
+
 		public override void SetModelViewProjectionMatrix(Matrix matrix)
 		{
-			device.SetUniformValue(0, matrix);
+			device.SetUniformValue(modelViewProjectionMatrixLocation, matrix);
 		}
 
 		public override void SetDiffuseTexture(Image texture)
 		{
 			device.BindTexture((texture as OpenTK20Image).Handle);
-			device.SetUniformValue(1, 0);
+			device.SetUniformValue(diffuseTextureUniformLocation, 0);
 		}
 
 		public override void Bind()
 		{
 			device.UseShaderProgram(programHandle);
-			DefineVertexDeclaration();
 		}
 
-		private void DefineVertexDeclaration()
+		public override void BindVertexDeclaration()
 		{
 			for (int i = 0; i < Format.Elements.Length; i++)
 				if (Format.Elements[i].Size == Format.Elements[i].ComponentCount)

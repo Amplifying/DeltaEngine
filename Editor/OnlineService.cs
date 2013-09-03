@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using DeltaEngine.Content;
+using DeltaEngine.Core;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Messages;
 using DeltaEngine.Extensions;

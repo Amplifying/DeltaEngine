@@ -13,8 +13,10 @@ namespace DeltaEngine.Editor.ProjectCreator
 		private VsTemplate(string templateName, IEnumerable<string> sourceCodeFileNames,
 			IFileSystem fileSystem)
 		{
-			PathToZip = GetPathToVisualStudioTemplateZip(templateName, fileSystem);
-			var basePath = GetBasePath(PathToZip, fileSystem);
+			this.fileSystem = fileSystem;
+			templatePath = Path.Combine("VisualStudioTemplates", "Delta Engine", templateName + ".zip");
+			PathToZip = GetPathToVisualStudioTemplateZip();
+			var basePath = GetBasePath(PathToZip);
 			AssemblyInfo = Path.Combine(basePath, "Properties", "AssemblyInfo.cs");
 			Csproj = Path.Combine(basePath, templateName + ".csproj");
 			Ico = Path.Combine(basePath, templateName + "Icon.ico");
@@ -23,36 +25,43 @@ namespace DeltaEngine.Editor.ProjectCreator
 				SourceCodeFiles.Add(Path.Combine(basePath, fileName));
 		}
 
+		private readonly IFileSystem fileSystem;
+		private readonly string templatePath;
+
 		public string PathToZip { get; private set; }
 
-		private static string GetPathToVisualStudioTemplateZip(string templateName,
-			IFileSystem fileSystem)
+		private string GetPathToVisualStudioTemplateZip()
 		{
-			var solutionPath = GetVstFromCurrentWorkingDirectory(templateName, fileSystem);
+			var currentPath = GetVstFromCurrentWorkingDirectory();
+			if (fileSystem.File.Exists(currentPath))
+				return currentPath; //ncrunch: no coverage
+			var solutionPath = GetVstFromSolution();
 			if (fileSystem.File.Exists(solutionPath))
 				return solutionPath;
-
-			var environmentPath = GetVstFromEnvironmentVariable(templateName);
+			var environmentPath = GetVstFromEnvironmentVariable();
 			return fileSystem.File.Exists(environmentPath) ? environmentPath : string.Empty;
 		}
 
-		private static string GetVstFromCurrentWorkingDirectory(string templateName,
-			IFileSystem fileSystem)
+		private string GetVstFromCurrentWorkingDirectory()
+		{
+			return
+				Path.GetFullPath(Path.Combine(fileSystem.Directory.GetCurrentDirectory(), templatePath));
+		}
+
+		private string GetVstFromSolution()
 		{
 			return
 				Path.GetFullPath(Path.Combine(fileSystem.Directory.GetCurrentDirectory(), "..", "..", "..",
-					VstFolder, "Delta Engine", templateName + ".zip"));
+					templatePath));
 		}
 
-		private const string VstFolder = "VisualStudioTemplates";
-
-		private static string GetVstFromEnvironmentVariable(string templateName)
+		private string GetVstFromEnvironmentVariable()
 		{
-			return Path.Combine(Environment.ExpandEnvironmentVariables("%DeltaEnginePath%"), VstFolder,
-				"Content", templateName + ".zip");
+			return Path.Combine(Environment.ExpandEnvironmentVariables("%DeltaEnginePath%"),
+				templatePath);
 		}
 
-		private static string GetBasePath(string fileName, IFileSystem fileSystem)
+		private string GetBasePath(string fileName)
 		{
 			return fileName == string.Empty ? "" : fileSystem.Path.GetDirectoryName(fileName);
 		}

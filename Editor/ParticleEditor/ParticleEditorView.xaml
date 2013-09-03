@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:particleEditor="clr-namespace:DeltaEngine.Editor.ParticleEditor"
              mc:Ignorable="d"
-             HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
              d:DesignHeight="800" d:DesignWidth="400" MinWidth="300">
 
 	<UserControl.Resources>
@@ -65,7 +64,7 @@
 				<RowDefinition Height="30" />
 				<RowDefinition Height="72" />
 			</Grid.RowDefinitions>
-			<Grid Grid.RowSpan="4">
+			<Grid Grid.RowSpan="5" Background="#FFF0F0F0">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="12" />
 					<RowDefinition Height="30" />
@@ -74,6 +73,8 @@
 					<RowDefinition Height="12" />
 					<RowDefinition Height="30" />
 					<RowDefinition Height="12" />
+					<RowDefinition Height="30"/>
+					<RowDefinition Height="12"/>
 					<RowDefinition Height="30" />
 					<RowDefinition Height="12" />
 					<RowDefinition Height="30" />
@@ -114,10 +115,10 @@
 					<ColumnDefinition Width="12" />
 				</Grid.ColumnDefinitions>
 				<TextBox Text="{Binding Path=EmitterData.SpawnInterval,UpdateSourceTrigger=PropertyChanged}" Grid.Column="3"
-					         Grid.Row="27" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,1" />
+					         Grid.Row="29" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,1" />
 				<TextBox Text="{Binding Path=EmitterData.LifeTime, UpdateSourceTrigger=PropertyChanged}" Grid.Column="3"
-					         Grid.Row="11" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0" />
-				<TextBox Grid.Column="3" Grid.Row="23" Style="{StaticResource DeltaTextBox}" Margin="1,1,0,0">
+					         Grid.Row="13" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0" />
+				<TextBox Grid.Column="3" Grid.Row="25" Style="{StaticResource DeltaTextBox}" Margin="1,1,0,0">
 					<TextBox.Text>
 						<Binding Path="EmitterData.Force" UpdateSourceTrigger="PropertyChanged">
 							<Binding.Converter>
@@ -126,7 +127,7 @@
 						</Binding>
 					</TextBox.Text>
 				</TextBox>
-				<TextBox Grid.Column="3" Grid.Row="21" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0">
+				<TextBox Grid.Column="3" Grid.Row="23" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0">
 					<TextBox.Text>
 						<Binding Path="EmitterData.StartVelocity" UpdateSourceTrigger="PropertyChanged">
 							<Binding.Converter>
@@ -135,9 +136,9 @@
 						</Binding>
 					</TextBox.Text>
 				</TextBox>
-				<TextBox Grid.Column="3" Grid.Row="19" Style="{StaticResource DeltaTextBox}" RenderTransformOrigin="0.514,0.95"
+				<TextBox Grid.Column="3" Grid.Row="21" Style="{StaticResource DeltaTextBox}" RenderTransformOrigin="0.514,0.95"
 					         Margin="1,0,0,0" Text="{Binding Path=EmitterData.StartRotation, UpdateSourceTrigger=PropertyChanged}"/>
-				<TextBox Grid.Column="3" Grid.Row="7" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0">
+				<TextBox Grid.Column="3" Grid.Row="9" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0">
 					<TextBox.Text>
 						<Binding Path="EmitterData.Size" UpdateSourceTrigger="PropertyChanged">
 							<Binding.Converter>
@@ -148,33 +149,33 @@
 				</TextBox>
 				<TextBox
 						Text="{Binding Path=MaxNumbersOfParticles,UpdateSourceTrigger=PropertyChanged}"
-						Grid.Column="3" Grid.Row="29" Style="{StaticResource DeltaTextBox}" Grid.ColumnSpan="3" Margin="1,0,0,0" />
+						Grid.Column="3" Grid.Row="31" Style="{StaticResource DeltaTextBox}" Grid.ColumnSpan="3" Margin="1,0,0,0" />
 
-				<Label Content="Spawn Interval" Grid.Row="27"
+				<Label Content="Spawn Interval" Grid.Row="29"
 					       Style="{StaticResource DeltaLabel}" Grid.Column="1" />
-				<Label Content="Life Time" Grid.Row="11"
+				<Label Content="Life Time" Grid.Row="13"
 					       Style="{StaticResource DeltaLabel}" Grid.Column="1" />
-				<Label Content="Force" Grid.Row="23"
+				<Label Content="Force" Grid.Row="25"
 					       Style="{StaticResource DeltaLabel}" Grid.Column="1" Margin="0,1,0,0" />
-				<Label Content="Start Velocity" Grid.Row="21"
+				<Label Content="Start Velocity" Grid.Row="23"
 					       Style="{StaticResource DeltaLabel}" RenderTransformOrigin="0.464,0.717" Grid.Column="1" Margin="1,0,0,0" />
-				<Label Content="Start Rotation" Grid.Row="19"
+				<Label Content="Start Rotation" Grid.Row="21"
 					       Style="{StaticResource DeltaLabel}" Grid.Column="1" Margin="1,0,0,1" />
-				<Label Content="Size" Grid.Row="7"
+				<Label Content="Size" Grid.Row="9"
 					       Style="{StaticResource DeltaLabel}" Grid.Column="1" />
-				<Label Content="Max. Number " Grid.Row="29"
+				<Label Content="Max. Number " Grid.Row="31"
 					       Style="{StaticResource DeltaLabel}" Grid.Column="1" Margin="0,1,0,0" />
 				<ComboBox Grid.Column="3" Grid.Row="3" Name="ParticleNameTextBox"
 					          ItemsSource="{Binding Path=ParticleList}" Text="{Binding Path=ParticleName}"
-					          IsEditable="true" Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="3" Margin="1,0,0,0" />
+					          IsEditable="true" Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="3" />
 				<ComboBox Grid.Row="5"
 					          ItemsSource="{Binding Path=MaterialList}" SelectedItem="{Binding Path=SelectedMaterial}" Grid.Column="3"
 					          Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="3" />
 				<Label Content="Material" Grid.Row="5" Style="{StaticResource DeltaLabel}" Grid.Column="1" />
 				<Label Content="Name" Grid.Column="1" Grid.Row="3" Style="{StaticResource DeltaLabel}" />
-				<Label Content="Start Position" Grid.Column="1" Grid.Row="17" Style="{StaticResource DeltaLabel}" Margin="0,0,0,0" />
-				<Label Content="Billboard Mode" Grid.Column="1" Grid.Row="13" Style="{StaticResource DeltaLabel}" />
-				<TextBox Grid.Column="3" Grid.Row="17" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}" Margin="0,0,0,0">
+				<Label Content="Start Position" Grid.Column="1" Grid.Row="19" Style="{StaticResource DeltaLabel}" Margin="0,0,0,0" />
+				<Label Content="Billboard Mode" Grid.Column="1" Grid.Row="15" Style="{StaticResource DeltaLabel}" />
+				<TextBox Grid.Column="3" Grid.Row="19" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}" Margin="0,0,0,0">
 					<TextBox.Text>
 						<Binding Path="Position" UpdateSourceTrigger="PropertyChanged">
 							<Binding.Converter>
@@ -183,46 +184,47 @@
 						</Binding>
 					</TextBox.Text>
 				</TextBox>
-				<ComboBox Grid.Column="3" Grid.Row="13" Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="3" Margin="1,0,0,0" />
-				<Label Content="Rotation Force" Grid.Column="1" Grid.Row="25" Style="{StaticResource DeltaLabel}" />
-				<Label Content="Color" Grid.Column="1" Grid.Row="9" Style="{StaticResource DeltaLabel}" />
-				<TextBox Grid.Column="3" Grid.Row="25" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}"
+				<ComboBox Grid.Column="3" Grid.Row="15" Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="3" 
+									ItemsSource="{Binding Path=BillBoardModeList}" SelectedItem="{Binding Path=SelectedBillBoardMode}" />
+				<Label Content="Rotation Force" Grid.Column="1" Grid.Row="27" Style="{StaticResource DeltaLabel}" />
+				<Label Content="Color" Grid.Column="1" Grid.Row="11" Style="{StaticResource DeltaLabel}" />
+				<TextBox Grid.Column="3" Grid.Row="27" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}"
 					         Text="{ Binding Path=EmitterData.Size, UpdateSourceTrigger=PropertyChanged}" Margin="1,0,0,0"/>
-				<TextBox Grid.Column="3" Grid.Row="9" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0" />
-				<Button x:Name="RotationForceGraphButton" Grid.Column="5" Grid.Row="25" IsEnabled="False">
-					<Image Height="20" Width="20" Source="Images\GraphButton.png" />
+				<TextBox Grid.Column="3" Grid.Row="11" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0" />
+				<Button x:Name="RotationForceGraphButton" Grid.Column="5" Grid.Row="27" IsEnabled="False">
+					<Image Height="20" Width="20" Source="..\Images\ParticleEditor\GraphButton.png" />
 				</Button>
-				<Button x:Name="SizeGraphButton" Grid.Column="5" Grid.Row="7" IsEnabled="False" Foreground="White">
+				<Button x:Name="SizeGraphButton" Grid.Column="5" Grid.Row="9" IsEnabled="False" Foreground="White">
 					<Button.Background>
 						<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
 							<GradientStop Color="#FFC1C1C1" Offset="0" />
 							<GradientStop Color="#FF616161" Offset="1" />
 						</LinearGradientBrush>
 					</Button.Background>
-					<Image Height="20" Width="20" Source="Images\GraphButton.png" />
+					<Image Height="20" Width="20" Source="..\Images\ParticleEditor\GraphButton.png" />
 				</Button>
-				<Button x:Name="ColorGraphButton" Grid.Column="5" Grid.Row="9" IsEnabled="False">
-					<Image Height="20" Width="20" Source="Images\GraphButton.png" />
+				<Button x:Name="ColorGraphButton" Grid.Column="5" Grid.Row="11" IsEnabled="False">
+					<Image Height="20" Width="20" Source="..\Images\ParticleEditor\GraphButton.png" />
 				</Button>
-				<Button x:Name="LifeTimeRangeButton" Grid.Column="5" Grid.Row="11" IsEnabled="False">
-					<Image Height="20" Width="20" Source="Images\RangeButton.png" />
+				<Button x:Name="LifeTimeRangeButton" Grid.Column="5" Grid.Row="13" IsEnabled="False">
+					<Image Height="20" Width="20" Source="..\Images\ParticleEditor\ParticleEditor\RangeButton.png" />
 				</Button>
-				<Button x:Name="StartPositionRangeButton" Grid.Column="5" Grid.Row="17" Margin="0,0,0,0" IsEnabled="False">
-					<Image Height="20" Width="20" Source="Images\RangeButton.png" />
+				<Button x:Name="StartPositionRangeButton" Grid.Column="5" Grid.Row="19" Margin="0,0,0,0" IsEnabled="False">
+					<Image Height="20" Width="20" Source="..\Images\ParticleEditor\RangeButton.png" />
 				</Button>
-				<Button x:Name="ForceGraphButton" Grid.Column="5" Grid.Row="23" IsEnabled="False">
-					<Image Height="20" Width="20" Source="Images\GraphButton.png" />
+				<Button x:Name="ForceGraphButton" Grid.Column="5" Grid.Row="25" IsEnabled="False">
+					<Image Height="20" Width="20" Source="..\Images\ParticleEditor\GraphButton.png" />
 				</Button>
-				<Button x:Name="LifeTimeGraphButton_Copy4" Grid.Column="5" Grid.Row="21" IsEnabled="False">
-					<Image Height="20" Width="20" Source="Images\RangeButton.png" />
+				<Button x:Name="LifeTimeGraphButton_Copy4" Grid.Column="5" Grid.Row="23" IsEnabled="False">
+					<Image Height="20" Width="20" Source="..\Images\ParticleEditor\RangeButton.png" />
 				</Button>
-				<Button x:Name="StartRotationRangeButton" Grid.Column="5" Grid.Row="19" IsEnabled="False">
-					<Image Height="20" Width="20" Source="Images\RangeButton.png" />
+				<Button x:Name="StartRotationRangeButton" Grid.Column="5" Grid.Row="21" IsEnabled="False">
+					<Image Height="20" Width="20" Source="..\Images\ParticleEditor\RangeButton.png" />
 				</Button>
-				<Button x:Name="SpawnIntervalRangeButton" Grid.Column="5" Grid.Row="27" IsEnabled="False">
-					<Image Height="20" Width="20" Source="Images\RangeButton.png" />
+				<Button x:Name="SpawnIntervalRangeButton" Grid.Column="5" Grid.Row="29" IsEnabled="False">
+					<Image Height="20" Width="20" Source="..\Images\ParticleEditor\RangeButton.png" />
 				</Button>
-				<Label Content="Advanced" Grid.Column="1" Grid.Row="15" Grid.ColumnSpan="5" FontFamily="Arial"
+				<Label Content="Advanced" Grid.Column="1" Grid.Row="17" Grid.ColumnSpan="5" FontFamily="Arial"
 					       Background="#FFACACAC" FontSize="18" Foreground="White" />
 				<Button Content="?" Grid.Column="5" Grid.Row="1" Style="{StaticResource DeltaButton}" FontSize="20"
 					        FontWeight="Bold">
@@ -234,7 +236,7 @@
 					</Button.Background>
 				</Button>
 				<Button Content="Delete" Style="{StaticResource DeltaButton}"
-				        Foreground="White"  FontSize="18" Grid.Column="1" Grid.Row="32" HorizontalAlignment="Left" Width="120">
+				        Foreground="White"  FontSize="18" Grid.Column="1" Grid.Row="34" HorizontalAlignment="Left" Width="120">
 					<Button.RenderTransform>
 						<TransformGroup>
 							<ScaleTransform ScaleY="-1" ScaleX="-1"/>
@@ -251,7 +253,17 @@
 					</Button.Background>
 				</Button>
 				<Button Content="Save" Click="Save" Style="{StaticResource DeltaButton}"
-				        HorizontalAlignment="Right" Width="128" Foreground="White" FontWeight="Bold" FontSize="22" Grid.Row="31" RenderTransformOrigin="0.5,0.5" Grid.Column="3" Grid.ColumnSpan="3" Grid.RowSpan="2">
+				        HorizontalAlignment="Right" Width="128" Foreground="White" FontWeight="Bold" FontSize="22"
+								Grid.Row="33" RenderTransformOrigin="0.5,0.5" Grid.Column="3" Grid.ColumnSpan="3" Grid.RowSpan="2">
+					<Button.Background>
+						<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+							<GradientStop Color="#FFA0A0A0" Offset="0" />
+							<GradientStop Color="#FF8B8B8B" Offset="1" />
+						</LinearGradientBrush>
+					</Button.Background>
+				</Button>
+				<Button Content="Create Material" Style="{StaticResource DeltaButton}" 
+					Foreground="White" FontSize="18" Grid.Row="7" RenderTransformOrigin="0.5,0.5" Grid.Column="1" Grid.ColumnSpan="5" Margin="1,0,0,0">
 					<Button.Background>
 						<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
 							<GradientStop Color="#FFA0A0A0" Offset="0" />

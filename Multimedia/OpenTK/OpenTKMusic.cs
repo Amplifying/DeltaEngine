@@ -1,6 +1,6 @@
-﻿using System;
+﻿using DeltaEngine.Core;
+using System;
 using System.IO;
-using DeltaEngine.Content;
 using DeltaEngine.Extensions;
 using DeltaEngine.Multimedia.OpenTK.Helpers;
 using System.Diagnostics;
@@ -37,8 +37,8 @@ namespace DeltaEngine.Multimedia.OpenTK
 			}
 		}
 
-		public OpenTKMusic(string filename, OpenTKSoundDevice soundDevice, Settings settings)
-			: base(filename,soundDevice,settings)
+		protected OpenTKMusic(string contentName, OpenTKSoundDevice soundDevice, Settings settings)
+			: base(contentName,soundDevice,settings)
 		{
 			openAL = soundDevice;
 			channelHandle = openAL.CreateChannel();

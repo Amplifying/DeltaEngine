@@ -1,5 +1,6 @@
 ﻿using System;
-using DeltaEngine.Editor.Core;
+using DeltaEngine.Editor.Messages;
+using DeltaEngine.Logging;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.AppBuilder.Tests
@@ -9,7 +10,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		[Test]
 		public void CheckValuesOfSimpleAppInfo()
 		{
-			var appInfo = new AndroidAppInfo("MockApp.zip", Guid.Empty);
+			var appInfo = new AndroidAppInfo("MockApp.zip", Guid.Empty, DateTime.Now);
 			Assert.AreEqual("MockApp.zip", appInfo.FilePath);
 			Assert.AreEqual("MockApp", appInfo.Name);
 			Assert.AreEqual(PlatformName.Android, appInfo.Platform);
@@ -19,26 +20,33 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		[Test]
 		public void CheckRebuildableApp()
 		{
-			var appInfo = new AndroidAppInfo("MockApp.zip", Guid.Empty) { SolutionFilePath = "App.sln" };
+			var appInfo = new AndroidAppInfo("MockApp.zip", Guid.Empty, DateTime.Now)
+			{
+				SolutionFilePath = "App.sln"
+			};
 			Assert.IsTrue(appInfo.IsSolutionPathAvailable);
 		}
 
 		[Test]
 		public void LaunchAppWithoutDeviceThrowsExcetpion()
 		{
-			AppInfo app = "FakeApp".AsMockAppInfo(PlatformName.Android);
+			AppInfo app = AppBuilderTestingExtensions.GetMockAppInfo("FakeApp", PlatformName.Android);
 			Assert.Throws<AppInfo.NoDeviceSpecified>(() => app.LaunchApp(null));
 		}
 
 		[Test, Category("Slow")]
 		public void LaunchApp()
 		{
-			AppInfo app = "LogoApp".TryGetAlreadyBuiltApp(PlatformName.Android);
+			new ConsoleLogger();
+			const string AppName = "LogoApp";//"GhostWars";
+			AppInfo app = AppBuilderTestingExtensions.TryGetAlreadyBuiltApp(AppName, PlatformName.Android);
 			if (app == null)
-				return;
-			Device[] availableDevices = app.AvailableDevices;
+				throw new Exception("No app found with name: " + AppName);
+			Device[] availableDevices = AndroidDeviceFinder.GetAvailableDevices();
 			if (availableDevices.Length > 0)
 				app.LaunchApp(availableDevices[0]);
+			else
+				throw new Exception("No devices available to deploy to");
 		}
 	}
 }

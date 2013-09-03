@@ -13,7 +13,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		{
 			const string AppName = "MockApp";
 			AppInfo appInfo = AppInfoExtensions.CreateAppInfo(AppName, PlatformName.Windows,
-				Guid.NewGuid());
+				Guid.NewGuid(), DateTime.Now);
 			Assert.AreEqual(AppName, appInfo.Name);
 			Assert.AreEqual(PlatformName.Windows, appInfo.Platform);
 			Assert.AreNotEqual(Guid.Empty, appInfo.AppGuid);
@@ -29,7 +29,8 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 				PackageGuid = Guid.NewGuid(),
 			};
 			const string AppDirectory = "DirectoryForApps";
-			AppInfo appInfo = buildResult.ToAppInfo(AppDirectory);
+			AppInfo appInfo = AppInfoExtensions.CreateAppInfo(Path.Combine(AppDirectory, buildResult.PackageFileName),
+				buildResult.Platform, buildResult.PackageGuid, DateTime.Now);
 			Assert.AreEqual(buildResult.ProjectName, appInfo.Name);
 			Assert.AreEqual(buildResult.Platform, appInfo.Platform);
 			Assert.AreEqual(Path.Combine(AppDirectory, buildResult.PackageFileName), appInfo.FilePath);
@@ -39,7 +40,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		[Test]
 		public void GetFullAppNameForAndroidApp()
 		{
-			var androidApp = new AndroidAppInfo(@"C:\Fake\MockApp.apk", Guid.Empty);
+			var androidApp = new AndroidAppInfo(@"C:\Fake\MockApp.apk", Guid.Empty, DateTime.Now);
 			string fullAppName = androidApp.GetFullAppNameForEngineApp();
 			Assert.IsTrue(fullAppName.Contains("DeltaEngine"), fullAppName);
 		}
@@ -47,7 +48,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		[Test]
 		public void GetFullAppNameForNonAndroidApp()
 		{
-			var otherPlatfromApp = new WP7AppInfo(@"C:\Fake\MockApp.xap", Guid.Empty);
+			var otherPlatfromApp = new WP7AppInfo(@"C:\Fake\MockApp.xap", Guid.Empty, DateTime.Now);
 			string fullAppName = otherPlatfromApp.GetFullAppNameForEngineApp();
 			Assert.IsFalse(fullAppName.Contains("DeltaEngine"), fullAppName);
 		}

@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using DeltaEngine.Content;
+using DeltaEngine.Core;
 using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Core.Properties;
@@ -14,6 +15,7 @@ using DeltaEngine.Editor.Messages;
 using DeltaEngine.Logging;
 using DeltaEngine.Networking.Messages;
 using DeltaEngine.Networking.Tcp;
+using DeltaEngine.Platforms;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using Microsoft.Win32;
@@ -23,14 +25,16 @@ namespace DeltaEngine.Editor
 	public class EditorViewModel : ViewModelBase
 	{
 		public EditorViewModel()
-			: this(new EditorPluginLoader()) {}
+			: this(new EditorPluginLoader(), new FileSettings()) {}
 
-		public EditorViewModel(EditorPluginLoader plugins)
+		public EditorViewModel(EditorPluginLoader plugins, Settings settings)
 		{
 			this.plugins = plugins;
+			this.settings = settings;
 			AvailableProjects = new List<string>();
 			Error = Resources.EnterYourApiKey;
 			SetupLogger();
+			plugins.FindAndLoadAllPlugins();
 			RegisterCommands();
 			SetApiKey(LoadDataFromRegistry("ApiKey"));
 			SetCurrentProject(LoadDataFromRegistry("SelectedProject"));
@@ -39,6 +43,7 @@ namespace DeltaEngine.Editor
 		}
 
 		private readonly EditorPluginLoader plugins;
+		private readonly Settings settings;
 		public List<string> AvailableProjects { get; private set; }
 
 		public string Error
@@ -65,10 +70,10 @@ namespace DeltaEngine.Editor
 
 		private void RegisterCommands()
 		{
-			OnLoginButtonClicked = new RelayCommand(ValidateLogin, ConnectionHasNotTimedOut);
+			OnLoginButtonClicked = new RelayCommand(ValidateLogin);
 			OnLogoutButtonClicked = new RelayCommand(Logout);
 		}
-		
+
 		public ICommand OnLoginButtonClicked { get; private set; }
 		public ICommand OnLogoutButtonClicked { get; private set; }
 
@@ -104,12 +109,12 @@ namespace DeltaEngine.Editor
 			connection.Connected += () => connection.Send(new ProjectNamesRequest());
 			connection.Connected += ValidateLogin;
 			connection.DataReceived += OnDataReceived;
-			connection.ConnectToOnlineService(() =>
+			connection.TimedOut += () => 
 			{
 				Disconnect();
-				hasConnectionTimedOut = true;
 				Error = Resources.ConnectionToDeltaEngineTimedOut;
-			});
+			};
+			connection.Connect(settings.OnlineServiceIp, settings.OnlineServicePort);
 			Service.CreateInitialContentLoader(connection);
 		}
 
@@ -120,13 +125,6 @@ namespace DeltaEngine.Editor
 			get { return service; }
 		}
 		private readonly OnlineService service = new OnlineService();
-
-		private static bool ConnectionHasNotTimedOut()
-		{
-			return !hasConnectionTimedOut;
-		}
-
-		private static bool hasConnectionTimedOut;
 
 		private void ValidateLogin()
 		{
@@ -164,7 +162,10 @@ namespace DeltaEngine.Editor
 				Logger.Warning(serverError.Error);
 			}
 			else if (projectNames != null)
+			{
 				AvailableProjects.AddRange(projectNames.ProjectNames);
+				RaisePropertyChanged("AvailableProjects");
+			}
 			else if (loginMessage != null)
 				Login(loginMessage);
 		}
@@ -177,6 +178,7 @@ namespace DeltaEngine.Editor
 			IsLoggedIn = true;
 			ChangeVisiblePanel();
 			Error = "";
+			RaisePropertyChanged("Service");
 		}
 
 		public void SaveApiKey()
@@ -297,7 +299,7 @@ namespace DeltaEngine.Editor
 			stopwatch.Start();
 			var instance = Activator.CreateInstance(pluginType) as EditorPluginView;
 			stopwatch.Stop();
-			if (stopwatch.ElapsedMilliseconds > 10 && instance != null)
+			if (stopwatch.ElapsedMilliseconds > 50 && instance != null)
 				Logger.Warning("Initialization of plugin " + instance.ShortName + " took to long: " +
 					stopwatch.ElapsedMilliseconds + "ms");
 			if (instance != null)
@@ -332,7 +334,6 @@ namespace DeltaEngine.Editor
 		}
 
 		private const string StartMaximized = "StartMaximized";
-
 
 		public void UploadToOnlineService(string contentFilePath)
 		{

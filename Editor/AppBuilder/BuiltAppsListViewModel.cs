@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using DeltaEngine.Content.Xml;
-using DeltaEngine.Editor.Core;
+using DeltaEngine.Editor.Messages;
 using DeltaEngine.Extensions;
 using GalaSoft.MvvmLight;
 
@@ -19,14 +19,44 @@ namespace DeltaEngine.Editor.AppBuilder
 			builtAppsList = new List<AppInfo>();
 			AppStorageDirectory = Path.Combine(AssemblyExtensions.GetMyDocumentsAppFolder(), "BuiltApps");
 			appStorageData = new XmlData("AppsStorage");
+			FindBuiltApps();
 		}
 
 		private readonly List<AppInfo> builtAppsList;
 		public string AppStorageDirectory { get; set; }
 		private XmlData appStorageData;
 
+		private void FindBuiltApps()
+		{
+			if (!Directory.Exists(AppStorageDirectory))
+				return;
+			var files = Directory.GetFiles(AppStorageDirectory);
+			foreach (var filePath in files)
+				if (!filePath.EndsWith(".db"))
+					builtAppsList.Add(AppInfoExtensions.CreateAppInfo(filePath,
+						PlatformNameExtensions.GetPlatformFromFileExtension(Path.GetExtension(filePath)),
+						GetDummyAppGuid(Path.GetFileNameWithoutExtension(filePath)),
+						File.GetCreationTime(filePath)));
+		}
+
+		private static Guid GetDummyAppGuid(string appName)
+		{
+			//loading it from the DeltaEngine.Samples.sln is not that hard, do not do this manually!
+			appName = appName.ToLower();
+			if (appName.StartsWith("logoapp"))
+				return new Guid("4d33a50e-3aa2-4e7e-bc0c-4ef7b3d5e985");
+			if (appName.StartsWith("breakout"))
+				return new Guid("2e78abad-fe79-455a-8393-48e08de57064");
+			if (appName.StartsWith("blocks"))
+				return new Guid("8d02900e-a9a6-4510-acd1-f8df74602ed0");
+			if (appName.StartsWith("ghostwars"))
+				return new Guid("039f9138-e9f4-4abe-899c-18cfadd7b930");
+			return Guid.Empty;
+		}
+
 		public AppInfo[] BuiltApps
 		{
+			//TODO: filter by selected platform and only return those packages
 			get { return builtAppsList.ToArray(); }
 		}
 
@@ -92,6 +122,7 @@ namespace DeltaEngine.Editor.AppBuilder
 			return Path.Combine(AppStorageDirectory, "AppsStorage.xml");
 		}
 
+		//never called except in tests
 		public void Load()
 		{
 			ValidateAppStorageDirectory();
@@ -107,9 +138,11 @@ namespace DeltaEngine.Editor.AppBuilder
 		{
 			string packageFilePath = Path.Combine(AppStorageDirectory,
 				appMetaData.GetAttributeValue(AttributeNamePackageFileName));
-			var appPlatform = appMetaData.GetAttributeValue(AttributeNamePlatform).Parse<PlatformName>();
+			var appPlatform =
+				appMetaData.GetAttributeValue(AttributeNamePlatform).TryParse(PlatformName.Windows);
 			var appGuid = new Guid(appMetaData.GetAttributeValue(AttributeNamePackageGuid));
-			var loadedAppInfo = AppInfoExtensions.CreateAppInfo(packageFilePath, appPlatform, appGuid);
+			var loadedAppInfo = AppInfoExtensions.CreateAppInfo(packageFilePath, appPlatform, appGuid,
+				DateTime.Now);
 			loadedAppInfo.SolutionFilePath = appMetaData.GetAttributeValue(AttributeNameSolutionPath);
 			builtAppsList.Add(loadedAppInfo);
 		}
@@ -126,14 +159,5 @@ namespace DeltaEngine.Editor.AppBuilder
 		}
 
 		public event Action<AppInfo> RebuildRequest;
-	}
-
-	internal class DemoBuiltAppsListForDesigner : BuiltAppsListViewModel
-	{
-		public DemoBuiltAppsListForDesigner()
-		{
-			AddApp(new WindowsAppInfo("Rebuildable app", Guid.NewGuid()) { SolutionFilePath = "A.sln" });
-			AddApp(new WindowsAppInfo("Non-Rebuildable app ", Guid.NewGuid()));
-		}
 	}
 }

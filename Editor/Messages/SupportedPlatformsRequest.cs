@@ -1,4 +1,4 @@
 ﻿namespace DeltaEngine.Editor.Messages
 {
-	public class SupportedPlatformsRequest : BuildMessage { }
+	public class SupportedPlatformsRequest : BuildMessage {}
 }

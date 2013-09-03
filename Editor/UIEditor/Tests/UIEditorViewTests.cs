@@ -16,11 +16,5 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 		}
 
 		private UIEditorViewModel uiEditor;
-
-		[Test]
-		public void DrawImage()
-		{
-			//uiEditor.AddImage();
-		}
 	}
 }

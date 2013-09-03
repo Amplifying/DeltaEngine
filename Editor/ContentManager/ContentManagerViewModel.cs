@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using DeltaEngine.Content;
+using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Editor.ContentManager.Previewers;
 using DeltaEngine.Editor.Core;
@@ -26,7 +28,7 @@ namespace DeltaEngine.Editor.ContentManager
 			this.service = service;
 			metaDataCreator = new ContentMetaDataCreator(service);
 			SetMessenger();
-			ContentList = new ObservableCollection<string>();
+			ContentList = new ObservableCollection<ContentView>();
 			BackgroundImageList = new ObservableCollection<string>();
 			BackgroundImageList.Add("None");
 			RefreshContentList();
@@ -38,20 +40,29 @@ namespace DeltaEngine.Editor.ContentManager
 
 		private void SetMessenger()
 		{
+			Messenger.Default.Register<IList<ContentView>>(this, "DeleteContent", DeleteContentFromList);
 			Messenger.Default.Register<bool>(this, "DeleteContent", DeleteContentFromList);
 			Messenger.Default.Register<IDataObject>(this, "AddContent", DropContent);
 		}
 
+		public void DeleteContentFromList(IList<ContentView> contentList)
+		{
+			foreach (var content in contentList)
+				service.DeleteContent(content.NewContent.ContentName);
+		}
+
 		public void DeleteContentFromList(bool deleteSubContent)
 		{
-			service.DeleteContent(selectedContent, deleteSubContent);
+			service.DeleteContent(selectedContent.NewContent.ContentName, deleteSubContent);
 		}
 
 		public bool IsAnimation
 		{
 			get
 			{
-				var contentType = service.GetTypeOfContent(selectedContent);
+				if (selectedContent == null)
+					return false;
+				var contentType = service.GetTypeOfContent(selectedContent.NewContent.ContentName);
 				return contentType == ContentType.ImageAnimation ||
 					contentType == ContentType.SpriteSheetAnimation || contentType == ContentType.Material;
 			}
@@ -97,11 +108,22 @@ namespace DeltaEngine.Editor.ContentManager
 			ContentList.Clear();
 			var foundContent = service.GetAllContentNames();
 			foreach (string content in foundContent)
-				ContentList.Add(content);
+				AddNewContent(content);
 			RaisePropertyChanged("ContentList");
 		}
 
-		public ObservableCollection<string> ContentList { get; set; }
+		private void AddNewContent(string content)
+		{
+			var newContent = new ContentView();
+			var type = service.GetTypeOfContent(content);
+			if (type == ContentType.FontXml)
+				newContent.CreateContentView("ContentTypes/Xml.png", content);
+			else
+				newContent.CreateContentView("ContentTypes/" + type.ToString() + ".png", content);
+			ContentList.Add(newContent);
+		}
+
+		public ObservableCollection<ContentView> ContentList { get; set; }
 
 		public void RefreshBackgroundImageList()
 		{
@@ -114,7 +136,7 @@ namespace DeltaEngine.Editor.ContentManager
 
 		public ObservableCollection<string> BackgroundImageList { get; set; }
 
-		public string SelectedContent
+		public ContentView SelectedContent
 		{
 			get { return selectedContent; }
 			set
@@ -126,18 +148,18 @@ namespace DeltaEngine.Editor.ContentManager
 				RaisePropertyChanged("IsAnimation");
 			}
 		}
-		private string selectedContent;
+		private ContentView selectedContent;
 
 		private void CheckTypeOfContent()
 		{
 			if (selectedContent == null)
 				return;
-			var type = service.GetTypeOfContent(selectedContent);
+			var type = service.GetTypeOfContent(selectedContent.NewContent.ContentName);
 			if (type == null)
 				return;
 			try
 			{
-				new ContentViewer().Viewer(selectedContent, (ContentType)type);
+				new ContentViewer().Viewer(selectedContent.NewContent.ContentName, (ContentType)type);
 			}
 			catch (Exception ex)
 			{

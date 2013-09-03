@@ -16,7 +16,7 @@
 	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance Type=helpers:DesignEditorViewModel, IsDesignTimeCreatable=True}"
 	Title="Delta Engine Editor" Width="1366" Height="640" MinWidth="600" MinHeight="300"
-	WindowStyle="None" ResizeMode="CanResize" BorderThickness="0" Icon="DeltaEngineIcon.ico"
+	WindowStyle="None" ResizeMode="CanResize" BorderThickness="0" Icon="DeltaEngine.Editor.ico"
 	MouseDown="OnMouseDown">
 	<shell:WindowChrome.WindowChrome>
 		<shell:WindowChrome CaptionHeight="0" ResizeBorderThickness="5" />
@@ -57,7 +57,12 @@
 		</Style>
 	</Window.Resources>
 	<Grid>
-		<Grid Margin="0 0 0 64" Background="#FFF3F3F3">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*" MinHeight="268" />
+			<RowDefinition Height="3" />
+			<RowDefinition Height="64" MinHeight="32" />
+		</Grid.RowDefinitions>
+		<Grid Background="#FFF3F3F3" Grid.Row="0" Grid.RowSpan="2">
 			<Image
 				Source="Images\WelcomeDeltaLogo.png" Width="186" Height="50"
 				HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,11,0,0" />
@@ -243,10 +248,11 @@
 				</Image.Style>
 			</Image>
 		</Grid>
-		<Grid VerticalAlignment="Bottom" Height="64">
+		<GridSplitter HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="1" />
+		<Grid Grid.Row="2">
 			<TextBox
 				VerticalScrollBarVisibility="Visible" Text="{Binding Path=TextLogger.Log, Mode=OneWay}"
-				IsReadOnly="True" />
+				IsReadOnly="True" Name="LogOutput" />
 		</Grid>
 	</Grid>
 </Window>

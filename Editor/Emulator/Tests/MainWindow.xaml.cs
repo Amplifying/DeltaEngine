@@ -6,6 +6,7 @@ using DeltaEngine.Rendering.Shapes;
 using Color = DeltaEngine.Datatypes.Color;
 using EngineApp = DeltaEngine.Platforms.App;
 using Point = DeltaEngine.Datatypes.Point;
+using Window = DeltaEngine.Core.Window;
 
 namespace DeltaEngine.Editor.Emulator.Tests
 {

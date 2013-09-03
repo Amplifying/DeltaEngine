@@ -10,5 +10,10 @@
 		}
 
 		public string Reason { get; private set; }
+
+		public override string ToString()
+		{
+			return GetType().Name + ": " + Reason;
+		}
 	}
 }

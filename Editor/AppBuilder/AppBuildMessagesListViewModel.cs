@@ -111,5 +111,14 @@ namespace DeltaEngine.Editor.AppBuilder
 		{
 			return message.MessageData.TimeStamp.CompareTo(other.MessageData.TimeStamp);
 		}
+
+		public void ClearMessages()
+		{
+			Warnings.Clear();
+			Errors.Clear();
+			TriggerMatchingCurrentFilterChanged();
+			RaisePropertyChanged("TextOfErrorCount");
+			RaisePropertyChanged("TextOfWarningCount");
+		}
 	}
 }

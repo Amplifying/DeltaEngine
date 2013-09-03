@@ -17,7 +17,7 @@ namespace DeltaEngine.Editor.InputEditor.Tests
 
 		private InputEditorViewModel inputModel;
 
-		[Test, STAThread]
+		[Test, STAThread, CloseAfterFirstFrame]
 		public void ChangeTypeOfTriggerToMouse()
 		{
 			AddTriggerToList();
@@ -40,7 +40,7 @@ namespace DeltaEngine.Editor.InputEditor.Tests
 			Assert.AreEqual(1, inputModel.availableCommands.NumberOfCommands);
 		}
 
-		[Test, STAThread]
+		[Test, STAThread, CloseAfterFirstFrame]
 		public void ChangeTypeOfTriggerToGamePad()
 		{
 			AddTriggerToList();
@@ -49,7 +49,7 @@ namespace DeltaEngine.Editor.InputEditor.Tests
 			Assert.AreEqual("Pressed", trigger.State.ToString());
 		}
 
-		[Test, STAThread]
+		[Test, STAThread, CloseAfterFirstFrame]
 		public void ChangeTypeOfTriggerToTouch()
 		{
 			AddTriggerToList();
@@ -58,7 +58,7 @@ namespace DeltaEngine.Editor.InputEditor.Tests
 			Assert.AreEqual("Pressed", trigger.State.ToString());
 		}
 
-		[Test, STAThread]
+		[Test, STAThread, CloseAfterFirstFrame]
 		public void ChangingTypeMultipleTimes()
 		{
 			AddTriggerToList();
@@ -70,7 +70,7 @@ namespace DeltaEngine.Editor.InputEditor.Tests
 			Assert.AreEqual("Keyboard", inputModel.TriggerList[0].TriggerType.SelectedItem.ToString());
 		}
 
-		[Test, STAThread]
+		[Test, STAThread, CloseAfterFirstFrame]
 		public void ChangingTypeOf2TriggerToKey()
 		{
 			AddTriggerToList();

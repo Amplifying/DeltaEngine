@@ -28,7 +28,6 @@ namespace DeltaEngine.Editor.MaterialEditor
 
 		public Material NewMaterial { get; set; }
 		private readonly Service service;
-		public ObservableCollection<string> ImageList { get; set; }
 		public ObservableCollection<string> ShaderList { get; set; }
 		public ObservableCollection<string> MaterialList { get; set; }
 		public ObservableCollection<string> BlendModeList { get; set; }
@@ -57,16 +56,23 @@ namespace DeltaEngine.Editor.MaterialEditor
 		private void CreateListOfLocalContentDataImages(string projectPath)
 		{
 			ImageList = new ObservableCollection<string>();
-			AddContentTypeToContentList(ContentType.Image);
-			AddContentTypeToContentList(ContentType.ImageAnimation);
-			AddContentTypeToContentList(ContentType.SpriteSheetAnimation);
+			AnimationList = new ObservableCollection<string>();
+			ImageList.Add("");
+			AnimationList.Add("");
+			AddContentTypeToContentList(ImageList, ContentType.Image);
+			AddContentTypeToContentList(AnimationList, ContentType.ImageAnimation);
+			AddContentTypeToContentList(AnimationList, ContentType.SpriteSheetAnimation);
 		}
 
-		private void AddContentTypeToContentList(ContentType type)
+		public ObservableCollection<string> ImageList { get; set; }
+		public ObservableCollection<string> AnimationList { get; set; }
+
+		private void AddContentTypeToContentList(ObservableCollection<string> contentList,
+			ContentType type)
 		{
-			var contentList = service.GetAllContentNamesByType(type);
-			foreach (var content in contentList)
-				ImageList.Add(content);
+			var contentTypeList = service.GetAllContentNamesByType(type);
+			foreach (var content in contentTypeList)
+				contentList.Add(content);
 		}
 
 		private void CreateListOfLocalContentDataShades(string projectPath)
@@ -75,6 +81,8 @@ namespace DeltaEngine.Editor.MaterialEditor
 			var contentList = service.GetAllContentNamesByType(ContentType.Shader);
 			foreach (var content in contentList)
 				ShaderList.Add(content);
+			SelectedShader = Shader.Position2DColorUv;
+			RaisePropertyChanged("SelectedRenderSize");
 		}
 
 		private void LoadColors()
@@ -104,6 +112,8 @@ namespace DeltaEngine.Editor.MaterialEditor
 		{
 			foreach (var color in ColorList)
 				ColorStringList.Add(color.Key);
+			SelectedColor = "White";
+			RaisePropertyChanged("SelectedColor");
 		}
 
 		private void LoadMaterials()
@@ -121,6 +131,7 @@ namespace DeltaEngine.Editor.MaterialEditor
 			foreach (var value in enumValues)
 				BlendModeList.Add(Enum.GetName(typeof(BlendMode), value));
 			SelectedBlendMode = BlendMode.Normal.ToString();
+			RaisePropertyChanged("SelectedBlendMode");
 		}
 
 		private void FillListWithRenderSize()
@@ -129,6 +140,7 @@ namespace DeltaEngine.Editor.MaterialEditor
 			foreach (var value in enumValues)
 				RenderStyleList.Add(Enum.GetName(typeof(RenderSize), value));
 			SelectedRenderSize = RenderSize.PixelBased.ToString();
+			RaisePropertyChanged("SelectedRenderSize");
 		}
 
 		public string SelectedRenderSize
@@ -157,9 +169,13 @@ namespace DeltaEngine.Editor.MaterialEditor
 
 		private void CreateNewMaterial()
 		{
-			if (SelectedShader == null || SelectedImage == null || SelectedColor == null)
+			if (SelectedShader == null || SelectedColor == null ||
+				(SelectedImage == null && SelectedAnimation == null))
 				return;
-			NewMaterial = new Material(SelectedShader, SelectedImage);
+			if (string.IsNullOrEmpty(SelectedAnimation))
+				NewMaterial = new Material(SelectedShader, SelectedImage);
+			else
+				NewMaterial = new Material(SelectedShader, SelectedAnimation);
 			NewMaterial.DefaultColor = ColorList[selectedColor];
 			NewMaterial.SetRenderSize(
 				(RenderSize)Enum.Parse(typeof(RenderSize), selectedRenderSize, true));
@@ -175,11 +191,27 @@ namespace DeltaEngine.Editor.MaterialEditor
 			set
 			{
 				selectedImage = value;
+				selectedAnimation = "";
 				CreateNewMaterial();
+				RaisePropertyChanged("SelectedAnimation");
 			}
 		}
 
 		private string selectedImage;
+
+		public string SelectedAnimation
+		{
+			get { return selectedAnimation; }
+			set
+			{
+				selectedAnimation = value;
+				selectedImage = "";
+				CreateNewMaterial();
+				RaisePropertyChanged("SelectedImage");
+			}
+		}
+
+		private string selectedAnimation;
 
 		public string SelectedShader
 		{
@@ -223,6 +255,8 @@ namespace DeltaEngine.Editor.MaterialEditor
 
 		public void Save()
 		{
+			if (NewMaterial == null || String.IsNullOrEmpty(MaterialName))
+				return;
 			var fileNameAndBytes = new Dictionary<string, byte[]>();
 			fileNameAndBytes.Add(MaterialName + ".deltamaterial", null);
 			var metaDataCreator = new ContentMetaDataCreator(service);

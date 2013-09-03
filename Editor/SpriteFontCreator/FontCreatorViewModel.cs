@@ -4,6 +4,7 @@ using System.Drawing.Text;
 using System.Globalization;
 using System.IO;
 using DeltaEngine.Content;
+using DeltaEngine.Core;
 using DeltaEngine.Editor.Core;
 using GalaSoft.MvvmLight;
 

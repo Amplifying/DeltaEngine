@@ -11,15 +11,16 @@ namespace DeltaEngine.Editor.Tests
 	public class OnlineServiceTests
 	{
 		[Test]
-		public void Check()
+		public void CheckOnlineService()
 		{
 			var service = new OnlineService();
 			object result = null;
 			var connection = OnlineServiceConnection.CreateForEditor();
 			connection.Connected +=
 				() => connection.Send(new LoginRequest(LoadApiKeyFromRegistry(), "LogoApp"));
+			connection.TimedOut += () => { throw new ConnectionTimedOut(); };
 			connection.DataReceived += message => result = message;
-			connection.ConnectToOnlineService(() => { throw new ConnectionTimedOut(); });
+			connection.Connect("deltaengine.net", 800);
 			service.Connect("John Doe", connection);
 			Thread.Sleep(500);
 			Console.WriteLine("User Name: " + service.UserName);

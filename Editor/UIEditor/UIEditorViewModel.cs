@@ -2,12 +2,13 @@
 using System.Collections.ObjectModel;
 using DeltaEngine.Commands;
 using DeltaEngine.Content;
+using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Input;
 using DeltaEngine.Rendering.Sprites;
 using DeltaEngine.Scenes;
-using DeltaEngine.ScreenSpaces;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 
@@ -25,6 +26,7 @@ namespace DeltaEngine.Editor.UIEditor
 			SetMouseCommands();
 			Messenger.Default.Register<string>(this, "AddImage", AddImage);
 			Messenger.Default.Register<string>(this, "RemoveSprite", RemoveSprite);
+			Messenger.Default.Register<string>(this, "SaveUI", SaveUI);
 		}
 
 		private readonly Service service;
@@ -44,14 +46,14 @@ namespace DeltaEngine.Editor.UIEditor
 		{
 			new Command(SetSelectedImage).Add(new MouseButtonTrigger());
 			new Command(MoveImage).Add(new MousePositionTrigger(MouseButton.Left, State.Pressed));
-			new Command(position => LastMousePosition = position).Add(
+			new Command(position => lastMousePosition = position).Add(
 				new MouseButtonTrigger(MouseButton.Middle));
 			new Command(ScaleImage).Add(new MousePositionTrigger(MouseButton.Middle, State.Pressed));
 		}
 
 		private void SetSelectedImage(Point mousePosition)
 		{
-			LastMousePosition = mousePosition;
+			lastMousePosition = mousePosition;
 			foreach (Sprite sprite in scene.Controls)
 				if (sprite.DrawArea.Contains(mousePosition))
 				{
@@ -64,57 +66,35 @@ namespace DeltaEngine.Editor.UIEditor
 
 		private void MoveImage(Point mousePosition)
 		{
-			var relativePosition = mousePosition - LastMousePosition;
-			LastMousePosition = mousePosition;
+			if (SelectedSprite == null)
+				return;
+			var relativePosition = mousePosition - lastMousePosition;
+			lastMousePosition = mousePosition;
 			SelectedSprite.Center += relativePosition;
 		}
 
 		private void ScaleImage(Point mousePosition)
 		{
-			var relativePosition = mousePosition - LastMousePosition;
-			LastMousePosition = mousePosition;
+			if (SelectedSprite == null)
+				return;
+			var relativePosition = mousePosition - lastMousePosition;
+			lastMousePosition = mousePosition;
 			SelectedSprite.Size =
 				new Size(SelectedSprite.Size.Width + (SelectedSprite.Size.Width * relativePosition.Y),
 					SelectedSprite.Size.Height + (SelectedSprite.Size.Height * relativePosition.Y));
 		}
 
-		private Point LastMousePosition = Point.Unused;
+		private Point lastMousePosition = Point.Unused;
 		public Sprite SelectedSprite { get; set; }
 
 		public void AddImage(string image)
 		{
-			if (string.IsNullOrEmpty(SelectedImageInList))
-				return;
-
-			AddNewImageToList(image);
+			AddNewImageToList();
 			RaisePropertyChanged("UIImages");
 			RaisePropertyChanged("ImageInGridList");
 		}
 
 		public string SelectedImageInList { get; set; }
-
-		public void AddNewImageToList(string newImage)
-		{
-			var sprite = new Sprite(new Material(Shader.Position2DUv, SelectedImageInList),
-				Rectangle.One);
-			var size = sprite.Material.DiffuseMap.PixelSize;
-			var newRect = new Rectangle(0, 0, size.Width, size.Height);
-			newRect = ScreenSpace.Current.FromPixelSpace(newRect);
-			sprite.DrawArea = newRect;
-			scene.Add(sprite);
-			UIImagesInList.Add(SelectedImageInList);
-		}
-
-		public string SelectedSpriteNameInList
-		{
-			get { return selectedSpriteNameInList; }
-			set { selectedSpriteNameInList = value;
-			SelectedSprite = (Sprite)scene.Controls[SpriteListIndex];
-			}
-		}
-
-		private string selectedSpriteNameInList;
-		public int SpriteListIndex { get; set; }
 
 		public void RemoveSprite(string obj)
 		{
@@ -124,5 +104,56 @@ namespace DeltaEngine.Editor.UIEditor
 			scene.Controls.Remove(SelectedSprite);
 			SelectedSprite.IsActive = false;
 		}
+
+		private void SaveUI(string obj)
+		{
+			if (scene.Controls.Count == 0 || string.IsNullOrEmpty(UIName))
+				return;
+			var fileNameAndBytes = new Dictionary<string, byte[]>();
+			var bytes = BinaryDataExtensions.ToByteArrayWithTypeInformation(scene);
+			fileNameAndBytes.Add(UIName + ".deltaUI", bytes);
+			var metaDataCreator = new ContentMetaDataCreator(service);
+			ContentMetaData contentMetaData = metaDataCreator.CreateMetaDataFromUI(UIName, bytes);
+			service.UploadContent(contentMetaData, fileNameAndBytes);
+		}
+
+		public string UIName { get; set; }
+
+		public void AddNewImageToList()
+		{
+			var customImage = ContentLoader.Create<Image>(new ImageCreationData(new Size(8, 8)));
+			var colors = new Color[8 * 8];
+			for (int i = 0; i < 8 * 8; i++)
+				colors[i] = Color.Purple;
+			customImage.Fill(colors);
+			var newSprite =
+				new Sprite(
+					new Material(ContentLoader.Load<Shader>(Shader.Position2DColorUv), customImage),
+					new Rectangle(0.5f, 0.5f, 0.5f, 0.5f));
+			var newRect = Rectangle.FromCenter(0.5f, 0.5f, 0.2f, 0.2f);
+			newSprite.DrawArea = newRect;
+			scene.Add(newSprite);
+			bool freeName = false;
+			int numberOfNames = 0;
+			while (freeName == false)
+				if (UIImagesInList.Contains("NewSprite" + numberOfNames))
+					numberOfNames++;
+				else
+					freeName = true;
+			UIImagesInList.Add("NewSprite" + numberOfNames);
+		}
+
+		public string SelectedSpriteNameInList
+		{
+			get { return selectedSpriteNameInList; }
+			set
+			{
+				selectedSpriteNameInList = value;
+				SelectedSprite = (Sprite)scene.Controls[SpriteListIndex];
+			}
+		}
+
+		private string selectedSpriteNameInList;
+		public int SpriteListIndex { get; set; }
 	}
 }

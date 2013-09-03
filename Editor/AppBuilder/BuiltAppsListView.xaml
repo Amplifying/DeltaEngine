@@ -19,31 +19,32 @@
 							<ColumnDefinition Width="8" />
 							<ColumnDefinition Width="2*" />
 							<ColumnDefinition Width="*" />
-							<ColumnDefinition Width="12" />
+							<ColumnDefinition Width="160" />
 							<ColumnDefinition Width="80" />
 							<ColumnDefinition Width="12" />
 							<ColumnDefinition Width="140" />
-							<ColumnDefinition Width="12" />
-							<ColumnDefinition Width="70" />
 						</Grid.ColumnDefinitions>
 						<Image
-							Source="/DeltaEngine.Editor.AppBuilder;component/Images/BuildInfoIcon.png" Grid.Column="0" />
+							Source="/DeltaEngine.Editor;component/Images/AppBuilder/BuildInfoIcon.png" Grid.Column="0" />
 						<TextBlock
 							Name="AppName" Text="{Binding Path=Name}" FontSize="14"
 							VerticalAlignment="Center" Grid.Column="2" />
 						<TextBlock
 							Name="PlatformName" Text="{Binding Path=Platform}" FontSize="14"
 							VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="3" />
+						<TextBlock
+							Name="BuildDate" Text="{Binding Path=BuildDate}" FontSize="14"
+							VerticalAlignment="Center" Grid.Column="4" />
 						<Button
 							Name="RebuildAppButton" Content="Rebuild" FontSize="14" Height="30" Grid.Column="5"
 							Click="OnRebuildAppClicked" IsEnabled="{Binding Path=IsSolutionPathAvailable}" />
-						<ComboBox
+						<!--<ComboBox
 							Name="DevicesComboBox" FontSize="14" Height="30" Grid.Column="7"
 							ItemsSource="{Binding Path=AvailableDevices}" SelectedIndex="0"
 							DisplayMemberPath="Name" HorizontalContentAlignment="Center"
-						/>
+						/>-->
 						<Button
-							Name="LaunchAppButton" Content="Launch" FontSize="14" Height="30" Grid.Column="9"
+							Name="LaunchAppButton" Content="Launch" FontSize="14" Height="30" Grid.Column="7"
 							Click="OnLaunchAppClicked" IsEnabled="{Binding Path=IsDeviceAvailable}" />
 					</Grid>
 				</DataTemplate>

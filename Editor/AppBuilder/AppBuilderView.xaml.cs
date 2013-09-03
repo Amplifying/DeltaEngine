@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows;
+using DeltaEngine.Core;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Messages;
 using Microsoft.Win32;
@@ -100,7 +101,7 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		public string Icon
 		{
-			get { return @"Icons/AppBuilder.png"; }
+			get { return @"Images/Plugins/AppBuilder.png"; }
 		}
 
 		public bool RequiresLargePane

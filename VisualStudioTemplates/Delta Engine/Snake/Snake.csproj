@@ -38,6 +38,7 @@
     <ApplicationIcon>SnakeIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="System" />
     <Reference Include="DeltaEngine.Content.Xml">
 	  <HintPath>$(DeltaEnginePath)\DeltaEngine.Content.Xml.dll</HintPath>
     </Reference>
@@ -50,6 +51,9 @@
     <Reference Include="DeltaEngine.Platforms">
 	  <HintPath>$(DeltaEnginePath)\DeltaEngine.Platforms.dll</HintPath>
     </Reference>
+    <Reference Include="DeltaEngine.WindowsOpenTK20">
+	  <HintPath>$(DeltaEnginePath)\DeltaEngine.WindowsOpenTK20.dll</HintPath>
+    </Reference>
     <Reference Include="DeltaEngine.Rendering">
 	  <HintPath>$(DeltaEnginePath)\DeltaEngine.Rendering.dll</HintPath>
     </Reference>
@@ -59,8 +63,11 @@
     <Reference Include="DeltaEngine.Rendering.Shapes">
 	  <HintPath>$(DeltaEnginePath)\DeltaEngine.Rendering.Shapes.dll</HintPath>
     </Reference>
-    <Reference Include="DeltaEngine.WindowsOpenTK20">
-	  <HintPath>$(DeltaEnginePath)\DeltaEngine.WindowsOpenTK20.dll</HintPath>
+    <Reference Include="DeltaEngine.Rendering.Sprites">
+	  <HintPath>$(DeltaEnginePath)\DeltaEngine.Rendering.Sprites.dll</HintPath>
+    </Reference>
+    <Reference Include="DeltaEngine.Scenes">
+	  <HintPath>$(DeltaEnginePath)\DeltaEngine.Scenes.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -72,8 +79,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Body.cs" />
     <Compile Include="Chunk.cs" />
+    <Compile Include="Menu.cs" />
     <Compile Include="Snake.cs" />
-    <Compile Include="SnakeGame.cs" />
+    <Compile Include="Game.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

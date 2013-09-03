@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using DeltaEngine.Editor.Core;
+using DeltaEngine.Editor.Messages;
+using DeltaEngine.Mocks;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.AppBuilder.Tests
@@ -19,6 +21,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 
 		private static AppBuilderViewModel GetViewModelWithMockService()
 		{
+			new MockLogger();
 			return new AppBuilderViewModel(new MockBuildService());
 		}
 

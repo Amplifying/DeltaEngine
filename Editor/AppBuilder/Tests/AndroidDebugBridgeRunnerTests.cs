@@ -1,5 +1,5 @@
 ﻿using System;
-using DeltaEngine.Editor.Core;
+using DeltaEngine.Editor.Messages;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.AppBuilder.Tests
@@ -19,8 +19,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 
 		private static AndroidDevice GetFirstAvailableDevice()
 		{
-			var deviceFinder = new AndroidDeviceFinder();
-			foreach (Device availableDevice in deviceFinder.GetAvailableDevices())
+			foreach (Device availableDevice in AndroidDeviceFinder.GetAvailableDevices())
 				return (AndroidDevice)availableDevice;
 			return null;
 		}
@@ -58,8 +57,11 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		[Test]
 		public void IsAppInstalled()
 		{
-			if (firstDevice != null)
-				Assert.IsTrue(IsAppInstalled("com.android.settings"));
+			if (firstDevice == null)
+				throw new NullReferenceException("No Android device found");
+			Assert.IsTrue(IsAppInstalled("com.android.settings"));
+			Console.WriteLine("Is LogoApp installed: " + IsAppInstalled("net.DeltaEngine.LogoApp"));
+			Console.WriteLine("Is GhostWars installed: " + IsAppInstalled("net.DeltaEngine.GhostWars"));
 		}
 
 		private bool IsAppInstalled(string fullAppName)
@@ -88,7 +90,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 
 		private static AppInfo GetAppInfoForAndroid(string appName)
 		{
-			return appName.TryGetAlreadyBuiltApp(PlatformName.Android);
+			return AppBuilderTestingExtensions.TryGetAlreadyBuiltApp(appName, PlatformName.Android);
 		}
 
 		private bool IsAppInstalled(AppInfo app)

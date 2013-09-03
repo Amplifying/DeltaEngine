@@ -18,6 +18,7 @@ namespace DeltaEngine.Editor.ParticleEditor
 		{
 			ParticleList = new ObservableCollection<string>();
 			MaterialList = new ObservableCollection<string>();
+			BillBoardModeList = new ObservableCollection<string>();
 			SetUpStartEmitterData();
 			this.service = service;
 			metaDataCreator = new ContentMetaDataCreator(service);
@@ -25,27 +26,32 @@ namespace DeltaEngine.Editor.ParticleEditor
 			CreateParticle();
 			GetParticles();
 			GetMaterials();
+			GetBilBoardModes();
 		}
 
 		public ObservableCollection<string> ParticleList { get; set; }
 		public ObservableCollection<string> MaterialList { get; set; }
+		public ObservableCollection<string> BillBoardModeList { get; set; }
 		private readonly Service service;
 		private readonly ContentMetaDataCreator metaDataCreator;
 
 		private void SetUpStartEmitterData()
 		{
-			EmitterData = new ParticleEffectData
+			EmitterData = new ParticleEmitterData
 			{
 				SpawnInterval = 0.01f,
 				LifeTime = 1,
 				StartVelocity = new RangeGraph<Point>(new Point(0, -0.3f), new Point(0, -0.3f)),
 				Size = new RangeGraph<Size>(new Size(0.01f, 0.01f), new Size(0, 0)),
-				MaximumNumberOfParticles = 500
+				MaximumNumberOfParticles = 500,
+				StartRotation = new ValueRange(0, 0)
 			};
+			SelectedBillBoardMode = "Standard2D";
 			RaisePropertyChanged("EmitterCreator");
+			RaisePropertyChanged("SelectedBillBoardMode");
 		}
 
-		public ParticleEffectData EmitterData { get; set; }
+		public ParticleEmitterData EmitterData { get; set; }
 
 		private void CreateParticle()
 		{
@@ -74,7 +80,7 @@ namespace DeltaEngine.Editor.ParticleEditor
 		private void GetParticles()
 		{
 			ParticleList.Clear();
-			var foundParticles = service.GetAllContentNamesByType(ContentType.ParticleEffect);
+			var foundParticles = service.GetAllContentNamesByType(ContentType.ParticleEmitter);
 			foreach (var particle in foundParticles)
 				ParticleList.Add(particle);
 		}
@@ -85,6 +91,27 @@ namespace DeltaEngine.Editor.ParticleEditor
 			foreach (var material in materialList)
 				MaterialList.Add(material);
 		}
+
+		private void GetBilBoardModes()
+		{
+			var billBoardModes = Enum.GetValues(typeof(BillboardMode));
+			foreach (var billBoardMode in billBoardModes)
+				BillBoardModeList.Add(billBoardMode.ToString());
+		}
+
+		public string SelectedBillBoardMode
+		{
+			get { return selectedBillBoardMode; }
+			set
+			{
+				selectedBillBoardMode = value;
+				EmitterData.BillboardMode =
+					(BillboardMode)Enum.Parse(typeof(BillboardMode), selectedBillBoardMode);
+				CreateParticle();
+			}
+		}
+
+		private string selectedBillBoardMode;
 
 		public string SelectedMaterial
 		{
@@ -139,8 +166,8 @@ namespace DeltaEngine.Editor.ParticleEditor
 			set
 			{
 				particleName = value;
-				if (ContentLoader.Exists(ParticleName, ContentType.ParticleEffect))
-					EmitterData = ContentLoader.Load<ParticleEffectData>(particleName);
+				if (ContentLoader.Exists(ParticleName, ContentType.ParticleEmitter))
+					EmitterData = ContentLoader.Load<ParticleEmitterData>(particleName);
 				CreateParticle();
 				RaisePropertyChanged("EmitterData");
 				RaisePropertyChanged("SelectedMaterial");

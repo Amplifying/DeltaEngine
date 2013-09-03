@@ -7,7 +7,7 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 	/// </summary>
 	public class InputValidatorTests
 	{
-		[TestCase("Name"), TestCase("ProjectName")]
+		[TestCase("Name"), TestCase("ProjectName"), TestCase("DeltaEngine.Editor.ProjectCreator.Tests")]
 		public void ValidFolderNames(string name)
 		{
 			Assert.IsTrue(InputValidator.IsValidFolderName(name));

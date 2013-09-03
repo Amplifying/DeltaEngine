@@ -35,7 +35,7 @@ namespace DeltaEngine.Editor.SampleBrowser
 
 		public string Icon
 		{
-			get { return "Icons/SampleBrowser.png"; }
+			get { return "Images/Plugins/SampleBrowser.png"; }
 		}
 
 		public bool RequiresLargePane

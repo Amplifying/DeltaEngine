@@ -40,7 +40,6 @@ namespace DeltaEngine.Editor.ProjectCreator
 		{
 			if (!IsTargetDirectoryAvailable() || !IsSourceFileAvailable())
 				return;
-
 			CreateTargetDirectoryHierarchy();
 			CopyTemplateFilesToLocation();
 			ReplacePlaceholdersWithUserInput();
@@ -55,7 +54,6 @@ namespace DeltaEngine.Editor.ProjectCreator
 		{
 			if (FileSystem.GetType() == typeof(FileSystem))
 				return Template.PathToZip != string.Empty && ZipArchive.IsZipFile(Template.PathToZip);
-
 			return Template.PathToZip != string.Empty &&
 				FileSystem.Path.GetExtension(Template.PathToZip) == ".zip";
 		}
@@ -81,7 +79,8 @@ namespace DeltaEngine.Editor.ProjectCreator
 			if (FileSystem.GetType() == typeof(FileSystem))
 			{
 				var archive = ZipArchive.Open(Template.PathToZip);
-				foreach (var entry in archive.Entries.Where(x => !x.FilePath.Contains("vstemplate")))
+				foreach (var entry in
+					archive.Entries.Where(x => !x.FilePath.Contains("vstemplate") && !x.IsDirectory))
 					CopyFileInZipToLocation(entry);
 			}
 			else
@@ -109,7 +108,7 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		private string CreateTargetPathForZipEntry(IEntry entry)
 		{
-			var target = Path.Combine(Project.Location, entry.FilePath).Replace('/', '\\');
+			var target = Path.Combine(Project.Location, Project.Name, entry.FilePath).Replace('/', '\\');
 			return target.Replace(FileSystem.Path.GetFileNameWithoutExtension(Template.PathToZip),
 				Project.Name);
 		}

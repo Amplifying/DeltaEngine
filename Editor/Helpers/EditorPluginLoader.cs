@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Controls;
+using DeltaEngine.Core;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Extensions;
 
@@ -16,12 +17,18 @@ namespace DeltaEngine.Editor.Helpers
 
 		public EditorPluginLoader(string pluginBaseDirectory)
 		{
+			this.pluginBaseDirectory = pluginBaseDirectory;
 			UserControlsType = new List<Type>();
-			CopyAllEditorPlugins(pluginBaseDirectory);
-			FindAllEditorPluginViews();
 		}
 
 		public List<Type> UserControlsType { get; private set; }
+		private readonly string pluginBaseDirectory;
+
+		public void FindAndLoadAllPlugins()
+		{
+			CopyAllEditorPlugins(pluginBaseDirectory);
+			FindAllEditorPluginViews();
+		}
 
 		private static void CopyAllEditorPlugins(string pluginBaseDirectory)
 		{
@@ -77,6 +84,10 @@ namespace DeltaEngine.Editor.Helpers
 			foreach (var file in dllFiles)
 			{
 				var fileName = Path.GetFileNameWithoutExtension(file);
+				if (fileName.StartsWith("DeltaEngine.") &&
+					(DateTime.Now - File.GetLastWriteTime(file)).TotalDays > 7)
+					Logger.Warning(file + " looks outdated, it was last updated " +
+						File.GetLastWriteTime(file) + ". Check if this file is still being used!");
 				if (fileName.StartsWith("DeltaEngine.Editor.") &&
 					!assemblies.Any(assembly => assembly.FullName.Contains(fileName)))
 					assemblies.Add(Assembly.LoadFile(file));

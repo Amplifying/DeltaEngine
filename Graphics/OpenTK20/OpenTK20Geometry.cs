@@ -7,7 +7,7 @@ namespace DeltaEngine.Graphics.OpenTK20
 	/// </summary>
 	public class OpenTK20Geometry : Geometry
 	{
-		public OpenTK20Geometry(string contentName, OpenTK20Device device)
+		protected OpenTK20Geometry(string contentName, OpenTK20Device device)
 			: base(contentName)
 		{
 			this.device = device;

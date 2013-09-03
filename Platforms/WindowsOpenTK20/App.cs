@@ -1,4 +1,6 @@
-﻿namespace DeltaEngine.Platforms
+﻿using DeltaEngine.Core;
+
+namespace DeltaEngine.Platforms
 {
 	/// <summary>
 	/// Initializes the OpenTK20Resolver and the window to get started. To execute the app call Run.

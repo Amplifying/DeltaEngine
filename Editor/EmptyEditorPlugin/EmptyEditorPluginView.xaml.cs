@@ -25,7 +25,7 @@ namespace DeltaEngine.Editor.EmptyEditorPlugin
 
 		public string Icon
 		{
-			get { return "Icons/New.png"; }
+			get { return "Images/Plugins/New.png"; }
 		}
 
 		public bool RequiresLargePane

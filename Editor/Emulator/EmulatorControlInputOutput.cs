@@ -48,7 +48,8 @@ namespace DeltaEngine.Editor.Emulator
 
 		private void LoadDeviceInfoList()
 		{
-			var xmlStream = EmbeddedResoucesLoader.GetEmbeddedResourceStream("Devices.Devices.xml");
+			var xmlStream =
+				EmbeddedResourcesLoader.GetEmbeddedResourceStream("Images.Emulators.Devices.xml");
 			XElement xmlFile = XElement.Load(xmlStream);
 			IEnumerable<XElement> xmlDevices = xmlFile.Elements();
 			var deviceCount = (from category in xmlFile.Descendants("Device") select category).Count();

@@ -30,9 +30,9 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		private static AppBuildMessagesListViewModel CreateViewModelWithDummyMessages()
 		{
 			var listViewModel = new AppBuildMessagesListViewModel();
-			listViewModel.AddMessage("A simple build warning".AsBuildTestWarning());
-			listViewModel.AddMessage("A simple build error".AsBuildTestError());
-			listViewModel.AddMessage("A second simple build error".AsBuildTestError());
+			listViewModel.AddMessage(AppBuilderTestingExtensions.AsBuildTestWarning("A simple build warning"));
+			listViewModel.AddMessage(AppBuilderTestingExtensions.AsBuildTestError("A simple build error"));
+			listViewModel.AddMessage(AppBuilderTestingExtensions.AsBuildTestError("A second simple build error"));
 			return listViewModel;
 		}
 
@@ -41,7 +41,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		{
 			var listViewModel = CreateViewModelWithDummyMessages();
 			var window = CreateVerifiableWindowFromViewModel(listViewModel);
-			listViewModel.AddMessage("This error was added later".AsBuildTestError());
+			listViewModel.AddMessage(AppBuilderTestingExtensions.AsBuildTestError("This error was added later"));
 			window.ShowDialog();
 		}
 	}

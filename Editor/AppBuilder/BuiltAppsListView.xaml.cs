@@ -2,6 +2,10 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using DeltaEngine.Core;
+using DeltaEngine.Editor.Messages;
+using DeltaEngine.Extensions;
+using Microsoft.SmartDevice.Connectivity;
 
 namespace DeltaEngine.Editor.AppBuilder
 {
@@ -51,17 +55,30 @@ namespace DeltaEngine.Editor.AppBuilder
 		private void OnLaunchAppClicked(object launchButton, RoutedEventArgs e)
 		{
 			Panel controlOwner = GetControlOwner(launchButton);
-			AppInfo boundApp = GetBoundApp(controlOwner);
-			foreach (ComboBox child in controlOwner.Children.OfType<ComboBox>())
-				if (child.Name.StartsWith("Device"))
-					TryLaunchApp(boundApp, child.SelectedValue as Device);
+			AppInfo selectedApp = GetBoundApp(controlOwner);
+			(launchButton as Control).IsEnabled = false;
+			Action enableLaunchButtonAgain =
+				() => Dispatcher.BeginInvoke(new Action(() => (launchButton as Control).IsEnabled = false));
+			ThreadExtensions.Start(() => TryLaunchApp(selectedApp, enableLaunchButtonAgain));
 		}
 
-		private static void TryLaunchApp(AppInfo app, Device selectedDevice)
+		private static void TryLaunchApp(AppInfo selectedApp, Action enableLaunchButtonAgain)
 		{
 			try
 			{
-				app.LaunchApp(selectedDevice);
+				Device device;
+				if (selectedApp.Platform == PlatformName.Android)
+				{
+					var androidDevices = AndroidDeviceFinder.GetAvailableDevices();
+					if (androidDevices.Length == 0)
+						throw new DeviceNotConnectedException(
+							"No Android device found. Make sure you have the Android USB driver installed");
+					device = androidDevices[0];
+				}
+				else
+					device = new WebDevice();
+				selectedApp.LaunchApp(device);
+				enableLaunchButtonAgain();
 			}
 			catch (Exception ex)
 			{

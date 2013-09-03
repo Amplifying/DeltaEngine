@@ -42,9 +42,17 @@
       <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
       <Name>DeltaEngine</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Mocks\DeltaEngine.Content.Mocks.csproj">
+      <Project>{BA0A7803-4A15-416E-BC93-69F5B9DFC4A5}</Project>
+      <Name>DeltaEngine.Content.Mocks</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Content.Json.csproj">
       <Project>{F8411B87-8F40-4D86-A17D-939FEE017C56}</Project>
       <Name>DeltaEngine.Content.Json</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Platforms\TestWithOpenTK20\DeltaEngine.TestWithOpenTK20.csproj">
+      <Project>{3A3D2E3E-FCD6-40A4-8F4E-36F3D173AB41}</Project>
+      <Name>DeltaEngine.TestWithOpenTK20</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

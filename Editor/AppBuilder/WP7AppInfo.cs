@@ -1,16 +1,16 @@
 ﻿using System;
-using DeltaEngine.Editor.Core;
+using DeltaEngine.Editor.Messages;
 
 namespace DeltaEngine.Editor.AppBuilder
 {
 	public class WP7AppInfo : AppInfo
 	{
-		public WP7AppInfo(string fullAppDataFilePath, Guid appGuid)
-			: base(fullAppDataFilePath, appGuid, PlatformName.WindowsPhone7) { }
+		public WP7AppInfo(string fullAppDataFilePath, Guid appGuid, DateTime buildDate)
+			: base(fullAppDataFilePath, appGuid, PlatformName.WindowsPhone7, buildDate) { }
 
-		protected override Device[] GetAvailableDevices()
-		{
-			return new WP7DeviceFinder().GetAvailableDevices();
-		}
+		//protected override Device[] GetAvailableDevices()
+		//{
+		//	return new WP7DeviceFinder().GetAvailableDevices();
+		//}
 	}
 }

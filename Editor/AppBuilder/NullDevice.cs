@@ -1,6 +1,4 @@
-﻿using DeltaEngine.Editor.Messages;
-
-namespace DeltaEngine.Editor.AppBuilder
+﻿namespace DeltaEngine.Editor.AppBuilder
 {
 	/// <summary>
 	/// Represents a proxy device class which is thought for the case that no real device is
@@ -22,16 +20,10 @@ namespace DeltaEngine.Editor.AppBuilder
 			return false;
 		}
 
-		public void Install(AppInfo app)
-		{
-		}
+		public void Install(AppInfo app) {}
 
-		public void Uninstall(AppInfo app)
-		{
-		}
+		public void Uninstall(AppInfo app) {}
 
-		public void Launch(AppInfo app)
-		{
-		}
+		public void Launch(AppInfo app) {}
 	}
 }

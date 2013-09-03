@@ -9,16 +9,13 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		[Test]
 		public void GetAvailableDevices()
 		{
-			var deviceFinder = new AndroidDeviceFinder();
-			Device[] availableDevices = deviceFinder.GetAvailableDevices();
-			Console.WriteLine(availableDevices.Length + " devices available:");
+			Device[] availableDevices = AndroidDeviceFinder.GetAvailableDevices();
 			foreach (Device device in availableDevices)
 				AssertAndroidDevice(device);
 		}
 
 		public void AssertAndroidDevice(Device device)
 		{
-			Console.WriteLine("\t" + device);
 			Assert.IsTrue(device is AndroidDevice, device.GetType() + " - " + device.Name);
 			Assert.IsNotEmpty(device.Name);
 		}

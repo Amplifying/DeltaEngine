@@ -148,6 +148,7 @@
 				</LinearGradientBrush>
 			</Button.Background>
 		</Button>
+		<Label Content="Note: Currently only Basic License users are allowed to build for Android and Web: http://deltaengine.net/licensing" Grid.Column="1" Grid.ColumnSpan="8" Grid.Row="10"  />
 
 		<Button
 			Name="LaunchButton" FontSize="18" Grid.Column="7" Style="{StaticResource DeltaButton}"
@@ -161,7 +162,7 @@
 					<GradientStop Color="#FF8B8B8B" Offset="1" />
 				</LinearGradientBrush>
 			</Button.Background>
-			<Image Height="128" Source="Images\StartBuildIcon.png" Stretch="Fill" Width="128" OpacityMask="Black" />
+			<Image Height="128" Source="../Images/AppBuilder/StartBuildIcon.png" Stretch="Fill" Width="128" OpacityMask="Black" />
 		</Button>
 
 		<local:AppBuilderInfoListView

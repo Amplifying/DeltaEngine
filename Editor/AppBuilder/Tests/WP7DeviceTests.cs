@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using DeltaEngine.Editor.Core;
+﻿using System.Linq;
+using DeltaEngine.Editor.Messages;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.AppBuilder.Tests
@@ -12,7 +10,8 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		public void GetEmulatorDeviceAndSampleAppInfo()
 		{
 			emulatorDevice = GetEmulatorDevice();
-			sampleApp = "LogoApp".TryGetAlreadyBuiltApp(PlatformName.WindowsPhone7);
+			sampleApp = AppBuilderTestingExtensions.TryGetAlreadyBuiltApp("LogoApp",
+				PlatformName.WindowsPhone7);
 		}
 
 		private Device emulatorDevice;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using DeltaEngine.Content;
+using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Multimedia.OpenTK.Helpers;
 
@@ -12,8 +12,8 @@ namespace DeltaEngine.Multimedia.OpenTK
 	/// </summary>
 	public class OpenTKSound : Sound
 	{
-		public OpenTKSound(string filename, OpenTKSoundDevice openAL, Settings settings)
-			: base(filename, settings)
+		protected OpenTKSound(string contentName, OpenTKSoundDevice openAL, Settings settings)
+			: base(contentName, settings)
 		{
 			this.openAL = openAL;
 		}

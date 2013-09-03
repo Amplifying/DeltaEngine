@@ -28,7 +28,7 @@ namespace DeltaEngine.Editor.MaterialEditor
 
 		public string Icon
 		{
-			get { return "Icons/Material.png"; }
+			get { return "Images/Plugins/Material.png"; }
 		}
 
 		public bool RequiresLargePane

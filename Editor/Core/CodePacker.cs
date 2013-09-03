@@ -66,7 +66,7 @@ namespace DeltaEngine.Editor.Core
 		{
 			return filePath.EndsWith(".user") || filePath.EndsWith(".suo") ||
 				filePath.EndsWith(".cachefile") || filePath.EndsWith(".pch") ||
-				filePath.Contains(".ncrunch");
+				filePath.Contains(".ncrunch") || filePath.Contains(@"\Tests\");
 		}
 
 		public byte[] GetPackedData()
@@ -90,7 +90,6 @@ namespace DeltaEngine.Editor.Core
 		{
 			string relativeFilePath = filePath.Substring(directoryWithCode.Length + 1);
 			streamWriter.Write(relativeFilePath);
-
 			byte[] fileBytes = File.ReadAllBytes(filePath);
 			streamWriter.Write(fileBytes.Length);
 			streamWriter.Write(fileBytes);

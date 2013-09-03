@@ -52,7 +52,6 @@ namespace DeltaEngine.Editor.AppBuilder
 			{
 				if (String.IsNullOrEmpty(MessageData.Filename))
 					return "";
-
 				return MessageData.Filename + " (" + MessageData.TextLine + "," +
 					MessageData.TextColumn + ")";
 			}

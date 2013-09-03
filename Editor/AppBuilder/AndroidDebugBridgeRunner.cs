@@ -28,7 +28,6 @@ namespace DeltaEngine.Editor.AppBuilder
 					androidDevicesNames.Add(CreateDeviceInfo(outputMessage));
 			};
 			TryRunAdbProcess(processRunner);
-
 			return androidDevicesNames.ToArray();
 		}
 
@@ -46,7 +45,11 @@ namespace DeltaEngine.Editor.AppBuilder
 		private static AndroidDeviceInfo CreateDeviceInfo(string deviceInfoString)
 		{
 			string[] infoParts = deviceInfoString.Split('\t');
-			return new AndroidDeviceInfo { AdbDeviceId = infoParts[0], DeviceState = infoParts[1] };
+			return new AndroidDeviceInfo
+			{
+				AdbDeviceId = infoParts[0],
+				DeviceState = infoParts.Length > 1 ? infoParts[1] : ""
+			};
 		}
 
 		private static void TryRunAdbProcess(ProcessRunner adbProcess)

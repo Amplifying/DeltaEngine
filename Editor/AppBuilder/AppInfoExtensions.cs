@@ -1,22 +1,24 @@
 ﻿using System;
-using System.IO;
-using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Messages;
 
 namespace DeltaEngine.Editor.AppBuilder
 {
 	public static class AppInfoExtensions
 	{
-		public static AppInfo CreateAppInfo(string appFilePath, PlatformName platform, Guid appGuid)
+		//this should be a factory with a plugin system
+		public static AppInfo CreateAppInfo(string appFilePath, PlatformName platform, Guid appGuid,
+			DateTime buildDate)
 		{
 			switch (platform)
 			{
 				case PlatformName.Windows:
-					return new WindowsAppInfo(appFilePath, appGuid);
+					return new WindowsAppInfo(appFilePath, appGuid, buildDate);
 				case PlatformName.WindowsPhone7:
-					return new WP7AppInfo(appFilePath, appGuid);
+					return new WP7AppInfo(appFilePath, appGuid, buildDate);
 				case PlatformName.Android:
-					return new AndroidAppInfo(appFilePath, appGuid);
+					return new AndroidAppInfo(appFilePath, appGuid, buildDate);
+				case PlatformName.Web:
+					return new WebAppInfo(appFilePath, appGuid, buildDate);
 				default:
 					throw new UnsupportedPlatfromForAppInfo(appFilePath, platform);
 			}
@@ -26,17 +28,6 @@ namespace DeltaEngine.Editor.AppBuilder
 		{
 			public UnsupportedPlatfromForAppInfo(string appFilePath, PlatformName platform)
 				: base(platform + ": " + appFilePath) { }
-		}
-
-		public static AppInfo ToAppInfo(this AppBuildResult buildResult, string storageDirectory)
-		{
-			return CreateAppInfo(Path.Combine(storageDirectory, buildResult.PackageFileName),
-				buildResult.Platform, buildResult.PackageGuid);
-		}
-
-		public static string GetFullAppNameForEngineApp(this AppInfo appInfo)
-		{
-			return appInfo is AndroidAppInfo ? "net.DeltaEngine." + appInfo.Name : appInfo.Name;
 		}
 	}
 }

@@ -8,12 +8,14 @@ using System.Windows.Controls;
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
 using AvalonDock.Layout;
+using DeltaEngine.Core;
 using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Emulator;
 using DeltaEngine.Editor.Helpers;
 using DeltaEngine.Platforms.Windows;
 using OpenTKApp = DeltaEngine.Platforms.App;
+using Window = DeltaEngine.Core.Window;
 
 namespace DeltaEngine.Editor
 {
@@ -27,6 +29,8 @@ namespace DeltaEngine.Editor
 
 		public EditorView(EditorViewModel viewModel)
 		{
+			viewModel.TextLogger.NewLogMessage +=
+				() => Dispatcher.BeginInvoke(new Action(LogOutput.ScrollToEnd));
 			Loaded += SetWindowedOrFullscreen;
 			Closing += SaveWindowedOrFullscreen;
 			this.viewModel = viewModel;
@@ -47,6 +51,10 @@ namespace DeltaEngine.Editor
 			}
 		}
 
+		private readonly EditorViewModel viewModel;
+
+		private readonly MaximizerForEmptyWindows maximizer;
+
 		private void SetWindowedOrFullscreen(object sender, RoutedEventArgs e)
 		{
 			if (viewModel.StartEditorMaximized)
@@ -57,10 +65,6 @@ namespace DeltaEngine.Editor
 		{
 			viewModel.StartEditorMaximized = maximizer.isMaximized;
 		}
-
-		private readonly EditorViewModel viewModel;
-		private readonly MaximizerForEmptyWindows maximizer;
-		private BlockingViewportApp app;
 
 		private void StartInitialPlugin(Type type)
 		{
@@ -113,7 +117,7 @@ namespace DeltaEngine.Editor
 			{
 				Content = plugin,
 				CanClose = true,
-				Title = plugin.GetType().Name.Replace("View", "")
+				Title = ((EditorPluginView)plugin).ShortName
 			};
 		}
 
@@ -169,6 +173,8 @@ namespace DeltaEngine.Editor
 			Show();
 			app.RunAndBlock();
 		}
+
+		private BlockingViewportApp app;
 
 		private class BlockingViewportApp : OpenTKApp
 		{
