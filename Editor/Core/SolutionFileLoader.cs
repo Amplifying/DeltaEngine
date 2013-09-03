@@ -10,9 +10,9 @@ namespace DeltaEngine.Editor.Core
 		{
 			if (String.IsNullOrEmpty(solutionFilePath))
 				throw new NoSolutionPathSpecified();
-
 			solutionFile = solutionFilePath;
-			solutionContentLines = File.ReadAllLines(solutionFile);
+			solutionContentLines = File.Exists(solutionFilePath)
+				? File.ReadAllLines(solutionFile) : new string[0];
 			LoadProjectEntries();
 		}
 

@@ -58,7 +58,7 @@ namespace DeltaEngine.Editor.AppBuilder
 			AppInfo selectedApp = GetBoundApp(controlOwner);
 			(launchButton as Control).IsEnabled = false;
 			Action enableLaunchButtonAgain =
-				() => Dispatcher.BeginInvoke(new Action(() => (launchButton as Control).IsEnabled = false));
+				() => Dispatcher.BeginInvoke(new Action(() => (launchButton as Control).IsEnabled = true));
 			ThreadExtensions.Start(() => TryLaunchApp(selectedApp, enableLaunchButtonAgain));
 		}
 
@@ -78,12 +78,12 @@ namespace DeltaEngine.Editor.AppBuilder
 				else
 					device = new WebDevice();
 				selectedApp.LaunchApp(device);
-				enableLaunchButtonAgain();
 			}
 			catch (Exception ex)
 			{
 				Logger.Error(ex);
 			}
+			enableLaunchButtonAgain();
 		}
 	}
 }

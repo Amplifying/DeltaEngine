@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using DeltaEngine.Content.Xml;
+using DeltaEngine.Core;
 using DeltaEngine.Editor.Messages;
 using DeltaEngine.Extensions;
 using GalaSoft.MvvmLight;
@@ -33,10 +34,24 @@ namespace DeltaEngine.Editor.AppBuilder
 			var files = Directory.GetFiles(AppStorageDirectory);
 			foreach (var filePath in files)
 				if (!filePath.EndsWith(".db"))
-					builtAppsList.Add(AppInfoExtensions.CreateAppInfo(filePath,
-						PlatformNameExtensions.GetPlatformFromFileExtension(Path.GetExtension(filePath)),
-						GetDummyAppGuid(Path.GetFileNameWithoutExtension(filePath)),
-						File.GetCreationTime(filePath)));
+					LoadBuiltAppToList(filePath);
+		}
+
+		private void LoadBuiltAppToList(string appPackageFilePath)
+		{
+			try
+			{
+				AppInfo app = AppInfoExtensions.CreateAppInfo(appPackageFilePath,
+					PlatformNameExtensions.GetPlatformFromFileExtension(Path.GetExtension(appPackageFilePath)),
+					GetDummyAppGuid(Path.GetFileNameWithoutExtension(appPackageFilePath)),
+					File.GetCreationTime(appPackageFilePath));
+				builtAppsList.Add(app);
+			}
+			catch (Exception ex)
+			{
+				Logger.Warning("Unable to load already built app '" + appPackageFilePath + "':" +
+					Environment.NewLine + ex);
+			}
 		}
 
 		private static Guid GetDummyAppGuid(string appName)

@@ -26,6 +26,15 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		}
 
 		[Test]
+		public void ExpectExceptionWhenUsingSolutionUnderWrongPath()
+		{
+			var viewModel = GetViewModelWithMockService();
+			viewModel.UserSolutionPath = Path.Combine(@"C:\", "DeltaEngine.Samples.sln");
+			Assert.IsTrue(viewModel.UserSolutionPath.EndsWith("DeltaEngine.Samples.sln"));
+			Assert.IsTrue(File.Exists(viewModel.UserSolutionPath));
+		}
+
+		[Test]
 		public void ExcuteBrowseUserSolutionPath()
 		{
 			var viewModel = GetViewModelWithMockServiceAndSamplesSelection();
