@@ -21,14 +21,14 @@ namespace DeltaEngine.Editor.Tests
 			DeleteContentDirectoriesIfAvailable();
 			var messagesReceived = new List<object>();
 			var connection = OnlineServiceConnection.CreateForEditor();
-			EditorContentLoader contentLoader = null;
+			var contentLoader = new EditorContentLoader(connection);
 			connection.Connected += () => GetProjectsAndLogin(connection);
 			connection.TimedOut += () => { throw new ConnectionTimedOut(); };
 			connection.DataReceived += message =>
 			{
 				messagesReceived.Add(message);
 				if (message is SetProject)
-					contentLoader = new EditorContentLoader(connection, message as SetProject);
+					contentLoader.SetProject( message as SetProject);
 			};
 			connection.Connect("deltaengine.net", 800);
 			Thread.Sleep(3000);

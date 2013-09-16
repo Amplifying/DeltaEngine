@@ -71,7 +71,6 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		}
 
 		public event Action<object> DataReceived;
-		public event Action ContentChanged;
 
 		public void Send(object message)
 		{
@@ -86,10 +85,19 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			resultBuilder.BuildApp(userBuildRequest);
 		}
 
-		public void ChangeContent()
+		public void UpdateContent()
 		{
-			ContentChanged();
+			ContentUpdated(ContentType.Scene, "MockContent");
 		}
+
+		public event Action<ContentType, string> ContentUpdated;
+
+		public void DeleteContent()
+		{
+			ContentDeleted("MockContent");
+		}
+
+		public event Action<string> ContentDeleted;
 
 		public void ReceiveSomeTestMessages()
 		{
@@ -116,5 +124,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			Dictionary<string, byte[]> optionalFileData = null) {}
 
 		public void DeleteContent(string selectedContent, bool deleteSubContent = false) {}
+
+		public void StartPlugin(Type plugin) {}
 	}
 }

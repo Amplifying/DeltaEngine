@@ -4,6 +4,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Xml.Linq;
 using DeltaEngine.Content;
+using DeltaEngine.Core;
 using DeltaEngine.Editor.Core;
 
 namespace DeltaEngine.Editor.ContentManager
@@ -69,12 +70,14 @@ namespace DeltaEngine.Editor.ContentManager
 			case ".deltamesh":
 				return ContentType.Mesh;
 			case ".deltaparticle":
-				return ContentType.ParticleEmitter;
+				return ContentType.Particle2DEmitter;
 			case ".deltashader":
 				return ContentType.Shader;
 			case ".deltamaterial":
 				return ContentType.Material;
 			}
+			Logger.Warning("Unknown content type was unable to be added to the server : " +
+				Path.GetFileName(filePath));
 			throw new UnsupportedContentFileFoundCannotParseType(extension);
 		}
 
@@ -82,7 +85,7 @@ namespace DeltaEngine.Editor.ContentManager
 		{
 			var xmlFile = XDocument.Load(filePath);
 			if (xmlFile.Root.Name.ToString().Equals("Font"))
-				return ContentType.FontXml;
+				return ContentType.Font;
 			if (xmlFile.Root.Name.ToString().Equals("DefaultCommands"))
 				return ContentType.InputCommand;
 			return ContentType.Xml;
@@ -186,7 +189,7 @@ namespace DeltaEngine.Editor.ContentManager
 		{
 			var contentMetaData = new ContentMetaData();
 			SetDefaultValues(contentMetaData, particleName);
-			contentMetaData.Type = ContentType.ParticleEmitter;
+			contentMetaData.Type = ContentType.Particle2DEmitter;
 			contentMetaData.LocalFilePath = particleName + ".deltaparticle";
 			contentMetaData.FileSize = byteArray.Length;
 			return contentMetaData;

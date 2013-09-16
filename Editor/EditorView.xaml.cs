@@ -13,6 +13,7 @@ using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Emulator;
 using DeltaEngine.Editor.Helpers;
+using DeltaEngine.Extensions;
 using DeltaEngine.Platforms.Windows;
 using OpenTKApp = DeltaEngine.Platforms.App;
 using Window = DeltaEngine.Core.Window;
@@ -29,17 +30,14 @@ namespace DeltaEngine.Editor
 
 		public EditorView(EditorViewModel viewModel)
 		{
+			InitializeComponent();
 			viewModel.TextLogger.NewLogMessage +=
 				() => Dispatcher.BeginInvoke(new Action(LogOutput.ScrollToEnd));
 			Loaded += SetWindowedOrFullscreen;
 			Closing += SaveWindowedOrFullscreen;
-			this.viewModel = viewModel;
-			DataContext = viewModel;
-			InitializeComponent();
-			viewModel.AddAllPlugins();
+			DataContext = this.viewModel = viewModel;
 			maximizer = new MaximizerForEmptyWindows(this);
-			StartInitialPlugin(typeof(EmulatorControl));
-			StartInitialPlugin(typeof(ContentManagerView));
+			SetupEditorPlugins();
 			try
 			{
 				StartOpenTKViewportAndBlock();
@@ -47,12 +45,21 @@ namespace DeltaEngine.Editor
 			catch (Exception ex)
 			{
 				Logger.Error(ex);
+				if (StackTraceExtensions.IsStartedFromNunitConsole())
+					throw;
 				MessageBox.Show("Failed to initialize: " + ex, "Delta Engine Editor - Fatal Error");
 			}
 		}
 
-		private readonly EditorViewModel viewModel;
+		private void SetupEditorPlugins()
+		{
+			viewModel.AddAllPlugins();
+			viewModel.Service.StartEditorPlugin += StartInitialPlugin;
+			StartInitialPlugin(typeof(EmulatorControl));
+			StartInitialPlugin(typeof(ContentManagerView));
+		}
 
+		private readonly EditorViewModel viewModel;
 		private readonly MaximizerForEmptyWindows maximizer;
 
 		private void SetWindowedOrFullscreen(object sender, RoutedEventArgs e)

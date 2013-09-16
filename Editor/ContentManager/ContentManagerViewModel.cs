@@ -2,19 +2,16 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Windows;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Editor.ContentManager.Previewers;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Entities;
+using DeltaEngine.Rendering.Cameras;
 using DeltaEngine.Rendering.Sprites;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
-using Point = DeltaEngine.Datatypes.Point;
-using Size = DeltaEngine.Datatypes.Size;
 
 namespace DeltaEngine.Editor.ContentManager
 {
@@ -26,23 +23,17 @@ namespace DeltaEngine.Editor.ContentManager
 		public ContentManagerViewModel(Service service)
 		{
 			this.service = service;
-			metaDataCreator = new ContentMetaDataCreator(service);
 			SetMessenger();
 			ContentList = new ObservableCollection<ContentView>();
-			BackgroundImageList = new ObservableCollection<string>();
-			BackgroundImageList.Add("None");
 			RefreshContentList();
-			RefreshBackgroundImageList();
 		}
 
 		private readonly Service service;
-		private readonly ContentMetaDataCreator metaDataCreator;
 
 		private void SetMessenger()
 		{
 			Messenger.Default.Register<IList<ContentView>>(this, "DeleteContent", DeleteContentFromList);
 			Messenger.Default.Register<bool>(this, "DeleteContent", DeleteContentFromList);
-			Messenger.Default.Register<IDataObject>(this, "AddContent", DropContent);
 		}
 
 		public void DeleteContentFromList(IList<ContentView> contentList)
@@ -68,41 +59,6 @@ namespace DeltaEngine.Editor.ContentManager
 			}
 		}
 
-		//ncrunch: no coverage start
-		public void DropContent(IDataObject dropObject)
-		{
-			if (!IsFile(dropObject))
-				return;
-			var files = (string[])dropObject.GetData(DataFormats.FileDrop);
-			foreach (var file in files)
-				UploadToOnlineService(file);
-		}
-
-		private static bool IsFile(IDataObject dropObject)
-		{
-			return dropObject.GetDataPresent(DataFormats.FileDrop);
-		}
-
-		private void UploadToOnlineService(string contentFilePath)
-		{
-			var bytes = File.ReadAllBytes(contentFilePath);
-			if (bytes.Length > MaximumFileSize)
-			{
-				Logger.Warning("The file you wanted to add is too large, the maximum filesize is 16MB");
-				return;
-			}
-			var fileNameAndBytes = new Dictionary<string, byte[]>();
-			fileNameAndBytes.Add(Path.GetFileName(contentFilePath), bytes);
-			var contentMetaData = metaDataCreator.CreateMetaDataFromFile(contentFilePath);
-			if (ContentLoader.Exists(Path.GetFileName(contentFilePath)))
-				service.DeleteContent(Path.GetFileName(contentFilePath));
-			service.UploadContent(contentMetaData, fileNameAndBytes);
-		}
-
-		//ncrunch: no coverage end
-
-		private const int MaximumFileSize = 16777216;
-
 		public void RefreshContentList()
 		{
 			ContentList.Clear();
@@ -116,25 +72,24 @@ namespace DeltaEngine.Editor.ContentManager
 		{
 			var newContent = new ContentView();
 			var type = service.GetTypeOfContent(content);
-			if (type == ContentType.FontXml)
-				newContent.CreateContentView("ContentTypes/Xml.png", content);
-			else
-				newContent.CreateContentView("ContentTypes/" + type.ToString() + ".png", content);
+			CreateNewContentView(content, type, newContent);
 			ContentList.Add(newContent);
 		}
 
-		public ObservableCollection<ContentView> ContentList { get; set; }
-
-		public void RefreshBackgroundImageList()
+		private static void CreateNewContentView(string content, ContentType? type,
+			ContentView newContent)
 		{
-			BackgroundImageList.Clear();
-			var foundContent = service.GetAllContentNamesByType(ContentType.Image);
-			foreach (string content in foundContent)
-				BackgroundImageList.Add(content);
-			RaisePropertyChanged("BackgroundImageList");
+			if (type == ContentType.Font)
+				newContent.CreateContentView(Path.Combine(ContentTypeFolder, "Xml.png"), content);
+			else if (type == ContentType.Particle2DEmitter)
+				newContent.CreateContentView(Path.Combine(ContentTypeFolder, "ParticleEmitter.png"),
+					content);
+			else
+				newContent.CreateContentView(Path.Combine(ContentTypeFolder, type + ".png"), content);
 		}
 
-		public ObservableCollection<string> BackgroundImageList { get; set; }
+		public ObservableCollection<ContentView> ContentList { get; set; }
+		private const string ContentTypeFolder = "ContentTypes";
 
 		public ContentView SelectedContent
 		{
@@ -159,7 +114,8 @@ namespace DeltaEngine.Editor.ContentManager
 				return;
 			try
 			{
-				new ContentViewer().Viewer(selectedContent.NewContent.ContentName, (ContentType)type);
+				new ContentViewer().Viewer(selectedContent.NewContent.ContentName, service.ProjectName,
+					(ContentType)type);
 			}
 			catch (Exception ex)
 			{
@@ -185,7 +141,8 @@ namespace DeltaEngine.Editor.ContentManager
 		{
 			var entities = EntitiesRunner.Current.GetAllEntities();
 			foreach (var entity in entities)
-				entity.IsActive = false;
+				if (entity.GetType() != typeof(Camera))
+					entity.IsActive = false;
 		}
 
 		private void DrawBackground()

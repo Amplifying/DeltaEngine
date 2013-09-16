@@ -13,30 +13,25 @@ namespace DeltaEngine.Editor
 {
 	public class OnlineService : Service
 	{
-		public void CreateInitialContentLoader(OnlineServiceConnection connection)
-		{
-			editorContent = new EditorContentLoader(connection);
-		}
-
-		private EditorContentLoader editorContent;
-
 		public void Connect(string userName, OnlineServiceConnection connection)
 		{
+			UserName = userName;
 			onlineServiceConnection = connection;
 			connection.DataReceived += OnDataReceived;
 			send = connection.Send;
-			UserName = userName;
+			ContentLoader.Use<EditorContentLoader>();
+			editorContent = new EditorContentLoader(onlineServiceConnection);
+			editorContent.ContentUpdated += OnContentUpdated;
+			editorContent.ContentDeleted += OnContentDeleted;
 		}
 
+		public string UserName { get; private set; }
 		private OnlineServiceConnection onlineServiceConnection;
 
 		private void OnDataReceived(object message)
 		{
-			var login = message as LoginSuccessful;
 			var newProject = message as SetProject;
-			if (login != null)
-				UserName = login.UserName;
-			else if (newProject != null)
+			if (newProject != null)
 				ChangeProject(newProject);
 			else if (message.GetType() == typeof(ServerError))
 				Logger.Warning(message.ToString());
@@ -44,40 +39,45 @@ namespace DeltaEngine.Editor
 				DataReceived(message);
 		}
 
-		private Action<object> send;
-
-		public string UserName { get; private set; }
-
 		private void ChangeProject(SetProject project)
 		{
 			if (project.Permissions == ProjectPermissions.None)
+			{
+				if (StackTraceExtensions.IsStartedFromNunitConsole())
+					throw new Exception("No access to project " + project.ProjectName);
 				MessageBox.Show("No access to project " + project.ProjectName, "Fatal Error");
+			}
 			else
 			{
 				ProjectName = project.ProjectName;
 				Permissions = project.Permissions;
-				var contentDataResolver = editorContent.resolver;
-				editorContent.ContentChanged -= OnContentChanged;
-				editorContent.Dispose();
-				editorContent = new EditorContentLoader(onlineServiceConnection, project);
-				editorContent.resolver = contentDataResolver;
-				if (ContentChanged != null)
-					ContentChanged();
-				editorContent.ContentChanged += OnContentChanged;
+				editorContent.SetProject(project);
 			}
 		}
 
 		public string ProjectName { get; private set; }
 		public ProjectPermissions Permissions { get; private set; }
 		public event Action<object> DataReceived;
+		private Action<object> send;
+		private EditorContentLoader editorContent;
 
-		private void OnContentChanged()
+		private void OnContentUpdated(ContentType type, string name)
 		{
-			if (ContentChanged != null)
-				ContentChanged();
+			editorContent.RefreshMetaData();
+			if (ContentUpdated != null)
+				ContentUpdated(type, name);
 		}
 
-		public event Action ContentChanged;
+		public event Action<ContentType, string> ContentUpdated;
+
+		private void OnContentDeleted(string contentName)
+		{
+			editorContent.RefreshMetaData();
+			if (ContentDeleted != null)
+				ContentDeleted(contentName);
+		}
+
+		public event Action<string> ContentDeleted;
 
 		public void RequestChangeProject(string newProjectName)
 		{
@@ -116,5 +116,13 @@ namespace DeltaEngine.Editor
 		{
 			editorContent.Delete(contentName, deleteSubContent);
 		}
+
+		public void StartPlugin(Type plugin)
+		{
+			if (StartEditorPlugin != null)
+				StartEditorPlugin(plugin);
+		}
+
+		public event Action<Type> StartEditorPlugin;
 	}
 }

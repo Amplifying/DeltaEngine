@@ -54,17 +54,30 @@ namespace DeltaEngine.Platforms
 
 		private void TryCopyNativeDlls()
 		{
-			try
-			{
-				CopyNativeDlls();
-			}
-			catch (Exception ex)
-			{
-				throw new FailedToCopyNativeOpenALDllFiles("Please install OpenAL, can't find dlls!", ex);
-			}
+			if (TryCopyNativeDllsFromNuGetPackage())
+				return;
+			if (TryCopyNativeDllsFromDeltaEnginePath())
+				return;
+			throw new FailedToCopyNativeOpenALDllFiles("OpenAL dlls not found inside the application " + "output directory nor inside the %DeltaEnginePath% environment variable. Make sure it's " + "set and containing the required files: " + string.Join(",", nativeDllsNeeded));
 		}
 
-		private void CopyNativeDlls()
+		private bool TryCopyNativeDllsFromNuGetPackage()
+		{
+			var nuGetPackagesPath = FindNuGetPackagesPath();
+			string nativeBinariesPath = Path.Combine(nuGetPackagesPath, "packages", "OpenTKWithOpenAL.1.1.1161.61462", "NativeBinaries", "x86");
+			if (!Directory.Exists(nativeBinariesPath))
+				return false;
+			CopyNativeDllsFromPath(nativeBinariesPath);
+			return true;
+		}
+
+		private void CopyNativeDllsFromPath(string nativeBinariesPath)
+		{
+			foreach (var nativeDll in nativeDllsNeeded)
+				File.Copy(Path.Combine(nativeBinariesPath, nativeDll), nativeDll, true);
+		}
+
+		private static string FindNuGetPackagesPath()
 		{
 			var path = Path.Combine("..", "..");
 			while (!IsPackagesDirectory(path))
@@ -73,13 +86,21 @@ namespace DeltaEngine.Platforms
 				if (path.Length > 18)
 					break;
 			}
-			foreach (var nativeDll in nativeDllsNeeded)
-				File.Copy(Path.Combine(path, "packages", "OpenTKWithOpenAL.1.1.1161.61462", "NativeBinaries", "x86", nativeDll), nativeDll, true);
+			return path;
 		}
 
 		private static bool IsPackagesDirectory(string path)
 		{
 			return Directory.Exists(Path.Combine(path, "packages"));
+		}
+
+		private bool TryCopyNativeDllsFromDeltaEnginePath()
+		{
+			string enginePath = Environment.GetEnvironmentVariable("DeltaEnginePath");
+			if (enginePath == null || !Directory.Exists(enginePath))
+				return false;
+			CopyNativeDllsFromPath(enginePath);
+			return true;
 		}
 
 		public void RegisterFormsWindow(FormsWindow initializedWpfForumsWindow)
@@ -89,8 +110,8 @@ namespace DeltaEngine.Platforms
 
 		private class FailedToCopyNativeOpenALDllFiles : Exception
 		{
-			public FailedToCopyNativeOpenALDllFiles(string message, Exception innerException)
-				: base(message,innerException)
+			public FailedToCopyNativeOpenALDllFiles(string message)
+				: base(message)
 			{
 			}
 		}

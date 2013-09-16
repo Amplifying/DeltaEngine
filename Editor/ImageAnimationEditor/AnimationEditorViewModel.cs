@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using DeltaEngine.Content;
+using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
@@ -25,6 +27,7 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 			LoadImagesFromProject();
 			LoadAnimationsFromProject();
 			SetMessengers();
+			service.ContentUpdated += SendSuccessMessageToLogger;
 		}
 
 		private readonly Service service;
@@ -92,6 +95,7 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 			if (ContentLoader.Exists(AnimationName))
 				ReplaceOldContent();
 			service.UploadContent(contentMetaData, fileNameAndBytes);
+			service.ContentUpdated += SendSuccessMessageToLogger;
 		}
 
 		private ContentMetaData SaveImageAnimationOrSpriteSheetAnimation(Dictionary<string, byte[]> fileNameAndBytes)
@@ -115,6 +119,12 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 		{
 			service.DeleteContent(AnimationName);
 			ContentLoader.RemoveResource(AnimationName);
+		}
+
+		private void SendSuccessMessageToLogger(ContentType type, string name)
+		{
+			Logger.Info("The saving of the animation called " + AnimationName + " was a succes.");
+			service.ContentUpdated -= SendSuccessMessageToLogger;
 		}
 
 		public int SelectedIndex

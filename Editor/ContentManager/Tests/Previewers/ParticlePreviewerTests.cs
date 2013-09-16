@@ -26,11 +26,11 @@ namespace DeltaEngine.Editor.ContentManager.Tests.Previewers
 		{
 			mockMouse = Resolve<Mouse>() as MockMouse;
 			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(new Point(0.5f, 0.5f), particlePreviewer.currentDisplayParticle.Center);
+			Assert.AreEqual(new Point(0.5f, 0.5f), particlePreviewer.currentDisplayParticle.Position);
 			mockMouse.SetButtonState(MouseButton.Left, State.Pressed);
 			mockMouse.SetPosition(new Point(1f, 1f));
 			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(new Point(2.5f, 2.5f), particlePreviewer.currentDisplayParticle.Center);
+			Assert.AreEqual(new Point(2.5f, 2.5f), particlePreviewer.currentDisplayParticle.Position);
 		}
 
 		[Test]
@@ -38,9 +38,9 @@ namespace DeltaEngine.Editor.ContentManager.Tests.Previewers
 		{
 			mockMouse = Resolve<Mouse>() as MockMouse;
 			mockMouse.SetPosition(new Point(0f, 0f));
-			Assert.AreEqual(0.0f, particlePreviewer.currentDisplayParticle.DrawArea.Width);
+			Assert.AreEqual(0.0f, particlePreviewer.currentDisplayParticle.EmitterData.Size.Start.Width);
 			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(new Point(0.5f, 0.5f), particlePreviewer.currentDisplayParticle.Center);
+			Assert.AreEqual(new Point(0.5f, 0.5f), particlePreviewer.currentDisplayParticle.Position);
 			mockMouse.SetButtonState(MouseButton.Middle, State.Pressed);
 			mockMouse.SetPosition(new Point(1f, 1f));
 			AdvanceTimeAndUpdateEntities();
@@ -55,9 +55,9 @@ namespace DeltaEngine.Editor.ContentManager.Tests.Previewers
 			mockMouse.SetButtonState(MouseButton.Middle, State.Pressed);
 			mockMouse.SetPosition(new Point(1f, 1f));
 			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(new Point(2.5f, 2.5f), particlePreviewer.currentDisplayParticle.Center);
+			Assert.AreEqual(new Point(2.5f, 2.5f), particlePreviewer.currentDisplayParticle.Position);
 			particlePreviewer.PreviewContent("TestParticle");
-			Assert.AreEqual(new Point(0.5f, 0.5f), particlePreviewer.currentDisplayParticle.Center);
+			Assert.AreEqual(new Point(0.5f, 0.5f), particlePreviewer.currentDisplayParticle.Position);
 		}
 	}
 }

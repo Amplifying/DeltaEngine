@@ -1,13 +1,17 @@
-﻿using DeltaEngine.Editor.Mocks;
+﻿using DeltaEngine.Content;
+using DeltaEngine.Content.Mocks;
+using DeltaEngine.Editor.Mocks;
+using DeltaEngine.Platforms;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.MaterialEditor.Tests
 {
-	public class MaterialEditorViewModelTests
+	public class MaterialEditorViewModelTests : TestWithMocksOrVisually
 	{
 		[Test]
 		public void SetUp()
 		{
+			ContentLoader.Use<MockContentLoader>();
 			materialEditor = new MaterialEditorViewModel(new MockService("TestUser", "MaterialTests"));
 		}
 

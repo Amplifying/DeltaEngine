@@ -10,28 +10,23 @@ namespace DeltaEngine.Editor
 	public class EditorContentLoader : DeveloperOnlineContentLoader
 	{
 		public EditorContentLoader(OnlineServiceConnection connection)
-			: base(connection)
-		{
-			isIgnoringSetProject = true;
-		}
+			: base(connection) {}
 
-		public EditorContentLoader(OnlineServiceConnection connection, SetProject newProject)
-			: base(connection, Path.Combine("Content", newProject.ProjectName))
+		public void SetProject(SetProject newProject)
 		{
-			isIgnoringSetProject = true;
-			VerifyProjectAndGetContent(newProject);
+			contentPath = Path.Combine("Content", newProject.ProjectName);
+			file = null;
 			RefreshMetaData();
+			SendCheckProjectContent();
 		}
 
 		public List<string> GetAllNames()
 		{
-			RefreshMetaData();
 			return new List<string>(metaData.Keys);
 		}
 
 		public List<string> GetAllNamesByType(ContentType type)
 		{
-			RefreshMetaData();
 			var names = new List<string>();
 			foreach (var contentMetaData in metaData)
 				if (contentMetaData.Value.Type == type)
@@ -44,8 +39,8 @@ namespace DeltaEngine.Editor
 		{
 			var fileList = new List<UpdateContent.FileNameAndBytes>();
 			if (optionalFileData != null)
-				foreach (var file in optionalFileData)
-					fileList.Add(new UpdateContent.FileNameAndBytes { name = file.Key, data = file.Value });
+				foreach (var data in optionalFileData)
+					fileList.Add(new UpdateContent.FileNameAndBytes { name = data.Key, data = data.Value });
 			connection.Send(new UpdateContent(contentMetaData, fileList.ToArray()));
 		}
 

@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using DeltaEngine.Editor.Core;
+using DeltaEngine.Editor.MaterialEditor;
 
 namespace DeltaEngine.Editor.ParticleEditor
 {
@@ -16,10 +17,12 @@ namespace DeltaEngine.Editor.ParticleEditor
 		public void Init(Service service)
 		{
 			current = new ParticleEditorViewModel(service);
+			this.service = service;
 			DataContext = current;
 		}
 
 		private ParticleEditorViewModel current;
+		private Service service;
 
 		public string ShortName
 		{
@@ -39,6 +42,11 @@ namespace DeltaEngine.Editor.ParticleEditor
 		private void Save(object sender, RoutedEventArgs e)
 		{
 			current.Save();
+		}
+
+		private void OpenMaterialEditor(object sender, RoutedEventArgs e)
+		{
+			service.StartPlugin(typeof(MaterialEditorView));
 		}
 	}
 }

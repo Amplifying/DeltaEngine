@@ -11,21 +11,18 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 		public void PreviewContent(string contentName)
 		{
 			var particleEmitterData = ContentLoader.Load<ParticleEmitterData>(contentName);
-			particleEmitterData.StartPosition = new RangeGraph<Point>(new Point(0.25f, 0.25f),
+			particleEmitterData.StartPosition = new RangeGraph<Vector>(new Point(0.25f, 0.25f),
 				new Point(0.25f, 0.25f));
-			currentDisplayParticle = new ParticleEmitter(particleEmitterData, Point.Half);
+			currentDisplayParticle = new Particle2DEmitter(particleEmitterData, Point.Half);
 			SetImageCommands();
 		}
 
-		public ParticleEmitter currentDisplayParticle;
+		public Particle2DEmitter currentDisplayParticle;
 
 		private void SetImageCommands()
 		{
 			new Command(position => lastPanPosition = position).Add(new MouseButtonTrigger());
 			new Command(MoveImage).Add(new MousePositionTrigger(MouseButton.Left, State.Pressed));
-			new Command(position => lastScalePosition = position).Add(
-				new MouseButtonTrigger(MouseButton.Middle));
-			new Command(ScaleImage).Add(new MousePositionTrigger(MouseButton.Middle, State.Pressed));
 		}
 
 		private Point lastPanPosition = Point.Unused;
@@ -34,21 +31,7 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 		{
 			var relativePosition = mousePosition - lastPanPosition;
 			lastPanPosition = mousePosition;
-			currentDisplayParticle.Center += relativePosition;
-		}
-
-		private Point lastScalePosition = Point.Unused;
-
-		private void ScaleImage(Point mousePosition)
-		{
-			var relativePosition = mousePosition - lastScalePosition;
-			lastScalePosition = mousePosition;
-			currentDisplayParticle.Size =
-				new Size(
-					currentDisplayParticle.Size.Width +
-						(currentDisplayParticle.Size.Width * relativePosition.Y),
-					currentDisplayParticle.Size.Height +
-						(currentDisplayParticle.Size.Height * relativePosition.Y));
+			currentDisplayParticle.Position += relativePosition;
 		}
 	}
 }

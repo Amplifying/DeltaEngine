@@ -49,6 +49,10 @@
       <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
       <Name>DeltaEngine %28DeltaEngine\DeltaEngine%29</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Graphics\DeltaEngine.Graphics.csproj">
+      <Project>{8F701B0D-48B6-45CF-85E0-286BD53328BA}</Project>
+      <Name>DeltaEngine.Graphics</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
       <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
       <Name>DeltaEngine.Rendering</Name>
@@ -57,6 +61,10 @@
       <Project>{BECE691C-BAC6-434B-B1F9-4D8653922585}</Project>
       <Name>DeltaEngine.Rendering.Particles</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Rendering\Sprites\DeltaEngine.Rendering.Sprites.csproj">
+      <Project>{FCA7BAAA-3F6E-4CA3-B354-C34AF4F1BDDD}</Project>
+      <Name>DeltaEngine.Rendering.Sprites</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ContentManager\DeltaEngine.Editor.ContentManager.csproj">
       <Project>{F65A7A3C-81E9-4A61-9D64-BBDC7C66345F}</Project>
       <Name>DeltaEngine.Editor.ContentManager</Name>
@@ -64,6 +72,10 @@
     <ProjectReference Include="..\Core\DeltaEngine.Editor.Core.csproj">
       <Project>{C667C7FC-A1C7-4CBC-98C0-C97F776E4570}</Project>
       <Name>DeltaEngine.Editor.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MaterialEditor\DeltaEngine.Editor.MaterialEditor.csproj">
+      <Project>{3AD5B0B6-0DF8-4BB8-8EDB-A0BEDC9813D7}</Project>
+      <Name>DeltaEngine.Editor.MaterialEditor</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -81,8 +93,8 @@
       <DependentUpon>ParticleEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ParticleEditorViewModel.cs" />
-    <Compile Include="StringToPointConverter.cs" />
-    <Compile Include="StringToRangeOfSizeConverter.cs" />
+    <Compile Include="StringToGraphRangePointConverter.cs" />
+    <Compile Include="StringToGraphRangeSizeConverter.cs" />
     <Compile Include="StringToVectorConverter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

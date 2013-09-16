@@ -62,6 +62,10 @@
       <Project>{68AA6280-09EF-4325-B5F8-B8A967004144}</Project>
       <Name>DeltaEngine.Content.Online</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Content\Xml\DeltaEngine.Content.Xml.csproj">
+      <Project>{138A40B5-3D80-4BA3-BD84-D82C151EE7FE}</Project>
+      <Name>DeltaEngine.Content.Xml</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.csproj">
       <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
       <Name>DeltaEngine %28DeltaEngine\DeltaEngine%29</Name>
@@ -188,6 +192,8 @@
     <Resource Include="Images\UIEditor\CreateButton.png" />
     <Resource Include="Images\UIEditor\ImageButton.png" />
     <Resource Include="DeltaEngine.Editor.ico" />
+    <Resource Include="Images\UIEditor\CreateImage.png" />
+    <Resource Include="Images\UIEditor\CreateLabel.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Images\Emulators\AndroidGoogleNexus4_768x1280.png" />

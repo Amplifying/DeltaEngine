@@ -20,12 +20,15 @@ namespace DeltaEngine.Editor.Mocks
 		{
 			if (DataReceived != null)
 				DataReceived(data);
-			if (ContentChanged != null)
-				ContentChanged();
+			if (ContentUpdated != null)
+				ContentUpdated(ContentType.Scene, "MockContent");
+			if (ContentDeleted != null)
+				ContentDeleted("MockContent");
 		}
 
 		public event Action<object> DataReceived;
-		public event Action ContentChanged;
+		public event Action<ContentType, string> ContentUpdated;
+		public event Action<string> ContentDeleted;
 
 		public void Send(object message) {}
 
@@ -55,6 +58,8 @@ namespace DeltaEngine.Editor.Mocks
 		public void UploadContent(ContentMetaData metaData,
 			Dictionary<string, byte[]> optionalFileData = null) {}
 
-		public void DeleteContent(string selectedContent, bool deleteSubContent) { }
+		public void DeleteContent(string selectedContent, bool deleteSubContent) {}
+
+		public void StartPlugin(Type plugin) {}
 	}
 }

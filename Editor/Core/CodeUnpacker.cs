@@ -29,9 +29,13 @@ namespace DeltaEngine.Editor.Core
 		private void SavePackedDataToOutputDirectory(BinaryReader streamReader)
 		{
 			int fileCount = streamReader.ReadInt32();
+			if (fileCount == 0)
+				throw new NoSourceCodeFilesSentUnableToBuildApp();
 			for (int i = 0; i < fileCount; i++)
 				CreateFile(streamReader);
 		}
+
+		private class NoSourceCodeFilesSentUnableToBuildApp : Exception {}
 
 		private void CreateFile(BinaryReader streamReader)
 		{

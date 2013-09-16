@@ -109,13 +109,12 @@ namespace DeltaEngine.Editor
 			connection.Connected += () => connection.Send(new ProjectNamesRequest());
 			connection.Connected += ValidateLogin;
 			connection.DataReceived += OnDataReceived;
-			connection.TimedOut += () => 
+			connection.TimedOut += () =>
 			{
 				Disconnect();
 				Error = Resources.ConnectionToDeltaEngineTimedOut;
 			};
 			connection.Connect(settings.OnlineServiceIp, settings.OnlineServicePort);
-			Service.CreateInitialContentLoader(connection);
 		}
 
 		private bool tryingToConnect;
@@ -337,7 +336,18 @@ namespace DeltaEngine.Editor
 
 		public void UploadToOnlineService(string contentFilePath)
 		{
-			var bytes = File.ReadAllBytes(contentFilePath);
+			byte[] bytes;
+			try
+			{
+				bytes = File.ReadAllBytes(contentFilePath);
+			}
+			catch (Exception)
+			{
+				Logger.Warning("Unknown content type was unable to be added to the server : " +
+					Path.GetFileName(contentFilePath));
+				return;
+			}
+
 			if (bytes.Length > MaximumFileSize)
 			{
 				Logger.Warning("The file you wanted to add is too large, the maximum filesize is 16MB");

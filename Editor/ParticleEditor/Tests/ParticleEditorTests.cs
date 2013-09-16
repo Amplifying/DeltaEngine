@@ -1,6 +1,8 @@
-﻿using DeltaEngine.Editor.Mocks;
+﻿using DeltaEngine.Datatypes;
+using DeltaEngine.Editor.Mocks;
 using DeltaEngine.Platforms;
 using NUnit.Framework;
+using DeltaEngine.Rendering.Sprites;
 
 namespace DeltaEngine.Editor.ParticleEditor.Tests
 {
@@ -22,6 +24,36 @@ namespace DeltaEngine.Editor.ParticleEditor.Tests
 			Assert.AreEqual(500,particleEditor.MaxNumbersOfParticles);
 			particleEditor.MaxNumbersOfParticles = 20;
 			Assert.AreEqual(0, particleEditor.emitter.NumberOfActiveParticles);
+		}
+
+		[Test]
+		public void SetEmitterPosition()
+		{
+			var setPosition = new Vector(0.4f, 0.8f, 0.2f);
+			particleEditor.EmitterPosition = setPosition;
+			Assert.AreEqual(setPosition, particleEditor.EmitterPosition);
+		}
+		
+		[Test]
+		public void Set3DBillboardMode()
+		{
+			const BillboardMode SetMode = BillboardMode.UpAxis;
+			particleEditor.SelectedBillBoardMode = SetMode.ToString();
+			Assert.AreEqual(SetMode, particleEditor.EmitterData.BillboardMode);
+			Assert.AreEqual(SetMode.ToString(), particleEditor.SelectedBillBoardMode);
+		}
+
+		[Test]
+		public void SettingBillboardModeFromStringAlwaysGivesConsistentDefault()
+		{
+			particleEditor.SelectedBillBoardMode = "nonExistantMode";
+			Assert.AreEqual(BillboardMode.CameraFacing.ToString(), particleEditor.SelectedBillBoardMode);
+		}
+
+		[Test]
+		public void SaveParticleEmitterContent()
+		{
+			
 		}
 	}
 }

@@ -4,7 +4,7 @@ using System.Windows.Data;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Extensions;
 
-namespace WpfApplication1
+namespace DeltaEngine.Editor.ParticleEditor
 {
 	public class StringToVectorConverter : IValueConverter
 	{

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using DeltaEngine.Content;
 using DeltaEngine.Editor.Core;
 using GalaSoft.MvvmLight.Messaging;
 
@@ -18,14 +19,14 @@ namespace DeltaEngine.Editor.ContentManager
 
 		public void Init(Service service)
 		{
-			contentManagerViewModel = new ContentManagerViewModel(service);
-			DataContext = contentManagerViewModel;
-			service.ContentChanged += RefreshContentAfterUpdateOrDelete;
+			DataContext = contentManagerViewModel = new ContentManagerViewModel(service);
+			service.ContentUpdated += (type, name) => RefreshContentList();
+			service.ContentDeleted += name => RefreshContentList();
 		}
 
 		private ContentManagerViewModel contentManagerViewModel;
 
-		private void RefreshContentAfterUpdateOrDelete()
+		private void RefreshContentList()
 		{
 			Dispatcher.Invoke(new Action(contentManagerViewModel.RefreshContentList));
 		}

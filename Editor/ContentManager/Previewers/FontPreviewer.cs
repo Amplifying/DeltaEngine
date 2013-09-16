@@ -10,7 +10,7 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 	{
 		public void PreviewContent(string contentName)
 		{
-			var font = ContentLoader.Load<FontXml>(contentName);
+			var font = ContentLoader.Load<Font>(contentName);
 			if (currentDisplayText != null)
 				currentDisplayText.IsActive = false;
 			currentDisplayText = new FontText(font, PreviewText,

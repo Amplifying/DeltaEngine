@@ -27,7 +27,7 @@ namespace DeltaEngine.Editor.ContentManager.Tests.Previewers
 			mockMouse.SetButtonState(MouseButton.Left, State.Pressed);
 			mockMouse.SetPosition(new Point(1f, 1f));
 			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(new Point(2.5f, 2.5f), fontPreviewer.currentDisplayText.Center);	
+			Assert.AreEqual(new Point(0.5f, 0.5f), fontPreviewer.currentDisplayText.Center);	
 		}
 
 		[Test]
@@ -39,7 +39,7 @@ namespace DeltaEngine.Editor.ContentManager.Tests.Previewers
 			mockMouse.SetButtonState(MouseButton.Left, State.Pressed);
 			mockMouse.SetPosition(new Point(1f, 1f));
 			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(new Point(2.5f, 2.5f), fontPreviewer.currentDisplayText.Center);
+			Assert.AreEqual(new Point(0.5f, 0.5f), fontPreviewer.currentDisplayText.Center);
 			fontPreviewer.PreviewContent("DeltaEngineLogo");
 			Assert.AreEqual(new Point(0.5f, 0.5f), fontPreviewer.currentDisplayText.Center);
 		}

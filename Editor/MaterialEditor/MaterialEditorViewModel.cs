@@ -8,7 +8,11 @@ using DeltaEngine.Datatypes;
 using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Entities;
+using DeltaEngine.Graphics;
+using DeltaEngine.Graphics.Vertices;
+using DeltaEngine.Rendering.Shapes;
 using DeltaEngine.Rendering.Sprites;
+using DeltaEngine.ScreenSpaces;
 using GalaSoft.MvvmLight;
 
 namespace DeltaEngine.Editor.MaterialEditor
@@ -48,7 +52,7 @@ namespace DeltaEngine.Editor.MaterialEditor
 		{
 			var projectPath = Path.Combine("Content", service.ProjectName);
 			CreateListOfLocalContentDataImages(projectPath);
-			CreateListOfLocalContentDataShades(projectPath);
+			CreateListOfLocalContentDataShaders(projectPath);
 		}
 
 		public class NoLocalContentAvailable : Exception {}
@@ -75,12 +79,16 @@ namespace DeltaEngine.Editor.MaterialEditor
 				contentList.Add(content);
 		}
 
-		private void CreateListOfLocalContentDataShades(string projectPath)
+		private void CreateListOfLocalContentDataShaders(string projectPath)
 		{
 			ShaderList = new ObservableCollection<string>();
 			var contentList = service.GetAllContentNamesByType(ContentType.Shader);
 			foreach (var content in contentList)
-				ShaderList.Add(content);
+			{
+				var shader = ContentLoader.Load<Shader>(content) as ShaderWithFormat; 
+				if(shader.Format.HasUV)
+					ShaderList.Add(content);
+			}
 			SelectedShader = Shader.Position2DColorUv;
 			RaisePropertyChanged("SelectedRenderSize");
 		}
@@ -180,9 +188,25 @@ namespace DeltaEngine.Editor.MaterialEditor
 			NewMaterial.SetRenderSize(
 				(RenderSize)Enum.Parse(typeof(RenderSize), selectedRenderSize, true));
 			EntitiesRunner.Current.Clear();
-			NewMaterial.DiffuseMap.BlendMode =
-				(BlendMode)Enum.Parse(typeof(BlendMode), SelectedBlendMode);
-			new Sprite(NewMaterial, Rectangle.FromCenter(new Point(0.5f, 0.5f), new Size(0.5f, 0.5f)));
+			NewMaterial.DiffuseMap.BlendMode = (BlendMode)Enum.Parse(typeof(BlendMode), SelectedBlendMode);
+			var shaderWithFormat = NewMaterial.Shader as ShaderWithFormat;
+			if (shaderWithFormat.Format.Is3D)
+				Draw3DExample(shaderWithFormat);
+			else
+				Draw2DExample(shaderWithFormat);
+		}
+
+		private void Draw2DExample(ShaderWithFormat shader)
+		{
+			if (shader.Format.HasUV)
+				new Sprite(NewMaterial,Rectangle.FromCenter(Point.Half, 
+					ScreenSpace.Current.FromPixelSpace(NewMaterial.DiffuseMap.PixelSize)));
+		}
+
+		private void Draw3DExample(ShaderWithFormat shader)
+		{
+			if (shader.Format.HasUV)
+				new Billboard(Vector.Zero, Size.One, NewMaterial);	
 		}
 
 		public string SelectedImage
@@ -257,8 +281,6 @@ namespace DeltaEngine.Editor.MaterialEditor
 		{
 			if (NewMaterial == null || String.IsNullOrEmpty(MaterialName))
 				return;
-			var fileNameAndBytes = new Dictionary<string, byte[]>();
-			fileNameAndBytes.Add(MaterialName + ".deltamaterial", null);
 			var metaDataCreator = new ContentMetaDataCreator(service);
 			ContentMetaData contentMetaData = metaDataCreator.CreateMetaDataFromMaterial(MaterialName,
 				NewMaterial);
@@ -267,7 +289,14 @@ namespace DeltaEngine.Editor.MaterialEditor
 				service.DeleteContent(MaterialName);
 				ContentLoader.RemoveResource(MaterialName);
 			}
-			service.UploadContent(contentMetaData, fileNameAndBytes);
+			service.UploadContent(contentMetaData);
+			service.ContentUpdated += SendSuccessMessageToLogger;
+		}
+
+		private void SendSuccessMessageToLogger(ContentType type, string content)
+		{
+			Logger.Info("The saving of the animation called " + MaterialName + " was a succes.");
+			service.ContentUpdated -= SendSuccessMessageToLogger;
 		}
 
 		public string SelectedColor

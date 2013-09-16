@@ -12,7 +12,6 @@ namespace DeltaEngine.Graphics.OpenTK20
 	{
 		private readonly IWindowInfo windowInfo;
 		private BlendMode currentBlendMode = BlendMode.Opaque;
-		private bool isTexturingEnabled;
 		public const int InvalidHandle = -1;
 
 		public GraphicsContext Context { get; private set; }
@@ -160,18 +159,10 @@ namespace DeltaEngine.Graphics.OpenTK20
 
 		public void EnableTexturing()
 		{
-			if (isTexturingEnabled)
-				return;
-			isTexturingEnabled = true;
-			GL.Enable(EnableCap.Texture2D);
 		}
 
 		public void DisableTexturing()
 		{
-			if (isTexturingEnabled)
-				return;
-			isTexturingEnabled = false;
-			GL.Disable(EnableCap.Texture2D);
 		}
 
 		public int GenerateTexture()
@@ -181,9 +172,19 @@ namespace DeltaEngine.Graphics.OpenTK20
 			return glHandle;
 		}
 
-		public void BindTexture(int glHandle)
+		public void BindTexture(int glHandle, int samplerIndex = 0)
 		{
+			GL.ActiveTexture(GetSamplerFrom(samplerIndex));
 			GL.BindTexture(TextureTarget.Texture2D, glHandle);
+		}
+
+		private static TextureUnit GetSamplerFrom(int samplerIndex)
+		{
+			if (samplerIndex == 0)
+				return TextureUnit.Texture0;
+			if (samplerIndex == 1)
+				return TextureUnit.Texture1;
+			throw new UnsupportedTextureUnit();
 		}
 
 		public void LoadTexture(Size size, IntPtr data, bool hasAlpha)
@@ -284,13 +285,23 @@ namespace DeltaEngine.Graphics.OpenTK20
 			GL.UniformMatrix4(location, 1, false, matrix.GetValues);
 		}
 
+		public void SetUniformValues(int uniformLocation, Matrix[] matrices)
+		{
+			var values = new float[matrices.Length * 16];
+			for (int matrixIndex = 0; matrixIndex < matrices.Length; ++matrixIndex)
+				matrices[matrixIndex].GetValues.CopyTo(values, matrixIndex * 16);
+			GL.UniformMatrix4(uniformLocation, matrices.Length, false, values);
+		}
+
 		public void DrawTriangles(int indexOffsetInBytes, int numberOfIndicesToRender)
 		{
+			Shader.BindVertexDeclaration();
 			GL.DrawElements(BeginMode.Triangles, numberOfIndicesToRender, DrawElementsType.UnsignedShort, (IntPtr)indexOffsetInBytes);
 		}
 
 		public void DrawLines(int vertexOffset, int verticesCount)
 		{
+			Shader.BindVertexDeclaration();
 			GL.DrawArrays(BeginMode.Lines, vertexOffset, verticesCount);
 		}
 
@@ -305,6 +316,9 @@ namespace DeltaEngine.Graphics.OpenTK20
 		}
 
 		private class OpenGLVersionDoesNotSupportShaders : Exception
+		{
+		}
+		private class UnsupportedTextureUnit : Exception
 		{
 		}
 	}
