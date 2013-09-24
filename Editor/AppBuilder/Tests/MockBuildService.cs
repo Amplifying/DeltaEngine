@@ -72,7 +72,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 
 		public event Action<object> DataReceived;
 
-		public void Send(object message)
+		public void Send(object message, bool allowToCompressMessage = true)
 		{
 			if (message is AppBuildRequest)
 				OnHandleBuildRequest((AppBuildRequest)message);

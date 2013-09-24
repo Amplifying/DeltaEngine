@@ -285,6 +285,11 @@ namespace DeltaEngine.Graphics.OpenTK20
 			GL.UniformMatrix4(location, 1, false, matrix.GetValues);
 		}
 
+		public void SetUniformValue(int location, Vector3D vector)
+		{
+			GL.Uniform3(location, vector.X, vector.Y, vector.Z);
+		}
+
 		public void SetUniformValues(int uniformLocation, Matrix[] matrices)
 		{
 			var values = new float[matrices.Length * 16];

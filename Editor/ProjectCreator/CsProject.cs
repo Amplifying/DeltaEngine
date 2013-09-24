@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using DeltaEngine.Editor.Core;
 
 namespace DeltaEngine.Editor.ProjectCreator
 {
@@ -22,7 +24,7 @@ namespace DeltaEngine.Editor.ProjectCreator
 		{
 			const string EnvironmentVariable = "%DeltaEnginePath%\\";
 			string path = Environment.ExpandEnvironmentVariables(EnvironmentVariable);
-			return EnvironmentVariable == path ? "C:\\Code\\DeltaEngine\\Samples\\" : path;
+			return EnvironmentVariable == path ? Directory.GetCurrentDirectory() : path;
 		}
 	}
 }

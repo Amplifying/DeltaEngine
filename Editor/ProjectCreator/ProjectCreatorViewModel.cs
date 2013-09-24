@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
-using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using DeltaEngine.Editor.Core;
@@ -15,21 +14,15 @@ namespace DeltaEngine.Editor.ProjectCreator
 	{
 		public ProjectCreatorViewModel()
 		{
-			Project = new CsProject();
-			AvailableFrameworks = CreateListFromFrameworkEnum();
+			frameworks = new FrameworkFinder();
+			project = new CsProject();
+			AvailableFrameworks = frameworks.All;
 			RegisterCommands();
 		}
 
-		private CsProject Project { get; set; }
-
-		public List<DeltaEngineFramework> AvailableFrameworks { get; private set; }
-
-		private static List<DeltaEngineFramework> CreateListFromFrameworkEnum()
-		{
-			var arrayOfFrameworkEnum = Enum.GetValues(typeof(DeltaEngineFramework));
-			var enumerableEnum = arrayOfFrameworkEnum.Cast<DeltaEngineFramework>();
-			return new List<DeltaEngineFramework>(enumerableEnum);
-		}
+		private readonly FrameworkFinder frameworks;
+		private readonly CsProject project;
+		public DeltaEngineFramework[] AvailableFrameworks { get; private set; }
 
 		private void RegisterCommands()
 		{
@@ -48,10 +41,10 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		public string Name
 		{
-			get { return Project.Name; }
+			get { return project.Name; }
 			set
 			{
-				Project.Name = value;
+				project.Name = value;
 				RaisePropertyChanged("Name");
 			}
 		}
@@ -65,10 +58,10 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		public DeltaEngineFramework SelectedFramework
 		{
-			get { return Project.Framework; }
+			get { return project.Framework; }
 			set
 			{
-				Project.Framework = value;
+				project.Framework = value;
 				RaisePropertyChanged("SelectedFramework");
 			}
 		}
@@ -82,10 +75,10 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		public string Location
 		{
-			get { return Project.Location; }
+			get { return project.Location; }
 			set
 			{
-				Project.Location = value;
+				project.Location = value;
 				RaisePropertyChanged("Location");
 			}
 		}
@@ -94,7 +87,7 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		private void CreateProject()
 		{
-			var projectCreator = new ProjectCreator(Project, VsTemplate.GetEmptyGame(new FileSystem()),
+			var projectCreator = new ProjectCreator(project, VsTemplate.GetEmptyGame(new FileSystem()),
 				new FileSystem());
 			projectCreator.CreateProject();
 			if (projectCreator.HaveTemplateFilesBeenCopiedToLocation())

@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using DeltaEngine.Content;
 using DeltaEngine.Editor.Messages;
+using DeltaEngine.Mocks;
 using DeltaEngine.Networking;
 using DeltaEngine.Networking.Messages;
 using DeltaEngine.Networking.Tcp;
@@ -20,17 +21,11 @@ namespace DeltaEngine.Editor.Tests
 		{
 			DeleteContentDirectoriesIfAvailable();
 			var messagesReceived = new List<object>();
-			var connection = OnlineServiceConnection.CreateForEditor();
+			var connection = new OnlineServiceConnection(new MockSettings(),
+				() => { throw new ConnectionTimedOut(); });
 			var contentLoader = new EditorContentLoader(connection);
 			connection.Connected += () => GetProjectsAndLogin(connection);
-			connection.TimedOut += () => { throw new ConnectionTimedOut(); };
-			connection.DataReceived += message =>
-			{
-				messagesReceived.Add(message);
-				if (message is SetProject)
-					contentLoader.SetProject( message as SetProject);
-			};
-			connection.Connect("deltaengine.net", 800);
+			connection.DataReceived += message => { messagesReceived.Add(message); };
 			Thread.Sleep(3000);
 			CheckConnection(connection);
 			CheckContentLoader(contentLoader);
@@ -74,7 +69,7 @@ namespace DeltaEngine.Editor.Tests
 		private static void CheckContentLoader(EditorContentLoader contentLoader)
 		{
 			Assert.NotNull(contentLoader);
-			Assert.AreEqual(DefaultContentFiles + 3, contentLoader.GetAllNames().Count);
+			Assert.AreEqual(DefaultContentFiles + 2, contentLoader.GetAllNames().Count);
 			Assert.AreEqual(DefaultImages + 1, contentLoader.GetAllNamesByType(ContentType.Image).Count);
 		}
 

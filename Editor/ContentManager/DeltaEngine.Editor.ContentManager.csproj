@@ -59,29 +59,45 @@
       <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
       <Name>DeltaEngine %28DeltaEngine\DeltaEngine%29</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Graphics\DeltaEngine.Graphics.csproj">
+      <Project>{8F701B0D-48B6-45CF-85E0-286BD53328BA}</Project>
+      <Name>DeltaEngine.Graphics</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Input\DeltaEngine.Input.csproj">
       <Project>{CC65E69E-FAFD-4C2B-85EB-5E57FD3AF847}</Project>
       <Name>DeltaEngine.Input</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Rendering\Cameras\DeltaEngine.Rendering.Cameras.csproj">
-      <Project>{F5992CBF-8E17-4EB0-B483-F1DE7993C416}</Project>
-      <Name>DeltaEngine.Rendering.Cameras</Name>
+    <ProjectReference Include="..\..\Networking\Messages\DeltaEngine.Networking.Messages.csproj">
+      <Project>{74863E62-A568-4C0A-A37F-F04BFA8EB9DB}</Project>
+      <Name>DeltaEngine.Networking.Messages</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Rendering\DeltaEngine.Rendering.csproj">
+    <ProjectReference Include="..\..\Rendering2D\DeltaEngine.Rendering2D.csproj">
       <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
-      <Name>DeltaEngine.Rendering</Name>
+      <Name>DeltaEngine.Rendering2D</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Rendering\Fonts\DeltaEngine.Rendering.Fonts.csproj">
+    <ProjectReference Include="..\..\Rendering2D\Fonts\DeltaEngine.Rendering2D.Fonts.csproj">
       <Project>{4A00FD90-FF7B-4250-9CBC-B6855130090B}</Project>
-      <Name>DeltaEngine.Rendering.Fonts</Name>
+      <Name>DeltaEngine.Rendering2D.Fonts</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Rendering\Particles\DeltaEngine.Rendering.Particles.csproj">
-      <Project>{BECE691C-BAC6-434B-B1F9-4D8653922585}</Project>
-      <Name>DeltaEngine.Rendering.Particles</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Rendering\Sprites\DeltaEngine.Rendering.Sprites.csproj">
+    <ProjectReference Include="..\..\Rendering2D\Sprites\DeltaEngine.Rendering2D.Sprites.csproj">
       <Project>{FCA7BAAA-3F6E-4CA3-B354-C34AF4F1BDDD}</Project>
-      <Name>DeltaEngine.Rendering.Sprites</Name>
+      <Name>DeltaEngine.Rendering2D.Sprites</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Rendering3D\Cameras\DeltaEngine.Rendering3D.Cameras.csproj">
+      <Project>{F5992CBF-8E17-4EB0-B483-F1DE7993C416}</Project>
+      <Name>DeltaEngine.Rendering3D.Cameras</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Rendering3D\DeltaEngine.Rendering3D.csproj">
+      <Project>{3266F559-74EE-4A1C-B37B-2C591F73611B}</Project>
+      <Name>DeltaEngine.Rendering3D</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Rendering3D\Models\DeltaEngine.Rendering3D.Models.csproj">
+      <Project>{701FDD1A-6B8A-4CA9-B796-AC9546233F47}</Project>
+      <Name>DeltaEngine.Rendering3D.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Rendering3D\Particles\DeltaEngine.Rendering3D.Particles.csproj">
+      <Project>{BECE691C-BAC6-434B-B1F9-4D8653922585}</Project>
+      <Name>DeltaEngine.Rendering3D.Particles</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Scenes\DeltaEngine.Scenes.csproj">
       <Project>{75BB4C75-DE36-47B3-9910-10EA8E8973B7}</Project>
@@ -97,10 +113,6 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="ContentManagerView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ContentView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -135,10 +147,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ContentMetaDataCreator.cs" />
-    <Compile Include="ContentView.xaml.cs">
-      <DependentUpon>ContentView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ContentViewModel.cs" />
+    <Compile Include="ContentIconAndName.cs" />
     <Compile Include="Previewers\FontPreviewer.cs" />
     <Compile Include="Previewers\ImageAnimationPreviewer.cs" />
     <Compile Include="Previewers\ImagePreviewer.cs" />

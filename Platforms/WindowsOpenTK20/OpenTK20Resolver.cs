@@ -71,22 +71,23 @@ namespace DeltaEngine.Platforms
 			return true;
 		}
 
-		private void CopyNativeDllsFromPath(string nativeBinariesPath)
-		{
-			foreach (var nativeDll in nativeDllsNeeded)
-				File.Copy(Path.Combine(nativeBinariesPath, nativeDll), nativeDll, true);
-		}
-
 		private static string FindNuGetPackagesPath()
 		{
+			int MaxPathLength = 18;
 			var path = Path.Combine("..", "..");
 			while (!IsPackagesDirectory(path))
 			{
 				path = Path.Combine(path, "..");
-				if (path.Length > 18)
+				if (path.Length > MaxPathLength)
 					break;
 			}
 			return path;
+		}
+
+		private void CopyNativeDllsFromPath(string nativeBinariesPath)
+		{
+			foreach (var nativeDll in nativeDllsNeeded)
+				File.Copy(Path.Combine(nativeBinariesPath, nativeDll), nativeDll, true);
 		}
 
 		private static bool IsPackagesDirectory(string path)
@@ -99,7 +100,7 @@ namespace DeltaEngine.Platforms
 			string enginePath = Environment.GetEnvironmentVariable("DeltaEnginePath");
 			if (enginePath == null || !Directory.Exists(enginePath))
 				return false;
-			CopyNativeDllsFromPath(enginePath);
+			CopyNativeDllsFromPath(Path.Combine(enginePath, "OpenTK"));
 			return true;
 		}
 

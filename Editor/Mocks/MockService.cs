@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using DeltaEngine.Content;
 using DeltaEngine.Editor.Core;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Editor.Mocks
 {
@@ -30,21 +31,26 @@ namespace DeltaEngine.Editor.Mocks
 		public event Action<ContentType, string> ContentUpdated;
 		public event Action<string> ContentDeleted;
 
-		public void Send(object message) {}
+		public void Send(object message, bool allowToCompressMessage = true) {}
 
 		public IEnumerable<string> GetAllContentNames()
 		{
 			var list = new List<string>();
-			list.Add("Test1");
-			list.Add("Test2");
+			foreach (ContentType type in EnumExtensions.GetEnumValues<ContentType>())
+				list.AddRange(GetAllContentNamesByType(type));
 			return list;
 		}
 
 		public IEnumerable<string> GetAllContentNamesByType(ContentType type)
 		{
 			var list = new List<string>();
-			list.Add("Test1");
-			list.Add("Test2");
+			for (int i = 0; i < 2; i++)
+			{
+				string contentName = "My" + type + (i + 1);
+				if (type == ContentType.Material)
+					contentName += "In" + (i + 2) + "D";
+				list.Add(contentName);
+			}
 			return list;
 		}
 

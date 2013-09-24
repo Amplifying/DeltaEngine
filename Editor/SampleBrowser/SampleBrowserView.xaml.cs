@@ -20,7 +20,7 @@ namespace DeltaEngine.Editor.SampleBrowser
 
 			var model = new SampleBrowserViewModel();
 			DataContext = model;
-			model.GetSamples();
+			model.UpdateItems();
 		}
 
 		private void SearchTextBoxGotMouseCapture(object sender, MouseEventArgs e)

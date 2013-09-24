@@ -1,7 +1,7 @@
 ﻿using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
-using DeltaEngine.Rendering.Sprites;
+using DeltaEngine.Rendering2D.Sprites;
 using DeltaEngine.ScreenSpaces;
 using System;
 using System.Diagnostics;

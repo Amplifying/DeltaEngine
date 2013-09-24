@@ -48,5 +48,15 @@ namespace DeltaEngine.Editor.ParticleEditor
 		{
 			service.StartPlugin(typeof(MaterialEditorView));
 		}
+
+		private void CreateMaterialOnClick(object sender, RoutedEventArgs e)
+		{
+			service.StartPlugin(typeof(MaterialEditor.MaterialEditorView));
+		}
+
+		private void ColorGraphOnClick(object sender, RoutedEventArgs e)
+		{
+			current.SwitchGradientGraph();
+		}
 	}
 }

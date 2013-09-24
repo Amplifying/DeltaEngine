@@ -2,7 +2,7 @@
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
-using DeltaEngine.Rendering.Fonts;
+using DeltaEngine.Rendering2D.Fonts;
 
 namespace DeltaEngine.Editor.ContentManager.Previewers
 {
@@ -14,7 +14,7 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 			if (currentDisplayText != null)
 				currentDisplayText.IsActive = false;
 			currentDisplayText = new FontText(font, PreviewText,
-				Rectangle.FromCenter(Point.Half, new Size(1, 1)));
+				Rectangle.FromCenter(Vector2D.Half, new Size(1, 1)));
 			SetFontViewCommands();
 		}
 
@@ -24,10 +24,10 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 			new Command(MoveFontText).Add(new MousePositionTrigger(MouseButton.Left, State.Pressed));
 		}
 
-		private Point lastPanPosition = Point.Unused;
+		private Vector2D lastPanPosition = Vector2D.Unused;
 		public FontText currentDisplayText;
 
-		private void MoveFontText(Point mousePosition)
+		private void MoveFontText(Vector2D mousePosition)
 		{
 			var relativePosition = mousePosition - lastPanPosition;
 			lastPanPosition = mousePosition;

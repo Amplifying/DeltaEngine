@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
-using DeltaEngine.Content;
 using DeltaEngine.Editor.Core;
+using DeltaEngine.Networking.Messages;
 using GalaSoft.MvvmLight.Messaging;
 
 namespace DeltaEngine.Editor.ContentManager
@@ -20,11 +20,18 @@ namespace DeltaEngine.Editor.ContentManager
 		public void Init(Service service)
 		{
 			DataContext = contentManagerViewModel = new ContentManagerViewModel(service);
+			service.DataReceived += OnDataReceived;
 			service.ContentUpdated += (type, name) => RefreshContentList();
 			service.ContentDeleted += name => RefreshContentList();
 		}
 
 		private ContentManagerViewModel contentManagerViewModel;
+
+		private void OnDataReceived(object message)
+		{
+			if (message is SetProject)
+				RefreshContentList();
+		}
 
 		private void RefreshContentList()
 		{
@@ -37,12 +44,10 @@ namespace DeltaEngine.Editor.ContentManager
 			Messenger.Default.Send(dataObject, "AddContent");
 		}
 
-		private void DeleteSelectedImage(object sender, RoutedEventArgs e)
+		private void DeleteSelectedItems(object sender, RoutedEventArgs e)
 		{
-			IList<ContentView> contentList = new List<ContentView>();
-			foreach (var content in ImageList.SelectedItems)
-				contentList.Add((ContentView)content);
-			Messenger.Default.Send(contentList, "DeleteContent");
+			Messenger.Default.Send(ImageList.SelectedItems.Cast<ContentIconAndName>().ToArray(),
+				"DeleteContent");
 		}
 
 		private void DeleteSelectedImageAnimation(object sender, RoutedEventArgs e)

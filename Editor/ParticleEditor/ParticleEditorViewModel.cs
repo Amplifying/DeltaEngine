@@ -8,8 +8,11 @@ using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
-using DeltaEngine.Rendering.Particles;
-using DeltaEngine.Rendering.Sprites;
+using DeltaEngine.Rendering2D.Graphs;
+using DeltaEngine.Rendering3D.Cameras;
+using DeltaEngine.Rendering3D.Models;
+using DeltaEngine.Rendering3D.Particles;
+using DeltaEngine.Rendering3D.Shapes3D;
 using GalaSoft.MvvmLight;
 
 namespace DeltaEngine.Editor.ParticleEditor
@@ -18,13 +21,14 @@ namespace DeltaEngine.Editor.ParticleEditor
 	{
 		public ParticleEditorViewModel(Service service)
 		{
+			EntitiesRunner.Current.Clear();
 			ParticleList = new ObservableCollection<string>();
 			MaterialList = new ObservableCollection<string>();
 			BillBoardModeList = new ObservableCollection<string>();
 			SetUpStartEmitterData();
 			this.service = service;
-			metaDataCreator = new ContentMetaDataCreator(service);
-			emitterPosition = new Point(0.5f, 0.5f);
+			metaDataCreator = new ContentMetaDataCreator();
+			emitterPosition = new Vector2D(0.5f, 0.5f);
 			CreateEmitter();
 			GetParticles();
 			GetMaterials();
@@ -43,8 +47,9 @@ namespace DeltaEngine.Editor.ParticleEditor
 			{
 				SpawnInterval = 0.01f,
 				LifeTime = 1,
-				StartVelocity = new RangeGraph<Vector>(new Point(0, -0.3f), new Point(0, -0.3f)),
+				StartVelocity = new RangeGraph<Vector3D>(new Vector2D(0, -0.3f), new Vector2D(0, -0.3f)),
 				Size = new RangeGraph<Size>(new Size(0.01f, 0.01f), new Size(0, 0)),
+				Color = new RangeGraph<Color>(Datatypes.Color.White, Datatypes.Color.White),
 				MaximumNumberOfParticles = 500
 			};
 			SelectedBillBoardMode = "Standard2D";
@@ -56,6 +61,9 @@ namespace DeltaEngine.Editor.ParticleEditor
 
 		private void CreateEmitter()
 		{
+			EntitiesRunner.Current.Clear();
+			if (emitter != null)
+				emitter.IsActive = false;
 			if (EmitterData.BillboardMode == BillboardMode.Standard2D)
 				Create2DEmitter();
 			else
@@ -64,23 +72,34 @@ namespace DeltaEngine.Editor.ParticleEditor
 
 		private void Create2DEmitter()
 		{
-			EntitiesRunner.Current.Clear();
-			if (EmitterData.ParticleMaterial == null)
+			if (EmitterData.ParticleMaterial == null ||
+				(EmitterData.ParticleMaterial.Shader as ShaderWithFormat).Format.Is3D)
 				return;
-			emitter = new Particle2DEmitter(EmitterData, new Point(emitterPosition.X, emitterPosition.Y));
+			emitter = new Particle2DEmitter(EmitterData,
+				new Vector2D(emitterPosition.X, emitterPosition.Y));
 		}
 
 		private void Create3DEmitter()
 		{
-			EntitiesRunner.Current.Clear();
-			if (EmitterData.ParticleMaterial == null)
+			if (EmitterData.ParticleMaterial == null ||
+				!(EmitterData.ParticleMaterial.Shader as ShaderWithFormat).Format.Is3D)
 				return;
-			emitter = new Particle3DPointEmitter(EmitterData, Vector.Zero);
+			SetGridAndCameraTo3D();
+			emitter = new Particle3DPointEmitter(EmitterData, Vector3D.Zero);
 		}
+
+		private void SetGridAndCameraTo3D()
+		{
+			new Grid3D(10);
+			camera = Camera.Use<LookAtCamera>();
+			camera.Position = Vector3D.One;
+		}
+
+		private Camera camera;
 
 		public ParticleEmitter emitter;
 
-		public Vector EmitterPosition
+		public Vector3D EmitterPosition
 		{
 			get { return emitterPosition; }
 			set
@@ -92,12 +111,12 @@ namespace DeltaEngine.Editor.ParticleEditor
 			}
 		}
 
-		private Vector emitterPosition;
+		private Vector3D emitterPosition;
 
 		private void GetParticles()
 		{
 			ParticleList.Clear();
-			var foundParticles = service.GetAllContentNamesByType(ContentType.Particle2DEmitter);
+			var foundParticles = service.GetAllContentNamesByType(ContentType.ParticleEmitter);
 			foreach (var particle in foundParticles)
 				ParticleList.Add(particle);
 		}
@@ -111,29 +130,12 @@ namespace DeltaEngine.Editor.ParticleEditor
 
 		private void GetBillboardModes()
 		{
-			var newModeList = new ObservableCollection<string>();
-			var billBoardModes = Enum.GetValues(typeof(BillboardMode));
-			foreach (var billboardMode in billBoardModes)
-				AddBillboardModesFittingShaders((BillboardMode)billboardMode, ref newModeList);
-			BillBoardModeList = newModeList;
+			BillBoardModeList.Clear();
+			var newModeList = Enum.GetValues(typeof(BillboardMode));
+			foreach (var mode in newModeList)
+				BillBoardModeList.Add(((BillboardMode)mode).ToString());
 			if (!BillBoardModeList.Contains(selectedBillBoardMode))
 				selectedBillBoardMode = BillBoardModeList[0];
-		}
-
-		private void AddBillboardModesFittingShaders(BillboardMode billboardMode,
-			ref ObservableCollection<string> modeList)
-		{
-			if (EmitterData.ParticleMaterial == null)
-			{
-				modeList.Add(billboardMode.ToString());
-				return;
-			}
-			var shaderFormat = (EmitterData.ParticleMaterial.Shader as ShaderWithFormat).Format;
-			if (shaderFormat.Is3D)
-				if (billboardMode != BillboardMode.Standard2D)
-					modeList.Add(billboardMode.ToString());
-				else if (billboardMode == BillboardMode.Standard2D)
-					modeList.Add(billboardMode.ToString());
 		}
 
 		public string SelectedBillBoardMode
@@ -166,7 +168,6 @@ namespace DeltaEngine.Editor.ParticleEditor
 				if (String.IsNullOrEmpty(value))
 					return;
 				selectedMaterial = value;
-				GetBillboardModes();
 				RaisePropertyChanged("SelectedMaterial");
 				if (emitter != null)
 					emitter.IsActive = false;
@@ -192,6 +193,11 @@ namespace DeltaEngine.Editor.ParticleEditor
 
 		public void Save()
 		{
+			if (string.IsNullOrEmpty(particleName))
+			{
+				Logger.Info("Saving of content data requires a name, cannot save with an empty name.");
+				return;
+			}
 			var bytes = BinaryDataExtensions.ToByteArrayWithTypeInformation(EmitterData);
 			var fileNameAndBytes = new Dictionary<string, byte[]>();
 			fileNameAndBytes.Add(ParticleName + ".deltaparticle", bytes);
@@ -208,7 +214,7 @@ namespace DeltaEngine.Editor.ParticleEditor
 
 		private void SendSuccessMessageToLogger(ContentType type, string content)
 		{
-			Logger.Info("The saving of the animation called " + particleName + " was a succes.");
+			Logger.Info("The saving of the particleData called " + particleName + " was a succes.");
 			service.ContentUpdated -= SendSuccessMessageToLogger;
 		}
 
@@ -218,14 +224,98 @@ namespace DeltaEngine.Editor.ParticleEditor
 			set
 			{
 				particleName = value;
-				if (ContentLoader.Exists(ParticleName, ContentType.Particle2DEmitter))
+				if (ContentLoader.Exists(ParticleName, ContentType.ParticleEmitter))
 					EmitterData = ContentLoader.Load<ParticleEmitterData>(particleName);
 				CreateEmitter();
 				RaisePropertyChanged("EmitterData");
 				RaisePropertyChanged("SelectedMaterial");
 			}
 		}
-
 		private string particleName;
+
+		public void SwitchGradientGraph()
+		{
+			if (currentGraph != null)
+				return;
+
+			currentGraph = new GradientGraph(GetGraphDrawArea(), EmitterData.Color);
+		}
+
+		private GradientGraph currentGraph;
+
+		private static Rectangle GetGraphDrawArea()
+		{
+			return new Rectangle(0.1f, 0.6f, 0.8f, 0.1f);
+		}
+
+		public RangeGraph<Vector3D> Acceleration
+		{
+			get { return EmitterData.Acceleration; }
+			set
+			{
+				if (value != null)
+					EmitterData.Acceleration = value;
+			}
+		}
+
+		public RangeGraph<Vector3D> StartVelocity
+		{
+			get { return EmitterData.StartVelocity; }
+			set
+			{
+				if (value != null)
+					EmitterData.StartVelocity = value;
+			}
+		}
+
+		public RangeGraph<Color> Color
+		{
+			get { return EmitterData.Color; }
+			set
+			{
+				if (value != null)
+					EmitterData.Color = value;
+			}
+		}
+
+		public RangeGraph<ValueRange> RotationSpeed
+		{
+			get { return EmitterData.RotationSpeed; }
+			set
+			{
+				if (value != null)
+					EmitterData.RotationSpeed = value;
+			}
+		}
+
+		public RangeGraph<ValueRange> StartRotation
+		{
+			get { return EmitterData.StartRotation; }
+			set
+			{
+				if (value != null)
+					EmitterData.StartRotation = value;
+			}
+		}
+
+		public RangeGraph<Vector3D> StartPosition
+		{
+			get { return EmitterData.StartPosition; }
+			set
+			{
+				if (value != null)
+					EmitterData.StartPosition = value;
+			}
+		}
+
+		public RangeGraph<Size> Size
+		{
+			get { return EmitterData.Size; }
+			set
+			{
+				if (value != null)
+					EmitterData.Size = value;
+			}
+		}
 	}
 }

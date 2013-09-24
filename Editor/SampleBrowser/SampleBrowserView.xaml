@@ -67,29 +67,31 @@
 	</UserControl.Background>
 	<Grid Background="#FFF4F4F4">
 		<Grid.RowDefinitions>
-			<RowDefinition Height="12"/>
-			<RowDefinition Height="30"/>
-			<RowDefinition Height="12"/>
-			<RowDefinition/>
-			<RowDefinition Height="12"/>
+			<RowDefinition Height="12" />
+			<RowDefinition Height="30" />
+			<RowDefinition Height="12" />
+			<RowDefinition />
+			<RowDefinition Height="12" />
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="11"/>
-			<ColumnDefinition Width="156*"/>
-			<ColumnDefinition Width="22"/>
-			<ColumnDefinition Width="34"/>
-			<ColumnDefinition Width="5"/>
-			<ColumnDefinition Width="119*"/>
-			<ColumnDefinition Width="8"/>
-			<ColumnDefinition Width="30"/>
-			<ColumnDefinition Width="12"/>
+			<ColumnDefinition Width="11" />
+			<ColumnDefinition Width="37*" />
+			<ColumnDefinition Width="11" />
+			<ColumnDefinition Width="121" />
+			<ColumnDefinition Width="11" />
+			<ColumnDefinition Width="34" />
+			<ColumnDefinition Width="5" />
+			<ColumnDefinition Width="120*" />
+			<ColumnDefinition Width="8" />
+			<ColumnDefinition Width="30" />
+			<ColumnDefinition Width="12" />
 		</Grid.ColumnDefinitions>
 
 		<TextBox
-				Name="SearchTextBox" TextWrapping="Wrap"
-				Text="{Binding Path=SearchFilter, UpdateSourceTrigger=PropertyChanged}" 
-				FontSize="16" ToolTip="Filter results to find samples more easily"
-				GotMouseCapture="SearchTextBoxGotMouseCapture" Grid.Column="5" Grid.Row="1" Margin="2,0,0,0">
+			Name="SearchTextBox" TextWrapping="Wrap"
+			Text="{Binding Path=SearchFilter, UpdateSourceTrigger=PropertyChanged}"
+			FontSize="16" ToolTip="Filter results to find samples more easily"
+			GotMouseCapture="SearchTextBoxGotMouseCapture" Grid.Column="7" Grid.Row="1" Margin="2,0,0,0">
 			<i:Interaction.Triggers>
 				<i:EventTrigger EventName="TextChanged">
 					<i:InvokeCommandAction Command="{Binding Path=OnSearchTextChanged}" />
@@ -97,20 +99,20 @@
 			</i:Interaction.Triggers>
 			<TextBox.Style>
 				<Style
-						TargetType="{x:Type TextBox}">
+					TargetType="{x:Type TextBox}">
 					<Setter Property="Template">
 						<Setter.Value>
 							<ControlTemplate TargetType="{x:Type TextBox}">
 								<Grid>
 									<ScrollViewer
-											Margin="2,2,0,0"
-											x:Name="PART_ContentHost"
-											SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-											BorderBrush="#3E3E3E" Background="White" />
+										Margin="2,2,0,0"
+										x:Name="PART_ContentHost"
+										SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+										BorderBrush="#3E3E3E" Background="White" />
 									<TextBlock
-											Margin="5,3,0,0"
-											x:Name="textBlock" Opacity="0.345" Text="Search"
-											TextWrapping="Wrap" Visibility="Hidden" />
+										Margin="5,3,0,0"
+										x:Name="textBlock" Opacity="0.345" Text="Search"
+										TextWrapping="Wrap" Visibility="Hidden" />
 								</Grid>
 								<ControlTemplate.Triggers>
 									<MultiTrigger>
@@ -128,13 +130,13 @@
 			</TextBox.Style>
 		</TextBox>
 		<Image
-				Source="../Images/Search.png"
-				ToolTip="Filter the current content project to find specific items" Margin="2,0,0,0" Grid.Column="3" Grid.Row="1" />
+			Source="../Images/Search.png"
+			ToolTip="Filter the current content project to find specific items" Margin="2,0,0,0" Grid.Column="5" Grid.Row="1" />
 		<Image
-				Source="../Images/Remove.png"
-				Width="11" Height="11" HorizontalAlignment="Right"
-				ToolTip="Remove the filter text to see all items in the selected project again"
-				VerticalAlignment="Top" Margin="0,10,7,0" Grid.Column="5" Grid.Row="1">
+			Source="../Images/Remove.png"
+			Width="11" Height="11" HorizontalAlignment="Right"
+			ToolTip="Remove the filter text to see all items in the selected project again"
+			VerticalAlignment="Top" Margin="0,10,7,0" Grid.Column="7" Grid.Row="1">
 			<i:Interaction.Triggers>
 				<i:EventTrigger EventName="MouseDown">
 					<i:InvokeCommandAction Command="{Binding Path=OnSearchTextRemoved}" />
@@ -144,20 +146,31 @@
 
 		<ComboBox
 			ItemsSource="{Binding Path=AssembliesAvailable}"
-			SelectedValue="{Binding Path=SelectedAssembly, Mode=TwoWay}" Grid.Row="1" Grid.Column="1" Style="{StaticResource DeltaComboBox}">
+			SelectedValue="{Binding Path=SelectedAssembly, Mode=TwoWay}" Grid.Row="1" Grid.Column="1"
+			Style="{StaticResource DeltaComboBox}">
 			<i:Interaction.Triggers>
 				<i:EventTrigger EventName="SelectionChanged">
-					<i:InvokeCommandAction Command="{Binding Path=OnComboBoxSelectionChanged}" />
+					<i:InvokeCommandAction Command="{Binding Path=OnAssemblySelectionChanged}" />
+				</i:EventTrigger>
+			</i:Interaction.Triggers>
+		</ComboBox>
+		<ComboBox
+			ItemsSource="{Binding Path=FrameworksAvailable}"
+			SelectedValue="{Binding Path=SelectedFramework, Mode=TwoWay}" Grid.Column="3" Grid.Row="1"
+			Style="{StaticResource DeltaComboBox}">
+			<i:Interaction.Triggers>
+				<i:EventTrigger EventName="SelectionChanged">
+					<i:InvokeCommandAction Command="{Binding Path=OnFrameworkSelectionChanged}" />
 				</i:EventTrigger>
 			</i:Interaction.Triggers>
 		</ComboBox>
 		<Grid
 			Margin="0,3,2,0" VerticalAlignment="Top"
-			HorizontalAlignment="Right" Grid.Column="5" Grid.Row="1" Height="0" Width="0"/>
+			HorizontalAlignment="Right" Grid.Column="7" Grid.Row="1" Height="0" Width="0" />
 		<ListBox
-			Margin="0,0,-11,0" Background="#FFF4F4F4"
+			Background="#FFF4F4F4"
 			MinWidth="400" HorizontalContentAlignment="Stretch"
-			ItemsSource="{Binding Path=Samples}" Grid.ColumnSpan="8" Grid.Row="3" Grid.Column="1">
+			ItemsSource="{Binding Path=Samples}" Grid.ColumnSpan="11" Grid.Row="3">
 			<ListBox.ItemTemplate>
 				<DataTemplate>
 					<sampleBrowser:SampleItemView Width="auto" DataContext="{Binding}" />
@@ -166,11 +179,11 @@
 		</ListBox>
 		<Button
 			Content="?"
-			Style="{StaticResource DeltaButton}" Grid.Column="7" Grid.Row="1" Foreground="White" FontSize="20" FontWeight="Bold">
+			Style="{StaticResource DeltaButton}" Grid.Column="9" Grid.Row="1" Foreground="White" FontSize="20" FontWeight="Bold">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-					<GradientStop Color="#FFA0A0A0" Offset="0"/>
-					<GradientStop Color="#FF8B8B8B" Offset="1"/>
+					<GradientStop Color="#FFA0A0A0" Offset="0" />
+					<GradientStop Color="#FF8B8B8B" Offset="1" />
 				</LinearGradientBrush>
 			</Button.Background>
 			<i:Interaction.Triggers>

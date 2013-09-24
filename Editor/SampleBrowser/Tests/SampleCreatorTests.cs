@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
+using DeltaEngine.Editor.Core;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.SampleBrowser.Tests
@@ -12,9 +13,7 @@ namespace DeltaEngine.Editor.SampleBrowser.Tests
 		public void Init()
 		{
 			sampleCreator = new SampleCreator(CreateMockSamplesFileSystem());
-			sampleCreator.SamplesPath = "Samples";
-			sampleCreator.DeltaEngineRootPath = "";
-			sampleCreator.FallbackPath = "";
+			sampleCreator.InstallPath = "";
 		}
 
 		private SampleCreator sampleCreator;
@@ -40,7 +39,7 @@ namespace DeltaEngine.Editor.SampleBrowser.Tests
 		public void CreateSampleFromMockAssembly()
 		{
 			Assert.AreEqual(0, sampleCreator.Samples.Count);
-			sampleCreator.CreateSamples();
+			sampleCreator.CreateSamples(DeltaEngineFramework.OpenTK);
 			Assert.AreEqual(1, sampleCreator.Samples.Count);
 			Assert.AreEqual("EmptyGame", sampleCreator.Samples[0].Title);
 			Assert.AreEqual("Sample Game", sampleCreator.Samples[0].Description);

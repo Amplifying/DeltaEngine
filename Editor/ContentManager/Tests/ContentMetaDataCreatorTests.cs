@@ -13,8 +13,7 @@ namespace DeltaEngine.Editor.ContentManager.Tests
 		[Test, CloseAfterFirstFrame]
 		public void CreateContentMetaDataFromImageFileToBeUploadedToTheOnlineService()
 		{
-			var service = new OnlineService();
-			var creator = new ContentMetaDataCreator(service);
+			var creator = new ContentMetaDataCreator();
 			var filePath = Path.Combine("Content", "DeltaEngineLogo.png");
 			var metaData = creator.CreateMetaDataFromFile(filePath);
 			Assert.AreEqual("DeltaEngineLogo", metaData.Name);
@@ -32,8 +31,7 @@ namespace DeltaEngine.Editor.ContentManager.Tests
 		[Test, CloseAfterFirstFrame]
 		public void CreateContentMetaDataFromXmlFileToBeUploadedToTheOnlineService()
 		{
-			var service = new OnlineService();
-			var creator = new ContentMetaDataCreator(service);
+			var creator = new ContentMetaDataCreator();
 			var filePath = Path.Combine("Content", "Verdana12.xml");
 			var metaData = creator.CreateMetaDataFromFile(filePath);
 			Assert.AreEqual("Verdana12", metaData.Name);

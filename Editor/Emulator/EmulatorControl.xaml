@@ -7,22 +7,65 @@
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="500"
 	MinHeight="300" MinWidth="300">
 	<Grid>
-		<!--<Grid Height="20" VerticalAlignment="Top">
+		<Grid Height="20" VerticalAlignment="Top" Visibility="Collapsed">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*" />
 				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*" />
 			</Grid.ColumnDefinitions>
-			<ComboBox
-				Grid.Column="0"
-				ItemsSource="{Binding Path=AvailableDevices, UpdateSourceTrigger=PropertyChanged}"
-				SelectedItem="{Binding Path=SelectedDevice, UpdateSourceTrigger=PropertyChanged}" />
+			<TextBlock Grid.Column="0" Text="Device" />
 			<ComboBox
 				Grid.Column="1"
+				ItemsSource="{Binding Path=AvailableDevices, UpdateSourceTrigger=PropertyChanged}"
+				SelectedItem="{Binding Path=SelectedDevice, UpdateSourceTrigger=PropertyChanged}" />
+			<TextBlock Grid.Column="2" Text="Scaling" />
+			<ComboBox
+				Grid.Column="3"
 				ItemsSource="{Binding Path=AvailableScales, UpdateSourceTrigger=PropertyChanged}"
 				SelectedItem="{Binding Path=SelectedScale, UpdateSourceTrigger=PropertyChanged}" />
-		</Grid>-->
-		<!--<Grid Margin="0,20,0,0">-->
-		<Grid>
+			<CheckBox Grid.Column="4" Content="Grid On/Off" />
+			<TextBlock Grid.Column="5" Text="GridSize" />
+			<ComboBox Grid.Column="6">
+				<ComboBoxItem IsSelected="True">10 x 10</ComboBoxItem>
+				<ComboBoxItem>16 x 16</ComboBoxItem>
+				<ComboBoxItem>20 x 20</ComboBoxItem>
+				<ComboBoxItem>24 x 24</ComboBoxItem>
+				<ComboBoxItem>50 x 50</ComboBoxItem>
+			</ComboBox>
+			<CheckBox Grid.Column="7" Content="Snapping On/Off" />
+			<TextBlock Grid.Column="8" Text="Background" />
+			<ComboBox Grid.Column="9" Text="Background">
+				<ComboBoxItem>Color/Background</ComboBoxItem>
+				<ComboBoxItem>Image/3D Scene</ComboBoxItem>
+			</ComboBox>
+		</Grid>
+		<Grid Width="140" HorizontalAlignment="Left" Margin="0,20,0,0" Visibility="Collapsed">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="20" />
+				<RowDefinition Height="*" />
+				<RowDefinition Height="20" />
+				<RowDefinition Height="*" />
+			</Grid.RowDefinitions>
+			<TextBlock Grid.Row="0" Text="Toolbox" />
+			<ListBox Grid.Row="1">
+				<ListBoxItem>Tool 1</ListBoxItem>
+				<ListBoxItem>Tool 2</ListBoxItem>
+			</ListBox>
+			<TextBlock Grid.Row="2" Text="Hierarchy" />
+			<ListBox Grid.Row="3">
+				<ListBoxItem>Element 1</ListBoxItem>
+				<ListBoxItem>Element 2</ListBoxItem>
+				<ListBoxItem>Element 3</ListBoxItem>
+			</ListBox>
+		</Grid>
+		<Grid Margin="0,0,0,0">
 			<WindowsFormsHost Name="ViewportHost" x:FieldModifier="public" />
 		</Grid>
 	</Grid>

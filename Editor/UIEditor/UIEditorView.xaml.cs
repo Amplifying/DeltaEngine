@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.MaterialEditor;
 using DeltaEngine.Editor.SpriteFontCreator;
@@ -40,11 +41,6 @@ namespace DeltaEngine.Editor.UIEditor
 			get { return false; }
 		}
 
-		public void AddImage(object sender, RoutedEventArgs e)
-		{
-			Messenger.Default.Send("AddImage", "AddImage");
-		}
-
 		private void SaveUI(object sender, RoutedEventArgs e)
 		{
 			Messenger.Default.Send("SaveUI", "SaveUI");
@@ -75,6 +71,40 @@ namespace DeltaEngine.Editor.UIEditor
 		public void DecreaseRenderLayer(object sender, RoutedEventArgs e)
 		{
 			Messenger.Default.Send(-1, "ChangeRenderLayer");
+		}
+
+		private void DragImage(object sender, MouseEventArgs e)
+		{
+			if (e.LeftButton == MouseButtonState.Pressed && !isDragging)
+			{
+				Messenger.Default.Send(true, "SetDraggingImage");
+				isDragging = true;
+				Mouse.OverrideCursor = Cursors.Hand;
+			}
+
+			if (e.LeftButton != MouseButtonState.Pressed)
+			{
+				Messenger.Default.Send(false, "SetDraggingImage");
+				isDragging = false;
+				Mouse.OverrideCursor = Cursors.Arrow;
+			}
+		}
+
+		private bool isDragging;
+
+		private void SetMouseIcon(object sender, MouseEventArgs e)
+		{
+			if (e.LeftButton != MouseButtonState.Pressed)
+			{
+				Messenger.Default.Send(false, "SetDraggingImage");
+				isDragging = false;
+				Mouse.OverrideCursor = Cursors.Arrow;
+			}
+		}
+
+		private void ChangeGrid(object sender, SelectionChangedEventArgs e)
+		{
+			Messenger.Default.Send(e.AddedItems[0], "ChangeGrid");
 		}
 	}
 }

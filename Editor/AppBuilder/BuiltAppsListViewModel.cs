@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using DeltaEngine.Content.Xml;
 using DeltaEngine.Core;
 using DeltaEngine.Editor.Messages;
 using DeltaEngine.Extensions;
@@ -19,13 +18,32 @@ namespace DeltaEngine.Editor.AppBuilder
 		{
 			builtAppsList = new List<AppInfo>();
 			AppStorageDirectory = Path.Combine(AssemblyExtensions.GetMyDocumentsAppFolder(), "BuiltApps");
-			appStorageData = new XmlData("AppsStorage");
+			DeleteObsoleteAppsStorageXmlFileIfExists();
 			FindBuiltApps();
 		}
 
 		private readonly List<AppInfo> builtAppsList;
-		public string AppStorageDirectory { get; set; }
-		private XmlData appStorageData;
+		public string AppStorageDirectory { get; private set; }
+
+		private void DeleteObsoleteAppsStorageXmlFileIfExists()
+		{
+			// This functionality can be removed in some later releases after 0.9.9.3 again
+			string xmlStorageFilePath = Path.Combine(AppStorageDirectory, "AppsStorage.xml");
+			if (File.Exists(xmlStorageFilePath))
+				TryDeleteFile(xmlStorageFilePath);
+		}
+
+		private static void TryDeleteFile(string filePath)
+		{
+			try
+			{
+				File.Delete(filePath);
+			}
+			catch (Exception ex)
+			{
+				Logger.Warning("Unable to delete '" + filePath + "' file because: " + ex);
+			}
+		}
 
 		private void FindBuiltApps()
 		{
@@ -103,14 +121,6 @@ namespace DeltaEngine.Editor.AppBuilder
 			ValidateAppStorageDirectory();
 			CreateAppStorageDirectoryIfNecessary();
 			File.WriteAllBytes(appInfo.FilePath, appData);
-			var appMetaData = new XmlData("App");
-			appMetaData.AddAttribute(AttributeNamePackageFileName, Path.GetFileName(appInfo.FilePath));
-			appMetaData.AddAttribute(AttributeNamePlatform, appInfo.Platform);
-			appMetaData.AddAttribute(AttributeNamePackageGuid, appInfo.AppGuid);
-			if (appInfo.IsSolutionPathAvailable)
-				appMetaData.AddAttribute(AttributeNameSolutionPath, appInfo.SolutionFilePath);
-			appStorageData.AddChild(appMetaData);
-			File.WriteAllText(GetAppsStorageDataFilePath(), appStorageData.ToXmlString());
 		}
 
 		private void ValidateAppStorageDirectory()
@@ -125,41 +135,6 @@ namespace DeltaEngine.Editor.AppBuilder
 		{
 			if (!Directory.Exists(AppStorageDirectory))
 				Directory.CreateDirectory(AppStorageDirectory);
-		}
-
-		private const string AttributeNamePackageFileName = "PackageFileName";
-		private const string AttributeNamePlatform = "Platform";
-		private const string AttributeNamePackageGuid = "AppGuid";
-		private const string AttributeNameSolutionPath = "SolutionPath";
-
-		private string GetAppsStorageDataFilePath()
-		{
-			return Path.Combine(AppStorageDirectory, "AppsStorage.xml");
-		}
-
-		//never called except in tests
-		public void Load()
-		{
-			ValidateAppStorageDirectory();
-			string storageDataFilePath = GetAppsStorageDataFilePath();
-			if (File.Exists(storageDataFilePath))
-				appStorageData = new XmlFile(storageDataFilePath).Root;
-			foreach (XmlData appEntry in appStorageData.Children)
-				LoadSavedApp(appEntry);
-			RaisePropertyChangedOfBuiltApps();
-		}
-
-		private void LoadSavedApp(XmlData appMetaData)
-		{
-			string packageFilePath = Path.Combine(AppStorageDirectory,
-				appMetaData.GetAttributeValue(AttributeNamePackageFileName));
-			var appPlatform =
-				appMetaData.GetAttributeValue(AttributeNamePlatform).TryParse(PlatformName.Windows);
-			var appGuid = new Guid(appMetaData.GetAttributeValue(AttributeNamePackageGuid));
-			var loadedAppInfo = AppInfoExtensions.CreateAppInfo(packageFilePath, appPlatform, appGuid,
-				DateTime.Now);
-			loadedAppInfo.SolutionFilePath = appMetaData.GetAttributeValue(AttributeNameSolutionPath);
-			builtAppsList.Add(loadedAppInfo);
 		}
 
 		public string TextOfBuiltApps

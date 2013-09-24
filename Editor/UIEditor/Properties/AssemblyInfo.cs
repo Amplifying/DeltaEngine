@@ -12,5 +12,5 @@ using System.Windows;
 [assembly: Guid("3C2F6C8E-10F3-452B-8B31-09F54F6B0CC8")]
 [assembly:
 	ThemeInfo(ResourceDictionaryLocation.None, ResourceDictionaryLocation.SourceAssembly)]
-[assembly: AssemblyVersion("0.9.9.1")]
-[assembly: AssemblyFileVersion("0.9.9.1")]
+[assembly: AssemblyVersion("0.9.9.3")]
+[assembly: AssemblyFileVersion("0.9.9.3")]

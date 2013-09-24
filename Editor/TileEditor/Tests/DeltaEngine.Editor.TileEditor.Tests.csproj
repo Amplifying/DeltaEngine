@@ -57,7 +57,7 @@
       <Project>{138A40B5-3D80-4BA3-BD84-D82C151EE7FE}</Project>
       <Name>DeltaEngine.Content.Xml</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Rendering\Shapes\DeltaEngine.Rendering.Shapes.csproj">
+    <ProjectReference Include="..\..\..\Rendering2D\Shapes\DeltaEngine.Rendering2D.Shapes.csproj">
       <Project>{BB73D940-CBD2-4F00-B246-2A25CA5ACD7E}</Project>
       <Name>DeltaEngine.Rendering.Shapes</Name>
     </ProjectReference>

@@ -11,7 +11,7 @@ namespace DeltaEngine.Editor.Core
 		event Action<object> DataReceived;
 		event Action<ContentType, string> ContentUpdated;
 		event Action<string> ContentDeleted;
-		void Send(object message);
+		void Send(object message, bool allowToCompressMessage = true);
 		IEnumerable<string> GetAllContentNames();
 		IEnumerable<string> GetAllContentNamesByType(ContentType type);
 		ContentType? GetTypeOfContent(string content);

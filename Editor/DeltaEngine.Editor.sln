@@ -19,8 +19,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.SampleBr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.Tests", "Tests\DeltaEngine.Editor.Tests.csproj", "{349C2E33-0237-44AF-8A57-6B36D7ECFDD4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Content.Xml", "..\Content\Xml\DeltaEngine.Content.Xml.csproj", "{138A40B5-3D80-4BA3-BD84-D82C151EE7FE}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.Mocks", "Mocks\DeltaEngine.Editor.Mocks.csproj", "{2A38417D-2378-41F8-BCC6-A65E1894835A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Networking", "..\Networking\DeltaEngine.Networking.csproj", "{5231706E-2955-43BF-9C06-291E12AF5C5C}"
@@ -41,7 +39,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Platforms.Windo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Content.Json", "..\Content\Json\DeltaEngine.Content.Json.csproj", "{F8411B87-8F40-4D86-A17D-939FEE017C56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Rendering", "..\Rendering\DeltaEngine.Rendering.csproj", "{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Rendering2D", "..\Rendering2D\DeltaEngine.Rendering2D.csproj", "{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Content.Online", "..\Content\Online\DeltaEngine.Content.Online.csproj", "{68AA6280-09EF-4325-B5F8-B8A967004144}"
 EndProject
@@ -129,21 +127,31 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Multimedia.Musi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Multimedia.VideoStreams", "..\Multimedia\VideoStreams\DeltaEngine.Multimedia.VideoStreams.csproj", "{27487228-2ADB-447B-95D3-6F6053999281}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Rendering.Sprites", "..\Rendering\Sprites\DeltaEngine.Rendering.Sprites.csproj", "{FCA7BAAA-3F6E-4CA3-B354-C34AF4F1BDDD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Rendering2D.Sprites", "..\Rendering2D\Sprites\DeltaEngine.Rendering2D.Sprites.csproj", "{FCA7BAAA-3F6E-4CA3-B354-C34AF4F1BDDD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Rendering.Fonts", "..\Rendering\Fonts\DeltaEngine.Rendering.Fonts.csproj", "{4A00FD90-FF7B-4250-9CBC-B6855130090B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Rendering2D.Fonts", "..\Rendering2D\Fonts\DeltaEngine.Rendering2D.Fonts.csproj", "{4A00FD90-FF7B-4250-9CBC-B6855130090B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Rendering.Shapes", "..\Rendering\Shapes\DeltaEngine.Rendering.Shapes.csproj", "{BB73D940-CBD2-4F00-B246-2A25CA5ACD7E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Rendering2D.Shapes", "..\Rendering2D\Shapes\DeltaEngine.Rendering2D.Shapes.csproj", "{BB73D940-CBD2-4F00-B246-2A25CA5ACD7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Rendering.Cameras", "..\Rendering\Cameras\DeltaEngine.Rendering.Cameras.csproj", "{F5992CBF-8E17-4EB0-B483-F1DE7993C416}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Rendering3D.Cameras", "..\Rendering3D\Cameras\DeltaEngine.Rendering3D.Cameras.csproj", "{F5992CBF-8E17-4EB0-B483-F1DE7993C416}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Rendering.Particles", "..\Rendering\Particles\DeltaEngine.Rendering.Particles.csproj", "{BECE691C-BAC6-434B-B1F9-4D8653922585}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Rendering3D.Particles", "..\Rendering3D\Particles\DeltaEngine.Rendering3D.Particles.csproj", "{BECE691C-BAC6-434B-B1F9-4D8653922585}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.TileEditor", "TileEditor\DeltaEngine.Editor.TileEditor.csproj", "{84A35485-EE22-4EE2-9F9F-F621EEDBF580}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.TileEditor.Tests", "TileEditor\Tests\DeltaEngine.Editor.TileEditor.Tests.csproj", "{4AE0644E-6C05-4ECD-B81B-A73D04D64BAA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Rendering.Models", "..\Rendering\Models\DeltaEngine.Rendering.Models.csproj", "{701FDD1A-6B8A-4CA9-B796-AC9546233F47}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Rendering3D.Models", "..\Rendering3D\Models\DeltaEngine.Rendering3D.Models.csproj", "{701FDD1A-6B8A-4CA9-B796-AC9546233F47}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Rendering3D.Mocks", "..\Rendering3D\Mocks\DeltaEngine.Rendering3D.Mocks.csproj", "{DE00BA97-4ABF-443A-82B2-2D2947DAA0B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Content.Xml", "..\Content\Xml\DeltaEngine.Content.Xml.csproj", "{138A40B5-3D80-4BA3-BD84-D82C151EE7FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Rendering2D.Graphs", "..\Rendering2D\Graphs\DeltaEngine.Rendering2D.Graphs.csproj", "{BFD23A13-90D3-46FC-8EAB-78664F4FB37D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Rendering3D.Shapes3D", "..\Rendering3D\Shapes3D\DeltaEngine.Rendering3D.Shapes3D.csproj", "{C9CB5DFF-6BF8-4BC8-9148-FBC85FF5A203}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Rendering3D", "..\Rendering3D\DeltaEngine.Rendering3D.csproj", "{3266F559-74EE-4A1C-B37B-2C591F73611B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DeltaEngine", "DeltaEngine", "{274C46E2-0906-4579-AB99-A345801A6051}"
 EndProject
@@ -177,10 +185,6 @@ Global
 		{349C2E33-0237-44AF-8A57-6B36D7ECFDD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{349C2E33-0237-44AF-8A57-6B36D7ECFDD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{349C2E33-0237-44AF-8A57-6B36D7ECFDD4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{138A40B5-3D80-4BA3-BD84-D82C151EE7FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{138A40B5-3D80-4BA3-BD84-D82C151EE7FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{138A40B5-3D80-4BA3-BD84-D82C151EE7FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{138A40B5-3D80-4BA3-BD84-D82C151EE7FE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2A38417D-2378-41F8-BCC6-A65E1894835A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2A38417D-2378-41F8-BCC6-A65E1894835A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A38417D-2378-41F8-BCC6-A65E1894835A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -429,6 +433,26 @@ Global
 		{701FDD1A-6B8A-4CA9-B796-AC9546233F47}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{701FDD1A-6B8A-4CA9-B796-AC9546233F47}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{701FDD1A-6B8A-4CA9-B796-AC9546233F47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE00BA97-4ABF-443A-82B2-2D2947DAA0B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE00BA97-4ABF-443A-82B2-2D2947DAA0B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE00BA97-4ABF-443A-82B2-2D2947DAA0B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE00BA97-4ABF-443A-82B2-2D2947DAA0B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{138A40B5-3D80-4BA3-BD84-D82C151EE7FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{138A40B5-3D80-4BA3-BD84-D82C151EE7FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{138A40B5-3D80-4BA3-BD84-D82C151EE7FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{138A40B5-3D80-4BA3-BD84-D82C151EE7FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFD23A13-90D3-46FC-8EAB-78664F4FB37D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFD23A13-90D3-46FC-8EAB-78664F4FB37D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFD23A13-90D3-46FC-8EAB-78664F4FB37D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFD23A13-90D3-46FC-8EAB-78664F4FB37D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9CB5DFF-6BF8-4BC8-9148-FBC85FF5A203}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9CB5DFF-6BF8-4BC8-9148-FBC85FF5A203}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9CB5DFF-6BF8-4BC8-9148-FBC85FF5A203}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9CB5DFF-6BF8-4BC8-9148-FBC85FF5A203}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3266F559-74EE-4A1C-B37B-2C591F73611B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3266F559-74EE-4A1C-B37B-2C591F73611B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3266F559-74EE-4A1C-B37B-2C591F73611B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3266F559-74EE-4A1C-B37B-2C591F73611B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -462,12 +486,16 @@ Global
 		{BD8A80E2-A313-437E-B0EF-FC0B066280A7} = {274C46E2-0906-4579-AB99-A345801A6051}
 		{462DC673-E132-4A82-B49B-EC353D25B409} = {274C46E2-0906-4579-AB99-A345801A6051}
 		{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927} = {274C46E2-0906-4579-AB99-A345801A6051}
-		{F5992CBF-8E17-4EB0-B483-F1DE7993C416} = {274C46E2-0906-4579-AB99-A345801A6051}
 		{4A00FD90-FF7B-4250-9CBC-B6855130090B} = {274C46E2-0906-4579-AB99-A345801A6051}
-		{701FDD1A-6B8A-4CA9-B796-AC9546233F47} = {274C46E2-0906-4579-AB99-A345801A6051}
-		{BECE691C-BAC6-434B-B1F9-4D8653922585} = {274C46E2-0906-4579-AB99-A345801A6051}
+		{BFD23A13-90D3-46FC-8EAB-78664F4FB37D} = {274C46E2-0906-4579-AB99-A345801A6051}
 		{BB73D940-CBD2-4F00-B246-2A25CA5ACD7E} = {274C46E2-0906-4579-AB99-A345801A6051}
 		{FCA7BAAA-3F6E-4CA3-B354-C34AF4F1BDDD} = {274C46E2-0906-4579-AB99-A345801A6051}
+		{3266F559-74EE-4A1C-B37B-2C591F73611B} = {274C46E2-0906-4579-AB99-A345801A6051}
+		{F5992CBF-8E17-4EB0-B483-F1DE7993C416} = {274C46E2-0906-4579-AB99-A345801A6051}
+		{DE00BA97-4ABF-443A-82B2-2D2947DAA0B4} = {274C46E2-0906-4579-AB99-A345801A6051}
+		{701FDD1A-6B8A-4CA9-B796-AC9546233F47} = {274C46E2-0906-4579-AB99-A345801A6051}
+		{BECE691C-BAC6-434B-B1F9-4D8653922585} = {274C46E2-0906-4579-AB99-A345801A6051}
+		{C9CB5DFF-6BF8-4BC8-9148-FBC85FF5A203} = {274C46E2-0906-4579-AB99-A345801A6051}
 		{75BB4C75-DE36-47B3-9910-10EA8E8973B7} = {274C46E2-0906-4579-AB99-A345801A6051}
 		{3A3D2E3E-FCD6-40A4-8F4E-36F3D173AB41} = {274C46E2-0906-4579-AB99-A345801A6051}
 		{4FDE0BC1-AF24-4A6D-AB73-A28833D41AC8} = {274C46E2-0906-4579-AB99-A345801A6051}

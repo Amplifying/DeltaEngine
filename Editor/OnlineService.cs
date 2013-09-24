@@ -33,7 +33,7 @@ namespace DeltaEngine.Editor
 			var newProject = message as SetProject;
 			if (newProject != null)
 				ChangeProject(newProject);
-			else if (message.GetType() == typeof(ServerError))
+			if (message.GetType() == typeof(ServerError))
 				Logger.Warning(message.ToString());
 			else if (DataReceived != null)
 				DataReceived(message);
@@ -58,7 +58,7 @@ namespace DeltaEngine.Editor
 		public string ProjectName { get; private set; }
 		public ProjectPermissions Permissions { get; private set; }
 		public event Action<object> DataReceived;
-		private Action<object> send;
+		private Action<object, bool> send;
 		private EditorContentLoader editorContent;
 
 		private void OnContentUpdated(ContentType type, string name)
@@ -83,12 +83,12 @@ namespace DeltaEngine.Editor
 		{
 			if (newProjectName.Compare(ProjectName))
 				return;
-			send(new ChangeProjectRequest(newProjectName));
+			send(new ChangeProjectRequest(newProjectName), true);
 		}
 
-		public void Send(object message)
+		public void Send(object message, bool allowToCompressMessage = true)
 		{
-			send(message);
+			send(message, allowToCompressMessage);
 		}
 
 		public IEnumerable<string> GetAllContentNames()

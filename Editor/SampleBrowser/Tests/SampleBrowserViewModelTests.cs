@@ -61,7 +61,7 @@ namespace DeltaEngine.Editor.SampleBrowser.Tests
 		private void ChangeComboBoxSelectionTo(int index)
 		{
 			viewModel.SetSelection(index);
-			viewModel.OnComboBoxSelectionChanged.Execute(null);
+			viewModel.OnAssemblySelectionChanged.Execute(null);
 		}
 
 		[Test]

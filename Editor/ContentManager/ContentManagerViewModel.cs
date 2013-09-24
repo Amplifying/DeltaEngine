@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using DeltaEngine.Content;
@@ -8,8 +7,8 @@ using DeltaEngine.Datatypes;
 using DeltaEngine.Editor.ContentManager.Previewers;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Entities;
-using DeltaEngine.Rendering.Cameras;
-using DeltaEngine.Rendering.Sprites;
+using DeltaEngine.Rendering2D.Sprites;
+using DeltaEngine.Rendering3D.Cameras;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 
@@ -24,7 +23,7 @@ namespace DeltaEngine.Editor.ContentManager
 		{
 			this.service = service;
 			SetMessenger();
-			ContentList = new ObservableCollection<ContentView>();
+			ContentList = new ObservableCollection<ContentIconAndName>();
 			RefreshContentList();
 		}
 
@@ -32,19 +31,20 @@ namespace DeltaEngine.Editor.ContentManager
 
 		private void SetMessenger()
 		{
-			Messenger.Default.Register<IList<ContentView>>(this, "DeleteContent", DeleteContentFromList);
+			Messenger.Default.Register<ContentIconAndName[]>(this, "DeleteContent",
+				DeleteContentFromList);
 			Messenger.Default.Register<bool>(this, "DeleteContent", DeleteContentFromList);
 		}
 
-		public void DeleteContentFromList(IList<ContentView> contentList)
+		public void DeleteContentFromList(ContentIconAndName[] contentList)
 		{
 			foreach (var content in contentList)
-				service.DeleteContent(content.NewContent.ContentName);
+				service.DeleteContent(content.Name);
 		}
 
 		public void DeleteContentFromList(bool deleteSubContent)
 		{
-			service.DeleteContent(selectedContent.NewContent.ContentName, deleteSubContent);
+			service.DeleteContent(selectedContent.Name, deleteSubContent);
 		}
 
 		public bool IsAnimation
@@ -53,7 +53,7 @@ namespace DeltaEngine.Editor.ContentManager
 			{
 				if (selectedContent == null)
 					return false;
-				var contentType = service.GetTypeOfContent(selectedContent.NewContent.ContentName);
+				var contentType = service.GetTypeOfContent(selectedContent.Name);
 				return contentType == ContentType.ImageAnimation ||
 					contentType == ContentType.SpriteSheetAnimation || contentType == ContentType.Material;
 			}
@@ -68,60 +68,54 @@ namespace DeltaEngine.Editor.ContentManager
 			RaisePropertyChanged("ContentList");
 		}
 
-		private void AddNewContent(string content)
+		private void AddNewContent(string contentName)
 		{
-			var newContent = new ContentView();
-			var type = service.GetTypeOfContent(content);
-			CreateNewContentView(content, type, newContent);
-			ContentList.Add(newContent);
+			var contentType = service.GetTypeOfContent(contentName);
+			ContentList.Add(new ContentIconAndName(GetContentTypeIcon(contentType), contentName));
 		}
 
-		private static void CreateNewContentView(string content, ContentType? type,
-			ContentView newContent)
+		private static string GetContentTypeIcon(ContentType? type)
 		{
-			if (type == ContentType.Font)
-				newContent.CreateContentView(Path.Combine(ContentTypeFolder, "Xml.png"), content);
-			else if (type == ContentType.Particle2DEmitter)
-				newContent.CreateContentView(Path.Combine(ContentTypeFolder, "ParticleEmitter.png"),
-					content);
-			else
-				newContent.CreateContentView(Path.Combine(ContentTypeFolder, type + ".png"), content);
+			var iconFileName = type == ContentType.Font
+				? "Xml.png" : type == ContentType.ParticleEmitter ? "ParticleEmitter.png" : type + ".png";
+			return Path.Combine(ContentTypeFolder, iconFileName);
 		}
 
-		public ObservableCollection<ContentView> ContentList { get; set; }
+		public ObservableCollection<ContentIconAndName> ContentList { get; set; }
 		private const string ContentTypeFolder = "ContentTypes";
 
-		public ContentView SelectedContent
+		public ContentIconAndName SelectedContent
 		{
 			get { return selectedContent; }
 			set
 			{
 				selectedContent = value;
 				ClearEntitiesExceptCamera();
-				CheckTypeOfContent();
+				CreatePreviewerForSelectedContent();
 				DrawBackground();
 				RaisePropertyChanged("IsAnimation");
 			}
 		}
-		private ContentView selectedContent;
+		private ContentIconAndName selectedContent;
 
-		private void CheckTypeOfContent()
+		private void CreatePreviewerForSelectedContent()
 		{
 			if (selectedContent == null)
 				return;
-			var type = service.GetTypeOfContent(selectedContent.NewContent.ContentName);
+			var type = service.GetTypeOfContent(selectedContent.Name);
 			if (type == null)
 				return;
 			try
 			{
-				new ContentViewer().Viewer(selectedContent.NewContent.ContentName, service.ProjectName,
-					(ContentType)type);
+				contentViewer.View(selectedContent.Name, (ContentType)type);
 			}
 			catch (Exception ex)
 			{
 				Logger.Error(ex);
 			}
 		}
+
+		private readonly ContentViewer contentViewer = new ContentViewer();
 
 		public string SelectedBackgroundImage
 		{
@@ -130,7 +124,7 @@ namespace DeltaEngine.Editor.ContentManager
 			{
 				selectedBackgroundImage = value;
 				ClearEntitiesExceptCamera();
-				CheckTypeOfContent();
+				CreatePreviewerForSelectedContent();
 				DrawBackground();
 			}
 		}
@@ -150,7 +144,7 @@ namespace DeltaEngine.Editor.ContentManager
 			if (selectedBackgroundImage == null || selectedBackgroundImage == "None")
 				return;
 			var background = new Sprite(new Material(Shader.Position2DUv, selectedBackgroundImage),
-				new Rectangle(Point.Zero, Size.One));
+				new Rectangle(Vector2D.Zero, Size.One));
 			background.RenderLayer = -100;
 		}
 	}

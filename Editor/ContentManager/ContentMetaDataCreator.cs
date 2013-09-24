@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
 using System.IO;
-using System.Xml.Linq;
 using DeltaEngine.Content;
-using DeltaEngine.Core;
-using DeltaEngine.Editor.Core;
 
 namespace DeltaEngine.Editor.ContentManager
 {
@@ -14,19 +12,12 @@ namespace DeltaEngine.Editor.ContentManager
 	/// </summary>
 	public class ContentMetaDataCreator
 	{
-		public ContentMetaDataCreator(Service service)
-		{
-			this.service = service;
-		}
-
-		private readonly Service service;
-
 		//ncrunch: no coverage start
 		public ContentMetaData CreateMetaDataFromFile(string filePath)
 		{
 			var contentMetaData = new ContentMetaData();
 			contentMetaData.Name = Path.GetFileNameWithoutExtension(filePath);
-			contentMetaData.Type = ExtensionToType(filePath);
+			contentMetaData.Type = ContentTypeIdentifier.ExtensionToType(filePath);
 			contentMetaData.LastTimeUpdated = File.GetLastWriteTime(filePath);
 			contentMetaData.LocalFilePath = Path.GetFileName(filePath);
 			contentMetaData.PlatformFileId = 0;
@@ -34,67 +25,6 @@ namespace DeltaEngine.Editor.ContentManager
 			if (contentMetaData.Type == ContentType.Image)
 				AddImageDataFromBitmapToContentMetaData(filePath, contentMetaData);
 			return contentMetaData;
-		}
-
-		private static ContentType ExtensionToType(string filePath)
-		{
-			var extension = Path.GetExtension(filePath);
-			switch (extension.ToLower())
-			{
-			case ".png":
-			case ".jpg":
-			case ".bmp":
-			case ".tif":
-				return ContentType.Image;
-			case ".wav":
-				return ContentType.Sound;
-			case ".gif":
-				return ContentType.JustStore;
-			case ".mp3":
-			case ".ogg":
-			case ".wma":
-				return ContentType.Music;
-			case ".mp4":
-			case ".avi":
-			case ".wmv":
-				return ContentType.Video;
-
-			case ".xml":
-				return DetermineTypeForXmlFile(filePath);
-			case ".json":
-				return ContentType.Json;
-			case ".fbx":
-			case ".obj":
-			case ".dae":
-				return ContentType.Model;
-			case ".deltamesh":
-				return ContentType.Mesh;
-			case ".deltaparticle":
-				return ContentType.Particle2DEmitter;
-			case ".deltashader":
-				return ContentType.Shader;
-			case ".deltamaterial":
-				return ContentType.Material;
-			}
-			Logger.Warning("Unknown content type was unable to be added to the server : " +
-				Path.GetFileName(filePath));
-			throw new UnsupportedContentFileFoundCannotParseType(extension);
-		}
-
-		private static ContentType DetermineTypeForXmlFile(string filePath)
-		{
-			var xmlFile = XDocument.Load(filePath);
-			if (xmlFile.Root.Name.ToString().Equals("Font"))
-				return ContentType.Font;
-			if (xmlFile.Root.Name.ToString().Equals("DefaultCommands"))
-				return ContentType.InputCommand;
-			return ContentType.Xml;
-		}
-
-		private class UnsupportedContentFileFoundCannotParseType : Exception
-		{
-			public UnsupportedContentFileFoundCannotParseType(string extension)
-				: base(extension) {}
 		}
 
 		private static void AddImageDataFromBitmapToContentMetaData(string filePath,
@@ -146,7 +76,8 @@ namespace DeltaEngine.Editor.ContentManager
 			var contentMetaData = new ContentMetaData();
 			SetDefaultValues(contentMetaData, animationName);
 			contentMetaData.Type = ContentType.ImageAnimation;
-			contentMetaData.Values.Add("DefaultDuration", animation.DefaultDuration.ToString());
+			contentMetaData.Values.Add("DefaultDuration",
+				animation.DefaultDuration.ToString(CultureInfo.InvariantCulture));
 			string images = "";
 			for (int index = 0; index < animation.Frames.Length; index++)
 				images = AddImageToMetaData(animation, index, images);
@@ -179,7 +110,7 @@ namespace DeltaEngine.Editor.ContentManager
 			SetDefaultValues(contentMetaData, animationName);
 			contentMetaData.Type = ContentType.SpriteSheetAnimation;
 			contentMetaData.Values.Add("DefaultDuration",
-				spriteSheetAnimation.DefaultDuration.ToString());
+				spriteSheetAnimation.DefaultDuration.ToString(CultureInfo.InvariantCulture));
 			contentMetaData.Values.Add("SubImageSize", spriteSheetAnimation.SubImageSize.ToString());
 			contentMetaData.Values.Add("ImageName", spriteSheetAnimation.Image.Name);
 			return contentMetaData;
@@ -189,7 +120,7 @@ namespace DeltaEngine.Editor.ContentManager
 		{
 			var contentMetaData = new ContentMetaData();
 			SetDefaultValues(contentMetaData, particleName);
-			contentMetaData.Type = ContentType.Particle2DEmitter;
+			contentMetaData.Type = ContentType.ParticleEmitter;
 			contentMetaData.LocalFilePath = particleName + ".deltaparticle";
 			contentMetaData.FileSize = byteArray.Length;
 			return contentMetaData;

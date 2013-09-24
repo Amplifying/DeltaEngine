@@ -56,8 +56,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CodePackerTests.cs" />
     <Compile Include="CodeUnpackerTests.cs" />
-    <Compile Include="PlatformNameTests.cs" />
+    <Compile Include="DeltaEngineFrameworkExtensionsTests.cs" />
     <Compile Include="EmbeddedResourcesLoaderTests.cs" />
+    <Compile Include="FrameworkFinderTests.cs" />
     <Compile Include="PathExtensionsTests.cs" />
     <Compile Include="ProcessRunnerTests.cs" />
     <Compile Include="ProjectEntryTests.cs" />

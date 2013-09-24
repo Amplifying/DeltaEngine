@@ -28,6 +28,7 @@ namespace DeltaEngine.Editor.AppBuilder
 			BrowsePressed = new RelayCommand<string>(OnBrowseUserSolutionPathExecuted);
 			service.DataReceived += OnServiceMessageReceived;
 			Service.Send(new SupportedPlatformsRequest());
+			TrySelectEngineSamplesSolution();
 		}
 
 		public PlatformName[] SupportedPlatforms { get; private set; }
@@ -249,6 +250,35 @@ namespace DeltaEngine.Editor.AppBuilder
 		}
 
 		public event Action<AppBuildFailed> AppBuildFailedRecieved;
+
+		private void TrySelectEngineSamplesSolution()
+		{
+			if (IsEnginePathEnvironmentVariableAvailable())
+				UserSolutionPath = GetSamplesSolutionFilePath();
+			else
+				Logger.Warning("AppBuilder plugin: The DeltaEngine environment variable '" +
+					PathExtensions.EnginePathEnvironmentVariableName + "' isn't set." + Environment.NewLine +
+					"Please make sure it's defined correctly.");
+		}
+
+		private static bool IsEnginePathEnvironmentVariableAvailable()
+		{
+			return !String.IsNullOrEmpty(PathExtensions.GetDeltaEngineDirectory());
+		}
+
+		private static string GetSamplesSolutionFilePath()
+		{
+			string directoryOfSolutionFile = GetDirectoryForSamplesSolutionInEngineRelease();
+			if (!Directory.Exists(directoryOfSolutionFile))
+				directoryOfSolutionFile = PathExtensions.GetDeltaEngineDirectory();
+			return Path.Combine(directoryOfSolutionFile, "DeltaEngine.Samples.sln");
+		}
+
+		private static string GetDirectoryForSamplesSolutionInEngineRelease()
+		{
+			string engineDirectory = PathExtensions.GetDeltaEngineDirectory();
+			return Path.Combine(engineDirectory, "OpenTK");
+		}
 
 		public bool IsBuildActionExecutable
 		{

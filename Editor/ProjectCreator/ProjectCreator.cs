@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Text;
+using DeltaEngine.Editor.Core;
 using SharpCompress.Archive;
 using SharpCompress.Archive.Zip;
 using SharpCompress.Common;
@@ -173,7 +174,7 @@ namespace DeltaEngine.Editor.ProjectCreator
 			replacements.Add(new Replacement("$safeprojectname$", Project.Name));
 			replacements.Add(new Replacement(GetFileName(Template.Ico),
 				Project.Name + IcoSuffixAndExtension));
-			replacements.Add(GetReplacementDependingOnFramework());
+			replacements.AddRange(GetReplacementsDependingOnFramework());
 			var newFile = ReplaceFile(oldFile, replacements);
 			WriteAllText(Project.Location + Project.Name + "\\" + Project.Name + CsprojExtension,
 				newFile);
@@ -181,18 +182,14 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		private const string CsprojExtension = ".csproj";
 
-		private Replacement GetReplacementDependingOnFramework()
+		private IEnumerable<Replacement> GetReplacementsDependingOnFramework()
 		{
-			if (Project.Framework == DeltaEngineFramework.OpenTK)
-				return new Replacement("WindowsOpenTK", "WindowsOpenTK");
-			if (Project.Framework == DeltaEngineFramework.SharpDX)
-				return new Replacement("WindowsOpenTK", "WindowsSharpDX");
-			if (Project.Framework == DeltaEngineFramework.SlimDX)
-				return new Replacement("WindowsOpenTK", "WindowsSlimDX");
-			if (Project.Framework == DeltaEngineFramework.Xna)
-				return new Replacement("WindowsOpenTK", "WindowsXna");
-
-			return new Replacement("", "");
+			var replacements = new Replacement[2];
+			replacements[0] = new Replacement(DeltaEngineFramework.OpenTK.ToInternalName(),
+				Project.Framework.ToInternalName());
+			replacements[1] = new Replacement(DeltaEngineFramework.OpenTK.ToString(),
+				Project.Framework.ToString());
+			return replacements;
 		}
 
 		private void ReplaceSourceCodeFile(string sourceFileName)

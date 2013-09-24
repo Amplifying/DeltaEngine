@@ -105,7 +105,7 @@ namespace DeltaEngine.Multimedia.OpenTK
 			AL.Source(channelHandle, ALSourcef.Gain, volume);
 		}
 
-		public void SetPosition(int channelHandle, Vector position)
+		public void SetPosition(int channelHandle, Vector3D position)
 		{
 			AL.Source(channelHandle, ALSource3f.Position, position.X, position.Y, position.Z);
 		}

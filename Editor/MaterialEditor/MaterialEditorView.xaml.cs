@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.ImageAnimationEditor;
 
@@ -47,6 +48,11 @@ namespace DeltaEngine.Editor.MaterialEditor
 		private void OpenAnimationEditor(object sender, RoutedEventArgs e)
 		{
 			service.StartPlugin(typeof(AnimationEditorView));
+		}
+
+		private void ButtonBaseOnClick(object sender, RoutedEventArgs e)
+		{
+			service.StartPlugin(typeof(ContentManagerView));
 		}
 	}
 }

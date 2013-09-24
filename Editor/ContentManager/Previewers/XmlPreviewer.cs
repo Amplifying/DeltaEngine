@@ -8,7 +8,7 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 		//ncrunch: no coverage start
 		public void PreviewContent(string contentName)
 		{
-			Process.Start(Directory.GetCurrentDirectory() + contentName);
+			Process.Start(Path.Combine(Directory.GetCurrentDirectory(), contentName));
 		}
 		//ncrunch: no coverage end
 	}

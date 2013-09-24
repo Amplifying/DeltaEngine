@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace DeltaEngine.Editor.ContentManager.Tests.Previewers
 {
-	class ParticlePreviewerTests : TestWithMocksOrVisually
+	internal class ParticlePreviewerTests : TestWithMocksOrVisually
 	{
 		[SetUp]
 		public void Setup()
@@ -26,23 +26,27 @@ namespace DeltaEngine.Editor.ContentManager.Tests.Previewers
 		{
 			mockMouse = Resolve<Mouse>() as MockMouse;
 			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(new Point(0.5f, 0.5f), particlePreviewer.currentDisplayParticle.Position);
+			Assert.AreEqual(new Vector2D(0.5f, 0.5f),
+				particlePreviewer.currentDisplayParticle2D.Position);
 			mockMouse.SetButtonState(MouseButton.Left, State.Pressed);
-			mockMouse.SetPosition(new Point(1f, 1f));
+			mockMouse.SetPosition(new Vector2D(1f, 1f));
 			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(new Point(2.5f, 2.5f), particlePreviewer.currentDisplayParticle.Position);
+			Assert.AreEqual(new Vector2D(2.5f, 2.5f),
+				particlePreviewer.currentDisplayParticle2D.Position);
 		}
 
 		[Test]
 		public void ZoomCamera()
 		{
 			mockMouse = Resolve<Mouse>() as MockMouse;
-			mockMouse.SetPosition(new Point(0f, 0f));
-			Assert.AreEqual(0.0f, particlePreviewer.currentDisplayParticle.EmitterData.Size.Start.Width);
+			mockMouse.SetPosition(new Vector2D(0f, 0f));
+			Assert.AreEqual(0.1f,
+				particlePreviewer.currentDisplayParticle2D.EmitterData.Size.Start.Width);
 			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(new Point(0.5f, 0.5f), particlePreviewer.currentDisplayParticle.Position);
+			Assert.AreEqual(new Vector2D(0.5f, 0.5f),
+				particlePreviewer.currentDisplayParticle2D.Position);
 			mockMouse.SetButtonState(MouseButton.Middle, State.Pressed);
-			mockMouse.SetPosition(new Point(1f, 1f));
+			mockMouse.SetPosition(new Vector2D(1f, 1f));
 			AdvanceTimeAndUpdateEntities();
 			//TODO: Assert.AreEqual(1.5f, particlePreviewer.currentDisplayParticle.DrawArea.Width);
 		}
@@ -51,13 +55,15 @@ namespace DeltaEngine.Editor.ContentManager.Tests.Previewers
 		public void SettingNewImageCreatesNewSizeAndPosition()
 		{
 			mockMouse.SetButtonState(MouseButton.Left, State.Pressed);
-			mockMouse.SetPosition(new Point(1f, 1f));
+			mockMouse.SetPosition(new Vector2D(1f, 1f));
 			mockMouse.SetButtonState(MouseButton.Middle, State.Pressed);
-			mockMouse.SetPosition(new Point(1f, 1f));
+			mockMouse.SetPosition(new Vector2D(1f, 1f));
 			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(new Point(2.5f, 2.5f), particlePreviewer.currentDisplayParticle.Position);
+			Assert.AreEqual(new Vector2D(2.5f, 2.5f),
+				particlePreviewer.currentDisplayParticle2D.Position);
 			particlePreviewer.PreviewContent("TestParticle");
-			Assert.AreEqual(new Point(0.5f, 0.5f), particlePreviewer.currentDisplayParticle.Position);
+			Assert.AreEqual(new Vector2D(0.5f, 0.5f),
+				particlePreviewer.currentDisplayParticle2D.Position);
 		}
 	}
 }

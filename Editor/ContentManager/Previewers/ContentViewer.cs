@@ -13,7 +13,7 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 			viewers.Add(ContentType.SpriteSheetAnimation, new SpriteSheetPreviewer());
 			viewers.Add(ContentType.Material, new MaterialPreviewer());
 			//viewers.Add(ContentType.Mesh, new MeshPreviewer((DefaultCamera)camera));
-			viewers.Add(ContentType.Particle2DEmitter, new ParticlePreviewer());
+			viewers.Add(ContentType.ParticleEmitter, new ParticlePreviewer());
 			viewers.Add(ContentType.Font, new FontPreviewer());
 			viewers.Add(ContentType.Sound, new SoundPreviewer());
 			viewers.Add(ContentType.Music, new MusicPreviewer());
@@ -25,15 +25,11 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 		private readonly Dictionary<ContentType, ContentPreview> viewers =
 			new Dictionary<ContentType, ContentPreview>();
 
-		public void Viewer(string contentName, string projectName, ContentType type)
+		public void View(string contentName, ContentType type)
 		{
 			if (type == ContentType.Shader)
 				return;
-			if (type == ContentType.Xml)
-				viewers[type].PreviewContent(Path.Combine(contentFolder, projectName, contentName, ".xml"));
 			viewers[type].PreviewContent(contentName);
 		}
-
-		private const string contentFolder = "Content";
 	}
 }

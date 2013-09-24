@@ -2,7 +2,7 @@
 using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
-using DeltaEngine.Rendering.Sprites;
+using DeltaEngine.Rendering2D.Sprites;
 
 namespace DeltaEngine.Editor.ContentManager.Previewers
 {
@@ -10,9 +10,8 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 	{
 		public void PreviewContent(string contentName)
 		{
-			currentDisplayAnimation =
-				new Sprite(
-					new Material(Shader.Position2DUv, contentName), new Rectangle(0.25f, 0.25f, 0.5f, 0.5f));
+			currentDisplayAnimation = new Sprite(new Material(Shader.Position2DUv, contentName),
+				new Rectangle(0.25f, 0.25f, 0.5f, 0.5f));
 			SetImageCommands();
 		}
 
@@ -27,18 +26,18 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 			new Command(ScaleImage).Add(new MousePositionTrigger(MouseButton.Middle, State.Pressed));
 		}
 
-		private Point lastPanPosition = Point.Unused;
+		private Vector2D lastPanPosition = Vector2D.Unused;
 
-		private void MoveImage(Point mousePosition)
+		private void MoveImage(Vector2D mousePosition)
 		{
 			var relativePosition = mousePosition - lastPanPosition;
 			lastPanPosition = mousePosition;
 			currentDisplayAnimation.Center += relativePosition;
 		}
 
-		private Point lastScalePosition = Point.Unused;
+		private Vector2D lastScalePosition = Vector2D.Unused;
 
-		private void ScaleImage(Point mousePosition)
+		private void ScaleImage(Vector2D mousePosition)
 		{
 			var relativePosition = mousePosition - lastScalePosition;
 			lastScalePosition = mousePosition;

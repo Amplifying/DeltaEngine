@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
@@ -7,7 +6,7 @@ using DeltaEngine.Datatypes;
 using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Entities;
-using DeltaEngine.Rendering.Sprites;
+using DeltaEngine.Rendering2D.Sprites;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 
@@ -18,7 +17,7 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 		public AnimationEditorViewModel(Service service)
 		{
 			this.service = service;
-			metaDataCreator = new ContentMetaDataCreator(service);
+			metaDataCreator = new ContentMetaDataCreator();
 			LoadedImageList = new ObservableCollection<string>();
 			ImageList = new ObservableCollection<string>();
 			AnimationList = new ObservableCollection<string>();
@@ -89,29 +88,21 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 		{
 			if (ImageList.Count == 0 || string.IsNullOrEmpty(AnimationName))
 				return;
-			ContentMetaData contentMetaData;
-			var fileNameAndBytes = new Dictionary<string, byte[]>();
-			contentMetaData = SaveImageAnimationOrSpriteSheetAnimation(fileNameAndBytes);
+			ContentMetaData contentMetaData = SaveImageAnimationOrSpriteSheetAnimation();
 			if (ContentLoader.Exists(AnimationName))
 				ReplaceOldContent();
-			service.UploadContent(contentMetaData, fileNameAndBytes);
+			service.UploadContent(contentMetaData);
 			service.ContentUpdated += SendSuccessMessageToLogger;
 		}
 
-		private ContentMetaData SaveImageAnimationOrSpriteSheetAnimation(Dictionary<string, byte[]> fileNameAndBytes)
+		private ContentMetaData SaveImageAnimationOrSpriteSheetAnimation()
 		{
 			ContentMetaData contentMetaData;
 			if (ImageList.Count == 1)
-			{
-				fileNameAndBytes.Add(AnimationName + ".SpriteSheetAnimation", null);
 				contentMetaData = metaDataCreator.CreateMetaDataFromSpriteSheetAnimation(AnimationName,
 					spriteSheetAnimation);
-			}
 			else
-			{
-				fileNameAndBytes.Add(AnimationName + ".ImageAnimation", null);
 				contentMetaData = metaDataCreator.CreateMetaDataFromImageAnimation(AnimationName, animation);
-			}
 			return contentMetaData;
 		}
 
@@ -172,8 +163,10 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 
 		public void ShowSpritesheetAnimation()
 		{
-			spriteSheetAnimation = new SpriteSheetAnimation(new SpriteSheetAnimationCreationData(
-				ContentLoader.Load<Image>(ImageList[0]), Duration, SubImageSize)); 
+			spriteSheetAnimation =
+				new SpriteSheetAnimation(
+					new SpriteSheetAnimationCreationData(ContentLoader.Load<Image>(ImageList[0]), Duration,
+						SubImageSize));
 			var material = new Material(Shader.Position2DUv, "") { SpriteSheet = spriteSheetAnimation };
 			new Sprite(material, new Rectangle(0.25f, 0.25f, 0.5f, 0.5f));
 		}

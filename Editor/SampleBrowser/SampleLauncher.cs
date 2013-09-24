@@ -15,7 +15,7 @@ namespace DeltaEngine.Editor.SampleBrowser
 	{
 		public SampleLauncher()
 		{
-			LoadOpenTKResolverAssembly();
+			//LoadOpenTKResolverAssembly();
 		}
 
 		private void LoadOpenTKResolverAssembly()
@@ -64,8 +64,9 @@ namespace DeltaEngine.Editor.SampleBrowser
 					directory => Path.GetFileName(directory.TrimEnd(Path.DirectorySeparatorChar)) == "Editor");
 		}
 
-		private readonly string relativeResolverPath = Path.Combine("Platforms", "WindowsOpenTK",
-			"bin", "Debug", "DeltaEngine.WindowsOpenTK.dll");
+		private readonly string relativeResolverPath = Path.Combine("Platforms", "WindowsOpenTK20",
+			"bin", ExceptionExtensions.IsDebugMode ? "Debug" : "Release",
+			"DeltaEngine.WindowsOpenTK20.dll");
 
 		public void OpenProject(Sample sample)
 		{

@@ -3,7 +3,7 @@ using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Input;
 using DeltaEngine.Multimedia;
-using DeltaEngine.Rendering.Fonts;
+using DeltaEngine.Rendering2D.Fonts;
 
 namespace DeltaEngine.Editor.ContentManager.Previewers
 {

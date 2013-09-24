@@ -7,7 +7,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
-using AvalonDock.Layout;
 using DeltaEngine.Core;
 using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
@@ -15,6 +14,7 @@ using DeltaEngine.Editor.Emulator;
 using DeltaEngine.Editor.Helpers;
 using DeltaEngine.Extensions;
 using DeltaEngine.Platforms.Windows;
+using Xceed.Wpf.AvalonDock.Layout;
 using OpenTKApp = DeltaEngine.Platforms.App;
 using Window = DeltaEngine.Core.Window;
 

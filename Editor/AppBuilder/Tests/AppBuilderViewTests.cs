@@ -44,26 +44,25 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			view.Init(service);
 			return view;
 		}
-
+		
 		[Test, STAThread, Category("Slow"), Category("WPF")]
 		public void ShowViewWithMockServiceAndDummyApps()
 		{
-			var appBuilderView = CreateViewAndViewModelViaMockService();
-			var window = CreateTestWindow(appBuilderView);
-			var viewModel = appBuilderView.ViewModel;
+			AppBuilderView builderView = CreateViewAndViewModelViaMockService();
+			AppBuilderViewModel viewModel = builderView.ViewModel;
 			viewModel.AppListViewModel.AddApp(
 				AppBuilderTestingExtensions.GetMockAppInfo("My favorite app", PlatformName.Windows));
 			viewModel.AppListViewModel.AddApp(AppBuilderTestingExtensions.GetMockAppInfo(
 				"My mobile app", PlatformName.WindowsPhone7));
+			WpfWindow window = CreateTestWindow(builderView);
 			window.ShowDialog();
 		}
 
 		[Test, STAThread, Category("Slow"), Category("WPF")]
 		public void ShowViewWithMockServiceAndLoadedAppStorage()
 		{
-			var appBuilderView = CreateViewAndViewModelViaMockService();
-			var window = CreateTestWindow(appBuilderView);
-			appBuilderView.ViewModel.AppListViewModel.Load();
+			AppBuilderView builderView = CreateViewAndViewModelViaMockService();
+			WpfWindow window = CreateTestWindow(builderView);
 			window.ShowDialog();
 		}
 
@@ -71,9 +70,9 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		public void ShowViewWithMockServiceToVisualizeSwitchingBetweenBothLists()
 		{
 			var service = new MockBuildService();
-			var appBuilderView = CreateViewWithInitialiedViewModel(service);
-			AppBuilderViewModel viewModel = appBuilderView.ViewModel;
-			var window = CreateTestWindow(appBuilderView);
+			AppBuilderView builderView = CreateViewWithInitialiedViewModel(service);
+			AppBuilderViewModel viewModel = builderView.ViewModel;
+			WpfWindow window = CreateTestWindow(builderView);
 			window.MouseDoubleClick += (sender, e) => FireAppBuildMessagesOnMouseDoubleClick(e, viewModel);
 			window.ShowDialog();
 		}

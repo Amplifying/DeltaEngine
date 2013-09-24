@@ -10,9 +10,9 @@ namespace DeltaEngine.Graphics.OpenTK20
 	/// </summary>
 	public class OpenTK20ScreenshotCapturer : ScreenshotCapturer
 	{
-		public OpenTK20ScreenshotCapturer(OpenTK20Device device, Window window)
+		public OpenTK20ScreenshotCapturer(Device device, Window window)
 		{
-			this.device = device;
+			this.device = (OpenTK20Device)device;
 			this.window = window;
 		}
 

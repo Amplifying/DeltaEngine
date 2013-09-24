@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using DeltaEngine.Editor.Core;
+using NUnit.Framework;
 
 namespace DeltaEngine.Editor.ProjectCreator.Tests
 {

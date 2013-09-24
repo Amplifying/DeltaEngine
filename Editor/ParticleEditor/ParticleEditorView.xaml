@@ -136,29 +136,34 @@
 					         Grid.Row="15" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0" />
 				<TextBox Grid.Column="3" Grid.Row="27" Style="{StaticResource DeltaTextBox}" Margin="1,1,0,0">
 					<TextBox.Text>
-						<Binding Path="EmitterData.Acceleration" UpdateSourceTrigger="PropertyChanged">
+						<Binding Path="Acceleration" UpdateSourceTrigger="PropertyChanged">
 							<Binding.Converter>
-								<particleEditor:StringToGraphRangePointConverter />
+								<particleEditor:VectorGraphStringConverter />
 							</Binding.Converter>
 						</Binding>
 					</TextBox.Text>
 				</TextBox>
 				<TextBox Grid.Column="3" Grid.Row="25" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0">
 					<TextBox.Text>
-						<Binding Path="EmitterData.StartVelocity" UpdateSourceTrigger="PropertyChanged">
+						<Binding Path="StartVelocity" UpdateSourceTrigger="PropertyChanged">
 							<Binding.Converter>
-								<particleEditor:StringToGraphRangePointConverter />
+								<particleEditor:VectorGraphStringConverter />
 							</Binding.Converter>
 						</Binding>
 					</TextBox.Text>
 				</TextBox>
-				<TextBox Grid.Column="3" Grid.Row="23" Style="{StaticResource DeltaTextBox}" RenderTransformOrigin="0.514,0.95"
-					         Margin="1,0,0,0" Text="{Binding Path=EmitterData.StartRotation, UpdateSourceTrigger=PropertyChanged}"/>
+				<TextBox Grid.Column="3" Grid.Row="23" Style="{StaticResource DeltaTextBox}" RenderTransformOrigin="0.514,0.95" Margin="1,0,0,0" >
+					<Binding Path="StartRotation" UpdateSourceTrigger="PropertyChanged">
+						<Binding.Converter>
+							<particleEditor:ValueRangeGraphStringConverter />
+						</Binding.Converter>
+					</Binding>
+				</TextBox>
 				<TextBox Grid.Column="3" Grid.Row="11" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0">
 					<TextBox.Text>
-						<Binding Path="EmitterData.Size" UpdateSourceTrigger="PropertyChanged">
+						<Binding Path="Size" UpdateSourceTrigger="PropertyChanged">
 							<Binding.Converter>
-								<particleEditor:StringToGraphRangeSizeConverter />
+								<particleEditor:SizeGraphStringConverter />
 							</Binding.Converter>
 						</Binding>
 					</TextBox.Text>
@@ -193,9 +198,9 @@
 				<Label Content="Billboard Mode" Grid.Column="1" Grid.Row="17" Style="{StaticResource DeltaLabel}" />
 				<TextBox Grid.Column="3" Grid.Row="21" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}" Margin="0,0,0,0">
 					<TextBox.Text>
-						<Binding Path="Position" UpdateSourceTrigger="PropertyChanged">
+						<Binding Path="StartPosition" UpdateSourceTrigger="PropertyChanged">
 							<Binding.Converter>
-								<particleEditor:StringToGraphRangePointConverter />
+								<particleEditor:VectorGraphStringConverter />
 							</Binding.Converter>
 						</Binding>
 					</TextBox.Text>
@@ -204,9 +209,24 @@
 									ItemsSource="{Binding Path=BillBoardModeList}" SelectedItem="{Binding Path=SelectedBillBoardMode}" />
 				<Label Content="Rotation Speed" Grid.Column="1" Grid.Row="29" Style="{StaticResource DeltaLabel}" />
 				<Label Content="Color" Grid.Column="1" Grid.Row="13" Style="{StaticResource DeltaLabel}" />
-				<TextBox Grid.Column="3" Grid.Row="29" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}"
-					         Text="{ Binding Path=EmitterData.Size, UpdateSourceTrigger=PropertyChanged}" Margin="1,0,0,0"/>
-				<TextBox Grid.Column="3" Grid.Row="13" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0" />
+				<TextBox Grid.Column="3" Grid.Row="29" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0">
+					<TextBox.Text> 
+						<Binding Path="RotationSpeed" UpdateSourceTrigger="PropertyChanged">
+							<Binding.Converter>
+								<particleEditor:ValueRangeGraphStringConverter />
+							</Binding.Converter>
+						</Binding>
+					</TextBox.Text>
+				</TextBox>
+				<TextBox Grid.Column="3" Grid.Row="13" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0" >
+					<TextBox.Text>
+						<Binding Path="Color" UpdateSourceTrigger="PropertyChanged">
+							<Binding.Converter>
+								<particleEditor:ColorGraphStringConverter />
+							</Binding.Converter>
+						</Binding>
+					</TextBox.Text>
+				</TextBox>
 				<Button x:Name="RotationForceGraphButton" Grid.Column="5" Grid.Row="29" IsEnabled="False">
 					<Image Height="20" Width="20" Source="..\Images\ParticleEditor\GraphButton.png" />
 				</Button>
@@ -219,7 +239,7 @@
 					</Button.Background>
 					<Image Height="20" Width="20" Source="..\Images\ParticleEditor\GraphButton.png" />
 				</Button>
-				<Button x:Name="ColorGraphButton" Grid.Column="5" Grid.Row="13" IsEnabled="False">
+				<Button x:Name="ColorGraphButton" Grid.Column="5" Grid.Row="13" Click="ColorGraphOnClick">
 					<Image Height="20" Width="20" Source="..\Images\ParticleEditor\GraphButton.png" />
 				</Button>
 				<Button x:Name="LifeTimeRangeButton" Grid.Column="5" Grid.Row="15" IsEnabled="False">
@@ -278,7 +298,7 @@
 						</LinearGradientBrush>
 					</Button.Background>
 				</Button>
-				<Button Content="Create Material" Style="{StaticResource DeltaButton}" 
+				<Button Content="Create Material" Style="{StaticResource DeltaButton}" Click="OpenMaterialEditor"
 					Foreground="White" FontSize="18" Grid.Row="9" RenderTransformOrigin="0.5,0.5" Grid.Column="1" Grid.ColumnSpan="5" Margin="1,0,0,0">
 					<Button.Background>
 						<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">

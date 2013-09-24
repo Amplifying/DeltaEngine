@@ -1,7 +1,5 @@
 ﻿using System;
-using System.IO;
 using System.Windows;
-using DeltaEngine.Core;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Messages;
 using Microsoft.Win32;
@@ -26,7 +24,6 @@ namespace DeltaEngine.Editor.AppBuilder
 			BuildList.MessagesViewModel = ViewModel.MessagesListViewModel;
 			BuildList.AppListViewModel = ViewModel.AppListViewModel;
 			SwitchToBuiltApps();
-			TrySelectEngineSamplesSolution();
 			DataContext = ViewModel;
 		}
 
@@ -59,17 +56,6 @@ namespace DeltaEngine.Editor.AppBuilder
 		{
 			if (BuildList.BuiltAppsList.IsVisible)
 				Dispatcher.BeginInvoke(new Action(BuildList.FocusBuildMessagesList));
-		}
-
-		private void TrySelectEngineSamplesSolution()
-		{
-			string engineDirectory = PathExtensions.GetDeltaEngineDirectory();
-			if (engineDirectory != null)
-				ViewModel.UserSolutionPath = Path.Combine(engineDirectory, "DeltaEngine.Samples.sln");
-			else
-				Logger.Warning(ShortName + " plugin: The DeltaEngine environment variable '" +
-					PathExtensions.EnginePathEnvironmentVariableName + "' isn't set." + Environment.NewLine +
-					"Please make sure it's defined correctly.");
 		}
 
 		private void OnBrowseUserProjectClicked(object sender, RoutedEventArgs e)

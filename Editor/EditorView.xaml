@@ -3,13 +3,11 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:avalonDock="clr-namespace:AvalonDock;assembly=AvalonDock"
-	xmlns:avalonDockLayout="clr-namespace:AvalonDock.Layout;assembly=AvalonDock"
-	xmlns:themes="clr-namespace:AvalonDock.Themes;assembly=AvalonDock.Themes.Metro"
-	xmlns:shell="clr-namespace:Microsoft.Windows.Shell;assembly=AvalonDock"
 	xmlns:local="clr-namespace:DeltaEngine.Editor"
 	xmlns:helpers="clr-namespace:DeltaEngine.Editor.Helpers"
 	xmlns:l="http://wpflocalizeextension.codeplex.com"
+	xmlns:shell2="clr-namespace:Microsoft.Windows.Shell;assembly=Xceed.Wpf.AvalonDock"
+	xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
 	l:ResxLocalizationProvider.DefaultAssembly="DeltaEngine.Editor.Core"
 	l:ResxLocalizationProvider.DefaultDictionary="Resources"
 	x:Class="DeltaEngine.Editor.EditorView"
@@ -18,9 +16,9 @@
 	Title="Delta Engine Editor" Width="1366" Height="640" MinWidth="600" MinHeight="300"
 	WindowStyle="None" ResizeMode="CanResize" BorderThickness="0" Icon="DeltaEngine.Editor.ico"
 	MouseDown="OnMouseDown">
-	<shell:WindowChrome.WindowChrome>
-		<shell:WindowChrome CaptionHeight="0" ResizeBorderThickness="5" />
-	</shell:WindowChrome.WindowChrome>
+	<shell2:WindowChrome.WindowChrome>
+		<shell2:WindowChrome CaptionHeight="0" ResizeBorderThickness="5" />
+	</shell2:WindowChrome.WindowChrome>
 	<Window.Resources>
 		<Style x:Key="ActionLabelStyle" TargetType="{x:Type Label}">
 			<Setter Property="Margin" Value="10,3" />
@@ -135,10 +133,11 @@
 						Margin="0,4,399,0" VerticalAlignment="Top"
 						FontSize="13" Content="Project:" Foreground="#FF7B7B7B" FontFamily="Arial" HorizontalAlignment="Right" Width="55" />
 					<ComboBox
-						Margin="0,8,274,0" VerticalAlignment="Top"
+						Margin="0,8,274,0" VerticalAlignment="Top" HorizontalAlignment="Right"
+						Foreground="#FF7B7B7B" BorderBrush="{x:Null}" FontFamily="Arial" Width="122"
 						ItemsSource="{Binding Path=AvailableProjects}"
-						SelectedValue="{Binding Path=SelectedProject, Mode=TwoWay}" Foreground="#FF7B7B7B" BorderBrush="{x:Null}"
-						FontFamily="Arial" HorizontalAlignment="Right" Width="122">
+						SelectedValue="{Binding Path=SelectedProject, Mode=TwoWay}"
+						IsEnabled="{Binding Path=IsContentReady}">
 						<ComboBox.Background>
 							<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
 								<GradientStop Color="#FFB0B0B0" Offset="0" />
@@ -178,23 +177,23 @@
 							</Style>
 						</Label.Style>
 					</Label>
-					<avalonDock:DockingManager Margin="0,36,0,0" GridSplitterWidth="10" Drop="OnContentDrop" AllowDrop="True">
-						<avalonDock:DockingManager.Background>
+					<xcad:DockingManager Margin="0,36,0,0" GridSplitterWidth="10" Drop="OnContentDrop" AllowDrop="True">
+						<xcad:DockingManager.Background>
 							<RadialGradientBrush>
 								<GradientStop Color="#FFE4E4E4" Offset="1" />
 								<GradientStop Color="White" />
 							</RadialGradientBrush>
-						</avalonDock:DockingManager.Background>
-						<avalonDock:DockingManager.Theme>
-							<themes:MetroTheme />
-						</avalonDock:DockingManager.Theme>
-						<avalonDockLayout:LayoutRoot>
-							<avalonDockLayout:LayoutPanel>
-								<avalonDockLayout:LayoutDocumentPaneGroup x:Name="PluginGroup">
-								</avalonDockLayout:LayoutDocumentPaneGroup>
-							</avalonDockLayout:LayoutPanel>
-						</avalonDockLayout:LayoutRoot>
-					</avalonDock:DockingManager>
+						</xcad:DockingManager.Background>
+						<xcad:DockingManager.Theme>
+							<xcad:MetroTheme />
+						</xcad:DockingManager.Theme>
+						<xcad:LayoutRoot>
+							<xcad:LayoutPanel>
+								<xcad:LayoutDocumentPaneGroup x:Name="PluginGroup">
+								</xcad:LayoutDocumentPaneGroup>
+							</xcad:LayoutPanel>
+						</xcad:LayoutRoot>
+					</xcad:DockingManager>
 					<Label
 						Margin="0,4,255,0" VerticalAlignment="Top"
 						FontSize="14" Content="❘" Foreground="#FFC1C1C1" FontFamily="Arial" FontWeight="Bold" HorizontalAlignment="Right"

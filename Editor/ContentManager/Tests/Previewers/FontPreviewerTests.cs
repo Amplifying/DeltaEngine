@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace DeltaEngine.Editor.ContentManager.Tests.Previewers
 {
-	class FontPreviewerTests : TestWithMocksOrVisually
+	internal class FontPreviewerTests : TestWithMocksOrVisually
 	{
 		[SetUp]
 		public void LoadFontToDisplay()
@@ -23,11 +23,11 @@ namespace DeltaEngine.Editor.ContentManager.Tests.Previewers
 		{
 			var mockMouse = Resolve<Mouse>() as MockMouse;
 			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(new Point(0.5f, 0.5f), fontPreviewer.currentDisplayText.Center);
+			Assert.AreEqual(new Vector2D(0.5f, 0.5f), fontPreviewer.currentDisplayText.Center);
 			mockMouse.SetButtonState(MouseButton.Left, State.Pressed);
-			mockMouse.SetPosition(new Point(1f, 1f));
+			mockMouse.SetPosition(new Vector2D(1f, 1f));
 			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(new Point(0.5f, 0.5f), fontPreviewer.currentDisplayText.Center);	
+			Assert.AreEqual(new Vector2D(0.5f, 0.5f), fontPreviewer.currentDisplayText.Center);
 		}
 
 		[Test]
@@ -35,13 +35,13 @@ namespace DeltaEngine.Editor.ContentManager.Tests.Previewers
 		{
 			var mockMouse = Resolve<Mouse>() as MockMouse;
 			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(new Point(0.5f, 0.5f), fontPreviewer.currentDisplayText.Center);
+			Assert.AreEqual(new Vector2D(0.5f, 0.5f), fontPreviewer.currentDisplayText.Center);
 			mockMouse.SetButtonState(MouseButton.Left, State.Pressed);
-			mockMouse.SetPosition(new Point(1f, 1f));
+			mockMouse.SetPosition(new Vector2D(1f, 1f));
 			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(new Point(0.5f, 0.5f), fontPreviewer.currentDisplayText.Center);
+			Assert.AreEqual(new Vector2D(0.5f, 0.5f), fontPreviewer.currentDisplayText.Center);
 			fontPreviewer.PreviewContent("DeltaEngineLogo");
-			Assert.AreEqual(new Point(0.5f, 0.5f), fontPreviewer.currentDisplayText.Center);
+			Assert.AreEqual(new Vector2D(0.5f, 0.5f), fontPreviewer.currentDisplayText.Center);
 		}
 	}
 }

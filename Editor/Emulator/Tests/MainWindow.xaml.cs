@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media;
+using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
-using DeltaEngine.Rendering.Shapes;
+using DeltaEngine.Rendering2D.Shapes;
 using Color = DeltaEngine.Datatypes.Color;
 using EngineApp = DeltaEngine.Platforms.App;
-using Point = DeltaEngine.Datatypes.Point;
 using Window = DeltaEngine.Core.Window;
 
 namespace DeltaEngine.Editor.Emulator.Tests
@@ -38,7 +38,7 @@ namespace DeltaEngine.Editor.Emulator.Tests
 		private void OnClickButton(object sender, RoutedEventArgs e)
 		{
 			TestButton.Background = new SolidColorBrush(Colors.Yellow);
-			new Line2D(new Point(0, 1), new Point(Time.Total / 5f, 0), Color.Yellow);
+			new Line2D(new Vector2D(0, 1), new Vector2D(Time.Total / 5f, 0), Color.Yellow);
 		}
 
 		public void Connect(int connectionId, object target) {}

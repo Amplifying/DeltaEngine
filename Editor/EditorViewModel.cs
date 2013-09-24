@@ -106,19 +106,22 @@ namespace DeltaEngine.Editor
 			if (tryingToConnect)
 				return;
 			tryingToConnect = true;
+			connection = new OnlineServiceConnection();
 			connection.Connected += () => connection.Send(new ProjectNamesRequest());
 			connection.Connected += ValidateLogin;
 			connection.DataReceived += OnDataReceived;
-			connection.TimedOut += () =>
-			{
-				Disconnect();
-				Error = Resources.ConnectionToDeltaEngineTimedOut;
-			};
-			connection.Connect(settings.OnlineServiceIp, settings.OnlineServicePort);
+			connection.Connect(settings.OnlineServiceIp, settings.OnlineServicePort, OnTimeout);
 		}
 
 		private bool tryingToConnect;
-		private OnlineServiceConnection connection = OnlineServiceConnection.CreateForEditor();
+		private OnlineServiceConnection connection;
+
+		private void OnTimeout()
+		{
+			Disconnect();
+			Error = Resources.ConnectionToDeltaEngineTimedOut;
+		}
+
 		public OnlineService Service
 		{
 			get { return service; }
@@ -155,6 +158,8 @@ namespace DeltaEngine.Editor
 			var serverError = message as ServerError;
 			var projectNames = message as ProjectNamesResult;
 			var loginMessage = message as LoginSuccessful;
+			var newProject = message as SetProject;
+			var contentReady = message as ContentReady;
 			if (serverError != null)
 			{
 				Error = "Server Error: " + serverError.Error;
@@ -162,15 +167,21 @@ namespace DeltaEngine.Editor
 			}
 			else if (projectNames != null)
 			{
+				AvailableProjects.Clear();
 				AvailableProjects.AddRange(projectNames.ProjectNames);
 				RaisePropertyChanged("AvailableProjects");
 			}
 			else if (loginMessage != null)
 				Login(loginMessage);
+			else if (newProject != null)
+				IsContentReady = false;
+			else if (contentReady != null)
+				IsContentReady = true;
 		}
 
 		private void Login(LoginSuccessful loginMessage)
 		{
+			connection.Send(new ProjectNamesRequest());
 			Service.Connect(loginMessage.UserName, connection);
 			SaveApiKey();
 			SaveCurrentProject();
@@ -216,11 +227,22 @@ namespace DeltaEngine.Editor
 			RaisePropertyChanged("EditorPanelVisibility");
 		}
 
+		public bool IsContentReady
+		{
+			get { return isContentReady; }
+			set
+			{
+				isContentReady = value;
+				RaisePropertyChanged("IsContentReady");
+			}
+		}
+		private bool isContentReady;
+
 		private void Disconnect()
 		{
 			tryingToConnect = false;
 			connection.Dispose();
-			connection = OnlineServiceConnection.CreateForEditor();
+			connection = new OnlineServiceConnection();
 		}
 
 		private void Logout()
@@ -355,7 +377,7 @@ namespace DeltaEngine.Editor
 			}
 			var fileNameAndBytes = new Dictionary<string, byte[]>();
 			fileNameAndBytes.Add(Path.GetFileName(contentFilePath), bytes);
-			var metaDataCreator = new ContentMetaDataCreator(service);
+			var metaDataCreator = new ContentMetaDataCreator();
 			var contentMetaData = metaDataCreator.CreateMetaDataFromFile(contentFilePath);
 			if (ContentLoader.Exists(Path.GetFileName(contentFilePath)))
 				service.DeleteContent(Path.GetFileName(contentFilePath));

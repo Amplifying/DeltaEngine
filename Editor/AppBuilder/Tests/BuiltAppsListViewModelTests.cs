@@ -41,15 +41,6 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			Assert.True(appListViewModel.BuiltApps.Any(app => app.Platform == PlatformName.Web));
 		}
 
-		[Test]
-		public void SaveOrLoadWithoutAppStorageDirectoryShouldFail()
-		{
-			appListViewModel.AppStorageDirectory = "";
-			Assert.Throws<BuiltAppsListViewModel.NoAppStorageDirectorySpecified>(appListViewModel.Load);
-			Assert.Throws<BuiltAppsListViewModel.NoAppStorageDirectorySpecified>(
-				() => AddMockAppInfoAndSaveWithDummyData(appListViewModel));
-		}
-
 		private void AddMockAppInfoAndSaveWithDummyData(BuiltAppsListViewModel viewModel)
 		{
 			string folder = appListViewModel.AppStorageDirectory;
@@ -61,11 +52,8 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		[Test, Category("Slow")]
 		public void SaveAndLoadBuiltApps()
 		{
-			appListViewModel.AppStorageDirectory = "SaveAndLoadBuiltApps";
 			AddMockAppInfoAndSaveWithDummyData(appListViewModel);
 			var loadedViewModel = new BuiltAppsListViewModel();
-			loadedViewModel.AppStorageDirectory = appListViewModel.AppStorageDirectory;
-			loadedViewModel.Load();
 			AssertBuiltApps(appListViewModel.BuiltApps, loadedViewModel.BuiltApps);
 		}
 

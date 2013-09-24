@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using DeltaEngine.Editor.Core;
+using NUnit.Framework;
 
 namespace DeltaEngine.Editor.ProjectCreator.Tests
 {
@@ -26,24 +27,25 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 		[Test]
 		public void CheckAvailableFrameworks()
 		{
-			Assert.AreEqual(4, viewModel.AvailableFrameworks.Count);
-			Assert.AreEqual(DeltaEngineFramework.OpenTK, viewModel.AvailableFrameworks[0]);
-			Assert.AreEqual(DeltaEngineFramework.SharpDX, viewModel.AvailableFrameworks[1]);
-			Assert.AreEqual(DeltaEngineFramework.SlimDX, viewModel.AvailableFrameworks[2]);
-			Assert.AreEqual(DeltaEngineFramework.Xna, viewModel.AvailableFrameworks[3]);
+			Assert.AreEqual(6, viewModel.AvailableFrameworks.Length);
+			Assert.AreEqual(DeltaEngineFramework.GLFW, viewModel.AvailableFrameworks[0]);
+			Assert.AreEqual(DeltaEngineFramework.MonoGame, viewModel.AvailableFrameworks[1]);
+			Assert.AreEqual(DeltaEngineFramework.OpenTK, viewModel.AvailableFrameworks[2]);
+			Assert.AreEqual(DeltaEngineFramework.SharpDX, viewModel.AvailableFrameworks[3]);
+			Assert.AreEqual(DeltaEngineFramework.SlimDX, viewModel.AvailableFrameworks[4]);
+			Assert.AreEqual(DeltaEngineFramework.Xna, viewModel.AvailableFrameworks[5]);
 		}
 
-		[Test]
-		public void ChangeSelection()
+		[TestCase(0, DeltaEngineFramework.GLFW)]
+		[TestCase(1, DeltaEngineFramework.MonoGame)]
+		[TestCase(2, DeltaEngineFramework.OpenTK)]
+		[TestCase(3, DeltaEngineFramework.SharpDX)]
+		[TestCase(4, DeltaEngineFramework.SlimDX)]
+		[TestCase(5, DeltaEngineFramework.Xna)]
+		public void ChangeSelection(int id, DeltaEngineFramework expectedFramework)
 		{
-			viewModel.OnFrameworkSelectionChanged.Execute(1);
-			Assert.AreEqual(DeltaEngineFramework.SharpDX, viewModel.SelectedFramework);
-			viewModel.OnFrameworkSelectionChanged.Execute(2);
-			Assert.AreEqual(DeltaEngineFramework.SlimDX, viewModel.SelectedFramework);
-			viewModel.OnFrameworkSelectionChanged.Execute(3);
-			Assert.AreEqual(DeltaEngineFramework.Xna, viewModel.SelectedFramework);
-			viewModel.OnFrameworkSelectionChanged.Execute(0);
-			Assert.AreEqual(DeltaEngineFramework.OpenTK, viewModel.SelectedFramework);
+			viewModel.OnFrameworkSelectionChanged.Execute(id);
+			Assert.AreEqual(expectedFramework, viewModel.SelectedFramework);
 		}
 
 		[Test]

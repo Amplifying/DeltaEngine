@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using DeltaEngine.Mocks;
 using DeltaEngine.Networking.Messages;
 using DeltaEngine.Networking.Tcp;
 using Microsoft.Win32;
@@ -15,12 +16,11 @@ namespace DeltaEngine.Editor.Tests
 		{
 			var service = new OnlineService();
 			object result = null;
-			var connection = OnlineServiceConnection.CreateForEditor();
+			var connection = new OnlineServiceConnection(new MockSettings(),
+				() => { throw new ConnectionTimedOut(); });
 			connection.Connected +=
 				() => connection.Send(new LoginRequest(LoadApiKeyFromRegistry(), "LogoApp"));
-			connection.TimedOut += () => { throw new ConnectionTimedOut(); };
 			connection.DataReceived += message => result = message;
-			connection.Connect("deltaengine.net", 800);
 			service.Connect("John Doe", connection);
 			Thread.Sleep(500);
 			Console.WriteLine("User Name: " + service.UserName);

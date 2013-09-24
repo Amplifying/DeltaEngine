@@ -1,8 +1,8 @@
 ﻿using DeltaEngine.Datatypes;
 using DeltaEngine.Editor.Mocks;
 using DeltaEngine.Platforms;
+using DeltaEngine.Rendering3D.Models;
 using NUnit.Framework;
-using DeltaEngine.Rendering.Sprites;
 
 namespace DeltaEngine.Editor.ParticleEditor.Tests
 {
@@ -21,7 +21,7 @@ namespace DeltaEngine.Editor.ParticleEditor.Tests
 		{
 			particleEditor.SelectedMaterial = "TestMaterial";
 			particleEditor.ParticleName = "TestParticle";
-			Assert.AreEqual(500,particleEditor.MaxNumbersOfParticles);
+			Assert.AreEqual(500, particleEditor.MaxNumbersOfParticles);
 			particleEditor.MaxNumbersOfParticles = 20;
 			Assert.AreEqual(0, particleEditor.emitter.NumberOfActiveParticles);
 		}
@@ -29,11 +29,11 @@ namespace DeltaEngine.Editor.ParticleEditor.Tests
 		[Test]
 		public void SetEmitterPosition()
 		{
-			var setPosition = new Vector(0.4f, 0.8f, 0.2f);
+			var setPosition = new Vector3D(0.4f, 0.8f, 0.2f);
 			particleEditor.EmitterPosition = setPosition;
 			Assert.AreEqual(setPosition, particleEditor.EmitterPosition);
 		}
-		
+
 		[Test]
 		public void Set3DBillboardMode()
 		{
@@ -51,9 +51,6 @@ namespace DeltaEngine.Editor.ParticleEditor.Tests
 		}
 
 		[Test]
-		public void SaveParticleEmitterContent()
-		{
-			
-		}
+		public void SaveParticleEmitterContent() {}
 	}
 }

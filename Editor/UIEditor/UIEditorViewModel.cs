@@ -7,8 +7,8 @@ using DeltaEngine.Datatypes;
 using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Input;
-using DeltaEngine.Rendering.Shapes;
-using DeltaEngine.Rendering.Sprites;
+using DeltaEngine.Rendering2D.Shapes;
+using DeltaEngine.Rendering2D.Sprites;
 using DeltaEngine.Scenes;
 using DeltaEngine.ScreenSpaces;
 using GalaSoft.MvvmLight;
@@ -29,10 +29,11 @@ namespace DeltaEngine.Editor.UIEditor
 			FillContentImageList();
 			FillMaterialList();
 			SetMouseCommands();
-			Messenger.Default.Register<string>(this, "AddImage", AddImage);
 			Messenger.Default.Register<string>(this, "SaveUI", SaveUI);
 			Messenger.Default.Register<string>(this, "ChangeMaterial", ChangeMaterial);
 			Messenger.Default.Register<int>(this, "ChangeRenderLayer", ChangeRenderLayer);
+			Messenger.Default.Register<bool>(this, "SetDraggingImage", SetDraggingImage);
+			Messenger.Default.Register<object>(this, "ChangeGrid", ChangeGrid);
 			new Command(DeleteUIElement).Add(new KeyTrigger(Key.Delete));
 		}
 
@@ -54,19 +55,33 @@ namespace DeltaEngine.Editor.UIEditor
 		{
 			var materialList = service.GetAllContentNamesByType(ContentType.Material);
 			foreach (var material in materialList)
-				MaterialList.Add(material);
+				if (Is2DMaterial(material))
+					MaterialList.Add(material);
+		}
+
+		private static bool Is2DMaterial(string materialContentName)
+		{
+			var material = ContentLoader.Load<Material>(materialContentName);
+			return material.Shader.Name.Contains("2D");
 		}
 
 		private void SetMouseCommands()
 		{
 			new Command(SetSelectedImage).Add(new MouseButtonTrigger());
-			new Command(position => ControlProcessor.MoveImage(position, SelectedSprite)).Add(
-				new MousePositionTrigger(MouseButton.Left, State.Pressed));
+			new Command(
+				position =>
+					ControlProcessor.MoveImage(position, SelectedSprite, isDragging, IsSnappingToGrid)).Add(
+						new MousePositionTrigger(MouseButton.Left, State.Pressed));
 			new Command(position => ControlProcessor.lastMousePosition = position).Add(
 				new MouseButtonTrigger(MouseButton.Middle));
+			new Command(position => AddImage(position)).Add(new MouseButtonTrigger(MouseButton.Left,
+				State.Releasing));
 		}
 
-		private void SetSelectedImage(Point mousePosition)
+		private bool isDragging;
+		public bool IsSnappingToGrid { get; set; }
+
+		private void SetSelectedImage(Vector2D mousePosition)
 		{
 			ControlProcessor.lastMousePosition = mousePosition;
 			//bool FoundSprite = false;
@@ -77,15 +92,7 @@ namespace DeltaEngine.Editor.UIEditor
 					SelectedSpriteNameInList = sprite.Material.DiffuseMap.Name;
 					SelectedSprite = sprite;
 					ControlProcessor.UpdateOutLines(SelectedSprite);
-					//FoundSprite = true;
 				}
-			//if (!FoundSprite)
-			//{
-			//	SelectedSprite = null;
-			//	SpriteListIndex = 0;
-			//	SelectedSpriteNameInList = "";
-			//	ControlProcessor.UpdateOutLines(SelectedSprite);
-			//}
 			RaisePropertyChanged("SelectedSpriteNameInList");
 			RaisePropertyChanged("SpriteListIndex");
 		}
@@ -114,10 +121,13 @@ namespace DeltaEngine.Editor.UIEditor
 			RaisePropertyChanged("ControlName");
 		}
 
-		public void AddImage(string image)
+		public void AddImage(Vector2D position)
 		{
-			var sprite = AddNewImageToList();
+			if (!isDragging)
+				return;
+			var sprite = AddNewImageToList(position);
 			SelectedSprite = sprite;
+			isDragging = false;
 			RaisePropertyChanged("UIImagesInList");
 			RaisePropertyChanged("ImageInGridList");
 		}
@@ -131,7 +141,7 @@ namespace DeltaEngine.Editor.UIEditor
 			var fileNameAndBytes = new Dictionary<string, byte[]>();
 			var bytes = BinaryDataExtensions.ToByteArrayWithTypeInformation(scene);
 			fileNameAndBytes.Add(UIName + ".deltaUI", bytes);
-			var metaDataCreator = new ContentMetaDataCreator(service);
+			var metaDataCreator = new ContentMetaDataCreator();
 			ContentMetaData contentMetaData = metaDataCreator.CreateMetaDataFromUI(UIName, bytes);
 			service.UploadContent(contentMetaData, fileNameAndBytes);
 			service.ContentUpdated += SendSuccessMessageToLogger;
@@ -159,6 +169,85 @@ namespace DeltaEngine.Editor.UIEditor
 			RaisePropertyChanged("ControlLayer");
 		}
 
+		private void SetDraggingImage(bool draggingImage)
+		{
+			isDragging = draggingImage;
+		}
+
+		private void ChangeGrid(object grid)
+		{
+			if (grid.ToString().Contains("10"))
+				SetGridWidthAndHeight(10);
+			else if (grid.ToString().Contains("16"))
+				SetGridWidthAndHeight(16);
+			else if (grid.ToString().Contains("20"))
+				SetGridWidthAndHeight(20);
+			else if (grid.ToString().Contains("24"))
+				SetGridWidthAndHeight(24);
+			else if (grid.ToString().Contains("50"))
+				SetGridWidthAndHeight(50);
+			else
+				SetGridWidthAndHeight(0);
+		}
+
+		private void SetGridWidthAndHeight(int widthAndHeight)
+		{
+			GridWidth = widthAndHeight;
+			GridHeight = widthAndHeight;
+		}
+
+		public int GridWidth
+		{
+			get { return gridWidth; }
+			set
+			{
+				gridWidth = value;
+				DrawGrid();
+			}
+		}
+
+		private int gridWidth;
+
+		private void DrawGrid()
+		{
+			foreach (Line2D line2D in linesInGridList)
+				line2D.IsActive = false;
+			linesInGridList.Clear();
+			if (GridWidth == 0 || GridHeight == 0 || !isDrawingGrid)
+				return;
+			for (int i = 0; i < GridWidth; i++)
+				linesInGridList.Add(new Line2D(new Vector2D((i * (1.0f / GridWidth)), 0),
+					new Vector2D((i * (1.0f / GridWidth)), 1), Color.Red));
+			for (int j = 0; j < GridHeight; j++)
+				linesInGridList.Add(new Line2D(new Vector2D(0, (j * (1.0f / GridHeight))),
+					new Vector2D(1, (j * (1.0f / GridHeight))), Color.Red));
+		}
+
+		private readonly List<Line2D> linesInGridList = new List<Line2D>();
+
+		public int GridHeight
+		{
+			get { return gridHeight; }
+			set
+			{
+				gridHeight = value;
+				DrawGrid();
+			}
+		}
+
+		private int gridHeight;
+		public bool IsShowingGrid
+		{
+			get { return isDrawingGrid; }
+			set
+			{
+				isDrawingGrid = value;
+				DrawGrid();
+			}
+		}
+
+		private bool isDrawingGrid;
+
 		private void DeleteUIElement()
 		{
 			UIImagesInList.RemoveAt(SpriteListIndex);
@@ -166,10 +255,9 @@ namespace DeltaEngine.Editor.UIEditor
 			SelectedSprite.IsActive = false;
 		}
 
-		public Sprite AddNewImageToList()
+		public Sprite AddNewImageToList(Vector2D position)
 		{
-			var newSprite = CreateNewImage();
-			newSprite.DrawArea = Rectangle.FromCenter(0.5f, 0.5f, 0.2f, 0.2f);
+			var newSprite = CreateNewImage(position);
 			scene.Add(newSprite);
 			bool freeName = false;
 			int numberOfNames = 0;
@@ -185,19 +273,16 @@ namespace DeltaEngine.Editor.UIEditor
 			return newSprite;
 		}
 
-		private static Sprite CreateNewImage()
+		private static Sprite CreateNewImage(Vector2D position)
 		{
 			var customImage = ContentLoader.Create<Image>(new ImageCreationData(new Size(8, 8)));
 			var colors = new Color[8 * 8];
 			for (int i = 0; i < 8 * 8; i++)
 				colors[i] = Color.Purple;
 			customImage.Fill(colors);
-			var newSprite =
+			return
 				new Sprite(
-					new Material(ContentLoader.Load<Shader>(Shader.Position2DColorUv), customImage),
-					new Rectangle(0.5f, 0.5f, 0.5f, 0.5f));
-			newSprite.Material.MetaData = new ContentMetaData();
-			return newSprite;
+					new Material(ContentLoader.Load<Shader>(Shader.Position2DColorUv), customImage), position);
 		}
 
 		public string SelectedSpriteNameInList
@@ -218,55 +303,6 @@ namespace DeltaEngine.Editor.UIEditor
 
 		private string selectedSpriteNameInList;
 		public int SpriteListIndex { get; set; }
-
-		public bool IsShowingGrid
-		{
-			set
-			{
-				if (value)
-					DrawGrid();
-			}
-		}
-
-		private void DrawGrid()
-		{
-			if (GridWidth == 0 || GridHeight == 0)
-				return;
-			foreach (Line2D line2D in linesInGridList)
-				line2D.IsActive = false;
-			linesInGridList.Clear();
-			for (int i = 0; i < GridWidth; i++)
-				linesInGridList.Add(new Line2D(new Point((i * (1.0f / GridWidth)), 0),
-					new Point((i * (1.0f / GridWidth)), 1), Color.Red));
-			for (int j = 0; j < GridHeight; j++)
-				linesInGridList.Add(new Line2D(new Point(0, (j * (1.0f / GridHeight))),
-					new Point(1, (j * (1.0f / GridHeight))), Color.Red));
-		}
-
-		public int GridWidth
-		{
-			get { return gridWidth; }
-			set
-			{
-				gridWidth = value;
-				DrawGrid();
-			}
-		}
-
-		private int gridWidth;
-
-		public int GridHeight
-		{
-			get { return gridHeight; }
-			set
-			{
-				gridHeight = value;
-				DrawGrid();
-			}
-		}
-
-		private int gridHeight;
-		private readonly List<Line2D> linesInGridList = new List<Line2D>();
 
 		public int ControlLayer
 		{

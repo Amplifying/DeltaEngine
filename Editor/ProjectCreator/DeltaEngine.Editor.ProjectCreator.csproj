@@ -37,7 +37,7 @@
       <HintPath>..\packages\MvvmLightLibs.4.1.27.0\lib\net40\GalaSoft.MvvmLight.WPF4.dll</HintPath>
     </Reference>
     <Reference Include="SharpCompress">
-      <HintPath>..\packages\sharpcompress.0.8.2\lib\net40\SharpCompress.dll</HintPath>
+      <HintPath>..\packages\sharpcompress.0.10.1.3\lib\net40\SharpCompress.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.IO.Abstractions">
@@ -76,7 +76,6 @@
     <Compile Include="Replacement.cs" />
     <Compile Include="VsTemplate.cs" />
     <Compile Include="CsProject.cs" />
-    <Compile Include="DeltaEngineFramework.cs" />
     <Compile Include="ProjectCreatorView.xaml.cs">
       <DependentUpon>ProjectCreatorView.xaml</DependentUpon>
     </Compile>

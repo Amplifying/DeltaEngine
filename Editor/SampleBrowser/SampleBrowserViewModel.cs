@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Input;
+using DeltaEngine.Editor.Core;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 
@@ -16,10 +17,13 @@ namespace DeltaEngine.Editor.SampleBrowser
 	{
 		public SampleBrowserViewModel()
 		{
+			frameworks = new FrameworkFinder();
 			Samples = new List<Sample>();
 			AddSelectionFilters();
 			RegisterCommands();
 		}
+
+		private readonly FrameworkFinder frameworks;
 
 		public List<Sample> Samples
 		{
@@ -36,20 +40,26 @@ namespace DeltaEngine.Editor.SampleBrowser
 		{
 			AssembliesAvailable = new List<String>
 			{
-				"All",
+				//"All",
 				"Sample Games",
 				//"Tutorials",
-				"Visual Tests"
+				//"Visual Tests"
 			};
-			SelectedAssembly = AssembliesAvailable[1];
+			SelectedAssembly = AssembliesAvailable[0];
+			FrameworksAvailable = frameworks.All;
+			SelectedFramework = frameworks.Default;
 		}
 
 		public List<string> AssembliesAvailable { get; private set; }
 		public string SelectedAssembly { get; set; }
+		public DeltaEngineFramework[] FrameworksAvailable { get; private set; }
+
+		public DeltaEngineFramework SelectedFramework { get; set; }
 
 		private void RegisterCommands()
 		{
-			OnComboBoxSelectionChanged = new RelayCommand(UpdateItems);
+			OnAssemblySelectionChanged = new RelayCommand(UpdateItems);
+			OnFrameworkSelectionChanged = new RelayCommand(UpdateItems);
 			OnSearchTextChanged = new RelayCommand(UpdateItems);
 			OnSearchTextRemoved = new RelayCommand(ClearSearchFilter);
 			OnHelpClicked = new RelayCommand(OpenHelpWebsite);
@@ -57,10 +67,12 @@ namespace DeltaEngine.Editor.SampleBrowser
 			OnStartButtonClicked = new RelayCommand<Sample>(StartExecutable, CanStartExecutable);
 		}
 
-		public ICommand OnComboBoxSelectionChanged { get; private set; }
+		public ICommand OnAssemblySelectionChanged { get; private set; }
+		public ICommand OnFrameworkSelectionChanged { get; private set; }
 
-		private void UpdateItems()
+		public void UpdateItems()
 		{
+			GetSamples();
 			SelectItemsByAssemblyComboBoxSelection();
 			FilterItemsBySearchBox();
 			Samples = itemsToDisplay.OrderBy(o => o.ProjectFilePath).ToList();
@@ -142,25 +154,42 @@ namespace DeltaEngine.Editor.SampleBrowser
 			return sampleLauncher.DoesAssemblyExist(sample);
 		}
 
-		public void GetSamples()
+		private void GetSamples()
 		{
+			ClearEverything();
 			var sampleCreator = new SampleCreator();
-			sampleCreator.CreateSamples();
+			sampleCreator.CreateSamples(SelectedFramework);
+			if (sampleCreator.IsSourceCodeRelease())
+				SetFrameworkToDefault();
 			foreach (var sample in sampleCreator.Samples)
 				if (sample.Category == SampleCategory.Game)
 					allSampleGames.Add(sample);
 				else
 					allVisualTests.Add(sample);
-
 			AddEverythingTogether();
 			sampleLauncher = new SampleLauncher();
+		}
+
+		private void ClearEverything()
+		{
+			itemsToDisplay.Clear();
+			everything.Clear();
+			allSampleGames.Clear();
+			allVisualTests.Clear();
+		}
+
+		private void SetFrameworkToDefault()
+		{
+			FrameworksAvailable = new[] { DeltaEngineFramework.Default };
+			SelectedFramework = DeltaEngineFramework.Default;
+			RaisePropertyChanged("FrameworksAvailable");
+			RaisePropertyChanged("SelectedFramework");
 		}
 
 		public void AddEverythingTogether()
 		{
 			everything.AddRange(allSampleGames);
 			everything.AddRange(allVisualTests);
-			UpdateItems();
 		}
 
 		public void SetAllSamples(List<Sample> list)

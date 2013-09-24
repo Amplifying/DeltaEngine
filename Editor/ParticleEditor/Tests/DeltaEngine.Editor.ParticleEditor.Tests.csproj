@@ -39,6 +39,7 @@
     <Reference Include="nunit.framework">
       <HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
@@ -51,17 +52,13 @@
       <Project>{3A3D2E3E-FCD6-40A4-8F4E-36F3D173AB41}</Project>
       <Name>DeltaEngine.TestWithOpenTK20</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Rendering\DeltaEngine.Rendering.csproj">
-      <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
-      <Name>DeltaEngine.Rendering</Name>
+    <ProjectReference Include="..\..\..\Rendering3D\Models\DeltaEngine.Rendering3D.Models.csproj">
+      <Project>{701FDD1A-6B8A-4CA9-B796-AC9546233F47}</Project>
+      <Name>DeltaEngine.Rendering3D.Models</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Rendering\Particles\DeltaEngine.Rendering.Particles.csproj">
+    <ProjectReference Include="..\..\..\Rendering3D\Particles\DeltaEngine.Rendering3D.Particles.csproj">
       <Project>{BECE691C-BAC6-434B-B1F9-4D8653922585}</Project>
-      <Name>DeltaEngine.Rendering.Particles</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Rendering\Sprites\DeltaEngine.Rendering.Sprites.csproj">
-      <Project>{FCA7BAAA-3F6E-4CA3-B354-C34AF4F1BDDD}</Project>
-      <Name>DeltaEngine.Rendering.Sprites</Name>
+      <Name>DeltaEngine.Rendering3D.Particles</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\DeltaEngine.Editor.Core.csproj">
       <Project>{C667C7FC-A1C7-4CBC-98C0-C97F776E4570}</Project>
@@ -81,7 +78,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ColorGraphStringConverterTests.cs" />
     <Compile Include="ParticleEditorTests.cs" />
+    <Compile Include="StringToSizeGraphConverterTests.cs" />
+    <Compile Include="StringToVectorGraphConverterTests.cs" />
+    <Compile Include="ValueRangeGraphStringConverterTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
