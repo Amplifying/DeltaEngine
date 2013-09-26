@@ -44,7 +44,7 @@ namespace DeltaEngine.Editor.SampleBrowser.Tests
 			Assert.AreEqual("EmptyGame", sampleCreator.Samples[0].Title);
 			Assert.AreEqual("Sample Game", sampleCreator.Samples[0].Description);
 			Assert.AreEqual("Game", sampleCreator.Samples[0].Category.ToString());
-			Assert.AreEqual("http://DeltaEngine.net/Content/Icons/EmptyGame.png",
+			Assert.AreEqual("http://DeltaEngine.net/Editor/Icons/EmptyGame.png",
 				sampleCreator.Samples[0].ImageFilePath);
 			Assert.AreEqual(@"C:\Foo\Bar\Samples\EmptyGame\EmptyGame.csproj",
 				sampleCreator.Samples[0].ProjectFilePath);

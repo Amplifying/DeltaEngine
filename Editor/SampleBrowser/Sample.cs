@@ -20,7 +20,7 @@ namespace DeltaEngine.Editor.SampleBrowser
 			else
 			{
 				Description = "VisualTest";
-				ImageFilePath = "http://deltaengine.net/Content/Icons/StaticTest.png";
+				ImageFilePath = "http://deltaengine.net/Editor/Icons/StaticTest.png";
 			}
 			ProjectFilePath = projectFilePath;
 			AssemblyFilePath = assemblyFilePath;
@@ -44,7 +44,7 @@ namespace DeltaEngine.Editor.SampleBrowser
 
 		private static string GetIconWebPath()
 		{
-			return "http://DeltaEngine.net/Content/Icons/";
+			return "http://DeltaEngine.net/Editor/Icons/";
 		}
 
 		public static Sample CreateGame(string title, string projectFilePath,

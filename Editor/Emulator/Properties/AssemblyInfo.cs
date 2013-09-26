@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: CLSCompliant(true)]
 [assembly:
 	ThemeInfo(ResourceDictionaryLocation.None, ResourceDictionaryLocation.SourceAssembly)]
-[assembly: AssemblyVersion("0.9.9.3")]
-[assembly: AssemblyFileVersion("0.9.9.3")]
+[assembly: AssemblyVersion("0.9.9.4")]
+[assembly: AssemblyFileVersion("0.9.9.4")]
 [assembly: InternalsVisibleTo("DeltaEngine.Editor.Emulator.Tests")]
 [assembly: Guid("a49dfbee-5870-499e-a242-d489a854287f")]

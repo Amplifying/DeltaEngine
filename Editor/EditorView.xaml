@@ -6,8 +6,8 @@
 	xmlns:local="clr-namespace:DeltaEngine.Editor"
 	xmlns:helpers="clr-namespace:DeltaEngine.Editor.Helpers"
 	xmlns:l="http://wpflocalizeextension.codeplex.com"
-	xmlns:shell2="clr-namespace:Microsoft.Windows.Shell;assembly=Xceed.Wpf.AvalonDock"
-	xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+	xmlns:shell="clr-namespace:Microsoft.Windows.Shell;assembly=Xceed.Wpf.AvalonDock"
+	xmlns:avalonDock="http://schemas.xceed.com/wpf/xaml/avalondock"
 	l:ResxLocalizationProvider.DefaultAssembly="DeltaEngine.Editor.Core"
 	l:ResxLocalizationProvider.DefaultDictionary="Resources"
 	x:Class="DeltaEngine.Editor.EditorView"
@@ -16,9 +16,9 @@
 	Title="Delta Engine Editor" Width="1366" Height="640" MinWidth="600" MinHeight="300"
 	WindowStyle="None" ResizeMode="CanResize" BorderThickness="0" Icon="DeltaEngine.Editor.ico"
 	MouseDown="OnMouseDown">
-	<shell2:WindowChrome.WindowChrome>
-		<shell2:WindowChrome CaptionHeight="0" ResizeBorderThickness="5" />
-	</shell2:WindowChrome.WindowChrome>
+	<shell:WindowChrome.WindowChrome>
+		<shell:WindowChrome CaptionHeight="0" ResizeBorderThickness="5" />
+	</shell:WindowChrome.WindowChrome>
 	<Window.Resources>
 		<Style x:Key="ActionLabelStyle" TargetType="{x:Type Label}">
 			<Setter Property="Margin" Value="10,3" />
@@ -177,23 +177,23 @@
 							</Style>
 						</Label.Style>
 					</Label>
-					<xcad:DockingManager Margin="0,36,0,0" GridSplitterWidth="10" Drop="OnContentDrop" AllowDrop="True">
-						<xcad:DockingManager.Background>
+					<avalonDock:DockingManager Margin="0,36,0,0" GridSplitterWidth="10" Drop="OnContentDrop" AllowDrop="True">
+						<avalonDock:DockingManager.Background>
 							<RadialGradientBrush>
 								<GradientStop Color="#FFE4E4E4" Offset="1" />
 								<GradientStop Color="White" />
 							</RadialGradientBrush>
-						</xcad:DockingManager.Background>
-						<xcad:DockingManager.Theme>
-							<xcad:MetroTheme />
-						</xcad:DockingManager.Theme>
-						<xcad:LayoutRoot>
-							<xcad:LayoutPanel>
-								<xcad:LayoutDocumentPaneGroup x:Name="PluginGroup">
-								</xcad:LayoutDocumentPaneGroup>
-							</xcad:LayoutPanel>
-						</xcad:LayoutRoot>
-					</xcad:DockingManager>
+						</avalonDock:DockingManager.Background>
+						<avalonDock:DockingManager.Theme>
+							<avalonDock:MetroTheme />
+						</avalonDock:DockingManager.Theme>
+						<avalonDock:LayoutRoot>
+							<avalonDock:LayoutPanel>
+								<avalonDock:LayoutDocumentPaneGroup x:Name="PluginGroup">
+								</avalonDock:LayoutDocumentPaneGroup>
+							</avalonDock:LayoutPanel>
+						</avalonDock:LayoutRoot>
+					</avalonDock:DockingManager>
 					<Label
 						Margin="0,4,255,0" VerticalAlignment="Top"
 						FontSize="14" Content="❘" Foreground="#FFC1C1C1" FontFamily="Arial" FontWeight="Bold" HorizontalAlignment="Right"

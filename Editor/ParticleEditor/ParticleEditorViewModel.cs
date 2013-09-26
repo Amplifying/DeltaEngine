@@ -23,19 +23,23 @@ namespace DeltaEngine.Editor.ParticleEditor
 		{
 			EntitiesRunner.Current.Clear();
 			ParticleList = new ObservableCollection<string>();
+			EmitterList = new ObservableCollection<string>();
 			MaterialList = new ObservableCollection<string>();
 			BillBoardModeList = new ObservableCollection<string>();
 			SetUpStartEmitterData();
 			this.service = service;
 			metaDataCreator = new ContentMetaDataCreator();
 			emitterPosition = new Vector2D(0.5f, 0.5f);
+			LifeTime = 1;
 			CreateEmitter();
 			GetParticles();
+			GetEmitterList();
 			GetMaterials();
 			GetBillboardModes();
 		}
 
 		public ObservableCollection<string> ParticleList { get; set; }
+		public ObservableCollection<string> EmitterList { get; set; }
 		public ObservableCollection<string> MaterialList { get; set; }
 		public ObservableCollection<string> BillBoardModeList { get; set; }
 		private readonly Service service;
@@ -81,21 +85,34 @@ namespace DeltaEngine.Editor.ParticleEditor
 
 		private void Create3DEmitter()
 		{
-			if (EmitterData.ParticleMaterial == null ||
-				!(EmitterData.ParticleMaterial.Shader as ShaderWithFormat).Format.Is3D)
-				return;
 			SetGridAndCameraTo3D();
-			emitter = new Particle3DPointEmitter(EmitterData, Vector3D.Zero);
+			ResetEmitter3D();
 		}
 
 		private void SetGridAndCameraTo3D()
 		{
 			new Grid3D(10);
 			camera = Camera.Use<LookAtCamera>();
-			camera.Position = Vector3D.One;
+			camera.Position = Vector3D.One * 2.0f;
 		}
 
 		private Camera camera;
+
+		private void ResetEmitter3D()
+		{
+			if (EmitterData.ParticleMaterial == null ||
+				!(EmitterData.ParticleMaterial.Shader as ShaderWithFormat).Format.Is3D)
+				return;
+			if (EmitterData.EmitterType == "PointEmitter")
+				emitter = new Particle3DPointEmitter(EmitterData, EmitterData.StartPosition.Start);
+			else if (EmitterData.EmitterType == "LineEmitter")
+				emitter = new Particle3DLineEmitter(EmitterData, EmitterData.StartPosition);
+			else if (EmitterData.EmitterType == "BoxEmitter")
+				emitter = new Particle3DBoxEmitter(EmitterData, EmitterData.StartPosition);
+			else if (EmitterData.EmitterType == "SphericalEmitter")
+				emitter = new Particle3DSphericalEmitter(EmitterData, EmitterData.StartPosition.Start,
+					EmitterData.StartPosition.End.Length);
+		}
 
 		public ParticleEmitter emitter;
 
@@ -119,6 +136,14 @@ namespace DeltaEngine.Editor.ParticleEditor
 			var foundParticles = service.GetAllContentNamesByType(ContentType.ParticleEmitter);
 			foreach (var particle in foundParticles)
 				ParticleList.Add(particle);
+		}
+		
+		private void GetEmitterList()
+		{
+			EmitterList.Add("PointEmitter");
+			EmitterList.Add("LineEmitter");
+			EmitterList.Add("BoxEmitter");
+			EmitterList.Add("SphericalEmitter");
 		}
 
 		private void GetMaterials()
@@ -179,6 +204,26 @@ namespace DeltaEngine.Editor.ParticleEditor
 
 		private string selectedMaterial;
 
+		public string SelectedEmitter
+		{
+			get { return selectedEmitter; }
+			set
+			{
+				if (String.IsNullOrEmpty(value))
+					return;
+				selectedEmitter = value;
+				RaisePropertyChanged("SelectedEmitter");
+				if (emitter != null)
+					emitter.IsActive = false;
+				if (EmitterData.ParticleMaterial == null ||
+					!(EmitterData.ParticleMaterial.Shader as ShaderWithFormat).Format.Is3D)
+					return;
+				CreateEmitter();
+			}
+		}
+
+		private string selectedEmitter;
+
 		public int MaxNumbersOfParticles
 		{
 			get { return EmitterData.MaximumNumberOfParticles; }
@@ -226,12 +271,55 @@ namespace DeltaEngine.Editor.ParticleEditor
 				particleName = value;
 				if (ContentLoader.Exists(ParticleName, ContentType.ParticleEmitter))
 					EmitterData = ContentLoader.Load<ParticleEmitterData>(particleName);
+				ReloadParticleValues();
 				CreateEmitter();
-				RaisePropertyChanged("EmitterData");
-				RaisePropertyChanged("SelectedMaterial");
 			}
 		}
+
 		private string particleName;
+
+		private void ReloadParticleValues()
+		{
+			UpdateProperties();
+			RaisePropertiesChanged();
+		}
+
+		private void UpdateProperties()
+		{
+			if (EmitterData.ParticleMaterial == null)
+				return;
+			SelectedMaterial = EmitterData.ParticleMaterial.Name;
+			SelectedEmitter = EmitterData.EmitterType;
+			Size = EmitterData.Size;
+			Color = EmitterData.Color;
+			LifeTime = EmitterData.LifeTime;
+			SelectedBillBoardMode = EmitterData.BillboardMode.ToString();
+			StartPosition = EmitterData.StartPosition;
+			StartRotation = EmitterData.StartRotation;
+			StartVelocity = EmitterData.StartVelocity;
+			Acceleration = EmitterData.Acceleration;
+			RotationSpeed = EmitterData.RotationSpeed;
+			SpawnInterval = EmitterData.SpawnInterval;
+			MaxNumbersOfParticles = EmitterData.MaximumNumberOfParticles;
+		}
+
+		private void RaisePropertiesChanged()
+		{
+			RaisePropertyChanged("EmitterData");
+			RaisePropertyChanged("SelectedMaterial");
+			RaisePropertyChanged("SelectedEmitter");
+			RaisePropertyChanged("Size");
+			RaisePropertyChanged("Color");
+			RaisePropertyChanged("LifeTime");
+			RaisePropertyChanged("SelectedBillBoardMode");
+			RaisePropertyChanged("StartPosition");
+			RaisePropertyChanged("StartRotation");
+			RaisePropertyChanged("StartVelocity");
+			RaisePropertyChanged("Acceleration");
+			RaisePropertyChanged("RotationSpeed");
+			RaisePropertyChanged("SpawnInterval");
+			RaisePropertyChanged("MaxNumberOfParticles");
+		}
 
 		public void SwitchGradientGraph()
 		{
@@ -315,6 +403,27 @@ namespace DeltaEngine.Editor.ParticleEditor
 			{
 				if (value != null)
 					EmitterData.Size = value;
+			}
+		}
+
+		public float LifeTime
+		{
+			get { return EmitterData.LifeTime; }
+			set
+			{
+				EmitterData.LifeTime = value;
+				RaisePropertyChanged("LifeTime");
+			}
+		}
+
+		public float SpawnInterval
+		{
+			get { return EmitterData.SpawnInterval; }
+			set
+			{
+				if (value != 0)
+					EmitterData.SpawnInterval = value;
+				RaisePropertyChanged("SpawnInterval");
 			}
 		}
 	}

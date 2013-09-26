@@ -110,6 +110,8 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ColorGraphStringConverter.cs" />
+    <Compile Include="FloatStringConverter.cs" />
+    <Compile Include="IntStringConverter.cs" />
     <Compile Include="ParticleEditorView.xaml.cs">
       <DependentUpon>ParticleEditorView.xaml</DependentUpon>
     </Compile>

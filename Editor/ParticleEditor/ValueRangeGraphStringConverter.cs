@@ -38,7 +38,8 @@ namespace DeltaEngine.Editor.ParticleEditor
 					return null;
 				try
 				{
-					valueRanges.Add(new ValueRange(float.Parse(partitions[i]), float.Parse(partitions[i + 1])));
+					valueRanges.Add(new ValueRange(float.Parse(partitions[i], CultureInfo.InvariantCulture), 
+						float.Parse(partitions[i + 1], CultureInfo.InvariantCulture)));
 				}
 				catch
 				{

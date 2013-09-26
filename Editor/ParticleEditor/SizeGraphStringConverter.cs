@@ -36,7 +36,8 @@ namespace DeltaEngine.Editor.ParticleEditor
 					return null;
 				try
 				{
-					sizeList.Add(new Size(float.Parse(partitions[i]), float.Parse(partitions[i + 1])));
+					sizeList.Add(new Size(float.Parse(partitions[i], CultureInfo.InvariantCulture),
+						float.Parse(partitions[i + 1], CultureInfo.InvariantCulture)));
 				}
 				catch
 				{

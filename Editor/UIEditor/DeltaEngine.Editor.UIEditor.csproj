@@ -96,6 +96,29 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="..\Images\UIEditor\CreateButton.png" />
+    <Resource Include="..\Images\UIEditor\CreateImage.png" />
+    <Resource Include="..\Images\UIEditor\CreateLabel.png" />
+    <Resource Include="..\Images\UIEditor\DefaultButtonBackground.png" />
+    <Resource Include="..\Images\UIEditor\DefaultButtonHover.png" />
+    <Resource Include="..\Images\UIEditor\DefaultButtonPressed.png" />
+    <Resource Include="..\Images\UIEditor\DefaultCheckboxOff.png" />
+    <Resource Include="..\Images\UIEditor\DefaultCheckboxOffHover.png" />
+    <Resource Include="..\Images\UIEditor\DefaultCheckboxOn.png" />
+    <Resource Include="..\Images\UIEditor\DefaultCheckboxOnHover.png" />
+    <Resource Include="..\Images\UIEditor\DefaultDropDownBox.png" />
+    <Resource Include="..\Images\UIEditor\DefaultDropDownBoxHover.png" />
+    <Resource Include="..\Images\UIEditor\DefaultLabel.png" />
+    <Resource Include="..\Images\UIEditor\DefaultRadiobuttonOff.png" />
+    <Resource Include="..\Images\UIEditor\DefaultRadioButtonOffHover.png" />
+    <Resource Include="..\Images\UIEditor\DefaultRadiobuttonOn.png" />
+    <Resource Include="..\Images\UIEditor\DefaultRadioButtonOnHover.png" />
+    <Resource Include="..\Images\UIEditor\DefaultSlider.png" />
+    <Resource Include="..\Images\UIEditor\DefaultSliderBackground.png" />
+    <Resource Include="..\Images\UIEditor\DefaultSliderHover.png" />
+    <Resource Include="..\Images\UIEditor\ImageButton.png" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ControlProcessor.cs" />
     <Compile Include="UIEditorViewModel.cs" />

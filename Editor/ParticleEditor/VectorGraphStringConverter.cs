@@ -38,8 +38,9 @@ namespace DeltaEngine.Editor.ParticleEditor
 					return null;
 				try
 				{
-					vectorList.Add(new Vector3D(float.Parse(partitions[i]), float.Parse(partitions[i + 1]),
-						float.Parse(partitions[i + 2])));
+					vectorList.Add(new Vector3D(float.Parse(partitions[i], CultureInfo.InvariantCulture),
+						float.Parse(partitions[i + 1], CultureInfo.InvariantCulture),
+						float.Parse(partitions[i + 2], CultureInfo.InvariantCulture)));
 				}
 				catch
 				{

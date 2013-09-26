@@ -4,6 +4,7 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using DeltaEngine.Content;
+using DeltaEngine.Content.Xml;
 
 namespace DeltaEngine.Editor.ContentManager
 {

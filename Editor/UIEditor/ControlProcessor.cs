@@ -1,7 +1,7 @@
 ﻿using System;
 using DeltaEngine.Datatypes;
+using DeltaEngine.Rendering2D;
 using DeltaEngine.Rendering2D.Shapes;
-using DeltaEngine.Rendering2D.Sprites;
 
 namespace DeltaEngine.Editor.UIEditor
 {
@@ -39,7 +39,7 @@ namespace DeltaEngine.Editor.UIEditor
 			};
 		}
 
-		internal void UpdateOutLines(Sprite selectedSprite)
+		internal void UpdateOutLines(Entity2D selectedSprite)
 		{
 			Rectangle drawArea = selectedSprite == null ? Rectangle.Zero : selectedSprite.DrawArea;
 			const float Offset = 0.002f;
@@ -53,41 +53,42 @@ namespace DeltaEngine.Editor.UIEditor
 			outLines[3].EndPoint = drawArea.TopRight + new Vector2D(+Offset, -Offset);
 		}
 
-		internal void MoveImage(Vector2D mousePosition, Sprite selectedSprite, bool isDragging,
+		internal void MoveImage(Vector2D mousePosition, Entity2D selectedEntity2D, bool isDragging,
 			bool isSnappingToGrid)
 		{
-			if (selectedSprite == null || isDragging)
+			if (selectedEntity2D == null || isDragging)
 				return;
 			if (uiEditorViewModel.GridWidth == 0 || uiEditorViewModel.GridHeight == 0 ||
 				!isSnappingToGrid)
-				MoveImageWithoutGrid(mousePosition, selectedSprite);
+				MoveImageWithoutGrid(mousePosition, selectedEntity2D);
 			else
-				MoveImageUsingTheGrid(mousePosition, selectedSprite);
-			UpdateOutLines(selectedSprite);
+				MoveImageUsingTheGrid(mousePosition, selectedEntity2D);
+			UpdateOutLines(selectedEntity2D);
 		}
 
-		private void MoveImageWithoutGrid(Vector2D mousePosition, Sprite selectedSprite)
+		private void MoveImageWithoutGrid(Vector2D mousePosition, Entity2D selectedEntity2D)
 		{
 			var relativePosition = mousePosition - lastMousePosition;
 			lastMousePosition = mousePosition;
-			selectedSprite.Center += relativePosition;
+			selectedEntity2D.Center += relativePosition;
 		}
 
-		private void MoveImageUsingTheGrid(Vector2D mousePosition, Sprite selectedSprite)
+		private void MoveImageUsingTheGrid(Vector2D mousePosition, Entity2D selectedEntity2D)
 		{
 			var relativePosition = mousePosition - lastMousePosition;
-			float posX = (selectedSprite.DrawArea.Left + relativePosition.X);
-			float posY = (selectedSprite.DrawArea.Top + relativePosition.Y);
+			float posX = (selectedEntity2D.DrawArea.Left + relativePosition.X);
+			float posY = (selectedEntity2D.DrawArea.Top + relativePosition.Y);
 			float gridSpaceX = (1.0f / uiEditorViewModel.GridWidth);
 			float gridSpaceY = (1.0f / uiEditorViewModel.GridHeight);
 			var colomNumberInGrid = (int)Math.Round(posX / gridSpaceX);
 			var rowNumberInGrid = (int)Math.Round(posY / gridSpaceY);
-			selectedSprite.DrawArea = new Rectangle(gridSpaceX * colomNumberInGrid,
-				gridSpaceY * rowNumberInGrid, selectedSprite.DrawArea.Width, selectedSprite.DrawArea.Height);
-			if (spritePos == selectedSprite.Center)
+			selectedEntity2D.DrawArea = new Rectangle(gridSpaceX * colomNumberInGrid,
+				gridSpaceY * rowNumberInGrid, selectedEntity2D.DrawArea.Width,
+				selectedEntity2D.DrawArea.Height);
+			if (spritePos == selectedEntity2D.Center)
 				return;
 			lastMousePosition = mousePosition;
-			spritePos = selectedSprite.Center;
+			spritePos = selectedEntity2D.Center;
 		}
 	}
 }

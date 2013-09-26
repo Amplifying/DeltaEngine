@@ -130,10 +130,26 @@
 					<ColumnDefinition Width="30" />
 					<ColumnDefinition Width="12" />
 				</Grid.ColumnDefinitions>
-				<TextBox Text="{Binding Path=EmitterData.SpawnInterval,UpdateSourceTrigger=PropertyChanged}" Grid.Column="3"
-					         Grid.Row="31" Style="{StaticResource DeltaTextBox}" />
-				<TextBox Text="{Binding Path=EmitterData.LifeTime, UpdateSourceTrigger=PropertyChanged}" Grid.Column="3"
-					         Grid.Row="15" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0" />
+				<TextBox Grid.Column="3"
+					         Grid.Row="31" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0" >
+					<TextBox.Text>
+						<Binding Path="SpawnInterval" UpdateSourceTrigger="PropertyChanged">
+							<Binding.Converter>
+								<particleEditor:FloatStringConverter />
+							</Binding.Converter>
+						</Binding>
+					</TextBox.Text>
+				</TextBox>
+				<TextBox Grid.Column="3"
+					         Grid.Row="15" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0" >
+								 <TextBox.Text>
+						<Binding Path="LifeTime" UpdateSourceTrigger="PropertyChanged">
+						<Binding.Converter>
+							<particleEditor:FloatStringConverter />
+						</Binding.Converter>
+					</Binding>
+					</TextBox.Text>
+				</TextBox>
 				<TextBox Grid.Column="3" Grid.Row="27" Style="{StaticResource DeltaTextBox}" Margin="1,1,0,0">
 					<TextBox.Text>
 						<Binding Path="Acceleration" UpdateSourceTrigger="PropertyChanged">
@@ -168,9 +184,16 @@
 						</Binding>
 					</TextBox.Text>
 				</TextBox>
-				<TextBox
-						Text="{Binding Path=MaxNumbersOfParticles,UpdateSourceTrigger=PropertyChanged}"
-						Grid.Column="3" Grid.Row="33" Style="{StaticResource DeltaTextBox}" Grid.ColumnSpan="3" Margin="1,0,0,0" />
+				<TextBox Grid.Column="3"
+					         Grid.Row="33" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0" >
+					<TextBox.Text>
+						<Binding Path="MaxNumbersOfParticles" UpdateSourceTrigger="PropertyChanged">
+							<Binding.Converter>
+								<particleEditor:IntStringConverter />
+							</Binding.Converter>
+						</Binding>
+					</TextBox.Text>
+				</TextBox>
 
 				<Label Content="Spawn Interval" Grid.Row="31"
 					       Style="{StaticResource DeltaLabel}" Grid.Column="1" />
@@ -308,7 +331,9 @@
 					</Button.Background>
 				</Button>
 				<Label Content="Emitter Type" Grid.Column="1" Grid.Row="5" Style="{StaticResource DeltaLabel}"/>
-				<ComboBox Grid.Column="3" Style="{StaticResource DeltaComboBox}" Grid.Row="5" Grid.ColumnSpan="3"/>
+				<ComboBox Grid.Row="5"
+					          ItemsSource="{Binding Path=EmitterList}" SelectedItem="{Binding Path=SelectedEmitter}" Grid.Column="3"
+					          Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="4" Margin="1,0,11,0" />
 			</Grid>
 
 		</Grid>

@@ -156,6 +156,7 @@
     </Compile>
     <Compile Include="ContentManagerViewModel.cs" />
     <Compile Include="Previewers\MaterialPreviewer.cs" />
+    <Compile Include="Previewers\MeshPreviewer.cs" />
     <Compile Include="Previewers\MusicPreviewer.cs" />
     <Compile Include="Previewers\ParticlePreviewer.cs" />
     <Compile Include="Previewers\ContentPreview.cs" />

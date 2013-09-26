@@ -12,7 +12,7 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 			viewers.Add(ContentType.ImageAnimation, new ImageAnimationPreviewer());
 			viewers.Add(ContentType.SpriteSheetAnimation, new SpriteSheetPreviewer());
 			viewers.Add(ContentType.Material, new MaterialPreviewer());
-			//viewers.Add(ContentType.Mesh, new MeshPreviewer((DefaultCamera)camera));
+			viewers.Add(ContentType.Model, new MeshPreviewer());
 			viewers.Add(ContentType.ParticleEmitter, new ParticlePreviewer());
 			viewers.Add(ContentType.Font, new FontPreviewer());
 			viewers.Add(ContentType.Sound, new SoundPreviewer());

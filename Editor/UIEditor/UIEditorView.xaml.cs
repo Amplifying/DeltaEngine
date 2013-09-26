@@ -92,11 +92,29 @@ namespace DeltaEngine.Editor.UIEditor
 
 		private bool isDragging;
 
+		private void DragButton(object sender, MouseEventArgs e)
+		{
+			if (e.LeftButton == MouseButtonState.Pressed && !isDragging)
+			{
+				Messenger.Default.Send(true, "SetDraggingButton");
+				isDragging = true;
+				Mouse.OverrideCursor = Cursors.Hand;
+			}
+
+			if (e.LeftButton != MouseButtonState.Pressed)
+			{
+				Messenger.Default.Send(false, "SetDraggingButton");
+				isDragging = false;
+				Mouse.OverrideCursor = Cursors.Arrow;
+			}
+		}
+
 		private void SetMouseIcon(object sender, MouseEventArgs e)
 		{
 			if (e.LeftButton != MouseButtonState.Pressed)
 			{
 				Messenger.Default.Send(false, "SetDraggingImage");
+				Messenger.Default.Send(false, "SetDraggingButton");
 				isDragging = false;
 				Mouse.OverrideCursor = Cursors.Arrow;
 			}
