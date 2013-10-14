@@ -14,23 +14,23 @@ namespace DeltaEngine.Editor.Emulator
 	/// </summary>
 	public class WpfHostedFormsWindow : FormsWindow
 	{
-		public WpfHostedFormsWindow(EmulatorControl emulatorControl, System.Windows.Window window)
-			: base(GetEmulatorControlPanel(emulatorControl))
+		public WpfHostedFormsWindow(ViewportControl viewportControl, Window window)
+			: base(GetViewportControlPanel(viewportControl))
 		{
-			dispatcher = emulatorControl.ViewportHost.Dispatcher;
+			dispatcher = viewportControl.ViewportHost.Dispatcher;
 			this.window = window;
-			emulatorControl.ViewportHost.SizeChanged += OnHostControlSizeChanged;
+			viewportControl.ViewportHost.SizeChanged += OnHostControlSizeChanged;
 			new QuadraticScreenSpace(this);
 		}
 
-		private static Panel GetEmulatorControlPanel(EmulatorControl emulatorControl)
+		private static Panel GetViewportControlPanel(ViewportControl viewportControl)
 		{
-			emulatorControl.ApplyEmulator();
-			return emulatorControl.Screen;
+			viewportControl.ApplyEmulator();
+			return viewportControl.Screen;
 		}
 
 		private readonly Dispatcher dispatcher;
-		private readonly System.Windows.Window window;
+		private readonly Window window;
 
 		private void OnHostControlSizeChanged(object s, SizeChangedEventArgs e)
 		{

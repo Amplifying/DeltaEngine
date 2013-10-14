@@ -8,6 +8,6 @@
 	mc:Ignorable="d"
 	d:DesignHeight="300" d:DesignWidth="300">
 	<Grid>
-		<viewport:EmulatorControl Name="EngineViewport" />
+		<viewport:ViewportControl Name="EngineViewport" />
 	</Grid>
 </UserControl>

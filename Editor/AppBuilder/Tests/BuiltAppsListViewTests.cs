@@ -1,14 +1,14 @@
 ﻿using System;
-using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Messages;
 using NUnit.Framework;
 using WpfWindow = System.Windows.Window;
 
 namespace DeltaEngine.Editor.AppBuilder.Tests
 {
+	[Category("Slow"), Category("WPF")]
 	public class BuiltAppsListViewTests
 	{
-		[Test, STAThread, Category("Slow"), Category("WPF")]
+		[Test, STAThread]
 		public void ShowViewWithOneBuiltApp()
 		{
 			var listViewModel = GetBuiltAppsListWithDummyEntry();
@@ -32,7 +32,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			return new WpfWindow { Content = appsListView, Width = 800, Height = 480 };
 		}
 
-		[Test, STAThread, Category("Slow"), Category("WPF")]
+		[Test, STAThread]
 		public void ShowViewWithSeveralAppEntries()
 		{
 			var listViewModel = GetBuiltAppsListWithDummyEntry();
@@ -44,7 +44,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			window.ShowDialog();
 		}
 
-		[Test, STAThread, Category("Slow"), Category("WPF")]
+		[Test, STAThread]
 		public void ShowViewWithLogoAppForWindows()
 		{
 			var listViewModel = new BuiltAppsListViewModel();

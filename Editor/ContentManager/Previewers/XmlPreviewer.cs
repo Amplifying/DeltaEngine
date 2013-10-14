@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
+using DeltaEngine.Core;
+using Microsoft.Win32;
 
 namespace DeltaEngine.Editor.ContentManager.Previewers
 {
@@ -8,8 +10,23 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 		//ncrunch: no coverage start
 		public void PreviewContent(string contentName)
 		{
-			Process.Start(Path.Combine(Directory.GetCurrentDirectory(), contentName));
+			var projectName = GetProjectName();
+			if (string.IsNullOrEmpty(projectName))
+			{
+				Logger.Warning("No project selected, can't access selected file.");
+				return;
+			}
+			Process.Start(Path.Combine(Directory.GetCurrentDirectory(),"Content", projectName, 
+				contentName + ".xml"));
 		}
-		//ncrunch: no coverage end
+
+		private static string GetProjectName()
+		{
+			string projectName = "";
+			var key = Registry.CurrentUser.OpenSubKey(@"Software\DeltaEngine\Editor");
+			if (key != null)
+				projectName = (string)key.GetValue("SelectedProject");
+			return projectName;
+		}
 	}
 }

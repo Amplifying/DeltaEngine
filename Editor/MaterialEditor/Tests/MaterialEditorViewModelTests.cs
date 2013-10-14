@@ -11,7 +11,6 @@ namespace DeltaEngine.Editor.MaterialEditor.Tests
 		[Test]
 		public void SetUp()
 		{
-			ContentLoader.Use<MockContentLoader>();
 			materialEditor = new MaterialEditorViewModel(new MockService("TestUser", "MaterialTests"));
 		}
 

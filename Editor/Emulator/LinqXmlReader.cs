@@ -17,7 +17,6 @@ namespace DeltaEngine.Editor.Emulator
 			var value = container.Element(element);
 			if (value == null)
 				return new Point(0, 0);
-
 			string[] pointStrings = value.Value.Split(',');
 			return new Point(Int32.Parse(pointStrings[0]), Int32.Parse(pointStrings[1]));
 		}
@@ -27,7 +26,6 @@ namespace DeltaEngine.Editor.Emulator
 			var value = container.Element(element);
 			if (value == null)
 				return new Size(0, 0);
-
 			string[] sizeStrings = value.Value.Split(',');
 			return new Size(Int32.Parse(sizeStrings[0]), Int32.Parse(sizeStrings[1]));
 		}

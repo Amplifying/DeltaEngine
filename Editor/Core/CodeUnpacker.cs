@@ -35,7 +35,7 @@ namespace DeltaEngine.Editor.Core
 				CreateFile(streamReader);
 		}
 
-		private class NoSourceCodeFilesSentUnableToBuildApp : Exception {}
+		public class NoSourceCodeFilesSentUnableToBuildApp : Exception {}
 
 		private void CreateFile(BinaryReader streamReader)
 		{

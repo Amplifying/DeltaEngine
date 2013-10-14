@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DeltaEngine.Core;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Extensions;
 
@@ -60,8 +61,8 @@ namespace DeltaEngine.Editor.AppBuilder
 			}
 			catch (ProcessRunner.ProcessTerminatedWithError)
 			{
-				Console.WriteLine("Output:" + adbProcess.Output);
-				Console.WriteLine("Error:" + adbProcess.Errors);
+				Logger.Warning("Output:" + adbProcess.Output);
+				Logger.Warning("Error:" + adbProcess.Errors);
 				throw;
 			}
 		}

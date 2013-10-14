@@ -1,8 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
+using System.Linq;
+using System.Windows;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using DeltaEngine.Editor.Core;
+using Microsoft.Win32;
+using Point = System.Drawing.Point;
+using Size = System.Drawing.Size;
 
 namespace DeltaEngine.Editor.Emulator
 {
@@ -18,12 +26,15 @@ namespace DeltaEngine.Editor.Emulator
 
 		public void Init(Service service)
 		{
-			Devices = new Devices();
-			DataContext = Devices;
+			EmulatorViewModel = new EmulatorViewModel();
+			DataContext = EmulatorViewModel;
 		}
 
-		public Devices Devices { get; set; }
+		public void ProjectChanged() {}
 
+		public EmulatorViewModel EmulatorViewModel { get; set; }
+
+		/*
 		public void ApplyEmulator()
 		{
 			SetupScreen();
@@ -34,6 +45,211 @@ namespace DeltaEngine.Editor.Emulator
 			SetupMenu();
 			LoadStateFromRegistry();
 			Update();
+		}
+
+		private void SetupScreen()
+		{
+			Screen = new Panel();
+			Screen.BackColor = Color.Purple;
+			Screen.Dock = DockStyle.None;
+		}
+
+		private void SetupDeviceFrame()
+		{
+			deviceImage = new PictureBox();
+			deviceImage.BackColor = Color.Transparent;
+			deviceImage.BackgroundImageLayout = ImageLayout.Center;
+			deviceImage.Location = new Point(0, 0);
+			deviceImage.SizeMode = PictureBoxSizeMode.StretchImage;
+		}
+
+		private void SetupEmulator()
+		{
+			emulator = new Panel();
+			emulator.Controls.Add(Screen);
+			emulator.Controls.Add(deviceImage);
+			emulator.Dock = DockStyle.Fill;
+			emulator.Controls.Add(deviceImage);
+		}
+
+		private void SetupHost()
+		{
+			ViewportHost.Child = emulator;
+			((ISupportInitialize)(deviceImage)).EndInit();
+			emulator.ResumeLayout(false);
+		}
+
+		private MenuItem menuDevice;
+		private MenuItem menuOrientation;
+		private MenuItem menuScale;
+
+		private MenuItem[] menuDeviceDevices;
+		private MenuItem menuOrientationPortrait;
+		private MenuItem menuOrientationLandscape;
+		private MenuItem[] menuScaleScales;
+
+		private void SetupMenu()
+		{
+			var menu = new ContextMenu();
+			emulator.ContextMenu = menu;
+			menuDevice = new MenuItem();
+			menuDevice.Text = Properties.Resources.EmulatorControl_SetupMenu_Device;
+			SetupDeviceMenu();
+			menu.MenuItems.Add(menuDevice);
+			menuOrientation = new MenuItem();
+			menuOrientation.Text = Properties.Resources.EmulatorControl_SetupMenu_Orientation;
+			SetupOrientationMenu();
+			menu.MenuItems.Add(menuOrientation);
+			menuScale = new MenuItem();
+			menuScale.Text = Properties.Resources.EmulatorControl_SetupMenu_Scale;
+			SetupScaleMenu();
+			menu.MenuItems.Add(menuScale);
+		}
+
+		private void SetupDeviceMenu()
+		{
+			menuDeviceDevices = new MenuItem[devices.Length];
+			string lastType = devices[0].Type;
+			for (int i = 0; i < devices.Length; i++)
+			{
+				SetupDeviceMenuOption(i, lastType);
+				lastType = devices[i].Type;
+			}
+		}
+
+		private void SetupDeviceMenuOption(int optionIndex, string lastType)
+		{
+			if (devices[optionIndex].Type != lastType)
+				menuDevice.MenuItems.Add("-");
+
+			menuDeviceDevices[optionIndex] = new MenuItem();
+			menuDeviceDevices[optionIndex].Tag = optionIndex;
+			menuDeviceDevices[optionIndex].Text = devices[optionIndex].Name;
+			menuDeviceDevices[optionIndex].Click += MenuDeviceClick;
+			menuDevice.MenuItems.Add(menuDeviceDevices[optionIndex]);
+		}
+
+		private void SetupOrientationMenu()
+		{
+			menuOrientationPortrait = new MenuItem();
+			menuOrientationPortrait.Checked = true;
+			menuOrientationPortrait.Text =
+				Properties.Resources.EmulatorControl_SetupOrientationMenu_Portrait;
+			menuOrientationPortrait.Tag = 0;
+			menuOrientationPortrait.Click += MenuOrientationClick;
+			menuOrientation.MenuItems.Add(menuOrientationPortrait);
+			menuOrientationLandscape = new MenuItem();
+			menuOrientationLandscape.Checked = false;
+			menuOrientationLandscape.Text =
+				Properties.Resources.EmulatorControl_SetupOrientationMenu_Landscape;
+			menuOrientationLandscape.Tag = 1;
+			menuOrientationLandscape.Click += MenuOrientationClick;
+			menuOrientation.MenuItems.Add(menuOrientationLandscape);
+		}
+
+		private void SetupScaleMenu()
+		{
+			menuScaleScales = new MenuItem[NumberOfScales];
+			SetupScaleMenuOption(0, Properties.Resources.EmulatorControl_SetupScaleMenu__100);
+			SetupScaleMenuOption(1, Properties.Resources.EmulatorControl_SetupScaleMenu__75);
+			SetupScaleMenuOption(2, Properties.Resources.EmulatorControl_SetupScaleMenu__50);
+			for (int i = 0; i < NumberOfScales; i++)
+			{
+				menuScaleScales[i].Click += MenuScaleClick;
+				menuScale.MenuItems.Add(menuScaleScales[i]);
+			}
+		}
+
+		private void SetupScaleMenuOption(int optionIndex, string text)
+		{
+			menuScaleScales[optionIndex] = new MenuItem
+			{
+				Checked = true,
+				Tag = optionIndex,
+				Text = text
+			};
+		}
+		private void MenuDeviceClick(object sender, EventArgs e)
+		{
+			var selectedOption = (int)((MenuItem)sender).Tag;
+			SelectDevice(selectedOption);
+			SelectScale(devices[selectedOption].DefaultScaleIndex);
+			Update();
+		}
+
+		private void MenuOrientationClick(object sender, EventArgs e)
+		{
+			var selectedOption = (int)((MenuItem)sender).Tag;
+			SelectOrientation(selectedOption);
+			Update();
+		}
+
+		private void MenuScaleClick(object sender, EventArgs e)
+		{
+			var selectedOption = (int)((MenuItem)sender).Tag;
+			SelectScale(selectedOption);
+			Update();
+		}
+		public void SaveStateToRegistry()
+		{
+			RegistryKey registryKey =
+				Registry.CurrentUser.CreateSubKey(@"Software\DeltaEngine\Editor\Emulator");
+			if (registryKey == null)
+				return;
+			registryKey.SetValue("Device", selectedDevice);
+			registryKey.SetValue("Orientation", orientationPortrait ? 0 : 1);
+			for (int i = 0; i < NumberOfScales; i++)
+				if (menuScaleScales[i].Checked)
+				{
+					registryKey.SetValue("Scale", i);
+					return;
+				}
+		}
+
+		private void LoadStateFromRegistry()
+		{
+			RegistryKey registryKey =
+				Registry.CurrentUser.OpenSubKey(@"Software\DeltaEngine\Editor\Emulator", false);
+			if (registryKey != null)
+			{
+				SelectDevice((int)registryKey.GetValue("Device"));
+				SelectOrientation((int)registryKey.GetValue("Orientation"));
+				SelectScale((int)registryKey.GetValue("Scale"));
+			}
+			else
+				LoadDefaults();
+		}
+
+		private void LoadDefaults()
+		{
+			SelectDevice(0);
+			SelectScale(devices[selectedDevice].DefaultScaleIndex);
+			SelectOrientation(0);
+		}
+
+		private void LoadDeviceInfoList()
+		{
+			var xmlStream =
+				EmbeddedResourcesLoader.GetEmbeddedResourceStream("Images.Emulators.Devices.xml");
+			XElement xmlFile = XElement.Load(xmlStream);
+			IEnumerable<XElement> xmlDevices = xmlFile.Elements();
+			var deviceCount = (from category in xmlFile.Descendants("Device") select category).Count();
+			devices = new Device[deviceCount];
+			int deviceIndex = 0;
+			foreach (var xmlDevice in xmlDevices)
+				LoadDeviceInfo(deviceIndex++, xmlDevice);
+		}
+
+		private void LoadDeviceInfo(int deviceIndex, XContainer xmlDevice)
+		{
+			devices[deviceIndex].Type = xmlDevice.ReadStringValue("Type");
+			devices[deviceIndex].Name = xmlDevice.ReadStringValue("Name");
+			devices[deviceIndex].ImageFile = xmlDevice.ReadStringValue("ImageFile");
+			devices[deviceIndex].ScreenPoint = xmlDevice.ReadPointValue("ScreenPoint");
+			devices[deviceIndex].ScreenSize = xmlDevice.ReadSizeValue("ScreenSize");
+			devices[deviceIndex].CanRotate = xmlDevice.ReadBoolValue("CanRotate");
+			devices[deviceIndex].CanScale = xmlDevice.ReadBoolValue("CanScale");
+			devices[deviceIndex].DefaultScaleIndex = xmlDevice.ReadIntValue("DefaultScaleIndex");
 		}
 
 		public Panel Screen { get; private set; }
@@ -131,10 +347,17 @@ namespace DeltaEngine.Editor.Emulator
 			menuOrientationPortrait.Checked = orientationPortrait;
 			menuOrientationLandscape.Checked = !orientationPortrait;
 		}
+		 */
+
+		private void OnSelectedColorChanged(object sender,
+			RoutedPropertyChangedEventArgs<System.Windows.Media.Color> e)
+		{
+
+		}
 
 		public string ShortName
 		{
-			get { return "Viewport"; }
+			get { return "Emulator"; }
 		}
 
 		public string Icon
@@ -144,7 +367,7 @@ namespace DeltaEngine.Editor.Emulator
 
 		public bool RequiresLargePane
 		{
-			get { return true; }
+			get { return false; }
 		}
 	}
 }

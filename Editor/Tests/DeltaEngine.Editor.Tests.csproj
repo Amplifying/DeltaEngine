@@ -89,7 +89,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EditorContentLoaderTests.cs" />
-    <Compile Include="EditorPluginLoaderTests.cs" />
+    <Compile Include="Helpers\EditorPluginLoaderTests.cs" />
     <Compile Include="EditorViewModelTests.cs" />
     <Compile Include="MockEditorPluginView.cs" />
     <Compile Include="OnlineServiceTests.cs" />

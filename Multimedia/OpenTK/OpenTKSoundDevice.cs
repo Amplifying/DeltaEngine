@@ -3,7 +3,6 @@ using DeltaEngine.Datatypes;
 using DeltaEngine.Multimedia.OpenTK.Helpers;
 using OpenTK;
 using OpenTK.Audio.OpenAL;
-using DeltaEngine.Content;
 
 namespace DeltaEngine.Multimedia.OpenTK
 {
@@ -86,11 +85,11 @@ namespace DeltaEngine.Multimedia.OpenTK
 			return numberOfBuffersQueued;
 		}
 
-		public int GetNumberOfBuffersProcesed(int channelHandle)
+		public int GetNumberOfBuffersProcessed(int channelHandle)
 		{
-			int numberOfBufferProcessed;
-			AL.GetSource(channelHandle, ALGetSourcei.BuffersProcessed, out numberOfBufferProcessed);
-			return numberOfBufferProcessed;
+			int numberOfBuffersProcessed;
+			AL.GetSource(channelHandle, ALGetSourcei.BuffersProcessed, out numberOfBuffersProcessed);
+			return numberOfBuffersProcessed;
 		}
 
 		public ChannelState GetChannelState(int channelHandle)

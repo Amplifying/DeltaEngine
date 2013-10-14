@@ -6,7 +6,7 @@ using DeltaEngine.Datatypes;
 using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Entities;
-using DeltaEngine.Rendering2D.Sprites;
+using DeltaEngine.Rendering2D;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 
@@ -41,7 +41,7 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 			var foundContent = service.GetAllContentNamesByType(ContentType.Image);
 			foreach (string content in foundContent)
 				LoadedImageList.Add(content);
-			RaisePropertyChanged("BackgroundImageList");
+			RaisePropertyChanged("LoadedImageList");
 		}
 
 		private void LoadAnimationsFromProject()
@@ -167,7 +167,7 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 				new SpriteSheetAnimation(
 					new SpriteSheetAnimationCreationData(ContentLoader.Load<Image>(ImageList[0]), Duration,
 						SubImageSize));
-			var material = new Material(Shader.Position2DUv, "") { SpriteSheet = spriteSheetAnimation };
+			var material = new Material(Shader.Position2DUV, "") { SpriteSheet = spriteSheetAnimation };
 			new Sprite(material, new Rectangle(0.25f, 0.25f, 0.5f, 0.5f));
 		}
 
@@ -203,7 +203,7 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 			foreach (var image in ImageList)
 				imagelist.Add(ContentLoader.Load<Image>(image));
 			animation = new ImageAnimation(imagelist.ToArray(), Duration);
-			new Sprite(new Material(Shader.Position2DUv, "") { Animation = animation },
+			new Sprite(new Material(Shader.Position2DUV, "") { Animation = animation },
 				new Rectangle(0.25f, 0.25f, 0.5f, 0.5f));
 		}
 
@@ -227,13 +227,18 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 		{
 			EntitiesRunner.Current.Clear();
 			ImageList.Clear();
-			var material = new Material(Shader.Position2DUv, animationName);
+			var material = new Material(Shader.Position2DUV, animationName);
 			new Sprite(material, new Rectangle(0.25f, 0.25f, 0.5f, 0.5f));
 			if (material.Animation != null)
 				foreach (var image in material.Animation.Frames)
 					ImageList.Add(image.Name);
 			else
 				ImageList.Add(material.SpriteSheet.Image.Name);
+		}
+
+		public void RefreshData()
+		{
+			LoadImagesFromProject();
 		}
 	}
 }

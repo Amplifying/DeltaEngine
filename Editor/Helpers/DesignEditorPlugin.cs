@@ -6,6 +6,8 @@ namespace DeltaEngine.Editor.Helpers
 	{
 		public void Init(Service service) {}
 
+		public void ProjectChanged() {}
+
 		public string ShortName
 		{
 			get { return "Test Plugin"; }

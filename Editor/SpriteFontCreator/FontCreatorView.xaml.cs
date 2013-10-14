@@ -21,6 +21,8 @@ namespace DeltaEngine.Editor.SpriteFontCreator
 			DataContext = Current;
 		}
 
+		public void ProjectChanged() {}
+
 		public string ShortName
 		{
 			get { return "Font Editor"; }
@@ -57,7 +59,10 @@ namespace DeltaEngine.Editor.SpriteFontCreator
 		private void LegacyQualityCheckBoxClick(object sender, RoutedEventArgs e) {}
 		private void LegacyPlusButtonClick(object sender, RoutedEventArgs e) {}
 		private void LegacyMinusButtonClick(object sender, RoutedEventArgs e) {}
-		private void ImportFontButtonClick(object sender, RoutedEventArgs e) {}
+		private void ImportFontButtonClick(object sender, RoutedEventArgs e)
+		{
+			Current.OpenImportdialogue();
+		}
 
 		private void BestPlusButtonClick(object sender, RoutedEventArgs e)
 		{

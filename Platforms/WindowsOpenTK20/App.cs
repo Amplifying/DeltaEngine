@@ -9,7 +9,7 @@ namespace DeltaEngine.Platforms
 	{
 		protected App() {}
 
-		internal App(Window windowToRegister)
+		protected App(Window windowToRegister)
 		{
 			resolver.RegisterInstance(windowToRegister);
 		}

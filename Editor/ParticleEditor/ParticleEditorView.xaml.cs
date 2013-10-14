@@ -14,15 +14,17 @@ namespace DeltaEngine.Editor.ParticleEditor
 			InitializeComponent();
 		}
 
-		public void Init(Service service)
+		public void Init(Service setService)
 		{
-			current = new ParticleEditorViewModel(service);
-			this.service = service;
-			DataContext = current;
+			viewModel = new ParticleEditorViewModel(setService);
+			service = setService;
+			DataContext = viewModel;
 		}
 
-		private ParticleEditorViewModel current;
+		private ParticleEditorViewModel viewModel;
 		private Service service;
+
+		public void ProjectChanged() {}
 
 		public string ShortName
 		{
@@ -41,7 +43,7 @@ namespace DeltaEngine.Editor.ParticleEditor
 
 		private void Save(object sender, RoutedEventArgs e)
 		{
-			current.Save();
+			viewModel.Save();
 		}
 
 		private void OpenMaterialEditor(object sender, RoutedEventArgs e)
@@ -56,7 +58,12 @@ namespace DeltaEngine.Editor.ParticleEditor
 
 		private void ColorGraphOnClick(object sender, RoutedEventArgs e)
 		{
-			current.SwitchGradientGraph();
+			viewModel.SwitchGradientGraph();
+		}
+
+		private void Delete(object sender, RoutedEventArgs e)
+		{
+			viewModel.DeleteParticleContent();
 		}
 	}
 }

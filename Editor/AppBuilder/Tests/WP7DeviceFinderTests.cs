@@ -17,7 +17,6 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 
 		public void AssertWP7Device(Device device)
 		{
-			Console.WriteLine(device);
 			Assert.IsTrue(device is WP7Device, device.GetType() + " - " + device.Name);
 			Assert.IsNotEmpty(device.Name);
 		}

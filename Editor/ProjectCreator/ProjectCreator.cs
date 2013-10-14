@@ -39,16 +39,11 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		public void CreateProject()
 		{
-			if (!IsTargetDirectoryAvailable() || !IsSourceFileAvailable())
+			if (!IsSourceFileAvailable())
 				return;
 			CreateTargetDirectoryHierarchy();
 			CopyTemplateFilesToLocation();
 			ReplacePlaceholdersWithUserInput();
-		}
-
-		public bool IsTargetDirectoryAvailable()
-		{
-			return DoesDirectoryExist(Project.Location);
 		}
 
 		public bool IsSourceFileAvailable()
@@ -59,20 +54,10 @@ namespace DeltaEngine.Editor.ProjectCreator
 				FileSystem.Path.GetExtension(Template.PathToZip) == ".zip";
 		}
 
-		private bool DoesDirectoryExist(string path)
-		{
-			return FileSystem.Directory.Exists(path);
-		}
-
 		private void CreateTargetDirectoryHierarchy()
 		{
-			CreateDirectory(Project.Location + Project.Name + "\\");
-			CreateDirectory(Project.Location + Project.Name + "\\Properties\\");
-		}
-
-		private void CreateDirectory(string path)
-		{
-			FileSystem.Directory.CreateDirectory(path);
+			FileSystem.Directory.CreateDirectory(Project.Path);
+			FileSystem.Directory.CreateDirectory(Path.Combine(Project.Path, "Properties"));
 		}
 
 		private void CopyTemplateFilesToLocation()
@@ -87,13 +72,13 @@ namespace DeltaEngine.Editor.ProjectCreator
 			else
 			{
 				CopyFile(Template.AssemblyInfo,
-					Project.Location + Project.Name + "\\Properties\\" + AssemblyInfo);
+					Path.Combine(Project.Path, "Properties", AssemblyInfo));
 				CopyFile(Template.Csproj,
-					Project.Location + Project.Name + "\\" + Project.Name + CsprojExtension);
+					Path.Combine(Project.Path, Project.Name + CsprojExtension));
 				CopyFile(Template.Ico,
-					Project.Location + Project.Name + "\\" + Project.Name + IcoSuffixAndExtension);
+					Path.Combine(Project.Path, Project.Name + IcoSuffixAndExtension));
 				foreach (var file in Template.SourceCodeFiles)
-					CopyFile(file, Project.Location + Project.Name + "\\" + GetFileName(file));
+					CopyFile(file, Path.Combine(Project.Path, GetFileName(file)));
 			}
 		}
 
@@ -109,7 +94,7 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		private string CreateTargetPathForZipEntry(IEntry entry)
 		{
-			var target = Path.Combine(Project.Location, Project.Name, entry.FilePath).Replace('/', '\\');
+			var target = Path.Combine(Project.Path, entry.FilePath).Replace('/', '\\');
 			return target.Replace(FileSystem.Path.GetFileNameWithoutExtension(Template.PathToZip),
 				Project.Name);
 		}
@@ -129,20 +114,16 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		private void ReplaceAssemblyInfo()
 		{
-			var oldFile = ReadAllLines(Project.Location + Project.Name + "\\Properties\\" + AssemblyInfo);
+			var oldFile =
+				FileSystem.File.ReadAllLines(Path.Combine(Project.Path, "Properties", AssemblyInfo));
 			var replacements = new List<Replacement>();
 			replacements.Add(new Replacement("$projectname$", Project.Name));
 			replacements.Add(new Replacement("$guid1$", Guid.NewGuid().ToString()));
 			var newFile = ReplaceFile(oldFile, replacements);
-			WriteAllText(Project.Location + Project.Name + "\\Properties\\" + AssemblyInfo, newFile);
+			FileSystem.File.WriteAllText(Path.Combine(Project.Path, "Properties", AssemblyInfo), newFile);
 		}
 
 		private const string AssemblyInfo = "AssemblyInfo.cs";
-
-		private IEnumerable<string> ReadAllLines(string path)
-		{
-			return FileSystem.File.ReadAllLines(path);
-		}
 
 		private static string ReplaceFile(IEnumerable<string> fileContent,
 			List<Replacement> replacements)
@@ -160,15 +141,10 @@ namespace DeltaEngine.Editor.ProjectCreator
 				(current, replacement) => current.Replace(replacement.OldValue, replacement.NewValue));
 		}
 
-		private void WriteAllText(string path, string contents)
-		{
-			FileSystem.File.WriteAllText(path, contents);
-		}
-
 		private void ReplaceCsproj()
 		{
 			var oldFile =
-				ReadAllLines(Project.Location + Project.Name + "\\" + Project.Name + CsprojExtension);
+				FileSystem.File.ReadAllLines(Path.Combine(Project.Path, Project.Name + CsprojExtension));
 			var replacements = new List<Replacement>();
 			replacements.Add(new Replacement("$guid1$", ""));
 			replacements.Add(new Replacement("$safeprojectname$", Project.Name));
@@ -176,7 +152,7 @@ namespace DeltaEngine.Editor.ProjectCreator
 				Project.Name + IcoSuffixAndExtension));
 			replacements.AddRange(GetReplacementsDependingOnFramework());
 			var newFile = ReplaceFile(oldFile, replacements);
-			WriteAllText(Project.Location + Project.Name + "\\" + Project.Name + CsprojExtension,
+			FileSystem.File.WriteAllText(Path.Combine(Project.Path, Project.Name + CsprojExtension),
 				newFile);
 		}
 
@@ -194,28 +170,27 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		private void ReplaceSourceCodeFile(string sourceFileName)
 		{
-			var oldFile = ReadAllLines(Project.Location + Project.Name + "\\" + sourceFileName);
+			var oldFile = FileSystem.File.ReadAllLines(Path.Combine(Project.Path, sourceFileName));
 			var replacements = new List<Replacement>();
 			replacements.Add(new Replacement("$safeprojectname$", Project.Name));
 			var newFile = ReplaceFile(oldFile, replacements);
-			WriteAllText(Project.Location + Project.Name + "\\" + sourceFileName, newFile);
+			FileSystem.File.WriteAllText(Path.Combine(Project.Path, sourceFileName), newFile);
 		}
 
 		public bool HasDirectoryHierarchyBeenCreated()
 		{
-			return DoesDirectoryExist(Project.Location + Project.Name + "\\") &&
-				DoesDirectoryExist(Project.Location + Project.Name + "\\Properties\\");
+			return FileSystem.Directory.Exists(Project.Path) &&
+				FileSystem.Directory.Exists(Path.Combine(Project.Path, "Properties"));
 		}
 
 		public bool HaveTemplateFilesBeenCopiedToLocation()
 		{
 			foreach (var file in Template.SourceCodeFiles)
-				if (!DoesFileExist(Project.Location + Project.Name + "\\" + GetFileName(file)))
+				if (!DoesFileExist(Path.Combine(Project.Path, GetFileName(file))))
 					return false;
-
-			return DoesFileExist(Project.Location + Project.Name + "\\Properties\\" + AssemblyInfo) &&
-				DoesFileExist(Project.Location + Project.Name + "\\" + Project.Name + CsprojExtension) &&
-				DoesFileExist(Project.Location + Project.Name + "\\" + Project.Name + IcoSuffixAndExtension);
+			return DoesFileExist(Path.Combine(Project.Path, "Properties", AssemblyInfo)) &&
+				DoesFileExist(Path.Combine(Project.Path, Project.Name + CsprojExtension)) &&
+				DoesFileExist(Path.Combine(Project.Path, Project.Name + IcoSuffixAndExtension));
 		}
 
 		private string GetFileName(string path)

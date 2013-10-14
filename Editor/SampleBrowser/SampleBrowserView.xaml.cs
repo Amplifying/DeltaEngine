@@ -17,11 +17,12 @@ namespace DeltaEngine.Editor.SampleBrowser
 		{
 			if (DataContext is SampleBrowserViewModel)
 				return;
-
 			var model = new SampleBrowserViewModel();
 			DataContext = model;
 			model.UpdateItems();
 		}
+
+		public void ProjectChanged() {}
 
 		private void SearchTextBoxGotMouseCapture(object sender, MouseEventArgs e)
 		{

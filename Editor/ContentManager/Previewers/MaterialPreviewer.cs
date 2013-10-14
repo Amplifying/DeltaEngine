@@ -3,8 +3,8 @@ using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Graphics;
 using DeltaEngine.Input;
-using DeltaEngine.Rendering2D.Sprites;
-using DeltaEngine.Rendering3D.Models;
+using DeltaEngine.Rendering2D;
+using DeltaEngine.Rendering3D;
 
 namespace DeltaEngine.Editor.ContentManager.Previewers
 {
@@ -32,39 +32,10 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 		public Sprite currentDisplaySprite;
 		private Billboard currentDisplayBillboard;
 
-		private void SetImageCommands()
-		{
-			new Command(position => lastPanPosition = position).Add(new MouseButtonTrigger());
-			new Command(MoveImage).Add(new MousePositionTrigger(MouseButton.Left, State.Pressed));
-			new Command(position => lastScalePosition = position).Add(
-				new MouseButtonTrigger(MouseButton.Middle));
-			new Command(ScaleImage).Add(new MousePositionTrigger(MouseButton.Middle, State.Pressed));
-		}
-
-		private void MoveImage(Vector2D mousePosition)
-		{
-			var relativePosition = mousePosition - lastPanPosition;
-			lastPanPosition = mousePosition;
-			currentDisplaySprite.Center += relativePosition;
-		}
-
-		private void ScaleImage(Vector2D mousePosition)
-		{
-			var relativePosition = mousePosition - lastScalePosition;
-			lastScalePosition = mousePosition;
-
-			currentDisplaySprite.Size =
-				new Size(
-					currentDisplaySprite.Size.Width + (currentDisplaySprite.Size.Width * relativePosition.Y),
-					currentDisplaySprite.Size.Height + (currentDisplaySprite.Size.Height * relativePosition.Y));
-		}
-
 		private void SetBillboardCommands()
 		{
 			new Command(position => lastPanPosition = position).Add(new MouseButtonTrigger());
 			new Command(MoveBillboard).Add(new MousePositionTrigger(MouseButton.Left, State.Pressed));
-			new Command(position => lastScalePosition = position).Add(
-				new MouseButtonTrigger(MouseButton.Middle));
 		}
 
 		private Vector2D lastPanPosition = Vector2D.Unused;
@@ -76,6 +47,10 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 			currentDisplayBillboard.Position -= relativePosition;
 		}
 
-		private Vector2D lastScalePosition = Vector2D.Unused;
+		private void SetImageCommands()
+		{
+			ContentDisplayChanger.SetEntity2DMoveCommand(currentDisplaySprite);
+			ContentDisplayChanger.SetEntity2DScaleCommand(currentDisplaySprite);
+		}
 	}
 }

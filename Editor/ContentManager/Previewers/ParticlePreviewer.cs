@@ -18,15 +18,14 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 			if (shaderWithFormat.Format.Is3D)
 				Particle3DPointEmitter = ResetEmitter3D(particleEmitterData);
 			else
-				currentDisplayParticle2D = new Particle2DEmitter(particleEmitterData, Vector2D.Half);
-			SetImageCommands2D();
-			SetImageCommands3D();
+				currentDisplayParticle2D = new ParticleEmitter(particleEmitterData, Vector2D.Half);
+			SetImageCommands();
 		}
 
-		public Particle2DEmitter currentDisplayParticle2D;
-		public Particle3DEmitter Particle3DPointEmitter;
+		public ParticleEmitter currentDisplayParticle2D;
+		public ParticleEmitter Particle3DPointEmitter;
 
-		private static Particle3DEmitter ResetEmitter3D(ParticleEmitterData emitterData)
+		private static ParticleEmitter ResetEmitter3D(ParticleEmitterData emitterData)
 		{
 			if (emitterData.EmitterType == "PointEmitter")
 				return new Particle3DPointEmitter(emitterData, emitterData.StartPosition.Start);
@@ -38,36 +37,10 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 					emitterData.StartPosition.End.Length);
 		}
 
-		private void SetImageCommands2D()
+		private void SetImageCommands()
 		{
-			new Command(position => lastPanPosition = position).Add(new MouseButtonTrigger());
-			new Command(MoveImage).Add(new MousePositionTrigger(MouseButton.Left, State.Pressed));
-		}
-
-		private Vector2D lastPanPosition = Vector2D.Unused;
-
-		private void MoveImage(Vector2D mousePosition)
-		{
-			if (currentDisplayParticle2D == null)
-				return;
-			var relativePosition = mousePosition - lastPanPosition;
-			lastPanPosition = mousePosition;
-			currentDisplayParticle2D.Position += relativePosition;
-		}
-
-		private void SetImageCommands3D()
-		{
-			new Command(position => lastPanPosition = position).Add(new MouseButtonTrigger());
-			new Command(MoveImage3D).Add(new MousePositionTrigger(MouseButton.Left, State.Pressed));
-		}
-
-		private void MoveImage3D(Vector2D mousePosition)
-		{
-			if (Particle3DPointEmitter == null)
-				return;
-			var relativePosition = mousePosition - lastPanPosition;
-			lastPanPosition = mousePosition;
-			Particle3DPointEmitter.Position += relativePosition;
+			ContentDisplayChanger.SetParticleDMoveCommand(Particle3DPointEmitter);
+			ContentDisplayChanger.SetParticleDMoveCommand(currentDisplayParticle2D);
 		}
 	}
 }

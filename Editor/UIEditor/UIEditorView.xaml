@@ -181,7 +181,7 @@
 			       Background="#FFACACAC" FontSize="18" Foreground="White" FontWeight="Bold" Margin="0,0,0,10" Grid.RowSpan="2" />
 			<ListBox Grid.ColumnSpan="9" Grid.Row="19" Margin="1,0,0,0" Grid.Column="1"
 			         ItemsSource="{Binding Path=UIImagesInList}" SelectedItem="{Binding Path=SelectedSpriteNameInList}"
-			         SelectedIndex="{Binding Path=SpriteListIndex}" />
+			         SelectedIndex="{Binding Path=SpriteListIndex}" SelectionChanged="ListBox_SelectionChanged" />
 			<Label Content="Alignment" Grid.Column="2" Grid.Row="29" Grid.ColumnSpan="8" FontFamily="Arial"
 			       Background="#FFC9C8C8" FontSize="18" Foreground="White" />
 			<Label Content="Horizontal" Grid.Column="2" Grid.Row="31" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}"
@@ -306,6 +306,7 @@
 			          Height="30" Grid.ColumnSpan="4" Style="{StaticResource DeltaCheckBox}" HorizontalAlignment="Left"
 			          Width="132" IsChecked="{Binding Path=IsSnappingToGrid}" />
 			<Button
+				PreviewMouseMove="DragLabel"
 				FontSize="18" Style="{StaticResource DeltaButton}"
 				ToolTip="Create Label"
 				Grid.Column="4" HorizontalAlignment="Left" Grid.Row="11" VerticalAlignment="Top" Width="30" Height="30"

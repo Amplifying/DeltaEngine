@@ -10,7 +10,6 @@ using DeltaEngine.Entities;
 using DeltaEngine.Input;
 using DeltaEngine.Rendering2D;
 using DeltaEngine.Rendering2D.Shapes;
-using DeltaEngine.Rendering2D.Sprites;
 using DeltaEngine.Scenes;
 using DeltaEngine.Scenes.UserInterfaces.Controls;
 using DeltaEngine.ScreenSpaces;
@@ -38,6 +37,7 @@ namespace DeltaEngine.Editor.UIEditor
 			Messenger.Default.Register<int>(this, "ChangeRenderLayer", ChangeRenderLayer);
 			Messenger.Default.Register<bool>(this, "SetDraggingImage", SetDraggingImage);
 			Messenger.Default.Register<bool>(this, "SetDraggingButton", SetDraggingButton);
+			Messenger.Default.Register<bool>(this, "SetDraggingLabel", SetDraggingLabel);
 			Messenger.Default.Register<object>(this, "ChangeGrid", ChangeGrid);
 			new Command(DeleteUIElement).Add(new KeyTrigger(Key.Delete));
 		}
@@ -47,7 +47,7 @@ namespace DeltaEngine.Editor.UIEditor
 		public ObservableCollection<string> UIImagesInList { get; private set; }
 		public ObservableCollection<string> MaterialList { get; private set; }
 		public readonly ControlProcessor ControlProcessor;
-		public Scene scene;
+		public readonly Scene scene;
 
 		private void FillContentImageList()
 		{
@@ -66,7 +66,15 @@ namespace DeltaEngine.Editor.UIEditor
 
 		private static bool Is2DMaterial(string materialContentName)
 		{
-			var material = ContentLoader.Load<Material>(materialContentName);
+			Material material;
+			try
+			{
+				material = ContentLoader.Load<Material>(materialContentName);
+			}
+			catch
+			{
+				return false;
+			}
 			return material.Shader.Name.Contains("2D");
 		}
 
@@ -83,9 +91,10 @@ namespace DeltaEngine.Editor.UIEditor
 				State.Releasing));
 			new Command(position => AddButton(position)).Add(new MouseButtonTrigger(MouseButton.Left,
 				State.Releasing));
+			new Command(position => AddLabel(position)).Add(new MouseButtonTrigger(MouseButton.Left,
+				State.Releasing));
 		}
 
-		private bool isDraggingImage;
 		private bool isDraggingButton;
 		private bool isDragging;
 		public bool IsSnappingToGrid { get; set; }
@@ -151,7 +160,25 @@ namespace DeltaEngine.Editor.UIEditor
 			RaisePropertyChanged("ImageInGridList");
 		}
 
-		public string SelectedImageInList { get; set; }
+		private bool isDraggingImage;
+
+		public Sprite AddNewImageToList(Vector2D position)
+		{
+			var newSprite = new Sprite("DefaultImage", new Rectangle(position, new Size(0.2f, 0.1f)));
+			scene.Add(newSprite);
+			bool freeName = false;
+			int numberOfNames = 0;
+			while (freeName == false)
+				if (UIImagesInList.Contains("NewSprite" + numberOfNames))
+					numberOfNames++;
+				else
+					freeName = true;
+			UIImagesInList.Add("NewSprite" + numberOfNames);
+			if (UIImagesInList[0] == null)
+				UIImagesInList[0] = "NewSprite" + numberOfNames;
+			newSprite.Material.MetaData.Name = "NewSprite" + numberOfNames;
+			return newSprite;
+		}
 
 		private void AddButton(Vector2D position)
 		{
@@ -189,6 +216,42 @@ namespace DeltaEngine.Editor.UIEditor
 			newButton.theme.ButtonMouseover.Material.MetaData.Name = "NewButton" + numberOfNames;
 			newButton.theme.ButtonPressed.Material.MetaData.Name = "NewButton" + numberOfNames;
 			return newButton;
+		}
+
+		private void AddLabel(Vector2D position)
+		{
+			if (!isDraggingLabel)
+				return;
+			var label = AddNewLabelToList(position);
+			ContentText = "Default Label";
+			SelectedEntity2D = label;
+			Entity2DWidth = label.DrawArea.Width;
+			Entity2DHeight = label.DrawArea.Height;
+			SelectedEntity2D = label;
+			isDraggingLabel = false;
+			isDragging = false;
+			RaisePropertyChanged("UIImagesInList");
+			RaisePropertyChanged("ImageInGridList");
+		}
+
+		private bool isDraggingLabel;
+
+		private Entity2D AddNewLabelToList(Vector2D position)
+		{
+			var newLabel = new Sprite("DefaultLabel", new Rectangle(position, new Size(0.2f, 0.1f)));
+			scene.Add(newLabel);
+			bool freeName = false;
+			int numberOfNames = 0;
+			while (freeName == false)
+				if (UIImagesInList.Contains("NewLabel" + numberOfNames))
+					numberOfNames++;
+				else
+					freeName = true;
+			UIImagesInList.Add("NewLabel" + numberOfNames);
+			if (UIImagesInList[0] == null)
+				UIImagesInList[0] = "NewLabel" + numberOfNames;
+			newLabel.Material.MetaData.Name = "NewLabel" + numberOfNames;
+			return newLabel;
 		}
 
 		public void SaveUI(string obj)
@@ -238,6 +301,12 @@ namespace DeltaEngine.Editor.UIEditor
 		{
 			isDraggingButton = draggingButton;
 			isDragging = draggingButton;
+		}
+
+		private void SetDraggingLabel(bool draggingLabel)
+		{
+			isDraggingLabel = draggingLabel;
+			isDragging = draggingLabel;
 		}
 
 		private void ChangeGrid(object grid)
@@ -321,37 +390,6 @@ namespace DeltaEngine.Editor.UIEditor
 			UIImagesInList.RemoveAt(SpriteListIndex);
 			scene.Controls.Remove(SelectedEntity2D);
 			SelectedEntity2D.IsActive = false;
-		}
-
-		public Sprite AddNewImageToList(Vector2D position)
-		{
-			var newSprite = CreateNewImage(position);
-			scene.Add(newSprite);
-			bool freeName = false;
-			int numberOfNames = 0;
-			while (freeName == false)
-				if (UIImagesInList.Contains("NewSprite" + numberOfNames))
-					numberOfNames++;
-				else
-					freeName = true;
-			UIImagesInList.Add("NewSprite" + numberOfNames);
-			if (UIImagesInList[0] == null)
-				UIImagesInList[0] = "NewSprite" + numberOfNames;
-			newSprite.Material.MetaData.Name = "NewSprite" + numberOfNames;
-			return newSprite;
-		}
-
-		private static Sprite CreateNewImage(Vector2D position)
-		{
-			var customImage = ContentLoader.Create<Image>(new ImageCreationData(new Size(8, 8)));
-			var colors = new Color[8 * 8];
-			for (int i = 0; i < 8 * 8; i++)
-				colors[i] = Color.Purple;
-			customImage.Fill(colors);
-			var material = new Material(ContentLoader.Load<Shader>(Shader.Position2DColorUv),
-				customImage);
-			var sprite = new Sprite(material, position);
-			return sprite;
 		}
 
 		public string SelectedSpriteNameInList

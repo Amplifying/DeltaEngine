@@ -61,7 +61,7 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 			fileSystem.Add(Path.Combine(BasePath, template.Ico), files[0]);
 			fileSystem.Add(Path.Combine(BasePath, template.SourceCodeFiles[0]), files[2]);
 			fileSystem.Add(Path.Combine(BasePath, template.SourceCodeFiles[1]), files[1]);
-			fileSystem.Add(project.Location, new MockDirectoryData());
+			fileSystem.Add(project.Path, new MockDirectoryData());
 			return new MockFileSystem(fileSystem);
 		}
 
@@ -118,13 +118,6 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 		}
 
 		[Test]
-		public void CheckAvailabilityOfTheTargetDirectory()
-		{
-			Assert.IsTrue(valid.IsTargetDirectoryAvailable());
-			Assert.IsFalse(invalid.IsTargetDirectoryAvailable());
-		}
-
-		[Test]
 		public void CheckAvailabilityOfTheSourceFile()
 		{
 			Assert.IsTrue(valid.IsSourceFileAvailable());
@@ -154,26 +147,24 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 		{
 			var mockFileSystem = CreateApprovedSystemMock(valid.Project);
 			valid.CreateProject();
-			string pathToLocation = valid.Project.Location + valid.Project.Name + "\\";
-			Assert.IsTrue(CompareFileSystems(mockFileSystem, valid.FileSystem, pathToLocation));
+			Assert.IsTrue(CompareFileSystems(mockFileSystem, valid.FileSystem, valid.Project.Path));
 		}
 
 		private static IFileSystem CreateApprovedSystemMock(CsProject project)
 		{
 			const string GeneratedProjectToCompare = "NewDeltaEngineProject";
-			string locationPath = Path.Combine(project.Location, project.Name);
-			string mockPathAssemblyInfo = Path.Combine(locationPath, "Properties", "AssemblyInfo.cs");
-			string realPathAssemblyInfo = Path.Combine(GeneratedProjectToCompare, "Properties",
+			string mockPathAssemblyInfo = Path.Combine(project.Path, "Properties", "AssemblyInfo.cs");
+			string realPathAssemblyInfo = Path.Combine(GeneratedProjectToCompare, "Properties", 
 				"AssemblyInfo.cs");
-			string mockPathCsproj = Path.Combine(locationPath, "NewDeltaEngineProject.csproj");
+			string mockPathCsproj = Path.Combine(project.Path, "NewDeltaEngineProject.csproj");
 			string realPathCsproj = Path.Combine(GeneratedProjectToCompare,
 				"NewDeltaEngineProject.csproj");
-			string mockPathIcon = Path.Combine(locationPath, "NewDeltaEngineProjectIcon.ico");
+			string mockPathIcon = Path.Combine(project.Path, "NewDeltaEngineProjectIcon.ico");
 			string realPathIcon = Path.Combine(GeneratedProjectToCompare,
 				"NewDeltaEngineProjectIcon.ico");
-			string mockPathProgram = Path.Combine(locationPath, "Program.cs");
+			string mockPathProgram = Path.Combine(project.Path, "Program.cs");
 			string realPathProgram = Path.Combine(GeneratedProjectToCompare, "Program.cs");
-			string mockPathGame = Path.Combine(locationPath, "Game.cs");
+			string mockPathGame = Path.Combine(project.Path, "Game.cs");
 			string realPathGame = Path.Combine(GeneratedProjectToCompare, "Game.cs");
 			return
 				new MockFileSystem(new Dictionary<string, MockFileData>
@@ -201,30 +192,35 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 				"Game.cs"
 			};
 
-			return filesToCheck.All(file => CompareFileInFileSystem(fs1, fs2, path + file));
+			return filesToCheck.All(file => CompareFileInFileSystem(fs1, fs2, Path.Combine(path, file)));
 		}
 
 		private static bool CompareFileInFileSystem(IFileSystem fs1, IFileSystem fs2, string filePath)
 		{
-			return FileEquals(fs1.File.ReadAllLines(filePath), fs2.File.ReadAllLines(filePath), filePath);
+			return IsFileEqual(fs1.File.ReadAllLines(filePath), fs2.File.ReadAllLines(filePath), filePath);
 		}
 
-		private static bool FileEquals(IList<string> file1, IList<string> file2, string filePath)
+		private static bool IsFileEqual(IList<string> file1, IList<string> file2, string filePath)
 		{
 			if (file1.Count != file2.Count)
-			{
-				Console.WriteLine("Number of lines are unequal: " + Path.GetFileName(filePath));
-				return false;
-			}
+				throw new NumberOfTextLinesAreNotEqual(filePath);
 			for (int i = 0; i < file1.Count; i++)
 				if (file1[i] != file2[i] && !file2[i].Contains("Guid") &&
 					!file2[i].Contains("AssemblyVersion") && !file2[i].Contains("AssemblyFileVersion"))
-				{
-					Console.WriteLine("Difference in line " + (i + 1) + ":");
-					Console.WriteLine("Expected: " + file1[i] + "\nActual:   " + file2[i]);
-					return false;
-				}
+					throw new TextLineIsDifferent(filePath, file1[i], file2[i]);
 			return true;
+		}
+
+		private class NumberOfTextLinesAreNotEqual : Exception
+		{
+			public NumberOfTextLinesAreNotEqual(string filePath)
+				: base(Path.GetFileName(filePath)) { }
+		}
+
+		private class TextLineIsDifferent : Exception
+		{
+			public TextLineIsDifferent(string filePath, string expected, string actual)
+				: base(Path.GetFileName(filePath) + " - expected: " + expected + ", actual: " + actual) { }
 		}
 	}
 }

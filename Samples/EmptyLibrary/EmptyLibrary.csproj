@@ -39,6 +39,10 @@
       <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
       <Name>DeltaEngine</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Platforms\WindowsOpenTK20\DeltaEngine.WindowsOpenTK20.csproj">
+      <Project>{4FDE0BC1-AF24-4A6D-AB73-A28833D41AC8}</Project>
+      <Name>DeltaEngine.WindowsOpenTK20</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />

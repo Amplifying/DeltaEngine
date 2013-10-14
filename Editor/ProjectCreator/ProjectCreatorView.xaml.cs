@@ -24,6 +24,8 @@ namespace DeltaEngine.Editor.ProjectCreator
 			viewModel.Service = service;
 		}
 
+		public void ProjectChanged() {}
+
 		public string ShortName
 		{
 			get { return "Project Creator"; }

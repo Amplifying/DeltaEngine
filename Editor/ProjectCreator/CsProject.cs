@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using DeltaEngine.Editor.Core;
+﻿using DeltaEngine.Editor.Core;
 
 namespace DeltaEngine.Editor.ProjectCreator
 {
@@ -13,18 +11,11 @@ namespace DeltaEngine.Editor.ProjectCreator
 		{
 			Name = "NewDeltaEngineProject";
 			Framework = DeltaEngineFramework.OpenTK;
-			Location = GetEnvironmentVariableWithFallback();
+			Path = PathExtensions.GetInstalledOrFallbackEnginePath();
 		}
 
 		public string Name { get; set; }
 		public DeltaEngineFramework Framework { get; set; }
-		public string Location { get; set; }
-
-		public static string GetEnvironmentVariableWithFallback()
-		{
-			const string EnvironmentVariable = "%DeltaEnginePath%\\";
-			string path = Environment.ExpandEnvironmentVariables(EnvironmentVariable);
-			return EnvironmentVariable == path ? Directory.GetCurrentDirectory() : path;
-		}
+		public string Path { get; set; }
 	}
 }

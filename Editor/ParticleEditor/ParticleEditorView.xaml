@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:particleEditor="clr-namespace:DeltaEngine.Editor.ParticleEditor"
+             xmlns:converters="clr-namespace:DeltaEngine.Editor.Converters;assembly=DeltaEngine.Editor.Converters"
              mc:Ignorable="d"
              d:DesignHeight="800" d:DesignWidth="400" MinWidth="300">
 
@@ -85,12 +86,12 @@
 					<RowDefinition Height="12" />
 					<RowDefinition Height="30" />
 					<RowDefinition Height="12" />
-					<RowDefinition Height="30"/>
-					<RowDefinition Height="12"/>
 					<RowDefinition Height="30" />
 					<RowDefinition Height="12" />
-					<RowDefinition Height="30"/>
-					<RowDefinition Height="12"/>
+					<RowDefinition Height="30" />
+					<RowDefinition Height="12" />
+					<RowDefinition Height="30" />
+					<RowDefinition Height="12" />
 					<RowDefinition Height="30" />
 					<RowDefinition Height="12" />
 					<RowDefinition Height="30" />
@@ -116,7 +117,7 @@
 					<RowDefinition Height="30" />
 					<RowDefinition Height="12" />
 					<RowDefinition Height="8.333" />
-					<RowDefinition Height="30"/>
+					<RowDefinition Height="30" />
 					<RowDefinition Height="12" />
 					<RowDefinition Height="30" />
 					<RowDefinition Height="60" />
@@ -131,30 +132,30 @@
 					<ColumnDefinition Width="12" />
 				</Grid.ColumnDefinitions>
 				<TextBox Grid.Column="3"
-					         Grid.Row="31" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0" >
+				         Grid.Row="31" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0">
 					<TextBox.Text>
 						<Binding Path="SpawnInterval" UpdateSourceTrigger="PropertyChanged">
 							<Binding.Converter>
-								<particleEditor:FloatStringConverter />
+								<converters:FloatStringConverter/>
 							</Binding.Converter>
 						</Binding>
 					</TextBox.Text>
 				</TextBox>
 				<TextBox Grid.Column="3"
-					         Grid.Row="15" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0" >
-								 <TextBox.Text>
+				         Grid.Row="15" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0">
+					<TextBox.Text>
 						<Binding Path="LifeTime" UpdateSourceTrigger="PropertyChanged">
-						<Binding.Converter>
-							<particleEditor:FloatStringConverter />
-						</Binding.Converter>
-					</Binding>
+							<Binding.Converter>
+								<converters:FloatStringConverter />
+							</Binding.Converter>
+						</Binding>
 					</TextBox.Text>
 				</TextBox>
 				<TextBox Grid.Column="3" Grid.Row="27" Style="{StaticResource DeltaTextBox}" Margin="1,1,0,0">
 					<TextBox.Text>
 						<Binding Path="Acceleration" UpdateSourceTrigger="PropertyChanged">
 							<Binding.Converter>
-								<particleEditor:VectorGraphStringConverter />
+								<converters:VectorGraphStringConverter />
 							</Binding.Converter>
 						</Binding>
 					</TextBox.Text>
@@ -163,15 +164,16 @@
 					<TextBox.Text>
 						<Binding Path="StartVelocity" UpdateSourceTrigger="PropertyChanged">
 							<Binding.Converter>
-								<particleEditor:VectorGraphStringConverter />
+								<converters:VectorGraphStringConverter />
 							</Binding.Converter>
 						</Binding>
 					</TextBox.Text>
 				</TextBox>
-				<TextBox Grid.Column="3" Grid.Row="23" Style="{StaticResource DeltaTextBox}" RenderTransformOrigin="0.514,0.95" Margin="1,0,0,0" >
+				<TextBox Grid.Column="3" Grid.Row="23" Style="{StaticResource DeltaTextBox}" RenderTransformOrigin="0.514,0.95"
+				         Margin="1,0,0,0">
 					<Binding Path="StartRotation" UpdateSourceTrigger="PropertyChanged">
 						<Binding.Converter>
-							<particleEditor:ValueRangeGraphStringConverter />
+							<converters:ValueRangeGraphStringConverter />
 						</Binding.Converter>
 					</Binding>
 				</TextBox>
@@ -179,42 +181,42 @@
 					<TextBox.Text>
 						<Binding Path="Size" UpdateSourceTrigger="PropertyChanged">
 							<Binding.Converter>
-								<particleEditor:SizeGraphStringConverter />
+								<converters:SizeGraphStringConverter />
 							</Binding.Converter>
 						</Binding>
 					</TextBox.Text>
 				</TextBox>
 				<TextBox Grid.Column="3"
-					         Grid.Row="33" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0" >
+				         Grid.Row="33" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0">
 					<TextBox.Text>
 						<Binding Path="MaxNumbersOfParticles" UpdateSourceTrigger="PropertyChanged">
 							<Binding.Converter>
-								<particleEditor:IntStringConverter />
+								<converters:IntStringConverter />
 							</Binding.Converter>
 						</Binding>
 					</TextBox.Text>
 				</TextBox>
 
 				<Label Content="Spawn Interval" Grid.Row="31"
-					       Style="{StaticResource DeltaLabel}" Grid.Column="1" />
+				       Style="{StaticResource DeltaLabel}" Grid.Column="1" />
 				<Label Content="Life Time" Grid.Row="15"
-					       Style="{StaticResource DeltaLabel}" Grid.Column="1" />
+				       Style="{StaticResource DeltaLabel}" Grid.Column="1" />
 				<Label Content="Acceleration" Grid.Row="27"
-					       Style="{StaticResource DeltaLabel}" Grid.Column="1" Margin="0,1,0,0" />
+				       Style="{StaticResource DeltaLabel}" Grid.Column="1" Margin="0,1,0,0" />
 				<Label Content="Start Velocity" Grid.Row="25"
-					       Style="{StaticResource DeltaLabel}" RenderTransformOrigin="0.464,0.717" Grid.Column="1" Margin="1,0,0,0" />
+				       Style="{StaticResource DeltaLabel}" RenderTransformOrigin="0.464,0.717" Grid.Column="1" Margin="1,0,0,0" />
 				<Label Content="Start Rotation" Grid.Row="23"
-					       Style="{StaticResource DeltaLabel}" Grid.Column="1" Margin="1,0,0,1" />
+				       Style="{StaticResource DeltaLabel}" Grid.Column="1" Margin="1,0,0,1" />
 				<Label Content="Size" Grid.Row="11"
-					       Style="{StaticResource DeltaLabel}" Grid.Column="1" />
+				       Style="{StaticResource DeltaLabel}" Grid.Column="1" />
 				<Label Content="Max. Number " Grid.Row="33"
-					       Style="{StaticResource DeltaLabel}" Grid.Column="1" Margin="0,1,0,0" />
+				       Style="{StaticResource DeltaLabel}" Grid.Column="1" Margin="0,1,0,0" />
 				<ComboBox Grid.Column="3" Grid.Row="3" Name="ParticleNameTextBox"
-					          ItemsSource="{Binding Path=ParticleList}" Text="{Binding Path=ParticleName}"
-					          IsEditable="true" Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="3" />
+				          ItemsSource="{Binding Path=ParticleList}" Text="{Binding Path=ParticleName}"
+				          IsEditable="true" Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="3" />
 				<ComboBox Grid.Row="7"
-					          ItemsSource="{Binding Path=MaterialList}" SelectedItem="{Binding Path=SelectedMaterial}" Grid.Column="3"
-					          Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="3" />
+				          ItemsSource="{Binding Path=MaterialList}" SelectedItem="{Binding Path=SelectedMaterial}" Grid.Column="3"
+				          Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="3" />
 				<Label Content="Material" Grid.Row="7" Style="{StaticResource DeltaLabel}" Grid.Column="1" />
 				<Label Content="Name" Grid.Column="1" Grid.Row="3" Style="{StaticResource DeltaLabel}" />
 				<Label Content="Start Position" Grid.Column="1" Grid.Row="21" Style="{StaticResource DeltaLabel}" Margin="0,0,0,0" />
@@ -223,29 +225,29 @@
 					<TextBox.Text>
 						<Binding Path="StartPosition" UpdateSourceTrigger="PropertyChanged">
 							<Binding.Converter>
-								<particleEditor:VectorGraphStringConverter />
+								<converters:VectorGraphStringConverter />
 							</Binding.Converter>
 						</Binding>
 					</TextBox.Text>
 				</TextBox>
-				<ComboBox Grid.Column="3" Grid.Row="17" Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="3" 
-									ItemsSource="{Binding Path=BillBoardModeList}" SelectedItem="{Binding Path=SelectedBillBoardMode}" />
+				<ComboBox Grid.Column="3" Grid.Row="17" Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="3"
+				          ItemsSource="{Binding Path=BillBoardModeList}" SelectedItem="{Binding Path=SelectedBillBoardMode}" />
 				<Label Content="Rotation Speed" Grid.Column="1" Grid.Row="29" Style="{StaticResource DeltaLabel}" />
 				<Label Content="Color" Grid.Column="1" Grid.Row="13" Style="{StaticResource DeltaLabel}" />
 				<TextBox Grid.Column="3" Grid.Row="29" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0">
-					<TextBox.Text> 
+					<TextBox.Text>
 						<Binding Path="RotationSpeed" UpdateSourceTrigger="PropertyChanged">
 							<Binding.Converter>
-								<particleEditor:ValueRangeGraphStringConverter />
+								<converters:ValueRangeGraphStringConverter />
 							</Binding.Converter>
 						</Binding>
 					</TextBox.Text>
 				</TextBox>
-				<TextBox Grid.Column="3" Grid.Row="13" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0" >
+				<TextBox Grid.Column="3" Grid.Row="13" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}" Margin="1,0,0,0">
 					<TextBox.Text>
 						<Binding Path="Color" UpdateSourceTrigger="PropertyChanged">
 							<Binding.Converter>
-								<particleEditor:ColorGraphStringConverter />
+								<converters:ColorGraphStringConverter />
 							</Binding.Converter>
 						</Binding>
 					</TextBox.Text>
@@ -284,9 +286,9 @@
 					<Image Height="20" Width="20" Source="..\Images\ParticleEditor\RangeButton.png" />
 				</Button>
 				<Label Content="Advanced" Grid.Column="1" Grid.Row="19" Grid.ColumnSpan="5" FontFamily="Arial"
-					       Background="#FFACACAC" FontSize="18" Foreground="White" />
+				       Background="#FFACACAC" FontSize="18" Foreground="White" />
 				<Button Content="?" Grid.Column="5" Grid.Row="1" Style="{StaticResource DeltaButton}" FontSize="20"
-					        FontWeight="Bold">
+				        FontWeight="Bold">
 					<Button.Background>
 						<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
 							<GradientStop Color="#FFA0A0A0" Offset="0" />
@@ -294,14 +296,14 @@
 						</LinearGradientBrush>
 					</Button.Background>
 				</Button>
-				<Button Content="Delete" Style="{StaticResource DeltaButton}"
-				        Foreground="White"  FontSize="18" Grid.Column="1" Grid.Row="36" HorizontalAlignment="Left" Width="120">
+				<Button Content="Delete" Click="Delete" Style="{StaticResource DeltaButton}"
+				        Foreground="White" FontSize="18" Grid.Column="1" Grid.Row="36" HorizontalAlignment="Left" Width="120">
 					<Button.RenderTransform>
 						<TransformGroup>
-							<ScaleTransform ScaleY="-1" ScaleX="-1"/>
-							<SkewTransform/>
-							<RotateTransform Angle="180"/>
-							<TranslateTransform/>
+							<ScaleTransform ScaleY="-1" ScaleX="-1" />
+							<SkewTransform />
+							<RotateTransform Angle="180" />
+							<TranslateTransform />
 						</TransformGroup>
 					</Button.RenderTransform>
 					<Button.Background>
@@ -313,7 +315,7 @@
 				</Button>
 				<Button Content="Save" Click="Save" Style="{StaticResource DeltaButton}"
 				        HorizontalAlignment="Right" Width="128" Foreground="White" FontWeight="Bold" FontSize="22"
-								Grid.Row="35" RenderTransformOrigin="0.5,0.5" Grid.Column="3" Grid.ColumnSpan="3" Grid.RowSpan="2">
+				        Grid.Row="35" RenderTransformOrigin="0.5,0.5" Grid.Column="3" Grid.ColumnSpan="3" Grid.RowSpan="2">
 					<Button.Background>
 						<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
 							<GradientStop Color="#FFA0A0A0" Offset="0" />
@@ -322,7 +324,8 @@
 					</Button.Background>
 				</Button>
 				<Button Content="Create Material" Style="{StaticResource DeltaButton}" Click="OpenMaterialEditor"
-					Foreground="White" FontSize="18" Grid.Row="9" RenderTransformOrigin="0.5,0.5" Grid.Column="1" Grid.ColumnSpan="5" Margin="1,0,0,0">
+				        Foreground="White" FontSize="18" Grid.Row="9" RenderTransformOrigin="0.5,0.5" Grid.Column="1"
+				        Grid.ColumnSpan="5" Margin="1,0,0,0">
 					<Button.Background>
 						<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
 							<GradientStop Color="#FFA0A0A0" Offset="0" />
@@ -330,10 +333,10 @@
 						</LinearGradientBrush>
 					</Button.Background>
 				</Button>
-				<Label Content="Emitter Type" Grid.Column="1" Grid.Row="5" Style="{StaticResource DeltaLabel}"/>
+				<Label Content="Emitter Type" Grid.Column="1" Grid.Row="5" Style="{StaticResource DeltaLabel}" />
 				<ComboBox Grid.Row="5"
-					          ItemsSource="{Binding Path=EmitterList}" SelectedItem="{Binding Path=SelectedEmitter}" Grid.Column="3"
-					          Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="4" Margin="1,0,11,0" />
+				          ItemsSource="{Binding Path=EmitterList}" SelectedItem="{Binding Path=SelectedEmitter}" Grid.Column="3"
+				          Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="4" Margin="1,0,11,0" />
 			</Grid>
 
 		</Grid>

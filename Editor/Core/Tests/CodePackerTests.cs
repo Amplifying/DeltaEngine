@@ -20,13 +20,6 @@ namespace DeltaEngine.Editor.Core.Tests
 		}
 
 		[Test]
-		public void LoadCodeFromProject()
-		{
-			CodePacker packer = GetCodePackerWithBuilderTestsData();
-			Assert.AreNotEqual(0, packer.CollectedFilesToPack.Count);
-		}
-
-		[Test]
 		public void ExpectExceptionWhenPackDirectoryWithoutCode()
 		{
 			const string Folder = "ExpectExceptionWhenPackEmptyFolder";
@@ -40,6 +33,14 @@ namespace DeltaEngine.Editor.Core.Tests
 				if (Directory.Exists(Folder))
 					Directory.Delete(Folder);
 			}
+		}
+
+		// ncrunch: no coverage start
+		[Test, Category("Slow")]
+		public void LoadCodeFromProject()
+		{
+			CodePacker packer = GetCodePackerWithBuilderTestsData();
+			Assert.AreNotEqual(0, packer.CollectedFilesToPack.Count);
 		}
 
 		private static CodePacker GetCodePackerWithBuilderTestsData()

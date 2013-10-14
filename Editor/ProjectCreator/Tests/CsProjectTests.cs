@@ -1,4 +1,5 @@
-﻿using DeltaEngine.Editor.Core;
+﻿using System.IO;
+using DeltaEngine.Editor.Core;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.ProjectCreator.Tests
@@ -26,7 +27,7 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 		public void DefaultPath()
 		{
 			var project = new CsProject();
-			Assert.AreEqual(CsProject.GetEnvironmentVariableWithFallback(), project.Location);
+			Assert.AreEqual(PathExtensions.GetDeltaEngineInstalledDirectory(), project.Path);
 		}
 	}
 }

@@ -11,7 +11,7 @@
 			Margin="0,50,0,0"
 			Content="Example WPF Button, click it to add lines to the Delta Engine Viewport below" />
 		<Grid Margin="0,80,0,0">
-			<tests:TestControl x:Name="Test" />
+			<tests:TestControl x:Name="TestControl" />
 		</Grid>
 	</Grid>
 </Window>

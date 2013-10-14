@@ -21,7 +21,7 @@ namespace DeltaEngine.Editor.Emulator.Tests
 			if (DesignerProperties.GetIsInDesignMode(this))
 				return;
 			Show();
-			var window = new WpfHostedFormsWindow(Test.EngineViewport, this);
+			var window = new WpfHostedFormsWindow(TestControl.EngineViewport, this);
 			Closing += (sender, args) => window.Dispose();
 			new BlockingViewportApp(window);
 		}

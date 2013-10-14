@@ -27,6 +27,8 @@ namespace DeltaEngine.Editor.AppBuilder
 			DataContext = ViewModel;
 		}
 
+		public void ProjectChanged() {}
+
 		public AppBuilderViewModel ViewModel { get; private set; }
 
 		private void OnAppBuildFailedRecieved(AppBuildFailed buildFailedMessage)
@@ -65,20 +67,17 @@ namespace DeltaEngine.Editor.AppBuilder
 				ViewModel.UserSolutionPath = dialog.FileName;
 		}
 
-		private OpenFileDialog CreateUserProjectPathBrowseDialog()
+		private static OpenFileDialog CreateUserProjectPathBrowseDialog()
 		{
 			return new OpenFileDialog
 			{
 				DefaultExt = ".sln",
 				Filter = "C# Solution (.sln)|*.sln",
-				InitialDirectory = GetInitialDirectoryForBrowseDialog(),
+				InitialDirectory = InitialDirectoryForBrowseDialog
 			};
 		}
 
-		protected string GetInitialDirectoryForBrowseDialog()
-		{
-			return "";
-		}
+		private const string InitialDirectoryForBrowseDialog = "";
 
 		public string ShortName
 		{

@@ -16,7 +16,14 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 
 		public void Init(Service service)
 		{
-			DataContext = new AnimationEditorViewModel(service);
+			DataContext = viewModel = new AnimationEditorViewModel(service);
+		}
+
+		private AnimationEditorViewModel viewModel;
+
+		public void ProjectChanged()
+		{
+			viewModel.RefreshData();
 		}
 
 		public string ShortName

@@ -1,7 +1,7 @@
 ﻿using DeltaEngine.Content;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
-using DeltaEngine.Rendering2D.Sprites;
+using DeltaEngine.Rendering2D;
 using DeltaEngine.ScreenSpaces;
 using System;
 using System.Diagnostics;
@@ -42,7 +42,7 @@ namespace DeltaEngine.Multimedia.OpenTK
 		}
 
 		protected OpenTKVideo(string contentName, OpenTKSoundDevice soundDevice)
-			: base(contentName,soundDevice)
+			: base(contentName, soundDevice)
 		{
 			channelHandle = openAL.CreateChannel();
 			buffers = openAL.CreateBuffers(NumberOfBuffers);
@@ -61,7 +61,7 @@ namespace DeltaEngine.Multimedia.OpenTK
 			elapsedSeconds = 0f;
 			if (image == null)
 				image = ContentLoader.Create<Image>(new ImageCreationData(new Size(video.Width, video.Height)));
-			surface = new Sprite(new Material(ContentLoader.Load<Shader>(Shader.Position2DUv), image), ScreenSpace.Current.Viewport);
+			surface = new Sprite(new Material(ContentLoader.Load<Shader>(Shader.Position2DUV), image), ScreenSpace.Current.Viewport);
 		}
 
 		private void UpdateVideoTexture()
@@ -159,7 +159,7 @@ namespace DeltaEngine.Multimedia.OpenTK
 
 		private bool UpdateBuffersAndCheckFinished()
 		{
-			int processed = openAL.GetNumberOfBuffersProcesed(channelHandle);
+			int processed = openAL.GetNumberOfBuffersProcessed(channelHandle);
 			while (processed-- > 0)
 			{
 				int buffer = openAL.UnqueueBufferFromChannel(channelHandle);

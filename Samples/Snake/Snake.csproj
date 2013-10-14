@@ -57,10 +57,6 @@
       <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
       <Name>DeltaEngine.Platforms</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Platforms\WindowsOpenTK20\DeltaEngine.WindowsOpenTK20.csproj">
-      <Project>{4FDE0BC1-AF24-4A6D-AB73-A28833D41AC8}</Project>
-      <Name>DeltaEngine.WindowsOpenTK20</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Rendering2D\DeltaEngine.Rendering2D.csproj">
       <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
       <Name>DeltaEngine.Rendering2D</Name>
@@ -73,13 +69,13 @@
       <Project>{BB73D940-CBD2-4F00-B246-2A25CA5ACD7E}</Project>
       <Name>DeltaEngine.Rendering2D.Shapes</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Rendering2D\Sprites\DeltaEngine.Rendering2D.Sprites.csproj">
-      <Project>{FCA7BAAA-3F6E-4CA3-B354-C34AF4F1BDDD}</Project>
-      <Name>DeltaEngine.Rendering2D.Sprites</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Scenes\DeltaEngine.Scenes.csproj">
       <Project>{75BB4C75-DE36-47B3-9910-10EA8E8973B7}</Project>
       <Name>DeltaEngine.Scenes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Platforms\WindowsOpenTK20\DeltaEngine.WindowsOpenTK20.csproj">
+      <Project>{4FDE0BC1-AF24-4A6D-AB73-A28833D41AC8}</Project>
+      <Name>DeltaEngine.WindowsOpenTK20</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -9,8 +9,8 @@ using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
-using DeltaEngine.Rendering2D.Sprites;
-using DeltaEngine.Rendering3D.Models;
+using DeltaEngine.Rendering2D;
+using DeltaEngine.Rendering3D;
 using DeltaEngine.ScreenSpaces;
 using GalaSoft.MvvmLight;
 
@@ -61,8 +61,8 @@ namespace DeltaEngine.Editor.MaterialEditor
 			ImageList.Add("");
 			AnimationList.Add("");
 			AddContentTypeToContentList(ImageList, ContentType.Image);
-			AddContentTypeToContentList(AnimationList, ContentType.ImageAnimation);
-			AddContentTypeToContentList(AnimationList, ContentType.SpriteSheetAnimation);
+			AddContentTypeToContentList(ImageList, ContentType.ImageAnimation);
+			AddContentTypeToContentList(ImageList, ContentType.SpriteSheetAnimation);
 		}
 
 		public ObservableCollection<string> ImageList { get; set; }
@@ -86,7 +86,7 @@ namespace DeltaEngine.Editor.MaterialEditor
 				if (shader.Format.HasUV)
 					ShaderList.Add(content);
 			}
-			SelectedShader = Shader.Position2DColorUv;
+			SelectedShader = Shader.Position2DColorUV;
 			RaisePropertyChanged("SelectedRenderSize");
 		}
 

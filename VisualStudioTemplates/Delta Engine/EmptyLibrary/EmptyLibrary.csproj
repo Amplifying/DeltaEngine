@@ -36,6 +36,9 @@
     <Reference Include="DeltaEngine">
 	  <HintPath>$(DeltaEnginePath)\OpenTK\DeltaEngine.dll</HintPath>
     </Reference>
+    <Reference Include="DeltaEngine.WindowsOpenTK20">
+	  <HintPath>$(DeltaEnginePath)\OpenTK\DeltaEngine.WindowsOpenTK20.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />

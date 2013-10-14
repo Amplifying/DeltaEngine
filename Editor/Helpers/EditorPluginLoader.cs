@@ -42,17 +42,23 @@ namespace DeltaEngine.Editor.Helpers
 			}
 		}
 
+		private static readonly List<string> FreshlyCopiedFiles = new List<string>();
+
 		private static void CopyAllDllsAndPdbsToCurrentDirectory(string directory)
 		{
 			var files = Directory.GetFiles(directory);
 			foreach (var file in files)
 				if (Path.GetExtension(file) == ".dll" || Path.GetExtension(file) == ".pdb")
-					CopyIfFileIsNewer(file,
+					CopyPluginIfFileIsNewer(file,
 						Path.Combine(Directory.GetCurrentDirectory(), Path.GetFileName(file)));
 		}
 
-		private static void CopyIfFileIsNewer(string sourceFile, string targetFile)
+		private static void CopyPluginIfFileIsNewer(string sourceFile, string targetFile)
 		{
+			if (sourceFile.Contains("DeltaEngine.Editor.EmptyEditorPlugin."))
+				return;
+			if (!FreshlyCopiedFiles.Contains(targetFile))
+				FreshlyCopiedFiles.Add(targetFile);
 			if (!File.Exists(targetFile) ||
 				File.GetLastWriteTime(sourceFile) > File.GetLastWriteTime(targetFile))
 				TryCopyFile(sourceFile, targetFile);
@@ -81,15 +87,22 @@ namespace DeltaEngine.Editor.Helpers
 		{
 			var assemblies = new List<Assembly>(AppDomain.CurrentDomain.GetAssemblies());
 			var dllFiles = Directory.GetFiles(Directory.GetCurrentDirectory(), "*.dll");
+			var editorUpdated = File.GetLastWriteTime("DeltaEngine.Editor.exe");
 			foreach (var file in dllFiles)
 			{
-				var fileName = Path.GetFileNameWithoutExtension(file);
-				if (fileName.StartsWith("DeltaEngine.") &&
-					(DateTime.Now - File.GetLastWriteTime(file)).TotalDays > 7)
+				var projectName = Path.GetFileNameWithoutExtension(file);
+				if (projectName.StartsWith("DeltaEngine.") &&
+					projectName != "DeltaEngine.Multimedia.VlcToTexture" &&
+					(editorUpdated - File.GetLastWriteTime(file)).TotalDays > 7)
+				{
+					bool removeFile = !FreshlyCopiedFiles.Contains(file);
 					Logger.Warning(file + " looks outdated, it was last updated " +
-						File.GetLastWriteTime(file) + ". Check if this file is still being used!");
-				if (fileName.StartsWith("DeltaEngine.Editor.") &&
-					!assemblies.Any(assembly => assembly.FullName.Contains(fileName)))
+						File.GetLastWriteTime(file) + ". " + (removeFile ? "File will be removed!" : ""));
+					if (removeFile)
+						File.Delete(file);
+				}
+				else if (projectName.StartsWith("DeltaEngine.Editor.") &&
+					!assemblies.Any(assembly => assembly.FullName.Contains(projectName)))
 					assemblies.Add(Assembly.LoadFile(file));
 			}
 			foreach (var assembly in assemblies)
@@ -103,7 +116,7 @@ namespace DeltaEngine.Editor.Helpers
 			{
 				foreach (var type in assembly.GetTypes())
 					if (typeof(EditorPluginView).IsAssignableFrom(type) &&
-						typeof(UserControl).IsAssignableFrom(type) && IsNotExcluded(type))
+						typeof(UserControl).IsAssignableFrom(type))
 						UserControlsType.Add(type);
 			}
 			catch (ReflectionTypeLoadException ex)
@@ -112,13 +125,5 @@ namespace DeltaEngine.Editor.Helpers
 					ex.LoaderExceptions.ToText());
 			}
 		}
-
-		private bool IsNotExcluded(Type type)
-		{
-			return excludedEditorPlugins.All(name => type.FullName != name);
-		}
-
-		private readonly string[] excludedEditorPlugins = new[]
-		{ "DeltaEngine.Editor.EmptyEditorPlugin.EmptyEditorPluginView" };
 	}
 }

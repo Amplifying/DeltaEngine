@@ -17,13 +17,15 @@ namespace DeltaEngine.Editor.MaterialEditor
 
 		public void Init(Service service)
 		{
-			curent = new MaterialEditorViewModel(service);
+			current = new MaterialEditorViewModel(service);
 			this.service = service;
-			DataContext = curent;
+			DataContext = current;
 		}
 
-		private MaterialEditorViewModel curent;
+		private MaterialEditorViewModel current;
 		private Service service;
+
+		public void ProjectChanged() {}
 
 		public string ShortName
 		{
@@ -42,7 +44,7 @@ namespace DeltaEngine.Editor.MaterialEditor
 
 		private void SaveMaterial(object sender, RoutedEventArgs e)
 		{
-			curent.Save();
+			current.Save();
 		}
 
 		private void OpenAnimationEditor(object sender, RoutedEventArgs e)

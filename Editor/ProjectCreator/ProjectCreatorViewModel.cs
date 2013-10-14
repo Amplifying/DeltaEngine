@@ -14,13 +14,11 @@ namespace DeltaEngine.Editor.ProjectCreator
 	{
 		public ProjectCreatorViewModel()
 		{
-			frameworks = new FrameworkFinder();
 			project = new CsProject();
-			AvailableFrameworks = frameworks.All;
+			AvailableFrameworks = new FrameworkFinder().All;
 			RegisterCommands();
 		}
 
-		private readonly FrameworkFinder frameworks;
 		private readonly CsProject project;
 		public DeltaEngineFramework[] AvailableFrameworks { get; private set; }
 
@@ -75,10 +73,10 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		public string Location
 		{
-			get { return project.Location; }
+			get { return project.Path; }
 			set
 			{
-				project.Location = value;
+				project.Path = value;
 				RaisePropertyChanged("Location");
 			}
 		}

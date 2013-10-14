@@ -13,24 +13,13 @@ namespace DeltaEngine.Editor.Core.Tests
 			Assert.Throws<CodeUnpacker.NoPackedDataSpecified>(() => new CodeUnpacker(new byte[0]));
 		}
 
-		// TODO:
-		//[Test]
+		[Test]
 		public void ExpectExceptionWhenUnpackEmptyFolder()
 		{
-			const string Folder = "ExpectExceptionWhenPackEmptyFolder";
-			try
-			{
-				Directory.CreateDirectory(Folder);
-				CodePacker packer = new CodePacker(Folder);
-				new CodeUnpacker(packer.GetPackedData()).SaveToDirectory("AnyDirectory");
-			}
-			finally 
-			{
-				if (Directory.Exists(Folder))
-					Directory.Delete(Folder);
-			}
+			const int FilesToUnpack = 0;
+			Assert.Throws<CodeUnpacker.NoSourceCodeFilesSentUnableToBuildApp>(
+				() => new CodeUnpacker(BitConverter.GetBytes(FilesToUnpack)).SaveToDirectory("AnyFolder"));
 		}
-
 
 		[Test]
 		public void UnpackPackedData()

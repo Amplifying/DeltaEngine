@@ -12,8 +12,10 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		[TestFixtureSetUp]
 		public void CreatePackageFileOfSample()
 		{
-			string packageFilePathOfSample = Path.Combine(PathExtensions.GetDeltaEngineDirectory(), "..",
-				"DeltaEngineServices", "GeneratedCode", "LogoAppSetup.exe");
+			//TODO: this is not a valid path, no one got any files there except Enrico
+			string packageFilePathOfSample =
+				Path.Combine(PathExtensions.GetDeltaEngineInstalledDirectory(), "..", "DeltaEngineServices",
+					"GeneratedCode", "LogoAppSetup.exe");
 			sampleApp = AppInfoExtensions.CreateAppInfo(packageFilePathOfSample, PlatformName.Windows,
 				new Guid("4d33a50e-3aa2-4e7e-bc0c-4ef7b3d5e985"), DateTime.Now);
 			device = new WindowsDevice();

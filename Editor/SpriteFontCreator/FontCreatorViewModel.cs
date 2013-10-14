@@ -7,6 +7,7 @@ using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Editor.Core;
 using GalaSoft.MvvmLight;
+using Microsoft.Win32;
 
 namespace DeltaEngine.Editor.SpriteFontCreator
 {
@@ -28,9 +29,18 @@ namespace DeltaEngine.Editor.SpriteFontCreator
 			targetProjectPath = Path.Combine("Content", service.ProjectName);
 		}
 
-		private Service service;
+		private readonly Service service;
 		public FontGeneratorSettings settings;
 		public string targetProjectPath;
+
+		public void OpenImportdialogue()
+		{
+			var dialog = new OpenFileDialog();
+			dialog.Filter = "True Type Font |*.ttf";
+			var result = dialog.ShowDialog();
+			if (result == true)
+				FamilyFilename = dialog.FileName;
+		}
 
 		public void GenerateFontFromSettings()
 		{
@@ -50,13 +60,10 @@ namespace DeltaEngine.Editor.SpriteFontCreator
 				throw new CannotSaveFontWithoutSpecifiedContentName();
 			if (string.IsNullOrEmpty(FamilyFilename))
 				throw new GettingFontWithEmptyNameNotPossible();
-
 			var metaDataToSend = SetMetaDataForFont();
-
 			byte[] fontFileData;
 			using (var fontFileReader = new BinaryReader(new FileStream(FamilyFilename, FileMode.Open)))
 				fontFileData = fontFileReader.ReadBytes((int)fontFileReader.BaseStream.Length);
-
 			var dataAndName = new Dictionary<string, byte[]> { { ContentName + ".ttf", fontFileData } };
 			service.UploadContent(metaDataToSend, dataAndName);
 		}
@@ -88,7 +95,17 @@ namespace DeltaEngine.Editor.SpriteFontCreator
 		public readonly List<string> AvailableDefaultFontNames = new List<string>();
 
 		public string ContentName { get; set; }
-		public string FamilyFilename { get; set; }
+		public string FamilyFilename
+		{
+			get { return familyFilename; }
+			set
+			{
+				if (!string.IsNullOrEmpty(value))
+					familyFilename = value;
+				RaisePropertyChanged("FamilyFilename");
+			}
+		}
+		private string familyFilename;
 		public bool UseDefaultFont { get; set; }
 		public float BestFontSize { get; set; }
 		public float BestFontTracking { get; set; }

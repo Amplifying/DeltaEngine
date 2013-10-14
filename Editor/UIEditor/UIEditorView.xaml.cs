@@ -26,6 +26,8 @@ namespace DeltaEngine.Editor.UIEditor
 
 		private Service service;
 
+		public void ProjectChanged() {}
+
 		public string ShortName
 		{
 			get { return "UI Screens"; }
@@ -109,12 +111,30 @@ namespace DeltaEngine.Editor.UIEditor
 			}
 		}
 
+		private void DragLabel(object sender, MouseEventArgs e)
+		{
+			if (e.LeftButton == MouseButtonState.Pressed && !isDragging)
+			{
+				Messenger.Default.Send(true, "SetDraggingLabel");
+				isDragging = true;
+				Mouse.OverrideCursor = Cursors.Hand;
+			}
+
+			if (e.LeftButton != MouseButtonState.Pressed)
+			{
+				Messenger.Default.Send(false, "SetDraggingLabel");
+				isDragging = false;
+				Mouse.OverrideCursor = Cursors.Arrow;
+			}
+		}
+
 		private void SetMouseIcon(object sender, MouseEventArgs e)
 		{
 			if (e.LeftButton != MouseButtonState.Pressed)
 			{
 				Messenger.Default.Send(false, "SetDraggingImage");
 				Messenger.Default.Send(false, "SetDraggingButton");
+				Messenger.Default.Send(false, "SetDraggingLabel");
 				isDragging = false;
 				Mouse.OverrideCursor = Cursors.Arrow;
 			}
@@ -123,6 +143,11 @@ namespace DeltaEngine.Editor.UIEditor
 		private void ChangeGrid(object sender, SelectionChangedEventArgs e)
 		{
 			Messenger.Default.Send(e.AddedItems[0], "ChangeGrid");
+		}
+
+		private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+
 		}
 	}
 }

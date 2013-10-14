@@ -56,7 +56,6 @@ namespace DeltaEngine.Editor.Core.Tests
 		{
 			string engineSamplesSolution = PathExtensions.GetSamplesSolutionFilePath();
 			Assert.IsTrue(File.Exists(engineSamplesSolution));
-
 			var solutionLoader = new SolutionFileLoader(engineSamplesSolution);
 			ProjectEntry logoAppProject = solutionLoader.GetCSharpProject("LogoApp");
 			Assert.IsNotNull(logoAppProject);

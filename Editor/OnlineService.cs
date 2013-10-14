@@ -52,11 +52,14 @@ namespace DeltaEngine.Editor
 				ProjectName = project.ProjectName;
 				Permissions = project.Permissions;
 				editorContent.SetProject(project);
+				if (ProjectChanged != null)
+					ProjectChanged();
 			}
 		}
 
 		public string ProjectName { get; private set; }
 		public ProjectPermissions Permissions { get; private set; }
+		public Action ProjectChanged;
 		public event Action<object> DataReceived;
 		private Action<object, bool> send;
 		private EditorContentLoader editorContent;

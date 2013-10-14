@@ -79,7 +79,7 @@ namespace DeltaEngine.Editor.Core
 			}
 			if (StandardOutputEvent != null)
 				StandardOutputEvent(e.Data);
-			Output += e.Data;
+			Output += e.Data + "\n";
 		}
 
 		public event Action<string> StandardOutputEvent;
@@ -93,7 +93,7 @@ namespace DeltaEngine.Editor.Core
 			}
 			if (ErrorOutputEvent != null)
 				ErrorOutputEvent(e.Data);
-			Errors += e.Data;
+			Errors += e.Data + "\n";
 		}
 
 		public event Action<string> ErrorOutputEvent;
@@ -104,8 +104,11 @@ namespace DeltaEngine.Editor.Core
 			nativeProcess.BeginOutputReadLine();
 			nativeProcess.BeginErrorReadLine();
 			WaitForExit();
-			CheckExitCode();
+			if (!DontCheckExitCode)
+				CheckExitCode();
 		}
+
+		public bool DontCheckExitCode { get; set; }
 
 		private void WaitForExit()
 		{

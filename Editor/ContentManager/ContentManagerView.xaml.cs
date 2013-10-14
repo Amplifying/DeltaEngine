@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Windows;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Networking.Messages;
@@ -25,6 +24,8 @@ namespace DeltaEngine.Editor.ContentManager
 			service.ContentDeleted += name => RefreshContentList();
 		}
 
+		public void ProjectChanged() {}
+
 		private ContentManagerViewModel contentManagerViewModel;
 
 		private void OnDataReceived(object message)
@@ -46,8 +47,7 @@ namespace DeltaEngine.Editor.ContentManager
 
 		private void DeleteSelectedItems(object sender, RoutedEventArgs e)
 		{
-			Messenger.Default.Send(ImageList.SelectedItems.Cast<ContentIconAndName>().ToArray(),
-				"DeleteContent");
+			Messenger.Default.Send("DeleteContent", "DeleteContent");
 		}
 
 		private void DeleteSelectedImageAnimation(object sender, RoutedEventArgs e)
@@ -68,6 +68,11 @@ namespace DeltaEngine.Editor.ContentManager
 		public bool RequiresLargePane
 		{
 			get { return false; }
+		}
+
+		private void ChangeSelectedItem(object sender, RoutedPropertyChangedEventArgs<object> e)
+		{
+			contentManagerViewModel.SelectedContent = e.NewValue;
 		}
 	}
 }

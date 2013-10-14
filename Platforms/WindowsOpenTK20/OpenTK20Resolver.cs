@@ -104,11 +104,6 @@ namespace DeltaEngine.Platforms
 			return true;
 		}
 
-		public void RegisterFormsWindow(FormsWindow initializedWpfForumsWindow)
-		{
-			RegisterInstance(initializedWpfForumsWindow);
-		}
-
 		private class FailedToCopyNativeOpenALDllFiles : Exception
 		{
 			public FailedToCopyNativeOpenALDllFiles(string message)

@@ -19,6 +19,8 @@ namespace DeltaEngine.Editor.InputEditor
 			DataContext = new InputEditorViewModel(service);
 		}
 
+		public void ProjectChanged() {}
+
 		public string ShortName
 		{
 			get { return "Input Commands"; }

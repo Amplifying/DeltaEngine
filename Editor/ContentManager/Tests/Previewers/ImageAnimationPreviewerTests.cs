@@ -28,10 +28,11 @@ namespace DeltaEngine.Editor.ContentManager.Tests.Previewers
 			AdvanceTimeAndUpdateEntities();
 			Assert.AreEqual(new Vector2D(0.5f, 0.5f),
 				imageAnimationPreviewer.currentDisplayAnimation.Center);
-			mockMouse.SetButtonState(MouseButton.Left, State.Pressed);
-			mockMouse.SetPosition(new Vector2D(1f, 1f));
+			mockMouse.SetButtonState(MouseButton.Left, State.Pressing);
 			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(new Vector2D(2.5f, 2.5f),
+			mockMouse.SetPosition(new Vector2D(0.6f, 0.6f));
+			AdvanceTimeAndUpdateEntities();
+			Assert.AreEqual(new Vector2D(0.6f, 0.6f),
 				imageAnimationPreviewer.currentDisplayAnimation.Center);
 		}
 
@@ -42,23 +43,24 @@ namespace DeltaEngine.Editor.ContentManager.Tests.Previewers
 			AdvanceTimeAndUpdateEntities();
 			Assert.AreEqual(new Vector2D(0.5f, 0.5f),
 				imageAnimationPreviewer.currentDisplayAnimation.Center);
-			mockMouse.SetButtonState(MouseButton.Middle, State.Pressed);
-			mockMouse.SetPosition(new Vector2D(1f, 1f));
+			mockMouse.SetButtonState(MouseButton.Middle, State.Pressing);
 			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(1.5f, imageAnimationPreviewer.currentDisplayAnimation.DrawArea.Width);
+			mockMouse.SetPosition(new Vector2D(0.6f, 0.6f));
+			AdvanceTimeAndUpdateEntities();
+			Assert.AreEqual(0.55f, imageAnimationPreviewer.currentDisplayAnimation.DrawArea.Width);
 		}
 
 		[Test]
 		public void SettingNewImageCreatesNewSizeAndPosition()
 		{
-			mockMouse.SetButtonState(MouseButton.Left, State.Pressed);
-			mockMouse.SetPosition(new Vector2D(1f, 1f));
-			mockMouse.SetButtonState(MouseButton.Middle, State.Pressed);
-			mockMouse.SetPosition(new Vector2D(1f, 1f));
+			mockMouse.SetButtonState(MouseButton.Left, State.Pressing);
+			mockMouse.SetButtonState(MouseButton.Middle, State.Pressing);
 			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(new Vector2D(2.5f, 2.5f),
+			mockMouse.SetPosition(new Vector2D(0.6f, 0.6f));
+			AdvanceTimeAndUpdateEntities();
+			Assert.AreEqual(new Vector2D(0.6f, 0.6f),
 				imageAnimationPreviewer.currentDisplayAnimation.Center);
-			Assert.AreEqual(1.5f, imageAnimationPreviewer.currentDisplayAnimation.DrawArea.Width);
+			Assert.AreEqual(0.55f, imageAnimationPreviewer.currentDisplayAnimation.DrawArea.Width);
 			imageAnimationPreviewer.PreviewContent("DeltaEngineLogo");
 			Assert.AreEqual(new Vector2D(0.5f, 0.5f),
 				imageAnimationPreviewer.currentDisplayAnimation.Center);

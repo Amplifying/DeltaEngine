@@ -9,11 +9,15 @@ namespace DeltaEngine.Editor.ProjectCreator
 	{
 		public static bool IsValidFolderName(string validate)
 		{
+			if (string.IsNullOrEmpty(validate))
+				return false;
 			return Regex.IsMatch(validate, "^[A-Z][a-zA-Z0-9.]*$");
 		}
 
 		public static bool IsValidPath(string validate)
 		{
+			if (string.IsNullOrEmpty(validate))
+				return false;
 			return Regex.IsMatch(validate, "^([a-zA-Z]:)?\\\\[[a-zA-Z0-9_-]+\\\\]*");
 		}
 	}

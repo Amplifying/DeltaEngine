@@ -18,6 +18,8 @@ namespace DeltaEngine.Editor.EmptyEditorPlugin
 				DataContext = new EmptyEditorPluginViewModel();
 		}
 
+		public void ProjectChanged() {}
+
 		public string ShortName
 		{
 			get { return "EmptyEditorPlugin"; }

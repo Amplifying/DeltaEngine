@@ -15,7 +15,13 @@ using DeltaEngine.Editor.Helpers;
 using DeltaEngine.Extensions;
 using DeltaEngine.Platforms.Windows;
 using Xceed.Wpf.AvalonDock.Layout;
+using Application = System.Windows.Application;
+using DataFormats = System.Windows.DataFormats;
+using DragEventArgs = System.Windows.DragEventArgs;
+using IDataObject = System.Windows.IDataObject;
+using MessageBox = System.Windows.MessageBox;
 using OpenTKApp = DeltaEngine.Platforms.App;
+using UserControl = System.Windows.Controls.UserControl;
 using Window = DeltaEngine.Core.Window;
 
 namespace DeltaEngine.Editor
@@ -38,6 +44,7 @@ namespace DeltaEngine.Editor
 			DataContext = this.viewModel = viewModel;
 			maximizer = new MaximizerForEmptyWindows(this);
 			SetupEditorPlugins();
+			SetProjectAndTestFromCommandLineArguments(viewModel);
 			try
 			{
 				StartOpenTKViewportAndBlock();
@@ -55,12 +62,22 @@ namespace DeltaEngine.Editor
 		{
 			viewModel.AddAllPlugins();
 			viewModel.Service.StartEditorPlugin += StartInitialPlugin;
-			StartInitialPlugin(typeof(EmulatorControl));
+			viewModel.Service.ProjectChanged += RefreshAllActivePlugins;
+			StartInitialPlugin(typeof(ViewportControl));
 			StartInitialPlugin(typeof(ContentManagerView));
 		}
-
+		
 		private readonly EditorViewModel viewModel;
 		private readonly MaximizerForEmptyWindows maximizer;
+
+		private static void SetProjectAndTestFromCommandLineArguments(EditorViewModel viewModel)
+		{
+			var arguments = Environment.GetCommandLineArgs();
+			if (arguments.Length > 1)
+				viewModel.SetProjectAndTest(App.StartupPath, arguments[1],
+					arguments.Length > 2 ? arguments[2] : "");
+			App.SetProjectAndTest += viewModel.SetProjectAndTest;
+		}
 
 		private void SetWindowedOrFullscreen(object sender, RoutedEventArgs e)
 		{
@@ -154,6 +171,16 @@ namespace DeltaEngine.Editor
 			document.IsActive = true;
 		}
 
+		private void RefreshAllActivePlugins()
+		{
+			foreach (var documentPane in PluginGroup.Children)
+				foreach (LayoutDocument layoutDocument in documentPane.Children)
+				{
+					LayoutDocument document = layoutDocument;
+					Dispatcher.Invoke(new Action(() => ((EditorPluginView)document.Content).ProjectChanged()));
+				}
+		}
+
 		private void StartOpenTKViewportAndBlock()
 		{
 			if (DesignerProperties.GetIsInDesignMode(this))
@@ -165,12 +192,12 @@ namespace DeltaEngine.Editor
 
 		private WpfHostedFormsWindow TryGetViewport(IEnumerable<EditorPluginView> plugins)
 		{
-			foreach (var plugin in plugins.Where(plugin => plugin.GetType() == typeof(EmulatorControl)))
-				return new WpfHostedFormsWindow(plugin as EmulatorControl, this);
-			throw new EngineViewportNotLoaded();
+			foreach (var plugin in plugins.Where(plugin => plugin.GetType() == typeof(ViewportControl)))
+				return new WpfHostedFormsWindow(plugin as ViewportControl, this);
+			throw new EngineViewportCouldNotBeLoaded();
 		}
 
-		private class EngineViewportNotLoaded : Exception {}
+		private class EngineViewportCouldNotBeLoaded : Exception {}
 
 		private void StartViewportAndWaitUntilWindowIsClosed(FormsWindow window)
 		{

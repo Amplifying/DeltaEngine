@@ -10,12 +10,12 @@ namespace DeltaEngine.Multimedia.OpenTK
 {
 	public class OpenTKMusic : Music
 	{
-		private OpenTKSoundDevice openAL;
-		private int channelHandle;
-		private int[] buffers;
-		private byte[] bufferData;
+		private readonly OpenTKSoundDevice openAL;
+		private readonly int channelHandle;
+		private readonly int[] buffers;
+		private readonly byte[] bufferData;
 		private const int NumberOfBuffers = 2;
-		private const int BufferSize = 1024 * 8;
+		private const int BufferSize = 1024 * 16;
 		private BaseMusicStream musicStream;
 		private AudioFormat format;
 		private DateTime playStartTime;
@@ -38,7 +38,7 @@ namespace DeltaEngine.Multimedia.OpenTK
 		}
 
 		protected OpenTKMusic(string contentName, OpenTKSoundDevice soundDevice, Settings settings)
-			: base(contentName,soundDevice,settings)
+			: base(contentName, soundDevice, settings)
 		{
 			openAL = soundDevice;
 			channelHandle = openAL.CreateChannel();
@@ -97,7 +97,7 @@ namespace DeltaEngine.Multimedia.OpenTK
 		public override void Run()
 		{
 			if (UpdateBuffersAndCheckFinished())
-				Stop();
+				HandleStreamFinished();
 			else
 				if (!IsPlaying())
 					openAL.Play(channelHandle);
@@ -117,7 +117,7 @@ namespace DeltaEngine.Multimedia.OpenTK
 
 		private bool UpdateBuffersAndCheckFinished()
 		{
-			int processed = openAL.GetNumberOfBuffersProcesed(channelHandle);
+			int processed = openAL.GetNumberOfBuffersProcessed(channelHandle);
 			while (processed-- > 0)
 			{
 				int buffer = openAL.UnqueueBufferFromChannel(channelHandle);

@@ -365,14 +365,13 @@ namespace DeltaEngine.Editor
 			}
 			catch (Exception)
 			{
-				Logger.Warning("Unknown content type was unable to be added to the server : " +
+				Logger.Warning("Unable to read bytes for uploading to the server : " +
 					Path.GetFileName(contentFilePath));
 				return;
 			}
-
 			if (bytes.Length > MaximumFileSize)
 			{
-				Logger.Warning("The file you wanted to add is too large, the maximum filesize is 16MB");
+				Logger.Warning("The file you added is too large, the maximum file size is 16MB");
 				return;
 			}
 			var fileNameAndBytes = new Dictionary<string, byte[]>();
@@ -385,5 +384,13 @@ namespace DeltaEngine.Editor
 		}
 
 		private const int MaximumFileSize = 16777216;
+
+		public void SetProjectAndTest(string initialPath, string projectName, string testName)
+		{
+			Logger.Info("Path: " + initialPath + ", Project: " + projectName + ", Test: " +
+				testName);
+			//TODO: CopyProjectFileFromOriginalPathIfNewer();
+			//Even better idea is to allow this from a special plugin with dropdown list to select which project to listen to. Select assembly from dropdown + browse butten + entry point from dropdown list. Then invoke the same from here.
+		}
 	}
 }

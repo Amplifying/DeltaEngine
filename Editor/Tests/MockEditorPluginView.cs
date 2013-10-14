@@ -10,6 +10,8 @@ namespace DeltaEngine.Editor.Tests
 			Console.WriteLine("MockEditorPlugin initialized");
 		}
 
+		public void ProjectChanged() {}
+
 		public string ShortName
 		{
 			get { return "Mock Plugin"; }

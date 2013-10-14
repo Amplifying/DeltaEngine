@@ -1,4 +1,5 @@
-﻿using System.Xml.Linq;
+﻿using System;
+using System.Xml.Linq;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.Emulator.Tests
@@ -6,7 +7,7 @@ namespace DeltaEngine.Editor.Emulator.Tests
 	public class LinqXmlReaderTests
 	{
 		[Test]
-		public void ReadStringValueTest()
+		public void ReadStringValue()
 		{
 			var xmlContents = new XElement("xmlContents");
 			xmlContents.Add(new XElement("StringValue", "Test"));
@@ -15,7 +16,7 @@ namespace DeltaEngine.Editor.Emulator.Tests
 		}
 
 		[Test]
-		public void ReadPointValueTest()
+		public void ReadPointValue()
 		{
 			var xmlContents = new XElement("xmlContents");
 			xmlContents.Add(new XElement("PointValue", "100,200"));
@@ -25,7 +26,24 @@ namespace DeltaEngine.Editor.Emulator.Tests
 		}
 
 		[Test]
-		public void ReadSizeValueTest()
+		public void ReadNonExistingPointValue()
+		{
+			var xmlContents = new XElement("xmlContents");
+			var value = xmlContents.ReadPointValue("PointValue");
+			Assert.AreEqual(0, value.X);
+			Assert.AreEqual(0, value.Y);
+		}
+
+		[Test]
+		public void ReadInvalidPointValueCrashes()
+		{
+			var xmlContents = new XElement("xmlContents");
+			xmlContents.Add(new XElement("PointValue", "a,b"));
+			Assert.Throws<FormatException>(() => xmlContents.ReadPointValue("PointValue"));
+		}
+
+		[Test]
+		public void ReadSizeValue()
 		{
 			var xmlContents = new XElement("xmlContents");
 			xmlContents.Add(new XElement("SizeValue", "100,200"));
@@ -35,7 +53,16 @@ namespace DeltaEngine.Editor.Emulator.Tests
 		}
 
 		[Test]
-		public void ReadIntValueTest()
+		public void ReadNonExistingSizeValue()
+		{
+			var xmlContents = new XElement("xmlContents");
+			var value = xmlContents.ReadSizeValue("SizeValue");
+			Assert.AreEqual(0, value.Width);
+			Assert.AreEqual(0, value.Height);
+		}
+
+		[Test]
+		public void ReadIntValue()
 		{
 			var xmlContents = new XElement("xmlContents");
 			xmlContents.Add(new XElement("IntValue", "100"));
@@ -44,7 +71,7 @@ namespace DeltaEngine.Editor.Emulator.Tests
 		}
 
 		[Test]
-		public void ReadBoolValueTest()
+		public void ReadBoolValue()
 		{
 			var xmlContents = new XElement("xmlContents");
 			xmlContents.Add(new XElement("TrueValue", "1"));

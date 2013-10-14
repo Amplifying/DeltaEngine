@@ -20,7 +20,7 @@ namespace DeltaEngine.Editor.ContentManager.Tests.Previewers
 		private MusicPreviewer musicPreviewer;
 		private MockMouse mockMouse;
 
-		[Test]
+		[Test, Ignore]
 		public void MoveCamera()
 		{
 			mockMouse = Resolve<Mouse>() as MockMouse;

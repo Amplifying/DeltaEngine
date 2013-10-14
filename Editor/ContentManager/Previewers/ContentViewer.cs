@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using DeltaEngine.Content;
+using DeltaEngine.Editor.Core;
 
 namespace DeltaEngine.Editor.ContentManager.Previewers
 {
@@ -20,6 +20,7 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 			viewers.Add(ContentType.Video, new VideoPreviewer());
 			viewers.Add(ContentType.Xml, new XmlPreviewer());
 			viewers.Add(ContentType.Scene, new UIPreview());
+			viewers.Add(ContentType.Level, new LevelPreview());
 		}
 
 		private readonly Dictionary<ContentType, ContentPreview> viewers =

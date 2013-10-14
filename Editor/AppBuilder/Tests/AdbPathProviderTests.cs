@@ -9,7 +9,6 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		public void FindAdbPath()
 		{
 			DeleteSupportFolderForTestIfExists();
-
 			var provider = new AdbPathProvider();
 			string adbPath = provider.GetAdbPath();
 			Assert.IsTrue(File.Exists(adbPath));

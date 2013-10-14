@@ -43,6 +43,12 @@ namespace DeltaEngine.Graphics.OpenTK20
 			CreateHandleAndSetDefaultSamplerState();
 		}
 
+		protected override void SetSamplerStateAndTryToLoadImage(Stream fileData)
+		{
+			SetSamplerState();
+			TryLoadImage(fileData);
+		}
+
 		protected override void LoadImage(Stream fileData)
 		{
 			using (var bitmap = new Bitmap(fileData))

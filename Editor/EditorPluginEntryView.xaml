@@ -5,8 +5,8 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:helpers="clr-namespace:DeltaEngine.Editor.Helpers"
-	mc:Ignorable="d" d:DataContext="{d:DesignInstance Type=helpers:DesignEditorPlugin, IsDesignTimeCreatable=True}"
-	Width="250" Height="56">
+	mc:Ignorable="d" Width="250" Height="56"
+	d:DataContext="{d:DesignInstance Type=helpers:DesignEditorPlugin, IsDesignTimeCreatable=True}">
 	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="44px" />

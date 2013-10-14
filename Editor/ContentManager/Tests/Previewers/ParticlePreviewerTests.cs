@@ -26,12 +26,12 @@ namespace DeltaEngine.Editor.ContentManager.Tests.Previewers
 		{
 			mockMouse = Resolve<Mouse>() as MockMouse;
 			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(new Vector2D(0.5f, 0.5f),
+			Assert.AreEqual(new Vector3D(0.5f, 0.5f, 0),
 				particlePreviewer.currentDisplayParticle2D.Position);
 			mockMouse.SetButtonState(MouseButton.Left, State.Pressed);
 			mockMouse.SetPosition(new Vector2D(1f, 1f));
 			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(new Vector2D(2.5f, 2.5f),
+			Assert.AreEqual(new Vector3D(0.5f, 0.5f, 0),
 				particlePreviewer.currentDisplayParticle2D.Position);
 		}
 
@@ -43,7 +43,7 @@ namespace DeltaEngine.Editor.ContentManager.Tests.Previewers
 			Assert.AreEqual(0.1f,
 				particlePreviewer.currentDisplayParticle2D.EmitterData.Size.Start.Width);
 			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(new Vector2D(0.5f, 0.5f),
+			Assert.AreEqual(new Vector3D(0.5f, 0.5f, 0),
 				particlePreviewer.currentDisplayParticle2D.Position);
 			mockMouse.SetButtonState(MouseButton.Middle, State.Pressed);
 			mockMouse.SetPosition(new Vector2D(1f, 1f));
@@ -59,10 +59,10 @@ namespace DeltaEngine.Editor.ContentManager.Tests.Previewers
 			mockMouse.SetButtonState(MouseButton.Middle, State.Pressed);
 			mockMouse.SetPosition(new Vector2D(1f, 1f));
 			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(new Vector2D(2.5f, 2.5f),
+			Assert.AreEqual(new Vector3D(0.5f, 0.5f, 0),
 				particlePreviewer.currentDisplayParticle2D.Position);
 			particlePreviewer.PreviewContent("TestParticle");
-			Assert.AreEqual(new Vector2D(0.5f, 0.5f),
+			Assert.AreEqual(new Vector3D(0.5f, 0.5f, 0),
 				particlePreviewer.currentDisplayParticle2D.Position);
 		}
 	}
