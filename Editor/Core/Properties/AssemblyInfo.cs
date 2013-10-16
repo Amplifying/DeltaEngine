@@ -10,6 +10,6 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
 [assembly: Guid("7d01900e-4041-4fc9-8edd-4016d4146805")]
-[assembly: AssemblyVersion("0.9.9.5")]
-[assembly: AssemblyFileVersion("0.9.9.5")]
+[assembly: AssemblyVersion("0.9.9.6")]
+[assembly: AssemblyFileVersion("0.9.9.6")]
 [assembly: InternalsVisibleTo("DeltaEngine.Editor.Core.Tests")]

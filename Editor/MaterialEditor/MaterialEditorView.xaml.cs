@@ -10,6 +10,7 @@ namespace DeltaEngine.Editor.MaterialEditor
 	/// </summary>
 	public partial class MaterialEditorView : EditorPluginView
 	{
+		//ncrunch: no coverage start
 		public MaterialEditorView()
 		{
 			InitializeComponent();

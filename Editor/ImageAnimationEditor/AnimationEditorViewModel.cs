@@ -112,11 +112,12 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 			ContentLoader.RemoveResource(AnimationName);
 		}
 
-		private void SendSuccessMessageToLogger(ContentType type, string name)
+		//ncrunch: no coverage start
+		public void SendSuccessMessageToLogger(ContentType type, string name)
 		{
 			Logger.Info("The saving of the animation called " + AnimationName + " was a succes.");
 			service.ContentUpdated -= SendSuccessMessageToLogger;
-		}
+		}//ncrunch: no coverage end 
 
 		public int SelectedIndex
 		{
@@ -217,13 +218,13 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 				animationName = value;
 				if (ContentLoader.Exists(animationName, ContentType.ImageAnimation) ||
 					ContentLoader.Exists(animationName, ContentType.SpriteSheetAnimation))
-					CreateAnimtaionFromFile();
+					CreateAnimationFromFile();
 			}
 		}
 
 		private string animationName;
 
-		public void CreateAnimtaionFromFile()
+		public void CreateAnimationFromFile()
 		{
 			EntitiesRunner.Current.Clear();
 			ImageList.Clear();

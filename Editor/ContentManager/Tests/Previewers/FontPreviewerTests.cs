@@ -7,7 +7,6 @@ using NUnit.Framework;
 
 namespace DeltaEngine.Editor.ContentManager.Tests.Previewers
 {
-	[Category("Slow")]
 	internal class FontPreviewerTests : TestWithMocksOrVisually
 	{
 		[SetUp]

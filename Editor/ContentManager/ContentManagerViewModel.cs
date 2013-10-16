@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Windows.Media;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
@@ -10,8 +11,6 @@ using DeltaEngine.Editor.ContentManager.Previewers;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Entities;
 using DeltaEngine.Rendering2D;
-using DeltaEngine.Rendering3D;
-using DeltaEngine.Rendering3D.Cameras;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 using Color = System.Windows.Media.Color;
@@ -33,13 +32,15 @@ namespace DeltaEngine.Editor.ContentManager
 		}
 
 		private readonly Service service;
-		private readonly List<string> selectedContentList;
+		public readonly List<string> selectedContentList;
 
 		private void SetMessenger()
 		{
 			Messenger.Default.Register<string>(this, "DeleteContent", DeleteContentFromList);
 			Messenger.Default.Register<bool>(this, "DeleteContent", DeleteContentFromList);
 			Messenger.Default.Register<string>(this, "AddToSelection", AddContentToSelection);
+			Messenger.Default.Register<string>(this, "AddMultipleContentToSelection",
+				AddMultipleContentToSelection);
 			Messenger.Default.Register<string>(this, "ClearList", ClearSelectionList);
 		}
 
@@ -55,7 +56,7 @@ namespace DeltaEngine.Editor.ContentManager
 			if (type == ContentType.ImageAnimation)
 				DeleteImageAnimation();
 			else if (type == ContentType.SpriteSheetAnimation)
-				ContentLoader.Load<SpriteSheetAnimation>(selectedContent.Name);
+				DeleteSpriteSheetAnimation();
 			service.DeleteContent(selectedContent.Name, deleteSubContent);
 		}
 
@@ -68,16 +69,62 @@ namespace DeltaEngine.Editor.ContentManager
 			service.DeleteContent(selectedContent.Name);
 		}
 
-		private void AddContentToSelection(string contentName)
+		private void DeleteSpriteSheetAnimation()
+		{
+			var animation = ContentLoader.Load<SpriteSheetAnimation>(selectedContent.Name);
+			var image = animation.MetaData.Get("ImageName", "");
+			service.DeleteContent(image);
+			service.DeleteContent(selectedContent.Name);
+		}
+
+		public void AddContentToSelection(string contentName)
 		{
 			foreach (var contentIconAndName in ContentList)
 				if (contentIconAndName.Name == contentName)
 					contentIconAndName.Brush = new SolidColorBrush(Color.FromArgb(255, 195, 195, 195));
 			selectedContentList.Add(contentName);
+			lastSelectedContent = contentName;
 			RaisePropertyChanged("ContentList");
 		}
 
-		private void ClearSelectionList(string obj)
+		private void AddMultipleContentToSelection(string contentName)
+		{
+			foreach (var contentIconAndName in ContentList)
+				if (contentIconAndName.Name == contentName)
+				{
+					if (selectedContentList.Count != 0)
+						GetContentBetweenLastAndNewContent(contentName);
+					contentIconAndName.Brush = new SolidColorBrush(Color.FromArgb(255, 195, 195, 195));
+					selectedContentList.Add(contentName);
+					lastSelectedContent = contentName;
+				}
+		}
+
+		private void GetContentBetweenLastAndNewContent(string contentName)
+		{
+			int indexsOfLastContent =
+				ContentList.IndexOf(
+					ContentList.FirstOrDefault(content => content.Name == lastSelectedContent));
+			var indexsOfNewContent =
+				ContentList.IndexOf(ContentList.FirstOrDefault(content => content.Name == contentName));
+			if (indexsOfLastContent < indexsOfNewContent)
+				for (int i = 0; indexsOfLastContent + i < indexsOfNewContent; i++)
+					SelectNewContent(indexsOfLastContent, i);
+			else if (indexsOfNewContent < indexsOfLastContent)
+				for (int i = 0; indexsOfNewContent + i < indexsOfLastContent; i++)
+					SelectNewContent(indexsOfLastContent, i);
+		}
+
+		private void SelectNewContent(int indexsOfLastContent, int i)
+		{
+			ContentList[indexsOfLastContent + i].Brush =
+				new SolidColorBrush(Color.FromArgb(255, 195, 195, 195));
+			selectedContentList.Add(ContentList[indexsOfLastContent + i].Name);
+		}
+
+		private string lastSelectedContent;
+
+		public void ClearSelectionList(string obj)
 		{
 			selectedContentList.Clear();
 			foreach (var contentIconAndName in ContentList)
@@ -109,15 +156,13 @@ namespace DeltaEngine.Editor.ContentManager
 			RaisePropertyChanged("ContentList");
 		}
 
-		private void AddNewContent(string contentName)
+		public void AddNewContent(string contentName)
 		{
 			var contentType = service.GetTypeOfContent(contentName);
-			if (contentType == ContentType.Mesh || contentType == ContentType.Geometry)
-				return;
 			ContentList.Add(new ContentIconAndName(GetContentTypeIcon(contentType), contentName));
 		}
 
-		private void AddAnimationAndSubEntries(string contentName, ContentType? contentType)
+		public void AddAnimationAndSubEntries(string contentName, ContentType? contentType)
 		{
 			var subContent = new ObservableCollection<ContentIconAndName>();
 			var animation = ContentLoader.Load<ImageAnimation>(contentName);
@@ -129,50 +174,14 @@ namespace DeltaEngine.Editor.ContentManager
 				subContent));
 		}
 
-		private void Add3DModelAndSubEntries(string contentName, ContentType? contentType)
-		{
-			var subContent = new ObservableCollection<ContentIconAndName>();
-			var model = ContentLoader.Load<ModelData>(contentName);
-			var meshes = model.MetaData.Get("MeshNames", "mesh");
-			foreach (var mesh in meshes.Split(new[] { ',', ' ' }))
-				if (!String.IsNullOrEmpty(mesh))
-					GetSubContentFromMesh(mesh, subContent);
-			ContentList.Add(new ContentIconAndName(GetContentTypeIcon(ContentType.Model), contentName,
-				subContent));
-		}
-
-		private static void GetSubContentFromMesh(string mesh,
-			ObservableCollection<ContentIconAndName> subContent)
-		{
-			var loadedMesh = ContentLoader.Load<Mesh>(mesh);
-			subContent.Add(new ContentIconAndName(GetContentTypeIcon(ContentType.Mesh), mesh));
-			GetSubEntriesForGeometryAndMaterial(subContent, loadedMesh);
-		}
-
-		private static void GetSubEntriesForGeometryAndMaterial(
-			ObservableCollection<ContentIconAndName> subContent, Mesh loadedMesh)
-		{
-			var geometrys = loadedMesh.MetaData.Get("GeometryName", "geometry");
-			foreach (var geometry in geometrys.Split(new[] { ',', ' ' }))
-				if (!String.IsNullOrEmpty(geometry))
-					subContent[subContent.Count - 1].SubContent.Add(
-						new ContentIconAndName(GetContentTypeIcon(ContentType.Geometry), geometry));
-			var materials = loadedMesh.MetaData.Get("MaterialName", "material");
-			foreach (var material in materials.Split(new[] { ',', ' ' }))
-				if (!String.IsNullOrEmpty(material))
-					subContent[subContent.Count - 1].SubContent.Add(
-						new ContentIconAndName(GetContentTypeIcon(ContentType.Material), material));
-		}
-
 		private static string GetContentTypeIcon(ContentType? type)
 		{
-			var iconFileName = type == ContentType.Font
-				? "Xml.png" : type == ContentType.ParticleEmitter ? "ParticleEmitter.png" : type + ".png";
+			var iconFileName = type == ContentType.Font ? "Xml.png" : type + ".png";
 			return Path.Combine(ContentTypeFolder, iconFileName);
 		}
 
 		public ObservableCollection<ContentIconAndName> ContentList { get; set; }
-		private const string ContentTypeFolder = "ContentTypes";
+		private const string ContentTypeFolder = "../Images/ContentTypes/";
 
 		public Object SelectedContent
 		{
@@ -180,12 +189,13 @@ namespace DeltaEngine.Editor.ContentManager
 			set
 			{
 				selectedContent = (ContentIconAndName)value;
-				ClearEntitiesExceptCamera();
+				ClearEntities();
 				CreatePreviewerForSelectedContent();
 				DrawBackground();
 				RaisePropertyChanged("IsAnimation");
 			}
 		}
+
 		private ContentIconAndName selectedContent;
 
 		private void CreatePreviewerForSelectedContent()
@@ -204,10 +214,12 @@ namespace DeltaEngine.Editor.ContentManager
 				else
 					CanDeleteSubContent = false;
 			}
+				//ncrunch: no coverage start
 			catch (Exception ex)
 			{
 				Logger.Error(ex);
 			}
+			//ncrunch: no coverage end
 		}
 
 		private readonly ContentViewer contentViewer = new ContentViewer();
@@ -218,7 +230,7 @@ namespace DeltaEngine.Editor.ContentManager
 			set
 			{
 				selectedBackgroundImage = value;
-				ClearEntitiesExceptCamera();
+				ClearEntities();
 				CreatePreviewerForSelectedContent();
 				DrawBackground();
 			}
@@ -226,12 +238,11 @@ namespace DeltaEngine.Editor.ContentManager
 
 		private string selectedBackgroundImage;
 
-		private static void ClearEntitiesExceptCamera()
+		private static void ClearEntities()
 		{
 			var entities = EntitiesRunner.Current.GetAllEntities();
 			foreach (var entity in entities)
-				if (entity.GetType() != typeof(Camera))
-					entity.IsActive = false;
+				entity.IsActive = false;
 		}
 
 		private void DrawBackground()
@@ -254,7 +265,6 @@ namespace DeltaEngine.Editor.ContentManager
 		}
 
 		private string searchText { get; set; }
-
 		public bool CanDeleteSubContent { get; set; }
 	}
 }

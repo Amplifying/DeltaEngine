@@ -15,7 +15,7 @@ namespace DeltaEngine.Editor.Helpers
 
 		public string Icon
 		{
-			get { return "Icons/Content.png"; }
+			get { return "Images/Plugins/Content.png"; }
 		}
 
 		public bool RequiresLargePane

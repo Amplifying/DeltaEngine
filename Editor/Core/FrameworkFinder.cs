@@ -16,7 +16,7 @@ namespace DeltaEngine.Editor.Core
 			foreach (var directoryInfo in GetInstallerDirectoryInfo(installDirectory).GetDirectories())
 			{
 				var framework = DeltaEngineFrameworkExtensions.FromString(directoryInfo.Name);
-				if (framework == DeltaEngineFramework.Default || !IsValid(directoryInfo))
+				if (framework == DeltaEngineFramework.None || !IsValid(directoryInfo))
 					continue;
 				installedFrameworks.Add(framework);
 				if (directoryInfo.Name == "OpenTK")
@@ -27,21 +27,28 @@ namespace DeltaEngine.Editor.Core
 
 		private static string GetInstallPath()
 		{
-			var installDirectory = Environment.GetEnvironmentVariable(EnvironmentVariable);
+			var installDirectory = PathExtensions.GetDeltaEngineInstalledDirectory();
 			if (installDirectory != null)
 				return installDirectory;
-			Logger.Warning("Environment Variable '" + EnvironmentVariable +
-				"' not set. Please use installer to set it up.");
+			Logger.Warning("Environment Variable '" + PathExtensions.EnginePathEnvironmentVariableName +
+				"' not set. Please use the DeltaEngine installer to set it up.");
 			return "";
 		}
 
-		private const string EnvironmentVariable = "DeltaEnginePath";
-
 		private static DirectoryInfo GetInstallerDirectoryInfo(string installDirectory)
 		{
-			return
-				new DirectoryInfo(String.IsNullOrEmpty(installDirectory)
-					? Directory.GetCurrentDirectory() : installDirectory);
+			var workingDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
+			return String.IsNullOrEmpty(installDirectory)
+				? IsFrameworkDirectory(workingDirectory) ? workingDirectory.Parent : workingDirectory
+				: new DirectoryInfo(installDirectory);
+		}
+
+		public static bool IsFrameworkDirectory(DirectoryInfo directory)
+		{
+			foreach (DeltaEngineFramework framework in Enum.GetValues(typeof(DeltaEngineFramework)))
+				if (framework.ToString() == directory.Name)
+					return true;
+			return false;
 		}
 
 		private static bool IsValid(DirectoryInfo directoryInfo)
@@ -60,7 +67,7 @@ namespace DeltaEngine.Editor.Core
 		{
 			get
 			{
-				if (editorFramework == DeltaEngineFramework.Default)
+				if (editorFramework == DeltaEngineFramework.None)
 					throw new EditorDefaultFrameworkNotInstalled();
 				return editorFramework;
 			}
@@ -72,7 +79,7 @@ namespace DeltaEngine.Editor.Core
 		{
 			get
 			{
-				if (current == DeltaEngineFramework.Default)
+				if (current == DeltaEngineFramework.None)
 					current = Default;
 				return current;
 			}

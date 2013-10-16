@@ -38,7 +38,6 @@ namespace DeltaEngine.Platforms
 			Register<OpenTK20Geometry>();
 			Register<OpenTKSound>();
 			Register<OpenTKMusic>();
-			Register<OpenTKVideo>();
 		}
 
 		private void MakeSureOpenALDllsAreAvailable()

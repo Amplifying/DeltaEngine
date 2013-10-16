@@ -6,17 +6,17 @@ namespace DeltaEngine.Editor.Core
 {
 	public static class PathExtensions
 	{
+		public static bool IsDeltaEnginePathEnvironmentVariableAvailable()
+		{
+			return !String.IsNullOrEmpty(GetDeltaEngineInstalledDirectory());
+		}
+
 		public static string GetDeltaEngineInstalledDirectory()
 		{
 			return Environment.GetEnvironmentVariable(EnginePathEnvironmentVariableName);
 		}
 
 		public const string EnginePathEnvironmentVariableName = "DeltaEnginePath";
-
-		public static bool IsDeltaEnginePathEnvironmentVariableAvailable()
-		{
-			return !String.IsNullOrEmpty(GetDeltaEngineInstalledDirectory());
-		}
 
 		//ncrunch: no coverage start
 		public static string GetFallbackEngineSourceCodeDirectory()
@@ -27,9 +27,7 @@ namespace DeltaEngine.Editor.Core
 			if (Directory.Exists(DefaultDevelopmentPath))
 				return DefaultDevelopmentPath;
 			throw new NoDeltaEngineFoundInFallbackPaths();
-		}
-
-		//ncrunch: no coverage end
+		} //ncrunch: no coverage end
 
 		public const string DefaultCodePath = @"C:\Code\DeltaEngine";
 
@@ -92,6 +90,11 @@ namespace DeltaEngine.Editor.Core
 		{
 			return IsDeltaEnginePathEnvironmentVariableAvailable()
 				? GetDeltaEngineInstalledDirectory() : GetFallbackEngineSourceCodeDirectory();
+		}
+
+		public static string GetEditorSourceCodeDirectory()
+		{
+			return Path.Combine(GetFallbackEngineSourceCodeDirectory(), "Editor");
 		}
 	}
 }

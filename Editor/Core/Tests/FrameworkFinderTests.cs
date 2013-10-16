@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 
@@ -8,10 +9,24 @@ namespace DeltaEngine.Editor.Core.Tests
 	public class FrameworkFinderTests
 	{
 		//ncrunch: no coverage start
+		[SetUp]
+		public void SetEnvironmentVariable()
+		{
+			Environment.SetEnvironmentVariable(PathExtensions.EnginePathEnvironmentVariableName, "");
+		}
+
+		[Test]
+		public void TestOutputDirectoryIsNotAFrameworkDirectory()
+		{
+			Assert.IsFalse(
+				FrameworkFinder.IsFrameworkDirectory(new DirectoryInfo(Directory.GetCurrentDirectory())));
+		}
+
 		[Test]
 		public void CheckAvailableDeltaEngineFrameworks()
 		{
 			CreateFrameworkFolders(GetAllDeltaEngineFrameworks());
+			frameworks = new FrameworkFinder();
 			Assert.AreEqual(6, frameworks.All.Length);
 		}
 
@@ -29,7 +44,6 @@ namespace DeltaEngine.Editor.Core.Tests
 				foreach (var additionalSubFolder in additionalSubFolders)
 					Directory.CreateDirectory(Path.Combine(directoryName, additionalSubFolder));
 			}
-			frameworks = new FrameworkFinder();
 		}
 
 		private readonly List<string> installerDirectories = new List<string>();
@@ -56,6 +70,7 @@ namespace DeltaEngine.Editor.Core.Tests
 		public void CheckAvailabilityOfDefaultFramework()
 		{
 			CreateFrameworkFolders(GetAllDeltaEngineFrameworks());
+			frameworks = new FrameworkFinder();
 			Assert.AreEqual(DefaultFramework, frameworks.Default);
 		}
 
@@ -74,10 +89,11 @@ namespace DeltaEngine.Editor.Core.Tests
 		public void ThrowIfDefaultFrameworkIsNotAvailable()
 		{
 			CreateFrameworkFolders(GetDeltaEngineFrameworksWithoutDefault());
-			var defaultFramework = DeltaEngineFramework.Default;
+			frameworks = new FrameworkFinder();
+			var defaultFramework = DeltaEngineFramework.None;
 			Assert.Throws<FrameworkFinder.EditorDefaultFrameworkNotInstalled>(
 				() => { defaultFramework = frameworks.Default; });
-			Assert.AreEqual(DeltaEngineFramework.Default, defaultFramework);
+			Assert.AreEqual(DeltaEngineFramework.None, defaultFramework);
 		}
 
 		private static IEnumerable<string> GetDeltaEngineFrameworksWithoutDefault()

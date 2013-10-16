@@ -1,0 +1,21 @@
+﻿<UserControl
+	x:Class="DeltaEngine.Editor.Emulator.ToolboxEntry"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:helpers="clr-namespace:DeltaEngine.Editor.Emulator.Helpers"
+	mc:Ignorable="d" Height="25" Width="120"
+	d:DataContext="{d:DesignInstance Type=helpers:DesignToolboxEntry, IsDesignTimeCreatable=True}">
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="25" />
+			<ColumnDefinition Width="*" />
+		</Grid.ColumnDefinitions>
+		<Image Height="20" Width="20" Source="{Binding Path=Icon}" />
+		<TextBlock
+			Grid.Column="1" Height="25" Width="95" FontWeight="Bold" FontSize="10"
+			FontFamily="Arial" Foreground="DarkGray" HorizontalAlignment="Left" Padding="0,7,0,0"
+			Text="{Binding Path=ShortName}" />
+	</Grid>
+</UserControl>

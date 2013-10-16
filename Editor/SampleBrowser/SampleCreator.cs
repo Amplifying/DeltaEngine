@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
@@ -24,7 +23,8 @@ namespace DeltaEngine.Editor.SampleBrowser
 			this.fileSystem = fileSystem;
 			Samples = new List<Sample>();
 			solutionSamplesPath = GetSolutionPath(Directory.GetCurrentDirectory());
-			InstallPath = Path.GetFullPath(Environment.ExpandEnvironmentVariables("%DeltaEnginePath%\\"));
+			InstallPath = PathExtensions.GetDeltaEngineInstalledDirectory() ??
+				GetParentOfWorkingDirectory();
 		}
 
 		private readonly IFileSystem fileSystem;
@@ -42,6 +42,11 @@ namespace DeltaEngine.Editor.SampleBrowser
 		}
 
 		public string InstallPath { get; set; }
+
+		private static string GetParentOfWorkingDirectory()
+		{
+			return new DirectoryInfo(Directory.GetCurrentDirectory()).Parent.FullName;
+		}
 
 		public void CreateSamples(DeltaEngineFramework framework)
 		{
@@ -82,16 +87,13 @@ namespace DeltaEngine.Editor.SampleBrowser
 				string projectName = GetProjectNameFromLocation(projectDirectory);
 				if (!HasExecutableFile(projectDirectory, projectName))
 					continue;
-
 				string projectFile = Path.Combine(projectDirectory, projectName + ".csproj");
 				if (!fileSystem.File.Exists(projectFile))
 					continue;
-
 				AddSampleGame(projectDirectory, projectName, projectFile);
 				string pathToTests = Path.Combine(projectDirectory, "Tests", "bin", GetConfigurationName());
 				if (!fileSystem.Directory.Exists(pathToTests))
 					continue;
-
 				//AddVisualTests(pathToTests, projectName, projectFile);
 			}
 		}
@@ -123,7 +125,6 @@ namespace DeltaEngine.Editor.SampleBrowser
 				if (!file.EndsWith(projectName + ".Tests.exe") &&
 					!file.EndsWith(projectName + ".Tests.dll"))
 					continue;
-
 				try
 				{
 					Assembly assembly = Assembly.LoadFrom(file);
@@ -131,7 +132,6 @@ namespace DeltaEngine.Editor.SampleBrowser
 					{
 						if (type.IsDefined(typeof(CompilerGeneratedAttribute), false))
 							continue;
-
 						foreach (var method in type.GetMethods().Where(IsVisualTest))
 							Samples.Add(Sample.CreateTest(projectName + ": " + method.Name, pathToProjectFile, file,
 								type.Name, method.Name));
@@ -157,7 +157,6 @@ namespace DeltaEngine.Editor.SampleBrowser
 		{
 			if (!fileSystem.Directory.Exists(InstallPath))
 				return;
-
 			string[] files = fileSystem.Directory.GetFiles(InstallPath);
 			foreach (string file in files)
 			{
@@ -173,17 +172,14 @@ namespace DeltaEngine.Editor.SampleBrowser
 		{
 			if (!fileSystem.Directory.Exists(directory))
 				return;
-
 			string[] directories = fileSystem.Directory.GetDirectories(directory);
 			foreach (string projectDirectory in directories)
 			{
 				if (excludedDirectories.Any(s => projectDirectory.Contains(s)))
 					continue;
-
 				GetSamplesFromDeltaEngine(projectDirectory);
 				if (!projectDirectory.Contains("Tests"))
 					continue;
-
 				string projectFile = "";
 				foreach (var file in
 					fileSystem.Directory.GetFiles(projectDirectory).Where(
@@ -194,7 +190,6 @@ namespace DeltaEngine.Editor.SampleBrowser
 				}
 				if (!fileSystem.File.Exists(projectFile))
 					continue;
-
 				string projectName = Path.GetFileNameWithoutExtension(projectFile);
 				projectName = projectName.Replace(".Tests", "");
 				GetDeltaEngineTestsProjects(projectName, projectDirectory, projectFile);

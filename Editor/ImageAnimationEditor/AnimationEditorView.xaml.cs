@@ -9,6 +9,7 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 	/// </summary>
 	public partial class AnimationEditorView : EditorPluginView
 	{
+		//ncrunch: no coverage start
 		public AnimationEditorView()
 		{
 			InitializeComponent();

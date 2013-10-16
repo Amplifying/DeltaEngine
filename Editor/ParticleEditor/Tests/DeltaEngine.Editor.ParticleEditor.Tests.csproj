@@ -52,13 +52,9 @@
       <Project>{3A3D2E3E-FCD6-40A4-8F4E-36F3D173AB41}</Project>
       <Name>DeltaEngine.TestWithOpenTK20</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Rendering3D\DeltaEngine.Rendering3D.csproj">
-      <Project>{3266F559-74EE-4A1C-B37B-2C591F73611B}</Project>
-      <Name>DeltaEngine.Rendering3D</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Rendering3D\Particles\DeltaEngine.Rendering3D.Particles.csproj">
+    <ProjectReference Include="..\..\..\Rendering2D\Particles\DeltaEngine.Rendering2D.Particles.csproj">
       <Project>{BECE691C-BAC6-434B-B1F9-4D8653922585}</Project>
-      <Name>DeltaEngine.Rendering3D.Particles</Name>
+      <Name>DeltaEngine.Rendering2D.Particles</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\DeltaEngine.Editor.Core.csproj">
       <Project>{C667C7FC-A1C7-4CBC-98C0-C97F776E4570}</Project>

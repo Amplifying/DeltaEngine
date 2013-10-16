@@ -40,12 +40,9 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -58,14 +55,6 @@
     <ProjectReference Include="..\..\DeltaEngine.csproj">
       <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
       <Name>DeltaEngine %28DeltaEngine\DeltaEngine%29</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\GameLogic\DeltaEngine.GameLogic.csproj">
-      <Project>{D21F79C7-DD85-4EED-9E3F-1A8C0FA65115}</Project>
-      <Name>DeltaEngine.GameLogic</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Graphics\DeltaEngine.Graphics.csproj">
-      <Project>{8F701B0D-48B6-45CF-85E0-286BD53328BA}</Project>
-      <Name>DeltaEngine.Graphics</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Input\DeltaEngine.Input.csproj">
       <Project>{CC65E69E-FAFD-4C2B-85EB-5E57FD3AF847}</Project>
@@ -83,25 +72,9 @@
       <Project>{4A00FD90-FF7B-4250-9CBC-B6855130090B}</Project>
       <Name>DeltaEngine.Rendering2D.Fonts</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Rendering2D\Shapes\DeltaEngine.Rendering2D.Shapes.csproj">
-      <Project>{BB73D940-CBD2-4F00-B246-2A25CA5ACD7E}</Project>
-      <Name>DeltaEngine.Rendering2D.Shapes</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Rendering3D\Cameras\DeltaEngine.Rendering3D.Cameras.csproj">
-      <Project>{F5992CBF-8E17-4EB0-B483-F1DE7993C416}</Project>
-      <Name>DeltaEngine.Rendering3D.Cameras</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Rendering3D\DeltaEngine.Rendering3D.csproj">
-      <Project>{3266F559-74EE-4A1C-B37B-2C591F73611B}</Project>
-      <Name>DeltaEngine.Rendering3D</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Rendering3D\Particles\DeltaEngine.Rendering3D.Particles.csproj">
+    <ProjectReference Include="..\..\Rendering2D\Particles\DeltaEngine.Rendering2D.Particles.csproj">
       <Project>{BECE691C-BAC6-434B-B1F9-4D8653922585}</Project>
-      <Name>DeltaEngine.Rendering3D.Particles</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Rendering3D\Shapes\DeltaEngine.Rendering3D.Shapes.csproj">
-      <Project>{C9CB5DFF-6BF8-4BC8-9148-FBC85FF5A203}</Project>
-      <Name>DeltaEngine.Rendering3D.Shapes</Name>
+      <Name>DeltaEngine.Rendering2D.Particles</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Scenes\DeltaEngine.Scenes.csproj">
       <Project>{75BB4C75-DE36-47B3-9910-10EA8E8973B7}</Project>
@@ -126,39 +99,13 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="..\Images\ContentTypes\Actor.png" />
-    <Resource Include="..\Images\ContentTypes\Camera.png" />
-    <Resource Include="..\Images\ContentTypes\Font.png" />
-    <Resource Include="..\Images\ContentTypes\Geometry.png" />
-    <Resource Include="..\Images\ContentTypes\Image.png" />
-    <Resource Include="..\Images\ContentTypes\ImageAnimation.png" />
-    <Resource Include="..\Images\ContentTypes\InputCommand.png" />
-    <Resource Include="..\Images\ContentTypes\Json.png" />
-    <Resource Include="..\Images\ContentTypes\JustStore.png" />
-    <Resource Include="..\Images\ContentTypes\Level.png" />
-    <Resource Include="..\Images\ContentTypes\Material.png" />
-    <Resource Include="..\Images\ContentTypes\Mesh.png" />
-    <Resource Include="..\Images\ContentTypes\MeshAnimation.png" />
-    <Resource Include="..\Images\ContentTypes\Model.png" />
-    <Resource Include="..\Images\ContentTypes\Music.png" />
-    <Resource Include="..\Images\ContentTypes\ParticleEmitter.png" />
-    <Resource Include="..\Images\ContentTypes\Scene.png" />
-    <Resource Include="..\Images\ContentTypes\Shader.png" />
-    <Resource Include="..\Images\ContentTypes\Sound.png" />
-    <Resource Include="..\Images\ContentTypes\SpriteSheetAnimation.png" />
-    <Resource Include="..\Images\ContentTypes\Trigger.png" />
-    <Resource Include="..\Images\ContentTypes\UIScreen.png" />
-    <Resource Include="..\Images\ContentTypes\UITheme.png" />
-    <Resource Include="..\Images\ContentTypes\Video.png" />
-    <Resource Include="..\Images\ContentTypes\Xml.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ContentIconAndNameView.xaml.cs">
       <DependentUpon>ContentIconAndNameView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ContentMetaDataCreator.cs" />
     <Compile Include="ContentIconAndName.cs" />
+    <Compile Include="DesignContentIconAndNameView.cs" />
     <Compile Include="Previewers\ContentDisplayChanger.cs" />
     <Compile Include="Previewers\FontPreviewer.cs" />
     <Compile Include="Previewers\ImageAnimationPreviewer.cs" />
@@ -167,16 +114,13 @@
       <DependentUpon>ContentManagerView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ContentManagerViewModel.cs" />
-    <Compile Include="Previewers\LevelPreview.cs" />
     <Compile Include="Previewers\MaterialPreviewer.cs" />
-    <Compile Include="Previewers\MeshPreviewer.cs" />
     <Compile Include="Previewers\MusicPreviewer.cs" />
     <Compile Include="Previewers\ParticlePreviewer.cs" />
     <Compile Include="Previewers\ContentPreview.cs" />
     <Compile Include="Previewers\SoundPreviewer.cs" />
     <Compile Include="Previewers\SpriteSheetPreviewer.cs" />
-    <Compile Include="Previewers\UIPreview.cs" />
-    <Compile Include="Previewers\VideoPreviewer.cs" />
+    <Compile Include="Previewers\UIPreviewer.cs" />
     <Compile Include="Previewers\ContentViewer.cs" />
     <Compile Include="Previewers\XmlPreviewer.cs" />
   </ItemGroup>

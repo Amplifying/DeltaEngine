@@ -116,7 +116,9 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ControlProcessor.cs" />
+    <Compile Include="UIToolExtensions.cs" />
     <Compile Include="UIEditorViewModel.cs" />
+    <Compile Include="UITool.cs" />
     <Compile Include="UIEditorView.xaml.cs">
       <DependentUpon>UIEditorView.xaml</DependentUpon>
     </Compile>

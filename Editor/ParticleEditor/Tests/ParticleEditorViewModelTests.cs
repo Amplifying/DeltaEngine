@@ -1,7 +1,6 @@
 ﻿using DeltaEngine.Datatypes;
 using DeltaEngine.Editor.Mocks;
 using DeltaEngine.Platforms;
-using DeltaEngine.Rendering3D;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.ParticleEditor.Tests
@@ -22,22 +21,6 @@ namespace DeltaEngine.Editor.ParticleEditor.Tests
 			var setPosition = new Vector3D(0.4f, 0.8f, 0.2f);
 			particleEditor.EmitterPosition = setPosition;
 			Assert.AreEqual(setPosition, particleEditor.EmitterPosition);
-		}
-
-		[Test]
-		public void Set3DBillboardMode()
-		{
-			const BillboardMode SetMode = BillboardMode.UpAxis;
-			particleEditor.SelectedBillBoardMode = SetMode.ToString();
-			Assert.AreEqual(SetMode, particleEditor.EmitterData.BillboardMode);
-			Assert.AreEqual(SetMode.ToString(), particleEditor.SelectedBillBoardMode);
-		}
-
-		[Test]
-		public void SettingBillboardModeFromStringAlwaysGivesConsistentDefault()
-		{
-			particleEditor.SelectedBillBoardMode = "nonExistentMode";
-			Assert.AreEqual(BillboardMode.CameraFacing.ToString(), particleEditor.SelectedBillBoardMode);
 		}
 	}
 }

@@ -57,10 +57,6 @@
       <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
       <Name>DeltaEngine.Rendering2D</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Rendering3D\DeltaEngine.Rendering3D.csproj">
-      <Project>{3266F559-74EE-4A1C-B37B-2C591F73611B}</Project>
-      <Name>DeltaEngine.Rendering3D</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ContentManager\DeltaEngine.Editor.ContentManager.csproj">
       <Project>{F65A7A3C-81E9-4A61-9D64-BBDC7C66345F}</Project>
       <Name>DeltaEngine.Editor.ContentManager</Name>

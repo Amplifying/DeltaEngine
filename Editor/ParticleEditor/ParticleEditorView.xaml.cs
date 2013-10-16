@@ -9,6 +9,7 @@ namespace DeltaEngine.Editor.ParticleEditor
 	/// </summary>
 	public partial class ParticleEditorView : EditorPluginView
 	{
+		//ncrunch: no coverage start, relating arguments only
 		public ParticleEditorView()
 		{
 			InitializeComponent();
@@ -49,16 +50,6 @@ namespace DeltaEngine.Editor.ParticleEditor
 		private void OpenMaterialEditor(object sender, RoutedEventArgs e)
 		{
 			service.StartPlugin(typeof(MaterialEditorView));
-		}
-
-		private void CreateMaterialOnClick(object sender, RoutedEventArgs e)
-		{
-			service.StartPlugin(typeof(MaterialEditor.MaterialEditorView));
-		}
-
-		private void ColorGraphOnClick(object sender, RoutedEventArgs e)
-		{
-			viewModel.SwitchGradientGraph();
 		}
 
 		private void Delete(object sender, RoutedEventArgs e)

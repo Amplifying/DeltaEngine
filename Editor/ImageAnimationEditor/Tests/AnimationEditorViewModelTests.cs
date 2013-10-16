@@ -25,6 +25,8 @@ namespace DeltaEngine.Editor.ImageAnimationEditor.Tests
 			Assert.AreEqual("Test1", editor.ImageList[0]);
 			editor.MoveImageUp(0);
 			editor.MoveImageDown(1);
+			editor.RefreshData();
+			Assert.AreEqual(1, editor.SelectedIndex);
 		}
 
 		[Test]
@@ -52,6 +54,20 @@ namespace DeltaEngine.Editor.ImageAnimationEditor.Tests
 			editor.SaveAnimation("");
 			editor.AnimationName = "TestAnimation";
 			editor.SaveAnimation("");
+		}
+
+		[Test]
+		public void LoadAnimation()
+		{
+			editor.AnimationName = "ImageAnimation";
+			Assert.AreEqual(3, editor.ImageList.Count);
+		}
+
+		[Test]
+		public void LoadSpriteSheet()
+		{
+			editor.AnimationName = "SpriteSheet";
+			Assert.AreEqual(1, editor.ImageList.Count);
 		}
 	}
 }

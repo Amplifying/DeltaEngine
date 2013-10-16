@@ -9,6 +9,7 @@ namespace DeltaEngine.Editor.ContentManager
 	/// </summary>
 	public partial class ContentIconAndNameView
 	{
+		//ncrunch: no coverage start
 		public ContentIconAndNameView()
 		{
 			InitializeComponent();
@@ -16,9 +17,15 @@ namespace DeltaEngine.Editor.ContentManager
 
 		private void ClickOnElement(object sender, MouseButtonEventArgs e)
 		{
-			if (!Keyboard.IsKeyDown(Key.LeftCtrl))
+			if (Keyboard.IsKeyDown(Key.LeftCtrl))
+				Messenger.Default.Send(ContentName.Text, "AddToSelection");
+			else if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+				Messenger.Default.Send(ContentName.Text, "AddMultipleContentToSelection");
+			else
+			{
 				Messenger.Default.Send("ClearList", "ClearList");
-			Messenger.Default.Send(ContentName.Text, "AddToSelection");
+				Messenger.Default.Send(ContentName.Text, "AddToSelection");
+			}
 		}
 	}
 }

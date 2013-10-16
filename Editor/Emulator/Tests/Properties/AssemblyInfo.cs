@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("DeltaEngine.Editor.Emulator.Tests")]
@@ -7,7 +6,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCompany("Delta Engine")]
 [assembly: AssemblyCopyright("Copyright � Delta Engine 2013")]
 [assembly: ComVisible(false)]
-[assembly: CLSCompliant(true)]
 [assembly: Guid("839a210c-e2ec-4aba-a4e7-73a2207d4775")]
-[assembly: AssemblyVersion("0.9.9.5")]
-[assembly: AssemblyFileVersion("0.9.9.5")]
+[assembly: AssemblyVersion("0.9.9.6")]
+[assembly: AssemblyFileVersion("0.9.9.6")]

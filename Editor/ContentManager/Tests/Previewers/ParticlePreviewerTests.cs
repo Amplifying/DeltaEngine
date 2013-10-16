@@ -65,5 +65,14 @@ namespace DeltaEngine.Editor.ContentManager.Tests.Previewers
 			Assert.AreEqual(new Vector3D(0.5f, 0.5f, 0),
 				particlePreviewer.currentDisplayParticle2D.Position);
 		}
+
+		[Test]
+		public void CreateDifferent3DParticles()
+		{
+			particlePreviewer.PreviewContent("PointEmitter3D");
+			particlePreviewer.PreviewContent("LineEmitter3D");
+			particlePreviewer.PreviewContent("BoxEmitter3D");
+			particlePreviewer.PreviewContent("SphericalEmitter3D");
+		}
 	}
 }

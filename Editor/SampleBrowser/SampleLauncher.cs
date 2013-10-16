@@ -15,6 +15,7 @@ namespace DeltaEngine.Editor.SampleBrowser
 	{
 		public SampleLauncher()
 		{
+			//TODO: this needs to be fixed again:
 			//LoadOpenTKResolverAssembly();
 		}
 
@@ -99,7 +100,7 @@ namespace DeltaEngine.Editor.SampleBrowser
 
 		private void StartTest(string assembly, string entryClass, string entryMethod)
 		{
-			using (var starter = new AssemblyStarter(assembly))
+			using (var starter = new AssemblyStarter(assembly, false))
 				starter.Start(entryClass, entryMethod, new object[] { resolver });
 		}
 
@@ -107,7 +108,6 @@ namespace DeltaEngine.Editor.SampleBrowser
 		{
 			if (sample.Category == SampleCategory.Test)
 				return File.Exists(sample.AssemblyFilePath) && resolver != null;
-
 			return File.Exists(sample.AssemblyFilePath);
 		}
 	}

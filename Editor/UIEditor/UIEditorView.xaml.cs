@@ -30,7 +30,7 @@ namespace DeltaEngine.Editor.UIEditor
 
 		public string ShortName
 		{
-			get { return "UI Screens"; }
+			get { return "UI Scenes"; }
 		}
 
 		public string Icon

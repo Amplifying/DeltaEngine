@@ -4,7 +4,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:spriteAnimationEditor="clr-namespace:DeltaEngine.Editor.ImageAnimationEditor"
+	xmlns:converters="clr-namespace:DeltaEngine.Editor.Converters;assembly=DeltaEngine.Editor.Converters"
 	mc:Ignorable="d"
 	d:DesignHeight="600" d:DesignWidth="300">
 
@@ -59,13 +59,13 @@
 			<ColumnDefinition Width="127" />
 			<ColumnDefinition Width="16" />
 			<ColumnDefinition />
-			<ColumnDefinition Width="30"/>
+			<ColumnDefinition Width="30" />
 			<ColumnDefinition Width="12" />
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="12" />
-			<RowDefinition Height="30"/>
-			<RowDefinition Height="12"/>
+			<RowDefinition Height="30" />
+			<RowDefinition Height="12" />
 			<RowDefinition Height="30" />
 			<RowDefinition Height="12" />
 			<RowDefinition Height="144" />
@@ -78,13 +78,13 @@
 			<RowDefinition Height="12" />
 			<RowDefinition Height="30" />
 			<RowDefinition Height="12" />
-			<RowDefinition Height="40"/>
-			<RowDefinition Height="12"/>
+			<RowDefinition Height="40" />
+			<RowDefinition Height="12" />
 			<RowDefinition Height="40" />
 			<RowDefinition Height="9" />
 		</Grid.RowDefinitions>
-		<ComboBox Grid.Column="3" Grid.Row="3" IsEditable="True" Style="{StaticResource DeltaComboBox}" 
-							ItemsSource="{Binding Path=AnimationList}" Text="{Binding Path=AnimationName}" Grid.ColumnSpan="2"/>
+		<ComboBox Grid.Column="3" Grid.Row="3" IsEditable="True" Style="{StaticResource DeltaComboBox}"
+		          ItemsSource="{Binding Path=AnimationList}" Text="{Binding Path=AnimationName}" Grid.ColumnSpan="2" />
 		<ListBox Name="ImageViewList" Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="4" ItemsSource="{Binding Path=ImageList}"
 		         SelectedIndex="{Binding Path=SelectedIndex}" Style="{StaticResource DeltaListBox}">
 			<ListBox.ContextMenu>
@@ -93,21 +93,24 @@
 				</ContextMenu>
 			</ListBox.ContextMenu>
 		</ListBox>
-		<ComboBox Grid.Column="1" Grid.Row="7" Grid.ColumnSpan="4" ItemsSource="{Binding Path=LoadedImageList}" Style="{StaticResource DeltaComboBox}"
+		<ComboBox Grid.Column="1" Grid.Row="7" Grid.ColumnSpan="4" ItemsSource="{Binding Path=LoadedImageList}"
+		          Style="{StaticResource DeltaComboBox}"
 		          SelectedItem="{Binding Path=SelectedImageToAdd}" />
-		<Button Grid.Column="3" Grid.Row="9" Content="Up ↑" Click="MoveImageUp" Style="{StaticResource DeltaButton}" HorizontalAlignment="Right" Width="60" Margin="0,0,38,0" Foreground="White" >
+		<Button Grid.Column="3" Grid.Row="9" Content="Up ↑" Click="MoveImageUp" Style="{StaticResource DeltaButton}"
+		        HorizontalAlignment="Right" Width="60" Margin="0,0,38,0" Foreground="White">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-					<GradientStop Color="#FFA0A0A0" Offset="0"/>
-					<GradientStop Color="#FF8B8B8B" Offset="1"/>
+					<GradientStop Color="#FFA0A0A0" Offset="0" />
+					<GradientStop Color="#FF8B8B8B" Offset="1" />
 				</LinearGradientBrush>
 			</Button.Background>
 		</Button>
-		<Button Grid.Column="3" Grid.Row="9" Content="Down ↓" Click="MoveImageDown" Style="{StaticResource DeltaButton}" HorizontalAlignment="Right" Width="60" Foreground="White" Grid.ColumnSpan="2" >
+		<Button Grid.Column="3" Grid.Row="9" Content="Down ↓" Click="MoveImageDown" Style="{StaticResource DeltaButton}"
+		        HorizontalAlignment="Right" Width="60" Foreground="White" Grid.ColumnSpan="2">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-					<GradientStop Color="#FFA0A0A0" Offset="0"/>
-					<GradientStop Color="#FF8B8B8B" Offset="1"/>
+					<GradientStop Color="#FFA0A0A0" Offset="0" />
+					<GradientStop Color="#FF8B8B8B" Offset="1" />
 				</LinearGradientBrush>
 			</Button.Background>
 		</Button>
@@ -116,30 +119,33 @@
 			<TextBox.Text>
 				<Binding Path="SubImageSize" UpdateSourceTrigger="PropertyChanged">
 					<Binding.Converter>
-						<spriteAnimationEditor:StringToSizeConverter />
+						<converters:SizeStringConverter />
 					</Binding.Converter>
 				</Binding>
 			</TextBox.Text>
 		</TextBox>
 		<Label Content="Duration" Grid.Column="1" Grid.Row="13" Style="{StaticResource DeltaLabel}" />
-		<TextBox Grid.Column="3" Grid.Row="13" Text="{Binding Path=Duration}" Style="{StaticResource DeltaTextBox}" Grid.ColumnSpan="2" />
-		<Button Grid.Column="3" Grid.Row="15" Content="Save" Click="SaveAnimation" HorizontalAlignment="Right" Width="100" Style="{StaticResource DeltaButton}" Grid.ColumnSpan="2" FontSize="22" FontWeight="Bold" >
+		<TextBox Grid.Column="3" Grid.Row="13" Text="{Binding Path=Duration}" Style="{StaticResource DeltaTextBox}"
+		         Grid.ColumnSpan="2" />
+		<Button Grid.Column="3" Grid.Row="15" Content="Save" Click="SaveAnimation" HorizontalAlignment="Right" Width="100"
+		        Style="{StaticResource DeltaButton}" Grid.ColumnSpan="2" FontSize="22" FontWeight="Bold">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-					<GradientStop Color="#FFA0A0A0" Offset="0"/>
-					<GradientStop Color="#FF8B8B8B" Offset="1"/>
+					<GradientStop Color="#FFA0A0A0" Offset="0" />
+					<GradientStop Color="#FF8B8B8B" Offset="1" />
 				</LinearGradientBrush>
 			</Button.Background>
 		</Button>
-		<Label Content="Name" Grid.Column="1" Grid.Row="3" Style="{StaticResource DeltaLabel}"/>
+		<Label Content="Name" Grid.Column="1" Grid.Row="3" Style="{StaticResource DeltaLabel}" />
 		<Button Content="?" Grid.Column="4" Grid.Row="1" Style="{StaticResource DeltaButton}" FontWeight="Bold" FontSize="20">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-					<GradientStop Color="#FFA0A0A0" Offset="0"/>
-					<GradientStop Color="#FF8B8B8B" Offset="1"/>
+					<GradientStop Color="#FFA0A0A0" Offset="0" />
+					<GradientStop Color="#FF8B8B8B" Offset="1" />
 				</LinearGradientBrush>
 			</Button.Background>
 		</Button>
-		<Button Content="Delete" Grid.Column="1" Margin="0,11,0,0" Grid.Row="15" Style="{StaticResource DeltaButton}" FontWeight="Bold" HorizontalAlignment="Left" Width="75"/>
+		<Button Content="Delete" Grid.Column="1" Margin="0,11,0,0" Grid.Row="15" Style="{StaticResource DeltaButton}"
+		        FontWeight="Bold" HorizontalAlignment="Left" Width="75" />
 	</Grid>
 </UserControl>

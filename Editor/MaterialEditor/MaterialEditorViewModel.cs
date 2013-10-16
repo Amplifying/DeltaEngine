@@ -10,7 +10,6 @@ using DeltaEngine.Editor.Core;
 using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
 using DeltaEngine.Rendering2D;
-using DeltaEngine.Rendering3D;
 using DeltaEngine.ScreenSpaces;
 using GalaSoft.MvvmLight;
 
@@ -188,16 +187,7 @@ namespace DeltaEngine.Editor.MaterialEditor
 			NewMaterial.DiffuseMap.BlendMode =
 				(BlendMode)Enum.Parse(typeof(BlendMode), SelectedBlendMode);
 			var shaderWithFormat = NewMaterial.Shader as ShaderWithFormat;
-			if (shaderWithFormat.Format.Is3D)
-				Draw3DExample(shaderWithFormat);
-			else
-				Draw2DExample(shaderWithFormat);
-		}
-
-		private void Draw3DExample(ShaderWithFormat shader)
-		{
-			if (shader.Format.HasUV)
-				new Billboard(Vector3D.Zero, Size.One, NewMaterial);
+			Draw2DExample(shaderWithFormat);
 		}
 
 		private void Draw2DExample(ShaderWithFormat shader)
@@ -292,11 +282,13 @@ namespace DeltaEngine.Editor.MaterialEditor
 			service.ContentUpdated += SendSuccessMessageToLogger;
 		}
 
+		//ncrunch: no coverage start 
 		private void SendSuccessMessageToLogger(ContentType type, string content)
 		{
 			Logger.Info("The saving of the material called " + MaterialName + " was a succes.");
 			service.ContentUpdated -= SendSuccessMessageToLogger;
 		}
+		//ncrunch: no coverage end
 
 		public string SelectedColor
 		{

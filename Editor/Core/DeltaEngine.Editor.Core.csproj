@@ -65,6 +65,7 @@
     </Compile>
     <Compile Include="Service.cs" />
     <Compile Include="SolutionFileLoader.cs" />
+    <Compile Include="Tool.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

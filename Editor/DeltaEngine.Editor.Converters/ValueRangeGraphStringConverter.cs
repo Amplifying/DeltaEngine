@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Windows.Data;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Extensions;
-using DeltaEngine.Rendering3D.Particles;
+using DeltaEngine.Rendering2D.Particles;
 
 namespace DeltaEngine.Editor.Converters
 {

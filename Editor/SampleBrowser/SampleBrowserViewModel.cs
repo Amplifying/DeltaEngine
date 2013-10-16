@@ -180,8 +180,8 @@ namespace DeltaEngine.Editor.SampleBrowser
 
 		private void SetFrameworkToDefault()
 		{
-			FrameworksAvailable = new[] { DeltaEngineFramework.Default };
-			SelectedFramework = DeltaEngineFramework.Default;
+			FrameworksAvailable = new[] { DeltaEngineFramework.None };
+			SelectedFramework = DeltaEngineFramework.None;
 			RaisePropertyChanged("FrameworksAvailable");
 			RaisePropertyChanged("SelectedFramework");
 		}

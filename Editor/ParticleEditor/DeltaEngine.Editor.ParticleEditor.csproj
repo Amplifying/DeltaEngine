@@ -33,6 +33,9 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DynamicDataDisplay">
+      <HintPath>..\packages\DynamicDataDisplay.0.3.4704\lib\NET40\DynamicDataDisplay.dll</HintPath>
+    </Reference>
     <Reference Include="GalaSoft.MvvmLight.WPF4">
       <HintPath>..\packages\MvvmLightLibs.4.1.27.0\lib\net40\GalaSoft.MvvmLight.WPF4.dll</HintPath>
     </Reference>
@@ -65,25 +68,9 @@
       <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
       <Name>DeltaEngine.Rendering2D</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Rendering2D\Graphs\DeltaEngine.Rendering2D.Graphs.csproj">
-      <Project>{BFD23A13-90D3-46FC-8EAB-78664F4FB37D}</Project>
-      <Name>DeltaEngine.Rendering2D.Graphs</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Rendering3D\Cameras\DeltaEngine.Rendering3D.Cameras.csproj">
-      <Project>{F5992CBF-8E17-4EB0-B483-F1DE7993C416}</Project>
-      <Name>DeltaEngine.Rendering3D.Cameras</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Rendering3D\DeltaEngine.Rendering3D.csproj">
-      <Project>{3266F559-74EE-4A1C-B37B-2C591F73611B}</Project>
-      <Name>DeltaEngine.Rendering3D</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Rendering3D\Particles\DeltaEngine.Rendering3D.Particles.csproj">
+    <ProjectReference Include="..\..\Rendering2D\Particles\DeltaEngine.Rendering2D.Particles.csproj">
       <Project>{BECE691C-BAC6-434B-B1F9-4D8653922585}</Project>
-      <Name>DeltaEngine.Rendering3D.Particles</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Rendering3D\Shapes\DeltaEngine.Rendering3D.Shapes.csproj">
-      <Project>{C9CB5DFF-6BF8-4BC8-9148-FBC85FF5A203}</Project>
-      <Name>DeltaEngine.Rendering3D.Shapes</Name>
+      <Name>DeltaEngine.Rendering2D.Particles</Name>
     </ProjectReference>
     <ProjectReference Include="..\ContentManager\DeltaEngine.Editor.ContentManager.csproj">
       <Project>{F65A7A3C-81E9-4A61-9D64-BBDC7C66345F}</Project>
@@ -106,6 +93,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="GenericGraphGui.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GraphControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ParticleEditorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -113,6 +108,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="GenericGraphGui.xaml.cs">
+      <DependentUpon>GenericGraphGui.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="GraphControl.xaml.cs">
+      <DependentUpon>GraphControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ParticleEditorView.xaml.cs">
       <DependentUpon>ParticleEditorView.xaml</DependentUpon>
     </Compile>

@@ -15,13 +15,14 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 			new FontText(verdana, "Play/Stop", Rectangle.One);
 			music = ContentLoader.Load<Music>(contentName);
 			music.Play(1);
-			new Command(() =>
+			new Command(() => //ncrunch: no coverage start
 			{
 				if (music.IsPlaying())
 					music.Stop();
 				else
 					music.Play(1);
 			}).Add(new MouseButtonTrigger());
+			//ncrunch: no coverage end
 		}
 
 		private Font verdana;

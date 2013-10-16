@@ -397,7 +397,7 @@ namespace DeltaEngine.Editor.UIEditor
 			get { return selectedSpriteNameInList; }
 			set
 			{
-				if (value == "" || SpriteListIndex < 0)
+				if (string.IsNullOrEmpty(value) || SpriteListIndex < 0)
 					return;
 				selectedSpriteNameInList = value;
 				SelectedEntity2D = scene.Controls[SpriteListIndex];

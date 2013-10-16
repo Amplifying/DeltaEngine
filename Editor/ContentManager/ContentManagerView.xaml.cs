@@ -11,6 +11,7 @@ namespace DeltaEngine.Editor.ContentManager
 	/// </summary>
 	public partial class ContentManagerView : EditorPluginView
 	{
+		//ncrunch: no coverage start
 		public ContentManagerView()
 		{
 			InitializeComponent();

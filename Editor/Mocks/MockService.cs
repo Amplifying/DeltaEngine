@@ -58,6 +58,12 @@ namespace DeltaEngine.Editor.Mocks
 		{
 			if ("TestUser" == content)
 				return null;
+			if (content.Contains("ImageAnimation"))
+				return ContentType.ImageAnimation;
+			if (content.Contains("SpriteSheet"))
+				return ContentType.SpriteSheetAnimation;
+			if (content.Contains("Mesh"))
+				return ContentType.Mesh;
 			return ContentType.Image;
 		}
 

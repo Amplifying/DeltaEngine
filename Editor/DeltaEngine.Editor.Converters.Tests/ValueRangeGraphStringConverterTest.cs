@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Rendering3D.Particles;
+using DeltaEngine.Rendering2D.Particles;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.Converters.Tests

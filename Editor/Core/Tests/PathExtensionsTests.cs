@@ -7,15 +7,15 @@ namespace DeltaEngine.Editor.Core.Tests
 	public class PathExtensionsTests
 	{
 		[Test]
-		public void DeltaEnginePathEnvironmentVariableMustBeAnExistingDirectory()
-		{
-			Assert.IsTrue(Directory.Exists(PathExtensions.GetDeltaEngineInstalledDirectory()));
-		}
-
-		[Test]
 		public void DeltaEnginePathEnvironmentVariableMustBeSet()
 		{
 			Assert.IsTrue(PathExtensions.IsDeltaEnginePathEnvironmentVariableAvailable());
+		}
+
+		[Test]
+		public void DeltaEnginePathEnvironmentVariableMustBeAnExistingDirectory()
+		{
+			Assert.IsTrue(Directory.Exists(PathExtensions.GetDeltaEngineInstalledDirectory()));
 		}
 
 		[Test]
@@ -53,6 +53,7 @@ namespace DeltaEngine.Editor.Core.Tests
 		[Test]
 		public void GetInstalledPathIfEnvironmentVariableIsSetAndGetSourceCodePathIfItIsNotSet()
 		{
+			MakeSureThatDeltaEngineEnvironmentVariableIsSet();
 			Assert.AreEqual(PathExtensions.GetDeltaEngineInstalledDirectory(),
 				PathExtensions.GetInstalledOrFallbackEnginePath());
 			DeleteAndAssertDeltaEngineEnvironmentVariable();
@@ -60,11 +61,31 @@ namespace DeltaEngine.Editor.Core.Tests
 				PathExtensions.GetInstalledOrFallbackEnginePath());
 		}
 
+		private static void MakeSureThatDeltaEngineEnvironmentVariableIsSet()
+		{
+			if (!PathExtensions.IsDeltaEnginePathEnvironmentVariableAvailable())
+				SetAndAssertDeltaEngineEnvironmentVariable();
+		}
+
+		private static void SetAndAssertDeltaEngineEnvironmentVariable()
+		{
+			Assert.IsFalse(PathExtensions.IsDeltaEnginePathEnvironmentVariableAvailable());
+			Environment.SetEnvironmentVariable(PathExtensions.EnginePathEnvironmentVariableName,
+				PathExtensions.GetFallbackEngineSourceCodeDirectory());
+			Assert.IsTrue(PathExtensions.IsDeltaEnginePathEnvironmentVariableAvailable());
+		}
+
 		private static void DeleteAndAssertDeltaEngineEnvironmentVariable()
 		{
 			Assert.IsTrue(PathExtensions.IsDeltaEnginePathEnvironmentVariableAvailable());
 			Environment.SetEnvironmentVariable(PathExtensions.EnginePathEnvironmentVariableName, "");
 			Assert.IsFalse(PathExtensions.IsDeltaEnginePathEnvironmentVariableAvailable());
+		}
+
+		[Test]
+		public void EditorSourceCodeDirectoryHasToBeAvailable()
+		{
+			Assert.IsTrue(Directory.Exists(PathExtensions.GetEditorSourceCodeDirectory()));
 		}
 
 		//ncrunch: no coverage start

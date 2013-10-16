@@ -144,6 +144,18 @@ namespace DeltaEngine.Editor.ContentManager
 			return contentMetaData;
 		}
 
+		public ContentMetaData CreateParticleSystemData(string name, string[] emitterDataNames)
+		{
+			if (emitterDataNames == null || emitterDataNames.Length == 0)
+				return null;
+			var contentMetaData = new ContentMetaData { Name = name, Type = ContentType.ParticleSystem};
+			var rowOfNames = emitterDataNames[0];
+			for (int i = 1; i < emitterDataNames.Length; i++)
+				rowOfNames += ", " + emitterDataNames[i];
+			contentMetaData.Values.Add("EmitterNames", rowOfNames);
+			return contentMetaData;
+		}
+
 		public ContentMetaData CreateMetaDataFromUI(string uiName, byte[] byteArray)
 		{
 			var contentMetaData = new ContentMetaData();

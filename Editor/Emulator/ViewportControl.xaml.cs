@@ -1,14 +1,9 @@
-﻿using System.ComponentModel;
-using System.Drawing;
-using System.IO;
-using System.Windows.Controls;
+﻿using System;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using DeltaEngine.Editor.Core;
 using GalaSoft.MvvmLight.Messaging;
-using Image = System.Drawing.Image;
-using MenuItem = System.Windows.Forms.MenuItem;
-using Panel = System.Windows.Forms.Panel;
 
 namespace DeltaEngine.Editor.Emulator
 {
@@ -22,22 +17,25 @@ namespace DeltaEngine.Editor.Emulator
 			InitializeComponent();
 		}
 
-		public void Init(Service service) {}
+		public void Init(Service service)
+		{
+			DataContext = new ViewportControlViewModel();
+			//ShowToolPane();
+		}
+
+		private void ShowToolPane()
+		{
+			ToolPaneGrid.Visibility = Visibility.Visible;
+			ViewportHost.Margin = new Thickness(0, 0, 0, 0);
+			Graph.Margin = new Thickness(140, 0, 0, 0);
+		}
 
 		public void ProjectChanged() {}
 
 		public void ApplyEmulator()
 		{
 			SetupScreen();
-			SetupDeviceFrame();
-			SetupEmulator();
 			SetupHost();
-			/*TODO
-			LoadDeviceInfoList();
-			SetupMenu();
-			LoadStateFromRegistry();
-		 */
-			Update();
 		}
 
 		private void SetupScreen()
@@ -48,33 +46,10 @@ namespace DeltaEngine.Editor.Emulator
 
 		public Panel Screen { get; private set; }
 
-		private void SetupDeviceFrame()
-		{
-			deviceImage = new PictureBox();
-			deviceImage.BackColor = Color.Transparent;
-			deviceImage.BackgroundImageLayout = ImageLayout.Center;
-			deviceImage.Location = new Point(0, 0);
-			deviceImage.SizeMode = PictureBoxSizeMode.StretchImage;
-		}
-
-		private PictureBox deviceImage;
-
-		private void SetupEmulator()
-		{
-			outerPanelForEmulator = new Panel();
-			outerPanelForEmulator.Controls.Add(Screen);
-			outerPanelForEmulator.Controls.Add(deviceImage);
-			outerPanelForEmulator.Dock = DockStyle.Fill;
-			outerPanelForEmulator.Controls.Add(deviceImage);
-		}
-
-		private Panel outerPanelForEmulator;
-
 		private void SetupHost()
 		{
-			ViewportHost.Child = outerPanelForEmulator;
-			((ISupportInitialize)(deviceImage)).EndInit();
-			outerPanelForEmulator.ResumeLayout(false);
+			ViewportHost.Child = Screen;
+			Screen.ResumeLayout(false);
 		}
 
 		private void DragImage(object sender, System.Windows.Input.MouseEventArgs e)
@@ -85,12 +60,20 @@ namespace DeltaEngine.Editor.Emulator
 				isDragging = true;
 				Mouse.OverrideCursor = System.Windows.Input.Cursors.Hand;
 			}
-
 			if (e.LeftButton != MouseButtonState.Pressed)
 			{
 				Messenger.Default.Send(false, "SetDraggingImage");
 				isDragging = false;
 				Mouse.OverrideCursor = System.Windows.Input.Cursors.Arrow;
+			}
+		}
+
+		private void Drag(object sender, System.Windows.Input.MouseEventArgs e)
+		{
+			if (e.LeftButton == MouseButtonState.Pressed && !isDragging)
+			{
+				var toolboxEntry = sender as ToolboxEntry;
+				Console.WriteLine(toolboxEntry.Icon);
 			}
 		}
 
@@ -104,7 +87,6 @@ namespace DeltaEngine.Editor.Emulator
 				isDragging = true;
 				Mouse.OverrideCursor = System.Windows.Input.Cursors.Hand;
 			}
-
 			if (e.LeftButton != MouseButtonState.Pressed)
 			{
 				Messenger.Default.Send(false, "SetDraggingButton");
@@ -121,7 +103,6 @@ namespace DeltaEngine.Editor.Emulator
 				isDragging = true;
 				Mouse.OverrideCursor = System.Windows.Input.Cursors.Hand;
 			}
-
 			if (e.LeftButton != MouseButtonState.Pressed)
 			{
 				Messenger.Default.Send(false, "SetDraggingLabel");
@@ -129,124 +110,6 @@ namespace DeltaEngine.Editor.Emulator
 				Mouse.OverrideCursor = System.Windows.Input.Cursors.Arrow;
 			}
 		}
-
-		private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e) { }
-
-		private void Update()
-		{
-			if (!menuOrientation.Visible)
-				SelectOrientation(0);
-
-			if (!menuScale.Visible)
-				SelectScale(0);
-
-			//if (devices[selectedDevice].Name != "None")
-			//	SetEmulatorImageAndSize();
-			SetScreenLocationAndSize();
-		}
-
-		//TODO: create property and inject from EmulatorControl
-		private MenuItem menuDevice = new MenuItem();
-		private MenuItem menuOrientation = new MenuItem();
-		private MenuItem menuScale = new MenuItem();
-
-		private void SetEmulatorImageAndSize()
-		{
-			deviceImage.Image = Image.FromStream(GetImageFilestream(selectedDevice));
-			if (orientationPortrait)
-				deviceImage.Size = new Size((int)(deviceImage.Image.Size.Width * scale),
-					(int)(deviceImage.Image.Size.Height * scale));
-			else
-				deviceImage.Size = new Size((int)(deviceImage.Image.Size.Height * scale),
-					(int)(deviceImage.Image.Size.Width * scale));
-			MinWidth = deviceImage.Size.Width;
-			MinHeight = deviceImage.Size.Height;
-		}
-
-		private Stream GetImageFilestream(int deviceIndex)
-		{
-			var imageFilename = "Images.Emulators." + devices[deviceIndex].ImageFile + ".png";
-			return EmbeddedResourcesLoader.GetEmbeddedResourceStream(imageFilename);
-		}
-
-		private void SetScreenLocationAndSize()
-		{
-			if (orientationPortrait)
-				SetPortraitScreenLocationAndSize();
-			else
-				SetLandscapeScreenLocationAndSize();
-		}
-
-		private void SetPortraitScreenLocationAndSize()
-		{
-			Screen.Location = new Point((int)(devices[selectedDevice].ScreenPoint.X * scale),
-				(int)(devices[selectedDevice].ScreenPoint.Y * scale));
-			Screen.Size = new Size((int)(devices[selectedDevice].ScreenSize.Width * scale),
-				(int)(devices[selectedDevice].ScreenSize.Height * scale));
-		}
-
-		private void SetLandscapeScreenLocationAndSize()
-		{
-			deviceImage.Image.RotateFlip(RotateFlipType.Rotate270FlipNone);
-			Screen.Location = new Point((int)(devices[selectedDevice].ScreenPoint.Y * scale),
-				(int)(devices[selectedDevice].ScreenPoint.X * scale));
-			Screen.Size = new Size((int)(devices[selectedDevice].ScreenSize.Height * scale),
-				(int)(devices[selectedDevice].ScreenSize.Width * scale));
-		}
-
-		private void SelectScale(int scaleIndex)
-		{
-			string scalePercentage = menuScaleScales[scaleIndex].Text;
-			scalePercentage = scalePercentage.Substring(0, scalePercentage.Length - 1);
-			scale = int.Parse(scalePercentage) * 0.01f;
-			for (int i = 0; i < NumberOfScales; i++)
-				menuScaleScales[i].Checked = false;
-			menuScaleScales[scaleIndex].Checked = true;
-		}
-
-		private MenuItem[] menuScaleScales = new MenuItem[0];
-
-		private void SelectOrientation(int orientationIndex)
-		{
-			orientationPortrait = orientationIndex == 0;
-			menuOrientationPortrait.Checked = orientationPortrait;
-			menuOrientationLandscape.Checked = !orientationPortrait;
-		}
-
-		private Device[] devices = new Device[]
-		{
-			new Device()
-			{
-				Type = "Default",
-				Name = "None",
-				ScreenSize = new Size(1366, 768),
-				CanScale = true,
-				DefaultScaleIndex = 2
-			}
-		};
-		private int selectedDevice = 0;
-		private MenuItem menuOrientationPortrait = new MenuItem();
-		private MenuItem menuOrientationLandscape = new MenuItem();
-
-		private bool orientationPortrait = true;
-		private float scale = 1.0f;
-
-		private const int NumberOfScales = 3;
-
-		/*
-
-		private void SelectDevice(int deviceIndex)
-		{
-			selectedDevice = deviceIndex;
-			for (int i = 0; i < devices.Length; i++)
-				menuDeviceDevices[i].Checked = false;
-			menuDeviceDevices[deviceIndex].Checked = true;
-			menuOrientation.Visible = devices[deviceIndex].CanRotate;
-			menuScale.Visible = devices[deviceIndex].CanScale;
-			Screen.Dock = selectedDevice == 0 ? DockStyle.Fill : DockStyle.None;
-		}
-
-		 */
 
 		public string ShortName
 		{
