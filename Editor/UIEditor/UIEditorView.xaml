@@ -151,7 +151,7 @@
 			</Grid.RowDefinitions>
 			<Button Content="?" Grid.Column="9" Grid.Row="1" Style="{StaticResource DeltaButton}" ToolTip="Help"
 			        FontWeight="Bold" />
-			<Label Content="‡‡ Grid Properties" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="9" FontFamily="Arial"
+			<Label Content="Grid Properties" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="9" FontFamily="Arial"
 			       Background="#FFACACAC" FontSize="18" Foreground="White" FontWeight="Bold" />
 			<Label Content="Toolbox" Grid.Column="1" Grid.Row="9" Grid.ColumnSpan="9" FontFamily="Arial"
 			       Background="#FFACACAC" FontSize="18" Foreground="White" FontWeight="Bold" />
@@ -181,7 +181,13 @@
 			       Background="#FFACACAC" FontSize="18" Foreground="White" FontWeight="Bold" Margin="0,0,0,10" Grid.RowSpan="2" />
 			<ListBox Grid.ColumnSpan="9" Grid.Row="19" Margin="1,0,0,0" Grid.Column="1"
 			         ItemsSource="{Binding Path=UIImagesInList}" SelectedItem="{Binding Path=SelectedSpriteNameInList}"
-			         SelectedIndex="{Binding Path=SpriteListIndex}" SelectionChanged="ListBox_SelectionChanged" />
+			         SelectedIndex="{Binding Path=SpriteListIndex}">
+				<ListBox.ContextMenu>
+					<ContextMenu>
+						<MenuItem Header="Delete" Click="DeleteSelectedItem" />
+					</ContextMenu>
+				</ListBox.ContextMenu>
+			</ListBox>
 			<Label Content="Alignment" Grid.Column="2" Grid.Row="29" Grid.ColumnSpan="8" FontFamily="Arial"
 			       Background="#FFC9C8C8" FontSize="18" Foreground="White" />
 			<Label Content="Horizontal" Grid.Column="2" Grid.Row="31" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}"
@@ -284,7 +290,7 @@
 					</LinearGradientBrush>
 				</Button.Background>
 			</Button>
-			<Button Grid.ColumnSpan="3" Content="Delete" Grid.Column="2" Margin="0,0,22,0" Grid.Row="64"
+			<Button Grid.ColumnSpan="3" Content="Delete Scene" Grid.Column="2" Grid.Row="64"
 			        Style="{StaticResource DeltaButton}" FontWeight="Bold">
 				<Button.Background>
 					<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">

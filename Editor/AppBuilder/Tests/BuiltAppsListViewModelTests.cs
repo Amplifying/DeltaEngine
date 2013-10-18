@@ -26,7 +26,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		public void AddValidBuiltApp()
 		{
 			int oldNumberOfBuiltApps = appListViewModel.NumberOfBuiltApps;
-			appListViewModel.AddApp(AppBuilderTestingExtensions.GetMockAppInfo("TestApp",
+			appListViewModel.AddApp(AppBuilderTestExtensions.GetMockAppInfo("TestApp",
 				PlatformName.Windows));
 			Assert.AreEqual(oldNumberOfBuiltApps + 1, appListViewModel.NumberOfBuiltApps);
 		}
@@ -44,7 +44,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		{
 			string folder = appListViewModel.AppStorageDirectory;
 			appListViewModel.AddApp(
-				AppBuilderTestingExtensions.GetMockAppInfo("TestApp", PlatformName.Windows, folder),
+				AppBuilderTestExtensions.GetMockAppInfo("TestApp", PlatformName.Windows, folder),
 				new byte[] { 1 });
 		}
 

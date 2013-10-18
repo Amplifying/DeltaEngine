@@ -8,9 +8,9 @@ namespace DeltaEngine.Editor.AppBuilder
 		public WindowsAppInfo(string fullAppDataFilePath, Guid appGuid, DateTime buildDate)
 			: base(fullAppDataFilePath, appGuid, PlatformName.Windows, buildDate) { }
 
-		//protected override Device[] GetAvailableDevices()
-		//{
-		//	return new Device[] { new WindowsDevice() };
-		//}
+		protected override Device[] GetAvailableDevices()
+		{
+			return new Device[] { new WindowsDevice() };
+		}
 	}
 }

@@ -22,20 +22,20 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		{
 			var listViewModel = new AppBuildMessagesListViewModel();
 			listViewModel.AddMessage(
-				AppBuilderTestingExtensions.AsBuildTestWarning("A simple build warning"));
+				AppBuilderTestExtensions.AsBuildTestWarning("A simple build warning"));
 			listViewModel.AddMessage(
-				AppBuilderTestingExtensions.AsBuildTestError("A simple build error"));
+				AppBuilderTestExtensions.AsBuildTestError("A simple build error"));
 			listViewModel.AddMessage(
-				AppBuilderTestingExtensions.AsBuildTestError("A second simple build error"));
+				AppBuilderTestExtensions.AsBuildTestError("A second simple build error"));
 			return listViewModel;
 		}
 
 		private static BuiltAppsListViewModel CreateAppsListViewModelWithDummyEntries()
 		{
 			var appListViewModel = new BuiltAppsListViewModel();
-			appListViewModel.AddApp(AppBuilderTestingExtensions.GetMockAppInfo("A Windows app",
+			appListViewModel.AddApp(AppBuilderTestExtensions.GetMockAppInfo("A Windows app",
 				PlatformName.Windows));
-			appListViewModel.AddApp(AppBuilderTestingExtensions.GetMockAppInfo("A Windows Phone 7 app",
+			appListViewModel.AddApp(AppBuilderTestExtensions.GetMockAppInfo("A Windows Phone 7 app",
 				PlatformName.WindowsPhone7));
 			return appListViewModel;
 		}

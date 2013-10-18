@@ -52,7 +52,7 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 				entity.Size.Height + (entity.Size.Height * relativePosition.Y));
 		}
 
-		public static void SetParticleDMoveCommand(ParticleEmitter entity3D)
+		public static void SetParticleMoveCommand(ParticleEmitter entity3D)
 		{
 			new Command(position => lastPanPosition = position).Add(new MouseButtonTrigger());
 			new Command(position => MoveParticle(position, entity3D)).Add(

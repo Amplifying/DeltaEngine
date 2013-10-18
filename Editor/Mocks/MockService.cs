@@ -68,9 +68,17 @@ namespace DeltaEngine.Editor.Mocks
 		}
 
 		public void UploadContent(ContentMetaData metaData,
-			Dictionary<string, byte[]> optionalFileData = null) {}
+			Dictionary<string, byte[]> optionalFileData = null)
+		{
+			NumberOfMessagesSend++;
+		}
 
-		public void DeleteContent(string selectedContent, bool deleteSubContent) {}
+		public int NumberOfMessagesSend { get; private set; }
+
+		public void DeleteContent(string selectedContent, bool deleteSubContent)
+		{
+			NumberOfMessagesSend++;
+		}
 
 		public void StartPlugin(Type plugin) {}
 	}

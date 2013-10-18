@@ -372,7 +372,7 @@ namespace DeltaEngine.Editor.ParticleEditor
 
 		private void SendSuccessMessageToLogger(ContentType type, string content)
 		{
-			Logger.Info("The saving of the particleData called " + particleName + " was a succes.");
+			Logger.Info("The saving of the particleData called " + particleName + " was a success.");
 			service.ContentUpdated -= SendSuccessMessageToLogger;
 		}
 

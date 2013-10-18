@@ -4,6 +4,7 @@ namespace DeltaEngine.Editor.Emulator.Helpers
 {
 	public class DesignViewportControl
 	{
+		//ncrunch: no coverage start
 		public DesignViewportControl()
 		{
 			Tools = new List<ToolboxEntry>();

@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
+using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
@@ -15,13 +16,7 @@ using DeltaEngine.Editor.Helpers;
 using DeltaEngine.Extensions;
 using DeltaEngine.Platforms.Windows;
 using Xceed.Wpf.AvalonDock.Layout;
-using Application = System.Windows.Application;
-using DataFormats = System.Windows.DataFormats;
-using DragEventArgs = System.Windows.DragEventArgs;
-using IDataObject = System.Windows.IDataObject;
-using MessageBox = System.Windows.MessageBox;
 using OpenTKApp = DeltaEngine.Platforms.App;
-using UserControl = System.Windows.Controls.UserControl;
 using Window = DeltaEngine.Core.Window;
 
 namespace DeltaEngine.Editor
@@ -42,6 +37,7 @@ namespace DeltaEngine.Editor
 			Loaded += SetWindowedOrFullscreen;
 			Closing += SaveWindowedOrFullscreen;
 			DataContext = this.viewModel = viewModel;
+			QueuedContent = new List<string>();
 			maximizer = new MaximizerForEmptyWindows(this);
 			SetupEditorPlugins();
 			SetProjectAndTestFromCommandLineArguments(viewModel);
@@ -58,6 +54,8 @@ namespace DeltaEngine.Editor
 			}
 		}
 
+		private readonly List<string> QueuedContent;
+
 		private void SetupEditorPlugins()
 		{
 			viewModel.AddAllPlugins();
@@ -66,7 +64,7 @@ namespace DeltaEngine.Editor
 			StartInitialPlugin(typeof(ViewportControl));
 			StartInitialPlugin(typeof(ContentManagerView));
 		}
-		
+
 		private readonly EditorViewModel viewModel;
 		private readonly MaximizerForEmptyWindows maximizer;
 
@@ -278,10 +276,47 @@ namespace DeltaEngine.Editor
 			IDataObject dataObject = e.Data;
 			if (!IsFile(dataObject))
 				return;
-			var files = (string[])dataObject.GetData(DataFormats.FileDrop);
-			foreach (var file in files)
-				viewModel.UploadToOnlineService(file);
+			var newFiles = (string[])dataObject.GetData(DataFormats.FileDrop);
+			if (IsUploadingContent)
+			{
+				foreach (var file in newFiles)
+					QueuedContent.Add(file);
+				return;
+			}
+			files = newFiles;
+			viewModel.UploadToOnlineService(files[0]);
+			IsUploadingContent = true;
+			contentUploadIndex++;
+			viewModel.Service.ContentUpdated += UploadNextFile;
 		}
+
+		private string[] files;
+		private int contentUploadIndex;
+
+		private void UploadNextFile(ContentType arg1, string arg2)
+		{
+			if (files.Length < contentUploadIndex + 1)
+			{
+				contentUploadIndex = 0;
+				if (QueuedContent.Count == 0)
+				{
+					viewModel.Service.ContentUpdated -= UploadNextFile;
+					IsUploadingContent = false;
+				}
+				else
+				{
+					files = QueuedContent.ToArray();
+					QueuedContent.Clear();
+				}
+			}
+			else
+			{
+				viewModel.UploadToOnlineService(files[contentUploadIndex]);
+				contentUploadIndex++;
+			}
+		}
+
+		private bool IsUploadingContent;
 
 		private static bool IsFile(IDataObject dropObject)
 		{

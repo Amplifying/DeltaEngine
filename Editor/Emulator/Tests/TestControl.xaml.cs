@@ -5,6 +5,7 @@
 	/// </summary>
 	public partial class TestControl
 	{
+		//ncrunch: no coverage start
 		public TestControl()
 		{
 			InitializeComponent();

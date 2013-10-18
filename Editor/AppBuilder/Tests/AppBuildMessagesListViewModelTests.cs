@@ -10,9 +10,9 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		public void AddDifferentMessages()
 		{
 			var messagesList = new AppBuildMessagesListViewModel();
-			messagesList.AddMessage(AppBuilderTestingExtensions.AsBuildTestWarning("A test warning for this test"));
-			messagesList.AddMessage(AppBuilderTestingExtensions.AsBuildTestError("A test error for this test"));
-			messagesList.AddMessage(AppBuilderTestingExtensions.AsBuildTestError("Just another test error for this test"));
+			messagesList.AddMessage(AppBuilderTestExtensions.AsBuildTestWarning("A test warning for this test"));
+			messagesList.AddMessage(AppBuilderTestExtensions.AsBuildTestError("A test error for this test"));
+			messagesList.AddMessage(AppBuilderTestExtensions.AsBuildTestError("Just another test error for this test"));
 			Assert.AreEqual(1, messagesList.Warnings.Count);
 			Assert.AreEqual("1 Warning", messagesList.TextOfWarningCount);
 			Assert.AreEqual(2, messagesList.Errors.Count);
@@ -31,8 +31,8 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		private static AppBuildMessagesListViewModel GetViewModelWithOneMessageForEachType()
 		{
 			var messagesList = new AppBuildMessagesListViewModel();
-			messagesList.AddMessage(AppBuilderTestingExtensions.AsBuildTestWarning("Test warning"));
-			messagesList.AddMessage(AppBuilderTestingExtensions.AsBuildTestError("Test error"));
+			messagesList.AddMessage(AppBuilderTestExtensions.AsBuildTestWarning("Test warning"));
+			messagesList.AddMessage(AppBuilderTestExtensions.AsBuildTestError("Test error"));
 			return messagesList;
 		}
 

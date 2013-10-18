@@ -12,6 +12,7 @@ namespace DeltaEngine.Editor.Emulator
 	/// </summary>
 	public partial class ViewportControl : EditorPluginView
 	{
+		//ncrunch: no coverage start
 		public ViewportControl()
 		{
 			InitializeComponent();

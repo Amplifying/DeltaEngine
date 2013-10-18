@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using DeltaEngine.Core;
-using DeltaEngine.Editor.Messages;
 using DeltaEngine.Extensions;
-using Microsoft.SmartDevice.Connectivity;
 
 namespace DeltaEngine.Editor.AppBuilder
 {
@@ -66,18 +63,12 @@ namespace DeltaEngine.Editor.AppBuilder
 		{
 			try
 			{
-				Device device;
-				if (selectedApp.Platform == PlatformName.Android)
-				{
-					var androidDevices = AndroidDeviceFinder.GetAvailableDevices();
-					if (androidDevices.Length == 0)
-						throw new DeviceNotConnectedException(
-							"No Android device found. Make sure you have the Android USB driver installed");
-					device = androidDevices[0];
-				}
-				else
-					device = new WebDevice();
-				selectedApp.LaunchApp(device);
+				selectedApp.LaunchAppOnPrimaryDevice();
+			}
+			catch (AppInfo.NoDeviceAvailable)
+			{
+				Logger.Warning("No " + selectedApp.Platform + " device found. Please make sure your" +
+					" device is connected and you have the correct driver installed.");
 			}
 			catch (Exception ex)
 			{

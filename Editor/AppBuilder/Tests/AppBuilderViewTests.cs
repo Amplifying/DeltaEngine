@@ -51,8 +51,8 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			AppBuilderView builderView = CreateViewAndViewModelViaMockService();
 			AppBuilderViewModel viewModel = builderView.ViewModel;
 			viewModel.AppListViewModel.AddApp(
-				AppBuilderTestingExtensions.GetMockAppInfo("My favorite app", PlatformName.Windows));
-			viewModel.AppListViewModel.AddApp(AppBuilderTestingExtensions.GetMockAppInfo(
+				AppBuilderTestExtensions.GetMockAppInfo("My favorite app", PlatformName.Windows));
+			viewModel.AppListViewModel.AddApp(AppBuilderTestExtensions.GetMockAppInfo(
 				"My mobile app", PlatformName.WindowsPhone7));
 			WpfWindow window = CreateTestWindow(builderView);
 			window.ShowDialog();

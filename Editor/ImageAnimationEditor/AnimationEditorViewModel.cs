@@ -115,9 +115,9 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 		//ncrunch: no coverage start
 		public void SendSuccessMessageToLogger(ContentType type, string name)
 		{
-			Logger.Info("The saving of the animation called " + AnimationName + " was a succes.");
+			Logger.Info("The saving of the animation called " + AnimationName + " was a success.");
 			service.ContentUpdated -= SendSuccessMessageToLogger;
-		}//ncrunch: no coverage end 
+		} //ncrunch: no coverage end
 
 		public int SelectedIndex
 		{

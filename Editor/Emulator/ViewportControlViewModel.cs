@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using DeltaEngine.Editor.UIEditor;
 using GalaSoft.MvvmLight;
 
 namespace DeltaEngine.Editor.Emulator
@@ -16,8 +15,9 @@ namespace DeltaEngine.Editor.Emulator
 
 		private void SetupToolbox()
 		{
-			foreach (UITool tool in UIToolExtensions.GetNames())
-				Tools.Add(new ToolboxEntry(tool.ToString(), tool.GetImagePath()));
+			var namesAndPaths = new UIToolNamesAndPaths();
+			foreach (string tool in namesAndPaths.GetNames())
+				Tools.Add(new ToolboxEntry(tool, namesAndPaths.GetImagePath(tool)));
 		}
 	}
 }

@@ -1,4 +1,7 @@
 ﻿using System;
+using DeltaEngine.Editor.AppBuilder.Android;
+using DeltaEngine.Editor.AppBuilder.Web;
+using DeltaEngine.Editor.AppBuilder.WindowsPhone7;
 using DeltaEngine.Editor.Messages;
 
 namespace DeltaEngine.Editor.AppBuilder

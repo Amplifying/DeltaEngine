@@ -128,7 +128,7 @@
 							Foreground="#FF5D5D5D" />
 					</Grid>
 				</Grid>
-				<Grid Visibility="{Binding Path=EditorPanelVisibility}" Background="#FFFDFDFD">
+				<Grid Visibility="{Binding Path=EditorPanelVisibility}" Background="#FFE4E4E4">
 					<Label
 						Margin="0,4,399,0" VerticalAlignment="Top"
 						FontSize="13" Content="Project:" Foreground="#FF7B7B7B" FontFamily="Arial" HorizontalAlignment="Right" Width="55" />

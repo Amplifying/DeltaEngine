@@ -47,6 +47,7 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		private void FindBuiltApps()
 		{
+			Logger.Info(AppStorageDirectory);
 			if (!Directory.Exists(AppStorageDirectory))
 				return;
 			var files = Directory.GetFiles(AppStorageDirectory);
@@ -120,7 +121,8 @@ namespace DeltaEngine.Editor.AppBuilder
 		{
 			ValidateAppStorageDirectory();
 			CreateAppStorageDirectoryIfNecessary();
-			File.WriteAllBytes(appInfo.FilePath, appData);
+			string appSavePath = Path.Combine(AppStorageDirectory, Path.GetFileName(appInfo.FilePath));
+			File.WriteAllBytes(appSavePath, appData);
 		}
 
 		private void ValidateAppStorageDirectory()

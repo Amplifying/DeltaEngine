@@ -49,6 +49,10 @@
       <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
       <Name>DeltaEngine %28DeltaEngine\DeltaEngine%29</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Graphics\DeltaEngine.Graphics.csproj">
+      <Project>{8F701B0D-48B6-45CF-85E0-286BD53328BA}</Project>
+      <Name>DeltaEngine.Graphics</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Input\DeltaEngine.Input.csproj">
       <Project>{CC65E69E-FAFD-4C2B-85EB-5E57FD3AF847}</Project>
       <Name>DeltaEngine.Input</Name>
@@ -116,9 +120,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ControlProcessor.cs" />
-    <Compile Include="UIToolExtensions.cs" />
     <Compile Include="UIEditorViewModel.cs" />
-    <Compile Include="UITool.cs" />
     <Compile Include="UIEditorView.xaml.cs">
       <DependentUpon>UIEditorView.xaml</DependentUpon>
     </Compile>

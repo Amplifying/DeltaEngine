@@ -86,10 +86,6 @@
       <Project>{C667C7FC-A1C7-4CBC-98C0-C97F776E4570}</Project>
       <Name>DeltaEngine.Editor.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\UIEditor\DeltaEngine.Editor.UIEditor.csproj">
-      <Project>{DEACE2D0-B9A1-470A-9E27-98F04EADA297}</Project>
-      <Name>DeltaEngine.Editor.UIEditor</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -122,6 +118,8 @@
     <Compile Include="ToolboxEntry.xaml.cs">
       <DependentUpon>ToolboxEntry.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UITool.cs" />
+    <Compile Include="UIToolNamesAndPaths.cs" />
     <Compile Include="ViewportControl.xaml.cs">
       <DependentUpon>ViewportControl.xaml</DependentUpon>
     </Compile>

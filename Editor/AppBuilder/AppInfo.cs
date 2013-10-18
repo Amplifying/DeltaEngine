@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using DeltaEngine.Core;
+using DeltaEngine.Editor.AppBuilder.Android;
 using DeltaEngine.Editor.Messages;
 
 namespace DeltaEngine.Editor.AppBuilder
@@ -25,7 +25,6 @@ namespace DeltaEngine.Editor.AppBuilder
 		public PlatformName Platform { get; private set; }
 		public DateTime BuildDate { get; private set; }
 
-		/*
 		public Device[] AvailableDevices
 		{
 			get { return availableDevices ?? (availableDevices = GetAvailableDevices()); }
@@ -39,7 +38,6 @@ namespace DeltaEngine.Editor.AppBuilder
 		{
 			get { return AvailableDevices.Length > 0; }
 		}
-		 */
 
 		public string SolutionFilePath { get; set; }
 
@@ -48,7 +46,23 @@ namespace DeltaEngine.Editor.AppBuilder
 			get { return SolutionFilePath != null && SolutionFilePath.EndsWith(".sln"); }
 		}
 
-		public void LaunchApp(Device device)
+		public void LaunchAppOnPrimaryDevice()
+		{
+			if (!IsDeviceAvailable)
+				throw new NoDeviceAvailable(this);
+			LaunchAppOnDevice(AvailableDevices[0]);
+		}
+
+		public class NoDeviceAvailable : Exception
+		{
+			public NoDeviceAvailable(AppInfo appInfo)
+				: base(appInfo.ToString())
+			{
+				
+			}
+		}
+
+		public void LaunchAppOnDevice(Device device)
 		{
 			if (device == null)
 				throw new NoDeviceSpecified();

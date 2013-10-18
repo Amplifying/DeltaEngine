@@ -65,6 +65,10 @@
       <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
       <Name>DeltaEngine %28DeltaEngine\DeltaEngine%29</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Platforms\TestWithOpenTK20\DeltaEngine.TestWithOpenTK20.csproj">
+      <Project>{3A3D2E3E-FCD6-40A4-8F4E-36F3D173AB41}</Project>
+      <Name>DeltaEngine.TestWithOpenTK20</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Platforms\WindowsOpenTK20\DeltaEngine.WindowsOpenTK20.csproj">
       <Project>{4FDE0BC1-AF24-4A6D-AB73-A28833D41AC8}</Project>
       <Name>DeltaEngine.WindowsOpenTK20</Name>
@@ -84,6 +88,10 @@
     <ProjectReference Include="..\..\Core\DeltaEngine.Editor.Core.csproj">
       <Project>{C667C7FC-A1C7-4CBC-98C0-C97F776E4570}</Project>
       <Name>DeltaEngine.Editor.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\UIEditor\DeltaEngine.Editor.UIEditor.csproj">
+      <Project>{DEACE2D0-B9A1-470A-9E27-98F04EADA297}</Project>
+      <Name>DeltaEngine.Editor.UIEditor</Name>
     </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Editor.Emulator.csproj">
       <Project>{1D89891B-C4E6-4B92-8280-EDBA069EF9A7}</Project>
@@ -114,6 +122,11 @@
     <Compile Include="TestControl.xaml.cs">
       <DependentUpon>TestControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UIToolNamesAndPathsTests.cs" />
+    <Compile Include="ViewModelLocator.cs" />
+    <Compile Include="ViewportControlTests.cs" />
+    <Compile Include="ViewportControlViewModelTests.cs" />
+    <Compile Include="WpfHostedFormsWindowTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

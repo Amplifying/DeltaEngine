@@ -79,7 +79,7 @@
       <ColumnDefinition Width="12" />
       <ColumnDefinition Width="11*" />
       <ColumnDefinition Width="12" />
-      <ColumnDefinition Width="34" />
+      <ColumnDefinition Width="30" />
       <ColumnDefinition Width="8" />
       <ColumnDefinition Width="31*" />
       <ColumnDefinition Width="8" />

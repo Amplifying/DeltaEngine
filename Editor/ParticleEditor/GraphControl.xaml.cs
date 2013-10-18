@@ -15,25 +15,31 @@ namespace DeltaEngine.Editor.ParticleEditor
 {
 	public partial class GraphControl
 	{
-		public GraphControl()
+		public GraphControl(Color lineColor)
 		{
 			InitializeComponent();
+			Height = 128;
+			LineColor = lineColor;
 			DataPoints = new PointCollection();
-			//DataPoints.Add(new Point(0.0f, 0.1f));
-			//DataPoints.Add(new Point(0.25f, 0.7f));
-			//DataPoints.Add(new Point(0.5f, 1.0f));
-			//DataPoints.Add(new Point(0.5f, 1.0f));
-			//DataPoints.Add(new Point(0.25f, 0.4f));
-			//DataPoints.Add(new Point(0, 0.0f));
+			Loaded += OnLoaded;
+		}
+
+		public GraphControl(Color lineColor, PointCollection dataPoints)
+		{
+			InitializeComponent();
+			Height = 128;
+			LineColor = lineColor;
+			DataPoints = dataPoints;
 			Loaded += OnLoaded;
 		}
 
 		public PointCollection DataPoints { get; set; }
+		public Color LineColor { get; set; }
 
 		private void OnLoaded(object sender, RoutedEventArgs e)
 		{
 			SetupPlotter();
-			AddCurrentRunningTimeLine();
+			AddIntervalLimiters();
 			CreateLineGraph();
 		}
 
@@ -60,7 +66,7 @@ namespace DeltaEngine.Editor.ParticleEditor
 				AddNewPoint(ToDataPosition(remStartClickPosition));
 		}
 
-		private void AddNewPoint(Point newPoint)
+		internal void AddNewPoint(Point newPoint)
 		{
 			if (FindNearestPointOnlyX(newPoint, 0.025f) ||
 				DataPoints.Count > 0 && newPoint.X < DataPoints[0].X)
@@ -69,10 +75,20 @@ namespace DeltaEngine.Editor.ParticleEditor
 				if (newPoint.X < DataPoints[num].X)
 				{
 					DataPoints.Insert(num, newPoint);
+					InvokePointAdded(num);
 					return;
 				}
 			DataPoints.Add(newPoint);
+			InvokePointAdded(DataPoints.Count);
 		}
+
+		private void InvokePointAdded(int insertedIndex)
+		{
+			if (PointAdded != null)
+				PointAdded(insertedIndex);
+		}
+
+		public event Action<int> PointAdded;
 
 		private bool FindNearestPointOnlyX(Point dataPosition, float distance)
 		{
@@ -121,8 +137,8 @@ namespace DeltaEngine.Editor.ParticleEditor
 				Command = new RelayCommand(RemovePoint, IsContextMenuPointNearby),
 				CommandTarget = Plotter
 			};
-			var keyBinding = new KeyBinding(new RelayCommand(RemovePoint, IsMousePointNearby), Key.Delete,
-				ModifierKeys.None);
+			var keyBinding = new KeyBinding(new RelayCommand(RemovePoint, IsMousePointNearby),
+				Key.Delete, ModifierKeys.None);
 			InputBindings.Add(keyBinding);
 			removePoint.InputGestureText = "Del";
 			Plotter.DefaultContextMenu.StaticMenuItems.Insert(0, removePoint);
@@ -134,6 +150,8 @@ namespace DeltaEngine.Editor.ParticleEditor
 				DataPoints.Remove(nearestPoint);
 			nearestPoint = new Point();
 		}
+
+		//public event Action<int> PointRemoved;
 
 		private bool IsContextMenuPointNearby()
 		{
@@ -150,9 +168,14 @@ namespace DeltaEngine.Editor.ParticleEditor
 			return FindNearestPoint(ToDataPosition(clickPosition), 0.15f);
 		}
 
-		private void AddCurrentRunningTimeLine()
+		private void AddIntervalLimiters()
 		{
-			Plotter.AddChild(new VerticalLine(0.5f)
+			Plotter.AddChild(new VerticalLine(0.0f)
+			{
+				StrokeThickness = 0.75,
+				Stroke = new SolidColorBrush(Colors.LightSkyBlue)
+			});
+			Plotter.AddChild(new VerticalLine(1.0f)
 			{
 				StrokeThickness = 0.75,
 				Stroke = new SolidColorBrush(Colors.LightSkyBlue)
@@ -163,23 +186,17 @@ namespace DeltaEngine.Editor.ParticleEditor
 		{
 			editor = new PolylineEditor();
 			editor.Polyline = new ViewportPolyline();
-			//could be helpful for range: editor.Polyline.Fill = new SolidColorBrush(Colors.Violet);
-			editor.Polyline.Stroke = new SolidColorBrush(Colors.Green);
+			editor.Polyline.Stroke = new SolidColorBrush(LineColor);
 			editor.Polyline.StrokeThickness = 1;
 			editor.Polyline.Points = DataPoints;
-			//editor.Polyline.to
-			LiveToolTipService.SetToolTip(editor.Polyline,
-				new LiveToolTip { Background = Brushes.Green, Content = "X" });
-			/*
-		<d3:LiveToolTipService.ToolTip>
-				<d3:LiveToolTip Background="Violet">
-					PolyBezier line with control points editing
-				</d3:LiveToolTip>
-			</d3:LiveToolTipService.ToolTip>
-			 */
 			editor.AddToPlotter(Plotter);
 		}
 
 		private PolylineEditor editor;
+
+		public void AddPointUnsafe(double x, double y)
+		{
+			DataPoints.Add(new Point(x, y));
+		}
 	}
 }

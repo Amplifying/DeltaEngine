@@ -56,16 +56,12 @@ namespace DeltaEngine.Editor.MaterialEditor
 		private void CreateListOfLocalContentDataImages(string projectPath)
 		{
 			ImageList = new ObservableCollection<string>();
-			AnimationList = new ObservableCollection<string>();
-			ImageList.Add("");
-			AnimationList.Add("");
 			AddContentTypeToContentList(ImageList, ContentType.Image);
 			AddContentTypeToContentList(ImageList, ContentType.ImageAnimation);
 			AddContentTypeToContentList(ImageList, ContentType.SpriteSheetAnimation);
 		}
 
 		public ObservableCollection<string> ImageList { get; set; }
-		public ObservableCollection<string> AnimationList { get; set; }
 
 		private void AddContentTypeToContentList(ObservableCollection<string> contentList,
 			ContentType type)
@@ -285,10 +281,9 @@ namespace DeltaEngine.Editor.MaterialEditor
 		//ncrunch: no coverage start 
 		private void SendSuccessMessageToLogger(ContentType type, string content)
 		{
-			Logger.Info("The saving of the material called " + MaterialName + " was a succes.");
+			Logger.Info("The saving of the material called " + MaterialName + " was a success.");
 			service.ContentUpdated -= SendSuccessMessageToLogger;
-		}
-		//ncrunch: no coverage end
+		} //ncrunch: no coverage end
 
 		public string SelectedColor
 		{

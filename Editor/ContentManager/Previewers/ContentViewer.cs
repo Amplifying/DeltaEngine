@@ -13,6 +13,7 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 			viewers.Add(ContentType.SpriteSheetAnimation, new SpriteSheetPreviewer());
 			viewers.Add(ContentType.Material, new MaterialPreviewer());
 			viewers.Add(ContentType.ParticleEmitter, new ParticlePreviewer());
+			viewers.Add(ContentType.ParticleSystem, new ParticleSystemPreviewer());
 			viewers.Add(ContentType.Font, new FontPreviewer());
 			viewers.Add(ContentType.Sound, new SoundPreviewer());
 			viewers.Add(ContentType.Music, new MusicPreviewer());

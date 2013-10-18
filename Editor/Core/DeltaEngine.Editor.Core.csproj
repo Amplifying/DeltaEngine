@@ -37,7 +37,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\DeltaEngine.csproj">
       <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
-      <Name>DeltaEngine</Name>
+      <Name>DeltaEngine %28DeltaEngine\DeltaEngine%29</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -66,6 +66,7 @@
     <Compile Include="Service.cs" />
     <Compile Include="SolutionFileLoader.cs" />
     <Compile Include="Tool.cs" />
+    <Compile Include="ToolExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

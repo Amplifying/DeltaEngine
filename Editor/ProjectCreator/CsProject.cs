@@ -11,7 +11,7 @@ namespace DeltaEngine.Editor.ProjectCreator
 		{
 			Name = "NewDeltaEngineProject";
 			Framework = DeltaEngineFramework.OpenTK;
-			Path = PathExtensions.GetInstalledOrFallbackEnginePath();
+			Path = PathExtensions.GetVisualStudioProjectsFolder();
 		}
 
 		public string Name { get; set; }

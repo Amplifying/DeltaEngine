@@ -14,6 +14,7 @@ namespace DeltaEngine.Editor.Emulator
 	/// </summary>
 	public class WpfHostedFormsWindow : FormsWindow
 	{
+		//ncrunch: no coverage start
 		public WpfHostedFormsWindow(ViewportControl viewportControl, Window window)
 			: base(GetViewportControlPanel(viewportControl))
 		{

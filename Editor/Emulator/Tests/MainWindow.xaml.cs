@@ -15,6 +15,7 @@ namespace DeltaEngine.Editor.Emulator.Tests
 	/// </summary>
 	public partial class MainWindow
 	{
+		//ncrunch: no coverage start
 		public MainWindow()
 		{
 			InitializeComponent();

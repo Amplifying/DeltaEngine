@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using DeltaEngine.Extensions;
 
@@ -38,11 +39,11 @@ namespace DeltaEngine.Editor.Core
 			const string DeltaEngineSolutionFile = "DeltaEngine.sln";
 			var solutionFilePath = GetFilePathFromSourceCode(DeltaEngineSolutionFile);
 			if (String.IsNullOrEmpty(solutionFilePath))
-				throw new FileNotFoundException(DeltaEngineSolutionFile);
+				throw new FileNotFoundException(DeltaEngineSolutionFile); //ncrunch: no coverage
 			return solutionFilePath;
 		}
 
-		private static string GetFilePathFromSourceCode(string filename)
+		public static string GetFilePathFromSourceCode(string filename)
 		{
 			string originalDirectory = Environment.CurrentDirectory;
 			try
@@ -66,7 +67,7 @@ namespace DeltaEngine.Editor.Core
 			string filename)
 		{
 			if (directory.Parent == null)
-				return null;
+				return null; //ncrunch: no coverage
 			foreach (var file in directory.GetFiles())
 				if (file.Name == filename)
 					return file.FullName;
@@ -77,13 +78,13 @@ namespace DeltaEngine.Editor.Core
 		{
 			const string SamplesSolutionFile = "DeltaEngine.Samples.sln";
 			return GetFilePathFromSourceCode(SamplesSolutionFile) ??
-				GetFilePathFromInstallerRelease(Path.Combine("OpenTK", SamplesSolutionFile));
+				GetFilePathFromInstallerRelease(SamplesSolutionFile);
 		}
 
-		private static string GetFilePathFromInstallerRelease(string filePath)
+		public static string GetFilePathFromInstallerRelease(string filePath)
 		{
 			return IsDeltaEnginePathEnvironmentVariableAvailable()
-				? Path.Combine(GetDeltaEngineInstalledDirectory(), filePath) : null;
+				? Path.Combine(GetDeltaEngineInstalledDirectory(), Path.Combine("OpenTK", filePath)) : null;
 		}
 
 		public static string GetInstalledOrFallbackEnginePath()
@@ -91,10 +92,28 @@ namespace DeltaEngine.Editor.Core
 			return IsDeltaEnginePathEnvironmentVariableAvailable()
 				? GetDeltaEngineInstalledDirectory() : GetFallbackEngineSourceCodeDirectory();
 		}
-
-		public static string GetEditorSourceCodeDirectory()
+		
+		public static string GetVisualStudioProjectsFolder()
 		{
-			return Path.Combine(GetFallbackEngineSourceCodeDirectory(), "Editor");
+			foreach (var visualStudioProjectPath in GetSupportedVisualStudioProjectFolders())
+				if (Directory.Exists(visualStudioProjectPath))
+					return visualStudioProjectPath;
+			throw new VisualStudioDefaultProjectsLocationNotFound(); //ncrunch: no coverage
 		}
+
+		private static IEnumerable<string> GetSupportedVisualStudioProjectFolders()
+		{
+			string myDocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+			const string ProjectsFolder = "Projects";
+			return new[]
+			{
+				Path.Combine(myDocumentsPath, "Visual Studio 2013", ProjectsFolder),
+				Path.Combine(myDocumentsPath, "Visual Studio 2012", ProjectsFolder),
+				Path.Combine(myDocumentsPath, "Visual Studio 2010", ProjectsFolder),
+				Path.Combine(myDocumentsPath, "Visual Studio 2008", ProjectsFolder)
+			};
+		}
+
+		private class VisualStudioDefaultProjectsLocationNotFound : Exception {}
 	}
 }

@@ -1,5 +1,4 @@
 ﻿using System.Windows.Input;
-using System.Windows.Media;
 using GalaSoft.MvvmLight.Messaging;
 
 namespace DeltaEngine.Editor.ContentManager
@@ -21,7 +20,7 @@ namespace DeltaEngine.Editor.ContentManager
 				Messenger.Default.Send(ContentName.Text, "AddToSelection");
 			else if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
 				Messenger.Default.Send(ContentName.Text, "AddMultipleContentToSelection");
-			else
+			else if (e.LeftButton == MouseButtonState.Pressed)
 			{
 				Messenger.Default.Send("ClearList", "ClearList");
 				Messenger.Default.Send(ContentName.Text, "AddToSelection");

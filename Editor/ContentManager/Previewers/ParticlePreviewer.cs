@@ -9,8 +9,6 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 		public void PreviewContent(string contentName)
 		{
 			var particleEmitterData = ContentLoader.Load<ParticleEmitterData>(contentName);
-			particleEmitterData.StartPosition = new RangeGraph<Vector3D>(new Vector2D(0.25f, 0.25f),
-				new Vector2D(0.25f, 0.25f));
 			currentDisplayParticle2D = new ParticleEmitter(particleEmitterData, Vector2D.Half);
 			SetImageCommands();
 		}
@@ -19,7 +17,7 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 
 		private void SetImageCommands()
 		{
-			ContentDisplayChanger.SetParticleDMoveCommand(currentDisplayParticle2D);
+			ContentDisplayChanger.SetParticleMoveCommand(currentDisplayParticle2D);
 		}
 	}
 }

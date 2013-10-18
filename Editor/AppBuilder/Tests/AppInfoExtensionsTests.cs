@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
-using DeltaEngine.Editor.Core;
+using DeltaEngine.Editor.AppBuilder.Android;
+using DeltaEngine.Editor.AppBuilder.WindowsPhone7;
 using DeltaEngine.Editor.Messages;
 using NUnit.Framework;
 

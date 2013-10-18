@@ -10,6 +10,7 @@ using DeltaEngine.Datatypes;
 using DeltaEngine.Editor.ContentManager.Previewers;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Entities;
+using DeltaEngine.Multimedia;
 using DeltaEngine.Rendering2D;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
@@ -176,7 +177,13 @@ namespace DeltaEngine.Editor.ContentManager
 
 		private static string GetContentTypeIcon(ContentType? type)
 		{
-			var iconFileName = type == ContentType.Font ? "Xml.png" : type + ".png";
+			string iconFileName;
+			if (type == ContentType.Font)
+				iconFileName = "Xml.png";
+			else if (type == ContentType.ParticleSystem)
+				iconFileName = ContentType.ParticleEmitter + ".png";
+			else
+				iconFileName = type + ".png";
 			return Path.Combine(ContentTypeFolder, iconFileName);
 		}
 
@@ -242,7 +249,8 @@ namespace DeltaEngine.Editor.ContentManager
 		{
 			var entities = EntitiesRunner.Current.GetAllEntities();
 			foreach (var entity in entities)
-				entity.IsActive = false;
+				if (!entity.GetType().IsSubclassOf(typeof(SoundDevice)))
+					entity.IsActive = false;
 		}
 
 		private void DrawBackground()

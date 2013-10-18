@@ -41,7 +41,12 @@ namespace DeltaEngine.Editor.UIEditor
 
 		internal void UpdateOutLines(Entity2D selectedSprite)
 		{
-			Rectangle drawArea = selectedSprite == null ? Rectangle.Zero : selectedSprite.DrawArea;
+			if (selectedSprite == null)
+			{
+				ClearLines();
+				return;
+			}
+			var drawArea = selectedSprite.DrawArea;
 			const float Offset = 0.002f;
 			outLines[0].StartPoint = drawArea.TopLeft + new Vector2D(-Offset, -Offset);
 			outLines[0].EndPoint = drawArea.TopRight + new Vector2D(+Offset, -Offset);
@@ -51,6 +56,18 @@ namespace DeltaEngine.Editor.UIEditor
 			outLines[2].EndPoint = drawArea.BottomRight + new Vector2D(+Offset, +Offset);
 			outLines[3].StartPoint = drawArea.BottomRight + new Vector2D(+Offset, +Offset);
 			outLines[3].EndPoint = drawArea.TopRight + new Vector2D(+Offset, -Offset);
+		}
+
+		private void ClearLines()
+		{
+			outLines[0].StartPoint = new Vector2D(0, 0);
+			outLines[0].EndPoint = new Vector2D(0, 0);
+			outLines[1].StartPoint = new Vector2D(0, 0);
+			outLines[1].EndPoint = new Vector2D(0, 0);
+			outLines[2].StartPoint = new Vector2D(0, 0);
+			outLines[2].EndPoint = new Vector2D(0, 0);
+			outLines[3].StartPoint = new Vector2D(0, 0);
+			outLines[3].EndPoint = new Vector2D(0, 0);
 		}
 
 		internal void MoveImage(Vector2D mousePosition, Entity2D selectedEntity2D, bool isDragging,
@@ -86,7 +103,7 @@ namespace DeltaEngine.Editor.UIEditor
 				gridSpaceY * rowNumberInGrid, selectedEntity2D.DrawArea.Width,
 				selectedEntity2D.DrawArea.Height);
 			if (spritePos == selectedEntity2D.Center)
-				return;
+				return;//ncrunch: no coverage
 			lastMousePosition = mousePosition;
 			spritePos = selectedEntity2D.Center;
 		}

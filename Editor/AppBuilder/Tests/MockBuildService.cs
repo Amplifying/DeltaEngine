@@ -101,8 +101,8 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 
 		public void ReceiveSomeTestMessages()
 		{
-			DataReceived(AppBuilderTestingExtensions.AsBuildTestWarning("A BuildWarning"));
-			DataReceived(AppBuilderTestingExtensions.AsBuildTestError("A BuildError"));
+			DataReceived(AppBuilderTestExtensions.AsBuildTestWarning("A BuildWarning"));
+			DataReceived(AppBuilderTestExtensions.AsBuildTestError("A BuildError"));
 		}
 
 		public IEnumerable<string> GetAllContentNames()

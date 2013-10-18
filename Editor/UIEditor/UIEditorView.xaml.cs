@@ -13,6 +13,7 @@ namespace DeltaEngine.Editor.UIEditor
 	/// </summary>
 	public partial class UIEditorView : EditorPluginView
 	{
+		//ncrunch: no coverage start
 		public UIEditorView()
 		{
 			InitializeComponent();
@@ -145,9 +146,9 @@ namespace DeltaEngine.Editor.UIEditor
 			Messenger.Default.Send(e.AddedItems[0], "ChangeGrid");
 		}
 
-		private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		private void DeleteSelectedItem(object sender, RoutedEventArgs e)
 		{
-
+			Messenger.Default.Send("DeleteSelectedControl", "DeleteSelectedControl");
 		}
 	}
 }

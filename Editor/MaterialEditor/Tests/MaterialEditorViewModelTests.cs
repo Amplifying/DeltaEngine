@@ -1,4 +1,4 @@
-﻿using DeltaEngine.Content;
+﻿using DeltaEngine.Datatypes;
 using DeltaEngine.Editor.Mocks;
 using DeltaEngine.Platforms;
 using NUnit.Framework;
@@ -10,9 +10,11 @@ namespace DeltaEngine.Editor.MaterialEditor.Tests
 		[SetUp]
 		public void SetUp()
 		{
-			materialEditor = new MaterialEditorViewModel(new MockService("TestUser", "MaterialTests"));
+			mockService = new MockService("TestUser", "MaterialTests");
+			materialEditor = new MaterialEditorViewModel(mockService);
 		}
 
+		private MockService mockService;
 		private MaterialEditorViewModel materialEditor;
 
 		[Test]
@@ -25,31 +27,37 @@ namespace DeltaEngine.Editor.MaterialEditor.Tests
 		[Test]
 		public void SaveMaterialFromImage()
 		{
-			materialEditor.Save();
 			materialEditor.SelectedImage = "DeltaEngineLogo";
 			materialEditor.MaterialName = "NewMaterial";
 			materialEditor.Save();
+			Assert.AreEqual(2, mockService.NumberOfMessagesSend);
 		}
 
 		[Test]
 		public void SaveMaterialFromAnimation()
 		{
 			materialEditor.Save();
-			materialEditor.SelectedAnimation = "NewImageAnimation";
+			Assert.AreEqual(0, mockService.NumberOfMessagesSend);
+			materialEditor.SelectedAnimation = "ImageAnimation";
 			materialEditor.MaterialName = "NewMaterial";
 			materialEditor.Save();
+			Assert.AreEqual(2, mockService.NumberOfMessagesSend);
 		}
 
 		[Test]
 		public void LoadInMaterialWithAnimation()
 		{
 			materialEditor.MaterialName = "NewMaterialImageAnimation";
+			Assert.IsNotNull(materialEditor.NewMaterial);
+			Assert.AreEqual(3, materialEditor.NewMaterial.Animation.Frames.Length);
 		}
 
 		[Test]
 		public void LoadInMaterialWithSpriteSheetAnimation()
 		{
 			materialEditor.MaterialName = "NewMaterialSpriteSheetAnimation";
+			Assert.IsNotNull(materialEditor.NewMaterial);
+			Assert.AreEqual(new Size(32, 32), materialEditor.NewMaterial.SpriteSheet.SubImageSize);
 		}
 	}
 }

@@ -118,6 +118,7 @@
     <Compile Include="Previewers\MusicPreviewer.cs" />
     <Compile Include="Previewers\ParticlePreviewer.cs" />
     <Compile Include="Previewers\ContentPreview.cs" />
+    <Compile Include="Previewers\ParticleSystemPreviewer.cs" />
     <Compile Include="Previewers\SoundPreviewer.cs" />
     <Compile Include="Previewers\SpriteSheetPreviewer.cs" />
     <Compile Include="Previewers\UIPreviewer.cs" />

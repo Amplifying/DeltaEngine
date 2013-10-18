@@ -19,7 +19,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		private static BuiltAppsListViewModel GetBuiltAppsListWithDummyEntry()
 		{
 			var listViewModel = new BuiltAppsListViewModel();
-			listViewModel.AddApp(AppBuilderTestingExtensions.GetMockAppInfo("Windows app",
+			listViewModel.AddApp(AppBuilderTestExtensions.GetMockAppInfo("Windows app",
 				PlatformName.Windows));
 			return listViewModel;
 		}
@@ -36,9 +36,9 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		public void ShowViewWithSeveralAppEntries()
 		{
 			var listViewModel = GetBuiltAppsListWithDummyEntry();
-			listViewModel.AddApp(AppBuilderTestingExtensions.GetMockAppInfo("Windows app",
+			listViewModel.AddApp(AppBuilderTestExtensions.GetMockAppInfo("Windows app",
 				PlatformName.Windows));
-			listViewModel.AddApp(AppBuilderTestingExtensions.GetMockAppInfo("WP7 app",
+			listViewModel.AddApp(AppBuilderTestExtensions.GetMockAppInfo("WP7 app",
 				PlatformName.WindowsPhone7));
 			var window = CreateVerifiableWindowFromViewModel(listViewModel);
 			window.ShowDialog();
@@ -48,10 +48,8 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		public void ShowViewWithLogoAppForWindows()
 		{
 			var listViewModel = new BuiltAppsListViewModel();
-			AppInfo app = AppBuilderTestingExtensions.TryGetAlreadyBuiltApp("LogoApp",
-				PlatformName.Windows);
-			if (app != null)
-				listViewModel.AddApp(app);
+			AppInfo app = AppBuilderTestExtensions.TryGetAlreadyBuiltApp("LogoApp", PlatformName.Windows);
+			listViewModel.AddApp(app);
 			var window = CreateVerifiableWindowFromViewModel(listViewModel);
 			window.ShowDialog();
 		}
