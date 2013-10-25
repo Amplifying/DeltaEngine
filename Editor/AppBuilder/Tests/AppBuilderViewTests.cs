@@ -81,10 +81,10 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			AppBuilderViewModel viewModel)
 		{
 			if (e.LeftButton != MouseButtonState.Released)
-				SelectProjectToBuild(viewModel, "Blocks");
+				SelectProjectToBuild(viewModel, "LogoApp");
 			else if (e.RightButton != MouseButtonState.Released)
-				SelectProjectToBuild(viewModel, "DeltaEngine");
-			viewModel.BuildPressed.Execute(null);
+				SelectProjectToBuild(viewModel, "GhostWars");
+			viewModel.BuildCommand.Execute(null);
 		}
 
 		private static void SelectProjectToBuild(AppBuilderViewModel viewModel, string projectName)

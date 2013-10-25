@@ -1,26 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
-using DeltaEngine.Content;
-using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Messages;
+using DeltaEngine.Editor.Mocks;
 
 namespace DeltaEngine.Editor.AppBuilder.Tests
 {
-	public class MockBuildService : Service
+	public class MockBuildService : MockService
 	{
 		public MockBuildService()
+			: base(typeof(MockBuildService).Name + "User", "LogoApp")
 		{
-			UserName = GetType().Name + "User";
-			ProjectName = "LogoApp";
 			Platforms = new[] { PlatformName.Windows };
 			resultBuilder = new MockAppResultBuilder(this);
+			NumberOfBuildRequests = 0;
 		}
 
-		public string UserName { get; private set; }
-		public string ProjectName { get; private set; }
 		public PlatformName[] Platforms { get; private set; }
 		private readonly MockAppResultBuilder resultBuilder;
+		public int NumberOfBuildRequests { get; private set; }
 
 		private class MockAppResultBuilder
 		{
@@ -56,7 +53,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 				int startTime = Environment.TickCount;
 				while ((Environment.TickCount - startTime) < waitingTimeInMs)
 					Thread.Sleep(0);
-				service.DataReceived(GetBuiltResult());
+				service.ReceiveData(GetBuiltResult());
 			}
 
 			private object GetBuiltResult()
@@ -70,61 +67,42 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			}
 		}
 
-		public event Action<object> DataReceived;
-
-		public void Send(object message, bool allowToCompressMessage = true)
+		public override void Send(object message, bool allowToCompressMessage = true)
 		{
 			if (message is AppBuildRequest)
 				OnHandleBuildRequest((AppBuildRequest)message);
 			if (message is SupportedPlatformsRequest)
-				DataReceived(new SupportedPlatformsResult(new[] { PlatformName.Android, PlatformName.Web, }));
+				ReceiveData(new SupportedPlatformsResult(SupportedPlatforms));
 		}
+
+		private static readonly PlatformName[] SupportedPlatforms = new[]
+			{ PlatformName.Windows, PlatformName.Android, PlatformName.Web, };
 
 		private void OnHandleBuildRequest(AppBuildRequest userBuildRequest)
 		{
+			NumberOfBuildRequests++;
 			resultBuilder.BuildApp(userBuildRequest);
 		}
 
-		public void UpdateContent()
-		{
-			ContentUpdated(ContentType.Scene, "MockContent");
-		}
-
-		public event Action<ContentType, string> ContentUpdated;
-
-		public void DeleteContent()
-		{
-			ContentDeleted("MockContent");
-		}
-
-		public event Action<string> ContentDeleted;
-
 		public void ReceiveSomeTestMessages()
 		{
-			DataReceived(AppBuilderTestExtensions.AsBuildTestWarning("A BuildWarning"));
-			DataReceived(AppBuilderTestExtensions.AsBuildTestError("A BuildError"));
+			RaiseAppBuildWarning("A BuildWarning");
+			ReceiveData(AppBuilderTestExtensions.AsBuildTestError("A BuildError"));
 		}
 
-		public IEnumerable<string> GetAllContentNames()
+		public void RaiseAppBuildInfo(string message)
 		{
-			return new List<string>();
+			ReceiveData(AppBuilderTestExtensions.AsBuildTestInfo(message));
 		}
 
-		public IEnumerable<string> GetAllContentNamesByType(ContentType type)
+		public void RaiseAppBuildWarning(string message)
 		{
-			return new List<string>();
+			ReceiveData(AppBuilderTestExtensions.AsBuildTestWarning(message));
 		}
 
-		public ContentType? GetTypeOfContent(string content)
+		public void ReceiveAppBuildFailed(string reason)
 		{
-			return ContentType.Image;
+			ReceiveData(new AppBuildFailed(reason));
 		}
-
-		public void UploadContent(ContentMetaData metaData,
-			Dictionary<string, byte[]> optionalFileData = null) {}
-
-		public void DeleteContent(string selectedContent, bool deleteSubContent = false) {}
-
-		public void StartPlugin(Type plugin) {}
 	}
 }

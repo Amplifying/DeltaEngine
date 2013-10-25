@@ -37,10 +37,10 @@ namespace DeltaEngine.Editor
 			Loaded += SetWindowedOrFullscreen;
 			Closing += SaveWindowedOrFullscreen;
 			DataContext = this.viewModel = viewModel;
-			QueuedContent = new List<string>();
+			queuedContent = new List<string>();
 			maximizer = new MaximizerForEmptyWindows(this);
 			SetupEditorPlugins();
-			SetProjectAndTestFromCommandLineArguments(viewModel);
+			SetProjectAndTestFromCommandLineArguments();
 			try
 			{
 				StartOpenTKViewportAndBlock();
@@ -54,29 +54,6 @@ namespace DeltaEngine.Editor
 			}
 		}
 
-		private readonly List<string> QueuedContent;
-
-		private void SetupEditorPlugins()
-		{
-			viewModel.AddAllPlugins();
-			viewModel.Service.StartEditorPlugin += StartInitialPlugin;
-			viewModel.Service.ProjectChanged += RefreshAllActivePlugins;
-			StartInitialPlugin(typeof(ViewportControl));
-			StartInitialPlugin(typeof(ContentManagerView));
-		}
-
-		private readonly EditorViewModel viewModel;
-		private readonly MaximizerForEmptyWindows maximizer;
-
-		private static void SetProjectAndTestFromCommandLineArguments(EditorViewModel viewModel)
-		{
-			var arguments = Environment.GetCommandLineArgs();
-			if (arguments.Length > 1)
-				viewModel.SetProjectAndTest(App.StartupPath, arguments[1],
-					arguments.Length > 2 ? arguments[2] : "");
-			App.SetProjectAndTest += viewModel.SetProjectAndTest;
-		}
-
 		private void SetWindowedOrFullscreen(object sender, RoutedEventArgs e)
 		{
 			if (viewModel.StartEditorMaximized)
@@ -86,6 +63,19 @@ namespace DeltaEngine.Editor
 		private void SaveWindowedOrFullscreen(object sender, CancelEventArgs e)
 		{
 			viewModel.StartEditorMaximized = maximizer.isMaximized;
+		}
+
+		private readonly EditorViewModel viewModel;
+		private readonly List<string> queuedContent;
+		private readonly MaximizerForEmptyWindows maximizer;
+
+		private void SetupEditorPlugins()
+		{
+			viewModel.AddAllPlugins();
+			viewModel.Service.StartEditorPlugin += StartInitialPlugin;
+			viewModel.Service.ProjectChanged += RefreshAllActivePlugins;
+			StartInitialPlugin(typeof(ViewportControl));
+			StartInitialPlugin(typeof(ContentManagerView));
 		}
 
 		private void StartInitialPlugin(Type type)
@@ -177,6 +167,40 @@ namespace DeltaEngine.Editor
 					LayoutDocument document = layoutDocument;
 					Dispatcher.Invoke(new Action(() => ((EditorPluginView)document.Content).ProjectChanged()));
 				}
+		}
+
+		private void SetProjectAndTestFromCommandLineArguments()
+		{
+			var arguments = Environment.GetCommandLineArgs();
+			if (arguments.Length > 1)
+			{
+				viewModel.SetProjectAndTest(App.StartupPath, arguments[1],
+					arguments.Length > 2 ? arguments[2] : "");
+				HandleStartupArguments(App.StartupPath, arguments[1], arguments[2]);
+			}
+			App.SetProjectAndTest += viewModel.SetProjectAndTest;
+			App.SetProjectAndTest += HandleStartupArguments;
+		}
+
+		private void HandleStartupArguments(string arg1, string arg2, string arg3)
+		{
+			SetDeltaEnginePathForCurrentProcess(arg2, arg3);
+			ShowPlugin(arg2, arg3);
+		}
+
+		private static void SetDeltaEnginePathForCurrentProcess(string arg1, string arg2)
+		{
+			if (arg1 == PathExtensions.EnginePathEnvironmentVariableName)
+				Environment.SetEnvironmentVariable(PathExtensions.EnginePathEnvironmentVariableName, arg2);
+		}
+
+		private void ShowPlugin(string arg1, string arg2)
+		{
+			if (arg1 != "ShowPlugin")
+				return;
+			var editorPlugin = viewModel.EditorPlugins.FirstOrDefault(p => p.ShortName == arg2);
+			StartEditorPlugin(editorPlugin as UserControl);
+			maximizer.BringWindowToForeground();
 		}
 
 		private void StartOpenTKViewportAndBlock()
@@ -271,21 +295,46 @@ namespace DeltaEngine.Editor
 			Process.Start("http://deltaengine.net/Account/ApiKey");
 		}
 
+		private void FirstStepsClick(object sender, RoutedEventArgs e)
+		{
+			Process.Start("http://deltaengine.net/learn/firststeps");
+		}
+
+		private void TutorialsClick(object sender, RoutedEventArgs e)
+		{
+			Process.Start("http://deltaengine.net/learn/tutorials");
+		}
+
+		private void AboutTheEditorClick(object sender, RoutedEventArgs e)
+		{
+			Process.Start("http://deltaengine.net/features/editor");
+		}
+
+		private void StartingWithCSClick(object sender, RoutedEventArgs e)
+		{
+			Process.Start("http://deltaengine.net/learn/startingwithcsharp");
+		}
+
+		private void StartingWithCPPClick(object sender, RoutedEventArgs e)
+		{
+			Process.Start("http://deltaengine.net/learn/startingwithcpp");
+		}
+
 		private void OnContentDrop(object sender, DragEventArgs e)
 		{
 			IDataObject dataObject = e.Data;
 			if (!IsFile(dataObject))
 				return;
 			var newFiles = (string[])dataObject.GetData(DataFormats.FileDrop);
-			if (IsUploadingContent)
+			if (isUploadingContent)
 			{
 				foreach (var file in newFiles)
-					QueuedContent.Add(file);
+					queuedContent.Add(file);
 				return;
 			}
 			files = newFiles;
 			viewModel.UploadToOnlineService(files[0]);
-			IsUploadingContent = true;
+			isUploadingContent = true;
 			contentUploadIndex++;
 			viewModel.Service.ContentUpdated += UploadNextFile;
 		}
@@ -298,15 +347,15 @@ namespace DeltaEngine.Editor
 			if (files.Length < contentUploadIndex + 1)
 			{
 				contentUploadIndex = 0;
-				if (QueuedContent.Count == 0)
+				if (queuedContent.Count == 0)
 				{
 					viewModel.Service.ContentUpdated -= UploadNextFile;
-					IsUploadingContent = false;
+					isUploadingContent = false;
 				}
 				else
 				{
-					files = QueuedContent.ToArray();
-					QueuedContent.Clear();
+					files = queuedContent.ToArray();
+					queuedContent.Clear();
 				}
 			}
 			else
@@ -316,7 +365,7 @@ namespace DeltaEngine.Editor
 			}
 		}
 
-		private bool IsUploadingContent;
+		private bool isUploadingContent;
 
 		private static bool IsFile(IDataObject dropObject)
 		{

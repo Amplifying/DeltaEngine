@@ -119,7 +119,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ControlAdder.cs" />
+    <Compile Include="ControlChanger.cs" />
     <Compile Include="ControlProcessor.cs" />
+    <Compile Include="UIEditorScene.cs" />
+    <Compile Include="UIControl.cs" />
     <Compile Include="UIEditorViewModel.cs" />
     <Compile Include="UIEditorView.xaml.cs">
       <DependentUpon>UIEditorView.xaml</DependentUpon>

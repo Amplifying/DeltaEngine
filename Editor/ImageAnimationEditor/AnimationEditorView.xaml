@@ -84,7 +84,7 @@
 			<RowDefinition Height="9" />
 		</Grid.RowDefinitions>
 		<ComboBox Grid.Column="3" Grid.Row="3" IsEditable="True" Style="{StaticResource DeltaComboBox}"
-		          ItemsSource="{Binding Path=AnimationList}" Text="{Binding Path=AnimationName}" Grid.ColumnSpan="2" />
+		          ItemsSource="{Binding Path=AnimationList}" Text="{Binding Path=AnimationName}" Grid.ColumnSpan="2" IsTextSearchEnabled="False"/>
 		<ListBox Name="ImageViewList" Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="4" ItemsSource="{Binding Path=ImageList}"
 		         SelectedIndex="{Binding Path=SelectedIndex}" Style="{StaticResource DeltaListBox}">
 			<ListBox.ContextMenu>

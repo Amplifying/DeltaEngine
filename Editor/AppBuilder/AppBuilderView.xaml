@@ -89,12 +89,15 @@
 		<Label Style="{StaticResource DeltaLabel}" Content="C# Solution"  Grid.Column="1" Grid.Row="3" />
 		<TextBox
 			x:Name="SolutionPathTextBox"
-			Grid.Column="3" IsReadOnly="True" x:FieldModifier="public"
-			Text="{Binding Path=UserSolutionPath}" Grid.Row="3" Style="{StaticResource DeltaTextBox}" />
+			Grid.Column="3" IsReadOnly="True" x:FieldModifier="public" Background="#F7F7F7"
+			Text="{Binding Path=UserSolutionPath}" Grid.Row="3" Style="{StaticResource DeltaTextBox}">
+			<TextBox.ToolTip>
+				<TextBlock FontWeight="Bold">Your currently selected Code-Solution file that contains your Project you want to build</TextBlock>
+			</TextBox.ToolTip>
+		</TextBox>
 		<Button
 			x:Name="SolutionPathBrowseButton"
-			FontSize="20" Content="..." Grid.Column="5" IsEnabled="False" Style="{StaticResource DeltaButton}"
-			ToolTip="Select the source code for the entry point project. The source code and all dependencies must exist locally to build. If you don't have the source code you can only start the latest Build Result (if available)."
+			FontSize="20" Content="..." Grid.Column="5" IsEnabled="True" Style="{StaticResource DeltaButton}"
 			Click="OnBrowseUserProjectClicked" Grid.Row="3">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -102,6 +105,9 @@
 					<GradientStop Color="#FF8B8B8B" Offset="1"/>
 				</LinearGradientBrush>
 			</Button.Background>
+			<Button.ToolTip>
+				<TextBlock FontWeight="Bold">Browse to the Code-Solution of your Project you want to build</TextBlock>
+			</Button.ToolTip>
 		</Button>
 
 		<Label
@@ -111,19 +117,28 @@
 			x:Name="ProjectComboBox" Grid.Column="3" HorizontalContentAlignment="Left"
 			ItemsSource="{Binding Path=AvailableProjectsInSelectedSolution}"
 			SelectedValue="{Binding Path=SelectedSolutionProject}"
-			DisplayMemberPath="Title" Grid.Row="5" Style="{StaticResource DeltaComboBox}"
-		/>
+			DisplayMemberPath="Title" Grid.Row="5" Style="{StaticResource DeltaComboBox}">
+			<ComboBox.ToolTip>
+				<TextBlock FontWeight="Bold">The available Project's of the selected Code-Solution you can build</TextBlock>
+			</ComboBox.ToolTip>
+		</ComboBox>
 
 		<Label
-			x:Name="EntryPointLabel" Content="Entry Point" Style="{StaticResource DeltaLabel}" Grid.Column="1" Grid.Row="7" />
+			x:Name="EntryPointLabel" Content="Entry Point" Style="{StaticResource DeltaLabel}"
+			Grid.Column="1" Grid.Row="7" IsEnabled="False" />
 		<ComboBox
-			x:Name="EntryPointComboBox" Grid.Column="3" HorizontalContentAlignment="Left"
+			x:Name="EntryPointComboBox" Grid.Column="3" HorizontalContentAlignment="Left" IsEnabled="False"
 			ItemsSource="{Binding Path=AvailableEntryPointsInSelectedProject}"
-			SelectedValue="{Binding Path=SelectedEntryPoint}" Grid.Row="7" Style="{StaticResource DeltaComboBox}" />
+			SelectedValue="{Binding Path=SelectedEntryPoint}" Grid.Row="7"
+			Style="{StaticResource DeltaComboBox}" Foreground="#BDBDBD">
+			<ComboBox.ToolTip>
+				<TextBlock FontWeight="Bold">The available Entry-Point's that the current selected Project has (Feature currently disabled)</TextBlock>
+			</ComboBox.ToolTip>
+		</ComboBox>
 		<Button
 			Name="RefreshButton" Content="↻" FontSize="16" Grid.Column="5" Style="{StaticResource DeltaButton}"
 			ToolTip="Refreshes the list of available entry points. Useful if you just added a new unit test!"
-			Foreground="White" FontFamily="Arial" FontWeight="Bold" Grid.Row="7">
+			Foreground="White" FontFamily="Arial" FontWeight="Bold" Grid.Row="7" Visibility="Hidden">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
 					<GradientStop Color="#FFB0B0B0" Offset="0" />
@@ -137,10 +152,14 @@
 		<ComboBox
 			Name="PlatformComboBox" Grid.Column="3" HorizontalContentAlignment="Left"
 			ItemsSource="{Binding Path=SupportedPlatforms}"
-			SelectedValue="{Binding Path=SelectedPlatform}" Grid.Row="9" Style="{StaticResource DeltaComboBox}" />
+			SelectedValue="{Binding Path=SelectedPlatform}" Grid.Row="9" Style="{StaticResource DeltaComboBox}">
+			<ComboBox.ToolTip>
+				<TextBlock FontWeight="Bold">The available Platforms you can pick to build your Project</TextBlock>
+			</ComboBox.ToolTip>
+		</ComboBox>
 		<Button
 			x:Name="EditSettings" Content="⚙" FontSize="16" Grid.Column="5" Style="{StaticResource DeltaButton}"
-			ToolTip="" Foreground="White" FontFamily="Arial" FontWeight="Bold" Grid.Row="9">
+			Foreground="White" FontFamily="Arial" FontWeight="Bold" Grid.Row="9" Visibility="Hidden">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
 					<GradientStop Color="#FFA0A0A0" />
@@ -152,28 +171,36 @@
 
 		<Button
 			Name="LaunchButton" FontSize="18" Grid.Column="7" Style="{StaticResource DeltaButton}"
-			ToolTip="Builds the current specified code for the selected Platform."
-			Command="{Binding Path=BuildPressed}" FontFamily="Bebas" Foreground="White" FontWeight="Bold"
+			Command="{Binding Path=BuildCommand}" FontFamily="Bebas" FontWeight="Bold"
 			IsEnabled="{Binding Path=IsBuildActionExecutable}"
-			TextOptions.TextHintingMode="Fixed" Grid.Row="3" Grid.RowSpan="7" BorderBrush="{x:Null}" Grid.ColumnSpan="2">
+			TextOptions.TextHintingMode="Fixed" Grid.Row="3" Grid.RowSpan="7" BorderBrush="{x:Null}" Grid.ColumnSpan="3" Margin="0,0,10,0">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
 					<GradientStop Color="#FFB2B2B2" Offset="0" />
 					<GradientStop Color="#FF8B8B8B" Offset="1" />
 				</LinearGradientBrush>
 			</Button.Background>
+			<Button.ToolTip>
+				<TextBlock FontWeight="Bold">Builds the selected Project with current for the selected Platform</TextBlock>
+			</Button.ToolTip>
 			<Image Height="128" Source="../Images/AppBuilder/StartBuildIcon.png" Stretch="Fill" Width="128" OpacityMask="Black" />
 		</Button>
 
 		<local:AppBuilderInfoListView
 			x:Name="BuildList" Margin="0,40,0,0" Grid.Column="1" Grid.ColumnSpan="8" Grid.Row="10" />
-		<Button Content="?" Grid.Column="8" Grid.Row="1" Style="{StaticResource DeltaButton}" FontSize="20" FontWeight="Bold">
+		<Button
+			Content="?" Grid.Column="8" Grid.Row="1" Style="{StaticResource DeltaButton}" FontSize="20"
+			FontWeight="Bold"
+			Command="{Binding Path=HelpCommand}">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
 					<GradientStop Color="#FFB2B2B2" Offset="0"/>
 					<GradientStop Color="#FF8B8B8B" Offset="1"/>
 				</LinearGradientBrush>
 			</Button.Background>
+			<Button.ToolTip>
+				<TextBlock FontWeight="Bold">Help of how to use the AppBuilder</TextBlock>
+			</Button.ToolTip>
 		</Button>
 	</Grid>
 </UserControl>

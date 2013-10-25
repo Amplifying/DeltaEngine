@@ -48,7 +48,6 @@ namespace DeltaEngine.Editor.ContentManager.Tests.Previewers
 			mockMouse.SetButtonState(MouseButton.Middle, State.Pressed);
 			mockMouse.SetPosition(new Vector2D(1f, 1f));
 			AdvanceTimeAndUpdateEntities();
-			//TODO: Assert.AreEqual(1.5f, particlePreviewer.currentDisplayParticle.DrawArea.Width);
 		}
 
 		[Test]

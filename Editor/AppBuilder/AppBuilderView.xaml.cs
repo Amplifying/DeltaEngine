@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Messages;
@@ -67,17 +68,22 @@ namespace DeltaEngine.Editor.AppBuilder
 				ViewModel.UserSolutionPath = dialog.FileName;
 		}
 
-		private static OpenFileDialog CreateUserProjectPathBrowseDialog()
+		private OpenFileDialog CreateUserProjectPathBrowseDialog()
 		{
 			return new OpenFileDialog
 			{
 				DefaultExt = ".sln",
 				Filter = "C# Solution (.sln)|*.sln",
-				InitialDirectory = InitialDirectoryForBrowseDialog
+				InitialDirectory = GetInitialDirectoryForBrowseDialog(),
 			};
 		}
 
-		private const string InitialDirectoryForBrowseDialog = "";
+		private string GetInitialDirectoryForBrowseDialog()
+		{
+			if (String.IsNullOrWhiteSpace(ViewModel.UserSolutionPath))
+				return PathExtensions.GetDeltaEngineInstalledDirectory();
+			return Path.GetDirectoryName(ViewModel.UserSolutionPath);
+		}
 
 		public string ShortName
 		{

@@ -19,9 +19,11 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 
 		private void CreateNewAppBuilderViewModel()
 		{
-			viewModel = new AppBuilderViewModel(new MockBuildService());
+			buildService = new MockBuildService();
+			viewModel = new AppBuilderViewModel(buildService);
 		}
 
+		private MockBuildService buildService;
 		private AppBuilderViewModel viewModel;
 
 		[Test]
@@ -30,7 +32,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			Assert.IsNotEmpty(viewModel.SupportedPlatforms);
 			foreach (PlatformName platform in viewModel.SupportedPlatforms)
 				Logger.Info("SupportedPlatform: " + platform);
-			Assert.AreNotEqual(0, viewModel.SelectedPlatform);
+			Assert.AreNotEqual((PlatformName)0, viewModel.SelectedPlatform);
 		}
 		
 		[Test]
@@ -90,11 +92,49 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		}
 
 		[Test]
-		public void ExcuteBuild()
+		public void ExcuteBuildCommand()
 		{
-			Assert.IsTrue(viewModel.BuildPressed.CanExecute(null));
+			Assert.IsTrue(viewModel.IsBuildActionExecutable);
+			Assert.IsTrue(viewModel.BuildCommand.CanExecute(null));
 			viewModel.BuiltAppRecieved += (app, data) => Logger.Info("Built app received: " + app.Name);
-			viewModel.BuildPressed.Execute(null);
+			viewModel.BuildCommand.Execute(null);
 		}
+
+		[Test, Category("Slow"), Timeout(10000)]
+		public void RequestRequild()
+		{
+			int numberOfRequests = buildService.NumberOfBuildRequests;
+			AppInfo app = AppBuilderTestExtensions.TryGetAlreadyBuiltApp("LogoApp", PlatformName.Windows);
+			app.SolutionFilePath = PathExtensions.GetSamplesSolutionFilePath();
+			viewModel.AppListViewModel.RequestRebuild(app);
+			Assert.AreEqual(numberOfRequests + 1, buildService.NumberOfBuildRequests);
+		}
+
+		[Test]
+		public void AppBuilderShouldBeAbleToHandleBuildMessage()
+		{
+			int numberOfWarngins = viewModel.MessagesListViewModel.Warnings.Count;
+			buildService.RaiseAppBuildInfo("Info messages won't be collected");
+			buildService.RaiseAppBuildWarning("An other build warning");
+			Assert.AreEqual(numberOfWarngins + 1, viewModel.MessagesListViewModel.Warnings.Count);
+		}
+
+		[Test]
+		public void AppBuilderShouldBeAbleToHandleFailedBuild()
+		{
+			Assert.IsTrue(viewModel.IsBuildActionExecutable);
+			viewModel.AppBuildFailedRecieved += (fail) => Logger.Info("Built failed: " + fail.Reason);
+			buildService.ReceiveAppBuildFailed("Info messages won't be collected");
+			Assert.IsTrue(viewModel.IsBuildActionExecutable);
+		}
+
+		// ncrunch: no coverage start
+		[Test, Category("Slow")]
+		public void ExcuteHelpCommand()
+		{
+			Assert.IsTrue(viewModel.HelpCommand.CanExecute(null));
+			viewModel.HelpCommand.Execute(null);
+		}
+		// ncrunch: no coverage end
 	}
 }

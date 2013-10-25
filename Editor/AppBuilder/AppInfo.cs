@@ -14,7 +14,6 @@ namespace DeltaEngine.Editor.AppBuilder
 			FilePath = fullAppDataFilePath;
 			AppGuid = appGuid;
 			Name = Path.GetFileNameWithoutExtension(fullAppDataFilePath);
-			Name = Name.Replace("-debug", "").Replace("Web", "");
 			Platform = platform;
 			BuildDate = buildDate;
 		}
@@ -56,12 +55,10 @@ namespace DeltaEngine.Editor.AppBuilder
 		public class NoDeviceAvailable : Exception
 		{
 			public NoDeviceAvailable(AppInfo appInfo)
-				: base(appInfo.ToString())
-			{
-				
-			}
+				: base(appInfo.ToString()) {}
 		}
 
+		// ncrunch: no coverage start
 		public void LaunchAppOnDevice(Device device)
 		{
 			if (device == null)
@@ -77,6 +74,7 @@ namespace DeltaEngine.Editor.AppBuilder
 			device.Launch(this);
 			Logger.Info("Done Launching App " + Name);
 		}
+		// ncrunch: no coverage end
 
 		public class NoDeviceSpecified : Exception {}
 

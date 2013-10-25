@@ -1,6 +1,7 @@
 ﻿using System;
 using DeltaEngine.Editor.AppBuilder.Android;
 using DeltaEngine.Editor.AppBuilder.Web;
+using DeltaEngine.Editor.AppBuilder.Windows;
 using DeltaEngine.Editor.AppBuilder.WindowsPhone7;
 using DeltaEngine.Editor.Messages;
 
@@ -27,7 +28,7 @@ namespace DeltaEngine.Editor.AppBuilder
 			}
 		}
 
-		private class UnsupportedPlatfromForAppInfo : Exception
+		public class UnsupportedPlatfromForAppInfo : Exception
 		{
 			public UnsupportedPlatfromForAppInfo(string appFilePath, PlatformName platform)
 				: base(platform + ": " + appFilePath) { }

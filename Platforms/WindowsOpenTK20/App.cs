@@ -19,6 +19,7 @@ namespace DeltaEngine.Platforms
 		protected void Run()
 		{
 			resolver.Run();
+			resolver.Dispose();
 		}
 
 		protected internal T Resolve<T>() where T : class

@@ -42,6 +42,11 @@
 			<Setter Property="Foreground" Value="#FF5D5D5D" />
 		</Style>
 
+		<Style TargetType="Border" x:Key="DeltaBorder">
+			<Setter Property="BorderBrush" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="2" />
+		</Style>
+
 	</UserControl.Resources>
 
 	<Grid>
@@ -52,46 +57,52 @@
 		<StackPanel Margin="0,0,0,1"
 			Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="0"
 		>
-			<StackPanel
-				Name="PlatformsStackPanel" Orientation="Horizontal" Margin="0,0,4,0"
-				Width="Auto" HorizontalAlignment="Left"
-				MouseDown="OnPlatformsStackPanelClicked">
-				<Image
-					Source="/DeltaEngine.Editor;component/Images/AppBuilder/BuildInfoIcon.png"
-					Height="32" Width="32"
-				/>
-				<Label
-					x:Name="AppsLabel" Content="{Binding Path=TextOfBuiltApps}"
-					HorizontalAlignment="Left" Style="{StaticResource DeltaLabel}"
-				/>
-			</StackPanel>
-			<StackPanel
-				Name="ErrorsStackPanel" Orientation="Horizontal" Margin="0,0,4,0"
-				Width="Auto" HorizontalAlignment="Left"
-				MouseDown="OnErrorsStackPanelClicked">
-				<Image
-					Source="/DeltaEngine.Editor;component/Images/AppBuilder/BuildErrorIcon.png"
-					Height="32" Width="32"
-				/>
-				<Label
-					x:Name="ErrorsLabel" Content="{Binding Path=TextOfErrorCount}"
-					HorizontalAlignment="Left" Style="{StaticResource DeltaLabel}" 
-				/>
-			</StackPanel>
-			<StackPanel
-				x:Name="WarningsStackPanel" Margin="0,0,4,0" Orientation="Horizontal"
-				Width="Auto" HorizontalAlignment="Left"
-				MouseDown="OnWarningsStackPanelClicked"
-			>
-				<Image
-					Source="/DeltaEngine.Editor;component/Images/AppBuilder/BuildWarningIcon.png"
-					Height="32" Width="32"
-				/>
-				<Label
-					x:Name="WarningsLabel" Content="{Binding Path=TextOfWarningCount, Mode=OneWay}"
-					HorizontalAlignment="Left" Style="{StaticResource DeltaLabel}"
-				/>
-			</StackPanel>
+			<Border Name="AppsListPanelBorder" Style="{StaticResource DeltaBorder}">
+				<StackPanel
+					Name="PlatformsStackPanel" Orientation="Horizontal" Margin="0,0,4,0"
+					Width="Auto" HorizontalAlignment="Left"
+					MouseDown="OnPlatformsStackPanelClicked">
+					<Image
+						Source="/DeltaEngine.Editor;component/Images/AppBuilder/BuildInfoIcon.png"
+						Height="32" Width="32"
+					/>
+					<Label
+						x:Name="AppsLabel" Content="{Binding Path=TextOfBuiltApps}"
+						HorizontalAlignment="Left" Style="{StaticResource DeltaLabel}"
+					/>
+				</StackPanel>
+			</Border>
+			<Border Name="ErrorsPanelBorder" Style="{StaticResource DeltaBorder}">
+				<StackPanel
+					Name="ErrorsStackPanel" Orientation="Horizontal" Margin="0,0,4,0"
+					Width="Auto" HorizontalAlignment="Left"
+					MouseDown="OnErrorsStackPanelClicked">
+					<Image
+						Source="/DeltaEngine.Editor;component/Images/AppBuilder/BuildErrorIcon.png"
+						Height="32" Width="32"
+					/>
+					<Label
+						x:Name="ErrorsLabel" Content="{Binding Path=TextOfErrorCount}"
+						HorizontalAlignment="Left" Style="{StaticResource DeltaLabel}" 
+					/>
+				</StackPanel>
+			</Border>
+			<Border Name="WarningsPanelBorder" Style="{StaticResource DeltaBorder}">
+				<StackPanel
+					x:Name="WarningsStackPanel" Margin="0,0,4,0" Orientation="Horizontal"
+					Width="Auto" HorizontalAlignment="Left"
+					MouseDown="OnWarningsStackPanelClicked"
+				>
+					<Image
+						Source="/DeltaEngine.Editor;component/Images/AppBuilder/BuildWarningIcon.png"
+						Height="32" Width="32"
+					/>
+					<Label
+						x:Name="WarningsLabel" Content="{Binding Path=TextOfWarningCount, Mode=OneWay}"
+						HorizontalAlignment="Left" Style="{StaticResource DeltaLabel}"
+					/>
+				</StackPanel>
+			</Border>
 		</StackPanel>
 
 		<builder:BuiltAppsListView x:Name="BuiltAppsList" Grid.Row="1" />

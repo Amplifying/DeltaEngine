@@ -245,6 +245,13 @@
     <Resource Include="Images\ContentTypes\UITheme.png" />
     <Resource Include="Images\ContentTypes\Video.png" />
     <Resource Include="Images\ContentTypes\Xml.png" />
+    <Resource Include="Images\OctopusWelcome.png" />
+    <Resource Include="Images\CPP.png" />
+    <Resource Include="Images\CreateProject.png" />
+    <Resource Include="Images\CSharp.png" />
+    <Resource Include="Images\Tutorials.png" />
+    <Resource Include="Images\FirstSteps.png" />
+    <Resource Include="Images\Editor.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Images\Emulators\AndroidGoogleNexus4_768x1280.png" />

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using DeltaEngine.Content;
+using DeltaEngine.Core;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Extensions;
+using DeltaEngine.Mocks;
 
 namespace DeltaEngine.Editor.Mocks
 {
@@ -12,10 +14,12 @@ namespace DeltaEngine.Editor.Mocks
 		{
 			UserName = userName;
 			ProjectName = projectName;
+			EditorSettings = new MockSettings();
 		}
 
 		public string UserName { get; private set; }
 		public string ProjectName { get; private set; }
+		public Settings EditorSettings { get; private set; }
 
 		public void ReceiveData(object data)
 		{
@@ -27,11 +31,17 @@ namespace DeltaEngine.Editor.Mocks
 				ContentDeleted("MockContent");
 		}
 
+		public void RecieveData(ContentType type)
+		{
+			if (ContentUpdated != null)
+				ContentUpdated(type, "MockContent");
+		}
+
 		public event Action<object> DataReceived;
 		public event Action<ContentType, string> ContentUpdated;
 		public event Action<string> ContentDeleted;
 
-		public void Send(object message, bool allowToCompressMessage = true) {}
+		public virtual void Send(object message, bool allowToCompressMessage = true) {}
 
 		public IEnumerable<string> GetAllContentNames()
 		{
@@ -70,14 +80,14 @@ namespace DeltaEngine.Editor.Mocks
 		public void UploadContent(ContentMetaData metaData,
 			Dictionary<string, byte[]> optionalFileData = null)
 		{
-			NumberOfMessagesSend++;
+			NumberOfMessagesSent++;
 		}
 
-		public int NumberOfMessagesSend { get; private set; }
+		public int NumberOfMessagesSent { get; private set; }
 
 		public void DeleteContent(string selectedContent, bool deleteSubContent)
 		{
-			NumberOfMessagesSend++;
+			NumberOfMessagesSent++;
 		}
 
 		public void StartPlugin(Type plugin) {}

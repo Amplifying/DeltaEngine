@@ -23,6 +23,12 @@ namespace DeltaEngine.Editor.UIEditor
 		{
 			this.service = service;
 			DataContext = new UIEditorViewModel(service);
+			Messenger.Default.Register<string>(this, "SetMaterialToNull", SetMaterialToNull);
+		}
+
+		private void SetMaterialToNull(string obj)
+		{
+			MaterialComboBox.Text = "";
 		}
 
 		private Service service;
@@ -51,6 +57,8 @@ namespace DeltaEngine.Editor.UIEditor
 
 		private void ChangeMaterial(object sender, SelectionChangedEventArgs e)
 		{
+			if (e.AddedItems.Count == 0)
+				return;
 			if (e.AddedItems[0] == null)
 				return;
 			Messenger.Default.Send(e.AddedItems[0].ToString(), "ChangeMaterial");
@@ -141,14 +149,24 @@ namespace DeltaEngine.Editor.UIEditor
 			}
 		}
 
-		private void ChangeGrid(object sender, SelectionChangedEventArgs e)
-		{
-			Messenger.Default.Send(e.AddedItems[0], "ChangeGrid");
-		}
-
 		private void DeleteSelectedItem(object sender, RoutedEventArgs e)
 		{
 			Messenger.Default.Send("DeleteSelectedControl", "DeleteSelectedControl");
+		}
+
+		private void GridOnGotFocus(object sender, RoutedEventArgs e)
+		{
+			Messenger.Default.Send("ShowToolboxPane", "ShowToolboxPane");
+		}
+
+		private void GridOnLostFocus(object sender, RoutedEventArgs e)
+		{
+			Messenger.Default.Send("HideToolboxPane", "HideToolboxPane");
+		}
+
+		private void AddNewResolutionToList(object sender, RoutedEventArgs e)
+		{
+			Messenger.Default.Send("AddNewResolution", "AddNewResolution");
 		}
 	}
 }

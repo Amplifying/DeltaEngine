@@ -25,13 +25,14 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 		public void NewImageShouldBeAdded()
 		{
 			AddNewSprite();
-			Assert.AreEqual(1, viewModel.scene.Controls.Count);
+			Assert.AreEqual(1, viewModel.Scene.Controls.Count);
 		}
 
 		private void AddNewSprite()
 		{
-			viewModel.SetDraggingImage(true);
-			viewModel.AddImage(new Vector2D(0.5f, 0.5f));
+			viewModel.Adder.SetDraggingImage(true);
+			viewModel.Adder.AddImage(new Vector2D(0.5f, 0.5f), viewModel.uiControl,
+				viewModel.uiEditorScene);
 			viewModel.SelectedSpriteNameInList = "NewSprite0";
 			Assert.AreEqual("NewSprite0", viewModel.SelectedSpriteNameInList);
 		}
@@ -39,30 +40,42 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 		[Test, CloseAfterFirstFrame]
 		public void CannotAddIfImageDraggingNotSet()
 		{
-			viewModel.SetDraggingImage(false);
-			viewModel.AddImage(new Vector2D(1.0f, 1.0f));
-			Assert.AreEqual(0, viewModel.scene.Controls.Count);
+			viewModel.Adder.SetDraggingImage(false);
+			viewModel.Adder.AddImage(new Vector2D(1.0f, 1.0f), viewModel.uiControl,
+				viewModel.uiEditorScene);
+			Assert.AreEqual(0, viewModel.Scene.Controls.Count);
+			Assert.AreEqual(2, viewModel.ContentImageListList.Count);
 		}
 
 		[Test]
 		public void UIShouldSave()
 		{
 			AddNewSprite();
-			viewModel.UIName = "NewUI";
+			viewModel.UIName = "SceneWithAButton";
 			viewModel.SaveUI("");
-			Assert.AreEqual(1, ((MockService)viewModel.service).NumberOfMessagesSend);
+			Assert.AreEqual(1, ((MockService)viewModel.service).NumberOfMessagesSent);
 		}
 
 		[Test]
 		public void CannotSaveUIIfNoControlsWereAdded()
 		{
-			viewModel.UIName = "NewUI";
+			viewModel.UIName = "SceneWithAButton";
 			bool saved = false;
-			mockService.ContentUpdated += (ContentType type, string name) =>
-			{
-				//ncrunch: no coverage
-				saved = CheckNameAndTypeOfUpdate(type, name); //ncrunch: no coverage
-			};
+			mockService.ContentUpdated +=
+				(ContentType type, string name) => //ncrunch: no coverage start
+				{ saved = CheckNameAndTypeOfUpdate(type, name); }; //ncrunch: no coverage end
+			viewModel.SaveUI("");
+			Assert.IsFalse(saved);
+		}
+
+		[Test]
+		public void WillNotLoadNonExistingScene()
+		{
+			viewModel.UIName = "NoDataScene";
+			bool saved = false;
+			mockService.ContentUpdated +=
+				(ContentType type, string name) => //ncrunch: no coverage start
+				{ saved = CheckNameAndTypeOfUpdate(type, name); }; //ncrunch: no coverage end
 			viewModel.SaveUI("");
 			Assert.IsFalse(saved);
 		}
@@ -71,9 +84,7 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 		private static bool CheckNameAndTypeOfUpdate(ContentType type, string name)
 		{
 			return type == ContentType.Scene && name.Equals("NewUI");
-		}
-
-		//ncrunch: no coverage end
+		}//ncrunch: no coverage end
 
 		[Test, CloseAfterFirstFrame]
 		public void GridShouldBeDrawn()
@@ -107,11 +118,14 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 		public void SelectedInterActiveButtonNameListShouldHaveDefaultName()
 		{
 			var mouse = Resolve<MockMouse>();
-			viewModel.SetDraggingButton(true);
-			viewModel.AddButton(new Vector2D(0.4f, 0.4f));
-			viewModel.SelectedSpriteNameInList = viewModel.UIImagesInList[0];
+			viewModel.Adder.SetDraggingButton(true);
+			viewModel.Adder.AddButton(new Vector2D(0.4f, 0.4f), viewModel.uiControl,
+				viewModel.uiEditorScene);
+			viewModel.SelectedSpriteNameInList = viewModel.uiEditorScene.UIImagesInList[0];
 			mouse.SetPosition(new Vector2D(0.45f, 0.45f));
 			mouse.SetButtonState(MouseButton.Left, State.Pressing);
+			viewModel.ContentText = "TestContentText";
+			Assert.AreEqual("NewButton0", viewModel.SelectedSpriteNameInList);
 		}
 
 		[Test, CloseAfterFirstFrame]
@@ -121,9 +135,10 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 		}
 
 		[Test, CloseAfterFirstFrame]
-		public void GetEntity2DHeight()
+		public void GetEntity2DWidthAndHeight()
 		{
 			Assert.AreEqual(0, viewModel.Entity2DHeight);
+			Assert.AreEqual(0, viewModel.Entity2DWidth);
 		}
 
 		[Test, CloseAfterFirstFrame]
@@ -144,66 +159,80 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 		}
 
 		[Test, CloseAfterFirstFrame]
-		public void NewButtonShouldBeAdded()
-		{
-			var mouse = Resolve<MockMouse>();
-			viewModel.SetDraggingButton(true);
-			mouse.SetButtonState(MouseButton.Left, State.Releasing);
-			//Assert.AreEqual(1, viewModel.scene.Controls.Count);
-		}
-
-		[Test, CloseAfterFirstFrame]
 		public void CannotAddNewButton()
 		{
+			viewModel.ChangeMaterial("newMaterial2D");
 			var mouse = Resolve<MockMouse>();
-			viewModel.SetDraggingButton(false);
+			viewModel.Adder.SetDraggingButton(false);
 			mouse.SetButtonState(MouseButton.Left, State.Releasing);
-			Assert.AreEqual(0, viewModel.scene.Controls.Count);
+			Assert.AreEqual(0, viewModel.Scene.Controls.Count);
+			Assert.AreEqual(2, viewModel.SceneNames.Count);
 		}
 
 		[Test, CloseAfterFirstFrame]
 		public void NewLabelShouldBeAdded()
 		{
 			var mouse = Resolve<MockMouse>();
-			viewModel.SetDraggingLabel(true);
+			AddLabel();
 			mouse.SetButtonState(MouseButton.Left, State.Releasing);
-			//Assert.AreEqual(1, viewModel.scene.Controls.Count);
+			Assert.AreEqual(1, viewModel.uiEditorScene.Scene.Controls.Count);
+		}
+
+		private void AddLabel()
+		{
+			viewModel.Adder.SetDraggingLabel(true);
+			viewModel.Adder.AddLabel(new Vector2D(0.5f, 0.5f), viewModel.uiControl,
+				viewModel.uiEditorScene);
+			viewModel.SelectedSpriteNameInList = "NewLabel0";
+			Assert.AreEqual("NewLabel0", viewModel.SelectedSpriteNameInList);
 		}
 
 		[Test, CloseAfterFirstFrame]
 		public void CannotAddNewLabel()
 		{
 			var mouse = Resolve<MockMouse>();
-			viewModel.SetDraggingLabel(false);
+			viewModel.Adder.SetDraggingLabel(false);
 			mouse.SetButtonState(MouseButton.Left, State.Releasing);
-			Assert.AreEqual(0, viewModel.scene.Controls.Count);
+			Assert.AreEqual(0, viewModel.Scene.Controls.Count);
+			Assert.AreEqual(0, viewModel.UIImagesInList.Count);
+			Assert.AreEqual(1, viewModel.MaterialList.Count);
 		}
 
 		[Test, CloseAfterFirstFrame]
 		public void DeleteUIElement()
 		{
-			var keyboard = Resolve<MockKeyboard>();
 			AddNewSprite();
+			AddNewSprite();
+			viewModel.uiControl.Index = 1;
+			var keyboard = Resolve<MockKeyboard>();
 			keyboard.SetKeyboardState(Key.Delete, State.Pressing);
-			//Assert.AreEqual(0, viewModel.scene.Controls.Count);
+			AdvanceTimeAndUpdateEntities();
+			viewModel.DeleteSelectedControl("");
+			Assert.AreEqual(1, viewModel.uiEditorScene.Scene.Controls.Count);
 		}
 
 		[Test, CloseAfterFirstFrame]
 		public void MoveImage()
 		{
+			AddNewSprite();
 			var mouse = Resolve<MockMouse>();
+			var startPosition = viewModel.SelectedEntity2D.DrawArea.TopLeft;
 			mouse.SetButtonState(MouseButton.Left, State.Pressed);
 			mouse.SetPosition(new Vector2D(0.55f, 0.55f));
-			//Assert
+			AdvanceTimeAndUpdateEntities();
+			Assert.AreNotEqual(startPosition, viewModel.SelectedEntity2D.DrawArea.TopLeft);
 		}
 
 		[Test, CloseAfterFirstFrame]
 		public void MoveImageWithoutGrid()
 		{
 			AddNewSprite();
+			var startPosition = viewModel.SelectedEntity2D.DrawArea.TopLeft;
 			var mouse = Resolve<MockMouse>();
+			mouse.SetPosition(new Vector2D(0.55f, 0.55f));
 			mouse.SetButtonState(MouseButton.Left, State.Pressed);
-			//Assert
+			AdvanceTimeAndUpdateEntities();
+			Assert.AreNotEqual(startPosition, viewModel.SelectedEntity2D.DrawArea.TopLeft);
 		}
 
 		[Test, CloseAfterFirstFrame]
@@ -211,12 +240,14 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 		{
 			AddNewSprite();
 			AddNewSprite();
+			var startPosition = viewModel.uiEditorScene.Scene.Controls[0].TopLeft;
 			viewModel.IsSnappingToGrid = true;
 			viewModel.GridWidth = 1;
 			viewModel.GridHeight = 1;
 			var mouse = Resolve<MockMouse>();
 			mouse.SetButtonState(MouseButton.Left, State.Pressed);
-			//Assert
+			Assert.AreEqual(startPosition, viewModel.uiEditorScene.Scene.Controls[1].TopLeft);
+			Assert.IsTrue(viewModel.IsSnappingToGrid);
 		}
 
 		[Test, CloseAfterFirstFrame]
@@ -229,23 +260,47 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 		public void ChangeMaterial()
 		{
 			viewModel.ChangeMaterial("newMaterial2D");
+			AddNewButton();
+			viewModel.ChangeMaterial("newMaterial2D");
 			viewModel.SelectedEntity2D = new Sprite(ContentLoader.Load<Material>("material"),
 				Rectangle.One);
 			viewModel.ChangeMaterial("newMaterial2D");
+			Assert.AreEqual("newMaterial2D", viewModel.SelectedEntity2D.Get<Material>().Name);
+		}
+
+		private void AddNewButton()
+		{
+			viewModel.Adder.SetDraggingButton(true);
+			viewModel.Adder.AddButton(new Vector2D(0.5f, 0.5f), viewModel.uiControl,
+				viewModel.uiEditorScene);
+			viewModel.SelectedSpriteNameInList = "NewButton0";
+			Assert.AreEqual("NewButton0", viewModel.SelectedSpriteNameInList);
 		}
 
 		[Test, CloseAfterFirstFrame]
 		public void ChangeRenderLayer()
 		{
+			viewModel.uiEditorScene.SelectedEntity2D =
+				viewModel.controlAdder.AddNewImageToList(Vector2D.Half, viewModel.uiControl,
+					viewModel.uiEditorScene);
 			viewModel.ChangeRenderLayer(1);
 			Assert.AreEqual(1, viewModel.ControlLayer);
 		}
 
-		[TestCase(10), TestCase(16), TestCase(20), TestCase(24), TestCase(50), TestCase(0)]
-		public void ChangeGrid(int width)
+		[Test, CloseAfterFirstFrame]
+		public void ChangeRenderLayerWhenNothingIsSelectedWillNotCrash()
 		{
-			viewModel.ChangeGrid(width);
-			Assert.AreEqual(width, viewModel.GridWidth);
+			viewModel.SelectedEntity2D = null;
+			viewModel.ChangeRenderLayer(1);
+			Assert.AreEqual(1, viewModel.ControlLayer);
+		}
+
+		[TestCase("10 x 10", 10), TestCase("16 x 16", 16), TestCase("20 x 20", 20),
+		 TestCase("24 x 24", 24), TestCase("50 x 50", 50)]
+		public void ChangeGrid(string widthAndHeight, int width)
+		{
+			viewModel.SelectedResolution = widthAndHeight;
+			Assert.AreEqual(width.ToString(), viewModel.GridWidth.ToString());
 		}
 
 		[Test, CloseAfterFirstFrame]
@@ -253,9 +308,96 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 		{
 			AddNewSprite();
 			AddNewSprite();
-			viewModel.SelectedSpriteNameInList = viewModel.UIImagesInList[0];
+			viewModel.SelectedSpriteNameInList = viewModel.uiEditorScene.UIImagesInList[0];
 			viewModel.DeleteSelectedControl("");
 			AddNewSprite();
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void StartingEditorWillLoadSceneNames()
+		{
+			Assert.AreEqual(2, viewModel.uiEditorScene.SceneNames.Count);
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void ChangControlName()
+		{
+			AddNewSprite();
+			Assert.AreEqual("NewSprite0", viewModel.ControlName);
+			viewModel.ControlName = "TestName";
+			Assert.AreEqual("TestName", viewModel.ControlName);
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void ChangControlNameAndAddNewSprite()
+		{
+			AddNewSprite();
+			AddNewSprite();
+			Assert.AreEqual("NewSprite0", viewModel.ControlName);
+			viewModel.ControlName = "TestName";
+			Assert.AreEqual("TestName", viewModel.ControlName);
+			viewModel.uiEditorScene.UIImagesInList[0] = null;
+			AddNewSprite();
+			Assert.AreEqual("NewSprite0", viewModel.uiEditorScene.UIImagesInList[2]);
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void ChangControlNameAndAddNewButton()
+		{
+			AddNewButton();
+			AddNewButton();
+			Assert.AreEqual("NewButton0", viewModel.ControlName);
+			viewModel.ControlName = "TestName";
+			Assert.AreEqual("TestName", viewModel.ControlName);
+			viewModel.uiEditorScene.UIImagesInList[0] = null;
+			AddNewButton();
+			Assert.AreEqual("NewButton0", viewModel.uiEditorScene.UIImagesInList[2]);
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void ChangControlNameAndAddNewLabel()
+		{
+			AddNewLabel();
+			AddNewLabel();
+			Assert.AreEqual("NewLabel0", viewModel.ControlName);
+			viewModel.ControlName = "TestName";
+			Assert.AreEqual("TestName", viewModel.ControlName);
+			viewModel.uiEditorScene.UIImagesInList[0] = null;
+			AddNewLabel();
+			Assert.AreEqual("NewLabel0", viewModel.uiEditorScene.UIImagesInList[2]);
+		}
+
+		private void AddNewLabel()
+		{
+			viewModel.Adder.SetDraggingLabel(true);
+			viewModel.Adder.AddLabel(new Vector2D(0.5f, 0.5f), viewModel.uiControl,
+				viewModel.uiEditorScene);
+			viewModel.SelectedSpriteNameInList = "NewLabel0";
+			Assert.AreEqual("NewLabel0", viewModel.SelectedSpriteNameInList);
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void ChangControlNameAndAddNewSlider()
+		{
+			AddNewSlider();
+			AddNewSlider();
+			Assert.AreEqual(NewSliderId, viewModel.ControlName);
+			viewModel.ControlName = "TestName";
+			Assert.AreEqual("TestName", viewModel.ControlName);
+			viewModel.uiEditorScene.UIImagesInList[0] = null;
+			AddNewSlider();
+			Assert.AreEqual(NewSliderId, viewModel.uiEditorScene.UIImagesInList[2]);
+		}
+
+		private const string NewSliderId = "NewSlider0";
+
+		private void AddNewSlider()
+		{
+			viewModel.Adder.SetDraggingSlider(true);
+			viewModel.Adder.AddSlider(new Vector2D(0.5f, 0.5f), viewModel.uiControl,
+				viewModel.uiEditorScene);
+			viewModel.SelectedSpriteNameInList = NewSliderId;
+			Assert.AreEqual(NewSliderId, viewModel.SelectedSpriteNameInList);
 		}
 	}
 }

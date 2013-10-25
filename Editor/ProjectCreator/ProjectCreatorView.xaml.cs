@@ -38,7 +38,7 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		public bool RequiresLargePane
 		{
-			get { return false; }
+			get { return true; }
 		}
 	}
 }

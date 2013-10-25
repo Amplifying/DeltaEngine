@@ -9,6 +9,7 @@ using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
+using DeltaEngine.Multimedia;
 using DeltaEngine.Rendering2D;
 using DeltaEngine.ScreenSpaces;
 using GalaSoft.MvvmLight;
@@ -19,8 +20,9 @@ namespace DeltaEngine.Editor.MaterialEditor
 	{
 		public MaterialEditorViewModel(Service service)
 		{
+			ClearEntities();
 			this.service = service;
-			ColorList = new Dictionary<string, Color>();
+			colorList = new Dictionary<string, Color>();
 			ColorStringList = new ObservableCollection<string>();
 			MaterialList = new ObservableCollection<string>();
 			BlendModeList = new ObservableCollection<string>();
@@ -34,8 +36,16 @@ namespace DeltaEngine.Editor.MaterialEditor
 		public ObservableCollection<string> MaterialList { get; set; }
 		public ObservableCollection<string> BlendModeList { get; set; }
 		public ObservableCollection<string> RenderStyleList { get; set; }
-		private readonly Dictionary<string, Color> ColorList;
+		private readonly Dictionary<string, Color> colorList;
 		public ObservableCollection<string> ColorStringList { get; set; }
+
+		private static void ClearEntities()
+		{
+			var entities = EntitiesRunner.Current.GetAllEntities();
+			foreach (var entity in entities)
+				if (!entity.GetType().IsSubclassOf(typeof(SoundDevice)))
+					entity.IsActive = false;
+		}
 
 		private void FillLists()
 		{
@@ -43,7 +53,7 @@ namespace DeltaEngine.Editor.MaterialEditor
 			LoadColors();
 			LoadMaterials();
 			FillListWithBlendModes();
-			FillListWithRenderSize();
+			FillListWithRenderSizeModes();
 		}
 
 		private void LoadImageAndShaderLists()
@@ -87,30 +97,30 @@ namespace DeltaEngine.Editor.MaterialEditor
 
 		private void LoadColors()
 		{
-			ColorList.Add("Black", Color.Black);
-			ColorList.Add("White", Color.White);
-			ColorList.Add("Blue", Color.Blue);
-			ColorList.Add("Cyan", Color.Cyan);
-			ColorList.Add("Green", Color.Green);
-			ColorList.Add("Orange", Color.Orange);
-			ColorList.Add("Pink", Color.Pink);
-			ColorList.Add("Purple", Color.Purple);
-			ColorList.Add("Red", Color.Red);
-			ColorList.Add("Teal", Color.Teal);
-			ColorList.Add("Yellow", Color.Yellow);
-			ColorList.Add("CornflowerBlue", Color.CornflowerBlue);
-			ColorList.Add("LightBlue", Color.LightBlue);
-			ColorList.Add("LightGray", Color.LightGray);
-			ColorList.Add("DarkGray", Color.DarkGray);
-			ColorList.Add("DarkGreen", Color.DarkGreen);
-			ColorList.Add("Gold", Color.Gold);
-			ColorList.Add("PaleGreen", Color.PaleGreen);
+			colorList.Add("Black", Color.Black);
+			colorList.Add("White", Color.White);
+			colorList.Add("Blue", Color.Blue);
+			colorList.Add("Cyan", Color.Cyan);
+			colorList.Add("Green", Color.Green);
+			colorList.Add("Orange", Color.Orange);
+			colorList.Add("Pink", Color.Pink);
+			colorList.Add("Purple", Color.Purple);
+			colorList.Add("Red", Color.Red);
+			colorList.Add("Teal", Color.Teal);
+			colorList.Add("Yellow", Color.Yellow);
+			colorList.Add("CornflowerBlue", Color.CornflowerBlue);
+			colorList.Add("LightBlue", Color.LightBlue);
+			colorList.Add("LightGray", Color.LightGray);
+			colorList.Add("DarkGray", Color.DarkGray);
+			colorList.Add("DarkGreen", Color.DarkGreen);
+			colorList.Add("Gold", Color.Gold);
+			colorList.Add("PaleGreen", Color.PaleGreen);
 			FillColorStringList();
 		}
 
 		private void FillColorStringList()
 		{
-			foreach (var color in ColorList)
+			foreach (var color in colorList)
 				ColorStringList.Add(color.Key);
 			SelectedColor = "White";
 			RaisePropertyChanged("SelectedColor");
@@ -134,12 +144,12 @@ namespace DeltaEngine.Editor.MaterialEditor
 			RaisePropertyChanged("SelectedBlendMode");
 		}
 
-		private void FillListWithRenderSize()
+		private void FillListWithRenderSizeModes()
 		{
-			Array enumValues = Enum.GetValues(typeof(RenderSize));
+			Array enumValues = Enum.GetValues(typeof(RenderSizeMode));
 			foreach (var value in enumValues)
-				RenderStyleList.Add(Enum.GetName(typeof(RenderSize), value));
-			SelectedRenderSize = RenderSize.PixelBased.ToString();
+				RenderStyleList.Add(Enum.GetName(typeof(RenderSizeMode), value));
+			SelectedRenderSize = RenderSizeMode.PixelBased.ToString();
 			RaisePropertyChanged("SelectedRenderSize");
 		}
 
@@ -176,9 +186,9 @@ namespace DeltaEngine.Editor.MaterialEditor
 				NewMaterial = new Material(SelectedShader, SelectedImage);
 			else
 				NewMaterial = new Material(SelectedShader, SelectedAnimation);
-			NewMaterial.DefaultColor = ColorList[selectedColor];
-			NewMaterial.SetRenderSize(
-				(RenderSize)Enum.Parse(typeof(RenderSize), selectedRenderSize, true));
+			NewMaterial.DefaultColor = colorList[selectedColor];
+			NewMaterial.RenderSizeMode =
+				(RenderSizeMode)Enum.Parse(typeof(RenderSizeMode), selectedRenderSize, true);
 			EntitiesRunner.Current.Clear();
 			NewMaterial.DiffuseMap.BlendMode =
 				(BlendMode)Enum.Parse(typeof(BlendMode), SelectedBlendMode);
@@ -250,7 +260,7 @@ namespace DeltaEngine.Editor.MaterialEditor
 					else
 						SelectedImage = NewMaterial.DiffuseMap.Name;
 					SelectedShader = NewMaterial.Shader.Name;
-					foreach (var colorWithString in ColorList)
+					foreach (var colorWithString in colorList)
 						if (NewMaterial.DefaultColor == colorWithString.Value)
 							SelectedColor = colorWithString.Key;
 					RaisePropertyChanged("SelectedImage");
@@ -283,7 +293,7 @@ namespace DeltaEngine.Editor.MaterialEditor
 		{
 			Logger.Info("The saving of the material called " + MaterialName + " was a success.");
 			service.ContentUpdated -= SendSuccessMessageToLogger;
-		} //ncrunch: no coverage end
+		}//ncrunch: no coverage end
 
 		public string SelectedColor
 		{
@@ -294,6 +304,7 @@ namespace DeltaEngine.Editor.MaterialEditor
 				CreateNewMaterial();
 			}
 		}
+
 		private string selectedColor;
 	}
 }

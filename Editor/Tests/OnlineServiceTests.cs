@@ -14,9 +14,10 @@ namespace DeltaEngine.Editor.Tests
 		[Test]
 		public void CheckOnlineService()
 		{
-			var service = new OnlineService();
+			var settings = new MockSettings();
+			var service = new OnlineService(settings);
 			object result = null;
-			var connection = new OnlineServiceConnection(new MockSettings(),
+			var connection = new OnlineServiceConnection(settings,
 				() => { throw new ConnectionTimedOut(); });
 			connection.Connected +=
 				() => connection.Send(new LoginRequest(LoadApiKeyFromRegistry(), "LogoApp"));

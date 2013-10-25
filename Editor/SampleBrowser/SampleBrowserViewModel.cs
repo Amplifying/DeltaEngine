@@ -11,7 +11,7 @@ namespace DeltaEngine.Editor.SampleBrowser
 {
 	/// <summary>
 	/// Used to display Sample Games, Tutorials and Tests of engine and user code.
-	/// http://deltaengine.net/Start/SampleBrowser
+	/// http://deltaengine.net/games/samplebrowser
 	/// </summary>
 	public class SampleBrowserViewModel : ViewModelBase
 	{
@@ -125,7 +125,7 @@ namespace DeltaEngine.Editor.SampleBrowser
 
 		private static void OpenHelpWebsite()
 		{
-			Process.Start("http://DeltaEngine.net/Start/SampleBrowser");
+			Process.Start("http://deltaengine.net/games/samplebrowser");
 		}
 
 		public ICommand OnViewButtonClicked { get; private set; }

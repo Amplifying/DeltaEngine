@@ -5,7 +5,7 @@
 	/// </summary>
 	public enum PlatformName
 	{
-		Windows,
+		Windows = 1,
 		Windows8,
 		WindowsPhone7,
 		Android,

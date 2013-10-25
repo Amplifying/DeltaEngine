@@ -117,13 +117,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Rendering2D.Sha
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Content.Xml", "..\Content\Xml\DeltaEngine.Content.Xml.csproj", "{138A40B5-3D80-4BA3-BD84-D82C151EE7FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.Converters", "DeltaEngine.Editor.Converters\DeltaEngine.Editor.Converters.csproj", "{E8A76CE3-973E-4952-B021-D03DCA19148E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.Converters.Tests", "DeltaEngine.Editor.Converters.Tests\DeltaEngine.Editor.Converters.Tests.csproj", "{3EA7CAEE-F6E8-40BA-B499-D74ECB51555A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Rendering2D.Particles", "..\Rendering2D\Particles\DeltaEngine.Rendering2D.Particles.csproj", "{BECE691C-BAC6-434B-B1F9-4D8653922585}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Rendering2D.Mocks", "..\Rendering2D\Mocks\DeltaEngine.Rendering2D.Mocks.csproj", "{27C9A179-531F-41FB-8257-8396061C751B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.Converters", "Converters\DeltaEngine.Editor.Converters.csproj", "{E8A76CE3-973E-4952-B021-D03DCA19148E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.Converters.Tests", "Converters\Tests\DeltaEngine.Editor.Converters.Tests.csproj", "{3EA7CAEE-F6E8-40BA-B499-D74ECB51555A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DeltaEngine", "DeltaEngine", "{274C46E2-0906-4579-AB99-A345801A6051}"
 EndProject
@@ -353,14 +353,6 @@ Global
 		{138A40B5-3D80-4BA3-BD84-D82C151EE7FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{138A40B5-3D80-4BA3-BD84-D82C151EE7FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{138A40B5-3D80-4BA3-BD84-D82C151EE7FE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E8A76CE3-973E-4952-B021-D03DCA19148E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E8A76CE3-973E-4952-B021-D03DCA19148E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E8A76CE3-973E-4952-B021-D03DCA19148E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E8A76CE3-973E-4952-B021-D03DCA19148E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3EA7CAEE-F6E8-40BA-B499-D74ECB51555A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3EA7CAEE-F6E8-40BA-B499-D74ECB51555A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3EA7CAEE-F6E8-40BA-B499-D74ECB51555A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3EA7CAEE-F6E8-40BA-B499-D74ECB51555A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BECE691C-BAC6-434B-B1F9-4D8653922585}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BECE691C-BAC6-434B-B1F9-4D8653922585}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BECE691C-BAC6-434B-B1F9-4D8653922585}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -369,6 +361,14 @@ Global
 		{27C9A179-531F-41FB-8257-8396061C751B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27C9A179-531F-41FB-8257-8396061C751B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27C9A179-531F-41FB-8257-8396061C751B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8A76CE3-973E-4952-B021-D03DCA19148E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8A76CE3-973E-4952-B021-D03DCA19148E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8A76CE3-973E-4952-B021-D03DCA19148E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8A76CE3-973E-4952-B021-D03DCA19148E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EA7CAEE-F6E8-40BA-B499-D74ECB51555A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EA7CAEE-F6E8-40BA-B499-D74ECB51555A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EA7CAEE-F6E8-40BA-B499-D74ECB51555A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EA7CAEE-F6E8-40BA-B499-D74ECB51555A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

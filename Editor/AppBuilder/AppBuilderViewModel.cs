@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Input;
@@ -22,21 +23,22 @@ namespace DeltaEngine.Editor.AppBuilder
 		{
 			Service = service;
 			MessagesListViewModel = new AppBuildMessagesListViewModel();
-			AppListViewModel = new BuiltAppsListViewModel();
+			AppListViewModel = new BuiltAppsListViewModel(service.EditorSettings);
 			AppListViewModel.RebuildRequest += OnAppRebuildRequest;
-			BuildPressed = new RelayCommand(OnBuildExecuted);
-			BrowsePressed = new RelayCommand<string>(OnBrowseUserSolutionPathExecuted);
+			BuildCommand = new RelayCommand(OnBuildExecuted, () => IsBuildActionExecutable);
+			HelpCommand = new RelayCommand(OpenHelpButtonClicked);
 			service.DataReceived += OnServiceMessageReceived;
 			Service.Send(new SupportedPlatformsRequest());
 			TrySelectEngineSamplesSolution();
+			SelectedPlatform = PlatformName.Windows;
 		}
 
 		public PlatformName[] SupportedPlatforms { get; private set; }
 		public Service Service { get; private set; }
 		public AppBuildMessagesListViewModel MessagesListViewModel { get; set; }
 		public BuiltAppsListViewModel AppListViewModel { get; set; }
-		public ICommand BuildPressed { get; private set; }
-		public ICommand BrowsePressed { get; private set; }
+		public ICommand BuildCommand { get; private set; }
+		public ICommand HelpCommand { get; private set; }
 
 		private void OnAppRebuildRequest(AppInfo app)
 		{
@@ -52,10 +54,12 @@ namespace DeltaEngine.Editor.AppBuilder
 				RaisePropertyChangedForIsBuildActionExecutable();
 				SendBuildRequestToServer(solutionFilePath, projectNameInSolution, platform);
 			}
+			// ncrunch: no coverage start
 			catch (Exception ex)
 			{
 				OnAppBuildMessageRecieved(GetErrorMessage(ex));
 			}
+			// ncrunch: no coverage end
 		}
 
 		private void RaisePropertyChangedForIsBuildActionExecutable()
@@ -109,9 +113,12 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		private ProjectEntry FindUserProjectInSolution()
 		{
-			return
+			if (AvailableProjectsInSelectedSolution.Count == 0)
+				return null;
+			ProjectEntry foundProject =
 				AvailableProjectsInSelectedSolution.FirstOrDefault(
 					csProject => csProject.Title == Service.ProjectName);
+			return foundProject ?? AvailableProjectsInSelectedSolution[0];
 		}
 
 		public ProjectEntry SelectedSolutionProject
@@ -158,12 +165,14 @@ namespace DeltaEngine.Editor.AppBuilder
 			set
 			{
 				selectedPlatform = value;
+				RaisePropertyChanged("SelectedPlatform");
 				RaisePropertyChangedForIsBuildActionExecutable();
 			}
 		}
 
 		private PlatformName selectedPlatform;
 
+		// ncrunch: no coverage start
 		private AppBuildMessage GetErrorMessage(Exception ex)
 		{
 			string errorMessage = "Failed to send BuildRequest to server because " + ex;
@@ -173,6 +182,7 @@ namespace DeltaEngine.Editor.AppBuilder
 				Type = AppBuildMessageType.BuildError,
 			};
 		}
+		// ncrunch: no coverage end
 
 		protected void OnBuildExecuted()
 		{
@@ -182,10 +192,12 @@ namespace DeltaEngine.Editor.AppBuilder
 				SelectedPlatform);
 		}
 
-		private void OnBrowseUserSolutionPathExecuted(string newUserProjectPath)
+		// ncrunch: no coverage start
+		private static void OpenHelpButtonClicked()
 		{
-			UserSolutionPath = newUserProjectPath;
+			Process.Start("http://DeltaEngine.net/features/appbuilder");
 		}
+		// ncrunch: no coverage end
 
 		private void OnServiceMessageReceived(object serviceMessage)
 		{
@@ -259,9 +271,10 @@ namespace DeltaEngine.Editor.AppBuilder
 		{
 			UserSolutionPath = PathExtensions.GetSamplesSolutionFilePath();
 			if (UserSolutionPath == null)
-				LogSamplesSolutionNotFoundWarning();
+				LogSamplesSolutionNotFoundWarning(); // ncrunch: no coverage
 		}
 
+		// ncrunch: no coverage start
 		private static void LogSamplesSolutionNotFoundWarning()
 		{
 			string newLine = Environment.NewLine;
@@ -270,6 +283,7 @@ namespace DeltaEngine.Editor.AppBuilder
 				"' environment variable isn't set or alternatively you downloaded the Engine source code" +
 				" to '" + PathExtensions.DefaultCodePath + ".");
 		}
+		// ncrunch: no coverage end
 
 		public bool IsBuildActionExecutable
 		{
@@ -294,9 +308,8 @@ namespace DeltaEngine.Editor.AppBuilder
 		{
 			get
 			{
-				if (SupportedPlatforms == null)
-					return false;
-				return SupportedPlatforms.Any(supportedPlatform => SelectedPlatform == supportedPlatform);
+				return SupportedPlatforms != null &&
+					SupportedPlatforms.Any(supportedPlatform => SelectedPlatform == supportedPlatform);
 			}
 		}
 	}

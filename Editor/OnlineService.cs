@@ -13,6 +13,13 @@ namespace DeltaEngine.Editor
 {
 	public class OnlineService : Service
 	{
+		public OnlineService(Settings editorSettings)
+		{
+			EditorSettings = editorSettings;
+		}
+
+		public Settings EditorSettings { get; private set; }
+
 		public void Connect(string userName, OnlineServiceConnection connection)
 		{
 			UserName = userName;

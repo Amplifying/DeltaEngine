@@ -25,37 +25,84 @@ namespace DeltaEngine.Editor.UIEditor
 		{
 			EntitiesRunner.Current.Clear();
 			this.service = service;
+			uiEditorScene = new UIEditorScene();
+			uiEditorScene.ControlProcessor = new ControlProcessor(this);
+			uiControl = new UIControl();
+			controlAdder = new ControlAdder();
+			controlChanger = new ControlChanger();
+			Adder = new ControlAdder();
+			InitializeVariables();
+			FillContentImageList();
+			FillMaterialList();
+			FillSceneNames();
+			SetMouseCommands("");
+			SetMessengers();
+			new Command(() => DeleteSelectedControl("")).Add(new KeyTrigger(Key.Delete));
+		}
+
+		public UIEditorScene uiEditorScene;
+		public ControlAdder Adder { get; private set; }
+		public readonly ControlAdder controlAdder;
+		public readonly ControlChanger controlChanger;
+		public readonly UIControl uiControl;
+
+		private void InitializeVariables()
+		{
 			ContentImageListList = new ObservableCollection<string>();
 			UIImagesInList = new ObservableCollection<string>();
 			MaterialList = new ObservableCollection<string>();
-			ControlProcessor = new ControlProcessor(this);
-			scene = new Scene();
-			FillContentImageList();
-			FillMaterialList();
-			SetMouseCommands();
-			Messenger.Default.Register<string>(this, "SaveUI", SaveUI);
-			Messenger.Default.Register<string>(this, "ChangeMaterial", ChangeMaterial);
-			Messenger.Default.Register<int>(this, "ChangeRenderLayer", ChangeRenderLayer);
-			Messenger.Default.Register<bool>(this, "SetDraggingImage", SetDraggingImage);
-			Messenger.Default.Register<bool>(this, "SetDraggingButton", SetDraggingButton);
-			Messenger.Default.Register<bool>(this, "SetDraggingLabel", SetDraggingLabel);
-			Messenger.Default.Register<object>(this, "ChangeGrid", ChangeGrid);
-			Messenger.Default.Register<string>(this, "DeleteSelectedControl", DeleteSelectedControl);
-			new Command(DeleteUIElement).Add(new KeyTrigger(Key.Delete));
+			SceneNames = new ObservableCollection<string>();
+			ResolutionList = new ObservableCollection<string>();
+			FillResolutionListWithDefaultResolutions();
+			uiEditorScene.Scene = new Scene();
+		}
+
+		public ObservableCollection<string> ResolutionList
+		{
+			get { return uiEditorScene.ResolutionList; }
+			set { uiEditorScene.ResolutionList = value; }
+		}
+
+		private void FillResolutionListWithDefaultResolutions()
+		{
+			ResolutionList.Add("10 x 10");
+			ResolutionList.Add("16 x 16");
+			ResolutionList.Add("20 x 20");
+			ResolutionList.Add("24 x 24");
+			ResolutionList.Add("50 x 50");
+		}
+
+		public ObservableCollection<string> ContentImageListList
+		{
+			get { return uiEditorScene.ContentImageListList; }
+			set { uiEditorScene.ContentImageListList = value; }
+		}
+
+		public ObservableCollection<string> UIImagesInList
+		{
+			get { return uiEditorScene.UIImagesInList; }
+			set { uiEditorScene.UIImagesInList = value; }
+		}
+
+		public ObservableCollection<string> MaterialList
+		{
+			get { return uiEditorScene.MaterialList; }
+			set { uiEditorScene.MaterialList = value; }
+		}
+
+		public ObservableCollection<string> SceneNames
+		{
+			get { return uiEditorScene.SceneNames; }
+			set { uiEditorScene.SceneNames = value; }
 		}
 
 		public readonly Service service;
-		public ObservableCollection<string> ContentImageListList { get; private set; }
-		public ObservableCollection<string> UIImagesInList { get; private set; }
-		public ObservableCollection<string> MaterialList { get; private set; }
-		public readonly ControlProcessor ControlProcessor;
-		public readonly Scene scene;
 
 		private void FillContentImageList()
 		{
 			var imageList = service.GetAllContentNamesByType(ContentType.Image);
 			foreach (var image in imageList)
-				ContentImageListList.Add(image);
+				uiEditorScene.ContentImageListList.Add(image);
 		}
 
 		private void FillMaterialList()
@@ -63,7 +110,7 @@ namespace DeltaEngine.Editor.UIEditor
 			var materialList = service.GetAllContentNamesByType(ContentType.Material);
 			foreach (var material in materialList)
 				if (Is2DMaterial(material))
-					MaterialList.Add(material);
+					uiEditorScene.MaterialList.Add(material);
 		}
 
 		private static bool Is2DMaterial(string materialContentName)
@@ -81,50 +128,120 @@ namespace DeltaEngine.Editor.UIEditor
 			return (!(material.Shader as ShaderWithFormat).Format.Is3D);
 		}
 
-		private void SetMouseCommands()
+		private void FillSceneNames()
 		{
-			new Command(SetSelectedEntity2D).Add(new MouseButtonTrigger());
+			foreach (var newScene in service.GetAllContentNamesByType(ContentType.Scene))
+				uiEditorScene.SceneNames.Add(newScene);
+		}
+
+		private void SetMouseCommands(string obj)
+		{
+			new Command(FindEntity2DOnPosition).Add(new MouseButtonTrigger());
 			new Command(
 				position =>
-					ControlProcessor.MoveImage(position, SelectedEntity2D, isDragging, IsSnappingToGrid)).Add(
-						new MousePositionTrigger(MouseButton.Left, State.Pressed));
-			new Command(position => ControlProcessor.lastMousePosition = position).Add(
+					uiEditorScene.ControlProcessor.MoveImage(position, SelectedEntity2D, Adder.IsDragging,
+						uiEditorScene.IsSnappingToGrid)).Add(new MousePositionTrigger(MouseButton.Left,
+							State.Pressed));
+			new Command(position => uiEditorScene.ControlProcessor.lastMousePosition = position).Add(
 				new MouseButtonTrigger(MouseButton.Middle));
 			new Command(position => SetCommandsForReleasing(position)).Add(
 				new MouseButtonTrigger(MouseButton.Left, State.Releasing));
 		}
 
-		private bool isDraggingButton;
-		private bool isDragging;
-		public bool IsSnappingToGrid { get; set; }
+		public Entity2D SelectedEntity2D
+		{
+			get { return uiEditorScene.SelectedEntity2D; }
+			set { uiEditorScene.SelectedEntity2D = value; }
+		}
 
-		private void SetSelectedEntity2D(Vector2D mousePosition)
+		private void SetMessengers()
+		{
+			Messenger.Default.Register<string>(this, "SaveUI", SaveUI);
+			Messenger.Default.Register<string>(this, "ChangeMaterial", ChangeMaterial);
+			Messenger.Default.Register<int>(this, "ChangeRenderLayer", ChangeRenderLayer);
+			Messenger.Default.Register<bool>(this, "SetDraggingImage", Adder.SetDraggingImage);
+			Messenger.Default.Register<bool>(this, "SetDraggingButton", Adder.SetDraggingButton);
+			Messenger.Default.Register<bool>(this, "SetDraggingLabel", Adder.SetDraggingLabel);
+			Messenger.Default.Register<bool>(this, "SetDraggingSlider", Adder.SetDraggingSlider);
+			Messenger.Default.Register<object>(this, "ChangeGrid", ChangeGrid);
+			Messenger.Default.Register<string>(this, "AddNewResolution", AddNewResolution);
+			Messenger.Default.Register<string>(this, "SetSelectedNameFromHierachy",
+				SetSelectedNameFromHierachy);
+			Messenger.Default.Register<int>(this, "SetSelectedIndexFromHierachy",
+				SetSelectedIndexFromHierachy);
+			Messenger.Default.Register<string>(this, "SetCenteredControl", CreateCenteredControl);
+			Messenger.Default.Register<string>(this, "SetMouseCommands", SetMouseCommands);
+			Messenger.Default.Register<string>(this, "DeleteSelectedContentFromWpf",
+				DeleteSelectedContentFromWpf);
+		}
+
+		private void DeleteSelectedContentFromWpf(string control)
+		{
+			var index = uiEditorScene.UIImagesInList.IndexOf(control);
+			if (index < 0)
+				return;
+			uiEditorScene.UIImagesInList.RemoveAt(index);
+			Scene.Controls[index].IsActive = false; 
+			Scene.Controls.RemoveAt(index);
+			uiEditorScene.ControlProcessor.UpdateOutLines(SelectedEntity2D);
+		}
+
+		private void FindEntity2DOnPosition(Vector2D mousePosition)
 		{
 			if (SelectedEntity2D != null)
-				if (SelectedEntity2D.GetType() == typeof(InteractiveButton) &&
+				if (SelectedEntity2D.GetType() == typeof(Button) &&
 					SelectedEntity2D.DrawArea.Contains(mousePosition))
-					isClicking = true;
-			ControlProcessor.lastMousePosition = mousePosition;
-			foreach (Sprite sprite in scene.Controls)
+					uiControl.isClicking = true;
+			uiEditorScene.ControlProcessor.lastMousePosition = mousePosition;
+			foreach (Sprite sprite in Scene.Controls)
 				if (sprite.DrawArea.Contains(mousePosition))
-				{
-					Rectangle drawArea;
-					if (sprite.GetType() == typeof(InteractiveButton))
-						drawArea = new Rectangle(sprite.DrawArea.TopLeft, ((InteractiveButton)sprite).BaseSize);
-					else
-						drawArea = sprite.DrawArea;
-					SpriteListIndex = scene.Controls.IndexOf(sprite);
-					if (SpriteListIndex < 0)
+					if (SetEntity2D(sprite))
 						return; //ncrunch: no coverage 
-					SelectedSpriteNameInList = sprite.Material.DiffuseMap.Name;
-					SelectedEntity2D = sprite;
-					ControlProcessor.UpdateOutLines(SelectedEntity2D);
-					SetWidthAndHeight(drawArea);
-				}
+			RaiseAllProperties();
+		}
+
+		private void RaiseAllProperties()
+		{
 			RaisePropertyChanged("SelectedSpriteNameInList");
 			RaisePropertyChanged("SpriteListIndex");
 			RaisePropertyChanged("Entity2DWidth");
 			RaisePropertyChanged("Entity2DHeight");
+			RaisePropertyChanged("ControlName");
+			RaisePropertyChanged("ControlLayer");
+			RaisePropertyChanged("ContentText");
+			RaisePropertyChanged("UIImagesInList");
+			RaisePropertyChanged("ImageInGridList");
+			RaisePropertyChanged("ResolutionList");
+		}
+
+		public Scene Scene
+		{
+			get { return uiEditorScene.Scene; }
+			set { uiEditorScene.Scene = value; }
+		}
+
+		private bool SetEntity2D(Sprite sprite)
+		{
+			Rectangle drawArea = sprite.GetType() == typeof(Button)
+				? new Rectangle(sprite.DrawArea.TopLeft, (sprite).Size) : sprite.DrawArea;
+			SpriteListIndex = Scene.Controls.IndexOf(sprite);
+			if (SpriteListIndex < 0)
+				return true; //ncrunch: no coverage 
+			SelectedSpriteNameInList = sprite.Material.MetaData.Name;
+			SelectedEntity2D = sprite;
+			if (SelectedEntity2D.Get<Material>() != null)
+				if (MaterialList.Contains(SelectedEntity2D.Get<Material>().MetaData.Name))
+					SelectedMaterial = SelectedEntity2D.Get<Material>().MetaData.Name;
+				else
+				{
+					SelectedMaterial = "";
+					Messenger.Default.Send("SetMaterialToNull", "SetMaterialToNull");
+				}
+			Messenger.Default.Send(SelectedSpriteNameInList, "SetSelectedName");
+			Messenger.Default.Send(SpriteListIndex, "SetSelectedIndex");
+			uiEditorScene.ControlProcessor.UpdateOutLines(SelectedEntity2D);
+			SetWidthAndHeight(drawArea);
+			return false;
 		}
 
 		private void SetWidthAndHeight(Rectangle rect)
@@ -133,202 +250,80 @@ namespace DeltaEngine.Editor.UIEditor
 			Entity2DHeight = rect.Height;
 		}
 
-		private bool isClicking;
-		public Entity2D SelectedEntity2D { get; set; }
-
 		public string ControlName
 		{
-			get { return controlName; }
-			set
-			{
-				controlName = value;
-				ChangeControlName();
-			}
-		}
-
-		private string controlName;
-
-		private void ChangeControlName()
-		{
-			SpriteListIndex = scene.Controls.IndexOf(SelectedEntity2D);
-			if (SpriteListIndex < 0)
-				return; //ncrunch: no coverage 
-			UIImagesInList[SpriteListIndex] = ControlName;
-			selectedSpriteNameInList = ControlName;
-			SelectedEntity2D.Get<Material>().MetaData.Name = ControlName;
-			RaisePropertyChanged("UIImagesInList");
-			RaisePropertyChanged("ControlName");
+			get { return uiControl.ControlName; }
+			set { controlChanger.ChangeControlName(value, uiControl, uiEditorScene); }
 		}
 
 		private void SetCommandsForReleasing(Vector2D position)
 		{
-			AddImage(position);
-			AddButton(position);
-			AddLabel(position);
-			isClicking = false;
+			Adder.AddImage(position, uiControl, uiEditorScene);
+			Adder.AddButton(position, uiControl, uiEditorScene);
+			Adder.AddLabel(position, uiControl, uiEditorScene);
+			Adder.AddSlider(position, uiControl, uiEditorScene);
+			uiControl.isClicking = false;
 			if (SelectedEntity2D != null)
-				ControlProcessor.UpdateOutLines(SelectedEntity2D);
-		}
-
-		public void AddImage(Vector2D position)
-		{
-			if (!isDraggingImage)
-				return;
-			var sprite = AddNewImageToList(position);
-			SelectedEntity2D = sprite;
-			Entity2DWidth = sprite.DrawArea.Width;
-			Entity2DHeight = sprite.DrawArea.Height;
-			SelectedEntity2D = sprite;
-			isDraggingImage = false;
-			isDragging = false;
-			RaisePropertyChanged("UIImagesInList");
-			RaisePropertyChanged("ImageInGridList");
-		}
-
-		private bool isDraggingImage;
-
-		public Sprite AddNewImageToList(Vector2D position)
-		{
-			var costumImage = CreateDefaultImage();
-			var newSprite =
-				new Sprite(
-					new Material(ContentLoader.Load<Shader>(Shader.Position2DColorUV), costumImage),
-					new Rectangle(new Vector2D(0.45f, 0.45f), new Size(0.05f)));
-			scene.Add(newSprite);
-			bool freeName = false;
-			int numberOfNames = 0;
-			while (freeName == false)
-				if (UIImagesInList.Contains("NewSprite" + numberOfNames))
-					numberOfNames++;
-				else
-					freeName = true;
-			UIImagesInList.Add("NewSprite" + numberOfNames);
-			if (UIImagesInList[0] == null)
-				UIImagesInList[0] = "NewSprite" + numberOfNames;
-			newSprite.Material.MetaData.Name = "NewSprite" + numberOfNames;
-			return newSprite;
-		}
-
-		private static Image CreateDefaultImage()
-		{
-			var creationData = new ImageCreationData(new Size(8));
-			var colors = new Color[8 * 8];
-			for (int i = 0; i < 8; i++)
-				for (int j = 0; j < 8; j++)
-					if ((i + j) % 2 == 0)
-						colors[i * 8 + j] = Color.LightGray;
-					else
-						colors[i * 8 + j] = Color.DarkGray;
-			var costumImage = ContentLoader.Create<Image>(creationData);
-			costumImage.Fill(colors);
-			return costumImage;
-		}
-
-		public void AddButton(Vector2D position)
-		{
-			if (!isDraggingButton)
-				return;
-			var button = AddNewButtonToList(position);
-			SelectedEntity2D = button;
-			ContentText = "Default Button";
-			Entity2DWidth = button.DrawArea.Width;
-			Entity2DHeight = button.DrawArea.Height;
-			SelectedEntity2D = button;
-			isDraggingButton = false;
-			isDragging = false;
-			RaisePropertyChanged("UIImagesInList");
-			RaisePropertyChanged("ImageInGridList");
-		}
-
-		private Entity2D AddNewButtonToList(Vector2D position)
-		{
-			var newButton = new InteractiveButton(new Rectangle(position, new Size(0.2f, 0.1f)),
-				"Default Button");
-			scene.Add(newButton);
-			bool freeName = false;
-			int numberOfNames = 0;
-			while (freeName == false)
-				if (UIImagesInList.Contains("NewButton" + numberOfNames))
-					numberOfNames++;
-				else
-					freeName = true;
-			UIImagesInList.Add("NewButton" + numberOfNames);
-			if (UIImagesInList[0] == null)
-				UIImagesInList[0] = "NewButton" + numberOfNames;
-			newButton.theme.Button.Material.MetaData.Name = "NewButton" + numberOfNames;
-			newButton.theme.ButtonDisabled.Material.MetaData.Name = "NewButton" + numberOfNames;
-			newButton.theme.ButtonMouseover.Material.MetaData.Name = "NewButton" + numberOfNames;
-			newButton.theme.ButtonPressed.Material.MetaData.Name = "NewButton" + numberOfNames;
-			return newButton;
-		}
-
-		private void AddLabel(Vector2D position)
-		{
-			if (!isDraggingLabel)
-				return;
-			var label = AddNewLabelToList(position);
-			SelectedEntity2D = label;
-			ContentText = "Default Label";
-			Entity2DWidth = label.DrawArea.Width;
-			Entity2DHeight = label.DrawArea.Height;
-			SelectedEntity2D = label;
-			isDraggingLabel = false;
-			isDragging = false;
-			RaisePropertyChanged("UIImagesInList");
-			RaisePropertyChanged("ImageInGridList");
-		}
-
-		private bool isDraggingLabel;
-
-		private Entity2D AddNewLabelToList(Vector2D position)
-		{
-			var newLabel = new Label(new Rectangle(position, new Size(0.2f, 0.1f)), "DefaultLabel");
-			scene.Add(newLabel);
-			bool freeName = false;
-			int numberOfNames = 0;
-			while (freeName == false)
-				if (UIImagesInList.Contains("NewLabel" + numberOfNames))
-					numberOfNames++;
-				else
-					freeName = true;
-			UIImagesInList.Add("NewLabel" + numberOfNames);
-			if (UIImagesInList[0] == null)
-				UIImagesInList[0] = "NewLabel" + numberOfNames;
-			newLabel.Material.MetaData.Name = "NewLabel" + numberOfNames;
-			return newLabel;
+				uiEditorScene.ControlProcessor.UpdateOutLines(SelectedEntity2D);
 		}
 
 		public void SaveUI(string obj)
 		{
-			if (scene.Controls.Count == 0 || string.IsNullOrEmpty(UIName))
-				return;
+			if (Scene.Controls.Count == 0 || string.IsNullOrEmpty(UIName))
+				return; //ncrunch: no coverage 
 			var fileNameAndBytes = new Dictionary<string, byte[]>();
-			var bytes = BinaryDataExtensions.ToByteArrayWithTypeInformation(scene);
+			var bytes = BinaryDataExtensions.ToByteArrayWithTypeInformation(Scene);
 			fileNameAndBytes.Add(UIName + ".deltaUI", bytes);
 			var metaDataCreator = new ContentMetaDataCreator();
 			ContentMetaData contentMetaData = metaDataCreator.CreateMetaDataFromUI(UIName, bytes);
-			service.UploadContent(contentMetaData, fileNameAndBytes);
 			service.ContentUpdated += SendSuccessMessageToLogger;
+			service.UploadContent(contentMetaData, fileNameAndBytes);
 		}
 
+		//ncrunch: no coverage start
 		private void SendSuccessMessageToLogger(ContentType type, string content)
 		{
-			Logger.Info("The saving of the animation called " + UIName + " was a succes.");
+			Logger.Info("The saving of the scene called " + UIName + " was a succes.");
 			service.ContentUpdated -= SendSuccessMessageToLogger;
 		}
 
-		public string UIName { get; set; }
+		//ncrunch: no coverage end
+
+		public string UIName
+		{
+			get { return uiEditorScene.UIName; }
+			set
+			{
+				uiEditorScene.UIName = value;
+				if (!ContentLoader.Exists(uiEditorScene.UIName, ContentType.Scene))
+					return;
+				foreach (var entity in EntitiesRunner.Current.GetAllEntities())
+					entity.IsActive = false;
+				Scene = ContentLoader.Load<Scene>(uiEditorScene.UIName);
+				foreach (var control in Scene.Controls)
+					UIImagesInList.Add(control.Get<Material>().Name);
+				SetMouseCommands("");
+			}
+		}
 
 		public void ChangeMaterial(string newMaterialName)
 		{
 			if (SelectedEntity2D == null)
 				return;
+			if (SelectedEntity2D.GetType() == typeof(Button))
+			{
+				var button = SelectedEntity2D as Button;
+				button.Get<Theme>().Button = ContentLoader.Load<Material>(newMaterialName);
+				button.Get<Theme>().ButtonDisabled = ContentLoader.Load<Material>(newMaterialName);
+				button.Get<Theme>().ButtonMouseover = ContentLoader.Load<Material>(newMaterialName);
+				button.Get<Theme>().ButtonPressed = ContentLoader.Load<Material>(newMaterialName);
+			}
 			SelectedEntity2D.Set(ContentLoader.Load<Material>(newMaterialName));
 			SelectedEntity2D.DrawArea = new Rectangle(SelectedEntity2D.DrawArea.TopLeft,
 				ScreenSpace.Current.FromPixelSpace(SelectedEntity2D.Get<Material>().DiffuseMap.PixelSize));
 			Entity2DWidth = SelectedEntity2D.DrawArea.Width;
 			Entity2DHeight = SelectedEntity2D.DrawArea.Height;
-			ControlProcessor.UpdateOutLines(SelectedEntity2D);
+			uiEditorScene.ControlProcessor.UpdateOutLines(SelectedEntity2D);
 		}
 
 		public void ChangeRenderLayer(int changeValue)
@@ -337,224 +332,204 @@ namespace DeltaEngine.Editor.UIEditor
 			RaisePropertyChanged("ControlLayer");
 		}
 
-		public void SetDraggingImage(bool draggingImage)
-		{
-			isDraggingImage = draggingImage;
-			isDragging = draggingImage;
-		}
-
-		public void SetDraggingButton(bool draggingButton)
-		{
-			isDraggingButton = draggingButton;
-			isDragging = draggingButton;
-		}
-
-		public void SetDraggingLabel(bool draggingLabel)
-		{
-			isDraggingLabel = draggingLabel;
-			isDragging = draggingLabel;
-		}
-
 		public void ChangeGrid(object grid)
 		{
-			if (grid.ToString().Contains("10"))
-				SetGridWidthAndHeight(10);
-			else if (grid.ToString().Contains("16"))
-				SetGridWidthAndHeight(16);
-			else if (grid.ToString().Contains("20"))
-				SetGridWidthAndHeight(20);
-			else if (grid.ToString().Contains("24"))
-				SetGridWidthAndHeight(24);
-			else if (grid.ToString().Contains("50"))
-				SetGridWidthAndHeight(50);
-			else
-				SetGridWidthAndHeight(0);
+			var newGridWidthAndHeight = grid.ToString().Trim(new[] { ' ' });
+			var gridwidthAndHeight = newGridWidthAndHeight.Split((new[] { '{', ',', '}', 'x' }));
+			int width;
+			int.TryParse(gridwidthAndHeight[0], out width);
+			int height;
+			int.TryParse(gridwidthAndHeight[1], out height);
+			if (width <= 0 || height <= 0)
+				return;
+			SetGridWidthAndHeight(width, height);
 		}
 
-		private void SetGridWidthAndHeight(int widthAndHeight)
+		private void SetGridWidthAndHeight(int width, int height)
 		{
-			GridWidth = widthAndHeight;
-			GridHeight = widthAndHeight;
+			GridWidth = width;
+			GridHeight = height;
 		}
 
 		public int GridWidth
 		{
-			get { return gridWidth; }
+			get { return uiEditorScene.GridWidth; }
 			set
 			{
-				gridWidth = value;
+				uiEditorScene.GridWidth = value;
 				DrawGrid();
 			}
 		}
-
-		private int gridWidth;
 
 		private void DrawGrid()
 		{
-			foreach (Line2D line2D in linesInGridList)
+			foreach (Line2D line2D in uiEditorScene.linesInGridList)
 				line2D.IsActive = false;
-			linesInGridList.Clear();
-			if (GridWidth == 0 || GridHeight == 0 || !isDrawingGrid)
+			uiEditorScene.linesInGridList.Clear();
+			if (GridWidth == 0 || GridHeight == 0 || !uiEditorScene.IsDrawingGrid)
 				return;
 			for (int i = 0; i < GridWidth; i++)
-				linesInGridList.Add(new Line2D(new Vector2D((i * (1.0f / GridWidth)), 0),
+				uiEditorScene.linesInGridList.Add(new Line2D(new Vector2D((i * (1.0f / GridWidth)), 0),
 					new Vector2D((i * (1.0f / GridWidth)), 1), Color.Red));
 			for (int j = 0; j < GridHeight; j++)
-				linesInGridList.Add(new Line2D(new Vector2D(0, (j * (1.0f / GridHeight))),
+				uiEditorScene.linesInGridList.Add(new Line2D(new Vector2D(0, (j * (1.0f / GridHeight))),
 					new Vector2D(1, (j * (1.0f / GridHeight))), Color.Red));
 		}
 
-		private readonly List<Line2D> linesInGridList = new List<Line2D>();
-
 		public int GridHeight
 		{
-			get { return gridHeight; }
+			get { return uiEditorScene.GridHeight; }
 			set
 			{
-				gridHeight = value;
+				uiEditorScene.GridHeight = value;
 				DrawGrid();
 			}
 		}
-
-		private int gridHeight;
 
 		public void DeleteSelectedControl(string obj)
 		{
 			if (SelectedEntity2D == null)
-				return;
-			SpriteListIndex = scene.Controls.IndexOf(SelectedEntity2D);
-			if (SpriteListIndex < 0)
-				return; //ncrunch: no coverage 
-			UIImagesInList.RemoveAt(SpriteListIndex);
-			scene.Remove(SelectedEntity2D);
+				return; //ncrunch: no coverage
+			uiControl.Index = Scene.Controls.IndexOf(SelectedEntity2D);
+			if (uiControl.Index < 0)
+				return; //ncrunch: no coverage
+			uiEditorScene.UIImagesInList.RemoveAt(uiControl.Index);
+			Scene.Remove(SelectedEntity2D);
 			SelectedEntity2D = null;
-			SpriteListIndex = -1;
-			ControlProcessor.UpdateOutLines(SelectedEntity2D);
+			uiControl.Index = -1;
+			uiEditorScene.ControlProcessor.UpdateOutLines(SelectedEntity2D);
+			Messenger.Default.Send("", "DeleteSelectedContent");
+		}
+
+		private void AddNewResolution(string obj)
+		{
+			if (ResolutionList.Count > 9)
+				for (int i = 0; i < 10; i++)
+					if (i == 9)
+						ResolutionList.RemoveAt(i);
+					else
+						ResolutionList[i] = ResolutionList[i + 1];
+			RaiseAllProperties();
+			ResolutionList.Add(NewGridWidth.ToString() + " x " + NewGridHeight.ToString());
+		}
+
+		private void SetSelectedNameFromHierachy(string newSelectedName)
+		{
+			SelectedSpriteNameInList = newSelectedName;
+		}
+
+		private void SetSelectedIndexFromHierachy(int newSelectedIndex)
+		{
+			SpriteListIndex = newSelectedIndex;
+		}
+
+		private void CreateCenteredControl(string newControl)
+		{
+			Adder.IsDragging = true;
+			if (newControl == "Image")
+			{
+				Adder.IsDraggingImage = true;
+				Adder.AddImage(Vector2D.Half, uiControl, uiEditorScene);
+			}
+			else if (newControl == "Button")
+			{
+				Adder.IsDraggingButton = true;
+				Adder.AddButton(Vector2D.Half, uiControl, uiEditorScene);
+			}
+			else if (newControl == "Label")
+			{
+				Adder.IsDraggingLabel = true;
+				Adder.AddLabel(Vector2D.Half, uiControl, uiEditorScene);
+			}
+			else if (newControl == "Slider")
+			{
+				Adder.IsDraggingSlider = true;
+				Adder.AddSlider(Vector2D.Half, uiControl, uiEditorScene);
+			}
+			uiControl.isClicking = false;
+			if (SelectedEntity2D != null)
+				uiEditorScene.ControlProcessor.UpdateOutLines(SelectedEntity2D);
 		}
 
 		public bool IsShowingGrid
 		{
-			get { return isDrawingGrid; }
+			get { return uiEditorScene.IsDrawingGrid; }
 			set
 			{
-				isDrawingGrid = value;
+				uiEditorScene.IsDrawingGrid = value;
 				DrawGrid();
 			}
 		}
 
-		private bool isDrawingGrid;
-
-		private void DeleteUIElement()
-		{
-			if (SpriteListIndex < 0)
-				return; //ncrunch: no coverage
-			UIImagesInList.RemoveAt(SpriteListIndex);
-			scene.Controls.Remove(SelectedEntity2D);
-			SelectedEntity2D.IsActive = false;
-		}
-
 		public string SelectedSpriteNameInList
 		{
-			get { return selectedSpriteNameInList; }
+			get { return uiEditorScene.SelectedSpriteNameInList; }
 			set
 			{
-				if (string.IsNullOrEmpty(value) || SpriteListIndex < 0)
-					return;
-				selectedSpriteNameInList = value;
-				SelectedEntity2D = scene.Controls[SpriteListIndex];
-				ControlProcessor.UpdateOutLines(SelectedEntity2D);
-				ControlName = SelectedEntity2D.Get<Material>().MetaData.Name;
-				ControlLayer = SelectedEntity2D.RenderLayer;
-				Entity2DWidth = SelectedEntity2D.DrawArea.Width;
-				Entity2DHeight = SelectedEntity2D.DrawArea.Height;
-				if (SelectedEntity2D.GetType() == typeof(InteractiveButton))
-				{
-					var button = (InteractiveButton)SelectedEntity2D;
-					ContentText = button.Text;
-				}
-				else
-					ContentText = "";
-				RaisePropertyChanged("ControlLayer");
-				RaisePropertyChanged("Entity2DWidth");
-				RaisePropertyChanged("Entity2DHeight");
+				controlChanger.SetSelectedSpriteNameInList(value, uiControl, uiEditorScene);
+				RaiseAllProperties();
 			}
 		}
-
-		private string selectedSpriteNameInList;
-		public int SpriteListIndex { get; set; }
 
 		public int ControlLayer
 		{
-			get { return controlLayer; }
-			set
-			{
-				controlLayer = value;
-				if (SelectedEntity2D == null)
-					return;
-				SelectedEntity2D.RenderLayer = controlLayer;
-			}
+			get { return uiControl.controlLayer; }
+			set { controlChanger.SetControlLayer(value, uiControl, uiEditorScene); }
 		}
-
-		private int controlLayer;
 
 		public float Entity2DWidth
 		{
-			get { return entity2DWidth; }
-			set
-			{
-				if (isClicking || SelectedEntity2D == null)
-					return;
-				entity2DWidth = value;
-				var rect = SelectedEntity2D.DrawArea;
-				rect.Width = entity2DWidth;
-				SelectedEntity2D.DrawArea = rect;
-				if (SelectedEntity2D.GetType() == typeof(InteractiveButton))
-					ChangeButton((InteractiveButton)SelectedEntity2D);
-				ControlProcessor.UpdateOutLines(SelectedEntity2D);
-				RaisePropertyChanged("Entity2DWidth");
-			}
+			get { return uiControl.EntityWidth; }
+			set { controlChanger.SetWidth(value, uiControl, uiEditorScene); }
 		}
-
-		private float entity2DWidth;
 
 		public float Entity2DHeight
 		{
-			get { return entity2DHeight; }
-			set
-			{
-				if (isClicking || SelectedEntity2D == null)
-					return;
-				entity2DHeight = value;
-				var rect = SelectedEntity2D.DrawArea;
-				rect.Height = entity2DHeight;
-				SelectedEntity2D.DrawArea = rect;
-				if (SelectedEntity2D.GetType() == typeof(InteractiveButton))
-					ChangeButton((InteractiveButton)SelectedEntity2D);
-				ControlProcessor.UpdateOutLines(SelectedEntity2D);
-				RaisePropertyChanged("Entity2DHeight");
-			}
-		}
-
-		private float entity2DHeight;
-
-		private void ChangeButton(InteractiveButton button)
-		{
-			button.BaseSize = new Size(Entity2DWidth, Entity2DHeight);
-			button.Text = ContentText;
+			get { return uiControl.EntityHeight; }
+			set { controlChanger.SetHeight(value, uiControl, uiEditorScene); }
 		}
 
 		public string ContentText
 		{
-			get { return contentText; }
+			get { return uiControl.contentText; }
+			set { controlChanger.SetContentText(value, uiControl, uiEditorScene); }
+		}
+
+		public int SpriteListIndex
+		{
+			get { return uiControl.Index; }
+			set { uiControl.Index = value; }
+		}
+
+		public bool IsSnappingToGrid
+		{
+			get { return uiEditorScene.IsSnappingToGrid; }
+			set { uiEditorScene.IsSnappingToGrid = value; }
+		}
+
+		public int NewGridWidth { get; set; }
+		public int NewGridHeight { get; set; }
+
+		public string SelectedResolution
+		{
+			get { return uiEditorScene.SelectedResolution; }
 			set
 			{
-				contentText = value;
-				if (SelectedEntity2D.GetType() == typeof(InteractiveButton))
-					ChangeButton((InteractiveButton)SelectedEntity2D);
-				RaisePropertyChanged("ContentText");
+				uiEditorScene.SelectedResolution = value;
+				ChangeGrid(value);
 			}
 		}
 
-		private string contentText;
+		public string SelectedMaterial
+		{
+			get { return selectedMaterial; }
+			set
+			{
+				selectedMaterial = value;
+				RaisePropertyChanged("SelectedMaterial");
+			}
+		}
+
+		private string selectedMaterial;
 	}
 }

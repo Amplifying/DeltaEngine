@@ -9,35 +9,50 @@
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="500"
 	d:DataContext="{d:DesignInstance Type=helpers:DesignViewportControl, IsDesignTimeCreatable=True}"
 	MinHeight="300" MinWidth="300">
-	<Grid>
-		<Grid Name="ToolPaneGrid" Width="140" HorizontalAlignment="Left" Visibility="Hidden">
+	<Grid GotFocus="GridOnGotFocus" LostFocus="GridOnLostFocus">
+		<Grid
+			Name="ToolPane" Width="140" HorizontalAlignment="Left"
+			Visibility="Hidden">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="20" />
-				<RowDefinition Height="*" />
+				<RowDefinition Height="Auto" MinHeight="100" />
+				<RowDefinition Height="5" />
 				<RowDefinition Height="20" />
 				<RowDefinition Height="*" />
 			</Grid.RowDefinitions>
 			<TextBlock Grid.Row="0" Text="Toolbox" />
 			<ListBox
-				Grid.Row="1" ItemsSource="{Binding Path=Tools}" >
+				Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+				Name="UIToolbox" PreviewMouseLeftButtonDown="ClickingOnButton" PreviewMouseLeftButtonUp="CreateNewSceneControl"
+				ItemsSource="{Binding Path=Tools}">
 				<ListBox.ItemTemplate>
 					<DataTemplate>
-						<local:ToolboxEntry 
-							Cursor="Hand" PreviewMouseMove="DragButton" DataContext="{Binding}" />
+						<local:ToolboxEntry
+							Cursor="Hand" PreviewMouseMove="CreateAndDragNewSceneControl"
+							DataContext="{Binding}" />
 					</DataTemplate>
 				</ListBox.ItemTemplate>
 			</ListBox>
-			<TextBlock Grid.Row="2" Text="Hierarchy" />
-			<ListBox
-				Grid.Row="3" Margin="1,0,0,0" ItemsSource="{Binding Path=UIImagesInList}"
-				SelectedItem="{Binding Path=SelectedSpriteNameInList}"
-				SelectedIndex="{Binding Path=SpriteListIndex}" />
+			<GridSplitter
+				Grid.Row="2" Cursor="SizeNS" Height="5" ResizeBehavior="PreviousAndCurrent"
+				Background="DarkGray" ShowsPreview="False" VerticalAlignment="Bottom"
+				HorizontalAlignment="Stretch" />
+			<TextBlock Grid.Row="3" Text="Hierarchy" />
+			<ListBox Grid.Row="4" Margin="1,0,0,0" ItemsSource="{Binding Path=UIImagesInList}"
+			         SelectedItem="{Binding Path=SelectedNameInList}"
+			         SelectedIndex="{Binding Path=IndexOfSelectedNameInList}">
+				<ListBox.ContextMenu>
+					<ContextMenu>
+						<MenuItem Header="Delete" Click="DeleteSelectedItem" />
+					</ContextMenu>
+				</ListBox.ContextMenu>
+			</ListBox>
 		</Grid>
-		<Grid Name="Graph" Height="160" VerticalAlignment="Bottom" Visibility="Visible">
-			<!--TODO: graph-->
-		</Grid>
+		<Grid
+			Name="Graph" Height="160" VerticalAlignment="Bottom" Visibility="Hidden" />
 		<Grid Margin="140,0,0,160">
-			<WindowsFormsHost Name="ViewportHost" x:FieldModifier="public" Margin="-140,0,0,0" />
+			<WindowsFormsHost
+				Name="ViewportHost" x:FieldModifier="public" Margin="-140,0,0,-160" />
 		</Grid>
 	</Grid>
 </UserControl>

@@ -13,6 +13,6 @@ using System.Windows;
 [assembly: CLSCompliant(true)]
 [assembly:
 	ThemeInfo(ResourceDictionaryLocation.None, ResourceDictionaryLocation.SourceAssembly)]
-[assembly: AssemblyVersion("0.9.9.7")]
-[assembly: AssemblyFileVersion("0.9.9.7")]
+[assembly: AssemblyVersion("0.9.9.8")]
+[assembly: AssemblyFileVersion("0.9.9.8")]
 [assembly: Guid("17b1df05-145b-4f78-ae68-4ada0f3d574b")]

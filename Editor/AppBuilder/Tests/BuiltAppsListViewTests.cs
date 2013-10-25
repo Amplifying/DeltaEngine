@@ -1,5 +1,6 @@
 ﻿using System;
 using DeltaEngine.Editor.Messages;
+using DeltaEngine.Mocks;
 using NUnit.Framework;
 using WpfWindow = System.Windows.Window;
 
@@ -18,7 +19,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 
 		private static BuiltAppsListViewModel GetBuiltAppsListWithDummyEntry()
 		{
-			var listViewModel = new BuiltAppsListViewModel();
+			var listViewModel = new BuiltAppsListViewModel(new MockSettings());
 			listViewModel.AddApp(AppBuilderTestExtensions.GetMockAppInfo("Windows app",
 				PlatformName.Windows));
 			return listViewModel;
@@ -47,7 +48,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		[Test, STAThread]
 		public void ShowViewWithLogoAppForWindows()
 		{
-			var listViewModel = new BuiltAppsListViewModel();
+			var listViewModel = new BuiltAppsListViewModel(new MockSettings());
 			AppInfo app = AppBuilderTestExtensions.TryGetAlreadyBuiltApp("LogoApp", PlatformName.Windows);
 			listViewModel.AddApp(app);
 			var window = CreateVerifiableWindowFromViewModel(listViewModel);

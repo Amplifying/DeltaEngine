@@ -7,74 +7,73 @@ namespace DeltaEngine.Editor.UIEditor
 {
 	public class ControlProcessor
 	{
-		private readonly UIEditorViewModel uiEditorViewModel;
-		public readonly Line2D[] outLines = new Line2D[4];
-		private static readonly Color SelectionColor = Color.Red;
-		private Vector2D spritePos;
-		internal Vector2D lastMousePosition = Vector2D.Unused;
-
 		public ControlProcessor(UIEditorViewModel uiEditorViewModel)
 		{
-			CreateOutlines();
 			this.uiEditorViewModel = uiEditorViewModel;
+			OutLines = new Line2D[4];
+			CreateOutlines();
 		}
+
+		private readonly UIEditorViewModel uiEditorViewModel;
 
 		private void CreateOutlines()
 		{
-			outLines[0] = new Line2D(Vector2D.Unused, Vector2D.Unused, SelectionColor)
+			OutLines[0] = new Line2D(Vector2D.Unused, Vector2D.Unused, SelectionColor)
 			{
 				RenderLayer = 1000
 			};
-			outLines[1] = new Line2D(Vector2D.Unused, Vector2D.Unused, SelectionColor)
+			OutLines[1] = new Line2D(Vector2D.Unused, Vector2D.Unused, SelectionColor)
 			{
 				RenderLayer = 1000
 			};
-			outLines[2] = new Line2D(Vector2D.Unused, Vector2D.Unused, SelectionColor)
+			OutLines[2] = new Line2D(Vector2D.Unused, Vector2D.Unused, SelectionColor)
 			{
 				RenderLayer = 1000
 			};
-			outLines[3] = new Line2D(Vector2D.Unused, Vector2D.Unused, SelectionColor)
+			OutLines[3] = new Line2D(Vector2D.Unused, Vector2D.Unused, SelectionColor)
 			{
 				RenderLayer = 1000
 			};
 		}
+
+		public Line2D[] OutLines { get; private set; }
+		private static readonly Color SelectionColor = Color.Red;
 
 		internal void UpdateOutLines(Entity2D selectedSprite)
 		{
 			if (selectedSprite == null)
-			{
-				ClearLines();
+			{			
 				return;
 			}
+			ClearLines();
 			var drawArea = selectedSprite.DrawArea;
-			const float Offset = 0.002f;
-			outLines[0].StartPoint = drawArea.TopLeft + new Vector2D(-Offset, -Offset);
-			outLines[0].EndPoint = drawArea.TopRight + new Vector2D(+Offset, -Offset);
-			outLines[1].StartPoint = drawArea.TopLeft + new Vector2D(-Offset, -Offset);
-			outLines[1].EndPoint = drawArea.BottomLeft + new Vector2D(-Offset, +Offset);
-			outLines[2].StartPoint = drawArea.BottomLeft + new Vector2D(-Offset, +Offset);
-			outLines[2].EndPoint = drawArea.BottomRight + new Vector2D(+Offset, +Offset);
-			outLines[3].StartPoint = drawArea.BottomRight + new Vector2D(+Offset, +Offset);
-			outLines[3].EndPoint = drawArea.TopRight + new Vector2D(+Offset, -Offset);
+			OutLines[0].StartPoint = drawArea.TopLeft;
+			OutLines[0].EndPoint = drawArea.TopRight;
+			OutLines[1].StartPoint = drawArea.TopLeft;
+			OutLines[1].EndPoint = drawArea.BottomLeft;
+			OutLines[2].StartPoint = drawArea.BottomLeft;
+			OutLines[2].EndPoint = drawArea.BottomRight;
+			OutLines[3].StartPoint = drawArea.BottomRight;
+			OutLines[3].EndPoint = drawArea.TopRight;
 		}
 
 		private void ClearLines()
 		{
-			outLines[0].StartPoint = new Vector2D(0, 0);
-			outLines[0].EndPoint = new Vector2D(0, 0);
-			outLines[1].StartPoint = new Vector2D(0, 0);
-			outLines[1].EndPoint = new Vector2D(0, 0);
-			outLines[2].StartPoint = new Vector2D(0, 0);
-			outLines[2].EndPoint = new Vector2D(0, 0);
-			outLines[3].StartPoint = new Vector2D(0, 0);
-			outLines[3].EndPoint = new Vector2D(0, 0);
+			OutLines[0].StartPoint = new Vector2D(0, 0);
+			OutLines[0].EndPoint = new Vector2D(0, 0);
+			OutLines[1].StartPoint = new Vector2D(0, 0);
+			OutLines[1].EndPoint = new Vector2D(0, 0);
+			OutLines[2].StartPoint = new Vector2D(0, 0);
+			OutLines[2].EndPoint = new Vector2D(0, 0);
+			OutLines[3].StartPoint = new Vector2D(0, 0);
+			OutLines[3].EndPoint = new Vector2D(0, 0);
 		}
 
 		internal void MoveImage(Vector2D mousePosition, Entity2D selectedEntity2D, bool isDragging,
 			bool isSnappingToGrid)
 		{
 			if (selectedEntity2D == null || isDragging)
-				return;
+				return; //ncrunch: no coverage 
 			if (uiEditorViewModel.GridWidth == 0 || uiEditorViewModel.GridHeight == 0 ||
 				!isSnappingToGrid)
 				MoveImageWithoutGrid(mousePosition, selectedEntity2D);
@@ -90,6 +89,8 @@ namespace DeltaEngine.Editor.UIEditor
 			selectedEntity2D.Center += relativePosition;
 		}
 
+		internal Vector2D lastMousePosition = Vector2D.Unused;
+
 		private void MoveImageUsingTheGrid(Vector2D mousePosition, Entity2D selectedEntity2D)
 		{
 			var relativePosition = mousePosition - lastMousePosition;
@@ -103,9 +104,11 @@ namespace DeltaEngine.Editor.UIEditor
 				gridSpaceY * rowNumberInGrid, selectedEntity2D.DrawArea.Width,
 				selectedEntity2D.DrawArea.Height);
 			if (spritePos == selectedEntity2D.Center)
-				return;//ncrunch: no coverage
+				return; //ncrunch: no coverage
 			lastMousePosition = mousePosition;
 			spritePos = selectedEntity2D.Center;
 		}
+
+		private Vector2D spritePos;
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
@@ -144,13 +145,13 @@ namespace DeltaEngine.Editor.ContentManager
 			return contentMetaData;
 		}
 
-		public ContentMetaData CreateParticleSystemData(string name, string[] emitterDataNames)
+		public ContentMetaData CreateParticleSystemData(string name, List<string> emitterDataNames)
 		{
-			if (emitterDataNames == null || emitterDataNames.Length == 0)
+			if (emitterDataNames == null || emitterDataNames.Count == 0)
 				return null;
 			var contentMetaData = new ContentMetaData { Name = name, Type = ContentType.ParticleSystem};
 			var rowOfNames = emitterDataNames[0];
-			for (int i = 1; i < emitterDataNames.Length; i++)
+			for (int i = 1; i < emitterDataNames.Count; i++)
 				rowOfNames += ", " + emitterDataNames[i];
 			contentMetaData.Values.Add("EmitterNames", rowOfNames);
 			return contentMetaData;

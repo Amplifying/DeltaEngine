@@ -13,11 +13,7 @@ namespace DeltaEngine.Editor.SampleBrowser
 	/// </summary>
 	public class SampleLauncher
 	{
-		public SampleLauncher()
-		{
-			//TODO: this needs to be fixed again:
-			//LoadOpenTKResolverAssembly();
-		}
+		public SampleLauncher() {}
 
 		private void LoadOpenTKResolverAssembly()
 		{
@@ -53,7 +49,6 @@ namespace DeltaEngine.Editor.SampleBrowser
 			string parentDirectory = Path.GetFullPath(Path.Combine(currentDirectory, ".."));
 			if (IsDeltaEngineDirectory(parentDirectory))
 				return Path.GetFullPath(Path.Combine(parentDirectory, relativeResolverPath));
-
 			return parentDirectory != Path.GetPathRoot(parentDirectory)
 				? GetOpenTKResolverPath(parentDirectory) : "";
 		}

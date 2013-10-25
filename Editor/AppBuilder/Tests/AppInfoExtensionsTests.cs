@@ -10,6 +10,14 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 	public class AppInfoExtensionsTests
 	{
 		[Test]
+		public void CreateAppInfoForUnsupportedPlatformShouldThrowAnException()
+		{
+			const string AppName = "MockApp";
+			Assert.Throws<AppInfoExtensions.UnsupportedPlatfromForAppInfo>(
+				() => AppInfoExtensions.CreateAppInfo(AppName, (PlatformName)99, Guid.Empty, DateTime.Now));
+		}
+
+		[Test]
 		public void CreateAppInfoForWindows()
 		{
 			const string AppName = "MockApp";

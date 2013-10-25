@@ -88,7 +88,7 @@
 			          ItemsSource="{Binding Path=ShaderList}"
 			          SelectedItem="{Binding Path=SelectedShader}" Grid.ColumnSpan="2" />
 			<ComboBox Grid.Column="3" Grid.Row="3" ItemsSource="{Binding Path=MaterialList}"
-			          Text="{Binding Path=MaterialName}" IsEditable="true" FontFamily="Arial"
+			          Text="{Binding Path=MaterialName}" IsEditable="true" FontFamily="Arial" IsTextSearchEnabled="False"
 			          FontSize="16" Foreground="#FF5D5D5D" Name="LoadedMaterialList" Grid.ColumnSpan="2" />
 			<Label Content="Default Color" Grid.Column="1" Grid.Row="11" Style="{StaticResource DeltaLabel}" />
 			<ComboBox Grid.Column="3" Grid.Row="11" Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="2"

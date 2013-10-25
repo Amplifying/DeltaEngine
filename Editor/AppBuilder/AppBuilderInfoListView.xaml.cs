@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -14,6 +15,55 @@ namespace DeltaEngine.Editor.AppBuilder
 		public AppBuilderInfoListView()
 		{
 			InitializeComponent();
+			AppsLabel.MouseEnter += (sender, args) => ShowBorderForAppsListPanel();
+			AppsLabel.MouseLeave += (sender, args) => HideBorderForAppsListPanel();
+			ErrorsLabel.MouseEnter += (sender, args) => ShowBorderForErrorsPanel();
+			ErrorsLabel.MouseLeave += (sender, args) => HideBorderForErrorsPanel();
+			WarningsLabel.MouseEnter += (sender, args) => ShowBorderForWarningsPanel();
+			WarningsLabel.MouseLeave += (sender, args) => HideBorderForWarningsPanel();
+		}
+
+		private void ShowBorderForAppsListPanel()
+		{
+			ShowBorder(AppsListPanelBorder);
+		}
+
+		private static void ShowBorder(Border border)
+		{
+			border.BorderBrush = new SolidColorBrush(Colors.DodgerBlue);
+		}
+
+		private void HideBorderForAppsListPanel()
+		{
+			if (!IsBuiltAppsListFocused)
+				HideBorder(AppsListPanelBorder);
+		}
+
+		private static void HideBorder(Border border)
+		{
+			border.BorderBrush = new SolidColorBrush(Colors.Transparent);
+		}
+
+		private void ShowBorderForErrorsPanel()
+		{
+			ShowBorder(ErrorsPanelBorder);
+		}
+
+		private void HideBorderForErrorsPanel()
+		{
+			if (!MessagesViewModel.IsShowingErrorsAllowed)
+				HideBorder(ErrorsPanelBorder);
+		}
+
+		private void ShowBorderForWarningsPanel()
+		{
+			ShowBorder(WarningsPanelBorder);
+		}
+
+		private void HideBorderForWarningsPanel()
+		{
+			if (!MessagesViewModel.IsShowingWarningsAllowed)
+				HideBorder(WarningsPanelBorder);
 		}
 
 		public BuiltAppsListViewModel AppListViewModel
@@ -33,7 +83,6 @@ namespace DeltaEngine.Editor.AppBuilder
 			MessagesViewModel.IsShowingWarningsAllowed = false;
 			BuildMessagesList.Visibility = Visibility.Collapsed;
 			BuiltAppsList.Visibility = Visibility.Visible;
-			AppsLabel.Background = new SolidColorBrush(ToggleEnabledColor);
 		}
 
 		public AppBuildMessagesListViewModel MessagesViewModel
@@ -61,22 +110,18 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		private void UpdateErrorsStackPanelBackground()
 		{
-			Color brushColor = MessagesViewModel.IsShowingErrorsAllowed ?
-				ToggleEnabledColor :
-				ToggleDisabledColor;
-			ErrorsLabel.Background = new SolidColorBrush(brushColor);
+			if (MessagesViewModel.IsShowingErrorsAllowed)
+				ShowBorderForErrorsPanel();
+			else
+				HideBorderForErrorsPanel();
 		}
-
-		private static readonly Color ToggleEnabledColor =
-			(Color)ColorConverter.ConvertFromString("#FFF0F0F0");
-		private static readonly Color ToggleDisabledColor = Colors.Gray;
 
 		private void UpdateWarningsStackPanelBackground()
 		{
-			Color brushColor = MessagesViewModel.IsShowingWarningsAllowed ?
-				ToggleEnabledColor :
-				ToggleDisabledColor;
-			WarningsLabel.Background = new SolidColorBrush(brushColor);
+			if (MessagesViewModel.IsShowingWarningsAllowed)
+				ShowBorderForWarningsPanel();
+			else
+				HideBorderForWarningsPanel();
 		}
 
 		private void OnErrorsStackPanelClicked(object sender, MouseButtonEventArgs e)
@@ -95,10 +140,10 @@ namespace DeltaEngine.Editor.AppBuilder
 		public void FocusBuildMessagesList()
 		{
 			BuiltAppsList.Visibility = Visibility.Collapsed;
-			AppsLabel.Background = new SolidColorBrush(ToggleDisabledColor);
 			BuildMessagesList.Visibility = Visibility.Visible;
 			MessagesViewModel.IsShowingErrorsAllowed = true;
 			MessagesViewModel.IsShowingWarningsAllowed = true;
+			HideBorderForAppsListPanel();
 		}
 
 		private void OnWarningsStackPanelClicked(object sender, MouseButtonEventArgs e)

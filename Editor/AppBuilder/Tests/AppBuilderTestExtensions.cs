@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using DeltaEngine.Core;
-using DeltaEngine.Editor.AppBuilder.WindowsPhone7;
 using DeltaEngine.Editor.Messages;
 using DeltaEngine.Logging;
+using DeltaEngine.Mocks;
 
 namespace DeltaEngine.Editor.AppBuilder.Tests
 {
@@ -25,26 +25,31 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			}
 		}
 
+		public static AppBuildMessage AsBuildTestInfo(string infoMessage)
+		{
+			return new AppBuildMessage(infoMessage)
+			{
+				Type = AppBuildMessageType.BuildInfo,
+				Project = TestProjectName,
+			};
+		}
+
+		private const string TestProjectName = "TestProject";
+
 		public static AppBuildMessage AsBuildTestWarning(string warningMessage)
 		{
+			AppBuildMessage message = AsBuildTestInfo(warningMessage);
+			message.Type = AppBuildMessageType.BuildWarning;
+			message.Filename = "TestClass.cs";
 			var randomizer = new Random();
-			var message = new AppBuildMessage(warningMessage)
-			{
-				Type = AppBuildMessageType.BuildWarning,
-				Project = TestProjectName,
-				Filename = "TestClass.cs",
-				TextLine = randomizer.Next(1, 35).ToString(CultureInfo.InvariantCulture),
-				TextColumn = randomizer.Next(1, 80).ToString(CultureInfo.InvariantCulture),
-			};
-
+			message.TextLine = randomizer.Next(1, 35).ToString(CultureInfo.InvariantCulture);
+			message.TextColumn = randomizer.Next(1, 80).ToString(CultureInfo.InvariantCulture);
 			return message;
 		}
 
-		public const string TestProjectName = "TestProject";
-
 		public static AppBuildMessage AsBuildTestError(string errorMessage)
 		{
-			var message = AsBuildTestWarning(errorMessage);
+			AppBuildMessage message = AsBuildTestWarning(errorMessage);
 			message.Type = AppBuildMessageType.BuildError;
 			return message;
 		}
@@ -52,13 +57,13 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		public static AppInfo GetMockAppInfo(string appName, PlatformName platform,
 			string directory = "")
 		{
-			return AppInfoExtensions.CreateAppInfo(Path.Combine(directory, appName + ".mockApp"),
-				platform, Guid.NewGuid(), DateTime.Now);
+			string filePath = Path.Combine(directory, appName + GetAppFileExtension(platform));
+			return AppInfoExtensions.CreateAppInfo(filePath, platform, Guid.NewGuid(), DateTime.Now);
 		}
 
 		public static AppInfo TryGetAlreadyBuiltApp(string appName, PlatformName platform)
 		{
-			var appsStorage = new BuiltAppsListViewModel();
+			var appsStorage = new BuiltAppsListViewModel(new MockSettings());
 			foreach (AppInfo app in appsStorage.BuiltApps)
 				if (app.Name == appName && app.Platform == platform)
 					return app;
@@ -89,6 +94,8 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		{
 			switch (platform)
 			{
+				case PlatformName.Windows:
+					return ".exe";
 				case PlatformName.Android:
 					return ".apk";
 				case PlatformName.WindowsPhone7:

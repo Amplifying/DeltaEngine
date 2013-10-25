@@ -30,18 +30,18 @@ namespace DeltaEngine.Editor.MaterialEditor.Tests
 			materialEditor.SelectedImage = "DeltaEngineLogo";
 			materialEditor.MaterialName = "NewMaterial";
 			materialEditor.Save();
-			Assert.AreEqual(2, mockService.NumberOfMessagesSend);
+			Assert.AreEqual(2, mockService.NumberOfMessagesSent);
 		}
 
 		[Test]
 		public void SaveMaterialFromAnimation()
 		{
 			materialEditor.Save();
-			Assert.AreEqual(0, mockService.NumberOfMessagesSend);
+			Assert.AreEqual(0, mockService.NumberOfMessagesSent);
 			materialEditor.SelectedAnimation = "ImageAnimation";
 			materialEditor.MaterialName = "NewMaterial";
 			materialEditor.Save();
-			Assert.AreEqual(2, mockService.NumberOfMessagesSend);
+			Assert.AreEqual(2, mockService.NumberOfMessagesSent);
 		}
 
 		[Test]

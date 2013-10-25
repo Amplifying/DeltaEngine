@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using DeltaEngine.Editor.Emulator.Helpers;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.Emulator.Tests

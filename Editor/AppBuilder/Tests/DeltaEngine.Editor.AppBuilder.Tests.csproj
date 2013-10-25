@@ -72,6 +72,10 @@
       <Project>{E4BF1DFC-4753-42E8-AF9C-06B5B3E6748E}</Project>
       <Name>DeltaEngine.Editor.Messages</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Mocks\DeltaEngine.Editor.Mocks.csproj">
+      <Project>{2A38417D-2378-41F8-BCC6-A65E1894835A}</Project>
+      <Name>DeltaEngine.Editor.Mocks</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Editor.AppBuilder.csproj">
       <Project>{C10F83F9-B20B-4362-8953-9B916B5894BE}</Project>
       <Name>DeltaEngine.Editor.AppBuilder</Name>
@@ -92,11 +96,14 @@
     <Compile Include="AppBuilderViewModelTests.cs" />
     <Compile Include="AppBuildMessagesListViewModelTests.cs" />
     <Compile Include="AppBuildMessagesListViewTests.cs" />
+    <Compile Include="AppBuildMessageViewModelTests.cs" />
     <Compile Include="AppInfoExtensionsTests.cs" />
+    <Compile Include="AppInfoTests.cs" />
+    <Compile Include="AppsStorageTests.cs" />
     <Compile Include="Web\WebAppInfoTests.cs" />
     <Compile Include="Web\WebDeviceTests.cs" />
-    <Compile Include="WindowsDeviceTests.cs" />
-    <Compile Include="WindowsAppInfoTests.cs" />
+    <Compile Include="Windows\WindowsDeviceTests.cs" />
+    <Compile Include="Windows\WindowsAppInfoTests.cs" />
     <Compile Include="BuiltAppsListViewModelTests.cs" />
     <Compile Include="BuiltAppsListViewTests.cs" />
     <Compile Include="MockBuildService.cs" />

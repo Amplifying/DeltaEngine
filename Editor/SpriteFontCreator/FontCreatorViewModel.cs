@@ -36,7 +36,7 @@ namespace DeltaEngine.Editor.SpriteFontCreator
 		public void OpenImportdialogue()
 		{
 			var dialog = new OpenFileDialog();
-			dialog.Filter = "True Type Font |*.ttf";
+			dialog.Filter = "True Type Font |*.ttf";//TODO: "ttf", "otf", "pfa", "pfb", "pt3", "sfd", "otb", "t42", "cef", "cff", "gsf", "ttc", "svg", "ik", "mf", "dfont", "bdf",
 			var result = dialog.ShowDialog();
 			if (result == true)
 				FamilyFilename = dialog.FileName;
@@ -78,6 +78,7 @@ namespace DeltaEngine.Editor.SpriteFontCreator
 			metaDataToSend.Values.Add("OutlineColor", settings.OutlineColor.ToString());
 			metaDataToSend.Values.Add("OutlineThickness",
 				settings.OutlineThicknessPercent.ToString(CultureInfo.InvariantCulture));
+			//TODO: isn't more data missing? view has more data and there is also advanced data!
 			return metaDataToSend;
 		}
 

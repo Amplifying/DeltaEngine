@@ -140,7 +140,6 @@ namespace DeltaEngine.Editor.Core.Tests
 		[Test]
 		public void WithoutEnvironmentVariableDefaultSourceCodePathShouldBeReturned()
 		{
-			DeleteEnvironmentVariableIfSet();
 			var defaultSourcePath = PathExtensions.GetInstalledOrFallbackEnginePath();
 			Assert.IsTrue(defaultSourcePath == @"C:\Code\DeltaEngine" ||
 				defaultSourcePath == @"C:\Development\DeltaEngine");

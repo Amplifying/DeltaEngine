@@ -1,5 +1,6 @@
 ﻿using System;
 using DeltaEngine.Editor.Messages;
+using DeltaEngine.Mocks;
 using NUnit.Framework;
 using WpfWindow = System.Windows.Window;
 
@@ -32,7 +33,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 
 		private static BuiltAppsListViewModel CreateAppsListViewModelWithDummyEntries()
 		{
-			var appListViewModel = new BuiltAppsListViewModel();
+			var appListViewModel = new BuiltAppsListViewModel(new MockSettings());
 			appListViewModel.AddApp(AppBuilderTestExtensions.GetMockAppInfo("A Windows app",
 				PlatformName.Windows));
 			appListViewModel.AddApp(AppBuilderTestExtensions.GetMockAppInfo("A Windows Phone 7 app",

@@ -1,9 +1,11 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
 using DeltaEngine.Editor.Core;
 using GalaSoft.MvvmLight.Messaging;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
+using Panel = System.Windows.Forms.Panel;
 
 namespace DeltaEngine.Editor.Emulator
 {
@@ -21,14 +23,29 @@ namespace DeltaEngine.Editor.Emulator
 		public void Init(Service service)
 		{
 			DataContext = new ViewportControlViewModel();
-			//ShowToolPane();
+			SetMessengers();
 		}
 
-		private void ShowToolPane()
+		private void SetMessengers()
 		{
-			ToolPaneGrid.Visibility = Visibility.Visible;
+			Messenger.Default.Register<string>(this, "ShowToolboxPane", ShowToolboxPane);
+			Messenger.Default.Register<string>(this, "HideToolboxPane", HideToolboxPane);
+
+
+		}
+
+		public void ShowToolboxPane(string obj)
+		{
+			ToolPane.Visibility = Visibility.Visible;
 			ViewportHost.Margin = new Thickness(0, 0, 0, 0);
 			Graph.Margin = new Thickness(140, 0, 0, 0);
+		}
+
+		public void HideToolboxPane(string obj)
+		{
+			ToolPane.Visibility = Visibility.Hidden;
+			ViewportHost.Margin = new Thickness(-140, 0, 0, 0);
+			Graph.Margin = new Thickness(0, 0, 0, 0);
 		}
 
 		public void ProjectChanged() {}
@@ -53,7 +70,23 @@ namespace DeltaEngine.Editor.Emulator
 			Screen.ResumeLayout(false);
 		}
 
-		private void DragImage(object sender, System.Windows.Input.MouseEventArgs e)
+		private void CreateAndDragNewSceneControl(object sender, MouseEventArgs e)
+		{
+			if (UIToolbox.SelectedItem == null)
+				return;
+			var item = UIToolbox.SelectedItem as ToolboxEntry;
+			if(item.ShortName == "Image")
+				DragImage(e);
+			if (item.ShortName == "Button")
+				DragButton(e);
+			if (item.ShortName== "Label")
+				DragLabel(e);
+			if (item.ShortName == "Slider")
+				DragSlider(e);
+			isClicking = false;
+		}
+
+		private void DragImage(MouseEventArgs e)
 		{
 			if (e.LeftButton == MouseButtonState.Pressed && !isDragging)
 			{
@@ -69,18 +102,9 @@ namespace DeltaEngine.Editor.Emulator
 			}
 		}
 
-		private void Drag(object sender, System.Windows.Input.MouseEventArgs e)
-		{
-			if (e.LeftButton == MouseButtonState.Pressed && !isDragging)
-			{
-				var toolboxEntry = sender as ToolboxEntry;
-				Console.WriteLine(toolboxEntry.Icon);
-			}
-		}
-
 		private bool isDragging;
 
-		private void DragButton(object sender, System.Windows.Input.MouseEventArgs e)
+		private void DragButton(MouseEventArgs e)
 		{
 			if (e.LeftButton == MouseButtonState.Pressed && !isDragging)
 			{
@@ -96,7 +120,7 @@ namespace DeltaEngine.Editor.Emulator
 			}
 		}
 
-		private void DragLabel(object sender, System.Windows.Input.MouseEventArgs e)
+		private void DragLabel(MouseEventArgs e)
 		{
 			if (e.LeftButton == MouseButtonState.Pressed && !isDragging)
 			{
@@ -112,6 +136,55 @@ namespace DeltaEngine.Editor.Emulator
 			}
 		}
 
+		private void DragSlider(MouseEventArgs e)
+		{
+			if (e.LeftButton == MouseButtonState.Pressed && !isDragging)
+			{
+				Messenger.Default.Send(true, "SetDraggingSlider");
+				isDragging = true;
+				Mouse.OverrideCursor = System.Windows.Input.Cursors.Hand;
+			}
+			if (e.LeftButton != MouseButtonState.Pressed)
+			{
+				Messenger.Default.Send(false, "SetDraggingSlider");
+				isDragging = false;
+				Mouse.OverrideCursor = System.Windows.Input.Cursors.Arrow;
+			}
+		}
+
+		private void ClickingOnButton(object sender, MouseButtonEventArgs e)
+		{
+			isClicking = true;
+		}
+
+		private bool isClicking;
+
+		private void CreateNewSceneControl(object sender, MouseButtonEventArgs mouseButtonEventArgs)
+		{
+			if (UIToolbox.SelectedItem == null || isClicking == false)
+				return;
+			var item = UIToolbox.SelectedItem as ToolboxEntry;
+			PlaceCenteredControl(item.ShortName);
+			UIToolbox.SelectedItem = null;
+			isClicking = false;
+		}
+
+		private void PlaceCenteredControl(string newControl)
+		{
+			Messenger.Default.Send(newControl, "SetCenteredControl");
+			Mouse.OverrideCursor = System.Windows.Input.Cursors.Hand;
+		}
+
+		private void GridOnGotFocus(object sender, RoutedEventArgs e)
+		{
+			Messenger.Default.Send("ShowToolboxPane", "ShowToolboxPane");
+		}
+
+		private void GridOnLostFocus(object sender, RoutedEventArgs e)
+		{
+			Messenger.Default.Send("HideToolboxPane", "HideToolboxPane");
+		}
+
 		public string ShortName
 		{
 			get { return "Viewport"; }
@@ -125,6 +198,11 @@ namespace DeltaEngine.Editor.Emulator
 		public bool RequiresLargePane
 		{
 			get { return true; }
+		}
+
+		private void DeleteSelectedItem(object sender, RoutedEventArgs e)
+		{
+			Messenger.Default.Send("", "DeleteSelectedContent");
 		}
 	}
 }

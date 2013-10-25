@@ -14,7 +14,7 @@ namespace DeltaEngine.Editor.Emulator.Tests
 		}
 
 		[Test, Category("Slow"), RequiresSTA]
-		public void AddLineInDeltaEngineWillSHowLineInWpf()
+		public void AddLineInDeltaEngineWillShowLineInWpf()
 		{
 			var window = new Window
 			{

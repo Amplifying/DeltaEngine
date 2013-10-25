@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DeltaEngine.Content;
+using DeltaEngine.Core;
 
 namespace DeltaEngine.Editor.Core
 {
@@ -8,6 +9,7 @@ namespace DeltaEngine.Editor.Core
 	{
 		string UserName { get; }
 		string ProjectName { get; }
+		Settings EditorSettings { get; }
 		event Action<object> DataReceived;
 		event Action<ContentType, string> ContentUpdated;
 		event Action<string> ContentDeleted;

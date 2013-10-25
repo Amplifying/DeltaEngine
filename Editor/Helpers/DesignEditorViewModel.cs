@@ -1,46 +1,80 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Input;
+using System.Windows.Media;
 using DeltaEngine.Core;
+using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Mocks;
 using DeltaEngine.Logging;
 
 namespace DeltaEngine.Editor.Helpers
 {
+	/// <summary>
+	/// Design-time DataContext of EditorViewModel for EditorView Designer
+	/// </summary>
 	public class DesignEditorViewModel
 	{
+		//ncrunch: no coverage start
 		public DesignEditorViewModel()
 		{
-			IsLoggedIn = true;
+			SetLoginState(false);
+			SetErrorMessage("Error message");
+			TryLogInfoToLogOutput("Log message");
 			ApiKey = "1A2B3C4D-5E6F-7G8H-9I0J-1K2L3M4N5O6P";
-			Error = "Error message";
-			TextLogger = new TextLogger();
-			TextLogger.Write(Logger.MessageType.Info, "Log message");
 			Service = new MockService("exDreamDuck", "Game - The Game");
 			AvailableProjects = new List<string> { "Project One", "Project Two", "Project Three" };
 			SelectedProject = AvailableProjects[0];
+			EditorPlugins = new List<EditorPluginView> { new DesignEditorPlugin() };
+			IsContentReady = false;
+			OnLoginButtonClicked = OnLogoutButtonClicked = null;
+		}
+
+		private void SetLoginState(bool isLoggedIn)
+		{
+			IsLoggedIn = isLoggedIn;
+			LoginPanelVisibility = IsLoggedIn ? Visibility.Hidden : Visibility.Visible;
+			EditorPanelVisibility = IsLoggedIn ? Visibility.Visible : Visibility.Hidden;
 		}
 
 		public bool IsLoggedIn { get; private set; }
-		public string ApiKey { get; set; }
+		public Visibility LoginPanelVisibility { get; private set; }
+		public Visibility EditorPanelVisibility { get; private set; }
+
+		private void SetErrorMessage(string errorMessage)
+		{
+			Error = errorMessage;
+			ErrorVisibility = string.IsNullOrEmpty(Error) ? Visibility.Hidden : Visibility.Visible;
+			ErrorForegroundColor = string.IsNullOrEmpty(Error) ? Brushes.Black : Brushes.White;
+			ErrorBackgroundColor = string.IsNullOrEmpty(Error) ? Brushes.Transparent : Brushes.DarkRed;
+		}
+
 		public string Error { get; private set; }
+		public Visibility ErrorVisibility { get; private set; }
+		public Brush ErrorForegroundColor { get; private set; }
+		public Brush ErrorBackgroundColor { get; private set; }
+
+		private void TryLogInfoToLogOutput(string logMessage)
+		{
+			try
+			{
+				TextLogger = new TextLogger();
+				TextLogger.Write(Logger.MessageType.Info, logMessage);
+			}
+			catch (Logger.LoggerWasAlreadyAttached ex)
+			{
+				Logger.Warning(ex);
+			}
+		}
+
 		public TextLogger TextLogger { get; private set; }
+
+		public string ApiKey { get; set; }
 		public MockService Service { get; private set; }
 		public List<string> AvailableProjects { get; private set; }
 		public string SelectedProject { get; set; }
-
-		public Visibility LoginPanelVisibility
-		{
-			get { return IsLoggedIn ? Visibility.Hidden : Visibility.Visible; }
-		}
-
-		public Visibility ErrorVisibility
-		{
-			get { return Error != "" ? Visibility.Visible : Visibility.Hidden; }
-		}
-
-		public Visibility EditorPanelVisibility
-		{
-			get { return IsLoggedIn ? Visibility.Visible : Visibility.Hidden; }
-		}
+		public List<EditorPluginView> EditorPlugins { get; private set; }
+		public bool IsContentReady { get; private set; }
+		public ICommand OnLoginButtonClicked { get; private set; }
+		public ICommand OnLogoutButtonClicked { get; private set; }
 	}
 }

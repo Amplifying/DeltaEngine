@@ -7,7 +7,7 @@ namespace DeltaEngine.Editor.Messages
 		/// <summary>
 		/// Need empty constructor for BinaryDataExtensions class reconstruction
 		/// </summary>
-		protected AppBuildMessage() {}
+		protected AppBuildMessage() {} // ncrunch: no coverage
 
 		public AppBuildMessage(string text)
 		{
@@ -27,9 +27,11 @@ namespace DeltaEngine.Editor.Messages
 		public string TextLine { get; set; }
 		public string TextColumn { get; set; }
 
+		// ncrunch: no coverage start
 		public override string ToString()
 		{
 			return Type + ": " + Text;
 		}
+		// ncrunch: no coverage end
 	}
 }

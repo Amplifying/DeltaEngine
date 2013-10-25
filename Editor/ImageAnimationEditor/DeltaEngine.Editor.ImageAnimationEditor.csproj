@@ -57,13 +57,13 @@
       <Project>{F65A7A3C-81E9-4A61-9D64-BBDC7C66345F}</Project>
       <Name>DeltaEngine.Editor.ContentManager</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Converters\DeltaEngine.Editor.Converters.csproj">
+      <Project>{E8A76CE3-973E-4952-B021-D03DCA19148E}</Project>
+      <Name>DeltaEngine.Editor.Converters</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Core\DeltaEngine.Editor.Core.csproj">
       <Project>{C667C7FC-A1C7-4CBC-98C0-C97F776E4570}</Project>
       <Name>DeltaEngine.Editor.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DeltaEngine.Editor.Converters\DeltaEngine.Editor.Converters.csproj">
-      <Project>{E8A76CE3-973E-4952-B021-D03DCA19148E}</Project>
-      <Name>DeltaEngine.Editor.Converters</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

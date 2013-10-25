@@ -63,5 +63,12 @@ namespace DeltaEngine.Editor.Helpers
 		}
 
 		private readonly NativeScreens screens = new NativeScreens();
+
+		public void BringWindowToForeground()
+		{
+			window.Activate();
+			if (window.WindowState == WindowState.Minimized)
+				window.WindowState = WindowState.Normal;
+		}
 	}
 }

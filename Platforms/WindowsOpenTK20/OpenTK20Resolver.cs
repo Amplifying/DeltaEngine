@@ -5,6 +5,8 @@ using DeltaEngine.Graphics.OpenTK20;
 using DeltaEngine.Input.Windows;
 using DeltaEngine.Multimedia.OpenTK;
 using DeltaEngine.Platforms.Windows;
+using DeltaEngine.Content.Xml;
+using DeltaEngine.Graphics;
 
 namespace DeltaEngine.Platforms
 {
@@ -19,6 +21,7 @@ namespace DeltaEngine.Platforms
 			RegisterSingleton<FormsWindow>();
 			RegisterSingleton<WindowsSystemInformation>();
 			RegisterSingleton<OpenTK20Device>();
+			RegisterSingleton<Drawing>();
 			RegisterSingleton<OpenTK20ScreenshotCapturer>();
 			RegisterSingleton<OpenTKSoundDevice>();
 			RegisterSingleton<WindowsMouse>();
@@ -26,6 +29,7 @@ namespace DeltaEngine.Platforms
 			RegisterSingleton<WindowsTouch>();
 			RegisterSingleton<WindowsGamePad>();
 			RegisterSingleton<CursorPositionTranslater>();
+			Register<InputCommands>();
 			if (IsAlreadyInitialized)
 				throw new UnableToRegisterMoreTypesAppAlreadyStarted();
 		}
@@ -38,6 +42,7 @@ namespace DeltaEngine.Platforms
 			Register<OpenTK20Geometry>();
 			Register<OpenTKSound>();
 			Register<OpenTKMusic>();
+			Register<XmlContent>();
 		}
 
 		private void MakeSureOpenALDllsAreAvailable()
@@ -57,7 +62,7 @@ namespace DeltaEngine.Platforms
 				return;
 			if (TryCopyNativeDllsFromDeltaEnginePath())
 				return;
-			throw new FailedToCopyNativeOpenALDllFiles("OpenAL dlls not found inside the application " + "output directory nor inside the %DeltaEnginePath% environment variable. Make sure it's " + "set and containing the required files: " + string.Join(",", nativeDllsNeeded));
+			throw new OpenTK20Resolver.FailedToCopyNativeOpenALDllFiles("OpenAL dlls not found inside the application " + "output directory nor inside the %DeltaEnginePath% environment variable. Make sure it's " + "set and containing the required files: " + string.Join(",", nativeDllsNeeded));
 		}
 
 		private bool TryCopyNativeDllsFromNuGetPackage()

@@ -28,12 +28,13 @@ namespace DeltaEngine.Graphics.OpenTK20
 			var colorFormat = new ColorFormat(8, 8, 8, 8);
 			var graphicsMode = new GraphicsMode(colorFormat, 24, 8, 0);
 			Context = new GraphicsContext(graphicsMode, windowInfo);
+			if (Settings.Current.UseVSync)
+				Context.SwapInterval = Settings.Current.LimitFramerate;
 			Context.MakeCurrent(windowInfo);
 			Context.LoadAll();
 			var version = GL.GetString(StringName.Version);
-			var extensions = GL.GetString(StringName.Extensions);
 			var majorVersion = int.Parse(version[0] + "");
-			if (majorVersion < 3 || string.IsNullOrEmpty(extensions))
+			if (majorVersion < 3 || string.IsNullOrEmpty(GL.GetString(StringName.Extensions)))
 				throw new OpenGLVersionDoesNotSupportShaders();
 		}
 

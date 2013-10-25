@@ -54,7 +54,32 @@ namespace DeltaEngine.Editor.ParticleEditor
 
 		private void Delete(object sender, RoutedEventArgs e)
 		{
-			viewModel.DeleteParticleContent();
+			viewModel.Delete();
+		}
+
+		private void LoadEffect(object sender, RoutedEventArgs e)
+		{
+			viewModel.LoadEffect();
+		}
+
+		private void AddDefaultEmitter(object sender, RoutedEventArgs e)
+		{
+			viewModel.AddEmitterToSystem();
+		}
+
+		private void RemoveSelectedEmitter(object sender, RoutedEventArgs e)
+		{
+			viewModel.RemoveCurrentEmitterFromSystem();
+		}
+
+		private void ResetDefaultEffect(object sender, RoutedEventArgs e)
+		{
+			viewModel.ResetDefaultEffect();
+		}
+
+		private void AddEmitterFromContent(object sender, RoutedEventArgs e)
+		{
+			viewModel.ToggleLookingForExistingEmitters();
 		}
 	}
 }

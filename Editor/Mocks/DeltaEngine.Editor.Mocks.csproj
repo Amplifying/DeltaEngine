@@ -41,6 +41,10 @@
       <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
       <Name>DeltaEngine %28DeltaEngine\DeltaEngine%29</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Mocks\DeltaEngine.Mocks.csproj">
+      <Project>{A5F4EF37-7B5F-4AAE-BFF2-C2D04DB805F7}</Project>
+      <Name>DeltaEngine.Mocks</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Core\DeltaEngine.Editor.Core.csproj">
       <Project>{C667C7FC-A1C7-4CBC-98C0-C97F776E4570}</Project>
       <Name>DeltaEngine.Editor.Core</Name>

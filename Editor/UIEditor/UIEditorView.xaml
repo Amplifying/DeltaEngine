@@ -8,7 +8,6 @@
 	d:DesignHeight="1600" d:DesignWidth="300" MinWidth="300">
 
 	<UserControl.Resources>
-
 		<Style TargetType="Label" x:Key="DeltaLabel">
 			<Setter Property="FontSize" Value="16" />
 			<Setter Property="FontFamily" Value="Arial" />
@@ -66,8 +65,9 @@
 
 	</UserControl.Resources>
 
-	<ScrollViewer PreviewMouseMove="SetMouseIcon">
-		<Grid Background="#FFF0F0F0" Height="1600">
+	<ScrollViewer PreviewMouseMove="SetMouseIcon" GotFocus="GridOnGotFocus" LostFocus="GridOnLostFocus">
+		<Grid
+			Background="#FFF0F0F0" Height="1600">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="12" />
 				<ColumnDefinition Width="12" />
@@ -94,14 +94,8 @@
 				<RowDefinition Height="30" />
 				<RowDefinition Height="12" />
 				<RowDefinition Height="30" />
-				<RowDefinition Height="20" />
-				<RowDefinition Height="30" />
 				<RowDefinition Height="12" />
 				<RowDefinition Height="30" />
-				<RowDefinition Height="12" />
-				<RowDefinition Height="30" />
-				<RowDefinition Height="12" />
-				<RowDefinition />
 				<RowDefinition Height="12" />
 				<RowDefinition Height="30" />
 				<RowDefinition Height="12" />
@@ -144,80 +138,48 @@
 				<RowDefinition Height="30" />
 				<RowDefinition Height="12.667" />
 				<RowDefinition Height="30" />
-				<RowDefinition Height="30" />
-				<RowDefinition Height="10" />
-				<RowDefinition Height="30" />
 				<RowDefinition Height="12" />
+				<RowDefinition Height="30" />
+				<RowDefinition Height="363" />
 			</Grid.RowDefinitions>
 			<Button Content="?" Grid.Column="9" Grid.Row="1" Style="{StaticResource DeltaButton}" ToolTip="Help"
-			        FontWeight="Bold" />
+			        FontWeight="Bold" Margin="0,0,0,11" Grid.RowSpan="2" />
 			<Label Content="Grid Properties" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="9" FontFamily="Arial"
-			       Background="#FFACACAC" FontSize="18" Foreground="White" FontWeight="Bold" />
-			<Label Content="Toolbox" Grid.Column="1" Grid.Row="9" Grid.ColumnSpan="9" FontFamily="Arial"
-			       Background="#FFACACAC" FontSize="18" Foreground="White" FontWeight="Bold" />
-			<Label Content="Object Properties" Grid.Column="1" Grid.Row="21" Grid.ColumnSpan="9" FontFamily="Arial"
-			       Background="#FFACACAC" FontSize="18" Foreground="White" FontWeight="Bold" />
-			<Button
-				PreviewMouseMove="DragButton"
-				FontSize="18" Style="{StaticResource DeltaButton}"
-				ToolTip="Create Button"
-				Grid.Row="11" Margin="0,0,28,0" Grid.ColumnSpan="2" Grid.Column="1" Background="#FFE2E2E2" Height="30"
-				VerticalAlignment="Bottom">
-				<Image Height="25" Width="25" Source="../Images/UIEditor/CreateButton.png" Stretch="Fill" />
-			</Button>
-
-			<Button
-				PreviewMouseMove="DragImage"
-				FontSize="18" Style="{StaticResource DeltaButton}"
-				ToolTip="Create Image"
-				Grid.Row="11" Grid.ColumnSpan="2" Grid.Column="2" Background="#FFE2E2E2" Height="30" VerticalAlignment="Bottom"
-				HorizontalAlignment="Right" Width="29">
-				<Image Height="25" Width="25" Source="../Images/UIEditor/CreateImage.png" Stretch="Fill" />
-			</Button>
+			       Background="#FFACACAC" FontSize="18" Foreground="White" FontWeight="Bold" Margin="0,0,0,11" Grid.RowSpan="2" />
+			<Label Content="Object Properties" Grid.Column="1" Grid.Row="15" Grid.ColumnSpan="9" FontFamily="Arial"
+			       Background="#FFACACAC" FontSize="18" Foreground="White" FontWeight="Bold" Margin="1,0,0,0" />
 			<Label Content="Resolution" Grid.Column="1" Grid.Row="5" ToolTip="Resolution" Style="{StaticResource DeltaLabel}"
 			       Grid.ColumnSpan="4" HorizontalAlignment="Left" Width="91" />
-			<Label Content="Hierarchy" Grid.Column="1" HorizontalAlignment="Left" Grid.Row="17" Grid.ColumnSpan="9" Width="259"
-			       FontFamily="Arial"
-			       Background="#FFACACAC" FontSize="18" Foreground="White" FontWeight="Bold" Margin="0,0,0,10" Grid.RowSpan="2" />
-			<ListBox Grid.ColumnSpan="9" Grid.Row="19" Margin="1,0,0,0" Grid.Column="1"
-			         ItemsSource="{Binding Path=UIImagesInList}" SelectedItem="{Binding Path=SelectedSpriteNameInList}"
-			         SelectedIndex="{Binding Path=SpriteListIndex}">
-				<ListBox.ContextMenu>
-					<ContextMenu>
-						<MenuItem Header="Delete" Click="DeleteSelectedItem" />
-					</ContextMenu>
-				</ListBox.ContextMenu>
-			</ListBox>
-			<Label Content="Alignment" Grid.Column="2" Grid.Row="29" Grid.ColumnSpan="8" FontFamily="Arial"
+			<Label Content="Alignment" Grid.Column="2" Grid.Row="23" Grid.ColumnSpan="8" FontFamily="Arial"
 			       Background="#FFC9C8C8" FontSize="18" Foreground="White" />
-			<Label Content="Horizontal" Grid.Column="2" Grid.Row="31" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}"
+			<Label Content="Horizontal" Grid.Column="2" Grid.Row="25" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}"
 			       HorizontalAlignment="Left" Width="107" />
-			<Label Grid.ColumnSpan="3" Content="Vertical" Grid.Column="2" Grid.Row="33" Style="{StaticResource DeltaLabel}"
+			<Label Grid.ColumnSpan="3" Content="Vertical" Grid.Column="2" Grid.Row="27" Style="{StaticResource DeltaLabel}"
 			       HorizontalAlignment="Left" Width="107" />
-			<ComboBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="31" />
-			<ComboBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="33" />
-			<Label Content="Margin Bottom" Grid.Column="2" Grid.Row="35" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}"
+			<ComboBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="25" />
+			<ComboBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="27" />
+			<Label Content="Margin Bottom" Grid.Column="2" Grid.Row="29" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}"
 			       HorizontalAlignment="Left" Width="107" />
-			<Label Content="Margin Top" Grid.Column="2" Grid.Row="37" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}"
+			<Label Content="Margin Top" Grid.Column="2" Grid.Row="31" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}"
 			       HorizontalAlignment="Left" Width="107" />
-			<Label Content="Margin Left" Grid.Column="2" Grid.Row="39" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}"
+			<Label Content="Margin Left" Grid.Column="2" Grid.Row="33" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}"
 			       HorizontalAlignment="Left" Width="107" />
-			<Label Content="Margin Right" Grid.Column="2" Grid.Row="41" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}"
+			<Label Content="Margin Right" Grid.Column="2" Grid.Row="35" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}"
 			       HorizontalAlignment="Left" Width="107" />
+			<TextBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="29" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}" />
+			<TextBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="31" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}" />
+			<TextBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="33" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}" />
 			<TextBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="35" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}" />
-			<TextBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="37" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}" />
-			<TextBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="39" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}" />
-			<TextBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="41" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}" />
-			<Label Content="Name" Grid.Column="1" Grid.Row="23" Grid.ColumnSpan="2" Style="{StaticResource DeltaLabel}"
+			<Label Content="Name" Grid.Column="1" Grid.Row="17" Grid.ColumnSpan="2" Style="{StaticResource DeltaLabel}"
 			       Margin="1,0,0,0" />
-			<TextBox Grid.ColumnSpan="6" Grid.Column="4" Height="30" Grid.Row="23" TextWrapping="Wrap" VerticalAlignment="Top"
+			<TextBox Grid.ColumnSpan="6" Grid.Column="4" Height="30" Grid.Row="17" TextWrapping="Wrap" VerticalAlignment="Top"
 			         Style="{StaticResource DeltaTextBox}"
 			         Text="{Binding Path=ControlName, UpdateSourceTrigger=PropertyChanged}" />
-			<Label Content="Layer" Grid.Column="1" Margin="1,0,0,0" Grid.Row="27" VerticalAlignment="Top" Height="30"
+			<Label Content="Layer" Grid.Column="1" Margin="1,0,0,0" Grid.Row="21" VerticalAlignment="Top" Height="30"
 			       Grid.ColumnSpan="2" Style="{StaticResource DeltaLabel}" />
-			<TextBox Grid.ColumnSpan="5" Grid.Column="4" Grid.Row="27" TextWrapping="Wrap" Text="{Binding Path=ControlLayer}"
+			<TextBox Grid.ColumnSpan="5" Grid.Column="4" Grid.Row="21" TextWrapping="Wrap" Text="{Binding Path=ControlLayer}"
 			         Style="{StaticResource DeltaTextBox}" />
-			<Button Content="▲" Grid.Column="9" Grid.Row="27" HorizontalAlignment="Right" Width="20" Height="15"
+			<Button Content="▲" Grid.Column="9" Grid.Row="21" HorizontalAlignment="Right" Width="20" Height="15"
 			        VerticalAlignment="Top" Foreground="White" FontFamily="Arial" FontSize="10" FontWeight="Bold"
 			        Click="IncreaseRenderlayer">
 				<Button.Background>
@@ -227,7 +189,7 @@
 					</LinearGradientBrush>
 				</Button.Background>
 			</Button>
-			<Button Content="▼" Grid.Column="9" HorizontalAlignment="Left" Margin="10,15,0,0" Grid.Row="27"
+			<Button Content="▼" Grid.Column="9" HorizontalAlignment="Left" Margin="10,15,0,0" Grid.Row="21"
 			        VerticalAlignment="Top" Width="20" Height="15" Foreground="White" FontFamily="Arial" FontSize="10"
 			        FontWeight="Bold" Click="DecreaseRenderLayer">
 				<Button.Background>
@@ -237,25 +199,25 @@
 					</LinearGradientBrush>
 				</Button.Background>
 			</Button>
-			<Label Content="Width" Grid.Column="1" Grid.Row="25" Margin="1,0,0,0" Grid.ColumnSpan="2"
-			       Style="{StaticResource DeltaLabel}" />
-			<TextBox Grid.Column="4" Grid.Row="25" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}"
+			<Label Content="Width" Grid.Column="1" Grid.Row="19" Grid.ColumnSpan="2"
+			       Style="{StaticResource DeltaLabel}" Margin="1,0,0,0" />
+			<TextBox Grid.Column="4" Grid.Row="19" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}"
 			         Text="{Binding Path=Entity2DWidth, UpdateSourceTrigger=PropertyChanged}" />
-			<Label Content="Height" Grid.Column="6" Grid.Row="25" Style="{StaticResource DeltaLabel}" />
-			<TextBox Grid.ColumnSpan="2" Grid.Column="8" Grid.Row="25" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}"
+			<Label Content="Height" Grid.Column="6" Grid.Row="19" Style="{StaticResource DeltaLabel}" />
+			<TextBox Grid.ColumnSpan="2" Grid.Column="8" Grid.Row="19" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}"
 			         Text="{Binding Path=Entity2DHeight, UpdateSourceTrigger=PropertyChanged}" />
-			<Label Content="Material" Grid.Column="2" Grid.Row="43" Grid.ColumnSpan="8" FontFamily="Arial"
+			<Label Content="Material" Grid.Column="2" Grid.Row="37" Grid.ColumnSpan="8" FontFamily="Arial"
 			       Background="#FFC9C8C8" FontSize="18" Foreground="White" />
-			<Label Content="Default" Grid.Column="2" Grid.Row="45" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}" />
-			<Label Content="Hovered" Grid.Column="2" Grid.Row="47" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}" />
-			<Label Content="Pressed" Grid.Column="2" Grid.Row="49" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}" />
-			<Label Content="Disabled" Grid.Column="2" Grid.Row="51" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}" />
-			<ComboBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="45" Style="{StaticResource DeltaComboBox}"
-			          ItemsSource="{Binding Path=MaterialList}" SelectionChanged="ChangeMaterial" />
-			<ComboBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="47" Style="{StaticResource DeltaComboBox}" />
-			<ComboBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="49" Style="{StaticResource DeltaComboBox}" />
-			<ComboBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="51" Style="{StaticResource DeltaComboBox}" />
-			<Button Grid.ColumnSpan="8" Content="Create Material" Grid.Column="2" Grid.Row="53"
+			<Label Content="Default" Grid.Column="2" Grid.Row="39" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}" />
+			<Label Content="Hovered" Grid.Column="2" Grid.Row="41" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}" />
+			<Label Content="Pressed" Grid.Column="2" Grid.Row="43" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}" />
+			<Label Content="Disabled" Grid.Column="2" Grid.Row="45" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}" />
+			<ComboBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="39" Style="{StaticResource DeltaComboBox}"
+			          ItemsSource="{Binding Path=MaterialList}" SelectionChanged="ChangeMaterial" Name="MaterialComboBox" SelectedItem="{Binding Path=SelectedMaterial}"/>
+			<ComboBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="41" Style="{StaticResource DeltaComboBox}" />
+			<ComboBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="43" Style="{StaticResource DeltaComboBox}" />
+			<ComboBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="45" Style="{StaticResource DeltaComboBox}" />
+			<Button Grid.ColumnSpan="8" Content="Create Material" Grid.Column="2" Grid.Row="47"
 			        Style="{StaticResource DeltaButton}" Click="OpenMaterialEditorClick">
 				<Button.Background>
 					<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -264,12 +226,12 @@
 					</LinearGradientBrush>
 				</Button.Background>
 			</Button>
-			<Label Content="Text" Grid.Column="2" Grid.Row="55" Grid.ColumnSpan="8" FontFamily="Arial"
+			<Label Content="Text" Grid.Column="2" Grid.Row="49" Grid.ColumnSpan="8" FontFamily="Arial"
 			       Background="#FFC9C8C8" FontSize="18" Foreground="White" />
-			<Label Content="Font" Grid.Column="2" Grid.Row="57" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}" />
-			<Label Content="Text" Grid.Column="2" Grid.Row="61" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}" />
-			<ComboBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="57" />
-			<Button Grid.ColumnSpan="8" Content="Create Font" Grid.Column="2" Grid.Row="59" Style="{StaticResource DeltaButton}"
+			<Label Content="Font" Grid.Column="2" Grid.Row="51" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}" />
+			<Label Content="Text" Grid.Column="2" Grid.Row="55" Grid.ColumnSpan="3" Style="{StaticResource DeltaLabel}" />
+			<ComboBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="51" />
+			<Button Grid.ColumnSpan="8" Content="Create Font" Grid.Column="2" Grid.Row="53" Style="{StaticResource DeltaButton}"
 			        Click="OpenFontEditor">
 				<Button.Background>
 					<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -278,11 +240,11 @@
 					</LinearGradientBrush>
 				</Button.Background>
 			</Button>
-			<TextBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="61" TextWrapping="Wrap"
+			<TextBox Grid.ColumnSpan="4" Grid.Column="6" Grid.Row="55" TextWrapping="Wrap"
 			         Text="{Binding Path=ContentText, UpdateSourceTrigger=PropertyChanged}"
 			         Style="{StaticResource DeltaTextBox}" />
-			<Button Grid.ColumnSpan="4" Content="Save" Grid.Column="6" Grid.Row="63" Style="{StaticResource DeltaButton}"
-			        FontSize="22" FontWeight="Bold" Grid.RowSpan="2" Click="SaveUI">
+			<Button Grid.ColumnSpan="4" Content="Save" Grid.Column="6" Grid.Row="57" Style="{StaticResource DeltaButton}"
+			        FontSize="22" FontWeight="Bold" Click="SaveUI">
 				<Button.Background>
 					<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
 						<GradientStop Color="#FFA0A0A0" Offset="0" />
@@ -290,7 +252,7 @@
 					</LinearGradientBrush>
 				</Button.Background>
 			</Button>
-			<Button Grid.ColumnSpan="3" Content="Delete Scene" Grid.Column="2" Grid.Row="64"
+			<Button Grid.ColumnSpan="3" Content="Delete Scene" Grid.Column="2" Grid.Row="57"
 			        Style="{StaticResource DeltaButton}" FontWeight="Bold">
 				<Button.Background>
 					<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -299,34 +261,28 @@
 					</LinearGradientBrush>
 				</Button.Background>
 			</Button>
-			<Label Grid.ColumnSpan="2" Content="Name" Margin="1,0,0,0" Grid.Row="15" Grid.Column="1"
+			<Label Grid.ColumnSpan="2" Content="Name" Margin="1,0,0,0" Grid.Row="13" Grid.Column="1"
 			       Style="{StaticResource DeltaLabel}" />
-			<Label Content="UI Scene" Grid.Column="1" Margin="3,0,10,0" Grid.Row="13" Grid.ColumnSpan="10" FontFamily="Arial"
+			<Label Content="UI Scene" Grid.Column="1" Margin="1,0,0,0" Grid.Row="11" Grid.ColumnSpan="9" FontFamily="Arial"
 			       Background="#FFACACAC" FontSize="18" Foreground="White" FontWeight="Bold" />
-			<ComboBox Grid.ColumnSpan="6" Grid.Column="4" Grid.Row="15" IsEditable="True" Margin="2,0,0,0"
-			          Text="{Binding Path=UIName}" />
-			<CheckBox Content="Show Grid" ToolTip="Show/Hide Grid" Grid.Column="1" HorizontalAlignment="Left" Grid.Row="7"
-			          VerticalAlignment="Top" Height="30" Grid.ColumnSpan="4" Width="108" Style="{StaticResource DeltaCheckBox}"
+			<ComboBox Grid.ColumnSpan="6" Grid.Column="4" Grid.Row="13" IsEditable="True" IsTextSearchEnabled="False"
+			          Text="{Binding Path=UIName}" ItemsSource="{Binding Path=SceneNames}" />
+			<CheckBox Content="Show Grid" ToolTip="Show/Hide Grid" Grid.Column="1" HorizontalAlignment="Left" Grid.Row="9"
+			          VerticalAlignment="Top" Height="30" Grid.ColumnSpan="4" Width="101" Style="{StaticResource DeltaCheckBox}"
 			          Margin="1,0,0,0" IsChecked="{Binding Path=IsShowingGrid}" />
-			<CheckBox Content="Snap" ToolTip="Snap Elements to Grid" Grid.Column="6" Grid.Row="7" VerticalAlignment="Top"
-			          Height="30" Grid.ColumnSpan="4" Style="{StaticResource DeltaCheckBox}" HorizontalAlignment="Left"
-			          Width="132" IsChecked="{Binding Path=IsSnappingToGrid}" />
-			<Button
-				PreviewMouseMove="DragLabel"
-				FontSize="18" Style="{StaticResource DeltaButton}"
-				ToolTip="Create Label"
-				Grid.Column="4" HorizontalAlignment="Left" Grid.Row="11" VerticalAlignment="Top" Width="30" Height="30"
-				Margin="7,0,0,0" Background="#FFE2E2E2">
-				<Image Height="25" Width="25" Source="../Images/UIEditor/CreateLabel.png" Stretch="Fill" />
+			<CheckBox Content="Snap" ToolTip="Snap Elements to Grid" Grid.Column="5" Grid.Row="9" VerticalAlignment="Top"
+			          Height="30" Grid.ColumnSpan="2" Style="{StaticResource DeltaCheckBox}" HorizontalAlignment="Left"
+			          Width="81" IsChecked="{Binding Path=IsSnappingToGrid}" />
+			<Button Grid.ColumnSpan="3" Grid.Column="7" Grid.Row="9" Content="Add" Style="{StaticResource DeltaButton}"
+			        Click="AddNewResolutionToList" Margin="0,0,0,11" Grid.RowSpan="2">
 			</Button>
+			<Label Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="7" Style="{StaticResource DeltaLabel}" Content="Width" Margin="1,0,0,0" RenderTransformOrigin="0.465,0.29" />
+			<Label Grid.Column="6" Grid.Row="7" Style="{StaticResource DeltaLabel}" Content="Height" />
+			<TextBox Grid.Column="4" Grid.Row="7" Text="{Binding Path=NewGridWidth}" />
+			<TextBox Grid.ColumnSpan="2" Grid.Column="8" Grid.Row="7" Text="{Binding Path=NewGridHeight}" />
 			<ComboBox Grid.ColumnSpan="6" ToolTip="Resolution" Grid.Column="4" Grid.Row="5" Margin="37,0,0,0"
-			          Style="{StaticResource DeltaComboBox}" SelectionChanged="ChangeGrid">
-				<sys:String>10 x 10</sys:String>
-				<sys:String>16 x 16</sys:String>
-				<sys:String>20 x 20</sys:String>
-				<sys:String>24 x 24</sys:String>
-				<sys:String>50 x 50</sys:String>
-			</ComboBox>
+			          Style="{StaticResource DeltaComboBox}" SelectedItem="{Binding Path=SelectedResolution}"
+			          ItemsSource="{Binding Path=ResolutionList}"/>
 		</Grid>
 	</ScrollViewer>
 </UserControl>

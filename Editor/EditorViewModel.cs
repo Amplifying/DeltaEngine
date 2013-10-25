@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -31,9 +32,11 @@ namespace DeltaEngine.Editor
 		{
 			this.plugins = plugins;
 			this.settings = settings;
+			service = new OnlineService(settings);
 			AvailableProjects = new List<string>();
 			Error = Resources.EnterYourApiKey;
 			SetupLogger();
+			SetVersionNumber();
 			plugins.FindAndLoadAllPlugins();
 			RegisterCommands();
 			SetApiKey(LoadDataFromRegistry("ApiKey"));
@@ -44,6 +47,7 @@ namespace DeltaEngine.Editor
 
 		private readonly EditorPluginLoader plugins;
 		private readonly Settings settings;
+		private readonly OnlineService service;
 		public List<string> AvailableProjects { get; private set; }
 
 		public string Error
@@ -67,6 +71,13 @@ namespace DeltaEngine.Editor
 		}
 
 		public TextLogger TextLogger { get; set; }
+
+		private void SetVersionNumber()
+		{
+			VersionNumber = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+		}
+
+		public string VersionNumber { get; set; }
 
 		private void RegisterCommands()
 		{
@@ -126,7 +137,6 @@ namespace DeltaEngine.Editor
 		{
 			get { return service; }
 		}
-		private readonly OnlineService service = new OnlineService();
 
 		private void ValidateLogin()
 		{
@@ -387,10 +397,7 @@ namespace DeltaEngine.Editor
 
 		public void SetProjectAndTest(string initialPath, string projectName, string testName)
 		{
-			Logger.Info("Path: " + initialPath + ", Project: " + projectName + ", Test: " +
-				testName);
-			//TODO: CopyProjectFileFromOriginalPathIfNewer();
-			//Even better idea is to allow this from a special plugin with dropdown list to select which project to listen to. Select assembly from dropdown + browse butten + entry point from dropdown list. Then invoke the same from here.
+			//Logger.Info("Path: " + initialPath + ", Project: " + projectName + ", Test: " + testName);
 		}
 	}
 }

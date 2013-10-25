@@ -23,8 +23,7 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 			viewModel.OnNameChanged.Execute(NewName);
 			Assert.AreEqual(NewName, viewModel.Name);
 		}
-
-		//TODO: fix
+		
 		[Test, Ignore]
 		public void CheckAvailableFrameworks()
 		{
@@ -36,7 +35,7 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 			Assert.AreEqual(DeltaEngineFramework.Xna, viewModel.AvailableFrameworks[5]);
 		}
 
-		/*TODO:
+		[Ignore]
 		[TestCase(0, DeltaEngineFramework.GLFW)]
 		[TestCase(1, DeltaEngineFramework.MonoGame)]
 		[TestCase(2, DeltaEngineFramework.OpenTK)]
@@ -48,8 +47,7 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 			viewModel.OnFrameworkSelectionChanged.Execute(id);
 			Assert.AreEqual(expectedFramework, viewModel.SelectedFramework);
 		}
-		 */
-
+		
 		[Test]
 		public void ChangePath()
 		{

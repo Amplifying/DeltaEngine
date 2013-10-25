@@ -191,6 +191,8 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 			get { return subImageSize; }
 			set
 			{
+				if (value.Width <= 0 || value.Height <= 0)
+					return;
 				subImageSize = value;
 				CreateNewAnimation();
 			}
