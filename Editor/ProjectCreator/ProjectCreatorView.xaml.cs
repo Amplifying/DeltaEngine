@@ -1,4 +1,7 @@
-﻿using DeltaEngine.Editor.Core;
+﻿using System.Windows;
+using System.Windows.Forms;
+using DeltaEngine.Editor.Core;
+using GalaSoft.MvvmLight.Messaging;
 
 namespace DeltaEngine.Editor.ProjectCreator
 {
@@ -8,23 +11,27 @@ namespace DeltaEngine.Editor.ProjectCreator
 	public partial class ProjectCreatorView : EditorPluginView
 	{
 		public ProjectCreatorView()
-			: this(new ProjectCreatorViewModel()) {}
+		{
+			InitializeComponent();
+		}
 
 		public ProjectCreatorView(ProjectCreatorViewModel viewModel)
 		{
-			InitializeComponent();
-			DataContext = viewModel;
-			this.viewModel = viewModel;
+			DataContext = this.viewModel = viewModel;
 		}
-
-		private readonly ProjectCreatorViewModel viewModel;
 
 		public void Init(Service service)
 		{
-			viewModel.Service = service;
+			DataContext = viewModel = new ProjectCreatorViewModel(service);
+			Messenger.Default.Send("ProjectCreator", "SetSelectedEditorPlugin");
 		}
 
-		public void ProjectChanged() {}
+		public void Activate()
+		{
+			Messenger.Default.Send("ProjectCreator", "SetSelectedEditorPlugin");
+		}
+
+		private ProjectCreatorViewModel viewModel;
 
 		public string ShortName
 		{
@@ -39,6 +46,13 @@ namespace DeltaEngine.Editor.ProjectCreator
 		public bool RequiresLargePane
 		{
 			get { return true; }
+		}
+
+		private void OnBrowseUserProjectsClicked(object sender, RoutedEventArgs e)
+		{
+			var dialog = new FolderBrowserDialog();
+			if (dialog.ShowDialog() == DialogResult.OK)
+				viewModel.Location = dialog.SelectedPath;
 		}
 	}
 }

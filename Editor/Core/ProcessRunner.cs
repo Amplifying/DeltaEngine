@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Editor.Core
 {
@@ -12,10 +14,10 @@ namespace DeltaEngine.Editor.Core
 		{
 			FilePath = filePath;
 			ArgumentsLine = argumentsLine;
-			WorkingDirectory = Environment.CurrentDirectory;
 			this.timeoutInMs = timeoutInMs;
 			Output = "";
 			Errors = "";
+			WorkingDirectory = PathExtensions.GetAbsolutePath(Path.GetDirectoryName(filePath));
 		}
 
 		public string FilePath { get; protected set; }

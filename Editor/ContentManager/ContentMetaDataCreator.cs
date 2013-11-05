@@ -150,6 +150,7 @@ namespace DeltaEngine.Editor.ContentManager
 			if (emitterDataNames == null || emitterDataNames.Count == 0)
 				return null;
 			var contentMetaData = new ContentMetaData { Name = name, Type = ContentType.ParticleSystem};
+			SetDefaultValues(contentMetaData, name);
 			var rowOfNames = emitterDataNames[0];
 			for (int i = 1; i < emitterDataNames.Count; i++)
 				rowOfNames += ", " + emitterDataNames[i];

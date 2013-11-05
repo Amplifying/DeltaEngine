@@ -29,7 +29,7 @@ namespace DeltaEngine.Editor.AppBuilder
 			get { return availableDevices ?? (availableDevices = GetAvailableDevices()); }
 		}
 
-		private static Device[] availableDevices;
+		private Device[] availableDevices;
 
 		protected abstract Device[] GetAvailableDevices();
 
@@ -63,13 +63,6 @@ namespace DeltaEngine.Editor.AppBuilder
 		{
 			if (device == null)
 				throw new NoDeviceSpecified();
-			if (device.IsAppInstalled(this))
-			{
-				Logger.Info("App " + Name + " was already installed, uninstalling it.");
-				device.Uninstall(this);
-			}
-			Logger.Info("Installing App " + Name + " on " + device.Name);
-			device.Install(this);
 			Logger.Info("Launching App " + Name + " on " + device.Name);
 			device.Launch(this);
 			Logger.Info("Done Launching App " + Name);

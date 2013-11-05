@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: ComVisible(false)]
 [assembly:
 	ThemeInfo(ResourceDictionaryLocation.None, ResourceDictionaryLocation.SourceAssembly)]
-[assembly: AssemblyVersion("0.9.9.8")]
-[assembly: AssemblyFileVersion("0.9.9.8")]
+[assembly: AssemblyVersion("0.9.9.9")]
+[assembly: AssemblyFileVersion("0.9.9.9")]
 [assembly: InternalsVisibleTo("DeltaEngine.Editor.Emulator.Tests")]
 [assembly: Guid("a49dfbee-5870-499e-a242-d489a854287f")]

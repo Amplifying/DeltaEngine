@@ -3,6 +3,7 @@ using System.IO;
 using DeltaEngine.Core;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Messages;
+using DeltaEngine.Extensions;
 using DeltaEngine.Mocks;
 using NUnit.Framework;
 
@@ -19,11 +20,11 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 
 		private void CreateNewAppBuilderViewModel()
 		{
-			buildService = new MockBuildService();
-			viewModel = new AppBuilderViewModel(buildService);
+			service = new MockBuildService();
+			viewModel = new AppBuilderViewModel(service);
 		}
 
-		private MockBuildService buildService;
+		private MockBuildService service;
 		private AppBuilderViewModel viewModel;
 
 		[Test]
@@ -49,7 +50,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			{
 				Environment.CurrentDirectory = PathExtensions.GetFallbackEngineSourceCodeDirectory();
 				CreateNewAppBuilderViewModel();
-				CheckAvailableProjectsOfSamplesSolution();
+				AssertSelectedSolutionProject();
 			}
 			finally
 			{
@@ -57,12 +58,9 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			}
 		}
 
-		private void CheckAvailableProjectsOfSamplesSolution()
+		private void AssertSelectedSolutionProject()
 		{
-			Assert.IsNotEmpty(viewModel.AvailableProjectsInSelectedSolution);
-			Assert.IsNotNull(viewModel.SelectedSolutionProject);
-			Assert.Contains(viewModel.SelectedSolutionProject,
-				viewModel.AvailableProjectsInSelectedSolution);
+			Assert.AreEqual(viewModel.SelectedSolutionProject.Title, service.ProjectName);
 		}
 
 		[Test]
@@ -74,7 +72,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			{
 				Environment.SetEnvironmentVariable(EnginePathVariableName, null);
 				CreateNewAppBuilderViewModel();
-				CheckAvailableProjectsOfSamplesSolution();
+				AssertSelectedSolutionProject();
 			}
 			finally
 			{
@@ -92,6 +90,31 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		}
 
 		[Test]
+		public void SelectedSolutionProjectMustUpdateWhenProjectNameHasChanged()
+		{
+			AssertSelectedProjectIsBuildable();
+			service.ChangeProject("LogoApp");
+			AssertSelectedProjectIsBuildable();
+			service.ChangeProject("GhostWars");
+			AssertSelectedProjectIsBuildable();
+		}
+
+		private void AssertSelectedProjectIsBuildable()
+		{
+			AssertSelectedSolutionProject();
+			Assert.IsTrue(viewModel.IsBuildActionExecutable);
+		}
+
+		[Test]
+		public void NonExistingProjectCanNotBeBuild()
+		{
+			AssertSelectedProjectIsBuildable();
+			service.ChangeProject("NonExistingProject");
+			Assert.IsNull(viewModel.SelectedSolutionProject);
+			Assert.IsFalse(viewModel.IsBuildActionExecutable);
+		}
+
+		[Test]
 		public void ExcuteBuildCommand()
 		{
 			Assert.IsTrue(viewModel.IsBuildActionExecutable);
@@ -103,19 +126,19 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		[Test, Category("Slow"), Timeout(10000)]
 		public void RequestRequild()
 		{
-			int numberOfRequests = buildService.NumberOfBuildRequests;
+			int numberOfRequests = service.NumberOfBuildRequests;
 			AppInfo app = AppBuilderTestExtensions.TryGetAlreadyBuiltApp("LogoApp", PlatformName.Windows);
-			app.SolutionFilePath = PathExtensions.GetSamplesSolutionFilePath();
+			app.SolutionFilePath = AppBuilderViewModel.GetSamplesSolutionFilePath();
 			viewModel.AppListViewModel.RequestRebuild(app);
-			Assert.AreEqual(numberOfRequests + 1, buildService.NumberOfBuildRequests);
+			Assert.AreEqual(numberOfRequests + 1, service.NumberOfBuildRequests);
 		}
 
 		[Test]
 		public void AppBuilderShouldBeAbleToHandleBuildMessage()
 		{
 			int numberOfWarngins = viewModel.MessagesListViewModel.Warnings.Count;
-			buildService.RaiseAppBuildInfo("Info messages won't be collected");
-			buildService.RaiseAppBuildWarning("An other build warning");
+			service.RaiseAppBuildInfo("You shouldn't see this message");
+			service.RaiseAppBuildWarning("An other build warning");
 			Assert.AreEqual(numberOfWarngins + 1, viewModel.MessagesListViewModel.Warnings.Count);
 		}
 
@@ -124,7 +147,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		{
 			Assert.IsTrue(viewModel.IsBuildActionExecutable);
 			viewModel.AppBuildFailedRecieved += (fail) => Logger.Info("Built failed: " + fail.Reason);
-			buildService.ReceiveAppBuildFailed("Info messages won't be collected");
+			service.ReceiveAppBuildFailed("Info messages won't be collected");
 			Assert.IsTrue(viewModel.IsBuildActionExecutable);
 		}
 
@@ -135,6 +158,5 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			Assert.IsTrue(viewModel.HelpCommand.CanExecute(null));
 			viewModel.HelpCommand.Execute(null);
 		}
-		// ncrunch: no coverage end
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using DeltaEngine.Core;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Extensions;
@@ -71,7 +72,8 @@ namespace DeltaEngine.Editor.AppBuilder.Android
 		{
 			try
 			{
-				TryRunAdbProcess("-s " + device.AdbId + " install -r " + apkFilePath);
+				TryRunAdbProcess("-s " + device.AdbId + " install -r " +
+					PathExtensions.GetAbsolutePath(apkFilePath));
 			}
 			catch (ProcessRunner.ProcessTerminatedWithError)
 			{
@@ -158,13 +160,12 @@ namespace DeltaEngine.Editor.AppBuilder.Android
 		{
 			string manufacturerName = GetGrepInfo(adbDeviceId, "ro.product.manufacturer");
 			return manufacturerName.IsFirstCharacterInLowerCase()
-				? manufacturerName.ConvertFirstCharactertoUpperCase() : manufacturerName;
+				? manufacturerName.ConvertFirstCharacterToUpperCase() : manufacturerName;
 		}
 
 		private string GetDeviceModelName(string adbDeviceId)
 		{
-			string modelName = GetGrepInfo(adbDeviceId, "ro.product.model");
-			return modelName;
+			return GetGrepInfo(adbDeviceId, "ro.product.model");
 		}
 
 		private string GetGrepInfo(string adbDeviceId, string grepParameter)
@@ -173,7 +174,7 @@ namespace DeltaEngine.Editor.AppBuilder.Android
 				" shell cat /system/build.prop | grep \"" + grepParameter + "\"");
 			TryRunAdbProcess(adbProcess);
 
-			return adbProcess.Output.Replace(grepParameter + "=", "");
+			return adbProcess.Output.Replace(grepParameter + "=", "").Trim();
 		}
 
 		public class DeterminationDeviceNameFailed : Exception

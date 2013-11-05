@@ -1,5 +1,4 @@
-﻿using DeltaEngine.Content;
-using DeltaEngine.Datatypes;
+﻿using DeltaEngine.Datatypes;
 using DeltaEngine.Scenes.UserInterfaces.Controls;
 using GalaSoft.MvvmLight.Messaging;
 
@@ -14,6 +13,7 @@ namespace DeltaEngine.Editor.UIEditor
 				return;
 			uiControl.EntityHeight = value;
 			var rect = selectedEntity2D.DrawArea;
+			rect.Width = uiControl.EntityWidth;
 			rect.Height = uiControl.EntityHeight;
 			selectedEntity2D.DrawArea = rect;
 			if (selectedEntity2D.GetType() == typeof(Button))
@@ -29,6 +29,7 @@ namespace DeltaEngine.Editor.UIEditor
 			uiControl.EntityWidth = value;
 			var rect = selectedEntity2D.DrawArea;
 			rect.Width = uiControl.EntityWidth;
+			rect.Height = uiControl.EntityHeight;
 			selectedEntity2D.DrawArea = rect;
 			if (selectedEntity2D.GetType() == typeof(Button))
 				ChangeButton((Button)selectedEntity2D, uiControl);
@@ -47,6 +48,14 @@ namespace DeltaEngine.Editor.UIEditor
 			uiControl.contentText = value;
 			if (selectedEntity2D.GetType() == typeof(Button))
 				ChangeButton((Button)selectedEntity2D, uiControl);
+			if (selectedEntity2D.GetType() == typeof(Label))
+				ChangeLabel((Label)selectedEntity2D, uiControl);
+		}
+
+		private static void ChangeLabel(Label label, UIControl uiControl)
+		{
+			label.Size = new Size(uiControl.EntityWidth, uiControl.EntityHeight);
+			label.Text = uiControl.contentText;
 		}
 
 		public void SetControlLayer(int value, UIControl uiControl, UIEditorScene uiEditorScene)
@@ -58,23 +67,23 @@ namespace DeltaEngine.Editor.UIEditor
 			selectedEntity2D.RenderLayer = uiControl.controlLayer;
 		}
 
-		public void SetSelectedSpriteNameInList(string value, UIControl uiControl,
+		public void SetSelectedControlNameInList(string value, UIControl uiControl,
 			UIEditorScene uiEditorScene)
 		{
-			if (string.IsNullOrEmpty(value) || uiControl.Index < 0)
+			if (string.IsNullOrEmpty(value) || uiControl.Index < 0 ||
+				uiEditorScene.Scene.Controls.Count <= 0)
 				return;
-			uiEditorScene.SelectedSpriteNameInList = value;
-			var selectedEntity2D = uiEditorScene.Scene.Controls[uiControl.Index];
-			uiEditorScene.UpdateOutLine(selectedEntity2D);
+			uiEditorScene.SelectedControlNameInList = value;
+			uiEditorScene.SelectedEntity2D = uiEditorScene.Scene.Controls[uiControl.Index];
+			uiEditorScene.UpdateOutLine(uiEditorScene.SelectedEntity2D);
 			uiControl.ControlName = value;
-			uiControl.controlLayer = selectedEntity2D.RenderLayer;
-			uiControl.EntityWidth = selectedEntity2D.DrawArea.Width;
-			uiControl.EntityHeight = selectedEntity2D.DrawArea.Height;
-			if (selectedEntity2D.GetType() == typeof(Button))
-			{
-				var button = (Button)selectedEntity2D;
-				uiControl.contentText = button.Text;
-			}
+			uiControl.controlLayer = uiEditorScene.SelectedEntity2D.RenderLayer;
+			uiControl.EntityWidth = uiEditorScene.SelectedEntity2D.DrawArea.Width;
+			uiControl.EntityHeight = uiEditorScene.SelectedEntity2D.DrawArea.Height;
+			if (uiEditorScene.SelectedEntity2D.GetType() == typeof(Button))
+				uiControl.contentText = ((Button)uiEditorScene.SelectedEntity2D).Text;
+			else if (uiEditorScene.SelectedEntity2D.GetType() == typeof(Label))
+				uiControl.contentText = ((Label)uiEditorScene.SelectedEntity2D).Text;
 			else
 				uiControl.contentText = "";
 		}
@@ -89,8 +98,8 @@ namespace DeltaEngine.Editor.UIEditor
 			if (spriteListIndex < 0)
 				return; //ncrunch: no coverage 
 			uiEditorScene.UIImagesInList[spriteListIndex] = controlName;
-			uiEditorScene.SelectedSpriteNameInList = controlName;
-			selectedEntity2D.Get<Material>().MetaData.Name = controlName;
+			uiEditorScene.SelectedControlNameInList = controlName;
+			selectedEntity2D.Set(controlName);
 		}
 	}
 }

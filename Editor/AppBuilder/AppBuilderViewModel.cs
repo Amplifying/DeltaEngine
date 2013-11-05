@@ -7,6 +7,7 @@ using System.Windows.Input;
 using DeltaEngine.Core;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Messages;
+using DeltaEngine.Extensions;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 
@@ -27,9 +28,10 @@ namespace DeltaEngine.Editor.AppBuilder
 			AppListViewModel.RebuildRequest += OnAppRebuildRequest;
 			BuildCommand = new RelayCommand(OnBuildExecuted, () => IsBuildActionExecutable);
 			HelpCommand = new RelayCommand(OpenHelpButtonClicked);
+			service.ProjectChanged += OnContentProjectChanged;
+			OnContentProjectChanged();
 			service.DataReceived += OnServiceMessageReceived;
 			Service.Send(new SupportedPlatformsRequest());
-			TrySelectEngineSamplesSolution();
 			SelectedPlatform = PlatformName.Windows;
 		}
 
@@ -83,42 +85,26 @@ namespace DeltaEngine.Editor.AppBuilder
 			{
 				userSolutionPath = value;
 				RaisePropertyChanged("UserSolutionPath");
-				DetermineAvailableProjectsOfSamplesSolution();
+				DetermineAvailableProjectsInSpecifiedSolution();
+				SelectedSolutionProject = FindUserProjectInSolution();
 			}
 		}
 
 		private string userSolutionPath;
 		private string codeSolutionPathOfBuildingApp;
 
-		private void DetermineAvailableProjectsOfSamplesSolution()
+		private void DetermineAvailableProjectsInSpecifiedSolution()
 		{
-			AvailableProjectsInSelectedSolution = new List<ProjectEntry>();
 			var solutionLoader = new SolutionFileLoader(UserSolutionPath);
-			List<ProjectEntry> allProjects = solutionLoader.GetCSharpProjects();
-			foreach (var project in allProjects.Where(project => IsSampleProject(project)))
-				AvailableProjectsInSelectedSolution.Add(project);
-			RaisePropertyChanged("AvailableProjectsInSelectedSolution");
-			SelectedSolutionProject = FindUserProjectInSolution();
+			availableProjectsInSelectedSolution = solutionLoader.GetCSharpProjects();
 		}
 
-		public List<ProjectEntry> AvailableProjectsInSelectedSolution { get; set; }
-
-		private static bool IsSampleProject(ProjectEntry project)
-		{
-			//currently tested and supported apps, will be extended to all soon
-			return project.Title == "LogoApp" || project.Title == "GhostWars";
-			/*return !project.Title.EndsWith(".Tests") && !project.Title.StartsWith("DeltaEngine.") &&
-				!project.Title.StartsWith("Empty");*/
-		}
+		private List<ProjectEntry> availableProjectsInSelectedSolution;
 
 		private ProjectEntry FindUserProjectInSolution()
 		{
-			if (AvailableProjectsInSelectedSolution.Count == 0)
-				return null;
-			ProjectEntry foundProject =
-				AvailableProjectsInSelectedSolution.FirstOrDefault(
-					csProject => csProject.Title == Service.ProjectName);
-			return foundProject ?? AvailableProjectsInSelectedSolution[0];
+			return availableProjectsInSelectedSolution.FirstOrDefault(
+				csProject => csProject.Title == Service.ProjectName);
 		}
 
 		public ProjectEntry SelectedSolutionProject
@@ -199,6 +185,11 @@ namespace DeltaEngine.Editor.AppBuilder
 		}
 		// ncrunch: no coverage end
 
+		private void OnContentProjectChanged()
+		{
+			TrySelectEngineSamplesSolution();
+		}
+
 		private void OnServiceMessageReceived(object serviceMessage)
 		{
 			if (serviceMessage is SupportedPlatformsResult)
@@ -215,6 +206,7 @@ namespace DeltaEngine.Editor.AppBuilder
 		{
 			SupportedPlatforms = platformsMessage.Platforms;
 			RaisePropertyChanged("SupportedPlatforms");
+			RaisePropertyChangedForIsBuildActionExecutable();
 		}
 
 		private void OnAppBuildMessageRecieved(AppBuildMessage receivedMessage)
@@ -226,7 +218,8 @@ namespace DeltaEngine.Editor.AppBuilder
 			}
 			Logger.Warning(receivedMessage.Text);
 			MessagesListViewModel.AddMessage(receivedMessage);
-			AllowBuildingAppsAgain();
+			if (receivedMessage.Type == AppBuildMessageType.BuildError)
+				AllowBuildingAppsAgain();
 		}
 
 		private void AllowBuildingAppsAgain()
@@ -269,9 +262,50 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		private void TrySelectEngineSamplesSolution()
 		{
-			UserSolutionPath = PathExtensions.GetSamplesSolutionFilePath();
+			UserSolutionPath = GetSamplesSolutionFilePath();
 			if (UserSolutionPath == null)
 				LogSamplesSolutionNotFoundWarning(); // ncrunch: no coverage
+		}
+
+		public static string GetSamplesSolutionFilePath()
+		{
+			const string SamplesSolutionFile = "DeltaEngine.Samples.sln";
+			return GetFilePathFromSourceCode(SamplesSolutionFile) ??
+				GetFilePathFromInstallerRelease(SamplesSolutionFile);
+		}
+
+		private static string GetFilePathFromSourceCode(string filename)
+		{
+			string originalDirectory = Environment.CurrentDirectory;
+			try
+			{
+				if (StackTraceExtensions.StartedFromNCrunch)
+					Environment.CurrentDirectory = PathExtensions.GetFallbackEngineSourceCodeDirectory();
+				var currentDirectory = new DirectoryInfo(Environment.CurrentDirectory);
+				return GetFilePathFromSourceCodeRecursively(currentDirectory, filename);
+			}
+			finally
+			{
+				Environment.CurrentDirectory = originalDirectory;
+			}
+		}
+
+		private static string GetFilePathFromSourceCodeRecursively(DirectoryInfo directory,
+			string filename)
+		{
+			if (directory.Parent == null)
+				return null; //ncrunch: no coverage
+			foreach (var file in directory.GetFiles())
+				if (file.Name == filename)
+					return file.FullName;
+			return GetFilePathFromSourceCodeRecursively(directory.Parent, filename);
+		}
+
+		private static string GetFilePathFromInstallerRelease(string filePath)
+		{
+			return PathExtensions.IsDeltaEnginePathEnvironmentVariableAvailable()
+				? Path.Combine(PathExtensions.GetDeltaEngineInstalledDirectory(),
+				Path.Combine("OpenTK", filePath)) : null;
 		}
 
 		// ncrunch: no coverage start
@@ -289,14 +323,14 @@ namespace DeltaEngine.Editor.AppBuilder
 		{
 			get
 			{
-				return IsUserProjectPathValid && IsUserSelectedEntryPointValid && IsSelectedPlatformValid &&
-					codeSolutionPathOfBuildingApp == null;
+				return IsCodeOfSelectedProjectAvailable && IsUserSelectedEntryPointValid &&
+					IsSelectedPlatformValid && codeSolutionPathOfBuildingApp == null;
 			}
 		}
 
-		private bool IsUserProjectPathValid
+		private bool IsCodeOfSelectedProjectAvailable
 		{
-			get { return File.Exists(UserSolutionPath); }
+			get { return SelectedSolutionProject != null; }
 		}
 
 		private bool IsUserSelectedEntryPointValid

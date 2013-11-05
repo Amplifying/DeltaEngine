@@ -11,7 +11,7 @@
 	<UserControl.Resources>
 
 		<Style TargetType="Label" x:Key="DeltaLabel">
-			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontSize" Value="14" />
 			<Setter Property="FontFamily" Value="Arial" />
 			<Setter Property="FontStyle" Value="Normal" />
 			<Setter Property="Background" Value="#e2e2e2" />
@@ -19,24 +19,26 @@
 		</Style>
 
 		<Style TargetType="TextBox" x:Key="DeltaTextBox">
-			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontSize" Value="14" />
 			<Setter Property="FontFamily" Value="Arial" />
 			<Setter Property="FontStyle" Value="Normal" />
 			<Setter Property="Background" Value="#FFFBFBFB" />
 			<Setter Property="Foreground" Value="#FF5D5D5D" />
-			<Setter Property="BorderBrush" Value="{x:Null}" />
+			<Setter Property="BorderBrush" Value="#FFB2B2B2" />
+			<Setter Property="Padding" Value="3,4,0,0" />
 		</Style>
 
 		<Style TargetType="ComboBox" x:Key="DeltaComboBox">
-			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontSize" Value="14" />
 			<Setter Property="FontFamily" Value="Arial" />
 			<Setter Property="FontStyle" Value="Normal" />
 			<Setter Property="Background" Value="#FFFBFBFB" />
 			<Setter Property="Foreground" Value="#FF5D5D5D" />
+			<Setter Property="Padding" Value="5"/>
 		</Style>
 
 		<Style TargetType="ListBox" x:Key="DeltaListBox">
-			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontSize" Value="14" />
 			<Setter Property="FontFamily" Value="Arial" />
 			<Setter Property="FontStyle" Value="Normal" />
 			<Setter Property="Background" Value="#FFFBFBFB" />
@@ -44,11 +46,18 @@
 		</Style>
 
 		<Style TargetType="Button" x:Key="DeltaButton">
-			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontSize" Value="14" />
 			<Setter Property="FontFamily" Value="Arial" />
 			<Setter Property="FontStyle" Value="Normal" />
 			<Setter Property="Background" Value="#FF9C9C9C" />
 			<Setter Property="Foreground" Value="#FFFFFFFF" />
+		</Style>
+
+		<Style TargetType="CheckBox" x:Key="DeltaCheckBox">
+			<Setter Property="FontSize" Value="14" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="Foreground" Value="#FF5D5D5D" />
 		</Style>
 
 	</UserControl.Resources>
@@ -56,15 +65,16 @@
 	<Grid Background="#FFF3F3F3">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="12" />
-			<ColumnDefinition Width="127" />
+			<ColumnDefinition Width="77" />
+			<ColumnDefinition Width="12" />
+			<ColumnDefinition Width="41" />
 			<ColumnDefinition Width="16" />
 			<ColumnDefinition />
+			<ColumnDefinition Width="90" />
 			<ColumnDefinition Width="30" />
 			<ColumnDefinition Width="12" />
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
-			<RowDefinition Height="12" />
-			<RowDefinition Height="30" />
 			<RowDefinition Height="12" />
 			<RowDefinition Height="30" />
 			<RowDefinition Height="12" />
@@ -78,14 +88,17 @@
 			<RowDefinition Height="12" />
 			<RowDefinition Height="30" />
 			<RowDefinition Height="12" />
-			<RowDefinition Height="40" />
+			<RowDefinition Height="30" />
+			<RowDefinition Height="12" />
+			<RowDefinition Height="30" />
 			<RowDefinition Height="12" />
 			<RowDefinition Height="40" />
 			<RowDefinition Height="9" />
 		</Grid.RowDefinitions>
-		<ComboBox Grid.Column="3" Grid.Row="3" IsEditable="True" Style="{StaticResource DeltaComboBox}"
-		          ItemsSource="{Binding Path=AnimationList}" Text="{Binding Path=AnimationName}" Grid.ColumnSpan="2" IsTextSearchEnabled="False"/>
-		<ListBox Name="ImageViewList" Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="4" ItemsSource="{Binding Path=ImageList}"
+		<ComboBox Grid.Column="5" Grid.Row="1" IsEditable="True" Style="{StaticResource DeltaComboBox}"
+		          ItemsSource="{Binding Path=AnimationList}" Text="{Binding Path=AnimationName}" Grid.ColumnSpan="3"
+		          IsTextSearchEnabled="False" />
+		<ListBox Name="ImageViewList" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="7" ItemsSource="{Binding Path=ImageList}"
 		         SelectedIndex="{Binding Path=SelectedIndex}" Style="{StaticResource DeltaListBox}">
 			<ListBox.ContextMenu>
 				<ContextMenu>
@@ -93,29 +106,27 @@
 				</ContextMenu>
 			</ListBox.ContextMenu>
 		</ListBox>
-		<ComboBox Grid.Column="1" Grid.Row="7" Grid.ColumnSpan="4" ItemsSource="{Binding Path=LoadedImageList}"
+		<Label Content="Image" Grid.Column="1" Grid.Row="7" Style="{StaticResource DeltaLabel}" />
+		<Button Grid.Column="6" Grid.Row="5" Content="Add Image" Click="AddImage" Style="{StaticResource DeltaButton}"
+		        HorizontalAlignment="Right" Width="111" Grid.ColumnSpan="2" />
+		<ComboBox Grid.Column="3" Grid.Row="7" Grid.ColumnSpan="5" ItemsSource="{Binding Path=LoadedImageList}"
 		          Style="{StaticResource DeltaComboBox}"
 		          SelectedItem="{Binding Path=SelectedImageToAdd}" />
-		<Button Grid.Column="3" Grid.Row="9" Content="Up ↑" Click="MoveImageUp" Style="{StaticResource DeltaButton}"
-		        HorizontalAlignment="Right" Width="60" Margin="0,0,38,0" Foreground="White">
-			<Button.Background>
-				<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-					<GradientStop Color="#FFA0A0A0" Offset="0" />
-					<GradientStop Color="#FF8B8B8B" Offset="1" />
-				</LinearGradientBrush>
-			</Button.Background>
+		<RadioButton Grid.Column="5" Grid.Row="9" Grid.ColumnSpan="3" Content="Preview Image" FontSize="14"
+		             IsChecked="{Binding Path=IsDisplayingImage}" />
+		<RadioButton Grid.Column="1" Grid.Row="9" Grid.ColumnSpan="4" Content="Preview Animation" FontSize="14"
+		             IsChecked="{Binding Path=IsDisplayingAnimation}" />
+		<Button Grid.Column="1" Grid.Row="5" Content="Up ↑" Click="MoveImageUp" Style="{StaticResource DeltaButton}"
+		        HorizontalAlignment="Right" Width="60" Margin="0,0,17,0">
 		</Button>
-		<Button Grid.Column="3" Grid.Row="9" Content="Down ↓" Click="MoveImageDown" Style="{StaticResource DeltaButton}"
-		        HorizontalAlignment="Right" Width="60" Foreground="White" Grid.ColumnSpan="2">
-			<Button.Background>
-				<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-					<GradientStop Color="#FFA0A0A0" Offset="0" />
-					<GradientStop Color="#FF8B8B8B" Offset="1" />
-				</LinearGradientBrush>
-			</Button.Background>
+		<Button Grid.Column="2" Grid.Row="5" Content="Down ↓" Click="MoveImageDown" Style="{StaticResource DeltaButton}"
+		        HorizontalAlignment="Right" Width="69" Grid.ColumnSpan="3">
 		</Button>
-		<Label Content="Secondary Size" Grid.Column="1" Grid.Row="11" Style="{StaticResource DeltaLabel}" />
-		<TextBox Grid.Column="3" Grid.Row="11" Style="{StaticResource DeltaTextBox}" Grid.ColumnSpan="2">
+		<Label Content="Sprite Sheet Properties" Grid.Row="13" Grid.ColumnSpan="7" FontFamily="Arial"
+		       Background="#FFC9C8C8" FontSize="18" Foreground="White" Grid.Column="1" />
+		<Label Content="Frame Size" Grid.Column="1" Grid.Row="15" Style="{StaticResource DeltaLabel}" Grid.ColumnSpan="3" />
+		<TextBox Grid.Column="5" Grid.Row="15" Style="{StaticResource DeltaTextBox}" Grid.ColumnSpan="3"
+		         ToolTip="Define the size that each image has per frame">
 			<TextBox.Text>
 				<Binding Path="SubImageSize" UpdateSourceTrigger="PropertyChanged">
 					<Binding.Converter>
@@ -124,10 +135,10 @@
 				</Binding>
 			</TextBox.Text>
 		</TextBox>
-		<Label Content="Duration" Grid.Column="1" Grid.Row="13" Style="{StaticResource DeltaLabel}" />
-		<TextBox Grid.Column="3" Grid.Row="13" Text="{Binding Path=Duration}" Style="{StaticResource DeltaTextBox}"
-		         Grid.ColumnSpan="2" />
-		<Button Grid.Column="3" Grid.Row="15" Content="Save" Click="SaveAnimation" HorizontalAlignment="Right" Width="100"
+		<Label Content="Duration" Grid.Column="1" Grid.Row="11" Style="{StaticResource DeltaLabel}" Grid.ColumnSpan="3" />
+		<TextBox Grid.Column="5" Grid.Row="11" Text="{Binding Path=Duration}" Style="{StaticResource DeltaTextBox}"
+		         Grid.ColumnSpan="3" />
+		<Button Grid.Column="6" Grid.Row="17" Content="Save" Click="SaveAnimation" IsEnabled="{Binding Path=CanSaveAnimation}"
 		        Style="{StaticResource DeltaButton}" Grid.ColumnSpan="2" FontSize="22" FontWeight="Bold">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -136,16 +147,6 @@
 				</LinearGradientBrush>
 			</Button.Background>
 		</Button>
-		<Label Content="Name" Grid.Column="1" Grid.Row="3" Style="{StaticResource DeltaLabel}" />
-		<Button Content="?" Grid.Column="4" Grid.Row="1" Style="{StaticResource DeltaButton}" FontWeight="Bold" FontSize="20">
-			<Button.Background>
-				<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-					<GradientStop Color="#FFA0A0A0" Offset="0" />
-					<GradientStop Color="#FF8B8B8B" Offset="1" />
-				</LinearGradientBrush>
-			</Button.Background>
-		</Button>
-		<Button Content="Delete" Grid.Column="1" Margin="0,11,0,0" Grid.Row="15" Style="{StaticResource DeltaButton}"
-		        FontWeight="Bold" HorizontalAlignment="Left" Width="75" />
+		<Label Content="Name" Grid.Column="1" Grid.Row="1" Style="{StaticResource DeltaLabel}" Grid.ColumnSpan="3" />
 	</Grid>
 </UserControl>

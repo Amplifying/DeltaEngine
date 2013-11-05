@@ -5,9 +5,11 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 {
 	public class UIPreviewer : ContentPreview
 	{
-		public void PreviewContent(string contentName)
+		public override void Preview(string contentName)
 		{
-			ContentLoader.Load<Scene>(contentName);
+			var scene = ContentLoader.Load<Scene>(contentName);
+			foreach (var control in scene.Controls)
+				control.IsActive = true;
 		}
 	}
 }

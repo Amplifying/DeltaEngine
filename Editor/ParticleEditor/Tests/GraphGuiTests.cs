@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿/*using System.Collections.Generic;
 using System.Windows;
 using DeltaEngine.Datatypes;
 using NUnit.Framework;
@@ -41,4 +41,4 @@ namespace DeltaEngine.Editor.ParticleEditor.Tests
 			window.ShowDialog();
 		}
 	}
-}
+}*/

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Controls;
 using DeltaEngine.Editor.Core;
-using DeltaEngine.Networking.Messages;
 using GalaSoft.MvvmLight.Messaging;
 
 namespace DeltaEngine.Editor.ContentManager
@@ -20,40 +20,30 @@ namespace DeltaEngine.Editor.ContentManager
 		public void Init(Service service)
 		{
 			DataContext = contentManagerViewModel = new ContentManagerViewModel(service);
-			service.DataReceived += OnDataReceived;
 			service.ContentUpdated += (type, name) => RefreshContentList();
 			service.ContentDeleted += name => RefreshContentList();
+			service.ProjectChanged += RefreshContentList;
+			service.ContentReady +=
+				() => Dispatcher.Invoke(new Action(contentManagerViewModel.ShowStartContent));
+			Messenger.Default.Send("ContentManager", "SetSelectedEditorPlugin");
 		}
 
-		public void ProjectChanged() {}
+		public void Activate()
+		{
+			Messenger.Default.Send("ContentManager", "SetSelectedEditorPlugin");
+			contentManagerViewModel.Activate();
+		}
 
 		private ContentManagerViewModel contentManagerViewModel;
-
-		private void OnDataReceived(object message)
-		{
-			if (message is SetProject)
-				RefreshContentList();
-		}
 
 		private void RefreshContentList()
 		{
 			Dispatcher.Invoke(new Action(contentManagerViewModel.RefreshContentList));
 		}
 
-		private void OnImageViewDrop(object sender, DragEventArgs e)
-		{
-			IDataObject dataObject = e.Data;
-			Messenger.Default.Send(dataObject, "AddContent");
-		}
-
 		private void DeleteSelectedItems(object sender, RoutedEventArgs e)
 		{
 			Messenger.Default.Send("DeleteContent", "DeleteContent");
-		}
-
-		private void DeleteSelectedImageAnimation(object sender, RoutedEventArgs e)
-		{
-			Messenger.Default.Send(true, "DeleteContent");
 		}
 
 		public string ShortName
@@ -71,9 +61,16 @@ namespace DeltaEngine.Editor.ContentManager
 			get { return false; }
 		}
 
-		private void ChangeSelectedItem(object sender, RoutedPropertyChangedEventArgs<object> e)
+		private void ChangeSelectedItem(object sender, SelectionChangedEventArgs e)
 		{
-			contentManagerViewModel.SelectedContent = e.NewValue;
+			if (e.AddedItems.Count <= 0)
+				return;
+			contentManagerViewModel.SelectedContent = e.AddedItems[0];
+		}
+
+		private void OpenFileExplorer(object sender, RoutedEventArgs e)
+		{
+			Messenger.Default.Send("OpenFileExplorerToAddNewContent", "OpenFileExplorerToAddNewContent");
 		}
 	}
 }

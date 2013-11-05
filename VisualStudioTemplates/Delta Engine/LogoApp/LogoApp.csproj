@@ -50,14 +50,14 @@
     <Reference Include="DeltaEngine.Input">
 	  <HintPath>$(DeltaEnginePath)\OpenTK\DeltaEngine.Input.dll</HintPath>
     </Reference>
+    <Reference Include="DeltaEngine.WindowsOpenTK20">
+	  <HintPath>$(DeltaEnginePath)\OpenTK\DeltaEngine.WindowsOpenTK20.dll</HintPath>
+    </Reference>
     <Reference Include="DeltaEngine.Rendering2D">
 	  <HintPath>$(DeltaEnginePath)\OpenTK\DeltaEngine.Rendering2D.dll</HintPath>
     </Reference>
     <Reference Include="DeltaEngine.Rendering2D.Shapes">
 	  <HintPath>$(DeltaEnginePath)\OpenTK\DeltaEngine.Rendering2D.Shapes.dll</HintPath>
-    </Reference>
-    <Reference Include="DeltaEngine.WindowsOpenTK20">
-	  <HintPath>$(DeltaEnginePath)\OpenTK\DeltaEngine.WindowsOpenTK20.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

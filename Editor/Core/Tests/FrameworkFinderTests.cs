@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using DeltaEngine.Extensions;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.Core.Tests
@@ -90,10 +91,10 @@ namespace DeltaEngine.Editor.Core.Tests
 		{
 			CreateFrameworkFolders(GetDeltaEngineFrameworksWithoutDefault());
 			frameworks = new FrameworkFinder();
-			var defaultFramework = DeltaEngineFramework.None;
+			var defaultFramework = DeltaEngineFramework.Default;
 			Assert.Throws<FrameworkFinder.EditorDefaultFrameworkNotInstalled>(
 				() => { defaultFramework = frameworks.Default; });
-			Assert.AreEqual(DeltaEngineFramework.None, defaultFramework);
+			Assert.AreEqual(DeltaEngineFramework.Default, defaultFramework);
 		}
 
 		private static IEnumerable<string> GetDeltaEngineFrameworksWithoutDefault()

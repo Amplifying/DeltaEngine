@@ -22,7 +22,8 @@ namespace DeltaEngine.Editor.Tests
 			model.ApiKey = "invalid";
 			model.OnLoginButtonClicked.Execute(null);
 			Thread.Sleep(200);
-			Assert.AreEqual(Resources.ConnectionToDeltaEngineTimedOut, model.Error);
+			Assert.IsTrue(model.Error.Contains("Server Error: Unable to login, invalid ApiKey!"));
+			Assert.IsFalse(model.IsLoggedIn);
 		}
 
 		private static EditorViewModel CreateModel()
@@ -38,12 +39,8 @@ namespace DeltaEngine.Editor.Tests
 			Assert.AreEqual(Resources.EnterYourApiKey, model.Error);
 			model.OnLoginButtonClicked.Execute(null);
 			Thread.Sleep(200);
-			if (model.Error == Resources.GetApiKeyHere)
-				throw new LoginWithEditorToHaveValidApiKeyInRegistry();
-			Assert.AreEqual("", model.Error);
+			Assert.AreEqual(Resources.GetApiKeyHere, model.Error);
 		}
-
-		private class LoginWithEditorToHaveValidApiKeyInRegistry : Exception {}
 
 		[Test]
 		public void LogoutSetsApiKeyEmpty()
@@ -170,6 +167,15 @@ namespace DeltaEngine.Editor.Tests
 			Assert.IsFalse(model.StartEditorMaximized);
 			model.StartEditorMaximized = true;
 			Assert.IsTrue(model.StartEditorMaximized);
+		}
+
+		[Test]
+		public void DefaultProjectToLoginWithIsSelectedIfUserHasNotLoggedInYetOrLoggedOut()
+		{
+			var mockPlugins = GetEditorPluginLoaderMock();
+			var model = new EditorViewModel(mockPlugins, new MockSettings());
+			model.SelectedProject = new EditorViewModel.ProjectNameAndFontWeight("", FontWeights.Normal);
+			Assert.AreEqual("GhostWars", model.SelectedProject);
 		}
 	}
 }

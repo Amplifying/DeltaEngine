@@ -57,6 +57,9 @@
     <Reference Include="DeltaEngine.Rendering2D.Shapes">
 	  <HintPath>$(DeltaEnginePath)\OpenTK\DeltaEngine.Rendering2D.Shapes.dll</HintPath>
     </Reference>
+    <Reference Include="DeltaEngine.Scenes">
+	  <HintPath>$(DeltaEnginePath)\OpenTK\DeltaEngine.Scenes.dll</HintPath>
+    </Reference>
     <Reference Include="DeltaEngine.WindowsOpenTK20">
 	  <HintPath>$(DeltaEnginePath)\OpenTK\DeltaEngine.WindowsOpenTK20.dll</HintPath>
     </Reference>

@@ -2,6 +2,7 @@
 using DeltaEngine.Datatypes;
 using DeltaEngine.Rendering2D;
 using DeltaEngine.Rendering2D.Shapes;
+using DeltaEngine.ScreenSpaces;
 
 namespace DeltaEngine.Editor.UIEditor
 {
@@ -37,15 +38,13 @@ namespace DeltaEngine.Editor.UIEditor
 		}
 
 		public Line2D[] OutLines { get; private set; }
-		private static readonly Color SelectionColor = Color.Red;
+		private static readonly Color SelectionColor = Color.White;
 
 		internal void UpdateOutLines(Entity2D selectedSprite)
 		{
-			if (selectedSprite == null)
-			{			
-				return;
-			}
 			ClearLines();
+			if (selectedSprite == null)
+				return;
 			var drawArea = selectedSprite.DrawArea;
 			OutLines[0].StartPoint = drawArea.TopLeft;
 			OutLines[0].EndPoint = drawArea.TopRight;
@@ -70,15 +69,15 @@ namespace DeltaEngine.Editor.UIEditor
 		}
 
 		internal void MoveImage(Vector2D mousePosition, Entity2D selectedEntity2D, bool isDragging,
-			bool isSnappingToGrid)
+			bool isSnappingToGrid, UIEditorScene scene)
 		{
 			if (selectedEntity2D == null || isDragging)
 				return; //ncrunch: no coverage 
 			if (uiEditorViewModel.GridWidth == 0 || uiEditorViewModel.GridHeight == 0 ||
-				!isSnappingToGrid)
+				!isSnappingToGrid || !scene.IsDrawingGrid)
 				MoveImageWithoutGrid(mousePosition, selectedEntity2D);
 			else
-				MoveImageUsingTheGrid(mousePosition, selectedEntity2D);
+				MoveImageUsingTheGrid(mousePosition, selectedEntity2D, scene);
 			UpdateOutLines(selectedEntity2D);
 		}
 
@@ -91,17 +90,35 @@ namespace DeltaEngine.Editor.UIEditor
 
 		internal Vector2D lastMousePosition = Vector2D.Unused;
 
-		private void MoveImageUsingTheGrid(Vector2D mousePosition, Entity2D selectedEntity2D)
+		private void MoveImageUsingTheGrid(Vector2D mousePosition, Entity2D selectedEntity2D,
+			UIEditorScene scene)
 		{
+			Vector2D topLeft = scene.LinesInGridList[0].TopLeft;
 			var relativePosition = mousePosition - lastMousePosition;
 			float posX = (selectedEntity2D.DrawArea.Left + relativePosition.X);
 			float posY = (selectedEntity2D.DrawArea.Top + relativePosition.Y);
-			float gridSpaceX = (1.0f / uiEditorViewModel.GridWidth);
-			float gridSpaceY = (1.0f / uiEditorViewModel.GridHeight);
-			var colomNumberInGrid = (int)Math.Round(posX / gridSpaceX);
-			var rowNumberInGrid = (int)Math.Round(posY / gridSpaceY);
-			selectedEntity2D.DrawArea = new Rectangle(gridSpaceX * colomNumberInGrid,
-				gridSpaceY * rowNumberInGrid, selectedEntity2D.DrawArea.Width,
+			var sceneSize =
+				ScreenSpace.Current.FromPixelSpace(new Size(uiEditorViewModel.UIWidth,
+					uiEditorViewModel.UIHeight));
+			var tileSize =
+				ScreenSpace.Current.FromPixelSpace(new Size(uiEditorViewModel.GridWidth,
+					uiEditorViewModel.GridHeight));
+			float tilewidth;
+			float tileheight;
+			if (sceneSize.Width > sceneSize.Height)
+			{
+				tilewidth = 1 / (sceneSize.Width / tileSize.Width);
+				tileheight = 1 / (sceneSize.Width / tileSize.Height);
+			}
+			else
+			{
+				tilewidth = 1 / (sceneSize.Height / tileSize.Width);
+				tileheight = 1 / (sceneSize.Height / tileSize.Height);
+			}
+			var colomNumberInGrid = (int)Math.Round((posX - topLeft.X) / tilewidth);
+			var rowNumberInGrid = (int)Math.Round((posY - topLeft.Y) / tileheight);
+			selectedEntity2D.DrawArea = new Rectangle((tilewidth * colomNumberInGrid) + topLeft.X,
+				(tileheight * rowNumberInGrid) + topLeft.Y, selectedEntity2D.DrawArea.Width,
 				selectedEntity2D.DrawArea.Height);
 			if (spritePos == selectedEntity2D.Center)
 				return; //ncrunch: no coverage
@@ -110,5 +127,10 @@ namespace DeltaEngine.Editor.UIEditor
 		}
 
 		private Vector2D spritePos;
+
+		public void CreateNewLines()
+		{
+			CreateOutlines();
+		}
 	}
 }

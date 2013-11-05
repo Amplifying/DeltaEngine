@@ -10,26 +10,13 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 		[TestCase("Name"), TestCase("ProjectName"), TestCase("DeltaEngine.Editor.ProjectCreator.Tests")]
 		public void ValidFolderNames(string name)
 		{
-			Assert.IsTrue(InputValidator.IsValidFolderName(name));
+			Assert.IsTrue(InputValidator.IsValidProjectName(name));
 		}
 
 		[TestCase(""), TestCase("name"), TestCase("1Name"), TestCase("Project Name")]
 		public void InvalidFolderNames(string name)
 		{
-			Assert.IsFalse(InputValidator.IsValidFolderName(name));
-		}
-
-		[TestCase("C:\\DeltaEngine\\"), TestCase("c:\\deltaengine\\"), TestCase("\\DeltaEngine\\")]
-		public void ValidPaths(string path)
-		{
-			Assert.IsTrue(InputValidator.IsValidPath(path));
-		}
-
-		[TestCase("DeltaEngine\\"), TestCase("\\DeltaEngine"), TestCase("\\c:\\DeltaEngine\\"),
-		 TestCase("\\Delta Engine\\"), TestCase("C:\\Delta Engine\\")]
-		public void InvalidPaths(string path)
-		{
-			Assert.IsFalse(InputValidator.IsValidPath(path));
+			Assert.IsFalse(InputValidator.IsValidProjectName(name));
 		}
 	}
 }

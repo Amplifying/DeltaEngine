@@ -1,11 +1,10 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
 using DeltaEngine.Editor.Core;
 using GalaSoft.MvvmLight.Messaging;
+using Cursors = System.Windows.Input.Cursors;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
-using Panel = System.Windows.Forms.Panel;
 
 namespace DeltaEngine.Editor.Emulator
 {
@@ -26,29 +25,37 @@ namespace DeltaEngine.Editor.Emulator
 			SetMessengers();
 		}
 
+		public void Activate() {}
+
 		private void SetMessengers()
 		{
-			Messenger.Default.Register<string>(this, "ShowToolboxPane", ShowToolboxPane);
-			Messenger.Default.Register<string>(this, "HideToolboxPane", HideToolboxPane);
-
-
+			Messenger.Default.Register<string>(this, "SetSelectedEditorPlugin", SetSelectedEditorPlugin);
 		}
 
-		public void ShowToolboxPane(string obj)
+		private void ShowToolboxPane(string obj)
 		{
 			ToolPane.Visibility = Visibility.Visible;
 			ViewportHost.Margin = new Thickness(0, 0, 0, 0);
-			Graph.Margin = new Thickness(140, 0, 0, 0);
 		}
 
-		public void HideToolboxPane(string obj)
+		private void HideToolboxPane(string obj)
 		{
 			ToolPane.Visibility = Visibility.Hidden;
 			ViewportHost.Margin = new Thickness(-140, 0, 0, 0);
-			Graph.Margin = new Thickness(0, 0, 0, 0);
 		}
 
-		public void ProjectChanged() {}
+		private void SetSelectedEditorPlugin(string plugin)
+		{
+			selectedEditorPlugin = plugin;
+			if (plugin == "UIEditor")
+				ShowToolboxPane("");
+			else
+				HideToolboxPane("");
+			if (plugin != "ContentManager")
+				Messenger.Default.Send("NoLongerSelectContentManager", "NoLongerSelectContentManager");
+		}
+
+		private string selectedEditorPlugin;
 
 		public void ApplyEmulator()
 		{
@@ -75,11 +82,11 @@ namespace DeltaEngine.Editor.Emulator
 			if (UIToolbox.SelectedItem == null)
 				return;
 			var item = UIToolbox.SelectedItem as ToolboxEntry;
-			if(item.ShortName == "Image")
+			if (item.ShortName == "Image")
 				DragImage(e);
 			if (item.ShortName == "Button")
 				DragButton(e);
-			if (item.ShortName== "Label")
+			if (item.ShortName == "Label")
 				DragLabel(e);
 			if (item.ShortName == "Slider")
 				DragSlider(e);
@@ -92,13 +99,13 @@ namespace DeltaEngine.Editor.Emulator
 			{
 				Messenger.Default.Send(true, "SetDraggingImage");
 				isDragging = true;
-				Mouse.OverrideCursor = System.Windows.Input.Cursors.Hand;
+				Mouse.OverrideCursor = Cursors.Hand;
 			}
 			if (e.LeftButton != MouseButtonState.Pressed)
 			{
 				Messenger.Default.Send(false, "SetDraggingImage");
 				isDragging = false;
-				Mouse.OverrideCursor = System.Windows.Input.Cursors.Arrow;
+				Mouse.OverrideCursor = Cursors.Arrow;
 			}
 		}
 
@@ -110,13 +117,13 @@ namespace DeltaEngine.Editor.Emulator
 			{
 				Messenger.Default.Send(true, "SetDraggingButton");
 				isDragging = true;
-				Mouse.OverrideCursor = System.Windows.Input.Cursors.Hand;
+				Mouse.OverrideCursor = Cursors.Hand;
 			}
 			if (e.LeftButton != MouseButtonState.Pressed)
 			{
 				Messenger.Default.Send(false, "SetDraggingButton");
 				isDragging = false;
-				Mouse.OverrideCursor = System.Windows.Input.Cursors.Arrow;
+				Mouse.OverrideCursor = Cursors.Arrow;
 			}
 		}
 
@@ -126,13 +133,13 @@ namespace DeltaEngine.Editor.Emulator
 			{
 				Messenger.Default.Send(true, "SetDraggingLabel");
 				isDragging = true;
-				Mouse.OverrideCursor = System.Windows.Input.Cursors.Hand;
+				Mouse.OverrideCursor = Cursors.Hand;
 			}
 			if (e.LeftButton != MouseButtonState.Pressed)
 			{
 				Messenger.Default.Send(false, "SetDraggingLabel");
 				isDragging = false;
-				Mouse.OverrideCursor = System.Windows.Input.Cursors.Arrow;
+				Mouse.OverrideCursor = Cursors.Arrow;
 			}
 		}
 
@@ -142,13 +149,13 @@ namespace DeltaEngine.Editor.Emulator
 			{
 				Messenger.Default.Send(true, "SetDraggingSlider");
 				isDragging = true;
-				Mouse.OverrideCursor = System.Windows.Input.Cursors.Hand;
+				Mouse.OverrideCursor = Cursors.Hand;
 			}
 			if (e.LeftButton != MouseButtonState.Pressed)
 			{
 				Messenger.Default.Send(false, "SetDraggingSlider");
 				isDragging = false;
-				Mouse.OverrideCursor = System.Windows.Input.Cursors.Arrow;
+				Mouse.OverrideCursor = Cursors.Arrow;
 			}
 		}
 
@@ -172,7 +179,7 @@ namespace DeltaEngine.Editor.Emulator
 		private void PlaceCenteredControl(string newControl)
 		{
 			Messenger.Default.Send(newControl, "SetCenteredControl");
-			Mouse.OverrideCursor = System.Windows.Input.Cursors.Hand;
+			Mouse.OverrideCursor = Cursors.Hand;
 		}
 
 		private void GridOnGotFocus(object sender, RoutedEventArgs e)

@@ -1,12 +1,5 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{948C7EAA-CF03-48C3-B4AC-3ADFBAA44D14}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\nuget.exe = .nuget\nuget.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor", "DeltaEngine.Editor.csproj", "{4C0891C0-CE79-4A2D-919E-6F706B62C8EA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.ProjectCreator", "ProjectCreator\DeltaEngine.Editor.ProjectCreator.csproj", "{369DC159-36A7-4523-80FD-81D8BEA37547}"
@@ -97,10 +90,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.WindowsOpenTK20
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Graphics.OpenTK20", "..\Graphics\OpenTK20\DeltaEngine.Graphics.OpenTK20.csproj", "{8EAA67E5-F00E-4963-A256-3ED968DFCFCF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.SpriteFontCreator", "SpriteFontCreator\DeltaEngine.Editor.SpriteFontCreator.csproj", "{E17F5FD4-7E51-4AD6-AF0E-E9D8DC028412}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.FontEditor.Tests", "SpriteFontCreator\Tests\DeltaEngine.Editor.SpriteFontCreator.Tests.csproj", "{248F631B-0CEF-487A-AC70-D75F712632E8}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.ImageAnimationEditor", "ImageAnimationEditor\DeltaEngine.Editor.ImageAnimationEditor.csproj", "{994FC0BF-C62A-4054-ADB5-C1A82489EE43}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.ImageAnimationEditor.Tests", "ImageAnimationEditor\Tests\DeltaEngine.Editor.ImageAnimationEditor.Tests.csproj", "{7BF01543-6A66-45BE-BC49-7614597BCBE9}"
@@ -125,7 +114,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.Converte
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeltaEngine.Editor.Converters.Tests", "Converters\Tests\DeltaEngine.Editor.Converters.Tests.csproj", "{3EA7CAEE-F6E8-40BA-B499-D74ECB51555A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DeltaEngine", "DeltaEngine", "{274C46E2-0906-4579-AB99-A345801A6051}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Engine", "Engine", "{274C46E2-0906-4579-AB99-A345801A6051}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -313,14 +302,6 @@ Global
 		{8EAA67E5-F00E-4963-A256-3ED968DFCFCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8EAA67E5-F00E-4963-A256-3ED968DFCFCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8EAA67E5-F00E-4963-A256-3ED968DFCFCF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E17F5FD4-7E51-4AD6-AF0E-E9D8DC028412}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E17F5FD4-7E51-4AD6-AF0E-E9D8DC028412}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E17F5FD4-7E51-4AD6-AF0E-E9D8DC028412}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E17F5FD4-7E51-4AD6-AF0E-E9D8DC028412}.Release|Any CPU.Build.0 = Release|Any CPU
-		{248F631B-0CEF-487A-AC70-D75F712632E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{248F631B-0CEF-487A-AC70-D75F712632E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{248F631B-0CEF-487A-AC70-D75F712632E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{248F631B-0CEF-487A-AC70-D75F712632E8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{994FC0BF-C62A-4054-ADB5-C1A82489EE43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{994FC0BF-C62A-4054-ADB5-C1A82489EE43}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{994FC0BF-C62A-4054-ADB5-C1A82489EE43}.Release|Any CPU.ActiveCfg = Release|Any CPU

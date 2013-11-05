@@ -39,7 +39,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\DeltaEngine.csproj">
       <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
-      <Name>DeltaEngine %28DeltaEngine\DeltaEngine%29</Name>
+      <Name>DeltaEngine</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Mocks\DeltaEngine.Mocks.csproj">
       <Project>{A5F4EF37-7B5F-4AAE-BFF2-C2D04DB805F7}</Project>
@@ -58,5 +58,4 @@
     <Compile Include="MockService.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>

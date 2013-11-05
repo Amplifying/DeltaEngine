@@ -7,6 +7,7 @@ using DeltaEngine.Multimedia.OpenTK;
 using DeltaEngine.Platforms.Windows;
 using DeltaEngine.Content.Xml;
 using DeltaEngine.Graphics;
+using DeltaEngine.Rendering2D;
 
 namespace DeltaEngine.Platforms
 {
@@ -22,6 +23,7 @@ namespace DeltaEngine.Platforms
 			RegisterSingleton<WindowsSystemInformation>();
 			RegisterSingleton<OpenTK20Device>();
 			RegisterSingleton<Drawing>();
+			RegisterSingleton<BatchRenderer>();
 			RegisterSingleton<OpenTK20ScreenshotCapturer>();
 			RegisterSingleton<OpenTKSoundDevice>();
 			RegisterSingleton<WindowsMouse>();

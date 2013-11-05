@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
+using DeltaEngine.Content;
 using DeltaEngine.Editor.Core;
 using GalaSoft.MvvmLight.Messaging;
 
@@ -8,7 +10,7 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 	/// Interaction logic for AnimationEditorView.xaml
 	/// </summary>
 	public partial class AnimationEditorView : EditorPluginView
-	{
+	{		
 		//ncrunch: no coverage start
 		public AnimationEditorView()
 		{
@@ -17,14 +19,22 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 
 		public void Init(Service service)
 		{
-			DataContext = viewModel = new AnimationEditorViewModel(service);
+			viewModel = new AnimationEditorViewModel(service);
+			DataContext = viewModel;
+			service.ProjectChanged +=
+				() => Dispatcher.Invoke(new Action(viewModel.ResetOnProjectChange));
+			service.ContentUpdated += (t, s) => Dispatcher.Invoke(
+				new Action(() => viewModel.RefreshOnContentChange()));
+			service.ContentDeleted += s => Dispatcher.Invoke(new Action(viewModel.RefreshOnContentChange));
+			Messenger.Default.Send("AnimationEditor", "SetSelectedEditorPlugin");
 		}
 
 		private AnimationEditorViewModel viewModel;
 
-		public void ProjectChanged()
+		public void Activate()
 		{
-			viewModel.RefreshData();
+			viewModel.ActivateAnimation();
+			Messenger.Default.Send("AnimationEditor", "SetSelectedEditorPlugin");
 		}
 
 		public string ShortName
@@ -66,6 +76,11 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 			if (ImageViewList.Items.Count == 0)
 				return;
 			Messenger.Default.Send("SaveAnimation", "SaveAnimation");
+		}
+
+		private void AddImage(object sender, RoutedEventArgs e)
+		{
+			Messenger.Default.Send("AddImage", "AddImage");
 		}
 	}
 }

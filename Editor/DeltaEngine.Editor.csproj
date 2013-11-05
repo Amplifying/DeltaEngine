@@ -40,11 +40,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GalaSoft.MvvmLight.WPF4">
-      <HintPath>packages\MvvmLightLibs.4.1.27.0\lib\net40\GalaSoft.MvvmLight.WPF4.dll</HintPath>
+      <HintPath>packages\MvvmLightLibs.4.2.30.0\lib\net40\GalaSoft.MvvmLight.WPF4.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity">
+      <HintPath>packages\MvvmLightLibs.4.2.30.0\lib\net40\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.XML" />
     <Reference Include="WindowsBase" />
@@ -84,7 +87,11 @@
     </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.csproj">
       <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
-      <Name>DeltaEngine %28DeltaEngine\DeltaEngine%29</Name>
+      <Name>DeltaEngine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Input\DeltaEngine.Input.csproj">
+      <Project>{CC65E69E-FAFD-4C2B-85EB-5E57FD3AF847}</Project>
+      <Name>DeltaEngine.Input</Name>
     </ProjectReference>
     <ProjectReference Include="..\Logging\DeltaEngine.Logging.csproj">
       <Project>{E4440567-3D5D-4670-AB49-8163B18E302E}</Project>
@@ -132,7 +139,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -150,7 +156,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\EditorBackground.png" />
     <Resource Include="Images\ExitButton.png" />
     <Resource Include="Images\MaximizeWindowButton.png" />
     <Resource Include="Images\MinimizeWindowButton.png" />
@@ -245,13 +250,20 @@
     <Resource Include="Images\ContentTypes\UITheme.png" />
     <Resource Include="Images\ContentTypes\Video.png" />
     <Resource Include="Images\ContentTypes\Xml.png" />
-    <Resource Include="Images\OctopusWelcome.png" />
     <Resource Include="Images\CPP.png" />
     <Resource Include="Images\CreateProject.png" />
     <Resource Include="Images\CSharp.png" />
     <Resource Include="Images\Tutorials.png" />
     <Resource Include="Images\FirstSteps.png" />
     <Resource Include="Images\Editor.png" />
+    <Resource Include="Images\HelpButton.png" />
+    <Resource Include="Images\HelpButtonHover.png" />
+    <Resource Include="Images\LoginKey.png" />
+    <Resource Include="Images\AppBuilder.png" />
+    <Resource Include="Images\Documentation.png" />
+    <Resource Include="Images\TroubleshootingChecklist.png" />
+    <Resource Include="Images\LoginImage.jpg" />
+    <Resource Include="Images\ProjectCreator\CreateProjectIcon.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Images\Emulators\AndroidGoogleNexus4_768x1280.png" />
@@ -295,7 +307,7 @@
     <Compile Include="Helpers\SingleInstance.cs" />
     <Compile Include="Helpers\SingleInstanceApp.cs" />
     <Compile Include="OnlineService.cs" />
+    <Compile Include="PopupMessageViewModel.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>

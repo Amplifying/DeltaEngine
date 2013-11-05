@@ -1,8 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Windows;
+using DeltaEngine.Core;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Messages;
+using DeltaEngine.Extensions;
+using GalaSoft.MvvmLight.Messaging;
 using Microsoft.Win32;
 
 namespace DeltaEngine.Editor.AppBuilder
@@ -20,17 +23,26 @@ namespace DeltaEngine.Editor.AppBuilder
 		public void Init(Service service)
 		{
 			ViewModel = new AppBuilderViewModel(service);
-			ViewModel.AppBuildFailedRecieved += OnAppBuildFailedRecieved;
-			ViewModel.BuiltAppRecieved += OnBuiltAppRecieved;
+			ViewModel.AppBuildFailedRecieved += DispatchAndHandleBuildFailedRecievedEvent;
+			ViewModel.BuiltAppRecieved += DispatchAndHandleBuildAppReceivedEvent;
 			BuildList.MessagesViewModel = ViewModel.MessagesListViewModel;
 			BuildList.AppListViewModel = ViewModel.AppListViewModel;
 			SwitchToBuiltApps();
 			DataContext = ViewModel;
+			Messenger.Default.Send("AppBuilder", "SetSelectedEditorPlugin");
 		}
 
-		public void ProjectChanged() {}
+		public void Activate()
+		{
+			Messenger.Default.Send("AppBuilder", "SetSelectedEditorPlugin");
+		}
 
 		public AppBuilderViewModel ViewModel { get; private set; }
+
+		private void DispatchAndHandleBuildFailedRecievedEvent(AppBuildFailed buildFailedMessage)
+		{
+			Dispatcher.BeginInvoke(new Action(() => OnAppBuildFailedRecieved(buildFailedMessage)));
+		}
 
 		private void OnAppBuildFailedRecieved(AppBuildFailed buildFailedMessage)
 		{
@@ -43,10 +55,22 @@ namespace DeltaEngine.Editor.AppBuilder
 			SwitchToBuildMessagesList();
 		}
 
+		private void SwitchToBuildMessagesList()
+		{
+			if (BuildList.BuiltAppsList.IsVisible)
+				Dispatcher.BeginInvoke(new Action(BuildList.FocusBuildMessagesList));
+		}
+
+		private void DispatchAndHandleBuildAppReceivedEvent(AppInfo appInfo, byte[] appData)
+		{
+			Dispatcher.BeginInvoke(new Action(() => OnBuiltAppRecieved(appInfo, appData)));
+		}
+
 		private void OnBuiltAppRecieved(AppInfo appInfo, byte[] appData)
 		{
 			ViewModel.AppListViewModel.AddApp(appInfo, appData);
 			SwitchToBuiltApps();
+			InstallAndLaunchNewBuiltApp(appInfo);
 		}
 
 		private void SwitchToBuiltApps()
@@ -55,10 +79,26 @@ namespace DeltaEngine.Editor.AppBuilder
 				Dispatcher.BeginInvoke(new Action(BuildList.FocusBuiltAppsList));
 		}
 
-		private void SwitchToBuildMessagesList()
+		private void InstallAndLaunchNewBuiltApp(AppInfo appInfo)
 		{
-			if (BuildList.BuiltAppsList.IsVisible)
-				Dispatcher.BeginInvoke(new Action(BuildList.FocusBuildMessagesList));
+			if (!appInfo.IsDeviceAvailable)
+				throw new NoDeviceAvailable(appInfo);
+
+			Device primaryDevice = appInfo.AvailableDevices[0];
+			if (primaryDevice.IsAppInstalled(appInfo))
+			{
+				Logger.Info("App " + Name + " was already installed, uninstalling it.");
+				primaryDevice.Uninstall(appInfo);
+			}
+			Logger.Info("Installing App " + Name + " on " + primaryDevice.Name);
+			primaryDevice.Install(appInfo);
+			primaryDevice.Launch(appInfo);
+		}
+
+		public class NoDeviceAvailable : Exception
+		{
+			public NoDeviceAvailable(AppInfo appInfo)
+				: base(appInfo.ToString()) { }
 		}
 
 		private void OnBrowseUserProjectClicked(object sender, RoutedEventArgs e)

@@ -26,22 +26,22 @@ namespace DeltaEngine.Editor.ParticleEditor.Tests
 		[Test, CloseAfterFirstFrame]
 		public void ViewModelStartsOffWithDefaultEffect()
 		{
-			Assert.AreEqual("", viewModel.ParticleSystemName);
+			Assert.AreEqual("MyParticleSystem", viewModel.ParticleSystemName);
 			Assert.AreEqual(0, viewModel.CurrentEmitterInEffect);
 			Assert.NotNull(viewModel.RotationSpeed);
 			Assert.NotNull(viewModel.Size);
 			Assert.AreEqual(ParticleEmitterPositionType.Point, viewModel.SelectedSpawnerType);
-			Assert.AreEqual(0, viewModel.MaxNumberOfParticles);
+			Assert.AreEqual(500, viewModel.MaxNumberOfParticles);
 			Assert.NotNull(viewModel.Color);
 			Assert.NotNull(viewModel.StartPosition);
 			Assert.NotNull(viewModel.StartRotation);
 			Assert.NotNull(viewModel.StartVelocity);
 			Assert.NotNull(viewModel.Acceleration);
-			Assert.AreEqual(0, viewModel.SpawnInterval);
-			Assert.AreEqual(0, viewModel.LifeTime);
+			Assert.AreEqual(0.01f, viewModel.SpawnInterval);
+			Assert.AreEqual(1, viewModel.LifeTime);
 			Assert.IsTrue(viewModel.CanModifyEmitters);
 			Assert.AreEqual(new[] { 0 }, viewModel.AvailableEmitterIndices);
-			Assert.IsTrue(viewModel.SelectedMaterialName.StartsWith("<Generated"));
+			Assert.IsTrue(viewModel.SelectedMaterialName.Equals("Default2D"));
 			Assert.NotNull(viewModel.ParticleEmitterNameToAdd);
 		}
 
@@ -49,6 +49,8 @@ namespace DeltaEngine.Editor.ParticleEditor.Tests
 		public void SaveContentTriggersResponseOfService()
 		{
 			viewModel.ParticleSystemName = "NameOfSavedContent";
+			viewModel.currentEffect.AttachedEmitters[0].EmitterData.ParticleMaterial =
+				ContentLoader.Load<Material>("Material");
 			var originalNumberOfMessages = mockService.NumberOfMessagesSent;
 			viewModel.Save();
 			mockService.ReceiveData(ContentType.ParticleSystem);
@@ -79,7 +81,7 @@ namespace DeltaEngine.Editor.ParticleEditor.Tests
 		{
 			viewModel.LifeTime = 0.5f;
 			viewModel.RemoveCurrentEmitterFromSystem();
-			Assert.AreEqual(0.0f, viewModel.LifeTime);
+			Assert.AreEqual(1.0f, viewModel.LifeTime);
 		}
 
 		[Test, CloseAfterFirstFrame]
@@ -197,16 +199,10 @@ namespace DeltaEngine.Editor.ParticleEditor.Tests
 		public void ShallNotSaveWithEmptyName()
 		{
 			viewModel.ParticleSystemName = "";
+			viewModel.currentEffect.AttachedEmitters[0].EmitterData.ParticleMaterial =
+				ContentLoader.Load<Material>("Material");
 			viewModel.Save();
 			Assert.IsTrue(Resolve<Logger>().LastMessage.Contains("empty name"));
-		}
-
-		[Test, CloseAfterFirstFrame]
-		public void DeletetionWithoutContentGivesMessage()
-		{
-			viewModel.ParticleSystemName = "TestContentDeletion";
-			viewModel.Delete();
-			Assert.IsTrue(Resolve<Logger>().LastMessage.Contains("does not exist"));
 		}
 
 		[Test, CloseAfterFirstFrame]
@@ -244,6 +240,14 @@ namespace DeltaEngine.Editor.ParticleEditor.Tests
 			AssertValueSet(() => { viewModel.ToggleLookingForExistingEmitters(); });
 			AssertValueSet(() => { viewModel.ToggleLookingForExistingEmitters(); });
 			Assert.AreEqual(Visibility.Hidden, viewModel.SavedEmitterSelectionVisibility);
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void CannotSelectUnavailableMaterial()
+		{
+			viewModel.SelectedMaterialName = "UnavailableMaterial";
+			Assert.AreNotEqual("UnavailableMaterial", viewModel.SelectedMaterialName);
+			Assert.IsTrue(Resolve<Logger>().LastMessage.Contains("failed to load"));
 		}
 	}
 }

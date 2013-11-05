@@ -1,4 +1,4 @@
-﻿using System.Windows;
+﻿/*using System.Windows;
 using System.Windows.Media;
 using DeltaEngine.Datatypes;
 using Size = DeltaEngine.Datatypes.Size;
@@ -63,4 +63,4 @@ namespace DeltaEngine.Editor.ParticleEditor
 			CurrentRange.AddValueAt((float)interpolation, addedSize);
 		}
 	}
-}
+}*/

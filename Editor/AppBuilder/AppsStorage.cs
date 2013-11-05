@@ -138,7 +138,7 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		public void AddApp(AppInfo app)
 		{
-			int indexOfApp = availableApps.FindIndex(a => a.Name == app.Name);
+			int indexOfApp = GetIndexOfAppInAvailableAppsList(app);
 			if (indexOfApp != InvalidIndex)
 			{
 				availableApps[indexOfApp] = app;
@@ -149,6 +149,11 @@ namespace DeltaEngine.Editor.AppBuilder
 				availableApps.Add(app);
 				AddAppToStorageData(app);
 			}
+		}
+
+		private int GetIndexOfAppInAvailableAppsList(AppInfo app)
+		{
+			return availableApps.FindIndex(a => a.Name == app.Name && a.Platform == app.Platform);
 		}
 
 		private const int InvalidIndex = -1;

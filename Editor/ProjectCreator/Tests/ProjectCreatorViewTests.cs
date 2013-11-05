@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using ApprovalTests.Reporters;
 using ApprovalTests.Wpf;
+using DeltaEngine.Editor.Mocks;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.ProjectCreator.Tests
@@ -19,7 +20,7 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 
 		private static ProjectCreatorViewModel CreateViewModel()
 		{
-			return new ProjectCreatorViewModel();
+			return new ProjectCreatorViewModel(new MockService("John Doe", "LogoApp"));
 		}
 
 		private static Window CreateVerifiableWindowFromViewModel(ProjectCreatorViewModel viewModel)

@@ -1,7 +1,8 @@
 ﻿namespace DeltaEngine.Graphics.OpenTK20
 {
 	/// <summary>
-	/// Vertex and index buffers are either static for mesh drawing or dynamic for CircularBuffer.
+	/// Vertex and index buffers are either static for mesh drawing, dynamic for changing data or
+	/// steam for CircularBuffer (changing every frame).
 	/// </summary>
 	public enum OpenTK20BufferMode
 	{

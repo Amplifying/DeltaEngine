@@ -22,7 +22,7 @@ namespace DeltaEngine.Editor.Core.Tests
 		[Test]
 		public void TryToMapPublicToInternalNameThrows()
 		{
-			Assert.Throws<ArgumentException>(() => DeltaEngineFramework.None.ToInternalName());
+			Assert.Throws<ArgumentException>(() => DeltaEngineFramework.Default.ToInternalName());
 		}
 
 		[TestCase(DeltaEngineFramework.GLFW, "GLFW3")]
@@ -39,7 +39,7 @@ namespace DeltaEngine.Editor.Core.Tests
 		[Test]
 		public void TryToMapPublicToInternalShortNameThrows()
 		{
-			Assert.Throws<ArgumentException>(() => DeltaEngineFramework.None.ToInternalShortName());
+			Assert.Throws<ArgumentException>(() => DeltaEngineFramework.Default.ToInternalShortName());
 		}
 
 		[TestCase(DeltaEngineFramework.GLFW, "GLFW")]

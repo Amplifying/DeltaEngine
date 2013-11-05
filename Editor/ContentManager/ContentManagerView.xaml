@@ -7,8 +7,8 @@
 	xmlns:contentManager="clr-namespace:DeltaEngine.Editor.ContentManager"
 	HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
 	d:DesignWidth="600" d:DesignHeight="600" MinWidth="300"
-	mc:Ignorable="d">
-
+	mc:Ignorable="d"
+	d:DataContext="{d:DesignInstance Type=contentManager:DesignContentManagerView, IsDesignTimeCreatable=True}">
 	<UserControl.Resources>
 		<Style TargetType="Label" x:Key="DeltaLabel">
 			<Setter Property="FontSize" Value="16" />
@@ -35,7 +35,7 @@
 			<Setter Property="Foreground" Value="#FF5D5D5D" />
 		</Style>
 
-		<Style TargetType="TreeView" x:Key="DeltaListBox">
+		<Style TargetType="ListBox" x:Key="DeltaListBox">
 			<Setter Property="FontSize" Value="16" />
 			<Setter Property="FontFamily" Value="Arial" />
 			<Setter Property="FontStyle" Value="Normal" />
@@ -62,46 +62,46 @@
 			<ColumnDefinition Width="12" />
 			<ColumnDefinition Width="32" />
 			<ColumnDefinition Width="10" />
-			<ColumnDefinition Width="57*" />
+			<ColumnDefinition Width="84" />
+			<ColumnDefinition Width="80*"/>
 			<ColumnDefinition Width="12" />
-			<ColumnDefinition Width="107*" />
+			<ColumnDefinition Width="149*" />
+			<ColumnDefinition Width="15*"/>
+			<ColumnDefinition Width="164*"/>
 			<ColumnDefinition Width="30" />
 			<ColumnDefinition Width="12" />
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="12" />
-			<RowDefinition Height="30" />
-			<RowDefinition Height="12" />
 			<RowDefinition Height="28" />
 			<RowDefinition Height="12" />
+			<RowDefinition Height="30"/>
+			<RowDefinition Height="12"/>
 			<RowDefinition />
 			<RowDefinition Height="12" />
 		</Grid.RowDefinitions>
-		<TreeView SelectedItemChanged="ChangeSelectedItem"
+		<ListBox SelectionChanged="ChangeSelectedItem"
 		          Name="ImageList" Style="{StaticResource DeltaListBox}"
 		          ItemsSource="{Binding Path=ContentList}"
-		          Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="6">
-			<TreeView.ContextMenu>
-				<ContextMenu>
-					<MenuItem Header="Delete" Click="DeleteSelectedItems" />
-					<MenuItem Header="Delete all images in animation" Click="DeleteSelectedImageAnimation"
-					          IsEnabled="{Binding Path=CanDeleteSubContent}" />
+		          Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="9">
+			<ListBox.ContextMenu>
+				<ContextMenu >
+					<MenuItem Header="Delete" Click="DeleteSelectedItems">
+						<MenuItem.Icon>
+							<Image Source="..\Images\ExitButton.png" Width="16" Height="16"/>
+						</MenuItem.Icon>
+					</MenuItem>
+					<!--<MenuItem Header="Delete all images in animation" Click="DeleteSelectedImageAnimation"
+					          IsEnabled="{Binding Path=CanDeleteSubContent}" />-->
 				</ContextMenu>
-			</TreeView.ContextMenu>
-		</TreeView>
+			</ListBox.ContextMenu>
+		</ListBox>
+		<Button Content="Add new files" Click="OpenFileExplorer" Grid.ColumnSpan="3" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Left" Width="126"/>
 		<TextBox
-			Height="28" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Row="3" Grid.Column="3"
-			Style="{StaticResource DeltaTextBox}" Grid.ColumnSpan="4" Text="{Binding Path=SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+			Height="28" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Row="1" Grid.Column="3"
+			Style="{StaticResource DeltaTextBox}" Grid.ColumnSpan="7" Text="{Binding Path=SearchText, UpdateSourceTrigger=PropertyChanged}"/>
 		<Image
-			Grid.Column="1" Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Top"
+			Grid.Column="1" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top"
 			Height="28" Width="30" Source="..\Images\Search.png" />
-		<Button Content="?" Grid.Column="6" Grid.Row="1" Style="{StaticResource DeltaButton}" FontSize="20" FontWeight="Bold">
-			<Button.Background>
-				<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-					<GradientStop Color="#FFA0A0A0" Offset="0" />
-					<GradientStop Color="#FF8B8B8B" Offset="1" />
-				</LinearGradientBrush>
-			</Button.Background>
-		</Button>
 	</Grid>
 </UserControl>

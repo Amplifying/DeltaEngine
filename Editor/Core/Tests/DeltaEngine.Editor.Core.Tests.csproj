@@ -33,16 +33,29 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GalaSoft.MvvmLight.WPF4">
+      <HintPath>..\..\packages\MvvmLightLibs.4.2.30.0\lib\net40\GalaSoft.MvvmLight.WPF4.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation">
+      <HintPath>..\..\packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Interactivity">
+      <HintPath>..\..\packages\MvvmLightLibs.4.2.30.0\lib\net40\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\DeltaEngine.csproj">
       <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
-      <Name>DeltaEngine %28DeltaEngine\DeltaEngine%29</Name>
+      <Name>DeltaEngine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\AppBuilder\DeltaEngine.Editor.AppBuilder.csproj">
+      <Project>{C10F83F9-B20B-4362-8953-9B916B5894BE}</Project>
+      <Name>DeltaEngine.Editor.AppBuilder</Name>
     </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Editor.Core.csproj">
       <Project>{C667C7FC-A1C7-4CBC-98C0-C97F776E4570}</Project>
@@ -59,11 +72,9 @@
     <Compile Include="DeltaEngineFrameworkExtensionsTests.cs" />
     <Compile Include="EmbeddedResourcesLoaderTests.cs" />
     <Compile Include="FrameworkFinderTests.cs" />
-    <Compile Include="PathExtensionsTests.cs" />
     <Compile Include="ProcessRunnerTests.cs" />
     <Compile Include="ProjectEntryTests.cs" />
     <Compile Include="SolutionFileLoaderTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>

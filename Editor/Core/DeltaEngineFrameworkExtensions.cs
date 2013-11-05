@@ -33,14 +33,14 @@ namespace DeltaEngine.Editor.Core
 
 		public static string ToInternalName(this DeltaEngineFramework framework)
 		{
-			if (framework == DeltaEngineFramework.None)
+			if (framework == DeltaEngineFramework.Default)
 				throw new ArgumentException(framework.ToString());
 			return FrameworkNames[framework];
 		}
 
 		public static string ToInternalShortName(this DeltaEngineFramework framework)
 		{
-			if (framework == DeltaEngineFramework.None)
+			if (framework == DeltaEngineFramework.Default)
 				throw new ArgumentException(framework.ToString());
 			return FrameworkShortNames[framework];
 		}
@@ -49,7 +49,7 @@ namespace DeltaEngine.Editor.Core
 		{
 			DeltaEngineFramework result;
 			return Enum.TryParse(frameworkName, true, out result)
-				? result : DeltaEngineFramework.None;
+				? result : DeltaEngineFramework.Default;
 		}
 	}
 }

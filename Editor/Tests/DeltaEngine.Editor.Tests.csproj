@@ -34,7 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GalaSoft.MvvmLight.WPF4">
-      <HintPath>..\packages\MvvmLightLibs.4.1.27.0\lib\net40\GalaSoft.MvvmLight.WPF4.dll</HintPath>
+      <HintPath>..\packages\MvvmLightLibs.4.2.30.0\lib\net40\GalaSoft.MvvmLight.WPF4.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
@@ -42,6 +42,9 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.Windows.Interactivity">
+      <HintPath>..\packages\MvvmLightLibs.4.2.30.0\lib\net40\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
@@ -52,7 +55,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\DeltaEngine.csproj">
       <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
-      <Name>DeltaEngine %28DeltaEngine\DeltaEngine%29</Name>
+      <Name>DeltaEngine</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Mocks\DeltaEngine.Mocks.csproj">
       <Project>{A5F4EF37-7B5F-4AAE-BFF2-C2D04DB805F7}</Project>
@@ -66,6 +69,10 @@
       <Project>{74863E62-A568-4C0A-A37F-F04BFA8EB9DB}</Project>
       <Name>DeltaEngine.Networking.Messages</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Platforms\TestWithOpenTK20\DeltaEngine.TestWithOpenTK20.csproj">
+      <Project>{3A3D2E3E-FCD6-40A4-8F4E-36F3D173AB41}</Project>
+      <Name>DeltaEngine.TestWithOpenTK20</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Core\DeltaEngine.Editor.Core.csproj">
       <Project>{C667C7FC-A1C7-4CBC-98C0-C97F776E4570}</Project>
       <Name>DeltaEngine.Editor.Core</Name>
@@ -78,6 +85,10 @@
       <Project>{E4BF1DFC-4753-42E8-AF9C-06B5B3E6748E}</Project>
       <Name>DeltaEngine.Editor.Messages</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Mocks\DeltaEngine.Editor.Mocks.csproj">
+      <Project>{2A38417D-2378-41F8-BCC6-A65E1894835A}</Project>
+      <Name>DeltaEngine.Editor.Mocks</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ProjectCreator\DeltaEngine.Editor.ProjectCreator.csproj">
       <Project>{369DC159-36A7-4523-80FD-81D8BEA37547}</Project>
       <Name>DeltaEngine.Editor.ProjectCreator</Name>
@@ -88,12 +99,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="AppTests.cs" />
     <Compile Include="EditorContentLoaderTests.cs" />
     <Compile Include="Helpers\EditorPluginLoaderTests.cs" />
     <Compile Include="EditorViewModelTests.cs" />
     <Compile Include="MockEditorPluginView.cs" />
     <Compile Include="OnlineServiceTests.cs" />
+    <Compile Include="PopupMessageViewModelTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>

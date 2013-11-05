@@ -6,7 +6,7 @@ namespace DeltaEngine.Editor.Helpers
 	{
 		public void Init(Service service) {}
 
-		public void ProjectChanged() {}
+		public void Activate() {}
 
 		public string ShortName
 		{

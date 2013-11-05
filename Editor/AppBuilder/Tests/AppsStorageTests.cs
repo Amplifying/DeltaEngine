@@ -17,10 +17,8 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		[Test]
 		public void IfSettingsDoesNotContainStorageDataItWillBeCreatedAutomatically()
 		{
-			Assert.IsFalse(settings.AreChanged);
 			var appsStorage = new AppsStorage(settings);
 			Assert.IsEmpty(appsStorage.AvailableApps);
-			Assert.IsTrue(settings.AreChanged);
 		}
 
 		[Test]
@@ -33,9 +31,10 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			Assert.AreEqual(appsStorage.AvailableApps.Length, loadedAppsStorage.AvailableApps.Length);
 		}
 
-		private static AppInfo GetMockAppInfo(string appName)
+		private static AppInfo GetMockAppInfo(string appName,
+			PlatformName platform = PlatformName.Windows)
 		{
-			return AppBuilderTestExtensions.GetMockAppInfo(appName, PlatformName.Windows);
+			return AppBuilderTestExtensions.GetMockAppInfo(appName, platform);
 		}
 
 		[Test]
@@ -48,6 +47,17 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			Assert.AreEqual(1, appsStorage.AvailableApps.Length);
 			var loadedAppsStorage = new AppsStorage(settings);
 			Assert.AreEqual(appsStorage.AvailableApps.Length, loadedAppsStorage.AvailableApps.Length);
+		}
+
+		[Test]
+		public void SavingAnAppMustBePlatformDependent()
+		{
+			var appsStorage = new AppsStorage(settings);
+			const string AppName = "MyCoolApp";
+			appsStorage.AddApp(GetMockAppInfo(AppName, PlatformName.Android));
+			Assert.AreEqual(1, appsStorage.AvailableApps.Length);
+			appsStorage.AddApp(GetMockAppInfo(AppName, PlatformName.Web));
+			Assert.AreEqual(2, appsStorage.AvailableApps.Length);
 		}
 	}
 }

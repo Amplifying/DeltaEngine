@@ -16,6 +16,7 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 		{
 			mockService = new MockService("TestUser", "NewProjectWithoutContent");
 			viewModel = new UIEditorViewModel(mockService);
+			viewModel.ClearScene("");
 		}
 
 		private UIEditorViewModel viewModel;
@@ -33,8 +34,7 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 			viewModel.Adder.SetDraggingImage(true);
 			viewModel.Adder.AddImage(new Vector2D(0.5f, 0.5f), viewModel.uiControl,
 				viewModel.uiEditorScene);
-			viewModel.SelectedSpriteNameInList = "NewSprite0";
-			Assert.AreEqual("NewSprite0", viewModel.SelectedSpriteNameInList);
+			viewModel.SelectedControlNameInList = "NewSprite0";
 		}
 
 		[Test, CloseAfterFirstFrame]
@@ -111,7 +111,7 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 		public void SelectedSpriteNameListShouldHaveDefaultName()
 		{
 			AddNewSprite();
-			Assert.AreEqual("NewSprite0", viewModel.SelectedSpriteNameInList);
+			Assert.AreEqual("NewSprite0", viewModel.SelectedControlNameInList);
 		}
 
 		[Test, CloseAfterFirstFrame]
@@ -121,11 +121,11 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 			viewModel.Adder.SetDraggingButton(true);
 			viewModel.Adder.AddButton(new Vector2D(0.4f, 0.4f), viewModel.uiControl,
 				viewModel.uiEditorScene);
-			viewModel.SelectedSpriteNameInList = viewModel.uiEditorScene.UIImagesInList[0];
+			viewModel.SelectedControlNameInList = viewModel.uiEditorScene.UIImagesInList[0];
 			mouse.SetPosition(new Vector2D(0.45f, 0.45f));
 			mouse.SetButtonState(MouseButton.Left, State.Pressing);
 			viewModel.ContentText = "TestContentText";
-			Assert.AreEqual("NewButton0", viewModel.SelectedSpriteNameInList);
+			Assert.AreEqual("NewButton0", viewModel.SelectedControlNameInList);
 		}
 
 		[Test, CloseAfterFirstFrame]
@@ -137,8 +137,8 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 		[Test, CloseAfterFirstFrame]
 		public void GetEntity2DWidthAndHeight()
 		{
-			Assert.AreEqual(0, viewModel.Entity2DHeight);
-			Assert.AreEqual(0, viewModel.Entity2DWidth);
+			Assert.AreEqual(0.1f, viewModel.Entity2DHeight);
+			Assert.AreEqual(0.2f, viewModel.Entity2DWidth);
 		}
 
 		[Test, CloseAfterFirstFrame]
@@ -183,8 +183,8 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 			viewModel.Adder.SetDraggingLabel(true);
 			viewModel.Adder.AddLabel(new Vector2D(0.5f, 0.5f), viewModel.uiControl,
 				viewModel.uiEditorScene);
-			viewModel.SelectedSpriteNameInList = "NewLabel0";
-			Assert.AreEqual("NewLabel0", viewModel.SelectedSpriteNameInList);
+			viewModel.SelectedControlNameInList = "NewLabel0";
+			Assert.AreEqual("NewLabel0", viewModel.SelectedControlNameInList);
 		}
 
 		[Test, CloseAfterFirstFrame]
@@ -195,7 +195,7 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 			mouse.SetButtonState(MouseButton.Left, State.Releasing);
 			Assert.AreEqual(0, viewModel.Scene.Controls.Count);
 			Assert.AreEqual(0, viewModel.UIImagesInList.Count);
-			Assert.AreEqual(1, viewModel.MaterialList.Count);
+			Assert.AreEqual(2, viewModel.MaterialList.Count);
 		}
 
 		[Test, CloseAfterFirstFrame]
@@ -273,8 +273,8 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 			viewModel.Adder.SetDraggingButton(true);
 			viewModel.Adder.AddButton(new Vector2D(0.5f, 0.5f), viewModel.uiControl,
 				viewModel.uiEditorScene);
-			viewModel.SelectedSpriteNameInList = "NewButton0";
-			Assert.AreEqual("NewButton0", viewModel.SelectedSpriteNameInList);
+			viewModel.SelectedControlNameInList = "NewButton0";
+			Assert.AreEqual("NewButton0", viewModel.SelectedControlNameInList);
 		}
 
 		[Test, CloseAfterFirstFrame]
@@ -308,7 +308,7 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 		{
 			AddNewSprite();
 			AddNewSprite();
-			viewModel.SelectedSpriteNameInList = viewModel.uiEditorScene.UIImagesInList[0];
+			viewModel.SelectedControlNameInList = viewModel.uiEditorScene.UIImagesInList[0];
 			viewModel.DeleteSelectedControl("");
 			AddNewSprite();
 		}
@@ -372,8 +372,8 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 			viewModel.Adder.SetDraggingLabel(true);
 			viewModel.Adder.AddLabel(new Vector2D(0.5f, 0.5f), viewModel.uiControl,
 				viewModel.uiEditorScene);
-			viewModel.SelectedSpriteNameInList = "NewLabel0";
-			Assert.AreEqual("NewLabel0", viewModel.SelectedSpriteNameInList);
+			viewModel.SelectedControlNameInList = "NewLabel0";
+			Assert.AreEqual("NewLabel0", viewModel.SelectedControlNameInList);
 		}
 
 		[Test, CloseAfterFirstFrame]
@@ -396,8 +396,8 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 			viewModel.Adder.SetDraggingSlider(true);
 			viewModel.Adder.AddSlider(new Vector2D(0.5f, 0.5f), viewModel.uiControl,
 				viewModel.uiEditorScene);
-			viewModel.SelectedSpriteNameInList = NewSliderId;
-			Assert.AreEqual(NewSliderId, viewModel.SelectedSpriteNameInList);
+			viewModel.SelectedControlNameInList = NewSliderId;
+			Assert.AreEqual(NewSliderId, viewModel.SelectedControlNameInList);
 		}
 	}
 }

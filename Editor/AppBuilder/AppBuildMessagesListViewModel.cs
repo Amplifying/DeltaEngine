@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Windows;
+using DeltaEngine.Core;
 using DeltaEngine.Editor.Messages;
 using GalaSoft.MvvmLight;
 
@@ -119,6 +123,32 @@ namespace DeltaEngine.Editor.AppBuilder
 			TriggerMatchingCurrentFilterChanged();
 			RaisePropertyChanged("TextOfErrorCount");
 			RaisePropertyChanged("TextOfWarningCount");
+		}
+
+		public void CopyMessageToClipboard(AppBuildMessageViewModel message)
+		{
+			SetCurrentTextInClipbard(message.ToString());
+		}
+
+		private static void SetCurrentTextInClipbard(string text)
+		{
+			// Clipboard access must be executed on a STA thread
+			var staThread = new Thread(() => TrySetClipboardText(text));
+			staThread.SetApartmentState(ApartmentState.STA);
+			staThread.Start();
+			staThread.Join();
+		}
+
+		private static void TrySetClipboardText(string text)
+		{
+			try
+			{
+				Clipboard.SetText(text);
+			}
+			catch (Exception)
+			{
+				Logger.Warning("Failed to access Clipboard text.");
+			}
 		}
 	}
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DeltaEngine.Core;
+using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Editor.Core
 {
@@ -16,7 +17,7 @@ namespace DeltaEngine.Editor.Core
 			foreach (var directoryInfo in GetInstallerDirectoryInfo(installDirectory).GetDirectories())
 			{
 				var framework = DeltaEngineFrameworkExtensions.FromString(directoryInfo.Name);
-				if (framework == DeltaEngineFramework.None || !IsValid(directoryInfo))
+				if (framework == DeltaEngineFramework.Default || !IsValid(directoryInfo))
 					continue;
 				installedFrameworks.Add(framework);
 				if (directoryInfo.Name == "OpenTK")
@@ -67,7 +68,7 @@ namespace DeltaEngine.Editor.Core
 		{
 			get
 			{
-				if (editorFramework == DeltaEngineFramework.None)
+				if (editorFramework == DeltaEngineFramework.Default)
 					throw new EditorDefaultFrameworkNotInstalled();
 				return editorFramework;
 			}
@@ -79,7 +80,7 @@ namespace DeltaEngine.Editor.Core
 		{
 			get
 			{
-				if (current == DeltaEngineFramework.None)
+				if (current == DeltaEngineFramework.Default)
 					current = Default;
 				return current;
 			}

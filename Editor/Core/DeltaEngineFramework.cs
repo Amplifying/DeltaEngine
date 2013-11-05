@@ -5,7 +5,7 @@
 	/// </summary>
 	public enum DeltaEngineFramework
 	{
-		None,
+		Default,
 		GLFW,
 		MonoGame,
 		OpenTK,

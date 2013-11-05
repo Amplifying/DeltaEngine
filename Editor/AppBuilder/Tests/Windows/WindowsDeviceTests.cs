@@ -1,11 +1,11 @@
-﻿using System;
+﻿using System.Threading;
 using DeltaEngine.Editor.AppBuilder.Windows;
 using DeltaEngine.Editor.Messages;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.AppBuilder.Tests.Windows
 {
-	[Category("Slow")]
+	[Category("Slow"), Timeout(15000)]
 	public class WindowsDeviceTests
 	{
 		[TestFixtureSetUp]
@@ -28,10 +28,16 @@ namespace DeltaEngine.Editor.AppBuilder.Tests.Windows
 		public void UninstallApp()
 		{
 			if (!device.IsAppInstalled(sampleApp))
-				device.Install(sampleApp);
+				InstallApp(sampleApp);
 			Assert.IsTrue(device.IsAppInstalled(sampleApp));
 			device.Uninstall(sampleApp);
 			Assert.IsFalse(device.IsAppInstalled(sampleApp));
+		}
+
+		private void InstallApp(AppInfo app)
+		{
+			device.Install(sampleApp);
+			Thread.Sleep(500);
 		}
 
 		[Test]
@@ -39,7 +45,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests.Windows
 		{
 			if (device.IsAppInstalled(sampleApp))
 				device.Uninstall(sampleApp);
-			device.Install(sampleApp);
+			InstallApp(sampleApp);
 			Assert.IsTrue(device.IsAppInstalled(sampleApp));
 		}
 
@@ -53,7 +59,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests.Windows
 		public void LaunchApp()
 		{
 			if (!device.IsAppInstalled(sampleApp))
-				device.Install(sampleApp);
+				InstallApp(sampleApp);
 			device.Launch(sampleApp);
 		}
 	}

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
@@ -23,6 +24,7 @@ namespace DeltaEngine.Editor.SampleBrowser
 			this.fileSystem = fileSystem;
 			Samples = new List<Sample>();
 			solutionSamplesPath = GetSolutionPath(Directory.GetCurrentDirectory());
+			solutionTutorialsPath = Path.Combine(solutionSamplesPath, "..", "Tutorials");
 			InstallPath = PathExtensions.GetDeltaEngineInstalledDirectory() ??
 				GetParentOfWorkingDirectory();
 		}
@@ -30,6 +32,7 @@ namespace DeltaEngine.Editor.SampleBrowser
 		private readonly IFileSystem fileSystem;
 		public List<Sample> Samples { get; private set; }
 		private readonly string solutionSamplesPath;
+		private readonly string solutionTutorialsPath;
 
 		private static string GetSolutionPath(string subDirectory)
 		{
@@ -50,26 +53,39 @@ namespace DeltaEngine.Editor.SampleBrowser
 
 		public void CreateSamples(DeltaEngineFramework framework)
 		{
-			if (fileSystem.Directory.Exists(solutionSamplesPath))
+			if (fileSystem.Directory.Exists(solutionSamplesPath) &&
+				fileSystem.Directory.Exists(solutionTutorialsPath))
+			{
 				GetSamplesFromSolutionDirectory();
+				GetTutorialsFromSolutionDirectory();
+			}
 			else if (fileSystem.Directory.Exists(InstallPath))
-				GetSamplesFromInstallPath(framework);
+			{
+				GetExecutablesFromInstallPath(framework, SampleCategory.Game);
+				GetExecutablesFromInstallPath(framework, SampleCategory.Tutorial);
+			}
 		}
 
-		private void GetSamplesFromInstallPath(DeltaEngineFramework framework)
+		private void GetExecutablesFromInstallPath(DeltaEngineFramework framework,
+			SampleCategory category)
 		{
+			if (category != SampleCategory.Game && category != SampleCategory.Tutorial)
+				return;
 			string[] directories =
 				fileSystem.Directory.GetDirectories(Path.Combine(InstallPath, framework.ToString(),
-					"Samples"));
+					category == SampleCategory.Game ? "Samples" : "Tutorials"));
 			foreach (string projectDirectory in directories)
 			{
 				if (projectDirectory.Contains("EmptyLibrary"))
 					continue;
 				string projectName = GetProjectNameFromLocation(projectDirectory);
-				string projectFile = Path.Combine(projectDirectory, projectName + ".csproj");
+				string prefix = category == SampleCategory.Game ? "" : "DeltaEngine.Tutorials.";
+				string projectFile = Path.Combine(projectDirectory, prefix + projectName + ".csproj");
 				string executableFile = Path.Combine(InstallPath, framework.ToString(),
-					projectName + ".exe");
-				Samples.Add(Sample.CreateGame(projectName, projectFile, executableFile));
+					prefix + projectName + ".exe");
+				Samples.Add(category == SampleCategory.Game
+					? Sample.CreateGame(projectName, projectFile, executableFile)
+					: Sample.CreateTutorial(projectName, projectFile, executableFile));
 			}
 		}
 
@@ -94,7 +110,22 @@ namespace DeltaEngine.Editor.SampleBrowser
 				string pathToTests = Path.Combine(projectDirectory, "Tests", "bin", GetConfigurationName());
 				if (!fileSystem.Directory.Exists(pathToTests))
 					continue;
-				//AddVisualTests(pathToTests, projectName, projectFile);
+				AddVisualTests(pathToTests, projectName, projectFile);
+			}
+		}
+
+		private void GetTutorialsFromSolutionDirectory()
+		{
+			string[] directories = fileSystem.Directory.GetDirectories(solutionTutorialsPath);
+			foreach (string projectDirectory in directories)
+			{
+				string projectName = "DeltaEngine.Tutorials." + Path.GetFileName(projectDirectory);
+				if (!HasExecutableFile(projectDirectory, projectName))
+					continue;
+				string projectFile = Path.Combine(projectDirectory, projectName + ".csproj");
+				if (!fileSystem.File.Exists(projectFile))
+					continue;
+				AddTutorial(projectDirectory, projectName, projectFile);
 			}
 		}
 
@@ -130,9 +161,9 @@ namespace DeltaEngine.Editor.SampleBrowser
 					Assembly assembly = Assembly.LoadFrom(file);
 					foreach (var type in assembly.GetTypes())
 					{
-						if (type.IsDefined(typeof(CompilerGeneratedAttribute), false))
+						if (type.IsDefined(typeof(CompilerGeneratedAttribute), false) || !IsVisualTestClass(type))
 							continue;
-						foreach (var method in type.GetMethods().Where(IsVisualTest))
+						foreach (var method in type.GetMethods().Where(IsVisualTestMethod))
 							Samples.Add(Sample.CreateTest(projectName + ": " + method.Name, pathToProjectFile, file,
 								type.Name, method.Name));
 					}
@@ -145,13 +176,32 @@ namespace DeltaEngine.Editor.SampleBrowser
 			}
 		}
 
-		private static bool IsVisualTest(MethodInfo method)
+		private void AddTutorial(string projectDirectory, string projectName, string projectFile)
 		{
-			object[] attributes = method.GetCustomAttributes(false);
-			return attributes.Any(attribute => attribute.GetType().ToString() == VisualTestAttribute);
+			string executableFile = Path.Combine(projectDirectory, "bin", GetConfigurationName(),
+				projectName + ".exe");
+			Samples.Add(Sample.CreateTutorial(projectName, projectFile, executableFile));
 		}
 
-		private const string VisualTestAttribute = "DeltaEngine.Platforms.All.VisualTestAttribute";
+		private static bool IsVisualTestClass(Type type)
+		{
+			return type.BaseType.FullName == "DeltaEngine.Platforms.TestWithMocksOrVisually";
+		}
+
+		private static bool IsVisualTestMethod(MethodInfo method)
+		{
+			object[] attributes = method.GetCustomAttributes(false);
+			bool isNUnitTest = false;
+			bool isCloseAfterFirstFrame = false;
+			foreach (object attribute in attributes)
+			{
+				if (attribute.GetType().FullName == "NUnit.Framework.TestAttribute")
+					isNUnitTest = true;
+				if (attribute.GetType().FullName == "DeltaEngine.Platforms.CloseAfterFirstFrameAttribute")
+					isCloseAfterFirstFrame = true;
+			}
+			return isNUnitTest && !isCloseAfterFirstFrame;
+		}
 
 		private void GetSamplesFromFallbackDirectory()
 		{

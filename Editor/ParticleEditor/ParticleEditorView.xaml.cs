@@ -1,6 +1,8 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.MaterialEditor;
+using GalaSoft.MvvmLight.Messaging;
 
 namespace DeltaEngine.Editor.ParticleEditor
 {
@@ -17,15 +19,37 @@ namespace DeltaEngine.Editor.ParticleEditor
 
 		public void Init(Service setService)
 		{
-			viewModel = new ParticleEditorViewModel(setService);
 			service = setService;
+			viewModel = new ParticleEditorViewModel(service);
 			DataContext = viewModel;
+			AttachToUpdateEvents();
+			Messenger.Default.Send("ParticleEditor", "SetSelectedEditorPlugin");
+		}
+
+		public void Activate()
+		{
+			viewModel.Activate();
+			Messenger.Default.Send("ParticleEditor", "SetSelectedEditorPlugin");
+		}
+
+		private void AttachToUpdateEvents()
+		{
+			service.ContentUpdated += (type, name) =>
+			{
+				Action updateAction = () => { viewModel.UpdateOnContentChange(type, name); };
+				Dispatcher.Invoke(updateAction);
+			};
+			service.ContentDeleted += (name) =>
+			{
+				Action updateAction = () => { viewModel.UpdateOnContentDeletion(name); };
+				Dispatcher.Invoke(updateAction);
+			};
+			service.ProjectChanged +=
+				() => Dispatcher.Invoke(new Action(viewModel.ResetOnProjectChange));
 		}
 
 		private ParticleEditorViewModel viewModel;
 		private Service service;
-
-		public void ProjectChanged() {}
 
 		public string ShortName
 		{
@@ -52,11 +76,6 @@ namespace DeltaEngine.Editor.ParticleEditor
 			service.StartPlugin(typeof(MaterialEditorView));
 		}
 
-		private void Delete(object sender, RoutedEventArgs e)
-		{
-			viewModel.Delete();
-		}
-
 		private void LoadEffect(object sender, RoutedEventArgs e)
 		{
 			viewModel.LoadEffect();
@@ -80,6 +99,11 @@ namespace DeltaEngine.Editor.ParticleEditor
 		private void AddEmitterFromContent(object sender, RoutedEventArgs e)
 		{
 			viewModel.ToggleLookingForExistingEmitters();
+		}
+
+		private void TryChooseTemplate(object sender, RoutedEventArgs e)
+		{
+			viewModel.ToggleLookingForTemplateEffect();
 		}
 	}
 }

@@ -1,7 +1,9 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.ImageAnimationEditor;
+using GalaSoft.MvvmLight.Messaging;
 
 namespace DeltaEngine.Editor.MaterialEditor
 {
@@ -20,13 +22,22 @@ namespace DeltaEngine.Editor.MaterialEditor
 		{
 			current = new MaterialEditorViewModel(service);
 			this.service = service;
+			service.ProjectChanged += () => Dispatcher.Invoke(new Action(current.ResetOnProjectChange));
+			service.ContentUpdated +=
+				(type, s) => Dispatcher.Invoke(new Action(current.RefreshOnContentChange));
+			service.ContentDeleted += s => Dispatcher.Invoke(new Action(current.RefreshOnContentChange));
 			DataContext = current;
+			Messenger.Default.Send("MaterialEditor", "SetSelectedEditorPlugin");
+		}
+
+		public void Activate()
+		{
+			current.Activate();
+			Messenger.Default.Send("MaterialEditor", "SetSelectedEditorPlugin");
 		}
 
 		private MaterialEditorViewModel current;
 		private Service service;
-
-		public void ProjectChanged() {}
 
 		public string ShortName
 		{

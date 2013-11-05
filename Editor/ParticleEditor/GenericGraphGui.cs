@@ -20,6 +20,6 @@ namespace DeltaEngine.Editor.ParticleEditor
 
 		protected virtual void ClearGraphs() {}
 
-		protected virtual void UpdateFromAdddedPointToRange(int insertedIndex){}
+		protected virtual void UpdateFromAdddedPointToRange(int insertedIndex) {}
 	}
 }

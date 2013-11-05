@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 using System.Windows;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
@@ -21,35 +22,51 @@ namespace DeltaEngine.Editor.ParticleEditor
 		public ParticleEditorViewModel(Service service)
 		{
 			this.service = service;
-			SetInitialDefaults();
+			if (service.Viewport != null)
+				viewport = service.Viewport;
+			CreateInstances();
 			UpdateDataForLoad();
+			SetInitialDefaults();
 		}
 
-		private void SetInitialDefaults()
+		private void CreateInstances()
 		{
-			ParticleSystemName = "";
-			existingEmitterNameToAdd = "";
-			currentEffect = new ParticleSystem();
-			currentEmitterInEffect = 0;
-			SavedEmitterSelectionVisibility = Visibility.Hidden;
-			AddEmitterToSystem();
-			currentEffect.Position = new Vector3D(0.5f, 0.5f, 0.0f);
 			EffectsInProject = new ObservableCollection<string>();
 			SpawnerTypeList = new ObservableCollection<ParticleEmitterPositionType>();
 			MaterialList = new ObservableCollection<string>();
+			AvailableTemplates = new ObservableCollection<string>();
 			metaDataCreator = new ContentMetaDataCreator();
 			EmittersInProject = new List<string>();
 		}
 
-		private Material CreateDefaultMaterial2D()
+		private void SetInitialDefaults()
+		{
+			TemplateListVisibility = Visibility.Hidden;
+			SavedEmitterSelectionVisibility = Visibility.Hidden;
+			currentEmitterInEffect = 0;
+			ParticleSystemName = "MyParticleSystem";
+			OverwriteOnSave = true;
+			if (ContentLoader.Exists(ParticleSystemName, ContentType.ParticleSystem))
+			{
+				LoadEffect();
+				CenterViewOnCurrentEffect();
+				return;
+			}
+			currentEffect = new ParticleSystem();
+			AddEmitterToSystem();
+			CenterViewOnCurrentEffect();
+		}
+
+		private static Material CreateDefaultMaterial2D()
 		{
 			var imageData = new ImageCreationData(new Size(32.0f, 32.0f));
 			var image = ContentLoader.Create<Image>(imageData);
+			image.Fill(Datatypes.Color.White);
 			return new Material(ContentLoader.Load<Shader>(Shader.Position2DColorUV), image,
 				imageData.PixelSize);
 		}
 
-		private void UpdateDataForLoad()
+		internal void UpdateDataForLoad()
 		{
 			GetListOfSpawnerTypes();
 			GetMaterials();
@@ -58,6 +75,7 @@ namespace DeltaEngine.Editor.ParticleEditor
 
 		private void GetListOfSpawnerTypes()
 		{
+			SpawnerTypeList.Clear();
 			foreach (ParticleEmitterPositionType spawnerType in
 				Enum.GetValues(typeof(ParticleEmitterPositionType)))
 				SpawnerTypeList.Add(spawnerType);
@@ -68,12 +86,11 @@ namespace DeltaEngine.Editor.ParticleEditor
 			MaterialList.Clear();
 			MaterialList.Add("Default2D");
 			var materialList = service.GetAllContentNamesByType(ContentType.Material);
-			foreach (var material in materialList)
-				if (MaterialHasColor(material))
-					MaterialList.Add(material);
+			foreach (var material in materialList.Where(material => TryMaterialHasColor(material)))
+				MaterialList.Add(material);
 		}
 
-		private static bool MaterialHasColor(string material)
+		private static bool TryMaterialHasColor(string material)
 		{
 			try
 			{
@@ -97,9 +114,10 @@ namespace DeltaEngine.Editor.ParticleEditor
 		public ObservableCollection<ParticleEmitterPositionType> SpawnerTypeList { get; set; }
 		public ObservableCollection<string> MaterialList { get; set; }
 		private readonly Service service;
+		private readonly EditorOpenTkViewport viewport;
 		private ContentMetaDataCreator metaDataCreator;
 
-		private ParticleSystem currentEffect;
+		public ParticleSystem currentEffect;
 		private int currentEmitterInEffect;
 
 		public void AddEmitterToSystem(ParticleEmitter existingEmitter = null)
@@ -111,11 +129,18 @@ namespace DeltaEngine.Editor.ParticleEditor
 			RaisePropertyChanged("AvailableEmitterIndices");
 		}
 
-		private ParticleEmitterData CreateDefaultEmitterData()
+		private static ParticleEmitterData CreateDefaultEmitterData()
 		{
-			var emitterData = new ParticleEmitterData();
-			emitterData.ParticleMaterial = CreateDefaultMaterial2D();
-			return emitterData;
+			return new ParticleEmitterData
+			{
+				ParticleMaterial = CreateDefaultMaterial2D(),
+				LifeTime = 1,
+				Size = new RangeGraph<Size>(new Size(0.2f, 0.2f), new Size(0, 0)),
+				SpawnInterval = 0.01f,
+				MaximumNumberOfParticles = 500,
+				StartVelocity =
+					new RangeGraph<Vector3D>(new Vector3D(0.2f, 0.2f, 0), new Vector3D(-0.2f, -0.2f, 0))
+			};
 		}
 
 		public void RemoveCurrentEmitterFromSystem()
@@ -164,7 +189,7 @@ namespace DeltaEngine.Editor.ParticleEditor
 				currentEmitterInEffect = 0;
 				RefreshAllEffectProperties();
 				RaisePropertyChanged("AvailableEmitterIndices");
-				currentEffect.Position = new Vector3D(0.5f, 0.5f, 0.0f);
+				CenterViewOnCurrentEffect();
 				return true;
 			}
 			catch
@@ -178,17 +203,6 @@ namespace DeltaEngine.Editor.ParticleEditor
 		{
 			if (currentEffect != null)
 				currentEffect.DisposeSystem();
-		}
-
-		public void Delete()
-		{
-			if (!ContentLoader.Exists(ParticleSystemName, ContentType.ParticleSystem))
-			{
-				LogDeleteFailure(ContentType.ParticleSystem, ParticleSystemName);
-				return;
-			}
-			service.DeleteContent(ParticleSystemName);
-			ParticleSystemName = "";
 		}
 
 		public void Save()
@@ -277,7 +291,15 @@ namespace DeltaEngine.Editor.ParticleEditor
 
 		public string SelectedMaterialName
 		{
-			get { return EmitterModified.EmitterData.ParticleMaterial.Name; }
+			get
+			{
+				var retrievedName = EmitterModified.EmitterData.ParticleMaterial.Name;
+				if (!retrievedName.StartsWith("<Generated"))
+					return retrievedName;
+				if ((EmitterModified.EmitterData.ParticleMaterial.Shader as ShaderWithFormat).Format.Is3D)
+					return "Default3D;";
+				return "Default2D";
+			}
 			set
 			{
 				if (String.IsNullOrEmpty(value))
@@ -421,13 +443,6 @@ namespace DeltaEngine.Editor.ParticleEditor
 			service.ContentUpdated -= LogSuccessMessage;
 		}
 
-		private static void LogDeleteFailure(ContentType type, string name)
-		{
-			var message = "Tried to delete " + name + " of type " + type.ToString();
-			message += ", which does not exist anyway. Just going to continue.";
-			Logger.Info(message);
-		}
-
 		private void RefreshAllEffectProperties()
 		{
 			RaisePropertyChanged("ParticleSystemName");
@@ -478,12 +493,14 @@ namespace DeltaEngine.Editor.ParticleEditor
 			DestroyAllEmitters();
 			currentEffect = new ParticleSystem();
 			currentEmitterInEffect = 0;
-			currentEffect.Position = new Vector3D(0.5f, 0.5f, 0.0f);
+			CenterViewOnCurrentEffect();
 			AddEmitterToSystem();
 			RefreshAllEffectProperties();
 			RaisePropertyChanged("AvailableEmitterIndices");
 			SavedEmitterSelectionVisibility = Visibility.Hidden;
 			RaisePropertyChanged("SavedEmitterSelectionVisibility");
+			TemplateListVisibility = Visibility.Hidden;
+			RaisePropertyChanged("TemplateListVisibility");
 		}
 
 		public void ToggleLookingForExistingEmitters()
@@ -504,23 +521,142 @@ namespace DeltaEngine.Editor.ParticleEditor
 		}
 
 		public List<string> EmittersInProject { get; set; }
+
 		public string ParticleEmitterNameToAdd
 		{
-			get { return existingEmitterNameToAdd; }
+			get { return ""; }
 			set
 			{
-				existingEmitterNameToAdd = value;
-				if (!ContentLoader.Exists(existingEmitterNameToAdd))
+				if (!ContentLoader.Exists(value))
 					return;
-				AddEmitterToSystem(
-					new ParticleEmitter(ContentLoader.Load<ParticleEmitterData>(existingEmitterNameToAdd),
-						Vector3D.Zero));
+				AddEmitterToSystem(new ParticleEmitter(ContentLoader.Load<ParticleEmitterData>(value),
+					Vector3D.Zero));
 				SavedEmitterSelectionVisibility = Visibility.Hidden;
 				RaisePropertyChanged("SavedEmitterSelectionVisibility");
 			}
 		}
 
-		private string existingEmitterNameToAdd;
 		public Visibility SavedEmitterSelectionVisibility { get; private set; }
+
+		public void ToggleLookingForTemplateEffect()
+		{
+			if (TemplateListVisibility == Visibility.Visible)
+			{
+				TemplateListVisibility = Visibility.Hidden;
+				RaisePropertyChanged("TemplateListVisibility");
+				return;
+			}
+			AvailableTemplates.Clear();
+			foreach (var availableTemplateName in availableTemplateNames)
+				AvailableTemplates.Add(availableTemplateName);
+			TemplateListVisibility = Visibility.Visible;
+			RaisePropertyChanged("AvailableTemplates");
+			RaisePropertyChanged("TemplateListVisibility");
+		}
+
+		public Visibility TemplateListVisibility { get; private set; }
+
+		private readonly string[] availableTemplateNames = new[] { "Point Fountain" };
+
+		public string TemplateNameToLoad
+		{
+			get { return " "; }
+			set
+			{
+				if (string.IsNullOrEmpty(value) || !AvailableTemplates.Contains(value))
+					return;
+				DestroyAllEmitters();
+				currentEffect = new ParticleSystem();
+				if (value == availableTemplateNames[0])
+				{
+					var emitterData = new ParticleEmitterData
+					{
+						ParticleMaterial = CreateDefaultMaterial2D(),
+						LifeTime = 1,
+						MaximumNumberOfParticles = 128,
+						Size = new RangeGraph<Size>(new Size(0.05f), new Size(0.0f)),
+						SpawnInterval = 0.1f,
+						StartVelocity =
+							new RangeGraph<Vector3D>(new Vector3D(-0.1f, -0.2f, 0.0f),
+								new Vector3D(0.2f, -0.2f, 0.0f)),
+						Acceleration =
+							new RangeGraph<Vector3D>(new Vector3D(0.0f, 0.4f, 0.0f), new Vector3D(0.0f, 0.4f, 0.0f)),
+						Color = new RangeGraph<Color>(Datatypes.Color.White, Datatypes.Color.TransparentWhite)
+					};
+					AddEmitterToSystem(new ParticleEmitter(emitterData, Vector3D.Zero));
+				}
+				currentEmitterInEffect = 0;
+				RefreshAllEffectProperties();
+				RaisePropertyChanged("AvailableEmitterIndices");
+				CenterViewOnCurrentEffect();
+				TemplateListVisibility = Visibility.Hidden;
+				RaisePropertyChanged("TemplateListVisibility");
+				SavedEmitterSelectionVisibility = Visibility.Hidden;
+				RaisePropertyChanged("SavedEmitterSelectionVisibility");
+			}
+		}
+
+		public ObservableCollection<string> AvailableTemplates { get; private set; }
+
+		private void CenterViewOnCurrentEffect()
+		{
+			if (viewport == null)
+				return;
+			viewport.CenterViewOn(currentEffect.Position.GetVector2D());
+			viewport.ZoomViewTo(1.0f);
+		}
+
+		internal void UpdateOnContentChange(ContentType type, string addedName)
+		{
+			if (type == ContentType.ParticleSystem && !EffectsInProject.Contains(addedName))
+			{
+				EffectsInProject.Add(addedName);
+				RaisePropertyChanged("EffectsInProject");
+			}
+			if (type == ContentType.ParticleEmitter && !EmittersInProject.Contains(addedName))
+			{
+				EmittersInProject.Add(addedName);
+				RaisePropertyChanged("EmittersInProject");
+			}
+			if (type == ContentType.Material && !MaterialList.Contains(addedName))
+			{
+				MaterialList.Add(addedName);
+				RaisePropertyChanged("MaterialList");
+			}
+		}
+
+		internal void UpdateOnContentDeletion(string removedName)
+		{
+			if (EffectsInProject.Contains(removedName))
+				EffectsInProject.Remove(removedName);
+			else if (EmittersInProject.Contains(removedName))
+				EmittersInProject.Remove(removedName);
+			else if (MaterialList.Contains(removedName))
+			{
+				MaterialList.Remove(removedName);
+				foreach (var emitter in currentEffect.AttachedEmitters)
+					if (emitter.EmitterData.ParticleMaterial.Name.Equals(removedName))
+						emitter.EmitterData.ParticleMaterial = CreateDefaultMaterial2D();
+			}
+		}
+
+		internal void ResetOnProjectChange()
+		{
+			UpdateDataForLoad();
+			ResetDefaultEffect();
+		}
+
+		public void Activate()
+		{
+			foreach (var emitter in currentEffect.AttachedEmitters)
+				emitter.IsActive = true;
+			service.Viewport.CenterViewOn(currentEffect.Position.GetVector2D());
+			service.Viewport.ZoomViewTo(1.0f);
+		}
+
+		public bool CanSaveParticleSystem
+		{
+			get { return !string.IsNullOrEmpty(ParticleSystemName); }
+		}
 	}
 }

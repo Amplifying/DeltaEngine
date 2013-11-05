@@ -26,10 +26,12 @@ namespace DeltaEngine.Editor
 			onlineServiceConnection = connection;
 			connection.DataReceived += OnDataReceived;
 			send = connection.Send;
+			ContentLoader.DisposeIfInitialized();
 			ContentLoader.Use<EditorContentLoader>();
 			editorContent = new EditorContentLoader(onlineServiceConnection);
 			editorContent.ContentUpdated += OnContentUpdated;
 			editorContent.ContentDeleted += OnContentDeleted;
+			editorContent.ContentReady += OnContentReady;
 		}
 
 		public string UserName { get; private set; }
@@ -66,7 +68,7 @@ namespace DeltaEngine.Editor
 
 		public string ProjectName { get; private set; }
 		public ProjectPermissions Permissions { get; private set; }
-		public Action ProjectChanged;
+		public event Action ProjectChanged;
 		public event Action<object> DataReceived;
 		private Action<object, bool> send;
 		private EditorContentLoader editorContent;
@@ -88,6 +90,14 @@ namespace DeltaEngine.Editor
 		}
 
 		public event Action<string> ContentDeleted;
+
+		private void OnContentReady()
+		{
+			if (ContentReady != null)
+				ContentReady();
+		}
+
+		public event Action ContentReady;
 
 		public void RequestChangeProject(string newProjectName)
 		{
@@ -134,5 +144,7 @@ namespace DeltaEngine.Editor
 		}
 
 		public event Action<Type> StartEditorPlugin;
+
+		public EditorOpenTkViewport Viewport { get; set; }
 	}
 }

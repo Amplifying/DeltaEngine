@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using DeltaEngine.Extensions;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.Core.Tests
@@ -32,7 +33,7 @@ namespace DeltaEngine.Editor.Core.Tests
 
 		private static CodePacker GetCodePackerWithTestData()
 		{
-			return new CodePacker(PathExtensions.GetEngineSolutionFilePath(), "DeltaEngine.Platforms");
+			return new CodePacker(PathExtensions.GetDeltaEngineSolutionFilePath(), "DeltaEngine.Platforms");
 		}
 
 		private static string[] GetAllFiles(string directory)

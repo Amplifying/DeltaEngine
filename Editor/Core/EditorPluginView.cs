@@ -8,7 +8,7 @@
 	public interface EditorPluginView
 	{
 		void Init(Service service);
-		void ProjectChanged();
+		void Activate();
 		string ShortName { get; }
 		string Icon { get; }
 		bool RequiresLargePane { get; }

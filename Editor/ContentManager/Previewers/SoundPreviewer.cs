@@ -9,7 +9,7 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 {
 	public sealed class SoundPreviewer : ContentPreview
 	{
-		public void PreviewContent(string contentName)
+		public override void Preview(string contentName)
 		{
 			verdana = ContentLoader.Load<Font>("Verdana12");
 			new FontText(verdana, "Play", Rectangle.One);

@@ -10,9 +10,11 @@ namespace DeltaEngine.Editor.Core
 		string UserName { get; }
 		string ProjectName { get; }
 		Settings EditorSettings { get; }
+		event Action ProjectChanged;
 		event Action<object> DataReceived;
 		event Action<ContentType, string> ContentUpdated;
 		event Action<string> ContentDeleted;
+		event Action ContentReady;
 		void Send(object message, bool allowToCompressMessage = true);
 		IEnumerable<string> GetAllContentNames();
 		IEnumerable<string> GetAllContentNamesByType(ContentType type);
@@ -20,5 +22,6 @@ namespace DeltaEngine.Editor.Core
 		void UploadContent(ContentMetaData metaData, Dictionary<string, byte[]> optionalFileData = null);
 		void DeleteContent(string selectedContent, bool deleteSubContent = false);
 		void StartPlugin(Type plugin);
+		EditorOpenTkViewport Viewport { get; set; }
 	}
 }

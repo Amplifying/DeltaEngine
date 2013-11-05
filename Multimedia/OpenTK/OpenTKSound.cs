@@ -12,8 +12,8 @@ namespace DeltaEngine.Multimedia.OpenTK
 	/// </summary>
 	public class OpenTKSound : Sound
 	{
-		protected OpenTKSound(string contentName, OpenTKSoundDevice openAL, Settings settings)
-			: base(contentName, settings)
+		protected OpenTKSound(string contentName, OpenTKSoundDevice openAL)
+			: base(contentName)
 		{
 			this.openAL = openAL;
 		}

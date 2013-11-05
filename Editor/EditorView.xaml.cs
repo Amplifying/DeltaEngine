@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
+using DeltaEngine.Commands;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Editor.ContentManager;
@@ -14,8 +16,11 @@ using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Emulator;
 using DeltaEngine.Editor.Helpers;
 using DeltaEngine.Extensions;
+using DeltaEngine.Input;
+using DeltaEngine.Platforms;
 using DeltaEngine.Platforms.Windows;
 using Xceed.Wpf.AvalonDock.Layout;
+using MouseButton = DeltaEngine.Input.MouseButton;
 using OpenTKApp = DeltaEngine.Platforms.App;
 using Window = DeltaEngine.Core.Window;
 
@@ -50,7 +55,9 @@ namespace DeltaEngine.Editor
 				Logger.Error(ex);
 				if (StackTraceExtensions.IsStartedFromNunitConsole())
 					throw;
-				MessageBox.Show("Failed to initialize: " + ex, "Delta Engine Editor - Fatal Error");
+				window.CopyTextToClipboard(ex.ToString());
+				MessageBox.Show("Failed to initialize: " + ex + Resolver.ErrorWasCopiedToClipboardMessage,
+					"Delta Engine Editor - Fatal Error");
 			}
 		}
 
@@ -73,15 +80,19 @@ namespace DeltaEngine.Editor
 		{
 			viewModel.AddAllPlugins();
 			viewModel.Service.StartEditorPlugin += StartInitialPlugin;
-			viewModel.Service.ProjectChanged += RefreshAllActivePlugins;
 			StartInitialPlugin(typeof(ViewportControl));
-			StartInitialPlugin(typeof(ContentManagerView));
 		}
 
 		private void StartInitialPlugin(Type type)
 		{
+			StartEditorPlugin(GetPluginByType(type));
+		}
+
+		private UserControl GetPluginByType(Type type)
+		{
 			foreach (var plugin in viewModel.EditorPlugins.Where(plugin => plugin.GetType() == type))
-				StartEditorPlugin(plugin as UserControl);
+				return plugin as UserControl;
+			return null;
 		}
 
 		private void StartEditorPlugin(UserControl plugin)
@@ -89,6 +100,11 @@ namespace DeltaEngine.Editor
 			EditorPluginSelection.SelectedItem = null;
 			if (CheckIfPluginIsAlreadyRunningAndFocus(plugin))
 				return;
+			if (viewport != null)
+			{
+				viewport.DestroyRenderedEntities();
+				viewport.ResetViewportArea();
+			}
 			if (!TryInitializePlugin(plugin))
 				return;
 			var document = CreateDocumentForPlugin(plugin);
@@ -123,15 +139,34 @@ namespace DeltaEngine.Editor
 			}
 		}
 
-		private static LayoutDocument CreateDocumentForPlugin(UserControl plugin)
+		private LayoutDocument CreateDocumentForPlugin(UserControl plugin)
 		{
-			return new LayoutDocument
+			var layoutDocument = new LayoutDocument
 			{
 				Content = plugin,
 				CanClose = true,
 				Title = ((EditorPluginView)plugin).ShortName
 			};
+			layoutDocument.IsActiveChanged += ChangeActivePlugin;
+			layoutDocument.Closed -= ChangeActivePlugin;
+			return layoutDocument;
 		}
+
+		private void ChangeActivePlugin(object sender, EventArgs e)
+		{
+			var userControl = ((UserControl)((LayoutDocument)sender).Content);
+			if (userControl.GetType() == typeof(ViewportControl))
+				return;
+			// ReSharper disable once PossibleUnintendedReferenceComparison
+			if (userControl == activePlugin)
+				return;
+			activePlugin = userControl;
+			if (viewModel.Service.Viewport != null)
+				viewModel.Service.Viewport.DestroyRenderedEntities();
+			((EditorPluginView)userControl).Activate();
+		}
+
+		private UserControl activePlugin;
 
 		private LayoutDocumentPane CreatePaneForPlugins(UserControl plugin)
 		{
@@ -149,24 +184,17 @@ namespace DeltaEngine.Editor
 		{
 			var pane = new LayoutDocumentPane();
 			pane.DockWidth = new GridLength(widthValue, GridUnitType.Star);
-			pane.DockMinWidth = 300;
+			pane.DockMinWidth = widthValue < 0.5 ? SmallPaneMinWidth : LargePaneMinWidth;
 			PluginGroup.Children.Add(pane);
 			return pane;
 		}
 
+		private const int SmallPaneMinWidth = 300;
+		private const int LargePaneMinWidth = 540;
+
 		private static void FocusDocumentToSeePlugin(LayoutDocument document)
 		{
 			document.IsActive = true;
-		}
-
-		private void RefreshAllActivePlugins()
-		{
-			foreach (var documentPane in PluginGroup.Children)
-				foreach (LayoutDocument layoutDocument in documentPane.Children)
-				{
-					LayoutDocument document = layoutDocument;
-					Dispatcher.Invoke(new Action(() => ((EditorPluginView)document.Content).ProjectChanged()));
-				}
 		}
 
 		private void SetProjectAndTestFromCommandLineArguments()
@@ -198,6 +226,7 @@ namespace DeltaEngine.Editor
 		{
 			if (arg1 != "ShowPlugin")
 				return;
+			Logger.Info(Directory.GetCurrentDirectory());
 			var editorPlugin = viewModel.EditorPlugins.FirstOrDefault(p => p.ShortName == arg2);
 			StartEditorPlugin(editorPlugin as UserControl);
 			maximizer.BringWindowToForeground();
@@ -207,28 +236,50 @@ namespace DeltaEngine.Editor
 		{
 			if (DesignerProperties.GetIsInDesignMode(this))
 				return;
-			var window = TryGetViewport(viewModel.EditorPlugins);
+			window = TryGetViewportWindow(viewModel.EditorPlugins);
 			ElementHost.EnableModelessKeyboardInterop(this);
 			StartViewportAndWaitUntilWindowIsClosed(window);
 		}
 
-		private WpfHostedFormsWindow TryGetViewport(IEnumerable<EditorPluginView> plugins)
+		private WpfHostedFormsWindow window;
+
+		private WpfHostedFormsWindow TryGetViewportWindow(IEnumerable<EditorPluginView> plugins)
 		{
 			foreach (var plugin in plugins.Where(plugin => plugin.GetType() == typeof(ViewportControl)))
 				return new WpfHostedFormsWindow(plugin as ViewportControl, this);
-			throw new EngineViewportCouldNotBeLoaded();
+			throw new EngineViewportCouldNotBeCreated();
 		}
 
-		private class EngineViewportCouldNotBeLoaded : Exception {}
+		private class EngineViewportCouldNotBeCreated : Exception {}
 
 		private void StartViewportAndWaitUntilWindowIsClosed(FormsWindow window)
 		{
 			Closing += (sender, args) => window.Dispose();
 			window.ViewportSizeChanged += size => InvalidateVisual();
 			app = new BlockingViewportApp(window);
+			RegisterViewportControlCommands();
+			viewport = new EditorOpenTkViewport(window);
+			viewModel.Service.Viewport = viewport;
 			Show();
+			GetPluginByType(typeof(ViewportControl)).Visibility = Visibility.Visible;
+			StartInitialPlugin(typeof(ContentManagerView));
 			app.RunAndBlock();
 		}
+
+		private void RegisterViewportControlCommands()
+		{
+			var dragTrigger = new MousePositionTrigger(MouseButton.Middle, State.Pressed);
+			dragTrigger.AddTag("ViewControl");
+			Command.Register("ViewportPanning", dragTrigger);
+			var dragStartTrigger = new MousePositionTrigger(MouseButton.Middle);
+			dragStartTrigger.AddTag("ViewControl");
+			Command.Register("ViewportPanningStart", dragStartTrigger);
+			var zoomTrigger = new MouseZoomTrigger();
+			zoomTrigger.AddTag("ViewControl");
+			Command.Register("ViewportZooming", zoomTrigger);
+		}
+
+		private EditorOpenTkViewport viewport;
 
 		private BlockingViewportApp app;
 
@@ -270,7 +321,7 @@ namespace DeltaEngine.Editor
 			var mousePos = e.MouseDevice.GetPosition(this);
 			if (e.ClickCount == 2 && mousePos.Y < 50)
 				maximizer.ToggleMaximize();
-			else if (e.ChangedButton == MouseButton.Left && !maximizer.isMaximized)
+			else if (e.ChangedButton == System.Windows.Input.MouseButton.Left && !maximizer.isMaximized)
 				DragMove();
 		}
 
@@ -318,6 +369,21 @@ namespace DeltaEngine.Editor
 		private void StartingWithCPPClick(object sender, RoutedEventArgs e)
 		{
 			Process.Start("http://deltaengine.net/learn/startingwithcpp");
+		}
+
+		private void TroubleshootingClick(object sender, RoutedEventArgs e)
+		{
+			Process.Start("http://deltaengine.net/learn/troubleshootingchecklist");
+		}
+
+		private void AppBuilderClick(object sender, RoutedEventArgs e)
+		{
+			Process.Start("http://deltaengine.net/features/appbuilder");
+		}
+
+		private void DocumentationClick(object sender, RoutedEventArgs e)
+		{
+			Process.Start("http://help.deltaengine.net/");
 		}
 
 		private void OnContentDrop(object sender, DragEventArgs e)
@@ -370,6 +436,11 @@ namespace DeltaEngine.Editor
 		private static bool IsFile(IDataObject dropObject)
 		{
 			return dropObject.GetDataPresent(DataFormats.FileDrop);
+		}
+
+		private void OnHelp(object sender, MouseButtonEventArgs e)
+		{
+			Process.Start("http://deltaengine.net/features/editor");
 		}
 	}
 }

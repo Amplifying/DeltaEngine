@@ -9,7 +9,6 @@ using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
-using DeltaEngine.Multimedia;
 using DeltaEngine.Rendering2D;
 using DeltaEngine.ScreenSpaces;
 using GalaSoft.MvvmLight;
@@ -20,14 +19,34 @@ namespace DeltaEngine.Editor.MaterialEditor
 	{
 		public MaterialEditorViewModel(Service service)
 		{
-			ClearEntities();
 			this.service = service;
 			colorList = new Dictionary<string, Color>();
 			ColorStringList = new ObservableCollection<string>();
 			MaterialList = new ObservableCollection<string>();
 			BlendModeList = new ObservableCollection<string>();
 			RenderStyleList = new ObservableCollection<string>();
+			MaterialName = "MyMaterial";
+			CanSaveMaterial = false;
 			FillLists();
+			CreateDefaultMaterial();
+		}
+
+		private void CreateDefaultMaterial()
+		{
+			var imageData = new ImageCreationData(new Size(8.0f, 8.0f));
+			var image = ContentLoader.Create<Image>(imageData);
+			var colors = new Color[8 * 8];
+			for (int i = 0; i < 8; i++)
+				for (int j = 0; j < 8; j++)
+					if ((i + j) % 2 == 0)
+						colors[i * 8 + j] = Color.LightGray;
+					else
+						colors[i * 8 + j] = Color.DarkGray;
+			image.Fill(colors);
+			var material = new Material(ContentLoader.Load<Shader>(Shader.Position2DColorUV), image,
+				new Size(8.0f, 8.0f));
+			renderExample = new Sprite(material, new Rectangle(0.25f, 0.25f, 0.5f, 0.5f));
+			renderExample.IsActive = true;
 		}
 
 		public Material NewMaterial { get; set; }
@@ -38,14 +57,6 @@ namespace DeltaEngine.Editor.MaterialEditor
 		public ObservableCollection<string> RenderStyleList { get; set; }
 		private readonly Dictionary<string, Color> colorList;
 		public ObservableCollection<string> ColorStringList { get; set; }
-
-		private static void ClearEntities()
-		{
-			var entities = EntitiesRunner.Current.GetAllEntities();
-			foreach (var entity in entities)
-				if (!entity.GetType().IsSubclassOf(typeof(SoundDevice)))
-					entity.IsActive = false;
-		}
 
 		private void FillLists()
 		{
@@ -91,7 +102,7 @@ namespace DeltaEngine.Editor.MaterialEditor
 				if (shader.Format.HasUV)
 					ShaderList.Add(content);
 			}
-			SelectedShader = Shader.Position2DColorUV;
+			selectedShader = Shader.Position2DColorUV;
 			RaisePropertyChanged("SelectedRenderSize");
 		}
 
@@ -122,7 +133,7 @@ namespace DeltaEngine.Editor.MaterialEditor
 		{
 			foreach (var color in colorList)
 				ColorStringList.Add(color.Key);
-			SelectedColor = "White";
+			selectedColor = "White";
 			RaisePropertyChanged("SelectedColor");
 		}
 
@@ -140,7 +151,7 @@ namespace DeltaEngine.Editor.MaterialEditor
 			Array enumValues = Enum.GetValues(typeof(BlendMode));
 			foreach (var value in enumValues)
 				BlendModeList.Add(Enum.GetName(typeof(BlendMode), value));
-			SelectedBlendMode = BlendMode.Normal.ToString();
+			selectedBlendMode = BlendMode.Normal.ToString();
 			RaisePropertyChanged("SelectedBlendMode");
 		}
 
@@ -149,7 +160,7 @@ namespace DeltaEngine.Editor.MaterialEditor
 			Array enumValues = Enum.GetValues(typeof(RenderSizeMode));
 			foreach (var value in enumValues)
 				RenderStyleList.Add(Enum.GetName(typeof(RenderSizeMode), value));
-			SelectedRenderSize = RenderSizeMode.PixelBased.ToString();
+			selectedRenderSize = RenderSizeMode.PixelBased.ToString();
 			RaisePropertyChanged("SelectedRenderSize");
 		}
 
@@ -179,17 +190,15 @@ namespace DeltaEngine.Editor.MaterialEditor
 
 		private void CreateNewMaterial()
 		{
-			if (SelectedShader == null || SelectedColor == null ||
-				(SelectedImage == null && SelectedAnimation == null))
+			if (string.IsNullOrEmpty(SelectedShader) || string.IsNullOrEmpty(SelectedColor) ||
+				(string.IsNullOrEmpty(SelectedImage) && string.IsNullOrEmpty(SelectedAnimation)))
 				return;
-			if (string.IsNullOrEmpty(SelectedAnimation))
-				NewMaterial = new Material(SelectedShader, SelectedImage);
-			else
-				NewMaterial = new Material(SelectedShader, SelectedAnimation);
+			NewMaterial = string.IsNullOrEmpty(SelectedAnimation)
+				? new Material(SelectedShader, SelectedImage)
+				: new Material(SelectedShader, SelectedAnimation);
 			NewMaterial.DefaultColor = colorList[selectedColor];
 			NewMaterial.RenderSizeMode =
 				(RenderSizeMode)Enum.Parse(typeof(RenderSizeMode), selectedRenderSize, true);
-			EntitiesRunner.Current.Clear();
 			NewMaterial.DiffuseMap.BlendMode =
 				(BlendMode)Enum.Parse(typeof(BlendMode), SelectedBlendMode);
 			var shaderWithFormat = NewMaterial.Shader as ShaderWithFormat;
@@ -198,11 +207,15 @@ namespace DeltaEngine.Editor.MaterialEditor
 
 		private void Draw2DExample(ShaderWithFormat shader)
 		{
+			if (renderExample != null)
+				renderExample.IsActive = false;
 			if (shader.Format.HasUV)
-				new Sprite(NewMaterial,
+				renderExample = new Sprite(NewMaterial,
 					Rectangle.FromCenter(Vector2D.Half,
 						ScreenSpace.Current.FromPixelSpace(NewMaterial.DiffuseMap.PixelSize)));
 		}
+
+		private Entity2D renderExample;
 
 		public string SelectedImage
 		{
@@ -212,6 +225,7 @@ namespace DeltaEngine.Editor.MaterialEditor
 				selectedImage = value;
 				selectedAnimation = "";
 				CreateNewMaterial();
+				CheckIfCanSave();
 				RaisePropertyChanged("SelectedAnimation");
 			}
 		}
@@ -267,6 +281,7 @@ namespace DeltaEngine.Editor.MaterialEditor
 					RaisePropertyChanged("SelectedShader");
 					RaisePropertyChanged("SelectedColor ");
 				}
+				CheckIfCanSave();
 			}
 		}
 
@@ -279,11 +294,6 @@ namespace DeltaEngine.Editor.MaterialEditor
 			var metaDataCreator = new ContentMetaDataCreator();
 			ContentMetaData contentMetaData = metaDataCreator.CreateMetaDataFromMaterial(MaterialName,
 				NewMaterial);
-			if (ContentLoader.Exists(MaterialName))
-			{
-				service.DeleteContent(MaterialName);
-				ContentLoader.RemoveResource(MaterialName);
-			}
 			service.UploadContent(contentMetaData);
 			service.ContentUpdated += SendSuccessMessageToLogger;
 		}
@@ -293,7 +303,9 @@ namespace DeltaEngine.Editor.MaterialEditor
 		{
 			Logger.Info("The saving of the material called " + MaterialName + " was a success.");
 			service.ContentUpdated -= SendSuccessMessageToLogger;
-		}//ncrunch: no coverage end
+		}
+
+		//ncrunch: no coverage end
 
 		public string SelectedColor
 		{
@@ -306,5 +318,54 @@ namespace DeltaEngine.Editor.MaterialEditor
 		}
 
 		private string selectedColor;
+
+		public void RefreshOnContentChange()
+		{
+			ImageList.Clear();
+			ShaderList.Clear();
+			MaterialList.Clear();
+			LoadImageAndShaderLists();
+			LoadMaterials();
+			RaisePropertyChanged("ImageList");
+			RaisePropertyChanged("ShaderList");
+		}
+
+		public void ResetOnProjectChange()
+		{
+			RefreshOnContentChange();
+			selectedImage = "";
+			selectedAnimation = "";
+			materialName = "";
+			RaisePropertyChanged("SelectedImage");
+			RaisePropertyChanged("SelectedAnimation");
+			RaisePropertyChanged("SelectedMaterial");
+		}
+
+		public void Activate()
+		{
+			renderExample.IsActive = true;
+			service.Viewport.CenterViewOn(renderExample.Center);
+			service.Viewport.ZoomViewTo(1.0f);
+		}
+
+		public bool CanSaveMaterial
+		{
+			get { return canSaveMaterial; }
+			set
+			{
+				canSaveMaterial = value;
+				RaisePropertyChanged("CanSaveMaterial");
+			}
+		}
+
+		private bool canSaveMaterial;
+
+		private void CheckIfCanSave()
+		{
+			if (string.IsNullOrEmpty(MaterialName) || string.IsNullOrEmpty(selectedImage))
+				CanSaveMaterial = false;
+			else
+				CanSaveMaterial = true;
+		}
 	}
 }

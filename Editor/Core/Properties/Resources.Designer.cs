@@ -115,15 +115,6 @@ namespace DeltaEngine.Editor.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Please obtain your API Key and select a project to login..
-        /// </summary>
-        public static string ObtainApiKeyAndSelectProject {
-            get {
-                return ResourceManager.GetString("ObtainApiKeyAndSelectProject", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Welcome.
         /// </summary>
         public static string Welcome {

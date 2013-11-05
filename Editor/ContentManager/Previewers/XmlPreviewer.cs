@@ -8,7 +8,7 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 	public class XmlPreviewer : ContentPreview
 	{
 		//ncrunch: no coverage start
-		public void PreviewContent(string contentName)
+		public override void Preview(string contentName)
 		{
 			var projectName = GetProjectName();
 			if (string.IsNullOrEmpty(projectName))

@@ -37,9 +37,25 @@ namespace DeltaEngine.Editor.Mocks
 				ContentUpdated(type, "MockContent");
 		}
 
+		public void ChangeProject(string projectName)
+		{
+			ProjectName = projectName;
+			if (ProjectChanged != null)
+				ProjectChanged();
+		}
+
+		public event Action ProjectChanged;
 		public event Action<object> DataReceived;
 		public event Action<ContentType, string> ContentUpdated;
 		public event Action<string> ContentDeleted;
+
+		public void SetContentReady()
+		{
+			if (ContentReady != null)
+				ContentReady();
+		}
+
+		public event Action ContentReady;
 
 		public virtual void Send(object message, bool allowToCompressMessage = true) {}
 
@@ -91,5 +107,7 @@ namespace DeltaEngine.Editor.Mocks
 		}
 
 		public void StartPlugin(Type plugin) {}
+
+		public EditorOpenTkViewport Viewport { get; set; }
 	}
 }

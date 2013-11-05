@@ -27,25 +27,23 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 
 		private static ProjectCreator CreateWithValidFileSystemMock()
 		{
-			var project = new CsProject();
-			var template = VsTemplate.GetEmptyGame(CreateSolutionTemplateMock());
+			var project = new CsProject("John Doe");
+			var template = VsTemplate.CreateByName(CreateSolutionTemplateMock(), "EmptyGame");
 			return new ProjectCreator(project, template,
 				CreateEmptyGameFileSystemMock(project, template));
 		}
 
 		private static MockFileSystem CreateSolutionTemplateMock()
 		{
-			const string TemplateZipMockPath = BasePath + @"\EmptyGame.zip";
+			string emptyGameZipTemplateFilePath =
+				Path.Combine(CreatorTestExtensions.GetEngineTemplatesDirectory(), "EmptyGame.zip");
 			var files = new Dictionary<string, MockFileData>();
-			files.Add(TemplateZipMockPath,
+			files.Add(emptyGameZipTemplateFilePath,
 				new MockFileData(File.ReadAllText(Path.Combine("NewDeltaEngineProject", "EmptyGame.zip"))));
 			var fileSystem = new MockFileSystem(files);
-			fileSystem.Directory.SetCurrentDirectory(TemplateZipMockPath);
+			fileSystem.Directory.SetCurrentDirectory(emptyGameZipTemplateFilePath);
 			return fileSystem;
 		}
-
-		private const string BasePath =
-			@"D:\Development\DeltaEngine\VisualStudioTemplates\Delta Engine";
 
 		private static IFileSystem CreateEmptyGameFileSystemMock(CsProject project,
 			VsTemplate template)
@@ -54,13 +52,14 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 				GetMockFileDataFromZip(Path.Combine("NewDeltaEngineProject", "EmptyGame.zip"));
 			Assert.AreEqual(5, files.Count);
 			var fileSystem = new Dictionary<string, MockFileData>();
-			fileSystem.Add(Path.Combine(BasePath, "EmptyGame.zip"),
+			string basePath = CreatorTestExtensions.GetEngineTemplatesDirectory();
+			fileSystem.Add(Path.Combine(basePath, "EmptyGame.zip"),
 				new MockFileData(File.ReadAllText(Path.Combine("NewDeltaEngineProject", "EmptyGame.zip"))));
-			fileSystem.Add(Path.Combine(BasePath, template.AssemblyInfo), files[3]);
-			fileSystem.Add(Path.Combine(BasePath, template.Csproj), files[4]);
-			fileSystem.Add(Path.Combine(BasePath, template.Ico), files[0]);
-			fileSystem.Add(Path.Combine(BasePath, template.SourceCodeFiles[0]), files[2]);
-			fileSystem.Add(Path.Combine(BasePath, template.SourceCodeFiles[1]), files[1]);
+			fileSystem.Add(Path.Combine(basePath, template.AssemblyInfo), files[3]);
+			fileSystem.Add(Path.Combine(basePath, template.Csproj), files[4]);
+			fileSystem.Add(Path.Combine(basePath, template.Ico), files[0]);
+			fileSystem.Add(Path.Combine(basePath, template.SourceCodeFiles[0]), files[2]);
+			fileSystem.Add(Path.Combine(basePath, template.SourceCodeFiles[1]), files[1]);
 			fileSystem.Add(project.Path, new MockDirectoryData());
 			return new MockFileSystem(fileSystem);
 		}
@@ -90,8 +89,8 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 
 		private static ProjectCreator CreateWithCorruptFileSystemMock()
 		{
-			var template = VsTemplate.GetEmptyGame(CreateCorruptVisualStudioTemplateMock());
-			return new ProjectCreator(new CsProject(), template, CreateCorruptFileSystemMock(template));
+			var template = VsTemplate.CreateByName(CreateCorruptVisualStudioTemplateMock(), "EmptyGame");
+			return new ProjectCreator(new CsProject(""), template, CreateCorruptFileSystemMock(template));
 		}
 
 		private static MockFileSystem CreateCorruptVisualStudioTemplateMock()

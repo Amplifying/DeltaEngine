@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Media;
 using System.Windows.Threading;
 using DeltaEngine.Platforms.Windows;
-using DeltaEngine.ScreenSpaces;
 using Application = System.Windows.Application;
 using DeltaSize = DeltaEngine.Datatypes.Size;
 
@@ -21,7 +21,7 @@ namespace DeltaEngine.Editor.Emulator
 			dispatcher = viewportControl.ViewportHost.Dispatcher;
 			this.window = window;
 			viewportControl.ViewportHost.SizeChanged += OnHostControlSizeChanged;
-			new QuadraticScreenSpace(this);
+			viewportControl.Background = new SolidColorBrush(Colors.Black);
 		}
 
 		private static Panel GetViewportControlPanel(ViewportControl viewportControl)

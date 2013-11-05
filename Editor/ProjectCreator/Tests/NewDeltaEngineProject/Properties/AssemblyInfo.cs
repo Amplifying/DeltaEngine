@@ -3,8 +3,8 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 
 [assembly: CLSCompliant(true)]
-[assembly: AssemblyTitle("NewDeltaEngineProject")]
-[assembly: AssemblyDescription("Delta Engine Game NewDeltaEngineProject")]
+[assembly: AssemblyTitle("JohnDoesGhostWars")]
+[assembly: AssemblyDescription("Delta Engine Game JohnDoesGhostWars")]
 [assembly: AssemblyCompany("Delta Engine")]
 [assembly: AssemblyCopyright("Copyright © Delta Engine 2013")]
 [assembly: ComVisible(false)]

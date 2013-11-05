@@ -1,9 +1,9 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.MaterialEditor;
-using DeltaEngine.Editor.SpriteFontCreator;
 using GalaSoft.MvvmLight.Messaging;
 
 namespace DeltaEngine.Editor.UIEditor
@@ -22,8 +22,30 @@ namespace DeltaEngine.Editor.UIEditor
 		public void Init(Service service)
 		{
 			this.service = service;
-			DataContext = new UIEditorViewModel(service);
+			DataContext = uiEditorViewModel = new UIEditorViewModel(service);
+			var viewModel = (UIEditorViewModel)DataContext;
+			service.ProjectChanged += () => Dispatcher.Invoke(new Action(viewModel.ResetOnProjectChange));
+			service.ContentUpdated +=
+				(type, s) => Dispatcher.Invoke(new Action(viewModel.RefreshOnContentChange));
+			service.ContentDeleted += s => Dispatcher.Invoke(new Action(viewModel.RefreshOnContentChange));
 			Messenger.Default.Register<string>(this, "SetMaterialToNull", SetMaterialToNull);
+			Messenger.Default.Register<string>(this, "SetHoveredMaterialToNull",
+				SetHoveredMaterialToNull);
+			Messenger.Default.Register<string>(this, "SetPressedMaterialToNull",
+				SetPressedMaterialToNull);
+			Messenger.Default.Register<string>(this, "SetDisabledMaterialToNull",
+				SetDisabledMaterialToNull);
+			Messenger.Default.Register<string>(this, "SetHorizontalAllignmentToNull",
+				SetHorizontalAllignmentToNull);
+			Messenger.Default.Register<string>(this, "SetVerticalAllignmentToNull",
+				SetVerticalAllignmentToNull);
+		}
+
+		private UIEditorViewModel uiEditorViewModel;
+
+		public void Activate()
+		{
+			uiEditorViewModel.ActivateHidenScene();
 		}
 
 		private void SetMaterialToNull(string obj)
@@ -31,9 +53,44 @@ namespace DeltaEngine.Editor.UIEditor
 			MaterialComboBox.Text = "";
 		}
 
-		private Service service;
+		private void SetHoveredMaterialToNull(string obj)
+		{
+			MaterialHoveredComboBox.Text = "";
+			if (obj.Contains("Picture") || obj.Contains("Label"))
+				MaterialHoveredComboBox.IsEnabled = false;
+			else
+				MaterialHoveredComboBox.IsEnabled = true;
+		}
 
-		public void ProjectChanged() {}
+		private void SetPressedMaterialToNull(string obj)
+		{
+			MaterialPressedComboBox.Text = "";
+			if (obj.Contains("Picture") || obj.Contains("Label"))
+				MaterialPressedComboBox.IsEnabled = false;
+			else
+				MaterialPressedComboBox.IsEnabled = true;
+		}
+
+		private void SetDisabledMaterialToNull(string obj)
+		{
+			MaterialDisabledComboBox.Text = "";
+			if (obj.Contains("Picture") || obj.Contains("Label"))
+				MaterialDisabledComboBox.IsEnabled = false;
+			else
+				MaterialDisabledComboBox.IsEnabled = true;
+		}
+
+		private void SetHorizontalAllignmentToNull(string obj)
+		{
+			HorizontalAllignment.Text = "";
+		}
+
+		private void SetVerticalAllignmentToNull(string obj)
+		{
+			VerticalAllignment.Text = "";
+		}
+
+		private Service service;
 
 		public string ShortName
 		{
@@ -64,15 +121,42 @@ namespace DeltaEngine.Editor.UIEditor
 			Messenger.Default.Send(e.AddedItems[0].ToString(), "ChangeMaterial");
 		}
 
+		private void ChangeHoveredMaterial(object sender, SelectionChangedEventArgs e)
+		{
+			if (e.AddedItems.Count == 0)
+				return;
+			if (e.AddedItems[0] == null)
+				return;
+			Messenger.Default.Send(e.AddedItems[0].ToString(), "ChangeHoveredMaterial");
+		}
+
+		private void ChangePressedMaterial(object sender, SelectionChangedEventArgs e)
+		{
+			if (e.AddedItems.Count == 0)
+				return;
+			if (e.AddedItems[0] == null)
+				return;
+			Messenger.Default.Send(e.AddedItems[0].ToString(), "ChangePressedMaterial");
+		}
+
+		private void ChangeDisabledMaterial(object sender, SelectionChangedEventArgs e)
+		{
+			if (e.AddedItems.Count == 0)
+				return;
+			if (e.AddedItems[0] == null)
+				return;
+			Messenger.Default.Send(e.AddedItems[0].ToString(), "ChangeDisabledMaterial");
+		}
+
 		private void OpenMaterialEditorClick(object sender, RoutedEventArgs e)
 		{
 			service.StartPlugin(typeof(MaterialEditorView));
 		}
 
-		private void OpenFontEditor(object sender, RoutedEventArgs e)
+		/*private void OpenFontEditor(object sender, RoutedEventArgs e)
 		{
 			service.StartPlugin(typeof(FontCreatorView));
-		}
+		}*/
 
 		public void IncreaseRenderlayer(object sender, RoutedEventArgs e)
 		{
@@ -84,59 +168,6 @@ namespace DeltaEngine.Editor.UIEditor
 			Messenger.Default.Send(-1, "ChangeRenderLayer");
 		}
 
-		private void DragImage(object sender, MouseEventArgs e)
-		{
-			if (e.LeftButton == MouseButtonState.Pressed && !isDragging)
-			{
-				Messenger.Default.Send(true, "SetDraggingImage");
-				isDragging = true;
-				Mouse.OverrideCursor = Cursors.Hand;
-			}
-
-			if (e.LeftButton != MouseButtonState.Pressed)
-			{
-				Messenger.Default.Send(false, "SetDraggingImage");
-				isDragging = false;
-				Mouse.OverrideCursor = Cursors.Arrow;
-			}
-		}
-
-		private bool isDragging;
-
-		private void DragButton(object sender, MouseEventArgs e)
-		{
-			if (e.LeftButton == MouseButtonState.Pressed && !isDragging)
-			{
-				Messenger.Default.Send(true, "SetDraggingButton");
-				isDragging = true;
-				Mouse.OverrideCursor = Cursors.Hand;
-			}
-
-			if (e.LeftButton != MouseButtonState.Pressed)
-			{
-				Messenger.Default.Send(false, "SetDraggingButton");
-				isDragging = false;
-				Mouse.OverrideCursor = Cursors.Arrow;
-			}
-		}
-
-		private void DragLabel(object sender, MouseEventArgs e)
-		{
-			if (e.LeftButton == MouseButtonState.Pressed && !isDragging)
-			{
-				Messenger.Default.Send(true, "SetDraggingLabel");
-				isDragging = true;
-				Mouse.OverrideCursor = Cursors.Hand;
-			}
-
-			if (e.LeftButton != MouseButtonState.Pressed)
-			{
-				Messenger.Default.Send(false, "SetDraggingLabel");
-				isDragging = false;
-				Mouse.OverrideCursor = Cursors.Arrow;
-			}
-		}
-
 		private void SetMouseIcon(object sender, MouseEventArgs e)
 		{
 			if (e.LeftButton != MouseButtonState.Pressed)
@@ -144,14 +175,8 @@ namespace DeltaEngine.Editor.UIEditor
 				Messenger.Default.Send(false, "SetDraggingImage");
 				Messenger.Default.Send(false, "SetDraggingButton");
 				Messenger.Default.Send(false, "SetDraggingLabel");
-				isDragging = false;
 				Mouse.OverrideCursor = Cursors.Arrow;
 			}
-		}
-
-		private void DeleteSelectedItem(object sender, RoutedEventArgs e)
-		{
-			Messenger.Default.Send("DeleteSelectedControl", "DeleteSelectedControl");
 		}
 
 		private void GridOnGotFocus(object sender, RoutedEventArgs e)
@@ -167,6 +192,11 @@ namespace DeltaEngine.Editor.UIEditor
 		private void AddNewResolutionToList(object sender, RoutedEventArgs e)
 		{
 			Messenger.Default.Send("AddNewResolution", "AddNewResolution");
+		}
+
+		private void ClearScene(object sender, RoutedEventArgs e)
+		{
+			Messenger.Default.Send("ClearScene", "ClearScene");
 		}
 	}
 }

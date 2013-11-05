@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
-using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Helpers;
 using DeltaEngine.Extensions;
 
@@ -32,7 +31,7 @@ namespace DeltaEngine.Editor
 		{
 			if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "DeltaEngine.Editor.exe")))
 				return;
-			string path = PathExtensions.GetInstalledOrFallbackEnginePath();
+			string path = GetInstalledOrFallbackEnginePath();
 			if (!String.IsNullOrEmpty(path))
 			{
 				Directory.SetCurrentDirectory(path);
@@ -50,6 +49,13 @@ namespace DeltaEngine.Editor
 			MessageBox.Show("Can't find DeltaEngine.Editor.exe. " +
 				"Please start the Editor from the folder it is located in!");
 			Environment.Exit(-1);
+		}
+
+		public static string GetInstalledOrFallbackEnginePath()
+		{
+			return PathExtensions.IsDeltaEnginePathEnvironmentVariableAvailable()
+				? PathExtensions.GetDeltaEngineInstalledDirectory()
+				: PathExtensions.GetFallbackEngineSourceCodeDirectory();
 		}
 
 		public bool SignalExternalCommandLineArguments(IList<string> arguments)

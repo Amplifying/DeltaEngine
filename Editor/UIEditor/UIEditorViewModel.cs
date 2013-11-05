@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using DeltaEngine.Commands;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
@@ -7,7 +8,6 @@ using DeltaEngine.Datatypes;
 using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Entities;
-using DeltaEngine.Graphics;
 using DeltaEngine.Input;
 using DeltaEngine.Rendering2D;
 using DeltaEngine.Rendering2D.Shapes;
@@ -23,20 +23,26 @@ namespace DeltaEngine.Editor.UIEditor
 	{
 		public UIEditorViewModel(Service service)
 		{
-			EntitiesRunner.Current.Clear();
 			this.service = service;
+			Messenger.Default.Send("ClearScene", "ClearScene");
+			Messenger.Default.Send("UIEditor", "SetSelectedEditorPlugin");
 			uiEditorScene = new UIEditorScene();
 			uiEditorScene.ControlProcessor = new ControlProcessor(this);
 			uiControl = new UIControl();
 			controlAdder = new ControlAdder();
 			controlChanger = new ControlChanger();
 			Adder = new ControlAdder();
+			Scene = new Scene();
 			InitializeVariables();
 			FillContentImageList();
 			FillMaterialList();
 			FillSceneNames();
+			FillListOfAvailableFonts();
 			SetMouseCommands("");
 			SetMessengers();
+			CreateCenteredControl("Button");
+			UIName = "MyUIName";
+			CheckIfCanSaveScene();
 			new Command(() => DeleteSelectedControl("")).Add(new KeyTrigger(Key.Delete));
 		}
 
@@ -53,8 +59,12 @@ namespace DeltaEngine.Editor.UIEditor
 			MaterialList = new ObservableCollection<string>();
 			SceneNames = new ObservableCollection<string>();
 			ResolutionList = new ObservableCollection<string>();
+			AvailableFontsInProject = new ObservableCollection<string>();
+			uiEditorScene.UIWidth = 1024;
+			uiEditorScene.UIHeight = 768;
 			FillResolutionListWithDefaultResolutions();
-			uiEditorScene.Scene = new Scene();
+			uiEditorScene.CreateGrtidOutline();
+			uiEditorScene.UpdateGridOutline();
 		}
 
 		public ObservableCollection<string> ResolutionList
@@ -70,6 +80,8 @@ namespace DeltaEngine.Editor.UIEditor
 			ResolutionList.Add("20 x 20");
 			ResolutionList.Add("24 x 24");
 			ResolutionList.Add("50 x 50");
+			SelectedResolution = "20 x 20";
+			IsShowingGrid = true;
 		}
 
 		public ObservableCollection<string> ContentImageListList
@@ -100,52 +112,98 @@ namespace DeltaEngine.Editor.UIEditor
 
 		private void FillContentImageList()
 		{
+			uiEditorScene.ContentImageListList.Clear();
 			var imageList = service.GetAllContentNamesByType(ContentType.Image);
 			foreach (var image in imageList)
 				uiEditorScene.ContentImageListList.Add(image);
+			RaisePropertyChanged("ContentImageListList");
 		}
 
 		private void FillMaterialList()
 		{
+			uiEditorScene.MaterialList.Clear();
 			var materialList = service.GetAllContentNamesByType(ContentType.Material);
-			foreach (var material in materialList)
-				if (Is2DMaterial(material))
-					uiEditorScene.MaterialList.Add(material);
+			foreach (var material in materialList.Where(material => TryAddMaterial(material)))
+				uiEditorScene.MaterialList.Add(material);
+			RaisePropertyChanged("MaterialList");
 		}
 
-		private static bool Is2DMaterial(string materialContentName)
+		private static bool TryAddMaterial(string material)
 		{
-			Material material;
 			try
 			{
-				material = ContentLoader.Load<Material>(materialContentName);
+				ContentLoader.Load<Material>(material);
+				return true;
 			}
-				//ncrunch: no coverage start
 			catch
 			{
 				return false;
-			} //ncrunch: no coverage end
-			return (!(material.Shader as ShaderWithFormat).Format.Is3D);
+			}
 		}
 
 		private void FillSceneNames()
 		{
+			uiEditorScene.SceneNames.Clear();
 			foreach (var newScene in service.GetAllContentNamesByType(ContentType.Scene))
 				uiEditorScene.SceneNames.Add(newScene);
+			RaisePropertyChanged("SceneNames");
+		}
+
+		private void FillListOfAvailableFonts()
+		{
+			AvailableFontsInProject.Clear();
+			var fontsInProject = service.GetAllContentNamesByType(ContentType.Font);
+			foreach (var fontName in fontsInProject)
+				AvailableFontsInProject.Add(fontName);
+			if (AvailableFontsInProject.Count > 0)
+				SelectedFontName = AvailableFontsInProject[0];
+			RaisePropertyChanged("AvailableFontsInProject");
+			RaisePropertyChanged("SelectedFontName");
 		}
 
 		private void SetMouseCommands(string obj)
 		{
-			new Command(FindEntity2DOnPosition).Add(new MouseButtonTrigger());
+			var mouseClick = new MouseButtonTrigger();
+			mouseClick.AddTag("ViewControl");
+			new Command(FindEntity2DOnPosition).Add(mouseClick).AddTag("ViewControl");
+			var moveMouse = new MousePositionTrigger(MouseButton.Left, State.Pressed);
+			moveMouse.AddTag("ViewControl");
 			new Command(
 				position =>
 					uiEditorScene.ControlProcessor.MoveImage(position, SelectedEntity2D, Adder.IsDragging,
-						uiEditorScene.IsSnappingToGrid)).Add(new MousePositionTrigger(MouseButton.Left,
-							State.Pressed));
+						uiEditorScene.IsSnappingToGrid, uiEditorScene)).Add(moveMouse).AddTag("ViewControl");
+			var middleMouseClick = new MouseButtonTrigger(MouseButton.Middle);
+			middleMouseClick.AddTag("ViewControl");
 			new Command(position => uiEditorScene.ControlProcessor.lastMousePosition = position).Add(
-				new MouseButtonTrigger(MouseButton.Middle));
-			new Command(position => SetCommandsForReleasing(position)).Add(
-				new MouseButtonTrigger(MouseButton.Left, State.Releasing));
+				middleMouseClick).AddTag("ViewControl");
+			var releaseMiddleMouse = new MouseButtonTrigger(MouseButton.Left, State.Releasing);
+			releaseMiddleMouse.AddTag("ViewControl");
+			new Command(position => SetCommandsForReleasing(position)).Add(releaseMiddleMouse).AddTag(
+				"ViewControl");
+		}
+
+		private void DeleteSelectedContentFromWpf(string control)
+		{
+			var index = uiEditorScene.UIImagesInList.IndexOf(control);
+			if (index < 0)
+				return;
+			uiEditorScene.UIImagesInList.RemoveAt(index);
+			Scene.Controls[index].IsActive = false;
+			Scene.Controls.RemoveAt(index);
+			SelectedEntity2D = null;
+			uiEditorScene.ControlProcessor.UpdateOutLines(SelectedEntity2D);
+		}
+
+		public void ClearScene(string obj)
+		{
+			foreach (var control in Scene.Controls)
+				control.IsActive = false;
+			Scene.Controls.Clear();
+			UIImagesInList.Clear();
+			SelectedEntity2D = null;
+			foreach (var entity in EntitiesRunner.Current.GetEntitiesOfType<DrawableEntity>())
+				entity.IsActive = false;
+			SetMouseCommands("");
 		}
 
 		public Entity2D SelectedEntity2D
@@ -158,6 +216,9 @@ namespace DeltaEngine.Editor.UIEditor
 		{
 			Messenger.Default.Register<string>(this, "SaveUI", SaveUI);
 			Messenger.Default.Register<string>(this, "ChangeMaterial", ChangeMaterial);
+			Messenger.Default.Register<string>(this, "ChangeHoveredMaterial", ChangeHoveredMaterial);
+			Messenger.Default.Register<string>(this, "ChangePressedMaterial", ChangePressedMaterial);
+			Messenger.Default.Register<string>(this, "ChangeDisabledMaterial", ChangeDisabledMaterial);
 			Messenger.Default.Register<int>(this, "ChangeRenderLayer", ChangeRenderLayer);
 			Messenger.Default.Register<bool>(this, "SetDraggingImage", Adder.SetDraggingImage);
 			Messenger.Default.Register<bool>(this, "SetDraggingButton", Adder.SetDraggingButton);
@@ -173,30 +234,29 @@ namespace DeltaEngine.Editor.UIEditor
 			Messenger.Default.Register<string>(this, "SetMouseCommands", SetMouseCommands);
 			Messenger.Default.Register<string>(this, "DeleteSelectedContentFromWpf",
 				DeleteSelectedContentFromWpf);
+			Messenger.Default.Register<string>(this, "ClearScene", ClearScene);
 		}
 
-		private void DeleteSelectedContentFromWpf(string control)
-		{
-			var index = uiEditorScene.UIImagesInList.IndexOf(control);
-			if (index < 0)
-				return;
-			uiEditorScene.UIImagesInList.RemoveAt(index);
-			Scene.Controls[index].IsActive = false; 
-			Scene.Controls.RemoveAt(index);
-			uiEditorScene.ControlProcessor.UpdateOutLines(SelectedEntity2D);
-		}
-
-		private void FindEntity2DOnPosition(Vector2D mousePosition)
+		public void FindEntity2DOnPosition(Vector2D mousePosition)
 		{
 			if (SelectedEntity2D != null)
 				if (SelectedEntity2D.GetType() == typeof(Button) &&
 					SelectedEntity2D.DrawArea.Contains(mousePosition))
 					uiControl.isClicking = true;
 			uiEditorScene.ControlProcessor.lastMousePosition = mousePosition;
-			foreach (Sprite sprite in Scene.Controls)
-				if (sprite.DrawArea.Contains(mousePosition))
-					if (SetEntity2D(sprite))
-						return; //ncrunch: no coverage 
+			bool hasSelectedControl = false;
+			SelectedEntity2D = null;
+			foreach (Control control in Scene.Controls)
+				if (control.DrawArea.Contains(mousePosition))
+				{
+					if (SelectedEntity2D != null && control.RenderLayer < SelectedEntity2D.RenderLayer)
+						continue;
+					hasSelectedControl = true;
+					if (SetEntity2D(control))
+						return;
+				}
+			if (!hasSelectedControl)
+				controlAdder.IsDragging = true;
 			RaiseAllProperties();
 		}
 
@@ -220,34 +280,51 @@ namespace DeltaEngine.Editor.UIEditor
 			set { uiEditorScene.Scene = value; }
 		}
 
-		private bool SetEntity2D(Sprite sprite)
+		private bool SetEntity2D(Control control)
 		{
-			Rectangle drawArea = sprite.GetType() == typeof(Button)
-				? new Rectangle(sprite.DrawArea.TopLeft, (sprite).Size) : sprite.DrawArea;
-			SpriteListIndex = Scene.Controls.IndexOf(sprite);
-			if (SpriteListIndex < 0)
+			Rectangle drawArea = control.GetType() == typeof(Button)
+				? new Rectangle(control.DrawArea.TopLeft, (control).Size) : control.DrawArea;
+			ControlListIndex = Scene.Controls.IndexOf(control);
+			if (ControlListIndex < 0)
 				return true; //ncrunch: no coverage 
-			SelectedSpriteNameInList = sprite.Material.MetaData.Name;
-			SelectedEntity2D = sprite;
+			SelectedControlNameInList = control.Get<string>();
+			SelectedEntity2D = control;
 			if (SelectedEntity2D.Get<Material>() != null)
-				if (MaterialList.Contains(SelectedEntity2D.Get<Material>().MetaData.Name))
-					SelectedMaterial = SelectedEntity2D.Get<Material>().MetaData.Name;
+				if (MaterialList.Contains(SelectedEntity2D.Get<string>()))
+					SelectedMaterial = SelectedEntity2D.Get<string>();
 				else
-				{
-					SelectedMaterial = "";
-					Messenger.Default.Send("SetMaterialToNull", "SetMaterialToNull");
-				}
-			Messenger.Default.Send(SelectedSpriteNameInList, "SetSelectedName");
-			Messenger.Default.Send(SpriteListIndex, "SetSelectedIndex");
+					SetMaterialsToNull();
+			Messenger.Default.Send(SelectedControlNameInList, "SetSelectedName");
+			Messenger.Default.Send(ControlListIndex, "SetSelectedIndex");
 			uiEditorScene.ControlProcessor.UpdateOutLines(SelectedEntity2D);
 			SetWidthAndHeight(drawArea);
+			ControlLayer = control.RenderLayer;
 			return false;
+		}
+
+		private void SetMaterialsToNull()
+		{
+			SelectedMaterial = "";
+			Messenger.Default.Send("SetMaterialToNull", "SetMaterialToNull");
+			Messenger.Default.Send(SelectedEntity2D.GetType().ToString(), "SetHoveredMaterialToNull");
+			Messenger.Default.Send(SelectedEntity2D.GetType().ToString(), "SetPressedMaterialToNull");
+			Messenger.Default.Send(SelectedEntity2D.GetType().ToString(), "SetDisabledMaterialToNull");
+			Messenger.Default.Send("SetHorizontalAllignmentToNull", "SetHorizontalAllignmentToNull");
+			Messenger.Default.Send("SetVerticalAllignmentToNull", "SetVerticalAllignmentToNull");
 		}
 
 		private void SetWidthAndHeight(Rectangle rect)
 		{
 			Entity2DWidth = rect.Width;
 			Entity2DHeight = rect.Height;
+			topMargin = rect.Top;
+			bottomMargin = rect.Bottom;
+			leftMargin = rect.Left;
+			rightMargin = rect.Right;
+			RaisePropertyChanged("RightMargin");
+			RaisePropertyChanged("LeftMargin");
+			RaisePropertyChanged("BottomMargin");
+			RaisePropertyChanged("TopMargin");
 		}
 
 		public string ControlName
@@ -262,6 +339,7 @@ namespace DeltaEngine.Editor.UIEditor
 			Adder.AddButton(position, uiControl, uiEditorScene);
 			Adder.AddLabel(position, uiControl, uiEditorScene);
 			Adder.AddSlider(position, uiControl, uiEditorScene);
+			controlAdder.IsDragging = false;
 			uiControl.isClicking = false;
 			if (SelectedEntity2D != null)
 				uiEditorScene.ControlProcessor.UpdateOutLines(SelectedEntity2D);
@@ -273,7 +351,7 @@ namespace DeltaEngine.Editor.UIEditor
 				return; //ncrunch: no coverage 
 			var fileNameAndBytes = new Dictionary<string, byte[]>();
 			var bytes = BinaryDataExtensions.ToByteArrayWithTypeInformation(Scene);
-			fileNameAndBytes.Add(UIName + ".deltaUI", bytes);
+			fileNameAndBytes.Add(UIName + ".deltascene", bytes);
 			var metaDataCreator = new ContentMetaDataCreator();
 			ContentMetaData contentMetaData = metaDataCreator.CreateMetaDataFromUI(UIName, bytes);
 			service.ContentUpdated += SendSuccessMessageToLogger;
@@ -295,35 +373,120 @@ namespace DeltaEngine.Editor.UIEditor
 			set
 			{
 				uiEditorScene.UIName = value;
+				CheckIfCanSaveScene();
 				if (!ContentLoader.Exists(uiEditorScene.UIName, ContentType.Scene))
 					return;
-				foreach (var entity in EntitiesRunner.Current.GetAllEntities())
+				foreach (var entity in EntitiesRunner.Current.GetEntitiesOfType<DrawableEntity>())
 					entity.IsActive = false;
-				Scene = ContentLoader.Load<Scene>(uiEditorScene.UIName);
-				foreach (var control in Scene.Controls)
-					UIImagesInList.Add(control.Get<Material>().Name);
+				Messenger.Default.Send("ClearScene", "ClearScene");
+				var scene = ContentLoader.Load<Scene>(uiEditorScene.UIName);
+				Scene = new Scene();
+				foreach (Control control in scene.Controls)
+				{
+					control.IsActive = true;
+					UIImagesInList.Add(control.Get<string>());
+					AddControlToScene(control);
+					Messenger.Default.Send(control.Get<string>(), "AddToHierachyList");
+					control.IsActive = false;
+				}
+				uiEditorScene.ControlProcessor.CreateNewLines();
+				CheckIfCanSaveScene();
 				SetMouseCommands("");
 			}
 		}
 
+		private void AddControlToScene(Control control)
+		{
+			Control newControl = null;
+			if (control.GetType() == typeof(Picture))
+				newControl = new Picture(control.Get<Theme>(), control.Get<Material>(), control.DrawArea);
+			else if (control.GetType() == typeof(Label))
+			{
+				newControl = new Label(control.Get<Theme>(), control.DrawArea, (control as Label).Text);
+				newControl.Set(control.Get<Material>());
+			}
+			else if (control.GetType() == typeof(Button))
+				newControl = new Button(control.Get<Theme>(), control.DrawArea, (control as Button).Text);
+			else if (control.GetType() == typeof(Slider))
+				newControl = new Slider(control.Get<Theme>(), control.DrawArea);
+			newControl.Set(control.Get<string>());
+			newControl.RenderLayer = control.RenderLayer;
+			Scene.Add(newControl);
+		}
+
 		public void ChangeMaterial(string newMaterialName)
+		{
+			var material = ContentLoader.Load<Material>(newMaterialName);
+			if (SelectedEntity2D == null)
+				return;
+			if (SelectedEntity2D.GetType() == typeof(Button))
+				SelectedEntity2D.Get<Theme>().Button = ContentLoader.Load<Material>(newMaterialName);
+			else if (SelectedEntity2D.GetType() == typeof(Slider))
+			{
+				SelectedEntity2D.Get<Theme>().Slider = ContentLoader.Load<Material>(newMaterialName);
+				SelectedEntity2D.Get<Theme>().SliderDisabled = ContentLoader.Load<Material>(newMaterialName);
+			}
+			else if (SelectedEntity2D.GetType() == typeof(Label))
+			{
+				SelectedEntity2D.Set(ContentLoader.Load<Material>(newMaterialName));
+				SelectedEntity2D.Get<Theme>().Label = ContentLoader.Load<Material>(newMaterialName);
+				SelectedEntity2D.Set(ContentLoader.Load<Material>(newMaterialName).DefaultColor);
+			}
+			else
+				SelectedEntity2D.Set(material);
+			SetControlSize(SelectedEntity2D, ContentLoader.Load<Material>(newMaterialName));
+			var rect = SelectedEntity2D.DrawArea;
+			Entity2DWidth = rect.Width;
+			Entity2DHeight = rect.Height;
+			uiEditorScene.ControlProcessor.UpdateOutLines(SelectedEntity2D);
+		}
+
+		private void ChangeHoveredMaterial(string newMaterialName)
 		{
 			if (SelectedEntity2D == null)
 				return;
 			if (SelectedEntity2D.GetType() == typeof(Button))
 			{
 				var button = SelectedEntity2D as Button;
-				button.Get<Theme>().Button = ContentLoader.Load<Material>(newMaterialName);
-				button.Get<Theme>().ButtonDisabled = ContentLoader.Load<Material>(newMaterialName);
 				button.Get<Theme>().ButtonMouseover = ContentLoader.Load<Material>(newMaterialName);
+			}
+			else if (SelectedEntity2D.GetType() == typeof(Slider))
+			{
+				var slider = SelectedEntity2D as Slider;
+				slider.Get<Theme>().SliderPointerMouseover = ContentLoader.Load<Material>(newMaterialName);
+			}
+		}
+
+		private void ChangePressedMaterial(string newMaterialName)
+		{
+			if (SelectedEntity2D == null)
+				return;
+			if (SelectedEntity2D.GetType() == typeof(Button))
+			{
+				var button = SelectedEntity2D as Button;
 				button.Get<Theme>().ButtonPressed = ContentLoader.Load<Material>(newMaterialName);
 			}
-			SelectedEntity2D.Set(ContentLoader.Load<Material>(newMaterialName));
-			SelectedEntity2D.DrawArea = new Rectangle(SelectedEntity2D.DrawArea.TopLeft,
-				ScreenSpace.Current.FromPixelSpace(SelectedEntity2D.Get<Material>().DiffuseMap.PixelSize));
-			Entity2DWidth = SelectedEntity2D.DrawArea.Width;
-			Entity2DHeight = SelectedEntity2D.DrawArea.Height;
-			uiEditorScene.ControlProcessor.UpdateOutLines(SelectedEntity2D);
+			else if (SelectedEntity2D.GetType() == typeof(Slider))
+			{
+				var slider = SelectedEntity2D as Slider;
+				slider.Get<Theme>().SliderPointer = ContentLoader.Load<Material>(newMaterialName);
+			}
+		}
+
+		private void ChangeDisabledMaterial(string newMaterialName)
+		{
+			if (SelectedEntity2D == null)
+				return;
+			if (SelectedEntity2D.GetType() == typeof(Button))
+			{
+				var button = SelectedEntity2D as Button;
+				button.Get<Theme>().ButtonDisabled = ContentLoader.Load<Material>(newMaterialName);
+			}
+			else if (SelectedEntity2D.GetType() == typeof(Slider))
+			{
+				var slider = SelectedEntity2D as Slider;
+				slider.Get<Theme>().SliderPointerDisabled = ContentLoader.Load<Material>(newMaterialName);
+			}
 		}
 
 		public void ChangeRenderLayer(int changeValue)
@@ -363,17 +526,56 @@ namespace DeltaEngine.Editor.UIEditor
 
 		private void DrawGrid()
 		{
-			foreach (Line2D line2D in uiEditorScene.linesInGridList)
+			if (UIWidth <= 0 || UIHeight <= 0)
+				return;
+			var sceneSize = ScreenSpace.Current.FromPixelSpace(new Size(UIWidth, UIHeight));
+			var tileSize = ScreenSpace.Current.FromPixelSpace(new Size(GridWidth, GridHeight));
+			var xOffset = 0.5f;
+			var yOffset = 0.5f;
+			var aspect = sceneSize.Width / sceneSize.Height;
+			if (aspect > 1)
+				yOffset = 1 / (2 * aspect);
+			else if (aspect < 1)
+				xOffset = aspect / 2;
+			foreach (Line2D line2D in uiEditorScene.LinesInGridList)
 				line2D.IsActive = false;
-			uiEditorScene.linesInGridList.Clear();
+			uiEditorScene.LinesInGridList.Clear();
 			if (GridWidth == 0 || GridHeight == 0 || !uiEditorScene.IsDrawingGrid)
 				return;
-			for (int i = 0; i < GridWidth; i++)
-				uiEditorScene.linesInGridList.Add(new Line2D(new Vector2D((i * (1.0f / GridWidth)), 0),
-					new Vector2D((i * (1.0f / GridWidth)), 1), Color.Red));
-			for (int j = 0; j < GridHeight; j++)
-				uiEditorScene.linesInGridList.Add(new Line2D(new Vector2D(0, (j * (1.0f / GridHeight))),
-					new Vector2D(1, (j * (1.0f / GridHeight))), Color.Red));
+			if (yOffset < xOffset)
+			{
+				for (int i = 0; i < UIWidth / GridWidth + 1; i++)
+					uiEditorScene.LinesInGridList.Add(
+						new Line2D(
+							new Vector2D((0.5f - xOffset + i * (1 / (sceneSize.Width / tileSize.Width))),
+								0.5f - yOffset),
+							new Vector2D((0.5f - xOffset + i * (1 / (sceneSize.Width / tileSize.Width))),
+								1 - (0.5f - yOffset)), Color.Red));
+				for (int j = 0; j < UIHeight / GridHeight + 1; j++)
+					uiEditorScene.LinesInGridList.Add(
+						new Line2D(
+							new Vector2D(0.5f - xOffset,
+								(0.5f - yOffset + j * (1 / (sceneSize.Height / tileSize.Height)) / aspect)),
+							new Vector2D(1 - (0.5f - xOffset),
+								(0.5f - yOffset + j * (1 / (sceneSize.Height / tileSize.Height)) / aspect)), Color.Red));
+			}
+			else
+			{
+				for (int i = 0; i < UIWidth / GridWidth + 1; i++)
+					uiEditorScene.LinesInGridList.Add(
+						new Line2D(
+							new Vector2D((0.5f - xOffset + i * (1 / (sceneSize.Width / tileSize.Width)) * aspect),
+								0.5f - yOffset),
+							new Vector2D((0.5f - xOffset + i * (1 / (sceneSize.Width / tileSize.Width)) * aspect),
+								1 - (0.5f - yOffset)), Color.Red));
+				for (int j = 0; j < UIHeight / GridHeight + 1; j++)
+					uiEditorScene.LinesInGridList.Add(
+						new Line2D(
+							new Vector2D(0.5f - xOffset,
+								(0.5f - yOffset + j * (1 / (sceneSize.Height / tileSize.Height)))),
+							new Vector2D(1 - (0.5f - xOffset),
+								(0.5f - yOffset + j * (1 / (sceneSize.Height / tileSize.Height)))), Color.Red));
+			}
 		}
 
 		public int GridHeight
@@ -403,6 +605,11 @@ namespace DeltaEngine.Editor.UIEditor
 
 		private void AddNewResolution(string obj)
 		{
+			if (ResolutionList.Contains(NewGridWidth.ToString() + " x " + NewGridHeight.ToString()))
+			{
+				SelectedResolution = NewGridWidth.ToString() + " x " + NewGridHeight.ToString();
+				return;
+			}
 			if (ResolutionList.Count > 9)
 				for (int i = 0; i < 10; i++)
 					if (i == 9)
@@ -411,16 +618,18 @@ namespace DeltaEngine.Editor.UIEditor
 						ResolutionList[i] = ResolutionList[i + 1];
 			RaiseAllProperties();
 			ResolutionList.Add(NewGridWidth.ToString() + " x " + NewGridHeight.ToString());
+			SelectedResolution = NewGridWidth.ToString() + " x " + NewGridHeight.ToString();
+			RaisePropertyChanged("SelectedResolution");
 		}
 
 		private void SetSelectedNameFromHierachy(string newSelectedName)
 		{
-			SelectedSpriteNameInList = newSelectedName;
+			SelectedControlNameInList = newSelectedName;
 		}
 
 		private void SetSelectedIndexFromHierachy(int newSelectedIndex)
 		{
-			SpriteListIndex = newSelectedIndex;
+			ControlListIndex = newSelectedIndex;
 		}
 
 		private void CreateCenteredControl(string newControl)
@@ -461,12 +670,12 @@ namespace DeltaEngine.Editor.UIEditor
 			}
 		}
 
-		public string SelectedSpriteNameInList
+		public string SelectedControlNameInList
 		{
-			get { return uiEditorScene.SelectedSpriteNameInList; }
+			get { return uiEditorScene.SelectedControlNameInList; }
 			set
 			{
-				controlChanger.SetSelectedSpriteNameInList(value, uiControl, uiEditorScene);
+				controlChanger.SetSelectedControlNameInList(value, uiControl, uiEditorScene);
 				RaiseAllProperties();
 			}
 		}
@@ -495,7 +704,7 @@ namespace DeltaEngine.Editor.UIEditor
 			set { controlChanger.SetContentText(value, uiControl, uiEditorScene); }
 		}
 
-		public int SpriteListIndex
+		public int ControlListIndex
 		{
 			get { return uiControl.Index; }
 			set { uiControl.Index = value; }
@@ -531,5 +740,200 @@ namespace DeltaEngine.Editor.UIEditor
 		}
 
 		private string selectedMaterial;
+
+		public float BottomMargin
+		{
+			get { return bottomMargin; }
+			set
+			{
+				bottomMargin = value;
+				if (SelectedEntity2D != null)
+					SelectedEntity2D.DrawArea = new Rectangle(SelectedEntity2D.DrawArea.Left,
+						value - SelectedEntity2D.DrawArea.Height, SelectedEntity2D.DrawArea.Width,
+						SelectedEntity2D.DrawArea.Height);
+				SetWidthAndHeight(SelectedEntity2D.DrawArea);
+			}
+		}
+
+		private float bottomMargin;
+
+		public float TopMargin
+		{
+			get { return topMargin; }
+			set
+			{
+				topMargin = value;
+				if (SelectedEntity2D != null)
+					SelectedEntity2D.DrawArea = new Rectangle(SelectedEntity2D.DrawArea.Left, value,
+						SelectedEntity2D.DrawArea.Width, SelectedEntity2D.DrawArea.Height);
+				SetWidthAndHeight(SelectedEntity2D.DrawArea);
+			}
+		}
+
+		private float topMargin;
+
+		public float LeftMargin
+		{
+			get { return leftMargin; }
+			set
+			{
+				leftMargin = value;
+				if (SelectedEntity2D != null)
+					SelectedEntity2D.DrawArea = new Rectangle(value, SelectedEntity2D.DrawArea.Top,
+						SelectedEntity2D.DrawArea.Width, SelectedEntity2D.DrawArea.Height);
+				SetWidthAndHeight(SelectedEntity2D.DrawArea);
+			}
+		}
+
+		private float leftMargin;
+
+		public float RightMargin
+		{
+			get { return rightMargin; }
+			set
+			{
+				rightMargin = value;
+				if (SelectedEntity2D != null)
+					SelectedEntity2D.DrawArea = new Rectangle(value - SelectedEntity2D.DrawArea.Width,
+						SelectedEntity2D.DrawArea.Top, SelectedEntity2D.DrawArea.Width,
+						SelectedEntity2D.DrawArea.Height);
+				SetWidthAndHeight(SelectedEntity2D.DrawArea);
+			}
+		}
+
+		private float rightMargin;
+
+		public string HorizontalAllignment
+		{
+			get { return horizontalAllignment; }
+			set
+			{
+				if (value == null)
+					return;
+				horizontalAllignment = value;
+				if (value.Contains("Left"))
+					LeftMargin = uiEditorScene.GridOutLine[0].StartPoint.X;
+				if (value.Contains("Right"))
+					RightMargin = uiEditorScene.GridOutLine[0].EndPoint.X;
+				if (value.Contains("Center"))
+					LeftMargin = 0.5f - SelectedEntity2D.DrawArea.Width / 2;
+				RaisePropertyChanged("HorizontalAllignment");
+			}
+		}
+
+		private string horizontalAllignment;
+
+		public string VerticalAllignment
+		{
+			get { return verticalAllignment; }
+			set
+			{
+				if (value == null)
+					return;
+				verticalAllignment = value;
+				if (value.Contains("Top"))
+					TopMargin = uiEditorScene.GridOutLine[0].StartPoint.Y;
+				if (value.Contains("Bottom"))
+					BottomMargin = uiEditorScene.GridOutLine[3].EndPoint.Y;
+				if (value.Contains("Center"))
+					TopMargin = 0.5f - SelectedEntity2D.DrawArea.Height / 2;
+				RaisePropertyChanged("VerticalAllignment");
+			}
+		}
+
+		private string verticalAllignment;
+
+		public int UIWidth
+		{
+			get { return uiEditorScene.UIWidth; }
+			set
+			{
+				uiEditorScene.UIWidth = value;
+				foreach (var control in uiEditorScene.Scene.Controls)
+					SetControlSize(control, control.Get<Material>());
+				uiEditorScene.UpdateGridOutline();
+				DrawGrid();
+			}
+		}
+
+		public int UIHeight
+		{
+			get { return uiEditorScene.UIHeight; }
+			set
+			{
+				uiEditorScene.UIHeight = value;
+				foreach (var control in uiEditorScene.Scene.Controls)
+					SetControlSize(control, control.Get<Material>());
+				uiEditorScene.UpdateGridOutline();
+				DrawGrid();
+			}
+		}
+
+		private void SetControlSize(Entity2D control, Material material)
+		{
+			if (material.DiffuseMap.PixelSize.Width < 10 || material.DiffuseMap.PixelSize.Height < 10)
+				return;
+			if (UIWidth > UIHeight)
+				control.DrawArea = new Rectangle(control.DrawArea.TopLeft,
+					new Size(((material.DiffuseMap.PixelSize.Width / UIWidth)),
+						((material.DiffuseMap.PixelSize.Height / UIWidth))));
+			else
+				control.DrawArea = new Rectangle(control.DrawArea.TopLeft,
+					new Size(((material.DiffuseMap.PixelSize.Width / UIHeight)),
+						((material.DiffuseMap.PixelSize.Height / UIHeight))));
+		}
+
+		internal void ResetOnProjectChange()
+		{
+			Messenger.Default.Send("ClearScene", "ClearScene");
+			InitializeVariables();
+			FillContentImageList();
+			FillMaterialList();
+			FillSceneNames();
+		}
+
+		internal void RefreshOnContentChange()
+		{
+			InitializeVariables();
+			FillContentImageList();
+			FillMaterialList();
+			FillSceneNames();
+		}
+
+		public ObservableCollection<string> AvailableFontsInProject { get; set; }
+
+		public string SelectedFontName { get; set; }
+
+		public void ActivateHidenScene()
+		{
+			foreach (var control in uiEditorScene.Scene.Controls)
+				control.IsActive = true;
+			foreach (var line in uiEditorScene.ControlProcessor.OutLines)
+				line.IsActive = true;
+			foreach (var line in uiEditorScene.LinesInGridList)
+				line.IsActive = true;
+			foreach (var line in uiEditorScene.GridOutLine)
+				line.IsActive = true;
+			service.Viewport.CenterViewOn(Vector2D.Half);
+			service.Viewport.ZoomViewTo(1.0f);
+			Messenger.Default.Send("UIEditor", "SetSelectedEditorPlugin");
+		}
+
+		public bool CanSaveScene
+		{
+			get { return canSaveScene; }
+			set
+			{
+				canSaveScene = value;
+				RaisePropertyChanged("CanSaveScene");
+			}
+		}
+
+		private bool canSaveScene;
+
+		private void CheckIfCanSaveScene()
+		{
+			CanSaveScene = !string.IsNullOrEmpty(UIName);
+		}
 	}
 }

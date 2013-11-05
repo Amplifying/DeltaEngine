@@ -42,9 +42,6 @@
     <Reference Include="DeltaEngine">
 	  <HintPath>$(DeltaEnginePath)\OpenTK\DeltaEngine.dll</HintPath>
     </Reference>
-    <Reference Include="DeltaEngine.Platforms">
-	  <HintPath>$(DeltaEnginePath)\OpenTK\DeltaEngine.Platforms.dll</HintPath>
-    </Reference>
     <Reference Include="DeltaEngine.WindowsOpenTK20">
 	  <HintPath>$(DeltaEnginePath)\OpenTK\DeltaEngine.WindowsOpenTK20.dll</HintPath>
     </Reference>

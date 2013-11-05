@@ -75,6 +75,8 @@ namespace DeltaEngine.Graphics.OpenTK20
 
 		protected override void DrawChunk(Chunk chunk)
 		{
+			//Logger.Info("DrawChunk: " + blendMode + ", " + chunk.Texture.Name + ", OffsetInBytes=" +
+			//	chunk.FirstIndexOffsetInBytes + ", NumberOfIndices=" + chunk.NumberOfIndices);
 			if (Is3D && blendMode == BlendMode.Additive)
 				device.DisableDepthTest();
 			if (UsesIndexBuffer)

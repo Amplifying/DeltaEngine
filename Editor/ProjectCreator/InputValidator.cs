@@ -7,18 +7,17 @@ namespace DeltaEngine.Editor.ProjectCreator
 	/// </summary>
 	public static class InputValidator
 	{
-		public static bool IsValidFolderName(string validate)
+		// Useful links:
+		// RegEx Tester - http://regexpal.com/
+		// RegEx examples - http://gskinner.com/RegExr/
+		public static bool IsValidProjectName(string validate)
 		{
-			if (string.IsNullOrEmpty(validate))
-				return false;
-			return Regex.IsMatch(validate, "^[A-Z][a-zA-Z0-9.]*$");
+			return !string.IsNullOrEmpty(validate) && Regex.IsMatch(validate, "^[A-Z][a-zA-Z0-9.]*$");
 		}
 
-		public static bool IsValidPath(string validate)
+		public static bool IsValidAbsolutePath(string path)
 		{
-			if (string.IsNullOrEmpty(validate))
-				return false;
-			return Regex.IsMatch(validate, "^([a-zA-Z]:)?\\\\[[a-zA-Z0-9_-]+\\\\]*");
+			return !string.IsNullOrEmpty(path) && Regex.IsMatch(path, "^[A-Za-z]:(\\[A-Za-z0-9]+)*");
 		}
 	}
 }

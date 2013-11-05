@@ -10,7 +10,7 @@ namespace DeltaEngine.Editor.SampleBrowser.Tests
 			var sample = Sample.CreateGame("GameSample", "Game.csproj", "Game.exe");
 			Assert.AreEqual("Sample Game", sample.Description);
 			Assert.AreEqual(SampleCategory.Game, sample.Category);
-			Assert.AreEqual("http://DeltaEngine.net/Editor/Icons/GameSample.png", sample.ImageFilePath);
+			Assert.AreEqual("http://DeltaEngine.net/Editor/Icons/GameSample.png", sample.ImageUrl);
 		}
 
 		[Test]
@@ -20,7 +20,7 @@ namespace DeltaEngine.Editor.SampleBrowser.Tests
 				"MethodName");
 			Assert.AreEqual("VisualTest", sample.Description);
 			Assert.AreEqual(SampleCategory.Test, sample.Category);
-			Assert.AreEqual("http://deltaengine.net/Editor/Icons/StaticTest.png", sample.ImageFilePath);
+			Assert.AreEqual("http://deltaengine.net/Editor/Icons/StaticTest.png", sample.ImageUrl);
 		}
 
 		[Test]

@@ -3,7 +3,7 @@ using System.IO;
 
 namespace DeltaEngine.Editor.Messages
 {
-	public class AppBuildRequest : BuildMessage
+	public class AppBuildRequest : BuildServiceMessage
 	{
 		/// <summary>
 		/// Need empty constructor for serialization and reconstruction.

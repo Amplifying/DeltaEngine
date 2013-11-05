@@ -50,11 +50,24 @@ namespace DeltaEngine.Editor.AppBuilder
 		{
 			get
 			{
-				if (String.IsNullOrEmpty(MessageData.Filename))
+				if (!IsFileAvailable)
 					return "";
-				return MessageData.Filename + " (" + MessageData.TextLine + "," +
-					MessageData.TextColumn + ")";
+				return MessageData.Filename + " (" + MessageData.TextLine + "," + MessageData.TextColumn +
+					")";
 			}
 		}
+
+		private bool IsFileAvailable
+		{
+			get { return !String.IsNullOrEmpty(MessageData.Filename); }
+		}
+
+		// ncrunch: no coverage start
+		public override string ToString()
+		{
+			string basicMessage = MessageData.Type + ": " + Project + " - " + Message;
+			return IsFileAvailable ? basicMessage + " - " + FileWithLineAndColumn : basicMessage;
+		}
+		// ncrunch: no coverage end
 	}
 }

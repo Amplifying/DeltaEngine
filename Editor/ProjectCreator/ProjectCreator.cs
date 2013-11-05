@@ -108,8 +108,8 @@ namespace DeltaEngine.Editor.ProjectCreator
 		{
 			ReplaceAssemblyInfo();
 			ReplaceCsproj();
-			ReplaceSourceCodeFile("Game.cs");
-			ReplaceSourceCodeFile("Program.cs");
+			foreach (var filename in Template.SourceCodeFiles)
+				ReplaceSourceCodeFile(Path.GetFileName(filename));
 		}
 
 		private void ReplaceAssemblyInfo()
@@ -149,6 +149,8 @@ namespace DeltaEngine.Editor.ProjectCreator
 			replacements.Add(new Replacement("$guid1$", ""));
 			replacements.Add(new Replacement("$safeprojectname$", Project.Name));
 			replacements.Add(new Replacement(GetFileName(Template.Ico),
+				Project.Name + IcoSuffixAndExtension));
+			replacements.Add(new Replacement(GetFileName(Template.Ico).Replace("Icon", ""),
 				Project.Name + IcoSuffixAndExtension));
 			replacements.AddRange(GetReplacementsDependingOnFramework());
 			var newFile = ReplaceFile(oldFile, replacements);

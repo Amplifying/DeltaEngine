@@ -135,9 +135,6 @@
   <data name="ConnectionToDeltaEngineTimedOut" xml:space="preserve">
     <value>Connection to DeltaEngine.net timed out, please check your internet connection!</value>
   </data>
-  <data name="ObtainApiKeyAndSelectProject" xml:space="preserve">
-    <value>Please obtain your API Key and select a project to login.</value>
-  </data>
   <data name="Welcome" xml:space="preserve">
     <value>Welcome</value>
   </data>

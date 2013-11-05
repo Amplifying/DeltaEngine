@@ -6,7 +6,7 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 {
 	public class ParticleSystemPreviewer : ContentPreview
 	{
-		public void PreviewContent(string contentName)
+		public override void Preview(string contentName)
 		{
 			var particleSystemData = ContentLoader.Load<ParticleSystemData>(contentName);
 			var system = new ParticleSystem(particleSystemData);

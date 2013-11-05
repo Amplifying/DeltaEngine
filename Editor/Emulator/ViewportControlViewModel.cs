@@ -18,6 +18,7 @@ namespace DeltaEngine.Editor.Emulator
 			Messenger.Default.Register<string>(this, "ChangeSelectedControlName",
 				ChangeSelectedControlName);
 			Messenger.Default.Register<string>(this, "DeleteSelectedContent", DeleteSelectedContent);
+			Messenger.Default.Register<string>(this, "ClearScene", ClearScene);
 			SetupToolbox();
 		}
 
@@ -46,6 +47,12 @@ namespace DeltaEngine.Editor.Emulator
 		{
 			Messenger.Default.Send(selectedNameInList, "DeleteSelectedContentFromWpf");
 			UIImagesInList.Remove(SelectedNameInList);
+			RaisePropertyChanged("SelectedNameInList");
+		}
+
+		private void ClearScene(string obj)
+		{
+			UIImagesInList.Clear();
 			RaisePropertyChanged("SelectedNameInList");
 		}
 

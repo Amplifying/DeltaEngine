@@ -8,14 +8,13 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 {
 	public class FontPreviewer : ContentPreview
 	{
-		public void PreviewContent(string contentName)
+		public override void Preview(string contentName)
 		{
 			var font = ContentLoader.Load<Font>(contentName);
 			if (currentDisplayText != null)
 				currentDisplayText.IsActive = false;
 			currentDisplayText = new FontText(font, PreviewText,
 				Rectangle.FromCenter(Vector2D.Half, new Size(1, 1)));
-			ContentDisplayChanger.SetEntity2DMoveCommand(currentDisplayText);
 		}
 
 		public FontText currentDisplayText;

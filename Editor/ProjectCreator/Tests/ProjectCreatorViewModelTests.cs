@@ -1,4 +1,5 @@
 ﻿using DeltaEngine.Editor.Core;
+using DeltaEngine.Editor.Mocks;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.ProjectCreator.Tests
@@ -11,7 +12,7 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 		[SetUp]
 		public void Create()
 		{
-			viewModel = new ProjectCreatorViewModel();
+			viewModel = new ProjectCreatorViewModel(new MockService("John Doe", "LogoApp"));
 		}
 
 		private ProjectCreatorViewModel viewModel;

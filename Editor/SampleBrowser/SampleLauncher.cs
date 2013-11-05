@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Windows;
 using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Editor.SampleBrowser
@@ -13,57 +10,6 @@ namespace DeltaEngine.Editor.SampleBrowser
 	/// </summary>
 	public class SampleLauncher
 	{
-		public SampleLauncher() {}
-
-		private void LoadOpenTKResolverAssembly()
-		{
-			string pathToOpenTKResolver = GetOpenTKResolverPath(Directory.GetCurrentDirectory());
-			try
-			{
-				Assembly assembly = Assembly.LoadFrom(pathToOpenTKResolver);
-				foreach (var type in assembly.GetTypes().Where(type => type.Name == "OpenTKResolver"))
-					resolver = type;
-			}
-			catch (FileNotFoundException e)
-			{
-				resolver = null;
-				MessageBox.Show(pathToOpenTKResolver + " not found: " + e.Message, "File not found");
-			}
-			catch (ReflectionTypeLoadException e)
-			{
-				resolver = null;
-				MessageBox.Show("Failed to load OpenTK Resolver: " + e.LoaderExceptions.ToText(),
-					"File not loaded");
-			}
-		}
-
-		private Type resolver;
-
-		public SampleLauncher(Type resolver)
-		{
-			this.resolver = resolver;
-		}
-
-		private string GetOpenTKResolverPath(string currentDirectory)
-		{
-			string parentDirectory = Path.GetFullPath(Path.Combine(currentDirectory, ".."));
-			if (IsDeltaEngineDirectory(parentDirectory))
-				return Path.GetFullPath(Path.Combine(parentDirectory, relativeResolverPath));
-			return parentDirectory != Path.GetPathRoot(parentDirectory)
-				? GetOpenTKResolverPath(parentDirectory) : "";
-		}
-
-		private static bool IsDeltaEngineDirectory(string path)
-		{
-			return
-				Directory.GetDirectories(path).Any(
-					directory => Path.GetFileName(directory.TrimEnd(Path.DirectorySeparatorChar)) == "Editor");
-		}
-
-		private readonly string relativeResolverPath = Path.Combine("Platforms", "WindowsOpenTK20",
-			"bin", ExceptionExtensions.IsDebugMode ? "Debug" : "Release",
-			"DeltaEngine.WindowsOpenTK20.dll");
-
 		public void OpenProject(Sample sample)
 		{
 			OpenFile(sample.ProjectFilePath);
@@ -93,16 +39,14 @@ namespace DeltaEngine.Editor.SampleBrowser
 				OpenFile(sample.AssemblyFilePath);
 		}
 
-		private void StartTest(string assembly, string entryClass, string entryMethod)
+		private static void StartTest(string assembly, string entryClass, string entryMethod)
 		{
 			using (var starter = new AssemblyStarter(assembly, false))
-				starter.Start(entryClass, entryMethod, new object[] { resolver });
+				starter.Start(entryClass, entryMethod);
 		}
 
 		public bool DoesAssemblyExist(Sample sample)
 		{
-			if (sample.Category == SampleCategory.Test)
-				return File.Exists(sample.AssemblyFilePath) && resolver != null;
 			return File.Exists(sample.AssemblyFilePath);
 		}
 	}

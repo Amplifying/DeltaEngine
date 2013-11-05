@@ -8,19 +8,19 @@
 	xmlns:helpers="clr-namespace:DeltaEngine.Editor.Emulator.Helpers"
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="500"
 	d:DataContext="{d:DesignInstance Type=helpers:DesignViewportControl, IsDesignTimeCreatable=True}"
-	MinHeight="300" MinWidth="300">
+	MinHeight="300" MinWidth="300" Background="Black" Visibility="Hidden">
 	<Grid GotFocus="GridOnGotFocus" LostFocus="GridOnLostFocus">
 		<Grid
 			Name="ToolPane" Width="140" HorizontalAlignment="Left"
 			Visibility="Hidden">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="20" />
-				<RowDefinition Height="Auto" MinHeight="100" />
+				<RowDefinition Height="Auto" MinHeight="100" MaxHeight="500" />
 				<RowDefinition Height="5" />
 				<RowDefinition Height="20" />
 				<RowDefinition Height="*" />
 			</Grid.RowDefinitions>
-			<TextBlock Grid.Row="0" Text="Toolbox" />
+			<TextBlock Grid.Row="0" Text="Toolbox" Background="White" />
 			<ListBox
 				Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden"
 				Name="UIToolbox" PreviewMouseLeftButtonDown="ClickingOnButton" PreviewMouseLeftButtonUp="CreateNewSceneControl"
@@ -37,8 +37,8 @@
 				Grid.Row="2" Cursor="SizeNS" Height="5" ResizeBehavior="PreviousAndCurrent"
 				Background="DarkGray" ShowsPreview="False" VerticalAlignment="Bottom"
 				HorizontalAlignment="Stretch" />
-			<TextBlock Grid.Row="3" Text="Hierarchy" />
-			<ListBox Grid.Row="4" Margin="1,0,0,0" ItemsSource="{Binding Path=UIImagesInList}"
+			<TextBlock Grid.Row="3" Text="Hierarchy" Background="White" />
+			<ListBox Grid.Row="4" ItemsSource="{Binding Path=UIImagesInList}"
 			         SelectedItem="{Binding Path=SelectedNameInList}"
 			         SelectedIndex="{Binding Path=IndexOfSelectedNameInList}">
 				<ListBox.ContextMenu>
@@ -48,11 +48,9 @@
 				</ListBox.ContextMenu>
 			</ListBox>
 		</Grid>
-		<Grid
-			Name="Graph" Height="160" VerticalAlignment="Bottom" Visibility="Hidden" />
-		<Grid Margin="140,0,0,160">
+		<Grid Margin="140,0,0,0">
 			<WindowsFormsHost
-				Name="ViewportHost" x:FieldModifier="public" Margin="-140,0,0,-160" />
+				Name="ViewportHost" x:FieldModifier="public" Margin="-140,0,0,0" />
 		</Grid>
 	</Grid>
 </UserControl>

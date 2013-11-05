@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
+using DeltaEngine.Editor.Core;
+using DeltaEngine.Extensions;
+using SharpCompress.Archive.Zip;
 
 namespace DeltaEngine.Editor.ProjectCreator
 {
@@ -15,13 +18,21 @@ namespace DeltaEngine.Editor.ProjectCreator
 		{
 			this.fileSystem = fileSystem;
 			templatePath = Path.Combine("VisualStudioTemplates", "Delta Engine", templateName + ".zip");
-			PathToZip = GetPathToVisualStudioTemplateZip();
+			PathToZip = GetPathToVisualStudioTemplateZip(templateName);
 			var basePath = GetBasePath(PathToZip);
 			AssemblyInfo = Path.Combine(basePath, "Properties", "AssemblyInfo.cs");
 			Csproj = Path.Combine(basePath, templateName + ".csproj");
 			Ico = Path.Combine(basePath, templateName + "Icon.ico");
 			SourceCodeFiles = new List<string>();
-			foreach (var fileName in sourceCodeFileNames)
+			var csFileNames = new List<string>();
+			foreach (var csFileName in ZipArchive.Open(PathToZip).Entries)
+			{
+				var filename = csFileName.FilePath;
+				if (!filename.Contains("AssemblyInfo.cs") && !filename.Contains(".csproj") &&
+					!filename.Contains(".ico") && !filename.Contains(".vstemplate"))
+					csFileNames.Add(filename);
+			}
+			foreach (var fileName in csFileNames)
 				SourceCodeFiles.Add(Path.Combine(basePath, fileName));
 		}
 
@@ -30,7 +41,7 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		public string PathToZip { get; private set; }
 
-		private string GetPathToVisualStudioTemplateZip()
+		private string GetPathToVisualStudioTemplateZip(string templateName)
 		{
 			var currentPath = GetVstFromCurrentWorkingDirectory();
 			if (fileSystem.File.Exists(currentPath))
@@ -39,7 +50,10 @@ namespace DeltaEngine.Editor.ProjectCreator
 			if (fileSystem.File.Exists(solutionPath))
 				return solutionPath;
 			var environmentPath = GetVstFromEnvironmentVariable();
-			return fileSystem.File.Exists(environmentPath) ? environmentPath : string.Empty;
+			return fileSystem.File.Exists(environmentPath)
+				? environmentPath
+				: Path.Combine(CsProject.GetVisualStudioProjectsFolder(), "..", "Templates",
+					"ProjectTemplates", "Visual C#", "Delta Engine", templateName + ".zip");
 		}
 
 		private string GetVstFromCurrentWorkingDirectory()
@@ -71,9 +85,9 @@ namespace DeltaEngine.Editor.ProjectCreator
 		public string Ico { get; private set; }
 		public List<string> SourceCodeFiles { get; private set; }
 
-		public static VsTemplate GetEmptyGame(IFileSystem fileSystem)
+		public static VsTemplate CreateByName(IFileSystem fileSystem, string templateName)
 		{
-			return new VsTemplate("EmptyGame", new List<string> { "Program.cs", "Game.cs" }, fileSystem);
+			return new VsTemplate(templateName, new List<string> { "Program.cs", "Game.cs" }, fileSystem);
 		}
 
 		public List<string> GetAllFilePathsAsList()
@@ -81,6 +95,18 @@ namespace DeltaEngine.Editor.ProjectCreator
 			var list = new List<string> { AssemblyInfo, Csproj, Ico };
 			list.AddRange(SourceCodeFiles);
 			return list;
+		}
+
+		public static string[] GetAllTemplateNames(DeltaEngineFramework framework)
+		{
+			if (!PathExtensions.IsDeltaEnginePathEnvironmentVariableAvailable())
+				return new string[0];
+			var templatePath = Path.Combine(PathExtensions.GetDeltaEngineInstalledDirectory(),
+				framework.ToString(), "VisualStudioTemplates", "Delta Engine");
+			var templateNames = new List<string>();
+			foreach (var file in Directory.GetFiles(templatePath))
+				templateNames.Add(Path.GetFileNameWithoutExtension(file));
+			return templateNames.ToArray();
 		}
 	}
 }

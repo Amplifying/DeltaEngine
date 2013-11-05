@@ -30,7 +30,7 @@ namespace DeltaEngine.Editor.MaterialEditor.Tests
 			materialEditor.SelectedImage = "DeltaEngineLogo";
 			materialEditor.MaterialName = "NewMaterial";
 			materialEditor.Save();
-			Assert.AreEqual(2, mockService.NumberOfMessagesSent);
+			Assert.AreEqual(1, mockService.NumberOfMessagesSent);
 		}
 
 		[Test]
@@ -41,7 +41,7 @@ namespace DeltaEngine.Editor.MaterialEditor.Tests
 			materialEditor.SelectedAnimation = "ImageAnimation";
 			materialEditor.MaterialName = "NewMaterial";
 			materialEditor.Save();
-			Assert.AreEqual(2, mockService.NumberOfMessagesSent);
+			Assert.AreEqual(1, mockService.NumberOfMessagesSent);
 		}
 
 		[Test]
@@ -57,7 +57,7 @@ namespace DeltaEngine.Editor.MaterialEditor.Tests
 		{
 			materialEditor.MaterialName = "NewMaterialSpriteSheetAnimation";
 			Assert.IsNotNull(materialEditor.NewMaterial);
-			Assert.AreEqual(new Size(32, 32), materialEditor.NewMaterial.SpriteSheet.SubImageSize);
+			Assert.AreEqual(new Size(107, 80), materialEditor.NewMaterial.SpriteSheet.SubImageSize);
 		}
 	}
 }

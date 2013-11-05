@@ -8,8 +8,6 @@ namespace DeltaEngine.Editor.Core
 	{
 		public SolutionFileLoader(string solutionFilePath)
 		{
-			if (String.IsNullOrEmpty(solutionFilePath))
-				throw new NoSolutionPathSpecified();
 			solutionFile = solutionFilePath;
 			solutionContentLines = File.Exists(solutionFilePath)
 				? File.ReadAllLines(solutionFile) : new string[0];

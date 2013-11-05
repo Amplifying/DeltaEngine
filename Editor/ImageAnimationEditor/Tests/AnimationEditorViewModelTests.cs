@@ -9,23 +9,27 @@ namespace DeltaEngine.Editor.ImageAnimationEditor.Tests
 		[SetUp]
 		public void SetUp()
 		{
-			editor = new AnimationEditorViewModel(new MockService("TestUser", "DeltaEngine.Editor.ImageAnimationEditor.Tests"));
+			service = new MockService("TestUser", "DeltaEngine.Editor.ImageAnimationEditor.Tests");
+			editor = new AnimationEditorViewModel(service);
 		}
 
+		private MockService service;
 		private AnimationEditorViewModel editor;
 
 		[Test]
 		public void MoveImageUpInTheList()
 		{
 			editor.SelectedImageToAdd = "Test1";
+			editor.AddImage("");
 			editor.SelectedImageToAdd = "Test2";
+			editor.AddImage("");
 			editor.MoveImageUp(1);
 			Assert.AreEqual("Test2", editor.ImageList[0]);
 			editor.MoveImageDown(0);
 			Assert.AreEqual("Test1", editor.ImageList[0]);
 			editor.MoveImageUp(0);
 			editor.MoveImageDown(1);
-			editor.RefreshData();
+			service.ChangeProject("LogoApp");
 			Assert.AreEqual(1, editor.SelectedIndex);
 		}
 
@@ -33,6 +37,7 @@ namespace DeltaEngine.Editor.ImageAnimationEditor.Tests
 		public void AddingAndRemovingImagesToList()
 		{
 			editor.SelectedImageToAdd = "Test1";
+			editor.AddImage("");
 			Assert.AreEqual(1,editor.ImageList.Count);
 			editor.DeleteImage("Test1");
 			Assert.AreEqual(0, editor.ImageList.Count);

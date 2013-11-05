@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using DeltaEngine.Extensions;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.Core.Tests
@@ -16,7 +17,7 @@ namespace DeltaEngine.Editor.Core.Tests
 		public void ProjectNotFoundInSolutionException()
 		{
 			Assert.Throws<SolutionFileLoader.ProjectNotFoundInSolution>(
-				() => new CodePacker(PathExtensions.GetEngineSolutionFilePath(), "App"));
+				() => new CodePacker(PathExtensions.GetDeltaEngineSolutionFilePath(), "App"));
 		}
 
 		[Test]
@@ -45,7 +46,7 @@ namespace DeltaEngine.Editor.Core.Tests
 
 		private static CodePacker GetCodePackerWithBuilderTestsData()
 		{
-			string solutionFilePath = PathExtensions.GetEngineSolutionFilePath();
+			string solutionFilePath = PathExtensions.GetDeltaEngineSolutionFilePath();
 			string testsProjectName = Path.GetFileNameWithoutExtension(solutionFilePath);
 			return new CodePacker(solutionFilePath, testsProjectName);
 		}

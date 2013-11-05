@@ -12,7 +12,7 @@ namespace DeltaEngine.Editor.ContentManager.Tests.Previewers
 		public void Setup()
 		{
 			soundPreviewer = new SoundPreviewer();
-			soundPreviewer.PreviewContent("DeltaEngineLogo");
+			soundPreviewer.PreviewContent("Sound");
 			mockMouse = Resolve<Mouse>() as MockMouse;
 			AdvanceTimeAndUpdateEntities();
 		}

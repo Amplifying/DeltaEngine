@@ -1,6 +1,6 @@
 ﻿using DeltaEngine.Content;
+using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Rendering2D;
 using DeltaEngine.Scenes.UserInterfaces.Controls;
 using GalaSoft.MvvmLight.Messaging;
 
@@ -51,10 +51,10 @@ namespace DeltaEngine.Editor.UIEditor
 			uiControl.EntityHeight = sprite.DrawArea.Height;
 			IsDraggingImage = false;
 			IsDragging = false;
-			Messenger.Default.Send(sprite.Material.MetaData.Name, "AddToHierachyList");
+			Messenger.Default.Send(sprite.Get<string>(), "AddToHierachyList");
 		}
 
-		public Sprite AddNewImageToList(Vector2D position, UIControl uiControl,
+		public Picture AddNewImageToList(Vector2D position, UIControl uiControl,
 			UIEditorScene uiEditorScene)
 		{
 			var newSprite = CreateANewDefaultImage(position);
@@ -63,17 +63,18 @@ namespace DeltaEngine.Editor.UIEditor
 			return newSprite;
 		}
 
-		private static Sprite CreateANewDefaultImage(Vector2D position)
+		private static Picture CreateANewDefaultImage(Vector2D position)
 		{
 			var costumImage = CreateDefaultImage();
 			var material = new Material(ContentLoader.Load<Shader>(Shader.Position2DColorUV),
 				costumImage, costumImage.PixelSize);
-			var newSprite = new Sprite(material,
+			var newSprite = new Picture(new Theme(), material,
 				Rectangle.FromCenter(position, new Size(0.05f)));
+			newSprite.Set(BlendMode.Normal);
 			return newSprite;
 		}
 
-		private static void SetDefaultNamesOfNewImages(Sprite newSprite, UIEditorScene uiEditorScene)
+		private static void SetDefaultNamesOfNewImages(Picture newSprite, UIEditorScene uiEditorScene)
 		{
 			bool freeName = false;
 			int numberOfNames = 0;
@@ -85,7 +86,7 @@ namespace DeltaEngine.Editor.UIEditor
 			uiEditorScene.UIImagesInList.Add("NewSprite" + numberOfNames);
 			if (uiEditorScene.UIImagesInList[0] == null)
 				uiEditorScene.UIImagesInList[0] = "NewSprite" + numberOfNames;
-			newSprite.Material.MetaData.Name = "NewSprite" + numberOfNames;
+			newSprite.Set("NewSprite" + numberOfNames);
 		}
 
 		private static Image CreateDefaultImage()
@@ -114,12 +115,12 @@ namespace DeltaEngine.Editor.UIEditor
 			uiControl.EntityHeight = button.DrawArea.Height;
 			IsDraggingButton = false;
 			IsDragging = false;
-			Messenger.Default.Send(button.Get<Theme>().Button.MetaData.Name, "AddToHierachyList");
+			Messenger.Default.Send(button.Get<string>(), "AddToHierachyList");
 		}
 
-		private static Entity2D AddNewButtonToList(Vector2D position, UIEditorScene uiEditorScene)
+		private static Button AddNewButtonToList(Vector2D position, UIEditorScene uiEditorScene)
 		{
-			var newButton = new Button(Rectangle.FromCenter(position, new Size(0.2f, 0.1f)),
+			var newButton = new Button(new Theme(), Rectangle.FromCenter(position, new Size(0.2f, 0.1f)),
 				"Default Button");
 			uiEditorScene.Scene.Add(newButton);
 			SetDefaultButtonName(newButton, uiEditorScene);
@@ -139,15 +140,7 @@ namespace DeltaEngine.Editor.UIEditor
 			uiEditorScene.UIImagesInList.Add("NewButton" + numberOfNames);
 			if (uiEditorScene.UIImagesInList[0] == null)
 				uiEditorScene.UIImagesInList[0] = "NewButton" + numberOfNames;
-			SetNameOfAllButtonStates(newButton, numberOfNames);
-		}
-
-		private static void SetNameOfAllButtonStates(Button newButton, int numberOfNames)
-		{
-			newButton.Get<Theme>().Button.MetaData.Name = "NewButton" + numberOfNames;
-			newButton.Get<Theme>().ButtonDisabled.MetaData.Name = "NewButton" + numberOfNames;
-			newButton.Get<Theme>().ButtonMouseover.MetaData.Name = "NewButton" + numberOfNames;
-			newButton.Get<Theme>().ButtonPressed.MetaData.Name = "NewButton" + numberOfNames;
+			newButton.Set("NewButton" + numberOfNames);
 		}
 
 		public void AddLabel(Vector2D position, UIControl uiControl, UIEditorScene uiEditorScene)
@@ -161,14 +154,15 @@ namespace DeltaEngine.Editor.UIEditor
 			uiControl.EntityHeight = label.DrawArea.Height;
 			IsDraggingLabel = false;
 			IsDragging = false;
-			Messenger.Default.Send(label.Material.MetaData.Name, "AddToHierachyList");
+			Messenger.Default.Send(label.Get<string>(), "AddToHierachyList");
 		}
 
 		private static Label AddNewLabelToList(Vector2D position, UIEditorScene uiEditorScene)
 		{
-			var newLabel = new Label(Rectangle.FromCenter(position, new Size(0.2f, 0.1f)), "DefaultLabel");
+			var newLabel = new Label(new Theme(), Rectangle.FromCenter(position, new Size(0.2f, 0.1f)), "DefaultLabel");
 			uiEditorScene.Scene.Add(newLabel);
 			SetDefaultNameOfLable(newLabel, uiEditorScene);
+			newLabel.Set(BlendMode.Normal);
 			return newLabel;
 		}
 
@@ -184,7 +178,7 @@ namespace DeltaEngine.Editor.UIEditor
 			uiEditorScene.UIImagesInList.Add("NewLabel" + numberOfNames);
 			if (uiEditorScene.UIImagesInList[0] == null)
 				uiEditorScene.UIImagesInList[0] = "NewLabel" + numberOfNames;
-			newLabel.Material.MetaData.Name = "NewLabel" + numberOfNames;
+			newLabel.Set("NewLabel" + numberOfNames);
 		}
 
 		public void AddSlider(Vector2D position, UIControl uiControl, UIEditorScene uiEditorScene)
@@ -198,12 +192,12 @@ namespace DeltaEngine.Editor.UIEditor
 			uiControl.EntityHeight = slider.DrawArea.Height;
 			IsDraggingSlider = false;
 			IsDragging = false;
-			Messenger.Default.Send(slider.Get<Theme>().Slider.MetaData.Name, "AddToHierachyList");
+			Messenger.Default.Send(slider.Get<string>(), "AddToHierachyList");
 		}
 
 		private static Slider AddNewSliderToList(Vector2D position, UIEditorScene uiEditorScene)
 		{
-			var newSlider = new Slider(Rectangle.FromCenter(position, new Size(0.15f, 0.03f)));
+			var newSlider = new Slider(new Theme(), Rectangle.FromCenter(position, new Size(0.15f, 0.03f)));
 			uiEditorScene.Scene.Add(newSlider);
 			SetDefaultSliderName(newSlider, uiEditorScene);
 			return newSlider;
@@ -221,20 +215,9 @@ namespace DeltaEngine.Editor.UIEditor
 			uiEditorScene.UIImagesInList.Add(NewSliderId + numberOfNames);
 			if (uiEditorScene.UIImagesInList[0] == null)
 				uiEditorScene.UIImagesInList[0] = NewSliderId + numberOfNames;
-			SetNameOfAllSliderStates(newSlider, numberOfNames);
+			newSlider.Set(NewSliderId + numberOfNames);
 		}
 
 		private const string NewSliderId = "NewSlider";
-
-		private static void SetNameOfAllSliderStates(Slider newSlider, int numberOfNames)
-		{
-			var theme = newSlider.Get<Theme>();
-			string name = NewSliderId + numberOfNames;
-			theme.Slider.MetaData.Name = name;
-			theme.SliderDisabled.MetaData.Name = name;
-			theme.SliderPointer.MetaData.Name = name;
-			theme.SliderPointerDisabled.MetaData.Name = name;
-			theme.SliderPointerMouseover.MetaData.Name = name;
-		}
 	}
 }

@@ -26,8 +26,11 @@ namespace DeltaEngine.Editor.Tests
 			Thread.Sleep(500);
 			Console.WriteLine("User Name: " + service.UserName);
 			CheckService(service, "LogoApp", result);
+			bool hasProjectChanged = false;
+			service.ProjectChanged += () => hasProjectChanged = true;
 			service.RequestChangeProject("Asteroids");
 			Thread.Sleep(500);
+			Assert.IsTrue(hasProjectChanged);
 			CheckService(service, "Asteroids", result);
 		}
 

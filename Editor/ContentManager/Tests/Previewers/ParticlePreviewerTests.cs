@@ -1,8 +1,10 @@
-﻿using DeltaEngine.Datatypes;
+﻿using DeltaEngine.Core;
+using DeltaEngine.Datatypes;
 using DeltaEngine.Editor.ContentManager.Previewers;
 using DeltaEngine.Input;
 using DeltaEngine.Input.Mocks;
 using DeltaEngine.Platforms;
+using DeltaEngine.ScreenSpaces;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.ContentManager.Tests.Previewers
@@ -14,41 +16,13 @@ namespace DeltaEngine.Editor.ContentManager.Tests.Previewers
 		{
 			particlePreviewer = new ParticlePreviewer();
 			particlePreviewer.PreviewContent("TestParticle");
+			new Camera2DScreenSpace(Resolve<Window>());
 			mockMouse = Resolve<Mouse>() as MockMouse;
 			AdvanceTimeAndUpdateEntities();
 		}
 
 		private ParticlePreviewer particlePreviewer;
 		private MockMouse mockMouse;
-
-		[Test]
-		public void MoveCamera()
-		{
-			mockMouse = Resolve<Mouse>() as MockMouse;
-			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(new Vector3D(0.5f, 0.5f, 0),
-				particlePreviewer.currentDisplayParticle2D.Position);
-			mockMouse.SetButtonState(MouseButton.Left, State.Pressed);
-			mockMouse.SetPosition(new Vector2D(1f, 1f));
-			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(new Vector3D(0.5f, 0.5f, 0),
-				particlePreviewer.currentDisplayParticle2D.Position);
-		}
-
-		[Test]
-		public void ZoomCamera()
-		{
-			mockMouse = Resolve<Mouse>() as MockMouse;
-			mockMouse.SetPosition(new Vector2D(0f, 0f));
-			Assert.AreEqual(0.1f,
-				particlePreviewer.currentDisplayParticle2D.EmitterData.Size.Start.Width);
-			AdvanceTimeAndUpdateEntities();
-			Assert.AreEqual(new Vector3D(0.5f, 0.5f, 0),
-				particlePreviewer.currentDisplayParticle2D.Position);
-			mockMouse.SetButtonState(MouseButton.Middle, State.Pressed);
-			mockMouse.SetPosition(new Vector2D(1f, 1f));
-			AdvanceTimeAndUpdateEntities();
-		}
 
 		[Test]
 		public void SettingNewImageCreatesNewSizeAndPosition()

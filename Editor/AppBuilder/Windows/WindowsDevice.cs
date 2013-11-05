@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
+using DeltaEngine.Core;
+using DeltaEngine.Editor.Core;
 
 namespace DeltaEngine.Editor.AppBuilder.Windows
 {
@@ -17,18 +20,26 @@ namespace DeltaEngine.Editor.AppBuilder.Windows
 
 		public bool IsAppInstalled(AppInfo app)
 		{
-			return app != null && File.Exists(app.FilePath);
+			return app != null && Directory.Exists(GetAppExtractionDirectory(app));
 		}
 
+		private static string GetAppExtractionDirectory(AppInfo app)
+		{
+			string fullFilePath = Path.IsPathRooted(app.FilePath)
+				? app.FilePath : Path.Combine(Environment.CurrentDirectory, app.FilePath);
+			return Path.Combine(Path.GetDirectoryName(fullFilePath), app.Name);
+		}
 
 		public void Install(AppInfo app)
 		{
+			Process.Start(app.FilePath, "/S /D=" + GetAppExtractionDirectory(app));
+			Thread.Sleep(50);
 		}
 
 		public void Uninstall(AppInfo app)
 		{
-			if (app == null)
-				throw new UninstallationFailedOnDevice(this, "null");
+			if (IsAppInstalled(app))
+				Directory.Delete(GetAppExtractionDirectory(app), true);
 		}
 
 		public class UninstallationFailedOnDevice : Exception
@@ -41,7 +52,15 @@ namespace DeltaEngine.Editor.AppBuilder.Windows
 		{
 			if (!IsAppInstalled(app))
 				throw new AppNotInstalled(app);
-			Process.Start(app.FilePath);
+			try
+			{
+				string exeFilePath = Path.Combine(GetAppExtractionDirectory(app), app.Name + ".exe");
+				new ProcessRunner(exeFilePath).Start();
+			}
+			catch (Exception)
+			{
+				Logger.Warning(app.Name + " was closed with error");
+			}
 		}
 
 		public class AppNotInstalled : Exception

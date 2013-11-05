@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using DeltaEngine.Editor.AppBuilder;
+using DeltaEngine.Extensions;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.Core.Tests
@@ -7,10 +10,10 @@ namespace DeltaEngine.Editor.Core.Tests
 	public class SolutionFileLoaderTests
 	{
 		[Test]
-		public void NoSolutionPathSpecifiedException()
+		public void WithoutSolutionThereWillBeNoAvailableProjects()
 		{
-			Assert.Throws<SolutionFileLoader.NoSolutionPathSpecified>(() => new SolutionFileLoader(null));
-			Assert.Throws<SolutionFileLoader.NoSolutionPathSpecified>(() => new SolutionFileLoader(""));
+			Assert.IsEmpty(new SolutionFileLoader(null).GetCSharpProjects());
+			Assert.IsEmpty(new SolutionFileLoader("").GetCSharpProjects());
 		}
 
 		[Test]
@@ -22,7 +25,7 @@ namespace DeltaEngine.Editor.Core.Tests
 
 		private static SolutionFileLoader GetLoaderWithLoadedEngineSolution()
 		{
-			return new SolutionFileLoader(PathExtensions.GetEngineSolutionFilePath());
+			return new SolutionFileLoader(PathExtensions.GetDeltaEngineSolutionFilePath());
 		}
 
 		[Test]
@@ -54,7 +57,7 @@ namespace DeltaEngine.Editor.Core.Tests
 		[Test]
 		public void GetSpecificCSharpProjectFromDeltaEngineSamplesSolution()
 		{
-			string engineSamplesSolution = PathExtensions.GetSamplesSolutionFilePath();
+			string engineSamplesSolution = AppBuilderViewModel.GetSamplesSolutionFilePath();
 			Assert.IsTrue(File.Exists(engineSamplesSolution));
 			var solutionLoader = new SolutionFileLoader(engineSamplesSolution);
 			ProjectEntry logoAppProject = solutionLoader.GetCSharpProject("LogoApp");

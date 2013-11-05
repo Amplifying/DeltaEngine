@@ -10,9 +10,18 @@ using WpfWindow = System.Windows.Window;
 namespace DeltaEngine.Editor.AppBuilder.Tests
 {
 	[UseReporter(typeof(KDiffReporter))]
+	[Category("Slow"), Category("WPF"), Timeout(60000)]
 	public class AppBuilderViewTests
 	{
-		[Test, STAThread, Category("Slow")]
+		[SetUp]
+		public void InitializeService()
+		{
+			service = new MockBuildService();
+		}
+
+		private MockBuildService service;
+
+		[Test, STAThread]
 		public void VerifyViewWithMocking()
 		{
 			WpfApprovals.Verify(CreateTestWindow(CreateViewAndViewModelViaMockService()));
@@ -30,9 +39,8 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			};
 		}
 
-		private static AppBuilderView CreateViewAndViewModelViaMockService()
+		private AppBuilderView CreateViewAndViewModelViaMockService()
 		{
-			var service = new MockBuildService();
 			var view = CreateViewWithInitialiedViewModel(service);
 			service.ReceiveSomeTestMessages();
 			return view;
@@ -45,7 +53,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			return view;
 		}
 		
-		[Test, STAThread, Category("Slow"), Category("WPF")]
+		[Test, STAThread]
 		public void ShowViewWithMockServiceAndDummyApps()
 		{
 			AppBuilderView builderView = CreateViewAndViewModelViaMockService();
@@ -53,12 +61,14 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			viewModel.AppListViewModel.AddApp(
 				AppBuilderTestExtensions.GetMockAppInfo("My favorite app", PlatformName.Windows));
 			viewModel.AppListViewModel.AddApp(AppBuilderTestExtensions.GetMockAppInfo(
-				"My mobile app", PlatformName.WindowsPhone7));
+				"My mobile app", PlatformName.Android));
+			viewModel.AppListViewModel.AddApp(AppBuilderTestExtensions.GetMockAppInfo(
+				"My cool web app", PlatformName.Web));
 			WpfWindow window = CreateTestWindow(builderView);
 			window.ShowDialog();
 		}
 
-		[Test, STAThread, Category("Slow"), Category("WPF")]
+		[Test, STAThread]
 		public void ShowViewWithMockServiceAndLoadedAppStorage()
 		{
 			AppBuilderView builderView = CreateViewAndViewModelViaMockService();
@@ -66,31 +76,24 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			window.ShowDialog();
 		}
 
-		[Test, STAThread, Category("Slow"), Category("WPF")]
+		[Test, STAThread]
 		public void ShowViewWithMockServiceToVisualizeSwitchingBetweenBothLists()
 		{
-			var service = new MockBuildService();
-			AppBuilderView builderView = CreateViewWithInitialiedViewModel(service);
+			AppBuilderView builderView = CreateViewAndViewModelViaMockService();
 			AppBuilderViewModel viewModel = builderView.ViewModel;
 			WpfWindow window = CreateTestWindow(builderView);
 			window.MouseDoubleClick += (sender, e) => FireAppBuildMessagesOnMouseDoubleClick(e, viewModel);
 			window.ShowDialog();
 		}
 
-		private static void FireAppBuildMessagesOnMouseDoubleClick(MouseButtonEventArgs e,
+		private void FireAppBuildMessagesOnMouseDoubleClick(MouseButtonEventArgs e,
 			AppBuilderViewModel viewModel)
 		{
 			if (e.LeftButton != MouseButtonState.Released)
-				SelectProjectToBuild(viewModel, "LogoApp");
+				service.ChangeProject("LogoApp");
 			else if (e.RightButton != MouseButtonState.Released)
-				SelectProjectToBuild(viewModel, "GhostWars");
+				service.ChangeProject("GhostWars");
 			viewModel.BuildCommand.Execute(null);
-		}
-
-		private static void SelectProjectToBuild(AppBuilderViewModel viewModel, string projectName)
-		{
-			viewModel.SelectedSolutionProject =
-				viewModel.AvailableProjectsInSelectedSolution.Find(p => p.Title == projectName);
 		}
 	}
 }

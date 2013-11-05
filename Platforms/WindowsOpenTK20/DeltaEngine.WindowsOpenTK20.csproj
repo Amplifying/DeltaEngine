@@ -63,6 +63,10 @@
       <Project>{32665D04-5A07-4F99-9E20-0639CD1C1D6D}</Project>
       <Name>DeltaEngine.Multimedia.OpenTK</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Rendering2D\DeltaEngine.Rendering2D.csproj">
+      <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
+      <Name>DeltaEngine.Rendering2D</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DeltaEngine.Platforms.csproj">
       <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
       <Name>DeltaEngine.Platforms</Name>

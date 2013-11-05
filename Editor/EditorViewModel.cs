@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
@@ -33,7 +32,7 @@ namespace DeltaEngine.Editor
 			this.plugins = plugins;
 			this.settings = settings;
 			service = new OnlineService(settings);
-			AvailableProjects = new List<string>();
+			AvailableProjects = new List<ProjectNameAndFontWeight>();
 			Error = Resources.EnterYourApiKey;
 			SetupLogger();
 			SetVersionNumber();
@@ -43,12 +42,14 @@ namespace DeltaEngine.Editor
 			SetCurrentProject(LoadDataFromRegistry("SelectedProject"));
 			ConnectToOnlineServiceAndTryToLogin();
 			EditorPlugins = new List<EditorPluginView>();
+			messageViewModel = new PopupMessageViewModel(service);
+			messageViewModel.MessageUpdated += RaisePopupMessageProperties;
 		}
 
 		private readonly EditorPluginLoader plugins;
 		private readonly Settings settings;
 		private readonly OnlineService service;
-		public List<string> AvailableProjects { get; private set; }
+		public List<ProjectNameAndFontWeight> AvailableProjects { get; private set; }
 
 		public string Error
 		{
@@ -61,6 +62,7 @@ namespace DeltaEngine.Editor
 				RaisePropertyChanged("ErrorBackgroundColor");
 			}
 		}
+
 		private string error;
 
 		private void SetupLogger()
@@ -74,7 +76,7 @@ namespace DeltaEngine.Editor
 
 		private void SetVersionNumber()
 		{
-			VersionNumber = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+			VersionNumber = "Version: " + Assembly.GetExecutingAssembly().GetName().Version;
 		}
 
 		public string VersionNumber { get; set; }
@@ -108,7 +110,7 @@ namespace DeltaEngine.Editor
 
 		private void SetCurrentProject(string project)
 		{
-			SelectedProject = project;
+			SelectedProject = new ProjectNameAndFontWeight(project, FontWeights.Normal);
 			RaisePropertyChanged("SelectedProject");
 		}
 
@@ -118,7 +120,6 @@ namespace DeltaEngine.Editor
 				return;
 			tryingToConnect = true;
 			connection = new OnlineServiceConnection();
-			connection.Connected += () => connection.Send(new ProjectNamesRequest());
 			connection.Connected += ValidateLogin;
 			connection.DataReceived += OnDataReceived;
 			connection.Connect(settings.OnlineServiceIp, settings.OnlineServicePort, OnTimeout);
@@ -142,26 +143,31 @@ namespace DeltaEngine.Editor
 		{
 			if (!connection.IsConnected)
 				ConnectToOnlineServiceAndTryToLogin();
-			else if (!string.IsNullOrEmpty(ApiKey) && !string.IsNullOrEmpty(SelectedProject))
-				connection.Send(new LoginRequest(ApiKey, SelectedProject));
-			else if (string.IsNullOrEmpty(ApiKey))
-				Error = Resources.GetApiKeyHere;
+			else if (!string.IsNullOrEmpty(ApiKey))
+				connection.Send(new LoginRequest(ApiKey, SelectedProject.Name));
 			else
-				Error = Resources.ObtainApiKeyAndSelectProject;
+				Error = Resources.GetApiKeyHere;
 		}
 
-		public string SelectedProject
+		public ProjectNameAndFontWeight SelectedProject
 		{
-			get { return selectedProject; }
+			get
+			{
+				if (string.IsNullOrEmpty(selectedProject.Name))
+					selectedProject = new ProjectNameAndFontWeight(DefaultProject, FontWeights.Normal);
+				return selectedProject;
+			}
 			set
 			{
 				if (isLoggedIn)
-					service.RequestChangeProject(value);
+					service.RequestChangeProject(value.Name);
 				selectedProject = value;
 				SaveCurrentProject();
 			}
 		}
-		private string selectedProject;
+
+		private ProjectNameAndFontWeight selectedProject;
+		private const string DefaultProject = "GhostWars";
 
 		private void OnDataReceived(object message)
 		{
@@ -176,17 +182,48 @@ namespace DeltaEngine.Editor
 				Logger.Warning(serverError.Error);
 			}
 			else if (projectNames != null)
-			{
-				AvailableProjects.Clear();
-				AvailableProjects.AddRange(projectNames.ProjectNames);
-				RaisePropertyChanged("AvailableProjects");
-			}
+				RefreshAvailableProjects(projectNames);
 			else if (loginMessage != null)
 				Login(loginMessage);
 			else if (newProject != null)
 				IsContentReady = false;
 			else if (contentReady != null)
 				IsContentReady = true;
+		}
+
+		private void RefreshAvailableProjects(ProjectNamesResult projectNames)
+		{
+			AvailableProjects.Clear();
+			var projectNamesAndWeight = new List<ProjectNameAndFontWeight>();
+			var fontWeight = FontWeights.Bold;
+			string tutorials = "";
+			foreach (var projectName in projectNames.ProjectNames)
+			{
+				if (projectName == "Asteroids")
+					fontWeight = FontWeights.Normal;
+				if (projectName == "DeltaEngine.Tutorials")
+				{
+					tutorials = projectName;
+					continue;
+				}
+				projectNamesAndWeight.Add(new ProjectNameAndFontWeight(projectName, fontWeight));
+			}
+			AvailableProjects.AddRange(projectNamesAndWeight);
+			if (!string.IsNullOrEmpty(tutorials))
+				AvailableProjects.Add(new ProjectNameAndFontWeight(tutorials, fontWeight));
+			RaisePropertyChanged("AvailableProjects");
+		}
+
+		public class ProjectNameAndFontWeight
+		{
+			public ProjectNameAndFontWeight(string name, FontWeight weight)
+			{
+				Name = name;
+				Weight = weight;
+			}
+
+			public string Name { get; private set; }
+			public FontWeight Weight { get; private set; }
 		}
 
 		private void Login(LoginSuccessful loginMessage)
@@ -217,7 +254,7 @@ namespace DeltaEngine.Editor
 
 		private void SaveCurrentProject()
 		{
-			SaveDataInRegistry("SelectedProject", SelectedProject);
+			SaveDataInRegistry("SelectedProject", SelectedProject.Name);
 		}
 
 		public bool IsLoggedIn
@@ -229,6 +266,7 @@ namespace DeltaEngine.Editor
 				RaisePropertyChanged("IsLoggedIn");
 			}
 		}
+
 		private bool isLoggedIn;
 
 		private void ChangeVisiblePanel()
@@ -246,6 +284,7 @@ namespace DeltaEngine.Editor
 				RaisePropertyChanged("IsContentReady");
 			}
 		}
+
 		private bool isContentReady;
 
 		private void Disconnect()
@@ -301,6 +340,24 @@ namespace DeltaEngine.Editor
 		}
 
 		public List<EditorPluginView> EditorPlugins { get; private set; }
+
+		private readonly PopupMessageViewModel messageViewModel;
+
+		private void RaisePopupMessageProperties()
+		{
+			RaisePropertyChanged("PopupText");
+			RaisePropertyChanged("PopupVisibility");
+		}
+
+		public string PopupText
+		{
+			get { return messageViewModel.Text; }
+		}
+
+		public Visibility PopupVisibility
+		{
+			get { return messageViewModel.Visiblity; }
+		}
 
 		public void AddAllPlugins()
 		{
@@ -388,8 +445,6 @@ namespace DeltaEngine.Editor
 			fileNameAndBytes.Add(Path.GetFileName(contentFilePath), bytes);
 			var metaDataCreator = new ContentMetaDataCreator();
 			var contentMetaData = metaDataCreator.CreateMetaDataFromFile(contentFilePath);
-			if (ContentLoader.Exists(Path.GetFileName(contentFilePath)))
-				service.DeleteContent(Path.GetFileName(contentFilePath));
 			service.UploadContent(contentMetaData, fileNameAndBytes);
 		}
 

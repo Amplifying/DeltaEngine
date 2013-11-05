@@ -7,7 +7,7 @@
 	xmlns:helpers="clr-namespace:DeltaEngine.Editor.SampleBrowser.Helpers"
 	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance Type=helpers:DesignSampleItem, IsDesignTimeCreatable=True}"
-	d:DesignHeight="110" d:DesignWidth="520"
+	d:DesignHeight="110" d:DesignWidth="800"
 	BorderBrush="Black" BorderThickness="0" Height="110">
 
 	<UserControl.Resources>
@@ -68,20 +68,20 @@
 		</Grid.ColumnDefinitions>
 		<Image
 			Width="96" Height="96" Margin="5,5,7,7"
-			Source="{Binding Path=ImageFilePath}"
+			Source="{Binding Path=ImageUrl}"
 			Stretch="Fill" HorizontalAlignment="Center" VerticalAlignment="Center" />
 		<TextBlock
 			Text="{Binding Path=Title}"
-			Grid.Column="1" HorizontalAlignment="Left" Margin="0,5,0,0"
+			Grid.Column="1" HorizontalAlignment="Left" Margin="0,11,175,0"
 			VerticalAlignment="Top" FontSize="18"
 			Foreground="#FF646464" FontFamily="Arial" FontWeight="Bold" TextDecorations="{x:Null}" />
 		<TextBlock
-			Text="{Binding Path=EntryClass}"
-			Grid.Column="1" HorizontalAlignment="Left" Margin="0,29,0,0" Foreground="Silver" VerticalAlignment="Top" />
+			Text="{Binding Path=Category}"
+			Grid.Column="1" HorizontalAlignment="Left" Margin="0,38,175,0" Foreground="Silver" VerticalAlignment="Top" />
 		<TextBlock
 			Text="{Binding Path=Description}"
-			Grid.Column="1" HorizontalAlignment="Left" Margin="0,47,0,0" Foreground="#FF898989"
-			VerticalAlignment="Top" TextWrapping="Wrap" MaxWidth="400" FontWeight="Bold" FontSize="14" />
+			Grid.Column="1" HorizontalAlignment="Left" Margin="0,60,175,8" Foreground="#FF898989"
+			VerticalAlignment="Top" TextWrapping="Wrap" FontSize="14" />
 		<Button
 			Content="View source code"
 			Tag="{Binding Path=ProjectFilePath}"

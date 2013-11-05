@@ -1,8 +1,5 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.SampleBrowser.Tests
@@ -13,21 +10,10 @@ namespace DeltaEngine.Editor.SampleBrowser.Tests
 		[SetUp]
 		public void Init()
 		{
-			sampleLauncher = new SampleLauncher(GetTestAssembly());
+			sampleLauncher = new SampleLauncher();
 		}
 
 		private SampleLauncher sampleLauncher;
-
-		private static Type GetTestAssembly()
-		{
-			Assembly assembly = Assembly.LoadFrom(GetPathToTestAssembly(true));
-			return assembly.GetTypes().FirstOrDefault(type => type.Name == "TestClass");
-		}
-
-		private static string GetPathToTestAssembly(bool isValid)
-		{
-			return isValid ? Path.GetFullPath("TestAssembly.dll") : @"Z:\invalid\TestAssembly.dll";
-		}
 
 		[Test]
 		public void LaunchingInvalidSampleShouldThrow()
@@ -40,6 +26,11 @@ namespace DeltaEngine.Editor.SampleBrowser.Tests
 		{
 			return Sample.CreateTest("TestSample", @"Test\Test.csproj", GetPathToTestAssembly(isValid),
 				"TestClass", "TestMethod");
+		}
+
+		private static string GetPathToTestAssembly(bool isValid)
+		{
+			return isValid ? Path.GetFullPath("TestAssembly.dll") : @"Z:\invalid\TestAssembly.dll";
 		}
 
 		private static Sample GetGameSample(bool isValid)

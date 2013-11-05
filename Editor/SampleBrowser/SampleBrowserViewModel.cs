@@ -34,16 +34,17 @@ namespace DeltaEngine.Editor.SampleBrowser
 				RaisePropertyChanged("Samples");
 			}
 		}
+
 		private List<Sample> samples;
 
 		private void AddSelectionFilters()
 		{
 			AssembliesAvailable = new List<String>
 			{
-				//"All",
+				"All",
 				"Sample Games",
-				//"Tutorials",
-				//"Visual Tests"
+				"Tutorials",
+				"Visual Tests"
 			};
 			SelectedAssembly = AssembliesAvailable[0];
 			FrameworksAvailable = frameworks.All;
@@ -85,19 +86,21 @@ namespace DeltaEngine.Editor.SampleBrowser
 			else if (SelectedAssembly == AssembliesAvailable[1])
 				itemsToDisplay = allSampleGames;
 			else if (SelectedAssembly == AssembliesAvailable[2])
+				itemsToDisplay = allTutorials;
+			else if (SelectedAssembly == AssembliesAvailable[3])
 				itemsToDisplay = allVisualTests;
 		}
 
 		private List<Sample> itemsToDisplay = new List<Sample>();
 		private List<Sample> everything = new List<Sample>();
 		private List<Sample> allSampleGames = new List<Sample>();
+		private List<Sample> allTutorials = new List<Sample>();
 		private List<Sample> allVisualTests = new List<Sample>();
 
 		private void FilterItemsBySearchBox()
 		{
 			if (String.IsNullOrEmpty(SearchFilter))
 				return;
-
 			string filterText = SearchFilter;
 			itemsToDisplay = itemsToDisplay.Where(item => item.ContainsFilterText(filterText)).ToList();
 		}
@@ -119,6 +122,7 @@ namespace DeltaEngine.Editor.SampleBrowser
 				RaisePropertyChanged("SearchFilter");
 			}
 		}
+
 		private string searchFilter;
 
 		public ICommand OnHelpClicked { get; private set; }
@@ -164,6 +168,8 @@ namespace DeltaEngine.Editor.SampleBrowser
 			foreach (var sample in sampleCreator.Samples)
 				if (sample.Category == SampleCategory.Game)
 					allSampleGames.Add(sample);
+				else if (sample.Category == SampleCategory.Tutorial)
+					allTutorials.Add(sample);
 				else
 					allVisualTests.Add(sample);
 			AddEverythingTogether();
@@ -175,13 +181,14 @@ namespace DeltaEngine.Editor.SampleBrowser
 			itemsToDisplay.Clear();
 			everything.Clear();
 			allSampleGames.Clear();
+			allTutorials.Clear();
 			allVisualTests.Clear();
 		}
 
 		private void SetFrameworkToDefault()
 		{
-			FrameworksAvailable = new[] { DeltaEngineFramework.None };
-			SelectedFramework = DeltaEngineFramework.None;
+			FrameworksAvailable = new[] { DeltaEngineFramework.Default };
+			SelectedFramework = DeltaEngineFramework.Default;
 			RaisePropertyChanged("FrameworksAvailable");
 			RaisePropertyChanged("SelectedFramework");
 		}
@@ -189,6 +196,7 @@ namespace DeltaEngine.Editor.SampleBrowser
 		public void AddEverythingTogether()
 		{
 			everything.AddRange(allSampleGames);
+			everything.AddRange(allTutorials);
 			everything.AddRange(allVisualTests);
 		}
 

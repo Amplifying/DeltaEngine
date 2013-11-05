@@ -1,18 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Windows;
+using DeltaEngine.Core;
+using DeltaEngine.Logging;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.AppBuilder.Tests
 {
 	public class AppBuildMessagesListViewModelTests
 	{
+		[TestFixtureSetUp]
+		public void SetLogger()
+		{
+			new ConsoleLogger();
+		}
+
 		[Test]
 		public void AddDifferentMessages()
 		{
 			var messagesList = new AppBuildMessagesListViewModel();
-			messagesList.AddMessage(AppBuilderTestExtensions.AsBuildTestWarning("A test warning for this test"));
-			messagesList.AddMessage(AppBuilderTestExtensions.AsBuildTestError("A test error for this test"));
-			messagesList.AddMessage(AppBuilderTestExtensions.AsBuildTestError("Just another test error for this test"));
+			messagesList.AddMessage(
+				AppBuilderTestExtensions.AsBuildTestWarning("A test warning for this test"));
+			messagesList.AddMessage(
+				AppBuilderTestExtensions.AsBuildTestError("A test error for this test"));
+			messagesList.AddMessage(
+				AppBuilderTestExtensions.AsBuildTestError("Just another test error for this test"));
 			Assert.AreEqual(1, messagesList.Warnings.Count);
 			Assert.AreEqual("1 Warning", messagesList.TextOfWarningCount);
 			Assert.AreEqual(2, messagesList.Errors.Count);
@@ -22,13 +35,13 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		[Test]
 		public void OnlyShowingErrorFilter()
 		{
-			AppBuildMessagesListViewModel messagesList = GetViewModelWithOneMessageForEachType();
+			AppBuildMessagesListViewModel messagesList = GetViewModelWithOneMessageForEachIssueType();
 			messagesList.IsShowingErrorsAllowed = true;
 			messagesList.IsShowingWarningsAllowed = false;
 			Assert.AreEqual(1, messagesList.MessagesMatchingCurrentFilter.Count);
 		}
 
-		private static AppBuildMessagesListViewModel GetViewModelWithOneMessageForEachType()
+		private static AppBuildMessagesListViewModel GetViewModelWithOneMessageForEachIssueType()
 		{
 			var messagesList = new AppBuildMessagesListViewModel();
 			messagesList.AddMessage(AppBuilderTestExtensions.AsBuildTestWarning("Test warning"));
@@ -39,7 +52,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		[Test]
 		public void OnlyShowingWarningFilter()
 		{
-			AppBuildMessagesListViewModel messagesList = GetViewModelWithOneMessageForEachType();
+			AppBuildMessagesListViewModel messagesList = GetViewModelWithOneMessageForEachIssueType();
 			messagesList.IsShowingErrorsAllowed = false;
 			messagesList.IsShowingWarningsAllowed = true;
 			Assert.AreEqual(1, messagesList.MessagesMatchingCurrentFilter.Count);
@@ -48,7 +61,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		[Test]
 		public void ShowingAllKindsOfMessages()
 		{
-			AppBuildMessagesListViewModel messagesList = GetViewModelWithOneMessageForEachType();
+			AppBuildMessagesListViewModel messagesList = GetViewModelWithOneMessageForEachIssueType();
 			messagesList.IsShowingErrorsAllowed = true;
 			messagesList.IsShowingWarningsAllowed = true;
 			Assert.AreEqual(2, messagesList.MessagesMatchingCurrentFilter.Count);
@@ -57,7 +70,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		[Test]
 		public void CheckMessagesMatchingCurrentFilterOrder()
 		{
-			AppBuildMessagesListViewModel messagesList = GetViewModelWithOneMessageForEachType();
+			AppBuildMessagesListViewModel messagesList = GetViewModelWithOneMessageForEachIssueType();
 			messagesList.IsShowingErrorsAllowed = true;
 			messagesList.IsShowingWarningsAllowed = true;
 
@@ -70,9 +83,47 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		[Test]
 		public void ClearMessages()
 		{
-			AppBuildMessagesListViewModel messagesList = GetViewModelWithOneMessageForEachType();
+			AppBuildMessagesListViewModel messagesList = GetViewModelWithOneMessageForEachIssueType();
 			messagesList.ClearMessages();
 			Assert.AreEqual(0, messagesList.MessagesMatchingCurrentFilter.Count);
+		}
+
+		[Test, Ignore]
+		// ncrunch: no coverage start
+		public void CheckCopyingSpecificMessageToSystemClipboad()
+		{
+			AppBuildMessagesListViewModel messagesList = GetViewModelWithOneMessageForEachIssueType();
+			IList<AppBuildMessageViewModel> messages = messagesList.MessagesMatchingCurrentFilter;
+			Assert.GreaterOrEqual(messages.Count, 2);
+			foreach (AppBuildMessageViewModel message in messages)
+			{
+				messagesList.CopyMessageToClipboard(message);
+				Assert.AreEqual(message.ToString(), GetCurrentTextInClipbard());
+			}
+		}
+
+		private static string GetCurrentTextInClipbard()
+		{
+			// Clipboard access must be executed on a STA thread
+			string clipboardText = "";
+			var staThread = new Thread(() => clipboardText = TryGetClipboardText());
+			staThread.SetApartmentState(ApartmentState.STA);
+			staThread.Start();
+			staThread.Join();
+			return clipboardText;
+		}
+
+		private static string TryGetClipboardText()
+		{
+			try
+			{
+				return Clipboard.GetText();
+			}
+			catch (Exception)
+			{
+				Logger.Warning("Failed to access Clipboard text.");
+				return "";
+			}
 		}
 	}
 }

@@ -118,6 +118,8 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			appName = appName.ToLower();
 			if (appName.StartsWith("logoapp"))
 				return new Guid("4d33a50e-3aa2-4e7e-bc0c-4ef7b3d5e985");
+			if (appName.StartsWith("ghostwars"))
+				return new Guid("039f9138-e9f4-4abe-899c-18cfadd7b930");
 			throw new GuidForAppNotFound(appName);
 		}
 

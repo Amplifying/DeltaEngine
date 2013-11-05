@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Diagnostics;
+using System.IO;
 using System.IO.Abstractions;
 using System.Windows;
 using System.Windows.Input;
@@ -12,14 +12,18 @@ namespace DeltaEngine.Editor.ProjectCreator
 {
 	public class ProjectCreatorViewModel : ViewModelBase
 	{
-		public ProjectCreatorViewModel()
+		public ProjectCreatorViewModel(Service service)
 		{
-			project = new CsProject();
+			this.service = service;
+			project = new CsProject(service.UserName);
+			AvailableStarterKits = VsTemplate.GetAllTemplateNames(project.Framework);
 			AvailableFrameworks = new FrameworkFinder().All;
 			RegisterCommands();
 		}
 
+		private readonly Service service;
 		private readonly CsProject project;
+		public string[] AvailableStarterKits { get; private set; }
 		public DeltaEngineFramework[] AvailableFrameworks { get; private set; }
 
 		private void RegisterCommands()
@@ -64,6 +68,17 @@ namespace DeltaEngine.Editor.ProjectCreator
 			}
 		}
 
+		public string SelectedStarterKit
+		{
+			get { return project.StarterKit; }
+			set
+			{
+				project.StarterKit = value;
+				RaisePropertyChanged("SelectedStarterKit");
+				RaisePropertyChanged("Name");
+			}
+		}
+
 		public ICommand OnLocationChanged { get; private set; }
 
 		private void ChangeLocation(string projectPath)
@@ -85,13 +100,14 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		private void CreateProject()
 		{
-			var projectCreator = new ProjectCreator(project, VsTemplate.GetEmptyGame(new FileSystem()),
-				new FileSystem());
+			var projectCreator = new ProjectCreator(project,
+				VsTemplate.CreateByName(new FileSystem(), project.StarterKit), new FileSystem());
 			projectCreator.CreateProject();
 			if (projectCreator.HaveTemplateFilesBeenCopiedToLocation())
 			{
-				Service.Send(new CreateProject(projectCreator.Project.Name));
-				MessageBox.Show("Project has successfully been created.", "Project created");
+				service.Send(new CreateProject(projectCreator.Project.Name, project.StarterKit));
+				Process.Start(Path.Combine(projectCreator.Project.Path,
+					projectCreator.Project.Name + ".csproj"));
 			}
 			else
 				MessageBox.Show(
@@ -100,11 +116,9 @@ namespace DeltaEngine.Editor.ProjectCreator
 					"Error");
 		}
 
-		public Service Service { get; set; }
-
 		private bool CanCreateProject()
 		{
-			return InputValidator.IsValidFolderName(Name) && InputValidator.IsValidPath(Location);
+			return InputValidator.IsValidProjectName(Name) && InputValidator.IsValidAbsolutePath(Location);
 		}
 	}
 }
