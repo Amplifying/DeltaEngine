@@ -15,13 +15,16 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 			new FontText(verdana, "Play/Stop", Rectangle.One);
 			music = ContentLoader.Load<Music>(contentName);
 			music.Play(1);
-			new Command(() => //ncrunch: no coverage start
+			var trigger = new MouseButtonTrigger();
+			trigger.AddTag("temporary");
+			var musicCommand = new Command(() => //ncrunch: no coverage start
 			{
 				if (music.IsPlaying())
 					music.Stop();
 				else
 					music.Play(1);
-			}).Add(new MouseButtonTrigger());
+			}).Add(trigger);
+			musicCommand.AddTag("temporary");
 			//ncrunch: no coverage end
 		}
 

@@ -81,9 +81,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CsProjectExtensions.cs" />
     <Compile Include="InputValidator.cs" />
     <Compile Include="ProjectCreator.cs" />
     <Compile Include="Replacement.cs" />
+    <Compile Include="SlnFileDataGenerator.cs" />
     <Compile Include="VsTemplate.cs" />
     <Compile Include="CsProject.cs" />
     <Compile Include="ProjectCreatorView.xaml.cs">

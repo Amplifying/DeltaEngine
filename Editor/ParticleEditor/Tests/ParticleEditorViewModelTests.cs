@@ -31,13 +31,13 @@ namespace DeltaEngine.Editor.ParticleEditor.Tests
 			Assert.NotNull(viewModel.RotationSpeed);
 			Assert.NotNull(viewModel.Size);
 			Assert.AreEqual(ParticleEmitterPositionType.Point, viewModel.SelectedSpawnerType);
-			Assert.AreEqual(500, viewModel.MaxNumberOfParticles);
+			Assert.AreEqual(128, viewModel.MaxNumberOfParticles);
 			Assert.NotNull(viewModel.Color);
 			Assert.NotNull(viewModel.StartPosition);
 			Assert.NotNull(viewModel.StartRotation);
 			Assert.NotNull(viewModel.StartVelocity);
 			Assert.NotNull(viewModel.Acceleration);
-			Assert.AreEqual(0.01f, viewModel.SpawnInterval);
+			Assert.AreEqual(0.1f, viewModel.SpawnInterval);
 			Assert.AreEqual(1, viewModel.LifeTime);
 			Assert.IsTrue(viewModel.CanModifyEmitters);
 			Assert.AreEqual(new[] { 0 }, viewModel.AvailableEmitterIndices);
@@ -57,6 +57,16 @@ namespace DeltaEngine.Editor.ParticleEditor.Tests
 			// Saving 1 system + 1 emitter = 2 ContentData
 			Assert.AreEqual(originalNumberOfMessages + 2, mockService.NumberOfMessagesSent);
 			Assert.IsTrue(Resolve<Logger>().LastMessage.Contains("saved"));
+		}
+
+		[Test]
+		public void WarningIsThrownWhenTryingToOverWriteExistingFiel()
+		{
+			viewModel.ParticleSystemName = "LoadParticleSystem";
+			viewModel.LoadEffect();
+			viewModel.ParticleSystemName = "LoadParticleSystem";
+			viewModel.OverwriteOnSave = false;
+			viewModel.Save();
 		}
 
 		[Test, CloseAfterFirstFrame]
@@ -141,7 +151,7 @@ namespace DeltaEngine.Editor.ParticleEditor.Tests
 		public void SetStartPosition()
 		{
 			Action setStartPostion =
-				() => { viewModel.StartPosition = new RangeGraph<Vector3D>(Vector3D.Zero, Vector3D.Up); };
+				() => { viewModel.StartPosition = new RangeGraph<Vector3D>(Vector3D.Zero, Vector3D.UnitY); };
 			AssertValueSet(setStartPostion);
 		}
 
@@ -208,7 +218,7 @@ namespace DeltaEngine.Editor.ParticleEditor.Tests
 		[Test, CloseAfterFirstFrame]
 		public void LoadEffect()
 		{
-			viewModel.ParticleSystemName = "LoadTest";
+			viewModel.ParticleSystemName = "LoadParticleSystem";
 			viewModel.LoadEffect();
 		}
 
@@ -248,6 +258,109 @@ namespace DeltaEngine.Editor.ParticleEditor.Tests
 			viewModel.SelectedMaterialName = "UnavailableMaterial";
 			Assert.AreNotEqual("UnavailableMaterial", viewModel.SelectedMaterialName);
 			Assert.IsTrue(Resolve<Logger>().LastMessage.Contains("failed to load"));
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void ActivateViewModelAgainAfterDeactivation()
+		{
+			foreach (var emitter in viewModel.currentEffect.AttachedEmitters)
+			{
+				emitter.IsActive = false;
+			}
+			viewModel.Activate();
+			foreach (var emitter in viewModel.currentEffect.AttachedEmitters)
+			{
+				Assert.IsTrue(emitter.IsActive);	
+			}
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void CanSaveEffectIfNameIsSet()
+		{
+			viewModel.ParticleSystemName = "ParticleSystem";
+			Assert.IsTrue(viewModel.CanSaveParticleSystem);
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void LookingForTemplateEffectShouldInitialyBeVisible()
+		{
+			viewModel.ToggleLookingForTemplateEffect();
+			Assert.AreEqual(Visibility.Visible, viewModel.TemplateListVisibility);
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void LookingForTemplateEffectShouldBeHidden()
+		{
+			viewModel.TemplateListVisibility = Visibility.Visible;
+			viewModel.ToggleLookingForTemplateEffect();
+			Assert.AreEqual(Visibility.Hidden, viewModel.TemplateListVisibility);
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void DefaultTemplateNameToLoadShouldBeSpace()
+		{
+			Assert.AreEqual(" ", viewModel.TemplateNameToLoad);
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void SetTemplateNameToLoadToDefault()
+		{
+			viewModel.ToggleLookingForTemplateEffect();
+			viewModel.TemplateNameToLoad = viewModel.AvailableTemplates[0];
+			Assert.AreEqual("Point Fountain", viewModel.AvailableTemplates[0]);
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void SetTemplateNameToLoadToNullShouldReturnSpace()
+		{
+			viewModel.TemplateNameToLoad = null;
+			Assert.AreEqual(" ", viewModel.TemplateNameToLoad);
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void UpdateOnContentChange()
+		{
+			Action updateSystem =
+				() => { viewModel.UpdateOnContentChange(ContentType.ParticleSystem, ""); };
+			AssertValueSet(updateSystem);
+			Action updateEmitter =
+				() => { viewModel.UpdateOnContentChange(ContentType.ParticleEmitter, ""); };
+			AssertValueSet(updateEmitter);
+			Action updateMaterial = () => { viewModel.UpdateOnContentChange(ContentType.Material, ""); };
+			AssertValueSet(updateMaterial);
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void UpdateOnContentDeletion()
+		{
+			Action updateEffects = () => { viewModel.UpdateOnContentDeletion("MyParticleSystem1"); };
+			AssertValueSet(updateEffects);
+			viewModel.EmittersInProject.Add("MyParticleEmitter");
+			Action updateEmitters = () => { viewModel.UpdateOnContentDeletion("MyParticleEmitter"); };
+			AssertValueSet(updateEmitters);
+			Action updateMaterial = () => { viewModel.UpdateOnContentDeletion("Default2D"); };
+			AssertValueSet(updateMaterial);
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void ChangeProjectShouldResetToDefaultEffect()
+		{
+			Action changeAction = () => { viewModel.ResetOnProjectChange(); };
+			AssertValueSet(changeAction);
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void SetParticleEmitterNameToAddToEmptyStringShouldReturn()
+		{
+			viewModel.ParticleEmitterNameToAdd = "";
+			Assert.AreEqual("", viewModel.ParticleEmitterNameToAdd);
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void CHangeSelectedMaterialName()
+		{
+			viewModel.SelectedMaterialName = "MyMaterial";
+			Assert.AreNotEqual("UnavailableMaterial", viewModel.SelectedMaterialName);
 		}
 	}
 }

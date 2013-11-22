@@ -23,7 +23,7 @@ namespace DeltaEngine.Editor.ParticleEditor
 		{
 			this.service = service;
 			if (service.Viewport != null)
-				viewport = service.Viewport;
+				viewport = service.Viewport; //ncrunch: no coverage
 			CreateInstances();
 			UpdateDataForLoad();
 			SetInitialDefaults();
@@ -47,11 +47,11 @@ namespace DeltaEngine.Editor.ParticleEditor
 			ParticleSystemName = "MyParticleSystem";
 			OverwriteOnSave = true;
 			if (ContentLoader.Exists(ParticleSystemName, ContentType.ParticleSystem))
-			{
+			{ //ncrunch: no coverage start
 				LoadEffect();
 				CenterViewOnCurrentEffect();
 				return;
-			}
+			} //ncrunch: no coverage end
 			currentEffect = new ParticleSystem();
 			AddEmitterToSystem();
 			CenterViewOnCurrentEffect();
@@ -59,9 +59,17 @@ namespace DeltaEngine.Editor.ParticleEditor
 
 		private static Material CreateDefaultMaterial2D()
 		{
-			var imageData = new ImageCreationData(new Size(32.0f, 32.0f));
+			var imageData = new ImageCreationData(new Size(8.0f, 8.0f));
+			imageData.DisableLinearFiltering = true;
 			var image = ContentLoader.Create<Image>(imageData);
-			image.Fill(Datatypes.Color.White);
+			var colors = new Color[8 * 8];
+			for (int i = 0; i < 8; i++)
+				for (int j = 0; j < 8; j++)
+					if ((i + j) % 2 == 0)
+						colors[i * 8 + j] = Datatypes.Color.LightGray;
+					else
+						colors[i * 8 + j] = Datatypes.Color.DarkGray;
+			image.Fill(colors);
 			return new Material(ContentLoader.Load<Shader>(Shader.Position2DColorUV), image,
 				imageData.PixelSize);
 		}
@@ -87,7 +95,7 @@ namespace DeltaEngine.Editor.ParticleEditor
 			MaterialList.Add("Default2D");
 			var materialList = service.GetAllContentNamesByType(ContentType.Material);
 			foreach (var material in materialList.Where(material => TryMaterialHasColor(material)))
-				MaterialList.Add(material);
+				MaterialList.Add(material); //ncrunch: no coverage
 		}
 
 		private static bool TryMaterialHasColor(string material)
@@ -96,10 +104,10 @@ namespace DeltaEngine.Editor.ParticleEditor
 			{
 				return (ContentLoader.Load<Material>(material).Shader as ShaderWithFormat).Format.HasColor;
 			}
-			catch (Exception)
+			catch (Exception) //ncrunch: no coverage start
 			{
 				return false;
-			}
+			} //ncrunch: no coverage end
 		}
 
 		private void GetSavedEffects()
@@ -135,11 +143,12 @@ namespace DeltaEngine.Editor.ParticleEditor
 			{
 				ParticleMaterial = CreateDefaultMaterial2D(),
 				LifeTime = 1,
-				Size = new RangeGraph<Size>(new Size(0.2f, 0.2f), new Size(0, 0)),
-				SpawnInterval = 0.01f,
-				MaximumNumberOfParticles = 500,
+				Size = new RangeGraph<Size>(new Size(0.01f, 0.01f), new Size(0.1f, 0.1f)),
+				SpawnInterval = 0.1f,
+				MaximumNumberOfParticles = 128,
 				StartVelocity =
-					new RangeGraph<Vector3D>(new Vector3D(0.2f, 0.2f, 0), new Vector3D(-0.2f, -0.2f, 0))
+					new RangeGraph<Vector3D>(new Vector3D(-0.1f, -0.2f, 0), new Vector3D(0.4f, -0.2f, 0)),
+					Acceleration = new RangeGraph<Vector3D>(new Vector3D(0.0f,0.1f,0.0f), new Vector3D(0.0f,0.3f,0.0f))
 			};
 		}
 
@@ -192,11 +201,13 @@ namespace DeltaEngine.Editor.ParticleEditor
 				CenterViewOnCurrentEffect();
 				return true;
 			}
+			//ncrunch: no coverage start
 			catch
 			{
 				Logger.Warning("Failed to load particle effect " + effectName);
+				ResetDefaultEffect();
 				return false;
-			}
+			}//ncrunch: no coverage end
 		}
 
 		private void DestroyAllEmitters()
@@ -231,7 +242,7 @@ namespace DeltaEngine.Editor.ParticleEditor
 				if (
 					!TrySavingEmitterData(currentEffect.AttachedEmitters[i].EmitterData, emitterName,
 						overwrite))
-					return false;
+					return false; //ncrunch: no coverage
 				emitterNames.Add(emitterName);
 			}
 			var metaData = metaDataCreator.CreateParticleSystemData(effectName, emitterNames);
@@ -244,10 +255,10 @@ namespace DeltaEngine.Editor.ParticleEditor
 			bool overwrite)
 		{
 			if (!MaySaveRegardingExistingAndOverwrite(name, ContentType.ParticleEmitter, overwrite))
-			{
+			{ //ncrunch: no coverage start
 				WarnExistantContentNoOverwrite(name, ContentType.ParticleEmitter);
 				return false;
-			}
+			} //ncrunch: no coverage end
 			var bytes = BinaryDataExtensions.ToByteArrayWithTypeInformation(emitterData);
 			var fileNameAndBytes = new Dictionary<string, byte[]>();
 			fileNameAndBytes.Add(name + ".deltaparticle", bytes);
@@ -297,7 +308,7 @@ namespace DeltaEngine.Editor.ParticleEditor
 				if (!retrievedName.StartsWith("<Generated"))
 					return retrievedName;
 				if ((EmitterModified.EmitterData.ParticleMaterial.Shader as ShaderWithFormat).Format.Is3D)
-					return "Default3D;";
+					return "Default3D;"; //ncrunch: no coverage
 				return "Default2D";
 			}
 			set
@@ -432,7 +443,7 @@ namespace DeltaEngine.Editor.ParticleEditor
 
 		private static void WarnExistantContentNoOverwrite(string name, ContentType type)
 		{
-			var message = "Tried to save " + type.ToString() + name;
+			var message = "Tried to save " + type + name;
 			message += ", which already is existant. Set overwrite if that's what you want!";
 			Logger.Warning(message);
 		}
@@ -554,7 +565,7 @@ namespace DeltaEngine.Editor.ParticleEditor
 			RaisePropertyChanged("TemplateListVisibility");
 		}
 
-		public Visibility TemplateListVisibility { get; private set; }
+		public Visibility TemplateListVisibility { get; set; }
 
 		private readonly string[] availableTemplateNames = new[] { "Point Fountain" };
 
@@ -602,11 +613,12 @@ namespace DeltaEngine.Editor.ParticleEditor
 		{
 			if (viewport == null)
 				return;
+			//ncrunch: no coverage start
 			viewport.CenterViewOn(currentEffect.Position.GetVector2D());
 			viewport.ZoomViewTo(1.0f);
-		}
+		} //ncrunch: no coverage end
 
-		internal void UpdateOnContentChange(ContentType type, string addedName)
+		public void UpdateOnContentChange(ContentType type, string addedName)
 		{
 			if (type == ContentType.ParticleSystem && !EffectsInProject.Contains(addedName))
 			{
@@ -625,7 +637,7 @@ namespace DeltaEngine.Editor.ParticleEditor
 			}
 		}
 
-		internal void UpdateOnContentDeletion(string removedName)
+		public void UpdateOnContentDeletion(string removedName)
 		{
 			if (EffectsInProject.Contains(removedName))
 				EffectsInProject.Remove(removedName);
@@ -636,11 +648,12 @@ namespace DeltaEngine.Editor.ParticleEditor
 				MaterialList.Remove(removedName);
 				foreach (var emitter in currentEffect.AttachedEmitters)
 					if (emitter.EmitterData.ParticleMaterial.Name.Equals(removedName))
-						emitter.EmitterData.ParticleMaterial = CreateDefaultMaterial2D();
+						emitter.EmitterData.ParticleMaterial = CreateDefaultMaterial2D(); //ncrunch: no coverage
 			}
+			RaisePropertyChanged("EffectsInProject");
 		}
 
-		internal void ResetOnProjectChange()
+		public void ResetOnProjectChange()
 		{
 			UpdateDataForLoad();
 			ResetDefaultEffect();
@@ -650,9 +663,12 @@ namespace DeltaEngine.Editor.ParticleEditor
 		{
 			foreach (var emitter in currentEffect.AttachedEmitters)
 				emitter.IsActive = true;
+			if(service.Viewport == null)
+				return;
+			//ncrunch: no coverage start
 			service.Viewport.CenterViewOn(currentEffect.Position.GetVector2D());
 			service.Viewport.ZoomViewTo(1.0f);
-		}
+		} //ncrunch: no coverage end
 
 		public bool CanSaveParticleSystem
 		{

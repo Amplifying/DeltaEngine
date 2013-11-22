@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows;
-using DeltaEngine.Content;
 using DeltaEngine.Editor.Core;
 using GalaSoft.MvvmLight.Messaging;
 
@@ -10,7 +9,7 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 	/// Interaction logic for AnimationEditorView.xaml
 	/// </summary>
 	public partial class AnimationEditorView : EditorPluginView
-	{		
+	{
 		//ncrunch: no coverage start
 		public AnimationEditorView()
 		{
@@ -21,15 +20,20 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 		{
 			viewModel = new AnimationEditorViewModel(service);
 			DataContext = viewModel;
-			service.ProjectChanged +=
-				() => Dispatcher.Invoke(new Action(viewModel.ResetOnProjectChange));
-			service.ContentUpdated += (t, s) => Dispatcher.Invoke(
-				new Action(() => viewModel.RefreshOnContentChange()));
-			service.ContentDeleted += s => Dispatcher.Invoke(new Action(viewModel.RefreshOnContentChange));
+			service.ProjectChanged += ChangeProject;
+			service.ContentUpdated +=
+				(t, s) => Dispatcher.Invoke(new Action(() => viewModel.RefreshOnContentChange()));
+			service.ContentDeleted +=
+				s => Dispatcher.Invoke(new Action(viewModel.RefreshOnContentChange));
 			Messenger.Default.Send("AnimationEditor", "SetSelectedEditorPlugin");
 		}
 
 		private AnimationEditorViewModel viewModel;
+
+		private void ChangeProject()
+		{
+			Dispatcher.Invoke(new Action(viewModel.ResetOnProjectChange));
+		}
 
 		public void Activate()
 		{
@@ -52,9 +56,11 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 			get { return false; }
 		}
 
-		private void DeleteSelectedImage(object sender, RoutedEventArgs e)
+		private void RemoveSelectedImage(object sender, RoutedEventArgs e)
 		{
-			Messenger.Default.Send(ImageViewList.SelectedItem.ToString(), "DeletingImage");
+			if (ImageViewList.SelectedItem == null)
+				return;
+			Messenger.Default.Send(ImageViewList.SelectedIndex, "RemoveImage");
 		}
 
 		private void MoveImageUp(object sender, RoutedEventArgs e)

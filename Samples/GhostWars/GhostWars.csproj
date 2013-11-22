@@ -50,6 +50,10 @@
       <Project>{CC65E69E-FAFD-4C2B-85EB-5E57FD3AF847}</Project>
       <Name>DeltaEngine.Input</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Platforms\WindowsOpenTK20\DeltaEngine.WindowsOpenTK20.csproj">
+      <Project>{4FDE0BC1-AF24-4A6D-AB73-A28833D41AC8}</Project>
+      <Name>DeltaEngine.WindowsOpenTK20</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Rendering2D\DeltaEngine.Rendering2D.csproj">
       <Project>{BDDB4AA4-5D31-43B3-9A3B-BF3030EDE927}</Project>
       <Name>DeltaEngine.Rendering2D</Name>
@@ -70,13 +74,10 @@
       <Project>{75BB4C75-DE36-47B3-9910-10EA8E8973B7}</Project>
       <Name>DeltaEngine.Scenes</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Platforms\WindowsOpenTK20\DeltaEngine.WindowsOpenTK20.csproj">
-      <Project>{4FDE0BC1-AF24-4A6D-AB73-A28833D41AC8}</Project>
-      <Name>DeltaEngine.WindowsOpenTK20</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="GhostWars.ico" />
+    <Content Include="GhostWarsIcon72x72.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -84,7 +85,7 @@
     <Compile Include="GameLogic.cs" />
     <Compile Include="GameState.cs" />
     <Compile Include="MainMenu.cs" />
-    <Compile Include="Game.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Team.cs" />
     <Compile Include="Tree.cs" />
     <Compile Include="TreeManager.cs" />

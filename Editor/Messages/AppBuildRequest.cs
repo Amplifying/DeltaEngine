@@ -15,6 +15,7 @@ namespace DeltaEngine.Editor.Messages
 		{
 			SolutionFileName = solutionFileName;
 			ProjectName = projectName;
+			ContentProjectName = projectName;
 			Platform = platform;
 			PackedCodeData = serializedCodeData;
 			ValidateData();
@@ -22,8 +23,10 @@ namespace DeltaEngine.Editor.Messages
 
 		public string SolutionFileName { get; private set; }
 		public string ProjectName { get; private set; }
+		public string ContentProjectName { get; set; }
 		public PlatformName Platform { get; private set; }
 		public byte[] PackedCodeData { get; private set; }
+		public bool IsRebuildOfCodeForced { get; set; }
 
 		private void ValidateData()
 		{

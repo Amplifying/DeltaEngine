@@ -11,7 +11,6 @@
     <RootNamespace>DeltaEngine.Editor.AppBuilder</RootNamespace>
     <AssemblyName>DeltaEngine.Editor.AppBuilder</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetPlatformVersion>8.0</TargetPlatformVersion>
     <FileAlignment>512</FileAlignment>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
@@ -38,6 +37,9 @@
     <Reference Include="GalaSoft.MvvmLight.WPF4">
       <HintPath>..\packages\MvvmLightLibs.4.2.30.0\lib\net40\GalaSoft.MvvmLight.WPF4.dll</HintPath>
     </Reference>
+    <Reference Include="Ionic.Zip.Reduced">
+      <HintPath>..\packages\DotNetZip.Reduced.1.9.1.8\lib\net20\Ionic.Zip.Reduced.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Smartdevice.Connectivity">
       <HintPath>..\packages\Smartdevice.Connectivity.10.0.0.0\lib\NET40\Microsoft.Smartdevice.Connectivity.dll</HintPath>
     </Reference>
@@ -57,6 +59,10 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Content\Online\DeltaEngine.Content.Online.csproj">
+      <Project>{68AA6280-09EF-4325-B5F8-B8A967004144}</Project>
+      <Name>DeltaEngine.Content.Online</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Content\Xml\DeltaEngine.Content.Xml.csproj">
       <Project>{138A40B5-3D80-4BA3-BD84-D82C151EE7FE}</Project>
       <Name>DeltaEngine.Content.Xml</Name>
@@ -69,9 +75,17 @@
       <Project>{A5F4EF37-7B5F-4AAE-BFF2-C2D04DB805F7}</Project>
       <Name>DeltaEngine.Mocks</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Networking\Messages\DeltaEngine.Networking.Messages.csproj">
+      <Project>{74863E62-A568-4C0A-A37F-F04BFA8EB9DB}</Project>
+      <Name>DeltaEngine.Networking.Messages</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Core\DeltaEngine.Editor.Core.csproj">
       <Project>{C667C7FC-A1C7-4CBC-98C0-C97F776E4570}</Project>
       <Name>DeltaEngine.Editor.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DeltaEngine.Editor.csproj">
+      <Project>{4C0891C0-CE79-4A2D-919E-6F706B62C8EA}</Project>
+      <Name>DeltaEngine.Editor</Name>
     </ProjectReference>
     <ProjectReference Include="..\Messages\DeltaEngine.Editor.Messages.csproj">
       <Project>{E4BF1DFC-4753-42E8-AF9C-06B5B3E6748E}</Project>
@@ -107,6 +121,7 @@
     <Compile Include="Android\AndroidDevice.cs" />
     <Compile Include="Android\AndroidDeviceFinder.cs" />
     <Compile Include="Android\AndroidDeviceInfo.cs" />
+    <Compile Include="Android\AndroidDriverDownloader.cs" />
     <Compile Include="AppBuildMessagesListView.xaml.cs">
       <DependentUpon>AppBuildMessagesListView.xaml</DependentUpon>
     </Compile>

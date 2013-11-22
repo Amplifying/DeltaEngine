@@ -4,7 +4,6 @@ using System.IO;
 using DeltaEngine.Content.Xml;
 using DeltaEngine.Core;
 using DeltaEngine.Editor.Messages;
-using DeltaEngine.Extensions;
 
 namespace DeltaEngine.Editor.AppBuilder
 {
@@ -22,11 +21,10 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		private void LoadAlreadyBuiltApps()
 		{
-			string storageDataAsXml = settings.GetValue(XmlNodeNameOfStorageData, "");
-			if (String.IsNullOrEmpty(storageDataAsXml))
+			storageData = settings.GetValue(XmlNodeNameOfStorageData,
+				new XmlData(XmlNodeNameOfStorageData));
+			if (String.IsNullOrEmpty(storageData.GetAttributeValue("StoragePath")))
 				CreateNewBuiltAppsListData();
-			else
-				storageData = new XmlSnippet(storageDataAsXml).Root;
 			StorageDirectory = storageData.GetAttributeValue("StoragePath");
 			foreach (XmlData appInfoData in storageData.Children)
 				TryLoadAppFromStorageData(appInfoData);
@@ -37,15 +35,14 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		private void CreateNewBuiltAppsListData()
 		{
-			storageData = new XmlData(XmlNodeNameOfStorageData);
 			storageData.AddAttribute("StoragePath",
-				Path.Combine(AssemblyExtensions.GetMyDocumentsAppFolder(), storageData.Name));
+				Path.Combine(Settings.GetMyDocumentsAppFolder(), storageData.Name));
 			UpdateStorageDataInSettings();
 		}
 
 		private void UpdateStorageDataInSettings()
 		{
-			settings.SetValue(storageData.Name, storageData.ToXmlString());
+			settings.SetValue(storageData.Name, storageData);
 		}
 
 		public string StorageDirectory { get; private set; }
@@ -59,8 +56,7 @@ namespace DeltaEngine.Editor.AppBuilder
 			// ncrunch: no coverage start
 			catch (Exception ex)
 			{
-				Logger.Warning("Unable to load '" + appInfoData.ToXmlString() + "' as app :" +
-					Environment.NewLine + ex);
+				Logger.Warning("Unable to load '" + appInfoData + "' as app :" + Environment.NewLine + ex);
 			}
 			// ncrunch: no coverage end
 		}

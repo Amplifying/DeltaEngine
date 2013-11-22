@@ -22,12 +22,20 @@ namespace DeltaEngine.Editor.MaterialEditor
 		{
 			current = new MaterialEditorViewModel(service);
 			this.service = service;
-			service.ProjectChanged += () => Dispatcher.Invoke(new Action(current.ResetOnProjectChange));
-			service.ContentUpdated +=
-				(type, s) => Dispatcher.Invoke(new Action(current.RefreshOnContentChange));
+			service.ProjectChanged += ChangeProject;
+			service.ContentUpdated += (type, name) =>
+			{
+				Action updateAction = () => { current.RefreshOnAddedContent(type, name); };
+				Dispatcher.Invoke(updateAction);
+			};
 			service.ContentDeleted += s => Dispatcher.Invoke(new Action(current.RefreshOnContentChange));
 			DataContext = current;
 			Messenger.Default.Send("MaterialEditor", "SetSelectedEditorPlugin");
+		}
+
+		private void ChangeProject()
+		{
+			Dispatcher.Invoke(new Action(current.ResetOnProjectChange));
 		}
 
 		public void Activate()
@@ -67,6 +75,11 @@ namespace DeltaEngine.Editor.MaterialEditor
 		private void ButtonBaseOnClick(object sender, RoutedEventArgs e)
 		{
 			service.StartPlugin(typeof(ContentManagerView));
+		}
+
+		private void LoadMaterial(object sender, RoutedEventArgs e)
+		{
+			current.LoadMaterial();
 		}
 	}
 }

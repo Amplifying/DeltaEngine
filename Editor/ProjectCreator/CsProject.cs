@@ -13,10 +13,10 @@ namespace DeltaEngine.Editor.ProjectCreator
 		public CsProject(string userName)
 		{
 			this.userName = userName.Replace(" ", "");
-			starterKit = "GhostWars";
+			starterKit = "EmptyApp";
 			SetProjectName();
-			Framework = DeltaEngineFramework.GLFW;
-			Path = GetVisualStudioProjectsFolder();
+			Framework = DeltaEngineFramework.OpenTK;
+			BaseDirectory = GetVisualStudioProjectsFolder();
 		}
 
 		private readonly string userName;
@@ -24,14 +24,22 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		private void SetProjectName()
 		{
-			autoProjectName = Name = userName + "s" + StarterKit;
+			autoProjectName = Name = ConcatenateUserNameAndStarterKit();
 		}
 
 		private string autoProjectName;
 		public string Name { get; set; }
+
+		private string ConcatenateUserNameAndStarterKit()
+		{
+			string genitiveS = userName.EndsWith("s", StringComparison.InvariantCultureIgnoreCase)
+				? "" : "s";
+			return userName + genitiveS + StarterKit;
+		}
+
 		public DeltaEngineFramework Framework { get; set; }
-		public string Path { get; set; }
-		
+		public string BaseDirectory { get; set; }
+
 		public static string GetVisualStudioProjectsFolder()
 		{
 			foreach (var visualStudioProjectPath in GetSupportedVisualStudioProjectFolders())
@@ -46,14 +54,14 @@ namespace DeltaEngine.Editor.ProjectCreator
 			const string ProjectsFolder = "Projects";
 			return new[]
 			{
-				System.IO.Path.Combine(myDocumentsPath, "Visual Studio 2013", ProjectsFolder),
-				System.IO.Path.Combine(myDocumentsPath, "Visual Studio 2012", ProjectsFolder),
-				System.IO.Path.Combine(myDocumentsPath, "Visual Studio 2010", ProjectsFolder),
-				System.IO.Path.Combine(myDocumentsPath, "Visual Studio 2008", ProjectsFolder)
+				Path.Combine(myDocumentsPath, "Visual Studio 2013", ProjectsFolder),
+				Path.Combine(myDocumentsPath, "Visual Studio 2012", ProjectsFolder),
+				Path.Combine(myDocumentsPath, "Visual Studio 2010", ProjectsFolder),
+				Path.Combine(myDocumentsPath, "Visual Studio 2008", ProjectsFolder)
 			};
 		}
 
-		private class VisualStudioDefaultProjectsLocationNotFound : Exception { }
+		private class VisualStudioDefaultProjectsLocationNotFound : Exception {}
 
 		public string StarterKit
 		{
@@ -64,6 +72,11 @@ namespace DeltaEngine.Editor.ProjectCreator
 				if (IsNameUnchanged())
 					SetProjectName();
 			}
+		}
+
+		public string OutputDirectory
+		{
+			get { return Path.Combine(BaseDirectory, Name); }
 		}
 
 		private bool IsNameUnchanged()

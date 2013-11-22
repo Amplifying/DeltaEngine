@@ -14,6 +14,7 @@
 			<Setter Property="FontStyle" Value="Normal" />
 			<Setter Property="Background" Value="#e2e2e2" />
 			<Setter Property="Foreground" Value="#FF5D5D5D" />
+			<Setter Property="Padding" Value="4,6,0,0" />
 		</Style>
 
 		<Style TargetType="Label" x:Key="DeltaLabelHeading1">
@@ -57,14 +58,6 @@
 			<Setter Property="Foreground" Value="#FF5D5D5D" />
 		</Style>
 
-		<Style TargetType="Button" x:Key="DeltaButton">
-			<Setter Property="FontSize" Value="14" />
-			<Setter Property="FontFamily" Value="Arial" />
-			<Setter Property="FontStyle" Value="Normal" />
-			<Setter Property="Background" Value="#FF9C9C9C" />
-			<Setter Property="Foreground" Value="#FFFFFFFF" />
-		</Style>
-
 		<Style TargetType="CheckBox" x:Key="DeltaCheckBox">
 			<Setter Property="FontSize" Value="14" />
 			<Setter Property="FontFamily" Value="Arial" />
@@ -72,29 +65,68 @@
 			<Setter Property="Foreground" Value="#FF5D5D5D" />
 		</Style>
 
-		<Style x:Key="TileButton" TargetType="Button">
+		<Style TargetType="Button" x:Key="DeltaButton">
+			<Setter Property="FontSize" Value="14" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="Background">
+				<Setter.Value>
+					<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+						<GradientStop Color="#FFBBBBBB" Offset="0"/>
+						<GradientStop Color="#FF9E9E9E" Offset="1"/>
+					</LinearGradientBrush>
+				</Setter.Value>
+			</Setter>
+			<Setter Property="BorderBrush" Value="Black" />
+			<Setter Property="Foreground" Value="#FFFFFFFF" />
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate TargetType="Button">
-						<Border Background="{TemplateBinding Background}"
-BorderBrush="{TemplateBinding BorderBrush}"
-BorderThickness="{TemplateBinding BorderThickness}">
-							<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+						<Border Background="{TemplateBinding Background}">
+							<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
 						</Border>
 					</ControlTemplate>
 				</Setter.Value>
 			</Setter>
-			<Setter Property="BorderThickness" Value="0" />
-			<Setter Property="Background" Value="#FF9C9C9C" />
-			<Setter Property="Foreground" Value="#FFFFFF" />
 			<Style.Triggers>
-				<Trigger Property="IsMouseOver" Value="True">
-					<Setter Property="Background" Value="#FF7894D3" />
+				<Trigger Property="IsEnabled" Value="False">
+					<Setter Property="Background" Value="#FFCFCFCF" />
 				</Trigger>
-				<Trigger Property="IsPressed" Value="True">
-					<Setter Property="Background" Value="#4e5fb3" />
-				</Trigger>
+				<MultiDataTrigger>
+					<MultiDataTrigger.Conditions>
+						<Condition
+									Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver}" Value="True" />
+						<Condition
+									Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled}" Value="True" />
+					</MultiDataTrigger.Conditions>
+					<Setter Property="Background" Value="#7894d3" />
+				</MultiDataTrigger>
 			</Style.Triggers>
+		</Style>
+
+		<Style x:Key="ActionLabelStyle" TargetType="{x:Type Label}">
+			<Setter Property="Margin" Value="10,3" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontWeight" Value="Bold" />
+			<Setter Property="Foreground" Value="#FF0D58DA" />
+			<Style.Resources>
+				<Style TargetType="TextBlock">
+					<Style.Triggers>
+						<MultiDataTrigger>
+							<MultiDataTrigger.Conditions>
+								<Condition
+									Binding="{Binding RelativeSource={RelativeSource FindAncestor,
+									AncestorType=Label}, Path=IsMouseOver}" Value="True" />
+								<Condition
+									Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled}" Value="True" />
+							</MultiDataTrigger.Conditions>
+							<Setter Property="TextDecorations" Value="Underline" />
+						</MultiDataTrigger>
+					</Style.Triggers>
+				</Style>
+			</Style.Resources>
 		</Style>
 
 	</UserControl.Resources>
@@ -152,8 +184,11 @@ BorderThickness="{TemplateBinding BorderThickness}">
 			Grid.Column="7" Grid.Row="1" FontSize="22" FontWeight="Bold" Grid.RowSpan="7" Height="148" VerticalAlignment="Top">
 			<Image Height="128" Source="../Images/ProjectCreator/CreateProjectIcon.png" Stretch="Fill" Width="128" OpacityMask="Black" />
 		</Button>
-		<WebBrowser
-			Source="http://deltaengine.net/learn/firststeps/#projectcreator"
-			Grid.Column="1" Grid.Row="9" Grid.ColumnSpan="7" />
+		<ScrollViewer 
+			Grid.Column="1" Grid.Row="9" Grid.ColumnSpan="7"
+			VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden">
+			<WebBrowser 
+				Source="http://deltaengine.net/learn/firststeps/#projectcreator"/>
+		</ScrollViewer>
 	</Grid>
 </UserControl>

@@ -16,12 +16,14 @@ namespace DeltaEngine.Editor.ContentManager
 
 		private void ClickOnElement(object sender, MouseButtonEventArgs e)
 		{
-			if (e.RightButton == MouseButtonState.Pressed)
-				return;
-			if (Keyboard.IsKeyDown(Key.LeftCtrl))
+			if (Keyboard.IsKeyDown(Key.LeftCtrl) && e.RightButton != MouseButtonState.Pressed)
 				Messenger.Default.Send(ContentName.Text, "AddToSelection");
 			else if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
 				Messenger.Default.Send(ContentName.Text, "AddMultipleContentToSelection");
+			else if (e.RightButton == MouseButtonState.Pressed)
+			{
+				Messenger.Default.Send(ContentName.Text, "SelectToDelete");
+			}
 			else if (e.LeftButton == MouseButtonState.Pressed)
 			{
 				Messenger.Default.Send("ClearList", "ClearList");

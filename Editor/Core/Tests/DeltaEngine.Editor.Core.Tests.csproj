@@ -53,6 +53,10 @@
       <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
       <Name>DeltaEngine</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Mocks\DeltaEngine.Mocks.csproj">
+      <Project>{A5F4EF37-7B5F-4AAE-BFF2-C2D04DB805F7}</Project>
+      <Name>DeltaEngine.Mocks</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\AppBuilder\DeltaEngine.Editor.AppBuilder.csproj">
       <Project>{C10F83F9-B20B-4362-8953-9B916B5894BE}</Project>
       <Name>DeltaEngine.Editor.AppBuilder</Name>
@@ -63,17 +67,18 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CodePackerTests.cs" />
-    <Compile Include="CodeUnpackerTests.cs" />
     <Compile Include="DeltaEngineFrameworkExtensionsTests.cs" />
     <Compile Include="EmbeddedResourcesLoaderTests.cs" />
     <Compile Include="FrameworkFinderTests.cs" />
-    <Compile Include="ProcessRunnerTests.cs" />
     <Compile Include="ProjectEntryTests.cs" />
+    <Compile Include="SolutionExtensionsTests.cs" />
     <Compile Include="SolutionFileLoaderTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

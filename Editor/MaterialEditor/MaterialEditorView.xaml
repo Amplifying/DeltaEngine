@@ -12,6 +12,21 @@
 			<Setter Property="FontStyle" Value="Normal" />
 			<Setter Property="Background" Value="#e2e2e2" />
 			<Setter Property="Foreground" Value="#FF5D5D5D" />
+			<Setter Property="Padding" Value="4,6,0,0" />
+		</Style>
+
+		<Style TargetType="Label" x:Key="DeltaLabelHeading1">
+			<Setter Property="FontSize" Value="18" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="Foreground" Value="#FF5D5D5D" />
+		</Style>
+
+		<Style TargetType="Label" x:Key="DeltaLabelHeading2">
+			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="Foreground" Value="#FF5D5D5D" />
 		</Style>
 
 		<Style TargetType="TextBox" x:Key="DeltaTextBox">
@@ -45,8 +60,39 @@
 			<Setter Property="FontSize" Value="14" />
 			<Setter Property="FontFamily" Value="Arial" />
 			<Setter Property="FontStyle" Value="Normal" />
-			<Setter Property="Background" Value="#FF9C9C9C" />
+			<Setter Property="Background">
+				<Setter.Value>
+					<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+						<GradientStop Color="#FFBBBBBB" Offset="0"/>
+						<GradientStop Color="#FF9E9E9E" Offset="1"/>
+					</LinearGradientBrush>
+				</Setter.Value>
+			</Setter>
+			<Setter Property="BorderBrush" Value="Black" />
 			<Setter Property="Foreground" Value="#FFFFFFFF" />
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Border Background="{TemplateBinding Background}">
+							<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+			<Style.Triggers>
+				<Trigger Property="IsEnabled" Value="False">
+					<Setter Property="Background" Value="#FFCFCFCF" />
+				</Trigger>
+				<MultiDataTrigger>
+					<MultiDataTrigger.Conditions>
+						<Condition
+Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver}" Value="True" />
+						<Condition
+Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled}" Value="True" />
+					</MultiDataTrigger.Conditions>
+					<Setter Property="Background" Value="#7894d3" />
+				</MultiDataTrigger>
+			</Style.Triggers>
 		</Style>
 
 		<Style TargetType="CheckBox" x:Key="DeltaCheckBox">
@@ -54,6 +100,30 @@
 			<Setter Property="FontFamily" Value="Arial" />
 			<Setter Property="FontStyle" Value="Normal" />
 			<Setter Property="Foreground" Value="#FF5D5D5D" />
+		</Style>
+
+		<Style x:Key="TileButton" TargetType="Button">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Border Background="{TemplateBinding Background}"
+BorderBrush="{TemplateBinding BorderBrush}"
+BorderThickness="{TemplateBinding BorderThickness}">
+							<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Background" Value="#FF7894D3" />
+			<Style.Triggers>
+				<Trigger Property="IsMouseOver" Value="True">
+					<Setter Property="Background" Value="#4e5fb3" />
+				</Trigger>
+				<Trigger Property="IsPressed" Value="True">
+					<Setter Property="Background" Value="#4e5fb3" />
+				</Trigger>
+			</Style.Triggers>
 		</Style>
 
 	</UserControl.Resources>
@@ -64,6 +134,8 @@
 				<RowDefinition Height="12" />
 				<RowDefinition Height="28" />
 				<RowDefinition Height="12" />
+				<RowDefinition Height="28"/>
+				<RowDefinition Height="12"/>
 				<RowDefinition Height="28" />
 				<RowDefinition Height="12" />
 				<RowDefinition Height="28" />
@@ -85,50 +157,39 @@
 			</Grid.RowDefinitions>
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="12" />
-				<ColumnDefinition Width="105" />
+				<ColumnDefinition Width="92" />
 				<ColumnDefinition Width="8" />
 				<ColumnDefinition />
 				<ColumnDefinition Width="90"/>
 				<ColumnDefinition Width="30" />
 				<ColumnDefinition Width="12" />
 			</Grid.ColumnDefinitions>
-			<Label Content="Image" Grid.Column="1" Grid.Row="3" Style="{StaticResource DeltaLabel}" />
-			<ComboBox Grid.Column="3" Grid.Row="3" Style="{StaticResource DeltaComboBox}" ItemsSource="{Binding Path=ImageList}"
+			<Label Content="Image" Grid.Column="1" Grid.Row="5" Style="{StaticResource DeltaLabel}" />
+			<ComboBox Grid.Column="3" Grid.Row="5" Style="{StaticResource DeltaComboBox}" ItemsSource="{Binding Path=ImageList}"
 			          SelectedItem="{Binding Path=SelectedImage}" Grid.ColumnSpan="3" />
-			<Label Content="Shader" Grid.Column="1" Grid.Row="13" Style="{StaticResource DeltaLabel}" />
-			<ComboBox Grid.Column="3" Grid.Row="13" Style="{StaticResource DeltaComboBox}"
+			<Label Content="Shader" Grid.Column="1" Grid.Row="15" Style="{StaticResource DeltaLabel}" />
+			<ComboBox Grid.Column="3" Grid.Row="15" Style="{StaticResource DeltaComboBox}"
 			          ItemsSource="{Binding Path=ShaderList}"
 			          SelectedItem="{Binding Path=SelectedShader}" Grid.ColumnSpan="3" />
 			<ComboBox Grid.Column="3" Grid.Row="1" ItemsSource="{Binding Path=MaterialList}"
 			          Text="{Binding Path=MaterialName}" IsEditable="true" FontFamily="Arial" IsTextSearchEnabled="False"
 			          FontSize="16" Foreground="#FF5D5D5D" Name="LoadedMaterialList" Grid.ColumnSpan="3" />
-			<Label Content="Default Color" Grid.Column="1" Grid.Row="9" Style="{StaticResource DeltaLabel}" />
-			<ComboBox Grid.Column="3" Grid.Row="9" Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="3"
+			<Button Grid.Column="4" Grid.Row="3" Grid.ColumnSpan="2" Content="Load Material" Click="LoadMaterial"/>
+			<Label Content="Default Color" Grid.Column="1" Grid.Row="11" Style="{StaticResource DeltaLabel}" />
+			<ComboBox Grid.Column="3" Grid.Row="11" Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="3"
 			          ItemsSource="{Binding Path=ColorStringList}" SelectedItem="{Binding Path=SelectedColor}" />
 			<Label Content="Name" Grid.Column="1" Grid.Row="1" Style="{StaticResource DeltaLabel}" />
-			<Button Content="Upload New Image" Grid.Column="1" Grid.Row="11" Grid.ColumnSpan="5"
-			        Style="{StaticResource DeltaButton}" HorizontalAlignment="Right" Width="276" Click="ButtonBaseOnClick">
-				<Button.Background>
-					<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-						<GradientStop Color="#FFA0A0A0" Offset="0" />
-						<GradientStop Color="#FF8B8B8B" Offset="1" />
-					</LinearGradientBrush>
-				</Button.Background>
+			<Button Content="Upload New Image" Grid.Column="1" Grid.Row="13" Grid.ColumnSpan="5"
+			        Style="{StaticResource DeltaButton}" Click="ButtonBaseOnClick" Foreground="White">
 			</Button>
 			<Button Style="{StaticResource DeltaButton}" Content="Save" Click="SaveMaterial" FontSize="22" FontWeight="Bold" Height="42" VerticalAlignment="Top"
-			        Grid.ColumnSpan="2" Grid.Column="4" Grid.Row="15" IsEnabled="{Binding Path=CanSaveMaterial}" Grid.RowSpan="2">
-				<Button.Background>
-					<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-						<GradientStop Color="#FFA6A6A6" Offset="0" />
-						<GradientStop Color="#FF979797" Offset="1" />
-					</LinearGradientBrush>
-				</Button.Background>
+			        Grid.ColumnSpan="2" Grid.Column="4" Grid.Row="17" IsEnabled="{Binding Path=CanSaveMaterial}" Grid.RowSpan="2">
 			</Button>
-			<Label Content="Blend Mode" Grid.Row="5" Grid.Column="1" Style="{StaticResource DeltaLabel}" />
-			<ComboBox Grid.ColumnSpan="3" Grid.Column="3" Grid.Row="5" Style="{StaticResource DeltaComboBox}"
-			          ItemsSource="{Binding Path=BlendModeList}" SelectedItem="{Binding Path=SelectedBlendMode}" />
-			<Label Content="RenderSize" Grid.Row="7" Grid.Column="1" Style="{StaticResource DeltaLabel}" />
+			<Label Content="Blend Mode" Grid.Row="7" Grid.Column="1" Style="{StaticResource DeltaLabel}" />
 			<ComboBox Grid.ColumnSpan="3" Grid.Column="3" Grid.Row="7" Style="{StaticResource DeltaComboBox}"
+			          ItemsSource="{Binding Path=BlendModeList}" SelectedItem="{Binding Path=SelectedBlendMode}" />
+			<Label Content="RenderSize" Grid.Row="9" Grid.Column="1" Style="{StaticResource DeltaLabel}" />
+			<ComboBox Grid.ColumnSpan="3" Grid.Column="3" Grid.Row="9" Style="{StaticResource DeltaComboBox}"
 			          ItemsSource="{Binding Path=RenderStyleList}" SelectedItem="{Binding Path=SelectedRenderSize}" />
 		</Grid>
 	</Grid>

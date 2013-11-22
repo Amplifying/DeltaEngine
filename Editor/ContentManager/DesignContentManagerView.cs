@@ -5,6 +5,7 @@ namespace DeltaEngine.Editor.ContentManager
 {
 	public class DesignContentManagerView
 	{
+		//ncrunch: no coverage start 
 		public DesignContentManagerView()
 		{
 			var children = new ObservableCollection<ContentIconAndName>();

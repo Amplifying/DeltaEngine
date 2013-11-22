@@ -12,18 +12,15 @@
 			IsEmulator = false;
 		}
 
-		public string Name { get; private set; }
-		public bool IsEmulator { get; private set; }
-
-		public bool IsAppInstalled(AppInfo app)
+		public override bool IsAppInstalled(AppInfo app)
 		{
 			return false;
 		}
 
-		public void Install(AppInfo app) {}
+		public override void Install(AppInfo app) { }
 
-		public void Uninstall(AppInfo app) {}
+		public override void Uninstall(AppInfo app) { }
 
-		public void Launch(AppInfo app) {}
+		protected override void LaunchApp(AppInfo app) { }
 	}
 }

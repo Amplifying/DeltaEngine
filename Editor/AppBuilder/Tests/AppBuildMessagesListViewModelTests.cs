@@ -94,7 +94,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		{
 			AppBuildMessagesListViewModel messagesList = GetViewModelWithOneMessageForEachIssueType();
 			IList<AppBuildMessageViewModel> messages = messagesList.MessagesMatchingCurrentFilter;
-			Assert.GreaterOrEqual(messages.Count, 2);
+			Assert.GreaterOrEqual(messages.Count, 1);
 			foreach (AppBuildMessageViewModel message in messages)
 			{
 				messagesList.CopyMessageToClipboard(message);

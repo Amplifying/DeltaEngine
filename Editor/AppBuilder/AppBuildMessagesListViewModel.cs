@@ -18,7 +18,7 @@ namespace DeltaEngine.Editor.AppBuilder
 			Warnings = new List<AppBuildMessage>();
 			Errors = new List<AppBuildMessage>();
 			IsShowingErrorsAllowed = true;
-			IsShowingWarningsAllowed = true;
+			IsShowingWarningsAllowed = false;
 		}
 
 		public List<AppBuildMessage> Warnings { get; set; }

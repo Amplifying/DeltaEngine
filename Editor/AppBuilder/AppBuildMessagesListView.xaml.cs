@@ -26,6 +26,7 @@ namespace DeltaEngine.Editor.AppBuilder
 				DataContext = value;
 			}
 		}
+
 		private AppBuildMessagesListViewModel viewModel;
 
 		private void UpdateMessageColumnWidth(object sender, SizeChangedEventArgs e)
@@ -42,6 +43,13 @@ namespace DeltaEngine.Editor.AppBuilder
 			if (newMessageColumnWidth < 50)
 				newMessageColumnWidth = 50;
 			MessageGridViewColumn.Width = newMessageColumnWidth;
+		}
+
+		private void OnCopyMessageClicked(object sender, RoutedEventArgs e)
+		{
+			var messageViewModel = OutputList.SelectedItem as AppBuildMessageViewModel;
+			if (messageViewModel != null)
+				ViewModel.CopyMessageToClipboard(messageViewModel);
 		}
 	}
 }

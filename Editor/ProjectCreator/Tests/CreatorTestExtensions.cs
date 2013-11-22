@@ -10,5 +10,11 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 			return Path.Combine(PathExtensions.GetDeltaEngineInstalledDirectory(), framework,
 				"VisualStudioTemplates", "Delta Engine");
 		}
+
+		public static string GetDeltaEngineProjectFilePath()
+		{
+			return Path.Combine(PathExtensions.GetFallbackEngineSourceCodeDirectory(),
+				"DeltaEngine.csproj");
+		}
 	}
 }

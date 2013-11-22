@@ -60,14 +60,6 @@
 			<Setter Property="Foreground" Value="#FF5D5D5D" />
 		</Style>
 
-		<Style TargetType="Button" x:Key="DeltaButton">
-			<Setter Property="FontSize" Value="14" />
-			<Setter Property="FontFamily" Value="Arial" />
-			<Setter Property="FontStyle" Value="Normal" />
-			<Setter Property="Background" Value="#FF9C9C9C" />
-			<Setter Property="Foreground" Value="#FFFFFFFF" />
-		</Style>
-
 		<Style TargetType="CheckBox" x:Key="DeltaCheckBox">
 			<Setter Property="FontSize" Value="14" />
 			<Setter Property="FontFamily" Value="Arial" />
@@ -75,39 +67,74 @@
 			<Setter Property="Foreground" Value="#FF5D5D5D" />
 		</Style>
 
-		<Style x:Key="TileButton" TargetType="Button">
+		<Style TargetType="Button" x:Key="DeltaButton">
+			<Setter Property="FontSize" Value="14" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="Background">
+				<Setter.Value>
+					<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+						<GradientStop Color="#FFBBBBBB" Offset="0"/>
+						<GradientStop Color="#FF9E9E9E" Offset="1"/>
+					</LinearGradientBrush>
+				</Setter.Value>
+			</Setter>
+			<Setter Property="BorderBrush" Value="Black" />
+			<Setter Property="Foreground" Value="#FFFFFFFF" />
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate TargetType="Button">
-						<Border Background="{TemplateBinding Background}"
-BorderBrush="{TemplateBinding BorderBrush}"
-BorderThickness="{TemplateBinding BorderThickness}">
-							<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+						<Border Background="{TemplateBinding Background}">
+							<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
 						</Border>
 					</ControlTemplate>
 				</Setter.Value>
 			</Setter>
-			<Setter Property="BorderThickness" Value="0" />
-			<Setter Property="Background" Value="#FF9C9C9C" />
-			<Setter Property="Foreground" Value="#FFFFFF" />
 			<Style.Triggers>
-				<Trigger Property="IsMouseOver" Value="True">
-					<Setter Property="Background" Value="#FF7894D3" />
+				<Trigger Property="IsEnabled" Value="False">
+					<Setter Property="Background" Value="#FFCFCFCF" />
 				</Trigger>
-				<Trigger Property="IsPressed" Value="True">
-					<Setter Property="Background" Value="#4e5fb3" />
-				</Trigger>
+				<MultiDataTrigger>
+					<MultiDataTrigger.Conditions>
+						<Condition
+Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver}" Value="True" />
+						<Condition
+Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled}" Value="True" />
+					</MultiDataTrigger.Conditions>
+					<Setter Property="Background" Value="#7894d3" />
+				</MultiDataTrigger>
 			</Style.Triggers>
+		</Style>
+
+		<Style x:Key="ActionLabelStyle" TargetType="{x:Type Label}">
+			<Setter Property="Margin" Value="10,3" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontWeight" Value="Bold" />
+			<Setter Property="Foreground" Value="#FF0D58DA" />
+			<Style.Resources>
+				<Style TargetType="TextBlock">
+					<Style.Triggers>
+						<MultiDataTrigger>
+							<MultiDataTrigger.Conditions>
+								<Condition
+Binding="{Binding RelativeSource={RelativeSource FindAncestor,
+AncestorType=Label}, Path=IsMouseOver}" Value="True" />
+								<Condition
+Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled}" Value="True" />
+							</MultiDataTrigger.Conditions>
+							<Setter Property="TextDecorations" Value="Underline" />
+						</MultiDataTrigger>
+					</Style.Triggers>
+				</Style>
+			</Style.Resources>
 		</Style>
 
 	</UserControl.Resources>
 
 	<ScrollViewer PanningMode="VerticalOnly">
 		<Grid>
-			<Grid.RowDefinitions>
-				<RowDefinition Height="589*" />
-				<RowDefinition Height="466*" />
-			</Grid.RowDefinitions>
 			<Grid Grid.RowSpan="2" Background="#FFF0F0F0">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="12" />
@@ -115,7 +142,7 @@ BorderThickness="{TemplateBinding BorderThickness}">
 					<RowDefinition Height="12" />
 					<RowDefinition Height="28" />
 					<RowDefinition Height="12" />
-					<RowDefinition Height="28" />
+					<RowDefinition Height="35" />
 					<RowDefinition Height="12" />
 					<RowDefinition Height="28" />
 					<RowDefinition Height="12" />
@@ -123,17 +150,7 @@ BorderThickness="{TemplateBinding BorderThickness}">
 					<RowDefinition Height="12" />
 					<RowDefinition Height="28" />
 					<RowDefinition Height="12" />
-					<RowDefinition Height="28" />
-					<RowDefinition Height="12" />
-					<RowDefinition Height="28" />
-					<RowDefinition Height="12" />
-					<RowDefinition Height="28" />
-					<RowDefinition Height="12" />
-					<RowDefinition Height="28" />
-					<RowDefinition Height="12" />
-					<RowDefinition Height="28" />
-					<RowDefinition Height="12" />
-					<RowDefinition Height="28" />
+					<RowDefinition Height="35" />
 					<RowDefinition Height="12" />
 					<RowDefinition Height="28" />
 					<RowDefinition Height="12" />
@@ -149,6 +166,16 @@ BorderThickness="{TemplateBinding BorderThickness}">
 					<RowDefinition Height="12" />
 					<RowDefinition Height="28" />
 					<RowDefinition Height="12" />
+					<RowDefinition Height="35" />
+					<RowDefinition Height="12" />
+					<RowDefinition Height="28" />
+					<RowDefinition Height="12" />
+					<RowDefinition Height="28" />
+					<RowDefinition Height="12" />
+					<RowDefinition Height="28" />
+					<RowDefinition Height="12" />
+					<RowDefinition Height="35" />
+					<RowDefinition Height="12" />
 					<RowDefinition Height="28" />
 					<RowDefinition Height="12" />
 					<RowDefinition Height="28" />
@@ -158,7 +185,7 @@ BorderThickness="{TemplateBinding BorderThickness}">
 					<RowDefinition Height="28" />
 					<RowDefinition Height="12" />
 					<RowDefinition Height="40" />
-					<RowDefinition Height="12" />
+					<RowDefinition />
 				</Grid.RowDefinitions>
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="12" />
@@ -191,8 +218,8 @@ BorderThickness="{TemplateBinding BorderThickness}">
 						</Binding>
 					</TextBox.Text>
 				</TextBox>
-				<Label Content="Changes over Time" Grid.Column="1" Grid.Row="37" Grid.ColumnSpan="7" FontFamily="Arial"
-							Background="#FFACACAC" FontSize="18" Foreground="White" />
+				<Label Content="Changes over Time" Grid.Row="37" Grid.ColumnSpan="8" FontFamily="Arial"
+							Background="{x:Null}" FontSize="18" Foreground="#FF707070" Margin="6,8,6,4" Grid.RowSpan="2" />
 				<TextBox Grid.Column="3" Grid.Row="39" Style="{StaticResource DeltaTextBox}" Margin="1,1,0,0" Grid.ColumnSpan="3">
 					<TextBox.Text>
 						<Binding Path="Acceleration" UpdateSourceTrigger="PropertyChanged">
@@ -256,21 +283,15 @@ BorderThickness="{TemplateBinding BorderThickness}">
 								Content="Load Effect" IsEnabled="{Binding Path=CanLoadEffect}" Click="LoadEffect" Grid.ColumnSpan="2" Margin="0,0,10,0" />
 				<Button x:Name="ResetEffectButton" Style="{StaticResource DeltaButton}" Grid.Row="3" Grid.Column="3"
 								Content="Reset Default" Click="ResetDefaultEffect" Grid.ColumnSpan="5" />
-				<ComboBox Grid.Column="3" Name="ParticleNameTextBox"
+				<ComboBox Grid.Column="1" Name="ParticleNameTextBox"
 									ItemsSource="{Binding Path=EffectsInProject}" Text="{Binding Path=ParticleSystemName}"
-									IsEditable="true" Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="5" IsTextSearchEnabled="False" Margin="1,0,0,11" Grid.RowSpan="2" Grid.Row="1"/>
-				<Label Content="Effect System Properties" Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="7" FontFamily="Arial"
-							Background="#FFACACAC" FontSize="18" Foreground="White" />
+									IsEditable="true" Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="7" IsTextSearchEnabled="False" Margin="56,0,0,11" Grid.RowSpan="2" Grid.Row="1"/>
+				<Label Content="Effect System Properties" Grid.Row="5" Grid.ColumnSpan="8" FontFamily="Arial"
+							Background="{x:Null}" FontSize="18" Foreground="#FF707070" Margin="6,8,6,4" Grid.RowSpan="2" />
 				<Button x:Name="NewEmitterButton" Style="{StaticResource DeltaButton}" Grid.Row="7" Grid.Column="1"
 								Content="New Emitter" IsEnabled="{Binding Path=CanModifyEmitters}" Click="AddDefaultEmitter" />
 				<Button x:Name="RemoveEmitterButton" Style="{StaticResource DeltaButton}" Grid.Row="7" Grid.Column="3"
 								Content="Delete Emitter" IsEnabled="{Binding Path=CanModifyEmitters}" Click="RemoveSelectedEmitter" Grid.ColumnSpan="5" >
-					<Button.Background>
-						<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-							<GradientStop Color="#FFA0A0A0" Offset="0"/>
-							<GradientStop Color="#FF8B8B8B" Offset="1"/>
-						</LinearGradientBrush>
-					</Button.Background>
 				</Button>
 				<Button x:Name="AddFromContentButton" Style="{StaticResource DeltaButton}" Grid.Row="9" Grid.Column="1"
 								Content="Existing Emitters" IsEnabled="{Binding Path=CanModifyEmitters}" Click="AddEmitterFromContent" />
@@ -283,13 +304,13 @@ BorderThickness="{TemplateBinding BorderThickness}">
 									ItemsSource="{Binding Path=AvailableEmitterIndices}" SelectedItem="{Binding Path=CurrentEmitterInEffect}"
 									Grid.Column="3"
 									Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="5" IsEnabled="{Binding Path=CanModifyEmitters}" />
-				<Label Content="Emitter Properties" Grid.Column="1" Grid.Row="13" Grid.ColumnSpan="7" FontFamily="Arial"
-							Background="#FFACACAC" FontSize="18" Foreground="White" />
+				<Label Content="Emitter Properties" Grid.Row="13" Grid.ColumnSpan="8" FontFamily="Arial"
+							Background="{x:Null}" FontSize="18" Foreground="#FF707070" Margin="6,8,6,4" Grid.RowSpan="2" />
 				<ComboBox Grid.Row="17"
 									ItemsSource="{Binding Path=MaterialList}" SelectedItem="{Binding Path=SelectedMaterialName}" Grid.Column="3"
 									Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="5" />
 				<Label Content="Material" Grid.Row="17" Style="{StaticResource DeltaLabel}" Grid.Column="1" />
-				<Label Content="Name" Grid.Column="1" Grid.Row="1" Style="{StaticResource DeltaLabel}" Margin="1,1,0,11" Grid.RowSpan="2" />
+				<Label Content="Name" Grid.Column="1" Grid.Row="1" Style="{StaticResource DeltaLabel}" Margin="1,1,69,11" Grid.RowSpan="2" />
 				<Label Content="Start Position" Grid.Column="1" Grid.Row="31" Style="{StaticResource DeltaLabel}" Margin="0,0,0,0" />
 				<Label Content="Billboard Mode" Grid.Column="1" Grid.Row="27" Style="{StaticResource DeltaLabel}" />
 				<TextBox Grid.Column="3" Grid.Row="31" TextWrapping="Wrap" Style="{StaticResource DeltaTextBox}" Margin="0,0,0,0" Grid.ColumnSpan="3">
@@ -357,27 +378,15 @@ BorderThickness="{TemplateBinding BorderThickness}">
 				<Button x:Name="SpawnIntervalRangeButton" Grid.Column="7" Grid.Row="43" IsEnabled="False">
 					<Image Height="20" Width="20" Source="..\Images\ParticleEditor\RangeButton.png" />
 				</Button>
-				<Label Content="Particles' Starting Properties" Grid.Column="1" Grid.Row="29" Grid.ColumnSpan="7"
+				<Label Content="Particles' Starting Properties" Grid.Row="29" Grid.ColumnSpan="8"
 							FontFamily="Arial"
-							Background="#FFACACAC" FontSize="18" Foreground="White" />
+							Background="{x:Null}" FontSize="18" Foreground="#FF707070" Margin="6,8,6,4" Grid.RowSpan="2" />
 				<Button Content="Save" Click="Save" Style="{StaticResource DeltaButton}"
 								HorizontalAlignment="Right" Width="120" Foreground="White" FontWeight="Bold" FontSize="22"
 								Grid.Row="47" RenderTransformOrigin="0.5,0.5" Grid.Column="4" Grid.ColumnSpan="4" IsEnabled="{Binding Path=CanSaveParticleSystem}">
-					<Button.Background>
-						<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-							<GradientStop Color="#FFA0A0A0" Offset="0" />
-							<GradientStop Color="#FF8B8B8B" Offset="1" />
-						</LinearGradientBrush>
-					</Button.Background>
 				</Button>
 				<Button Content="Create Material" Style="{StaticResource DeltaButton}" Click="OpenMaterialEditor"
 								Foreground="White" FontSize="18" Grid.Row="19" RenderTransformOrigin="0.5,0.5" Grid.Column="1" Margin="1,0,0,0" Grid.ColumnSpan="7">
-					<Button.Background>
-						<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-							<GradientStop Color="#FFA0A0A0" Offset="0" />
-							<GradientStop Color="#FF8B8B8B" Offset="1" />
-						</LinearGradientBrush>
-					</Button.Background>
 				</Button>
 				<Label Content="Emitter Type" Grid.Column="1" Grid.Row="15" Style="{StaticResource DeltaLabel}" />
 				<ComboBox Grid.Row="15"

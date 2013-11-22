@@ -11,13 +11,13 @@ namespace DeltaEngine.Editor
 	{
 		public EditorContentLoader(OnlineServiceConnection connection)
 			: base(connection) {}
-
+		
 		public void SetProject(SetProject newProject)
 		{
 			contentPath = Path.Combine("Content", newProject.ProjectName);
 			projectMetaDataFile = null;
 			ProjectName = newProject.ProjectName;
-			ClearBufferedRessources();
+			ClearBufferedResources();
 			RefreshMetaData();
 			SendCheckProjectContent();
 		}
@@ -30,9 +30,12 @@ namespace DeltaEngine.Editor
 		public List<string> GetAllNamesByType(ContentType type)
 		{
 			var names = new List<string>();
-			foreach (var contentMetaData in metaData)
-				if (contentMetaData.Value.Type == type)
-					names.Add(contentMetaData.Key);
+			lock (metaData)
+			{
+				foreach (var contentMetaData in metaData)
+					if (contentMetaData.Value.Type == type)
+						names.Add(contentMetaData.Key);
+			}
 			return names;
 		}
 
@@ -53,9 +56,12 @@ namespace DeltaEngine.Editor
 
 		public ContentType? GetTypeOfContent(string content)
 		{
-			foreach (var contentMetaData in metaData)
-				if (contentMetaData.Value.Name == content)
-					return contentMetaData.Value.Type;
+			lock (metaData)
+			{
+				foreach (var contentMetaData in metaData)
+					if (contentMetaData.Value.Name == content)
+						return contentMetaData.Value.Type;
+			}
 			return null;
 		}
 	}

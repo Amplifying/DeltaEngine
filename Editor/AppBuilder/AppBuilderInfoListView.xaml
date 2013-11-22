@@ -64,7 +64,7 @@
 					MouseDown="OnPlatformsStackPanelClicked">
 					<Image
 						Source="/DeltaEngine.Editor;component/Images/AppBuilder/BuildInfoIcon.png"
-						Height="32" Width="32"
+						Height="28" Width="28"
 					/>
 					<Label
 						x:Name="AppsLabel" Content="{Binding Path=TextOfBuiltApps}"
@@ -79,7 +79,7 @@
 					MouseDown="OnErrorsStackPanelClicked">
 					<Image
 						Source="/DeltaEngine.Editor;component/Images/AppBuilder/BuildErrorIcon.png"
-						Height="32" Width="32"
+						Height="28" Width="28"
 					/>
 					<Label
 						x:Name="ErrorsLabel" Content="{Binding Path=TextOfErrorCount}"
@@ -95,7 +95,7 @@
 				>
 					<Image
 						Source="/DeltaEngine.Editor;component/Images/AppBuilder/BuildWarningIcon.png"
-						Height="32" Width="32"
+						Height="28" Width="28"
 					/>
 					<Label
 						x:Name="WarningsLabel" Content="{Binding Path=TextOfWarningCount, Mode=OneWay}"

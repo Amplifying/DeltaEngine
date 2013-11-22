@@ -38,6 +38,14 @@
 					</GridViewColumn>
 				</GridView>
 			</ListView.View>
+			<ListView.ContextMenu>
+				<ContextMenu>
+					<MenuItem
+						Name="CopyMessageMenuItem" Header="Copy Message" Click="OnCopyMessageClicked"
+						ToolTip="Copies the current message to the clipboard"
+					/>
+				</ContextMenu>
+			</ListView.ContextMenu>
 		</ListView>
 	</Grid>
 </UserControl>

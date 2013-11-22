@@ -55,6 +55,10 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Content\Online\DeltaEngine.Content.Online.csproj">
+      <Project>{68AA6280-09EF-4325-B5F8-B8A967004144}</Project>
+      <Name>DeltaEngine.Content.Online</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\DeltaEngine.csproj">
       <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
       <Name>DeltaEngine</Name>
@@ -67,9 +71,17 @@
       <Project>{A5F4EF37-7B5F-4AAE-BFF2-C2D04DB805F7}</Project>
       <Name>DeltaEngine.Mocks</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Networking\Messages\DeltaEngine.Networking.Messages.csproj">
+      <Project>{74863E62-A568-4C0A-A37F-F04BFA8EB9DB}</Project>
+      <Name>DeltaEngine.Networking.Messages</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Core\DeltaEngine.Editor.Core.csproj">
       <Project>{C667C7FC-A1C7-4CBC-98C0-C97F776E4570}</Project>
       <Name>DeltaEngine.Editor.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DeltaEngine.Editor.csproj">
+      <Project>{4C0891C0-CE79-4A2D-919E-6F706B62C8EA}</Project>
+      <Name>DeltaEngine.Editor</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Messages\DeltaEngine.Editor.Messages.csproj">
       <Project>{E4BF1DFC-4753-42E8-AF9C-06B5B3E6748E}</Project>
@@ -94,6 +106,7 @@
     <Compile Include="Android\AndroidDebugBridgeRunnerTests.cs" />
     <Compile Include="Android\AndroidDeviceFinderTests.cs" />
     <Compile Include="Android\AndroidDeviceTests.cs" />
+    <Compile Include="Android\AndroidDriverDownloaderTests.cs" />
     <Compile Include="AppBuilderInfoListViewTests.cs" />
     <Compile Include="AppBuilderViewTests.cs" />
     <Compile Include="AppBuilderViewModelTests.cs" />

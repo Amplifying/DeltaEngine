@@ -17,7 +17,7 @@ namespace DeltaEngine.Editor.Helpers
 		//ncrunch: no coverage start
 		public DesignEditorViewModel()
 		{
-			SetLoginState(false);
+			SetLoginState(true);
 			SetErrorMessage("Error message");
 			TryLogInfoToLogOutput("Log message");
 			ApiKey = "1A2B3C4D-5E6F-7G8H-9I0J-1K2L3M4N5O6P";

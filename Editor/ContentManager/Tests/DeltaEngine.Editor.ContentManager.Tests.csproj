@@ -115,6 +115,7 @@
     <Compile Include="Previewers\MaterialPreviewerTests.cs" />
     <Compile Include="Previewers\MusicPreviewerTests.cs" />
     <Compile Include="Previewers\ParticlePreviewerTests.cs" />
+    <Compile Include="Previewers\ParticleSystemPreviewerTests.cs" />
     <Compile Include="Previewers\SoundPreviewerTests.cs" />
     <Compile Include="Previewers\SpriteSheetPreviewerTests.cs" />
     <Compile Include="Previewers\UIPreviewerTests.cs" />

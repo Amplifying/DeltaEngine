@@ -15,11 +15,18 @@ namespace DeltaEngine.Editor.Mocks
 			UserName = userName;
 			ProjectName = projectName;
 			EditorSettings = new MockSettings();
+			availableContentProjects = new List<string>();
 		}
 
 		public string UserName { get; private set; }
 		public string ProjectName { get; private set; }
 		public Settings EditorSettings { get; private set; }
+		protected readonly List<string> availableContentProjects;
+
+		public string[] AvailableProjects
+		{
+			get { return availableContentProjects.ToArray(); }
+		}
 
 		public void ReceiveData(object data)
 		{
@@ -40,6 +47,8 @@ namespace DeltaEngine.Editor.Mocks
 		public void ChangeProject(string projectName)
 		{
 			ProjectName = projectName;
+			if (!String.IsNullOrEmpty(projectName))
+				availableContentProjects.Add(projectName);
 			if (ProjectChanged != null)
 				ProjectChanged();
 		}
@@ -49,6 +58,12 @@ namespace DeltaEngine.Editor.Mocks
 		public event Action<ContentType, string> ContentUpdated;
 		public event Action<string> ContentDeleted;
 
+		public void SetAvailableProjects(string[] projectNames)
+		{
+			availableContentProjects.Clear();
+			availableContentProjects.AddRange(projectNames);
+		}
+
 		public void SetContentReady()
 		{
 			if (ContentReady != null)
@@ -56,6 +71,26 @@ namespace DeltaEngine.Editor.Mocks
 		}
 
 		public event Action ContentReady;
+
+		public string CurrentContentProjectSolutionFilePath
+		{
+			get
+			{
+				if (!String.IsNullOrEmpty(solutionFilePath))
+					return solutionFilePath;
+				if (ProjectName.Contains("Tutorials"))
+					return SolutionExtensions.GetTutorialsSolutionFilePath();
+				return SolutionExtensions.GetSamplesSolutionFilePath();
+			}
+			set { solutionFilePath = value; }
+		}
+		
+		private string solutionFilePath;
+
+		public void SetContentProjectSolutionFilePath(string name, string slnFilePath)
+		{
+			solutionFilePath = slnFilePath;
+		}
 
 		public virtual void Send(object message, bool allowToCompressMessage = true) {}
 
@@ -90,6 +125,12 @@ namespace DeltaEngine.Editor.Mocks
 				return ContentType.SpriteSheetAnimation;
 			if (content.Contains("Mesh"))
 				return ContentType.Mesh;
+			if (content.Contains("Material"))
+				return ContentType.Material;
+			if (content.Contains("UI") || content.Contains("Scene"))
+				return ContentType.Scene;
+			if (content.Contains("Theme"))
+				return ContentType.Theme;
 			return ContentType.Image;
 		}
 
@@ -98,6 +139,8 @@ namespace DeltaEngine.Editor.Mocks
 		{
 			NumberOfMessagesSent++;
 		}
+
+		public void UploadMutlipleContentToServer(string[] files) {}
 
 		public int NumberOfMessagesSent { get; private set; }
 

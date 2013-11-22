@@ -17,9 +17,12 @@ namespace DeltaEngine.Editor.Core.Tests
 			var projectEntry = new ProjectEntry(ProjectEntryString);
 			Assert.IsTrue(projectEntry.IsCSharpProject);
 			Assert.IsFalse(projectEntry.IsSolutionFolder);
-			Assert.AreEqual(ProjectName, projectEntry.Title);
+			Assert.AreEqual(ProjectName, projectEntry.Name);
 			Assert.AreEqual(ProjectFilePath, projectEntry.FilePath);
 			Assert.AreEqual(ProjectGuid, projectEntry.Guid);
+			Assert.AreEqual(-1260520527, projectEntry.GetHashCode());
+			Assert.IsFalse(projectEntry.Equals(new object()));
+			Assert.IsTrue(projectEntry.Equals(new ProjectEntry(ProjectEntryString)));
 		}
 
 		[Test]
@@ -34,7 +37,7 @@ namespace DeltaEngine.Editor.Core.Tests
 			var projectEntry = new ProjectEntry(ProjectFolderString);
 			Assert.IsTrue(projectEntry.IsSolutionFolder);
 			Assert.IsFalse(projectEntry.IsCSharpProject);
-			Assert.AreEqual(FolderName, projectEntry.Title);
+			Assert.AreEqual(FolderName, projectEntry.Name);
 			Assert.AreEqual(FolderName, projectEntry.FilePath);
 			Assert.AreEqual(FolderGuid, projectEntry.Guid);
 		}

@@ -13,7 +13,7 @@
 	x:Class="DeltaEngine.Editor.EditorView"
 	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance Type=helpers:DesignEditorViewModel, IsDesignTimeCreatable=True}"
-	Title="Delta Engine Editor" Width="1366" Height="750" MinWidth="1068" MinHeight="600"
+	Title="Delta Engine Editor" Width="1366" Height="750" MinWidth="1024" MinHeight="600"
 	WindowStyle="None" ResizeMode="CanResize" BorderThickness="0" Icon="DeltaEngine.Editor.ico"
 	MouseDown="OnMouseDown">
 	<shell:WindowChrome.WindowChrome>
@@ -87,15 +87,15 @@
 		</Grid.RowDefinitions>
 		<Grid Background="#FFF3F3F3" Grid.Row="0" Grid.RowSpan="2">
 			<Image
-				Source="Images\WelcomeDeltaLogo.png" Width="186" Height="50"
-				HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,11,0,0" />
-			<Grid HorizontalAlignment="Left" Background="White" Width="264" Margin="0,74,0,0">
+				Source="Images\WelcomeDeltaLogo.png" Width="184" Height="58"
+				HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,7,0,0" />
+			<Grid HorizontalAlignment="Left" Background="White" Width="200" Margin="0,74,0,0">
 				<ListBox
 					Name="EditorPluginSelection"
 					ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 					IsEnabled="{Binding Path=IsLoggedIn}"
 					SelectionChanged="OnEditorPluginSelectionChanged"
-					ItemsSource="{Binding Path=EditorPlugins}" BorderBrush="{x:Null}" Margin="0,0,54,0">
+					ItemsSource="{Binding Path=EditorPlugins}" BorderBrush="{x:Null}">
 					<ListBox.Background>
 						<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
 							<GradientStop Color="#FFFBFBFB" Offset="0" />
@@ -109,7 +109,7 @@
 					</ListBox.ItemTemplate>
 				</ListBox>
 			</Grid>
-			<Grid Margin="210,0,0,0" Background="#FFE4E4E4">
+			<Grid Margin="200,0,0,0" Background="#FFE4E4E4">
 				<Grid Visibility="{Binding Path=LoginPanelVisibility}">
 					<Grid HorizontalAlignment="Left" Width="1022" Height="718" VerticalAlignment="Top">
 						<Grid.ColumnDefinitions>
@@ -169,15 +169,8 @@
 							Background="{Binding Path=ErrorBackgroundColor}"
 							Margin="0,16,0,0" FontSize="16" Padding="5"
 							Visibility="{Binding Path=ErrorVisibility}"
-							MouseLeftButtonDown="ErrorClick" Grid.Row="5" Grid.Column="6" RenderTransformOrigin="0.5,0.5" Grid.RowSpan="2" Height="30" VerticalAlignment="Top" Grid.ColumnSpan="6">
-							<Label.RenderTransform>
-								<TransformGroup>
-									<ScaleTransform/>
-									<SkewTransform AngleY="-0.102"/>
-									<RotateTransform/>
-									<TranslateTransform Y="-0.498"/>
-								</TransformGroup>
-							</Label.RenderTransform>
+							MouseLeftButtonDown="ErrorClick" Grid.Row="5" Grid.Column="6" Grid.RowSpan="2"
+							Height="30" VerticalAlignment="Top" Grid.ColumnSpan="6">
 							<TextBlock Text="{Binding Path=Error}" />
 						</Label>
 						<Button
@@ -186,57 +179,50 @@
 							Command="{Binding Path=OnLoginButtonClicked}" FontWeight="Bold" Grid.Row="8" Grid.Column="6" Grid.ColumnSpan="6" Grid.RowSpan="2" />
 						<Button Grid.ColumnSpan="3" Margin="1,0,0,0" Grid.Column="5" Grid.Row="17" Style="{StaticResource ResourceKey=TileButton}" BorderBrush="{x:Null}"
 										Click="DocumentationClick">
-							<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="223" Height="94">
-								<TextBlock Text="Documentation" Height="22" Margin="0,0,80,0" Foreground="White" FontSize="16" />
-								<Image Source="Images/Documentation.png" Height="81" HorizontalAlignment="Left" Width="56"/>
-							</StackPanel>
+							<Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="230" Height="94">
+								<TextBlock Text="Documentation" Height="22" Margin="0,1,80,71" Foreground="White" FontSize="16" />
+								<Image Source="Images/Documentation.png" Height="81" HorizontalAlignment="Left" Width="56" Margin="5,23,0,-10"/>
+							</Grid>
 						</Button>
 						<Button Grid.ColumnSpan="3" Margin="1,0,0,0" Grid.Column="5" Grid.Row="15" Style="{StaticResource ResourceKey=TileButton}" BorderBrush="{x:Null}"
 										Click="TroubleshootingClick">
-							<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="223" Height="94">
-								<TextBlock Text="Troubleshooting Checklist/ FAQ" Height="22" Foreground="White" FontSize="16" />
-								<Image Source="Images/TroubleshootingChecklist.png" Height="64" HorizontalAlignment="Left" Width="55"/>
-							</StackPanel>
+							<Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="230" Height="100">
+								<TextBlock Text="Troubleshooting Checklist/ FAQ" Height="22" Foreground="White" FontSize="16" Margin="0,1,0,77" />
+								<Image Source="Images/TroubleshootingChecklist.png" Height="64" HorizontalAlignment="Left" Width="55" Margin="0,26,0,4"/>
+							</Grid>
 						</Button>
-						<Button Grid.Column="9" Grid.Row="17" Style="{StaticResource ResourceKey=TileButton}" BorderBrush="{x:Null}"
-										Click="StartingWithCSClick">
-							<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Height="100" Width="112">
-								<Image Source="Images/CSharp.png" Height="77" HorizontalAlignment="Left" Width="54" Margin="29,0,0,0"/>
-								<TextBlock Text="Starting with C#" Height="24" Foreground="White" FontSize="13" Margin="5,0" HorizontalAlignment="Center" />
-							</StackPanel>
-						</Button>
-						<Button Grid.Column="11" Grid.Row="17" Style="{StaticResource ResourceKey=TileButton}" BorderBrush="{x:Null}" Grid.ColumnSpan="2"
-										Click="StartingWithCPPClick">
-							<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Height="100" Width="112">
-								<Image Source="Images/CPP.png" Height="77" HorizontalAlignment="Left" Width="65" Margin="24,0,0,0"/>
-								<TextBlock Text="Starting with C++" Height="23" Foreground="White" FontSize="13" Margin="5,0" HorizontalAlignment="Center" />
-							</StackPanel>
+						<Button Grid.Column="9" Grid.Row="15" Style="{StaticResource ResourceKey=TileButton}" BorderBrush="{x:Null}"
+										Click="StartingWithCSClick" Grid.ColumnSpan="4">
+							<Grid HorizontalAlignment="Center" VerticalAlignment="Center" Height="100" Width="230">
+								<Image Source="Images/CSharp.png" HorizontalAlignment="Left" Width="72" Margin="3,34,0,0"/>
+								<TextBlock Text="Starting with C#" Height="24" Foreground="White" FontSize="16" Margin="-50,0,69,76" HorizontalAlignment="Center" />
+							</Grid>
 						</Button>
 						<Button Grid.ColumnSpan="3" Margin="1,0,0,0" Grid.Column="5" Grid.Row="13" BorderBrush="{x:Null}"
 							Click="FirstStepsClick" Style="{StaticResource ResourceKey=TileButton}">
-							<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="223" Height="94">
-								<TextBlock Text="First Steps" Height="22" Margin="0,0,80,0" Foreground="White" FontSize="16" />
-								<Image Source="Images/FirstSteps.png" Height="87" HorizontalAlignment="Left" Width="60"/>
-							</StackPanel>
+							<Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="230" Height="100">
+								<TextBlock Text="First Steps" Height="22" Margin="0,-2,80,74" Foreground="White" FontSize="16" />
+								<Image Source="Images/FirstSteps.png" Height="87" HorizontalAlignment="Left" Width="60" Margin="0,21,0,-14"/>
+							</Grid>
 						</Button>
 						<Button Grid.ColumnSpan="4" Grid.Column="9" Grid.Row="13" Style="{StaticResource ResourceKey=TileButton}" BorderBrush="{x:Null}"
 							Click="TutorialsClick">
-							<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="223" Height="94">
-								<TextBlock Text="Tutorials" Height="22" Margin="0,0,80,0" Foreground="White" FontSize="16" />
-								<Image Source="Images/Tutorials.png" Height="83" HorizontalAlignment="Left" Width="75"/>
-							</StackPanel>
+							<Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="230" Height="94">
+								<TextBlock Text="Tutorials" Height="22" Margin="0,-1,80,73" Foreground="White" FontSize="16" />
+								<Image Source="Images/Tutorials.png" Height="83" HorizontalAlignment="Left" Width="75" Margin="0,26,0,-15"/>
+							</Grid>
 						</Button>
 						<Image Grid.Column="1" HorizontalAlignment="Left" Height="651" Grid.Row="1" Grid.RowSpan="17" VerticalAlignment="Top" Width="386" Source="Images/LoginImage.jpg" Grid.ColumnSpan="4"/>
 						<Label Content="Getting Started" Grid.Column="4" FontSize="22" Foreground="#FF7A7A7A" Margin="11,14,78,6" FontWeight="Bold" Grid.ColumnSpan="8" Grid.Row="11" Grid.RowSpan="2"/>
-						<Label Content="The Delta Engine allows to write games or &#xD;&#xA;apps in C# or C++. It is free to use on the &#xD;&#xA;PC. Convert your apps to other platforms &#xD;&#xA;(Html5, Android, etc) via our cloud services." Grid.Column="2" FontSize="16" Foreground="White" Margin="0,14,0,39" Grid.Row="11" Grid.RowSpan="3"/>
-						<Button Grid.Column="9" Grid.Row="15" Style="{StaticResource ResourceKey=TileButton}" BorderBrush="{x:Null}"
+						<Label Content="The Delta Engine allows to write games or &#xA;apps in C#. It is free to use on the  PC. &#xD;&#xA;Convert your apps to other platforms &#xA;(Html5, Android, etc) via our cloud services." Grid.Column="2" FontSize="16" Foreground="White" Margin="0,14,0,39" Grid.Row="11" Grid.RowSpan="3"/>
+						<Button Grid.Column="9" Grid.Row="17" Style="{StaticResource ResourceKey=TileButton}" BorderBrush="{x:Null}"
 							Click="AboutTheEditorClick">
-							<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Height="100" Width="112">
-								<Image Source="Images/Editor.png" Height="77" HorizontalAlignment="Left" Width="54" Margin="29,0,0,0"/>
-								<TextBlock Text="Editor" Height="24" Foreground="White" FontSize="14" Margin="5,0" HorizontalAlignment="Center" />
-							</StackPanel>
+							<Grid HorizontalAlignment="Center" VerticalAlignment="Center" Height="100" Width="100">
+								<Image Source="Images/Editor.png" HorizontalAlignment="Left" Width="54" Margin="22,9,0,30"/>
+								<TextBlock Text="Editor" Height="24" Foreground="White" FontSize="16"  HorizontalAlignment="Center" VerticalAlignment="Center" Width="54" Margin="28,77,18,-1" />
+							</Grid>
 						</Button>
-						<Button Grid.Column="11" Grid.Row="15" Style="{StaticResource ResourceKey=TileButton}" BorderBrush="{x:Null}"
+						<Button Grid.Column="11" Grid.Row="17" Style="{StaticResource ResourceKey=TileButton}" BorderBrush="{x:Null}"
 							Click="AppBuilderClick" Grid.ColumnSpan="2">
 							<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Height="104" Width="112">
 								<Image Source="Images/AppBuilder.png" Height="79" HorizontalAlignment="Left" Width="49" Margin="29,0,0,0"/>
@@ -246,16 +232,23 @@
 					</Grid>
 				</Grid>
 				<Grid Visibility="{Binding Path=EditorPanelVisibility}" Background="#FFE4E4E4">
-					<TextBlock Margin="0,11,558,0" TextAlignment="Right" VerticalAlignment="Top" Foreground="#FF7B7B7B" Text="{Binding Path=VersionNumber}" FontSize="14" FontFamily="Arial" HorizontalAlignment="Right" Width="125"/>
+					<TextBlock
+						Margin="0,11,772,0" TextAlignment="Right" VerticalAlignment="Top" Foreground="#FF7B7B7B"
+						Text="{Binding Path=PopupText}" FontSize="14" FontFamily="Arial"
+						HorizontalAlignment="Right" Visibility="{Binding Path=PopupVisibility}" />
+					<TextBlock
+						Margin="0,11,607,0" TextAlignment="Right" VerticalAlignment="Top" Foreground="#FF7B7B7B"
+						Text="{Binding Path=VersionNumber}" FontSize="14" FontFamily="Arial"
+						HorizontalAlignment="Right" Width="125" />
 					<Label
-						Margin="0,6,423,0" VerticalAlignment="Top"
+						Margin="0,6,470,0" VerticalAlignment="Top"
 						FontSize="14" Content="Content Project:" Foreground="#FF7B7B7B" FontFamily="Arial" HorizontalAlignment="Right" Width="113" />
 					<ComboBox
-						Margin="0,8,274,0" VerticalAlignment="Top" HorizontalAlignment="Right"
-						Foreground="#FF7B7B7B" BorderBrush="{x:Null}" FontFamily="Arial" Width="149"
+						Margin="0,8,274,0" VerticalAlignment="Top" HorizontalAlignment="Right" FontSize="14"
+						Foreground="#FF7B7B7B" BorderBrush="{x:Null}" FontFamily="Arial" Width="197"
 						ItemsSource="{Binding Path=AvailableProjects}"
-						SelectedValue="{Binding Path=SelectedProject, Mode=TwoWay}"
-						IsEnabled="{Binding Path=IsContentReady}" FontSize="14">
+						SelectedItem="{Binding Path=SelectedProject}"
+						IsEnabled="{Binding Path=IsContentReady}">
 						<ComboBox.Background>
 							<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
 								<GradientStop Color="#FFB0B0B0" Offset="0" />
@@ -324,14 +317,10 @@
 						FontSize="14" Content="❘" Foreground="#FFC1C1C1" FontFamily="Arial" FontWeight="Bold" HorizontalAlignment="Right"
 						Width="17" Height="26" />
 					<Label
-						Margin="0,5,533,0" VerticalAlignment="Top"
+						Margin="0,5,583,0" VerticalAlignment="Top"
 						FontSize="14" Content="❘" Foreground="#FFC1C1C1" FontFamily="Arial" FontWeight="Bold" HorizontalAlignment="Right"
 						Width="17" Height="26" />
 				</Grid>
-				<TextBlock 
-					HorizontalAlignment="Left" Margin="900,10,0,0" TextWrapping="Wrap" 
-					Text="{Binding Path=PopupText}" VerticalAlignment="Top"
-					Visibility="{Binding Path=PopupVisibility}"/>
 			</Grid>
 			<Image
 				Width="24" Height="24" Margin="0,5,96,0" VerticalAlignment="Top"

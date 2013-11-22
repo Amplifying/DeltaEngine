@@ -48,14 +48,14 @@ namespace DeltaEngine.Editor.Emulator
 
 		protected override void ResizeCentered(DeltaSize newSizeInPixels)
 		{
-			throw new ResizeNotAllowedForInEditorViewport();
+			//throw new ResizeNotAllowedForInEditorViewport();
 		}
 
 		public class ResizeNotAllowedForInEditorViewport : Exception {}
 
 		public override void SetFullscreen(DeltaSize setFullscreenViewportSize)
 		{
-			throw new ResizeNotAllowedForInEditorViewport();
+			//throw new ResizeNotAllowedForInEditorViewport();
 		}
 
 		public override void Present()

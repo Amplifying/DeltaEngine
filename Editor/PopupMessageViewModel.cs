@@ -12,25 +12,26 @@ namespace DeltaEngine.Editor
 		{
 			Text = "";
 			Visiblity = Visibility.Hidden;
-			this.messageDisplayTime = messageDisplayTime;
 			service.ContentUpdated += ShowUpdateText;
+			messageTimer = new Timer(messageDisplayTime);
+			messageTimer.Elapsed += HideUpdateText;
 		}
 
 		public string Text { get; private set; }
 		public Visibility Visiblity { get; private set; }
-		private readonly int messageDisplayTime;
 
 		private void ShowUpdateText(ContentType type, string name)
 		{
 			Visiblity = Visibility.Visible;
 			Text = name + " " + type + " Updated!";
-			messageVisibility = new Timer(messageDisplayTime);
-			messageVisibility.Elapsed += RemoveUpdateText;
-			messageVisibility.Start();
 			FireVisibilityUpdatedAction();
+			if (messageTimer.Enabled)
+				ResetTimer();
+			else
+				messageTimer.Start();
 		}
 
-		private Timer messageVisibility;
+		private readonly Timer messageTimer;
 
 		private void FireVisibilityUpdatedAction()
 		{
@@ -40,11 +41,15 @@ namespace DeltaEngine.Editor
 
 		public event Action MessageUpdated;
 
-		private void RemoveUpdateText(object sender, ElapsedEventArgs e)
+		private void ResetTimer()
+		{
+			messageTimer.Stop();
+			messageTimer.Start();
+		}
+
+		private void HideUpdateText(object sender, ElapsedEventArgs e)
 		{
 			Visiblity = Visibility.Hidden;
-			messageVisibility.Elapsed -= RemoveUpdateText;
-			messageVisibility.Dispose();
 			FireVisibilityUpdatedAction();
 		}
 	}

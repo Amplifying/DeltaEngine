@@ -6,52 +6,135 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:contentManager="clr-namespace:DeltaEngine.Editor.ContentManager"
 	HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-	d:DesignWidth="600" d:DesignHeight="600" MinWidth="300"
+	d:DesignWidth="300" d:DesignHeight="600" MinWidth="300"
 	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance Type=contentManager:DesignContentManagerView, IsDesignTimeCreatable=True}">
+
 	<UserControl.Resources>
+
 		<Style TargetType="Label" x:Key="DeltaLabel">
-			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontSize" Value="14" />
 			<Setter Property="FontFamily" Value="Arial" />
 			<Setter Property="FontStyle" Value="Normal" />
 			<Setter Property="Background" Value="#e2e2e2" />
 			<Setter Property="Foreground" Value="#FF5D5D5D" />
+			<Setter Property="Padding" Value="4,6,0,0" />
+		</Style>
+
+		<Style TargetType="Label" x:Key="DeltaLabelHeading1">
+			<Setter Property="FontSize" Value="18" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="Foreground" Value="#FF5D5D5D" />
+		</Style>
+
+		<Style TargetType="Label" x:Key="DeltaLabelHeading2">
+			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="Foreground" Value="#FF5D5D5D" />
 		</Style>
 
 		<Style TargetType="TextBox" x:Key="DeltaTextBox">
-			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontSize" Value="14" />
 			<Setter Property="FontFamily" Value="Arial" />
 			<Setter Property="FontStyle" Value="Normal" />
 			<Setter Property="Background" Value="#FFFBFBFB" />
 			<Setter Property="Foreground" Value="#FF5D5D5D" />
-			<Setter Property="BorderBrush" Value="{x:Null}" />
+			<Setter Property="BorderBrush" Value="#FFB2B2B2" />
+			<Setter Property="Padding" Value="3,4,0,0" />
 		</Style>
 
 		<Style TargetType="ComboBox" x:Key="DeltaComboBox">
-			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontSize" Value="14" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="Background" Value="#FFFBFBFB" />
+			<Setter Property="Foreground" Value="#FF5D5D5D" />
+			<Setter Property="Padding" Value="5"/>
+		</Style>
+
+		<Style TargetType="ListBox" x:Key="DeltaListBox">
+			<Setter Property="FontSize" Value="14" />
 			<Setter Property="FontFamily" Value="Arial" />
 			<Setter Property="FontStyle" Value="Normal" />
 			<Setter Property="Background" Value="#FFFBFBFB" />
 			<Setter Property="Foreground" Value="#FF5D5D5D" />
 		</Style>
 
-		<Style TargetType="ListBox" x:Key="DeltaListBox">
-			<Setter Property="FontSize" Value="16" />
+		<Style TargetType="CheckBox" x:Key="DeltaCheckBox">
+			<Setter Property="FontSize" Value="14" />
 			<Setter Property="FontFamily" Value="Arial" />
 			<Setter Property="FontStyle" Value="Normal" />
-			<Setter Property="Background" Value="#FFFBFBFB" />
 			<Setter Property="Foreground" Value="#FF5D5D5D" />
 		</Style>
 
 		<Style TargetType="Button" x:Key="DeltaButton">
-			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontSize" Value="14" />
 			<Setter Property="FontFamily" Value="Arial" />
 			<Setter Property="FontStyle" Value="Normal" />
-			<Setter Property="Background" Value="#FF9C9C9C" />
+			<Setter Property="Background">
+				<Setter.Value>
+					<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+						<GradientStop Color="#FFBBBBBB" Offset="0"/>
+						<GradientStop Color="#FF9E9E9E" Offset="1"/>
+					</LinearGradientBrush>
+				</Setter.Value>
+			</Setter>
+			<Setter Property="BorderBrush" Value="Black" />
 			<Setter Property="Foreground" Value="#FFFFFFFF" />
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Border Background="{TemplateBinding Background}">
+							<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+			<Style.Triggers>
+				<Trigger Property="IsEnabled" Value="False">
+					<Setter Property="Background" Value="#FFCFCFCF" />
+				</Trigger>
+				<MultiDataTrigger>
+					<MultiDataTrigger.Conditions>
+						<Condition
+Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver}" Value="True" />
+						<Condition
+Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled}" Value="True" />
+					</MultiDataTrigger.Conditions>
+					<Setter Property="Background" Value="#7894d3" />
+				</MultiDataTrigger>
+			</Style.Triggers>
 		</Style>
 
-		<HierarchicalDataTemplate DataType="{x:Type contentManager:ContentIconAndName}"
+		<Style x:Key="ActionLabelStyle" TargetType="{x:Type Label}">
+			<Setter Property="Margin" Value="10,3" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontWeight" Value="Bold" />
+			<Setter Property="Foreground" Value="#FF0D58DA" />
+			<Style.Resources>
+				<Style TargetType="TextBlock">
+					<Style.Triggers>
+						<MultiDataTrigger>
+							<MultiDataTrigger.Conditions>
+								<Condition
+Binding="{Binding RelativeSource={RelativeSource FindAncestor,
+AncestorType=Label}, Path=IsMouseOver}" Value="True" />
+								<Condition
+Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled}" Value="True" />
+							</MultiDataTrigger.Conditions>
+							<Setter Property="TextDecorations" Value="Underline" />
+						</MultiDataTrigger>
+					</Style.Triggers>
+				</Style>
+			</Style.Resources>
+		</Style>
+
+
+	<HierarchicalDataTemplate DataType="{x:Type contentManager:ContentIconAndName}"
 		                          ItemsSource="{Binding Path=SubContent}">
 			<contentManager:ContentIconAndNameView />
 		</HierarchicalDataTemplate>
@@ -61,14 +144,12 @@
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="12" />
 			<ColumnDefinition Width="32" />
-			<ColumnDefinition Width="10" />
-			<ColumnDefinition Width="84" />
-			<ColumnDefinition Width="80*"/>
-			<ColumnDefinition Width="12" />
-			<ColumnDefinition Width="149*" />
-			<ColumnDefinition Width="15*"/>
-			<ColumnDefinition Width="164*"/>
-			<ColumnDefinition Width="30" />
+			<ColumnDefinition Width="8" />
+			<ColumnDefinition Width="46" />
+			<ColumnDefinition Width="9" />
+			<ColumnDefinition Width="86"/>
+			<ColumnDefinition/>
+			<ColumnDefinition Width="86"/>
 			<ColumnDefinition Width="12" />
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
@@ -77,18 +158,18 @@
 			<RowDefinition Height="12" />
 			<RowDefinition Height="30"/>
 			<RowDefinition Height="12"/>
-			<RowDefinition />
-			<RowDefinition Height="12" />
+			<RowDefinition Height="499*" />
+			<RowDefinition Height="12*" />
 		</Grid.RowDefinitions>
 		<ListBox SelectionChanged="ChangeSelectedItem"
-		          Name="ImageList" Style="{StaticResource DeltaListBox}"
-		          ItemsSource="{Binding Path=ContentList}"
-		          Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="9">
+		         Name="ImageList" Style="{StaticResource DeltaListBox}"
+		         ItemsSource="{Binding Path=ContentList}"
+		         Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="7" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
 			<ListBox.ContextMenu>
-				<ContextMenu >
+				<ContextMenu>
 					<MenuItem Header="Delete" Click="DeleteSelectedItems">
 						<MenuItem.Icon>
-							<Image Source="..\Images\ExitButton.png" Width="16" Height="16"/>
+							<Image Source="..\Images\ExitButton.png" Width="16" Height="16" />
 						</MenuItem.Icon>
 					</MenuItem>
 					<!--<MenuItem Header="Delete all images in animation" Click="DeleteSelectedImageAnimation"
@@ -96,12 +177,21 @@
 				</ContextMenu>
 			</ListBox.ContextMenu>
 		</ListBox>
-		<Button Content="Add new files" Click="OpenFileExplorer" Grid.ColumnSpan="3" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Left" Width="126"/>
 		<TextBox
 			Height="28" TextWrapping="Wrap" VerticalAlignment="Top" Grid.Row="1" Grid.Column="3"
-			Style="{StaticResource DeltaTextBox}" Grid.ColumnSpan="7" Text="{Binding Path=SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+			Style="{StaticResource DeltaTextBox}" Grid.ColumnSpan="5"
+			Text="{Binding Path=SearchText, UpdateSourceTrigger=PropertyChanged}" />
 		<Image
 			Grid.Column="1" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top"
 			Height="28" Width="30" Source="..\Images\Search.png" />
+		<Button
+			Content="Add" Grid.Row="3" Grid.ColumnSpan="3" Grid.Column="1" Style="{StaticResource DeltaButton}"
+			Click="OpenFileExplorer" />
+		<Button
+			Content="Delete" Grid.Column="5" Grid.Row="3" Style="{StaticResource DeltaButton}"
+			Click="DeleteContent" />
+		<Button
+			Content="Help" Grid.Column="7" Grid.Row="3" Style="{StaticResource DeltaButton}"
+			Click="OnHelp" />
 	</Grid>
 </UserControl>

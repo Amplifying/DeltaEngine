@@ -21,7 +21,7 @@ namespace DeltaEngine.Editor.Core
 					continue;
 				installedFrameworks.Add(framework);
 				if (directoryInfo.Name == "OpenTK")
-					editorFramework = DeltaEngineFramework.OpenTK;
+					Default = DeltaEngineFramework.OpenTK;
 			}
 			All = installedFrameworks.ToArray();
 		}
@@ -60,43 +60,7 @@ namespace DeltaEngine.Editor.Core
 			return numberOfProperFolders == 2;
 		}
 
-		private readonly DeltaEngineFramework editorFramework;
-
 		public DeltaEngineFramework[] All { get; private set; }
-
-		public DeltaEngineFramework Default
-		{
-			get
-			{
-				if (editorFramework == DeltaEngineFramework.Default)
-					throw new EditorDefaultFrameworkNotInstalled();
-				return editorFramework;
-			}
-		}
-
-		public class EditorDefaultFrameworkNotInstalled : Exception {}
-
-		public DeltaEngineFramework Current
-		{
-			get
-			{
-				if (current == DeltaEngineFramework.Default)
-					current = Default;
-				return current;
-			}
-			set { current = value; }
-		}
-
-		private DeltaEngineFramework current;
-
-		public string SamplesPath
-		{
-			get { return Path.Combine(Current.ToString(), "Samples"); }
-		}
-
-		public string TemplatesPath
-		{
-			get { return Path.Combine(Current.ToString(), "VisualStudioTemplates", "Delta Engine"); }
-		}
+		public DeltaEngineFramework Default { get; private set; }
 	}
 }

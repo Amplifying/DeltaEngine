@@ -7,7 +7,8 @@ namespace DeltaEngine.Editor.SampleBrowser.Tests
 		[Test]
 		public void CreateGameSample()
 		{
-			var sample = Sample.CreateGame("GameSample", "Game.csproj", "Game.exe");
+			var sample = new Sample("GameSample", SampleCategory.Game, "Game.sln", "Game.csproj",
+				"Game.exe");
 			Assert.AreEqual("Sample Game", sample.Description);
 			Assert.AreEqual(SampleCategory.Game, sample.Category);
 			Assert.AreEqual("http://DeltaEngine.net/Editor/Icons/GameSample.png", sample.ImageUrl);
@@ -16,29 +17,38 @@ namespace DeltaEngine.Editor.SampleBrowser.Tests
 		[Test]
 		public void CreateTestSample()
 		{
-			var sample = Sample.CreateTest("TestSample", "Tests.csproj", "Tests.dll", "ClassName",
-				"MethodName");
-			Assert.AreEqual("VisualTest", sample.Description);
+			var sample = new Sample("TestSample", SampleCategory.Test, "Test.sln", "Tests.csproj",
+				"Tests.dll") { EntryClass = "ClassName", EntryMethod = "MethodName" };
+			Assert.AreEqual("Visual Test", sample.Description);
 			Assert.AreEqual(SampleCategory.Test, sample.Category);
-			Assert.AreEqual("http://deltaengine.net/Editor/Icons/StaticTest.png", sample.ImageUrl);
+			Assert.AreEqual("http://DeltaEngine.net/Editor/Icons/VisualTest.png", sample.ImageUrl);
 		}
 
 		[Test]
 		public void ContainsFilterText()
 		{
-			var gameSample = Sample.CreateGame("GameSample", "Game.csproj", "Game.exe");
+			var gameSample = new Sample("GameSample", SampleCategory.Game, "Game.sln", "Game.csproj",
+				"Game.exe");
 			Assert.True(gameSample.ContainsFilterText("Game"));
 			Assert.False(gameSample.ContainsFilterText("Test"));
-			var testSample = Sample.CreateTest("TestSample", "Tests.csproj", "Tests.dll", "ClassName",
-				"MethodName");
+			var testSample = new Sample("TestSample", SampleCategory.Test, "Test.sln", "Tests.csproj",
+				"Tests.dll") { EntryClass = "ClassName", EntryMethod = "MethodName" };
 			Assert.True(testSample.ContainsFilterText("Test"));
 			Assert.False(testSample.ContainsFilterText("Game"));
 		}
 
 		[Test]
+		public void ContainsTutorialFilterText()
+		{
+			var gameSample = new Sample("TutorialSample", SampleCategory.Tutorial, "Tutorial.sln",
+				"Tutorial.csproj", "Tutorial.exe");
+			Assert.True(gameSample.ContainsFilterText("Tutorial"));
+		}
+
+		[Test]
 		public void ToStringTest()
 		{
-			var sample = Sample.CreateGame(Title, "Game.csproj", "Game.exe");
+			var sample = new Sample(Title, SampleCategory.Game, "Game.sln", "Game.csproj", "Game.exe");
 			Assert.AreEqual(
 				"Sample: Title=" + Title + ", Category=" + Category + ", Description=" + Description,
 				sample.ToString());

@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using DeltaEngine.Editor.Core;
+using DeltaEngine.Extensions;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.SampleBrowser.Tests
@@ -13,21 +14,23 @@ namespace DeltaEngine.Editor.SampleBrowser.Tests
 		public void Init()
 		{
 			sampleCreator = new SampleCreator(CreateMockSamplesFileSystem());
-			sampleCreator.InstallPath = "";
 		}
 
 		private SampleCreator sampleCreator;
 
-		private static IFileSystem CreateMockSamplesFileSystem()
+		private IFileSystem CreateMockSamplesFileSystem()
 		{
 			var files = new Dictionary<string, MockFileData>();
-			files.Add(@"Samples\EmptyGame\EmptyGame.csproj", new MockFileData(""));
-			files.Add(@"Samples\EmptyGame\bin\Debug\EmptyGame.exe", new MockFileData(""));
-			files.Add(@"Samples\EmptyGame\Tests\EmptyGame.Tests.csproj", new MockFileData(""));
-			files.Add(@"C:\Code\DeltaEngine\Editor\SampleBrowser\Tests\Assemblies\EmptyGame.Tests.dll",
+			files.Add(basePath + @"\Samples\EmptyApp\EmptyApp.csproj", new MockFileData(""));
+			files.Add(basePath + @"\Samples\EmptyApp\bin\Debug\EmptyApp.exe", new MockFileData(""));
+			files.Add(basePath + @"\Samples\EmptyApp\Tests\EmptyApp.Tests.csproj", new MockFileData(""));
+			files.Add(basePath + @"\Editor\SampleBrowser\Tests\Assemblies\EmptyApp.Tests.dll",
 				new MockFileData(GetTestAssemblyData()));
+			files.Add(basePath + @"\Tutorials\Basic01CreateWindow\Program.cs", new MockFileData(""));
 			return new MockFileSystem(files);
 		}
+
+		private readonly string basePath = PathExtensions.GetFallbackEngineSourceCodeDirectory();
 
 		private static string GetTestAssemblyData()
 		{
@@ -39,19 +42,19 @@ namespace DeltaEngine.Editor.SampleBrowser.Tests
 		public void CreateSampleFromMockAssembly()
 		{
 			Assert.AreEqual(0, sampleCreator.Samples.Count);
-			sampleCreator.CreateSamples(DeltaEngineFramework.OpenTK);
+			sampleCreator.CreateSamples(DeltaEngineFramework.Default);
 			Assert.AreEqual(1, sampleCreator.Samples.Count);
-			Assert.AreEqual("EmptyGame", sampleCreator.Samples[0].Title);
+			Assert.AreEqual("EmptyApp", sampleCreator.Samples[0].Title);
 			Assert.AreEqual("Sample Game", sampleCreator.Samples[0].Description);
 			Assert.AreEqual("Game", sampleCreator.Samples[0].Category.ToString());
-			Assert.AreEqual("http://DeltaEngine.net/Editor/Icons/EmptyGame.png",
+			Assert.AreEqual("http://DeltaEngine.net/Editor/Icons/EmptyApp.png",
 				sampleCreator.Samples[0].ImageUrl);
-			Assert.AreEqual(@"C:\Foo\Bar\Samples\EmptyGame\EmptyGame.csproj",
+			Assert.AreEqual(basePath + @"\Samples\EmptyApp\EmptyApp.csproj",
 				sampleCreator.Samples[0].ProjectFilePath);
-			Assert.AreEqual(@"C:\Foo\Bar\Samples\EmptyGame\bin\Debug\EmptyGame.exe",
+			Assert.AreEqual(basePath + @"\Samples\EmptyApp\bin\Debug\EmptyApp.exe",
 				sampleCreator.Samples[0].AssemblyFilePath);
-			Assert.AreEqual("", sampleCreator.Samples[0].EntryClass);
-			Assert.AreEqual("", sampleCreator.Samples[0].EntryMethod);
+			Assert.AreEqual(null, sampleCreator.Samples[0].EntryClass);
+			Assert.AreEqual(null, sampleCreator.Samples[0].EntryMethod);
 		}
 	}
 }

@@ -27,28 +27,17 @@ namespace DeltaEngine.Editor.Core
 			panningCommand = new Command("ViewportPanning", ViewportPanning);
 			zoomCommand = new Command("ViewportZooming", ViewPortZooming);
 			panningCommand.AddTag("ViewControl");
-			panningStart = new Command("ViewportPanningStart", position =>
-			{
-				lastDragPosition = position;
-				dragAcceleration = 0.5f;
-			});
-			panningStart.AddTag("ViewControl");
 			zoomCommand.AddTag("ViewControl");
 		}
 
 		private readonly Camera2DScreenSpace screenSpace;
 		private Command panningCommand;
 		private Command zoomCommand;
-		private Command panningStart;
 
-		private void ViewportPanning(Vector2D currentDragPosition)
+		private void ViewportPanning(Vector2D start, Vector2D end, bool done)
 		{
-			screenSpace.LookAt += (lastDragPosition - currentDragPosition) * dragAcceleration;
-			lastDragPosition = currentDragPosition;
+			screenSpace.LookAt += start - end;
 		}
-
-		private Vector2D lastDragPosition;
-		private float dragAcceleration;
 
 		private void ViewPortZooming(float zoomDifference)
 		{
@@ -73,8 +62,14 @@ namespace DeltaEngine.Editor.Core
 			var allEntities = EntitiesRunner.Current.GetAllEntities();
 			foreach (var entity in allEntities)
 				if (!entity.GetType().IsSubclassOf(typeof(SoundDevice)) &&
-					!(entity.GetTags().Contains("ViewControl")))
+					entity.GetType() != typeof(Command) && !entity.GetType().IsSubclassOf(typeof(Trigger)))
 					entity.IsActive = false;
+			var temporaryCommands = EntitiesRunner.Current.GetEntitiesWithTag("temporary");
+			for (int index = 0; index < temporaryCommands.Count; index++)
+			{
+				var command = temporaryCommands[index];
+				command.IsActive = false;
+			}
 		}
 
 		public void ResetViewportArea()

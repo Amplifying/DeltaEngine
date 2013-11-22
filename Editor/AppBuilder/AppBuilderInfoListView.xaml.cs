@@ -142,7 +142,6 @@ namespace DeltaEngine.Editor.AppBuilder
 			BuiltAppsList.Visibility = Visibility.Collapsed;
 			BuildMessagesList.Visibility = Visibility.Visible;
 			MessagesViewModel.IsShowingErrorsAllowed = true;
-			MessagesViewModel.IsShowingWarningsAllowed = true;
 			HideBorderForAppsListPanel();
 		}
 

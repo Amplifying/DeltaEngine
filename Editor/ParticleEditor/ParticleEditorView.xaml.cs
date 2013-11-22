@@ -24,6 +24,13 @@ namespace DeltaEngine.Editor.ParticleEditor
 			DataContext = viewModel;
 			AttachToUpdateEvents();
 			Messenger.Default.Send("ParticleEditor", "SetSelectedEditorPlugin");
+			Messenger.Default.Register<string>(this, "RemoveProjectUpdate", RemoveProjectUpdate);
+		}
+
+		private void RemoveProjectUpdate(string pluginName)
+		{
+			if (pluginName != "ParticleEditor")
+				service.ProjectChanged -= ChangeProject;
 		}
 
 		public void Activate()
@@ -44,8 +51,18 @@ namespace DeltaEngine.Editor.ParticleEditor
 				Action updateAction = () => { viewModel.UpdateOnContentDeletion(name); };
 				Dispatcher.Invoke(updateAction);
 			};
-			service.ProjectChanged +=
-				() => Dispatcher.Invoke(new Action(viewModel.ResetOnProjectChange));
+			service.ProjectChanged += ChangeProject;
+			service.ProjectChanged += () =>
+			{
+				Action updateAction = () => { viewModel.UpdateDataForLoad(); };
+				Dispatcher.Invoke(updateAction);
+			};
+
+		}
+
+		private void ChangeProject()
+		{
+			Dispatcher.Invoke(new Action(viewModel.ResetOnProjectChange));
 		}
 
 		private ParticleEditorViewModel viewModel;

@@ -16,16 +16,19 @@ namespace DeltaEngine.Editor.ProjectCreator
 	/// </summary>
 	public class ProjectCreator
 	{
-		public ProjectCreator(CsProject project, VsTemplate template, IFileSystem fileSystem)
+		public ProjectCreator(CsProject project, VsTemplate template, Service service,
+			IFileSystem fileSystem)
 		{
 			Project = project;
 			Template = template;
 			FileSystem = fileSystem;
+			this.service = service;
 		}
 
 		public CsProject Project { get; private set; }
 		public VsTemplate Template { get; private set; }
 		public IFileSystem FileSystem { get; private set; }
+		private readonly Service service;
 
 		public bool AreAllTemplateFilesAvailable()
 		{
@@ -44,6 +47,7 @@ namespace DeltaEngine.Editor.ProjectCreator
 			CreateTargetDirectoryHierarchy();
 			CopyTemplateFilesToLocation();
 			ReplacePlaceholdersWithUserInput();
+			CreateSolutionFile();
 		}
 
 		public bool IsSourceFileAvailable()
@@ -56,8 +60,13 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		private void CreateTargetDirectoryHierarchy()
 		{
-			FileSystem.Directory.CreateDirectory(Project.Path);
-			FileSystem.Directory.CreateDirectory(Path.Combine(Project.Path, "Properties"));
+			FileSystem.Directory.CreateDirectory(Project.OutputDirectory);
+			FileSystem.Directory.CreateDirectory(GetAssemblyInfoDirectory());
+		}
+
+		private string GetAssemblyInfoDirectory()
+		{
+			return Path.Combine(Project.OutputDirectory, "Properties");
 		}
 
 		private void CopyTemplateFilesToLocation()
@@ -71,15 +80,27 @@ namespace DeltaEngine.Editor.ProjectCreator
 			}
 			else
 			{
-				CopyFile(Template.AssemblyInfo,
-					Path.Combine(Project.Path, "Properties", AssemblyInfo));
-				CopyFile(Template.Csproj,
-					Path.Combine(Project.Path, Project.Name + CsprojExtension));
-				CopyFile(Template.Ico,
-					Path.Combine(Project.Path, Project.Name + IcoSuffixAndExtension));
+				CopyFile(Template.AssemblyInfo, GetAssemblyInfoFilePath());
+				CopyFile(Template.Csproj, GetProjectFilePath());
+				CopyFile(Template.Ico, Path.Combine(Project.OutputDirectory, Project.Name + ".ico"));
 				foreach (var file in Template.SourceCodeFiles)
-					CopyFile(file, Path.Combine(Project.Path, GetFileName(file)));
+					CopyFile(file, Path.Combine(Project.OutputDirectory, GetFileName(file)));
 			}
+		}
+
+		private string GetAssemblyInfoFilePath()
+		{
+			return Path.Combine(GetAssemblyInfoDirectory(), "AssemblyInfo.cs");
+		}
+
+		private string GetRelativeProjectFilePath()
+		{
+			return Project.Name + ".csproj";
+		}
+
+		private string GetProjectFilePath()
+		{
+			return Path.Combine(Project.OutputDirectory, GetRelativeProjectFilePath());
 		}
 
 		private void CopyFileInZipToLocation(IArchiveEntry entry)
@@ -94,9 +115,13 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		private string CreateTargetPathForZipEntry(IEntry entry)
 		{
-			var target = Path.Combine(Project.Path, entry.FilePath).Replace('/', '\\');
-			return target.Replace(FileSystem.Path.GetFileNameWithoutExtension(Template.PathToZip),
-				Project.Name);
+			var target = Path.Combine(Project.OutputDirectory, entry.FilePath).Replace('/', '\\');
+			if (target.EndsWith(".cs"))
+				return target;
+			string oldFileName = FileSystem.Path.GetFileName(entry.FilePath);
+			string newFileName =
+				oldFileName.Replace(FileSystem.Path.GetFileNameWithoutExtension(oldFileName), Project.Name);
+			return target.Replace(oldFileName, newFileName);
 		}
 
 		private void CopyFile(string sourceFileName, string destinationFileName)
@@ -114,24 +139,20 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		private void ReplaceAssemblyInfo()
 		{
-			var oldFile =
-				FileSystem.File.ReadAllLines(Path.Combine(Project.Path, "Properties", AssemblyInfo));
+			var oldFile = FileSystem.File.ReadAllLines(GetAssemblyInfoFilePath());
 			var replacements = new List<Replacement>();
 			replacements.Add(new Replacement("$projectname$", Project.Name));
 			replacements.Add(new Replacement("$guid1$", Guid.NewGuid().ToString()));
 			var newFile = ReplaceFile(oldFile, replacements);
-			FileSystem.File.WriteAllText(Path.Combine(Project.Path, "Properties", AssemblyInfo), newFile);
+			FileSystem.File.WriteAllText(GetAssemblyInfoFilePath(), newFile);
 		}
-
-		private const string AssemblyInfo = "AssemblyInfo.cs";
 
 		private static string ReplaceFile(IEnumerable<string> fileContent,
 			List<Replacement> replacements)
 		{
 			var newFile = new StringBuilder();
 			foreach (string line in fileContent)
-				newFile.Append(ReplaceLine(line, replacements) + "\r\n");
-
+				newFile.Append(ReplaceLine(line, replacements) + Environment.NewLine);
 			return newFile.ToString();
 		}
 
@@ -143,22 +164,15 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		private void ReplaceCsproj()
 		{
-			var oldFile =
-				FileSystem.File.ReadAllLines(Path.Combine(Project.Path, Project.Name + CsprojExtension));
+			var oldFile = FileSystem.File.ReadAllLines(GetProjectFilePath());
 			var replacements = new List<Replacement>();
 			replacements.Add(new Replacement("$guid1$", ""));
 			replacements.Add(new Replacement("$safeprojectname$", Project.Name));
-			replacements.Add(new Replacement(GetFileName(Template.Ico),
-				Project.Name + IcoSuffixAndExtension));
-			replacements.Add(new Replacement(GetFileName(Template.Ico).Replace("Icon", ""),
-				Project.Name + IcoSuffixAndExtension));
+			replacements.Add(new Replacement(GetFileName(Template.Ico), Project.Name + ".ico"));
 			replacements.AddRange(GetReplacementsDependingOnFramework());
 			var newFile = ReplaceFile(oldFile, replacements);
-			FileSystem.File.WriteAllText(Path.Combine(Project.Path, Project.Name + CsprojExtension),
-				newFile);
+			FileSystem.File.WriteAllText(GetProjectFilePath(), newFile);
 		}
-
-		private const string CsprojExtension = ".csproj";
 
 		private IEnumerable<Replacement> GetReplacementsDependingOnFramework()
 		{
@@ -172,34 +186,41 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		private void ReplaceSourceCodeFile(string sourceFileName)
 		{
-			var oldFile = FileSystem.File.ReadAllLines(Path.Combine(Project.Path, sourceFileName));
+			var oldFile =
+				FileSystem.File.ReadAllLines(Path.Combine(Project.OutputDirectory, sourceFileName));
 			var replacements = new List<Replacement>();
 			replacements.Add(new Replacement("$safeprojectname$", Project.Name));
 			var newFile = ReplaceFile(oldFile, replacements);
-			FileSystem.File.WriteAllText(Path.Combine(Project.Path, sourceFileName), newFile);
+			FileSystem.File.WriteAllText(Path.Combine(Project.OutputDirectory, sourceFileName), newFile);
+		}
+
+		private void CreateSolutionFile()
+		{
+			var fileDataGenerator = new SlnFileDataGenerator(GetRelativeProjectFilePath(),
+				Project.OutputDirectory);
+			string slnFilePath = Path.Combine(Project.OutputDirectory, Project.Name + ".sln");
+			string slnFileData = fileDataGenerator.GenerateVisualStudioSlnFileData();
+			FileSystem.File.WriteAllText(slnFilePath, slnFileData);
+			service.SetContentProjectSolutionFilePath(Project.Name, slnFilePath);
 		}
 
 		public bool HasDirectoryHierarchyBeenCreated()
 		{
-			return FileSystem.Directory.Exists(Project.Path) &&
-				FileSystem.Directory.Exists(Path.Combine(Project.Path, "Properties"));
+			return FileSystem.Directory.Exists(Project.OutputDirectory) &&
+				FileSystem.Directory.Exists(Path.Combine(Project.OutputDirectory, "Properties"));
 		}
 
 		public bool HaveTemplateFilesBeenCopiedToLocation()
 		{
 			foreach (var file in Template.SourceCodeFiles)
-				if (!DoesFileExist(Path.Combine(Project.Path, GetFileName(file))))
+				if (!DoesFileExist(Path.Combine(Project.OutputDirectory, GetFileName(file))))
 					return false;
-			return DoesFileExist(Path.Combine(Project.Path, "Properties", AssemblyInfo)) &&
-				DoesFileExist(Path.Combine(Project.Path, Project.Name + CsprojExtension)) &&
-				DoesFileExist(Path.Combine(Project.Path, Project.Name + IcoSuffixAndExtension));
+			return DoesFileExist(GetAssemblyInfoFilePath()) && DoesFileExist(GetProjectFilePath());
 		}
 
 		private string GetFileName(string path)
 		{
 			return FileSystem.Path.GetFileName(path);
 		}
-
-		private const string IcoSuffixAndExtension = "Icon.ico";
 	}
 }

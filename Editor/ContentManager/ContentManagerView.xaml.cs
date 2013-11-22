@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using DeltaEngine.Content;
 using DeltaEngine.Editor.Core;
 using GalaSoft.MvvmLight.Messaging;
 
@@ -20,13 +22,36 @@ namespace DeltaEngine.Editor.ContentManager
 		public void Init(Service service)
 		{
 			DataContext = contentManagerViewModel = new ContentManagerViewModel(service);
-			service.ContentUpdated += (type, name) => RefreshContentList();
-			service.ContentDeleted += name => RefreshContentList();
-			service.ProjectChanged += RefreshContentList;
-			service.ContentReady +=
-				() => Dispatcher.Invoke(new Action(contentManagerViewModel.ShowStartContent));
+			service.ContentUpdated += (type, name) =>
+			{
+				RefreshContentList();
+				ContentLoader.RemoveResource(name);
+				if (isContentReadyForUse)
+					Dispatcher.Invoke(
+						new Action(
+							() =>
+								contentManagerViewModel.SelectedContent =
+									new ContentIconAndName(contentManagerViewModel.GetContentTypeIcon(type), name)));
+			};
+			service.ContentDeleted += name =>
+			{
+				RefreshContentList();
+				ContentLoader.RemoveResource(name);
+			};
+			service.ProjectChanged += () =>
+			{
+				isContentReadyForUse = false;
+				RefreshContentList();
+			};
+			service.ContentReady += () =>
+			{
+				Dispatcher.Invoke(new Action(contentManagerViewModel.ShowStartContent));
+				isContentReadyForUse = true;
+			};
 			Messenger.Default.Send("ContentManager", "SetSelectedEditorPlugin");
 		}
+
+		private bool isContentReadyForUse;
 
 		public void Activate()
 		{
@@ -71,6 +96,16 @@ namespace DeltaEngine.Editor.ContentManager
 		private void OpenFileExplorer(object sender, RoutedEventArgs e)
 		{
 			Messenger.Default.Send("OpenFileExplorerToAddNewContent", "OpenFileExplorerToAddNewContent");
+		}
+
+		private void DeleteContent(object sender, RoutedEventArgs e)
+		{
+			Messenger.Default.Send("DeleteContent", "DeleteContent");
+		}
+
+		private void OnHelp(object sender, RoutedEventArgs e)
+		{
+			Process.Start("http://deltaengine.net/features/editor");
 		}
 	}
 }

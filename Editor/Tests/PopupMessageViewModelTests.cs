@@ -2,22 +2,21 @@
 using System.Windows;
 using DeltaEngine.Content;
 using DeltaEngine.Editor.Mocks;
-using DeltaEngine.Platforms;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.Tests
 {
-	public class PopupMessageViewModelTests : TestWithMocksOrVisually
+	public class PopupMessageViewModelTests
 	{
 		[SetUp]
 		public void InitializeMessageViewModelAndService()
 		{
 			service = new MockService("TestUser", "TestProject");
-			messageViewModel = new PopupMessageViewModel(service, MessageDisplayTime);	
+			messageViewModel = new PopupMessageViewModel(service, MessageDisplayTime);
 		}
 
-		private const int MessageDisplayTime = 3001;
 		private MockService service;
+		private const int MessageDisplayTime = 1000;
 		private PopupMessageViewModel messageViewModel;
 
 		[Test]
@@ -31,7 +30,24 @@ namespace DeltaEngine.Editor.Tests
 		public void RaiseUpdateContentEventShouldShowUpdateText()
 		{
 			service.RecieveData(ContentType.Image);
-			Assert.AreEqual("MockContent Image Updated!", messageViewModel.Text);
+			AssertPopUpText(ContentType.Image);
+		}
+
+		private void AssertPopUpText(ContentType contentType)
+		{
+			Assert.AreEqual("MockContent " + contentType + " Updated!", messageViewModel.Text);
+			Assert.AreEqual(Visibility.Visible, messageViewModel.Visiblity);
+		}
+
+		[Test]
+		public void MultipleUpdateContentMessagesAreShownImmediately()
+		{
+			service.RecieveData(ContentType.Material);
+			AssertPopUpText(ContentType.Material);
+			service.RecieveData(ContentType.Json);
+			AssertPopUpText(ContentType.Json);
+			service.RecieveData(ContentType.Xml);
+			AssertPopUpText(ContentType.Xml);
 		}
 
 		//ncrunch: no coverage start
@@ -39,7 +55,7 @@ namespace DeltaEngine.Editor.Tests
 		public void PopupMessageShouldBeHiddenAfterThreeSeconds()
 		{
 			service.RecieveData(ContentType.Image);
-			Thread.Sleep(MessageDisplayTime);
+			Thread.Sleep(MessageDisplayTime + 100);
 			Assert.AreEqual(Visibility.Hidden, messageViewModel.Visiblity);
 		}
 	}

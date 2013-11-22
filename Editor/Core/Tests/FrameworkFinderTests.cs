@@ -48,7 +48,7 @@ namespace DeltaEngine.Editor.Core.Tests
 		}
 
 		private readonly List<string> installerDirectories = new List<string>();
-		private readonly string[] additionalSubFolders = new[] { "Samples", "VisualStudioTemplates" };
+		private readonly string[] additionalSubFolders = { "Samples", "VisualStudioTemplates" };
 		private FrameworkFinder frameworks;
 
 		[TearDown]
@@ -84,22 +84,6 @@ namespace DeltaEngine.Editor.Core.Tests
 			var invalidFrameworks = new FrameworkFinder();
 			Assert.AreEqual(0, invalidFrameworks.All.Length);
 			Directory.Delete(DefaultFramework.ToString());
-		}
-
-		[Test, Ignore]
-		public void ThrowIfDefaultFrameworkIsNotAvailable()
-		{
-			CreateFrameworkFolders(GetDeltaEngineFrameworksWithoutDefault());
-			frameworks = new FrameworkFinder();
-			var defaultFramework = DeltaEngineFramework.Default;
-			Assert.Throws<FrameworkFinder.EditorDefaultFrameworkNotInstalled>(
-				() => { defaultFramework = frameworks.Default; });
-			Assert.AreEqual(DeltaEngineFramework.Default, defaultFramework);
-		}
-
-		private static IEnumerable<string> GetDeltaEngineFrameworksWithoutDefault()
-		{
-			return new[] { "GLFW", "MonoGame", "SharpDX", "SlimDX", "Xna" };
 		}
 	}
 }

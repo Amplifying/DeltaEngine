@@ -13,57 +13,78 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 		[SetUp]
 		public void Init()
 		{
-			project = new CsProject("John Doe");
+			project = new CsProject("User Name");
 		}
 
 		private CsProject project;
 
 		[Test]
-		public void DefaultStarterKitIsGhostWars()
+		public void DefaultStarterKitIsEmptyApp()
 		{
-			Assert.AreEqual("GhostWars", project.StarterKit);
+			Assert.AreEqual("EmptyApp", project.StarterKit);
 		}
 
 		[Test]
 		public void DefaultProjectNameIsUserNamePlusStarterKitName()
 		{
-			Assert.AreEqual("JohnDoesGhostWars", project.Name);
+			Assert.AreEqual("UserNamesEmptyApp", project.Name);
 		}
 
 		[Test]
 		public void ChangingStarterKitOnlyChangesTheNameIfItHasNotBeenChangedYet()
 		{
 			project.StarterKit = "LogoApp";
-			Assert.AreEqual("JohnDoesLogoApp", project.Name);
+			Assert.AreEqual("UserNamesLogoApp", project.Name);
 			project.StarterKit = "Snake";
-			Assert.AreEqual("JohnDoesSnake", project.Name);
-			project.Name = "NewDeltaEngineProject";
-			Assert.AreEqual("NewDeltaEngineProject", project.Name);
+			Assert.AreEqual("UserNamesSnake", project.Name);
+			project.Name = "GeneratedEmptyApp";
+			Assert.AreEqual("GeneratedEmptyApp", project.Name);
 			project.StarterKit = "Asteroids";
-			Assert.AreEqual("NewDeltaEngineProject", project.Name);
+			Assert.AreEqual("GeneratedEmptyApp", project.Name);
 		}
 
 		[Test]
-		public void DefaultFrameworkIsGLFW()
+		public void UserNameEndingWithSDoesNotAppendAdditionalS()
 		{
-			Assert.AreEqual(DeltaEngineFramework.GLFW, project.Framework);
+			project = new CsProject("Ellis");
+			Assert.AreEqual("EllisEmptyApp", project.Name);
+			project = new CsProject("ElviS");
+			Assert.AreEqual("ElviSEmptyApp", project.Name);
+		}
+
+		[Test]
+		public void DefaultFrameworkIsOpenTK()
+		{
+			Assert.AreEqual(DeltaEngineFramework.OpenTK, project.Framework);
 		}
 
 		[Test]
 		public void DefaultPathIsDefaultVisualStudioProjectLocation()
 		{
-			Assert.IsTrue(project.Path.Contains("Visual Studio") && project.Path.Contains("Projects"));
-			Assert.IsTrue(Directory.Exists(project.Path));
+			Assert.IsTrue(project.BaseDirectory.Contains("Visual Studio") &&
+				project.BaseDirectory.Contains("Projects"));
+			Assert.IsTrue(Directory.Exists(project.BaseDirectory));
 		}
 
 		[Test]
 		public void VisualStudioProjectsFolderInMyDocumentsMustBeAvailable()
 		{
 			string myDocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-			string visualStudioProjectsPath = Path.Combine(myDocumentsPath, "Visual Studio 2012",
-				"Projects");
-			Assert.AreEqual(visualStudioProjectsPath, CsProject.GetVisualStudioProjectsFolder());
+			Assert.IsTrue(project.BaseDirectory.StartsWith(myDocumentsPath));
+			Assert.IsTrue(project.BaseDirectory.Contains("Visual Studio"));
+			Assert.IsTrue(project.BaseDirectory.Contains("Projects"));
 			Assert.True(Directory.Exists(CsProject.GetVisualStudioProjectsFolder()));
+		}
+
+		[Test]
+		public void OutputDirectoryShouldBeBaseDirectoryPlusProjectName()
+		{
+			string myDocumentsPath = CsProject.GetVisualStudioProjectsFolder();
+			Assert.AreEqual(Path.Combine(myDocumentsPath, "UserNamesEmptyApp"), project.OutputDirectory);
+			project.StarterKit = "LogoApp";
+			Assert.AreEqual(Path.Combine(myDocumentsPath, "UserNamesLogoApp"), project.OutputDirectory);
+			project.Name = "MyEmptyApp";
+			Assert.AreEqual(Path.Combine(myDocumentsPath, "MyEmptyApp"), project.OutputDirectory);
 		}
 	}
 }

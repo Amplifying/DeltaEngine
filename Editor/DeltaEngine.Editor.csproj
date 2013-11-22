@@ -308,6 +308,7 @@
     <Compile Include="Helpers\SingleInstanceApp.cs" />
     <Compile Include="OnlineService.cs" />
     <Compile Include="PopupMessageViewModel.cs" />
+    <Compile Include="ProjectNameAndFontWeight.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

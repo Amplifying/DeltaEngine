@@ -49,6 +49,7 @@ namespace DeltaEngine.Editor.AppBuilder
 		{
 			RaisePropertyChanged("BuiltApps");
 			RaisePropertyChanged("TextOfBuiltApps");
+			RaiseNumberOfBuiltAppsChangedEvent();
 		}
 
 		private void SaveBuiltApp(AppInfo appInfo, byte[] appData)
@@ -71,5 +72,13 @@ namespace DeltaEngine.Editor.AppBuilder
 		}
 
 		public event Action<AppInfo> RebuildRequest;
+
+		private void RaiseNumberOfBuiltAppsChangedEvent()
+		{
+			if (NumberOfBuiltAppsChanged != null)
+				NumberOfBuiltAppsChanged();
+		}
+
+		public event Action NumberOfBuiltAppsChanged;
 	}
 }

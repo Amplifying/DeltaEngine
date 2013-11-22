@@ -1,5 +1,8 @@
 ﻿namespace DeltaEngine.Editor.Messages
 {
+	/// <summary>
+	/// Request to create Content Project in Content Service, command to create code project on client
+	/// </summary>
 	public class CreateProject
 	{
 		protected CreateProject() {}

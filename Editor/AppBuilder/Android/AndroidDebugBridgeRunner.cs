@@ -120,23 +120,9 @@ namespace DeltaEngine.Editor.AppBuilder.Android
 
 		public void StartEngineBuiltApplication(AndroidDevice device, string fullAppName)
 		{
-			try
-			{
-				TryRunAdbProcess("-s " + device.AdbId + " shell am start -a android.intent.action.MAIN" +
-					" -n " + fullAppName + "/.DeltaEngineActivity");
-			}
-			// ncrunch: no coverage start
-			catch (ProcessRunner.ProcessTerminatedWithError)
-			{
-				throw new StartApplicationFailedOnDevice(device.Name);
-			}
+			TryRunAdbProcess("-s " + device.AdbId + " shell am start -a android.intent.action.MAIN" +
+				" -n " + fullAppName + "/.DeltaEngineActivity");
 		}
-
-		public class StartApplicationFailedOnDevice : Exception
-		{
-			public StartApplicationFailedOnDevice(string deviceName) : base(deviceName) { }
-		}
-		// ncrunch: no coverage end
 
 		public string GetDeviceName(string adbDeviceId)
 		{

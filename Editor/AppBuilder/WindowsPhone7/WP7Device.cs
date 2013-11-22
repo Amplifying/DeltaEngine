@@ -17,21 +17,13 @@ namespace DeltaEngine.Editor.AppBuilder.WindowsPhone7
 		internal WP7Device(MsDevice nativeDevice)
 		{
 			this.nativeDevice = nativeDevice;
+			Name = nativeDevice.Name;
+			IsEmulator = Name.Contains("Emulator");
 		}
 
 		private readonly MsDevice nativeDevice;
 
-		public string Name
-		{
-			get { return nativeDevice.Name; }
-		}
-
-		public bool IsEmulator
-		{
-			get { return Name.Contains("Emulator"); }
-		}
-
-		public bool IsAppInstalled(AppInfo app)
+		public override bool IsAppInstalled(AppInfo app)
 		{
 			MakeSureDeviceConnectionIsEstablished();
 			return nativeDevice.IsApplicationInstalled(app.AppGuid);
@@ -76,7 +68,7 @@ namespace DeltaEngine.Editor.AppBuilder.WindowsPhone7
 		}
 		// ncrunch: no coverage end
 
-		public void Uninstall(AppInfo app)
+		public override void Uninstall(AppInfo app)
 		{
 			try
 			{
@@ -96,7 +88,7 @@ namespace DeltaEngine.Editor.AppBuilder.WindowsPhone7
 				: base(app.Name + " on " + device) { }
 		}
 
-		public void Install(AppInfo app)
+		public override void Install(AppInfo app)
 		{
 			try
 			{
@@ -115,7 +107,7 @@ namespace DeltaEngine.Editor.AppBuilder.WindowsPhone7
 				: base(app.Name + " on " + device) { }
 		}
 
-		public void Launch(AppInfo app)
+		protected override void LaunchApp(AppInfo app)
 		{
 			if (!IsAppInstalled(app))
 				throw new AppNotInstalled(this, app);

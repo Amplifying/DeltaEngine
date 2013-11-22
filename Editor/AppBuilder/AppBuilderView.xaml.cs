@@ -1,6 +1,9 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
+using System.Windows.Input;
+using System.Windows.Threading;
 using DeltaEngine.Core;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Messages;
@@ -13,7 +16,7 @@ namespace DeltaEngine.Editor.AppBuilder
 	/// <summary>
 	/// Shows all available actions and data provided by the AppBuilderViewModel.
 	/// </summary>
-	public partial class AppBuilderView : EditorPluginView
+	public partial class AppBuilderView : EditorPluginView, IDisposable
 	{
 		public AppBuilderView()
 		{
@@ -25,11 +28,23 @@ namespace DeltaEngine.Editor.AppBuilder
 			ViewModel = new AppBuilderViewModel(service);
 			ViewModel.AppBuildFailedRecieved += DispatchAndHandleBuildFailedRecievedEvent;
 			ViewModel.BuiltAppRecieved += DispatchAndHandleBuildAppReceivedEvent;
+			ViewModel.PropertyChanged += OnPropertyChangedInViewModel;
+			ViewModel.Service.DataReceived += DispatchAndHandleOnServiceMessageReceived;
 			BuildList.MessagesViewModel = ViewModel.MessagesListViewModel;
 			BuildList.AppListViewModel = ViewModel.AppListViewModel;
+			BuildList.AppListViewModel.NumberOfBuiltAppsChanged += OnNumberOfBuiltAppsChanged;
+			OnNumberOfBuiltAppsChanged();
 			SwitchToBuiltApps();
 			DataContext = ViewModel;
 			Messenger.Default.Send("AppBuilder", "SetSelectedEditorPlugin");
+		}
+
+		private void OnNumberOfBuiltAppsChanged()
+		{
+			if (BuildList.AppListViewModel.NumberOfBuiltApps > 0)
+				BuildAppInfoText.Visibility = Visibility.Hidden;
+			else
+				BuildAppInfoText.Visibility = Visibility.Visible;
 		}
 
 		public void Activate()
@@ -66,6 +81,11 @@ namespace DeltaEngine.Editor.AppBuilder
 			Dispatcher.BeginInvoke(new Action(() => OnBuiltAppRecieved(appInfo, appData)));
 		}
 
+		private void DispatchAndHandleOnServiceMessageReceived(object message)
+		{
+			Dispatcher.BeginInvoke(new Action(() => OnServiceMessageReceived(message)));
+		}
+
 		private void OnBuiltAppRecieved(AppInfo appInfo, byte[] appData)
 		{
 			ViewModel.AppListViewModel.AddApp(appInfo, appData);
@@ -79,26 +99,96 @@ namespace DeltaEngine.Editor.AppBuilder
 				Dispatcher.BeginInvoke(new Action(BuildList.FocusBuiltAppsList));
 		}
 
-		private void InstallAndLaunchNewBuiltApp(AppInfo appInfo)
+		public void InstallAndLaunchNewBuiltApp(AppInfo appInfo)
 		{
 			if (!appInfo.IsDeviceAvailable)
-				throw new NoDeviceAvailable(appInfo);
-
+			{
+				AppInfoExtensions.HandleNoDeviceAvailableInView(appInfo);
+				UpdateBuildProgressBar("Launching App aborted", 100);
+				return;
+			}
 			Device primaryDevice = appInfo.AvailableDevices[0];
 			if (primaryDevice.IsAppInstalled(appInfo))
 			{
-				Logger.Info("App " + Name + " was already installed, uninstalling it.");
+				UpdateBuildProgressBar(appInfo.Name + " was already installed, uninstalling it.", 90);
 				primaryDevice.Uninstall(appInfo);
 			}
-			Logger.Info("Installing App " + Name + " on " + primaryDevice.Name);
+			UpdateBuildProgressBar("Installing " + appInfo.Name + " on " + primaryDevice.Name, 95);
 			primaryDevice.Install(appInfo);
-			primaryDevice.Launch(appInfo);
+			TryLaunchApp(appInfo, primaryDevice);
+		}
+
+		private void TryLaunchApp(AppInfo appInfo, Device device)
+		{
+			try
+			{
+				UpdateBuildProgressBar("App launched", 100);
+				device.Launch(appInfo);
+			}
+			catch (Device.StartApplicationFailedOnDevice ex)
+			{
+				AppInfoExtensions.LogStartingAppFailed(appInfo, ex.DeviceName);
+			}
+		}
+		
+		private void UpdateBuildProgressBar(AppBuildProgress buildProgress)
+		{
+			UpdateBuildProgressBar(buildProgress.Text, buildProgress.ProgressPercentage);
+		}
+
+		private void UpdateBuildProgressBar(string progressText, int progressPercentage)
+		{
+			BuildProgressText.Text = "Progress: " + progressText;
+			BuildProgressBar.Value = progressPercentage;
+			ForceRefreshOfBuildProgressControls();
+		}
+
+		private void ForceRefreshOfBuildProgressControls()
+		{
+			BuildProgressText.Dispatcher.Invoke(DispatcherPriority.Render, new Action(() => { }));
+			BuildProgressBar.Dispatcher.Invoke(DispatcherPriority.Render, new Action(() => { }));
 		}
 
 		public class NoDeviceAvailable : Exception
 		{
 			public NoDeviceAvailable(AppInfo appInfo)
 				: base(appInfo.ToString()) { }
+		}
+
+		private void OnPropertyChangedInViewModel(object sender, PropertyChangedEventArgs e)
+		{
+			if (!IsVisible)
+				return;
+			if (e.PropertyName == "SelectedSolutionProject")
+				if (ViewModel.SelectedSolutionProject == null)
+					ShowProjectNotFoundMessageBox();
+		}
+
+		private void ShowProjectNotFoundMessageBox()
+		{
+			string solutionName = Path.GetFileNameWithoutExtension(ViewModel.UserSolutionPath);
+			string text = "The current CodeSolution doesn't contain a project for the selected" +
+				" ContentProject " + ViewModel.Service.ProjectName + "." + Environment.NewLine +
+				Environment.NewLine +
+				"If you want to build a project for " + solutionName + " then please change your" +
+				" ContentProject to it";
+			MessageBox.Show(text, "Project not found");
+		}
+
+		private void OnServiceMessageReceived(object serviceMessage)
+		{
+			if (serviceMessage is AppBuildProgress)
+				OnAppBuildProgressRecieved((AppBuildProgress)serviceMessage);
+		}
+
+		private void OnAppBuildProgressRecieved(AppBuildProgress progressMessage)
+		{
+			UpdateBuildProgressBar(progressMessage);
+			if (!ExceptionExtensions.IsDebugMode)
+				return;
+			string progressText = "Building progress " + progressMessage.ProgressPercentage + "%: " +
+				progressMessage.Text;
+			Logger.Info(progressText);
 		}
 
 		private void OnBrowseUserProjectClicked(object sender, RoutedEventArgs e)
@@ -138,6 +228,31 @@ namespace DeltaEngine.Editor.AppBuilder
 		public bool RequiresLargePane
 		{
 			get { return true; }
+		}
+
+		private void OnGotoLocalBuiltAppsDirectory(object sender, MouseButtonEventArgs e)
+		{
+			ViewModel.GotoBuiltAppsDirectoryCommand.Execute(null);
+		}
+
+		private void OnGotoUserProfilePage(object sender, MouseButtonEventArgs e)
+		{
+			ViewModel.GotoUserProfilePageCommand.Execute(null);
+		}
+
+		private void OnStartBuildClicked(object sender, RoutedEventArgs e)
+		{
+			UpdateBuildProgressBar("Build started", 1);
+			ViewModel.BuildCommand.Execute(null);
+		}
+
+		public void Dispose()
+		{
+			ViewModel.AppBuildFailedRecieved -= DispatchAndHandleBuildFailedRecievedEvent;
+			ViewModel.BuiltAppRecieved -= DispatchAndHandleBuildAppReceivedEvent;
+			ViewModel.PropertyChanged -= OnPropertyChangedInViewModel;
+			ViewModel.Service.DataReceived -= OnServiceMessageReceived;
+			BuildList.AppListViewModel.NumberOfBuiltAppsChanged -= OnNumberOfBuiltAppsChanged;
 		}
 	}
 }

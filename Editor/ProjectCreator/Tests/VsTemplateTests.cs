@@ -13,16 +13,15 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 	public class VsTemplateTests
 	{
 		[TestFixtureSetUp]
-		public void LoadResourcePathsOfEmptyGame()
+		public void LoadResourcePathsOfEmptyApp()
 		{
-			string basePath = Path.Combine(PathExtensions.GetDeltaEngineInstalledDirectory(), "GLFW",
-				"VisualStudioTemplates", "Delta Engine");
-			zipTemplateFilePath = Path.Combine(basePath, "EmptyGame.zip");
+			string basePath = CreatorTestExtensions.GetEngineTemplatesDirectory();
+			zipTemplateFilePath = Path.Combine(basePath, "EmptyApp.zip");
 			assemblyInfoFilePath = Path.Combine(basePath, "Properties", "AssemblyInfo.cs");
-			csprojFilePath = Path.Combine(basePath, "EmptyGame.csproj");
-			icoFilePath = Path.Combine(basePath, "EmptyGameIcon.ico");
+			csprojFilePath = Path.Combine(basePath, "EmptyApp.csproj");
+			icoFilePath = Path.Combine(basePath, "EmptyApp.ico");
 			programClassFilePath = Path.Combine(basePath, "Program.cs");
-			gameClassFilePath = Path.Combine(basePath, "Game.cs");
+			gameClassFilePath = Path.Combine(basePath, "ColorChanger.cs");
 		}
 		
 		private string zipTemplateFilePath;
@@ -33,9 +32,9 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 		private string gameClassFilePath;
 
 		[Test]
-		public void CreateWithEmptyGameTemplate()
+		public void CreateWithEmptyAppTemplate()
 		{
-			var template = VsTemplate.CreateByName(CreateFileSystemMock(), "EmptyGame");
+			var template = VsTemplate.CreateByName(CreateFileSystemMock(), "EmptyApp");
 			Assert.AreEqual(zipTemplateFilePath, template.PathToZip);
 			Assert.AreEqual(assemblyInfoFilePath, template.AssemblyInfo);
 			Assert.AreEqual(csprojFilePath, template.Csproj);
@@ -49,16 +48,16 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 		{
 			var files = new Dictionary<string, MockFileData>();
 			files.Add(zipTemplateFilePath,
-				new MockFileData(File.ReadAllText(Path.Combine("NewDeltaEngineProject", "EmptyGame.zip"))));
+				new MockFileData(File.ReadAllText(Path.Combine("GeneratedEmptyApp", "EmptyApp.zip"))));
 			var fileSystem = new MockFileSystem(files);
 			fileSystem.Directory.SetCurrentDirectory(zipTemplateFilePath);
 			return fileSystem;
 		}
 
 		[Test]
-		public void CheckTotalNumberOfFilesFromEmptyGameTemplate()
+		public void CheckTotalNumberOfFilesFromEmptyAppTemplate()
 		{
-			var template = VsTemplate.CreateByName(CreateFileSystemMock(), "EmptyGame");
+			var template = VsTemplate.CreateByName(CreateFileSystemMock(), "EmptyApp");
 			var list = template.GetAllFilePathsAsList();
 			Assert.AreEqual(5, list.Count);
 		}

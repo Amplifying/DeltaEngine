@@ -8,12 +8,15 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 {
 	public abstract class ContentPreview
 	{
+		private readonly UnableToLoadContentMessage unableToLoadContentMessage = new UnableToLoadContentMessage();
+
 		public void PreviewContent(string contentName)
 		{
 			try
 			{
 				Preview(contentName);
 			}
+			//ncrunch: no coverage start
 			catch (ContentLoader.ContentNotFound ex)
 			{
 				ShowFailToLoadContentMessage(contentName, ex);
@@ -24,7 +27,7 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 			}
 			catch (Exception)
 			{
-				ShowFailToLoadMessage(contentName);
+				UnableToLoadContentMessage.SendUnableToLoadContentMessage(contentName);
 			}
 		}
 
@@ -47,14 +50,6 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 				"Content " + contentName +
 					" has an '.' in the contentName. This is not allowed for it will be viewed as an extension",
 				Rectangle.One);
-		}
-
-		private static void ShowFailToLoadMessage(string contentName)
-		{
-			Logger.Warning("Could not load " + contentName + ". Check if all content is available");
-			var verdana = ContentLoader.Load<Font>("Verdana12");
-			new FontText(verdana,
-				"Could not load " + contentName + ". Check if all content is available", Rectangle.One);
 		}
 
 		public abstract void Preview(string contentName);

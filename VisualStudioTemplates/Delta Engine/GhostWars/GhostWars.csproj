@@ -32,7 +32,7 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>GhostWarsIcon.ico</ApplicationIcon>
+    <ApplicationIcon>GhostWars.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -44,6 +44,9 @@
     </Reference>
     <Reference Include="DeltaEngine.Input">
 	  <HintPath>$(DeltaEnginePath)\OpenTK\DeltaEngine.Input.dll</HintPath>
+    </Reference>
+    <Reference Include="DeltaEngine.WindowsOpenTK20">
+	  <HintPath>$(DeltaEnginePath)\OpenTK\DeltaEngine.WindowsOpenTK20.dll</HintPath>
     </Reference>
     <Reference Include="DeltaEngine.Rendering2D">
 	  <HintPath>$(DeltaEnginePath)\OpenTK\DeltaEngine.Rendering2D.dll</HintPath>
@@ -60,12 +63,10 @@
     <Reference Include="DeltaEngine.Scenes">
 	  <HintPath>$(DeltaEnginePath)\OpenTK\DeltaEngine.Scenes.dll</HintPath>
     </Reference>
-    <Reference Include="DeltaEngine.WindowsOpenTK20">
-	  <HintPath>$(DeltaEnginePath)\OpenTK\DeltaEngine.WindowsOpenTK20.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="GhostWars.ico" />
+    <Content Include="GhostWarsIcon72x72.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -73,7 +74,7 @@
     <Compile Include="GameLogic.cs" />
     <Compile Include="GameState.cs" />
     <Compile Include="MainMenu.cs" />
-    <Compile Include="Game.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Team.cs" />
     <Compile Include="Tree.cs" />
     <Compile Include="TreeManager.cs" />

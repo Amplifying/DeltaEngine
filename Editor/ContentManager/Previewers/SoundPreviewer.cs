@@ -14,7 +14,10 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 			verdana = ContentLoader.Load<Font>("Verdana12");
 			new FontText(verdana, "Play", Rectangle.One);
 			sound = ContentLoader.Load<Sound>(contentName);
-			new Command(() => sound.Play(1)).Add(new MouseButtonTrigger());
+			var trigger = new MouseButtonTrigger();
+			trigger.AddTag("temporary");
+			var soundCommand = new Command(() => sound.Play(1)).Add(trigger);
+			soundCommand.AddTag("temporary");
 		}
 
 		private Font verdana;

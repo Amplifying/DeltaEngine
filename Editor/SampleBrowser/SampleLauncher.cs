@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using DeltaEngine.Extensions;
+using Microsoft.Win32;
 
 namespace DeltaEngine.Editor.SampleBrowser
 {
@@ -10,23 +11,48 @@ namespace DeltaEngine.Editor.SampleBrowser
 	/// </summary>
 	public class SampleLauncher
 	{
-		public void OpenProject(Sample sample)
+		public void OpenSolutionForProject(Sample sample)
 		{
-			OpenFile(sample.ProjectFilePath);
+			if (sample.Category == SampleCategory.Game)
+				Process.Start(sample.ProjectFilePath);
+			else
+				StartVisualStudio(sample.SolutionFilePath, sample.ProjectFilePath, sample.EntryClass);
 		}
 
-		private static void OpenFile(string filePath)
+		private static void StartVisualStudio(string solutionFilePath, string projectFilePath,
+			string entryClass)
 		{
-			int index = filePath.LastIndexOf(@"\", StringComparison.Ordinal);
-			string exeDirectory = filePath.Substring(0, index);
-			var compiledOutputDirectory = new ProcessStartInfo(filePath)
+			string cSharpFilePath =
+				GetInitialProjectCSharpFilePath(Path.GetDirectoryName(projectFilePath), entryClass);
+			Process.Start(Path.Combine(GetLatestVisualStudioBinPath(), "devenv.exe"),
+				solutionFilePath + " " + cSharpFilePath);
+		}
+
+		private static string GetInitialProjectCSharpFilePath(string projectPath, string entryClassName)
+		{
+			string classFileName = Path.GetFullPath(Path.Combine(projectPath, entryClassName + ".cs"));
+			string gameFileName = Path.GetFullPath(Path.Combine(projectPath, "Game.cs"));
+			string programFileName = Path.GetFullPath(Path.Combine(projectPath, "Program.cs"));
+			return File.Exists(classFileName)
+				? classFileName : (File.Exists(gameFileName) ? gameFileName : programFileName);
+		}
+
+		private static string GetLatestVisualStudioBinPath()
+		{
+			for (int versionNumber = 12; versionNumber >= 8; versionNumber--)
 			{
-				WorkingDirectory = exeDirectory
-			};
-			Process.Start(compiledOutputDirectory);
+				var key = Environment.Is64BitOperatingSystem
+					? "Wow6432Node\\Microsoft\\VisualStudio\\" + versionNumber + ".0\\"
+					: "Microsoft\\VisualStudio\\" + versionNumber + ".0\\";
+				var installationPath =
+					(string)Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\" + key, "InstallDir", null);
+				if (!String.IsNullOrEmpty(installationPath))
+					return installationPath;
+			}
+			return "";
 		}
 
-		public bool DoesProjectExist(Sample sample)
+		public static bool DoesProjectExist(Sample sample)
 		{
 			return File.Exists(sample.ProjectFilePath);
 		}
@@ -36,7 +62,15 @@ namespace DeltaEngine.Editor.SampleBrowser
 			if (sample.Category == SampleCategory.Test)
 				StartTest(sample.AssemblyFilePath, sample.EntryClass, sample.EntryMethod);
 			else
-				OpenFile(sample.AssemblyFilePath);
+				StartExecutable(sample.AssemblyFilePath);
+		}
+
+		private static void StartExecutable(string filePath)
+		{
+			int index = filePath.LastIndexOf(@"\", StringComparison.Ordinal);
+			string exeDirectory = filePath.Substring(0, index);
+			var processInfo = new ProcessStartInfo(filePath) { WorkingDirectory = exeDirectory };
+			Process.Start(processInfo);
 		}
 
 		private static void StartTest(string assembly, string entryClass, string entryMethod)

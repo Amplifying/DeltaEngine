@@ -174,8 +174,25 @@ namespace DeltaEngine.Editor.Tests
 		{
 			var mockPlugins = GetEditorPluginLoaderMock();
 			var model = new EditorViewModel(mockPlugins, new MockSettings());
-			model.SelectedProject = new EditorViewModel.ProjectNameAndFontWeight("", FontWeights.Normal);
+			model.SelectedProject = new ProjectNameAndFontWeight("", FontWeights.Normal);
 			Assert.AreEqual("GhostWars", model.SelectedProject);
+		}
+
+		[Test]
+		public void WhenContentIsNotReadyTheProjectSelectionComboBoxIsDisabled()
+		{
+			var mockPlugins = GetEditorPluginLoaderMock();
+			var model = new EditorViewModel(mockPlugins, new MockSettings());
+			Assert.AreEqual(false, model.IsContentReady);
+		}
+
+		[Test]
+		public void PopUpNotificationForUpdatedContentDoesNotShowUpInitially()
+		{
+			var mockPlugins = GetEditorPluginLoaderMock();
+			var model = new EditorViewModel(mockPlugins, new MockSettings());
+			Assert.IsTrue(string.IsNullOrEmpty(model.PopupText));
+			Assert.AreEqual(Visibility.Hidden, model.PopupVisibility);
 		}
 	}
 }

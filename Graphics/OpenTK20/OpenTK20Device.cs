@@ -44,6 +44,7 @@ namespace DeltaEngine.Graphics.OpenTK20
 		{
 			windowInfo = Utilities.CreateWindowsWindowInfo((IntPtr)window.Handle);
 			CreateContext();
+			SetViewport(window.ViewportPixelSize);
 		}
 
 		private void CreateContext()

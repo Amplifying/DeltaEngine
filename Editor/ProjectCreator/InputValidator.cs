@@ -12,7 +12,7 @@ namespace DeltaEngine.Editor.ProjectCreator
 		// RegEx examples - http://gskinner.com/RegExr/
 		public static bool IsValidProjectName(string validate)
 		{
-			return !string.IsNullOrEmpty(validate) && Regex.IsMatch(validate, "^[A-Z][a-zA-Z0-9.]*$");
+			return !string.IsNullOrEmpty(validate) && Regex.IsMatch(validate, "^[a-zA-Z][a-zA-Z0-9.]*$");
 		}
 
 		public static bool IsValidAbsolutePath(string path)

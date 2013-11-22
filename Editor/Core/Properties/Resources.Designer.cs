@@ -79,11 +79,11 @@ namespace DeltaEngine.Editor.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Connection to DeltaEngine.net timed out, please check your internet connection!.
+        ///   Looks up a localized string similar to Connection timed out, please check your internet connection!.
         /// </summary>
-        public static string ConnectionToDeltaEngineTimedOut {
+        public static string ConnectionTimedOut {
             get {
-                return ResourceManager.GetString("ConnectionToDeltaEngineTimedOut", resourceCulture);
+                return ResourceManager.GetString("ConnectionTimedOut", resourceCulture);
             }
         }
         

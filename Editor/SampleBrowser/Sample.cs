@@ -8,8 +8,8 @@ namespace DeltaEngine.Editor.SampleBrowser
 	/// </summary>
 	public class Sample
 	{
-		protected Sample(string title, SampleCategory category, string projectFilePath,
-			string assemblyFilePath, string entryClass, string entryMethod)
+		public Sample(string title, SampleCategory category, string solutionFilePath,
+			string projectFilePath, string assemblyFilePath)
 		{
 			Title = title;
 			Category = category;
@@ -28,13 +28,12 @@ namespace DeltaEngine.Editor.SampleBrowser
 			}
 			else
 			{
-				Description = "Visual Test of " + entryClass;
+				Description = "Visual Test";
 				SetImageUrl("VisualTest");
 			}
+			SolutionFilePath = solutionFilePath;
 			ProjectFilePath = projectFilePath;
 			AssemblyFilePath = assemblyFilePath;
-			EntryClass = entryClass;
-			EntryMethod = entryMethod;
 		}
 
 		private static readonly Dictionary<string, string> SampleGameDescriptions =
@@ -42,7 +41,7 @@ namespace DeltaEngine.Editor.SampleBrowser
 			{
 				{
 					"Asteroids",
-					"A game similar to the old arcade classic.Take control of the alien missile ship and " +
+					"A game similar to the old arcade classic. Take control of the alien missile ship and " +
 						"split up the infinitely respawning rocks until they vanish, but do not collide to them!"
 				},
 				{
@@ -57,17 +56,25 @@ namespace DeltaEngine.Editor.SampleBrowser
 				},
 				{
 					"Drench",
-					"This one has multiplayer-functionality using the Networking interfaces." +
-						"Both players try to fill as much of the field as possible by taking over adjacent " +
+					"Both players try to fill as much of the field as possible by taking over adjacent " +
 						"fields of similar colours starting from either the left upper or the right lower corner."
 				},
 				{
-					"Game of Death",
-					"Stop little rabbits from multiplying and domineering the world. Use mallet, fire, " +
-						"poison and atomic bomb to kill them."
+					"GameOfDeath",
+					"Stop little rabbits from multiplying and dominating the world. Weapons range from " +
+						"simple mallets over fire and poison to atomic bombs. Your goal is to kill them all " +
+						"before they overrun you. Based on the Game Of Life game idea."
 				},
-				{ "Ghost Wars", "" },
-				{ "Insight", "A simple business app demo." },
+				{
+					"GhostWars",
+					"GhostWars is a real-time strategy game (RTS), where you have to conquer all trees " +
+						"with ghosts. You can play alone vs AI or over network against your friends."
+				},
+				{
+					"Insight",
+					"A simple business app demo as a proof of concept how to use the UI Editor " +
+						"for non-games in Milestone 5. "
+				},
 				{
 					"LogoApp",
 					"Not as much an actual game as s rather simple application aiming to serve as an " +
@@ -75,13 +82,18 @@ namespace DeltaEngine.Editor.SampleBrowser
 						"code might be a good starting point to learn about the ways of the Delta Engine " +
 						"aside from the tutorials."
 				},
-				{ "SideScroller", "" },
+				{
+					"SideScroller",
+					"This game was developed to improve image handling. Basically we wanted to allow " +
+						"tile-able textures, which you can see in the background of the game. This feature " +
+						"is also used in Basic Tutorial 6: Scrollable Background."
+				},
 				{
 					"Snake",
-					"Similar to the game that came to fame from its popularity on mobile devices." +
-						" This one is mostly about 2D polygon rendering and different ways of control " +
+					"Similar to the game that came to fame from its popularity on mobile devices. " +
+						"This one is mostly about 2D polygon rendering and different ways of control " +
 						"(try keys, mouse and touch, if available!)"
-				},
+				}
 			};
 
 		private static readonly Dictionary<string, string> TutorialDescritions =
@@ -205,10 +217,11 @@ namespace DeltaEngine.Editor.SampleBrowser
 		public string Description { get; private set; }
 		public SampleCategory Category { get; private set; }
 		public string ImageUrl { get; private set; }
+		public string SolutionFilePath { get; private set; }
 		public string ProjectFilePath { get; private set; }
 		public string AssemblyFilePath { get; private set; }
-		public string EntryClass { get; private set; }
-		public string EntryMethod { get; private set; }
+		public string EntryClass { get; set; }
+		public string EntryMethod { get; set; }
 
 		private void SetImageUrl(string fileName)
 		{
@@ -218,26 +231,6 @@ namespace DeltaEngine.Editor.SampleBrowser
 		private static string GetIconWebPath()
 		{
 			return "http://DeltaEngine.net/Editor/Icons/";
-		}
-
-		public static Sample CreateGame(string title, string projectFilePath,
-			string executableFilePath)
-		{
-			return new Sample(title, SampleCategory.Game, projectFilePath, executableFilePath, "", "");
-		}
-
-		public static Sample CreateTutorial(string title, string projectFilePath,
-			string executableFilePath)
-		{
-			return new Sample(title, SampleCategory.Tutorial, projectFilePath, executableFilePath, "",
-				"");
-		}
-
-		public static Sample CreateTest(string title, string projectFilePath, string assemblyFilePath,
-			string entryClass, string entryMethod)
-		{
-			return new Sample(title, SampleCategory.Test, projectFilePath, assemblyFilePath, entryClass,
-				entryMethod);
 		}
 
 		public bool ContainsFilterText(string filterText)

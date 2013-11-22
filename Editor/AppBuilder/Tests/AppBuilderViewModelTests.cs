@@ -5,27 +5,33 @@ using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Messages;
 using DeltaEngine.Extensions;
 using DeltaEngine.Mocks;
+using DeltaEngine.Networking.Messages;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.AppBuilder.Tests
 {
+	[Category("Slow")]
 	public class AppBuilderViewModelTests
 	{
 		[SetUp]
 		public void LoadAppBuilderViewModel()
 		{
-			new MockLogger();
+			logger = new MockLogger();
 			CreateNewAppBuilderViewModel();
 		}
+
+		private MockLogger logger;
 
 		private void CreateNewAppBuilderViewModel()
 		{
 			service = new MockBuildService();
 			viewModel = new AppBuilderViewModel(service);
+			service.ChangeProject(StartupProject);
 		}
 
 		private MockBuildService service;
 		private AppBuilderViewModel viewModel;
+		private const string StartupProject = "LogoApp";
 
 		[Test]
 		public void CheckSupportedAndSelectedPlatform()
@@ -60,7 +66,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 
 		private void AssertSelectedSolutionProject()
 		{
-			Assert.AreEqual(viewModel.SelectedSolutionProject.Title, service.ProjectName);
+			Assert.AreEqual(viewModel.SelectedSolutionProject.Name, service.ProjectName);
 		}
 
 		[Test]
@@ -128,7 +134,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		{
 			int numberOfRequests = service.NumberOfBuildRequests;
 			AppInfo app = AppBuilderTestExtensions.TryGetAlreadyBuiltApp("LogoApp", PlatformName.Windows);
-			app.SolutionFilePath = AppBuilderViewModel.GetSamplesSolutionFilePath();
+			app.SolutionFilePath = SolutionExtensions.GetSamplesSolutionFilePath();
 			viewModel.AppListViewModel.RequestRebuild(app);
 			Assert.AreEqual(numberOfRequests + 1, service.NumberOfBuildRequests);
 		}
@@ -151,12 +157,65 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			Assert.IsTrue(viewModel.IsBuildActionExecutable);
 		}
 
+		[Test]
+		public void ProjectsWhichShareOneContentProjectAreAllowedIfTheyShareSameNamespace()
+		{
+			service.ChangeProject("DeltaEngine.Tutorials");
+			string basicsTutorialSolutionFilePath =
+				Path.Combine(PathExtensions.GetFallbackEngineSourceCodeDirectory(), "Tutorials",
+					"DeltaEngine.Tutorials.Basics.sln");
+			viewModel.UserSolutionPath = basicsTutorialSolutionFilePath;
+			Assert.IsTrue(viewModel.IsBuildActionExecutable);
+		}
+
+		[Test]
+		public void NotifyTheServiceAboutChangedCodeSolutionPathWhenBuildIsExecuted()
+		{
+			const string CustomCodeSolutionFilePath = @"C:\Sample\MySampleGame.sln";
+			viewModel.UserSolutionPath = CustomCodeSolutionFilePath;
+			Assert.AreNotEqual(service.CurrentContentProjectSolutionFilePath, viewModel.UserSolutionPath);
+			Assert.IsTrue(viewModel.BuildCommand.CanExecute(null));
+			viewModel.BuildCommand.Execute(null);
+			Assert.AreEqual(viewModel.UserSolutionPath, service.CurrentContentProjectSolutionFilePath);
+		}
+
+		[Test]
+		public void ReceivingServerErrorWhileBuildingWillAbortBuildProcess()
+		{
+			bool isAppBuildFailedTriggeredByServerError = false;
+			viewModel.AppBuildFailedRecieved += failed =>  isAppBuildFailedTriggeredByServerError = true;
+			service.ReceiveData(new ServerError("I have seen an error"));
+			Assert.IsTrue(isAppBuildFailedTriggeredByServerError);
+		}
+
+		[Test]
+		public void UpdatedBuildProgressShouldBeLoggedForTheUser()
+		{
+			int currentNumberOfLogMessages = logger.NumberOfMessages;
+			service.ReceiveData(new AppBuildProgress("Testing progress done", 100));
+			Assert.AreEqual(currentNumberOfLogMessages + 1, logger.NumberOfMessages);
+		}
+
 		// ncrunch: no coverage start
 		[Test, Category("Slow")]
 		public void ExcuteHelpCommand()
 		{
 			Assert.IsTrue(viewModel.HelpCommand.CanExecute(null));
 			viewModel.HelpCommand.Execute(null);
+		}
+
+		[Test, Category("Slow")]
+		public void ExcuteGotoUserProfilePageCommand()
+		{
+			Assert.IsTrue(viewModel.GotoUserProfilePageCommand.CanExecute(null));
+			viewModel.GotoUserProfilePageCommand.Execute(null);
+		}
+
+		[Test, Category("Slow")]
+		public void ExcuteGotoBuiltAppsDirectoryCommand()
+		{
+			Assert.IsTrue(viewModel.GotoBuiltAppsDirectoryCommand.CanExecute(null));
+			viewModel.GotoBuiltAppsDirectoryCommand.Execute(null);
 		}
 	}
 }

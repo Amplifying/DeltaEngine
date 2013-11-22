@@ -8,6 +8,59 @@
 	xmlns:local="clr-namespace:DeltaEngine.Editor.AppBuilder"
 	d:DataContext="{d:DesignInstance local:DemoBuiltAppsListForDesigner, IsDesignTimeCreatable=true}"
 >
+
+	<UserControl.Resources>
+
+		<Style TargetType="Label" x:Key="DeltaLabel">
+			<Setter Property="FontSize" Value="14" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="Background" Value="#e2e2e2" />
+			<Setter Property="Foreground" Value="#FF5D5D5D" />
+			<Setter Property="Padding" Value="4,6,0,0" />
+		</Style>
+
+		<Style TargetType="Button" x:Key="DeltaButton">
+			<Setter Property="FontSize" Value="14" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="Background">
+				<Setter.Value>
+					<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+						<GradientStop Color="#FFBBBBBB" Offset="0"/>
+						<GradientStop Color="#FF9E9E9E" Offset="1"/>
+					</LinearGradientBrush>
+				</Setter.Value>
+			</Setter>
+			<Setter Property="BorderBrush" Value="Black" />
+			<Setter Property="Foreground" Value="#FFFFFFFF" />
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Border Background="{TemplateBinding Background}">
+							<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+			<Style.Triggers>
+				<Trigger Property="IsEnabled" Value="False">
+					<Setter Property="Background" Value="#FFCFCFCF" />
+				</Trigger>
+				<MultiDataTrigger>
+					<MultiDataTrigger.Conditions>
+						<Condition
+Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver}" Value="True" />
+						<Condition
+Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled}" Value="True" />
+					</MultiDataTrigger.Conditions>
+					<Setter Property="Background" Value="#7894d3" />
+				</MultiDataTrigger>
+			</Style.Triggers>
+		</Style>
+
+	</UserControl.Resources>
+
 	<Border BorderThickness="1" BorderBrush="Gray">
 	<ScrollViewer VerticalScrollBarVisibility="Visible" Background="White">
 		<ItemsControl Name="AppListControl" ItemsSource="{Binding Path=BuiltApps, Mode=OneWay}">
@@ -20,7 +73,7 @@
 							<ColumnDefinition Width="2*" />
 							<ColumnDefinition Width="*" />
 							<ColumnDefinition Width="160" />
-							<ColumnDefinition Width="80" />
+							<ColumnDefinition Width="100" />
 							<ColumnDefinition Width="12" />
 							<ColumnDefinition Width="100" />
 						</Grid.ColumnDefinitions>
@@ -36,7 +89,7 @@
 							Name="BuildDate" Text="{Binding Path=BuildDate}" FontSize="14"
 							VerticalAlignment="Center" Grid.Column="4" />
 						<Button
-							Name="RebuildAppButton" Content="Rebuild" FontSize="14" Height="30" Grid.Column="5"
+							Style="{StaticResource DeltaButton}" Name="RebuildAppButton" Content="Rebuild" FontSize="14" Height="30" Grid.Column="5"
 							Click="OnRebuildAppClicked" IsEnabled="{Binding Path=IsSolutionPathAvailable}" />
 						<!--<ComboBox
 							Name="DevicesComboBox" FontSize="14" Height="30" Grid.Column="7"
@@ -44,8 +97,8 @@
 							DisplayMemberPath="Name" HorizontalContentAlignment="Center"
 						/>-->
 						<Button
-							Name="LaunchAppButton" Content="Launch" FontSize="14" Height="30" Grid.Column="7"
-							Click="OnLaunchAppClicked" IsEnabled="{Binding Path=IsDeviceAvailable}" />
+							Style="{StaticResource DeltaButton}" Name="LaunchAppButton" Content="Launch" FontSize="14" Height="30" Grid.Column="7"
+							Click="OnLaunchAppClicked" />
 					</Grid>
 				</DataTemplate>
 			</ItemsControl.ItemTemplate>

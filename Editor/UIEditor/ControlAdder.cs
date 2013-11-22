@@ -1,13 +1,32 @@
 ﻿using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
-using DeltaEngine.Scenes.UserInterfaces.Controls;
+using DeltaEngine.Scenes.Controls;
 using GalaSoft.MvvmLight.Messaging;
 
 namespace DeltaEngine.Editor.UIEditor
 {
 	public class ControlAdder
 	{
+		public void AddControlToScene(Control control, UIEditorScene scene)
+		{
+			Control newControl = null;
+			if (control.GetType() == typeof(Picture))
+				newControl = new Picture(control.Get<Theme>(), control.Get<Material>(), control.DrawArea);
+			else if (control.GetType() == typeof(Label))
+			{
+				newControl = new Label(control.Get<Theme>(), control.DrawArea, (control as Label).Text);
+				newControl.Set(control.Get<Material>());
+			}
+			else if (control.GetType() == typeof(Button))
+				newControl = new Button(control.Get<Theme>(), control.DrawArea, (control as Button).Text);
+			else if (control.GetType() == typeof(Slider))
+				newControl = new Slider(control.Get<Theme>(), control.DrawArea);
+			newControl.AddTag(control.GetTags()[0]);
+			newControl.RenderLayer = control.RenderLayer;
+			scene.Scene.Add(newControl);
+		}
+
 		public void SetDraggingImage(bool draggingImage)
 		{
 			IsDraggingImage = draggingImage;
@@ -47,11 +66,12 @@ namespace DeltaEngine.Editor.UIEditor
 				return;
 			var sprite = AddNewImageToList(position, uiControl, uiEditorScene);
 			uiEditorScene.SelectedEntity2D = sprite;
+			uiControl.Index = uiEditorScene.Scene.Controls.IndexOf(sprite);
 			uiControl.EntityWidth = sprite.DrawArea.Width;
 			uiControl.EntityHeight = sprite.DrawArea.Height;
 			IsDraggingImage = false;
 			IsDragging = false;
-			Messenger.Default.Send(sprite.Get<string>(), "AddToHierachyList");
+			Messenger.Default.Send(sprite.GetTags()[0], "AddToHierachyList");
 		}
 
 		public Picture AddNewImageToList(Vector2D position, UIControl uiControl,
@@ -86,12 +106,13 @@ namespace DeltaEngine.Editor.UIEditor
 			uiEditorScene.UIImagesInList.Add("NewSprite" + numberOfNames);
 			if (uiEditorScene.UIImagesInList[0] == null)
 				uiEditorScene.UIImagesInList[0] = "NewSprite" + numberOfNames;
-			newSprite.Set("NewSprite" + numberOfNames);
+			newSprite.AddTag("NewSprite" + numberOfNames);
 		}
 
 		private static Image CreateDefaultImage()
 		{
 			var creationData = new ImageCreationData(new Size(8));
+			creationData.DisableLinearFiltering = true;
 			var colors = new Color[8 * 8];
 			for (int i = 0; i < 8; i++)
 				for (int j = 0; j < 8; j++)
@@ -110,12 +131,13 @@ namespace DeltaEngine.Editor.UIEditor
 				return;
 			var button = AddNewButtonToList(position, uiEditorScene);
 			uiEditorScene.SelectedEntity2D = button;
+			uiControl.Index = uiEditorScene.Scene.Controls.IndexOf(button);
 			uiControl.contentText = "Default Button";
 			uiControl.EntityWidth = button.DrawArea.Width;
 			uiControl.EntityHeight = button.DrawArea.Height;
 			IsDraggingButton = false;
 			IsDragging = false;
-			Messenger.Default.Send(button.Get<string>(), "AddToHierachyList");
+			Messenger.Default.Send(button.GetTags()[0], "AddToHierachyList");
 		}
 
 		private static Button AddNewButtonToList(Vector2D position, UIEditorScene uiEditorScene)
@@ -140,7 +162,7 @@ namespace DeltaEngine.Editor.UIEditor
 			uiEditorScene.UIImagesInList.Add("NewButton" + numberOfNames);
 			if (uiEditorScene.UIImagesInList[0] == null)
 				uiEditorScene.UIImagesInList[0] = "NewButton" + numberOfNames;
-			newButton.Set("NewButton" + numberOfNames);
+			newButton.AddTag("NewButton" + numberOfNames);
 		}
 
 		public void AddLabel(Vector2D position, UIControl uiControl, UIEditorScene uiEditorScene)
@@ -149,12 +171,13 @@ namespace DeltaEngine.Editor.UIEditor
 				return;
 			var label = AddNewLabelToList(position, uiEditorScene);
 			uiEditorScene.SelectedEntity2D = label;
+			uiControl.Index = uiEditorScene.Scene.Controls.IndexOf(label);
 			uiControl.contentText = "Default Label";
 			uiControl.EntityWidth = label.DrawArea.Width;
 			uiControl.EntityHeight = label.DrawArea.Height;
 			IsDraggingLabel = false;
 			IsDragging = false;
-			Messenger.Default.Send(label.Get<string>(), "AddToHierachyList");
+			Messenger.Default.Send(label.GetTags()[0], "AddToHierachyList");
 		}
 
 		private static Label AddNewLabelToList(Vector2D position, UIEditorScene uiEditorScene)
@@ -178,7 +201,7 @@ namespace DeltaEngine.Editor.UIEditor
 			uiEditorScene.UIImagesInList.Add("NewLabel" + numberOfNames);
 			if (uiEditorScene.UIImagesInList[0] == null)
 				uiEditorScene.UIImagesInList[0] = "NewLabel" + numberOfNames;
-			newLabel.Set("NewLabel" + numberOfNames);
+			newLabel.AddTag("NewLabel" + numberOfNames);
 		}
 
 		public void AddSlider(Vector2D position, UIControl uiControl, UIEditorScene uiEditorScene)
@@ -187,12 +210,13 @@ namespace DeltaEngine.Editor.UIEditor
 				return;
 			var slider = AddNewSliderToList(position, uiEditorScene);
 			uiEditorScene.SelectedEntity2D = slider;
+			uiControl.Index = uiEditorScene.Scene.Controls.IndexOf(slider);
 			uiControl.contentText = "Default Slider";
 			uiControl.EntityWidth = slider.DrawArea.Width;
 			uiControl.EntityHeight = slider.DrawArea.Height;
 			IsDraggingSlider = false;
 			IsDragging = false;
-			Messenger.Default.Send(slider.Get<string>(), "AddToHierachyList");
+			Messenger.Default.Send(slider.GetTags()[0], "AddToHierachyList");
 		}
 
 		private static Slider AddNewSliderToList(Vector2D position, UIEditorScene uiEditorScene)
@@ -215,7 +239,7 @@ namespace DeltaEngine.Editor.UIEditor
 			uiEditorScene.UIImagesInList.Add(NewSliderId + numberOfNames);
 			if (uiEditorScene.UIImagesInList[0] == null)
 				uiEditorScene.UIImagesInList[0] = NewSliderId + numberOfNames;
-			newSlider.Set(NewSliderId + numberOfNames);
+			newSlider.AddTag(NewSliderId + numberOfNames);
 		}
 
 		private const string NewSliderId = "NewSlider";

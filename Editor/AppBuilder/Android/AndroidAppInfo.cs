@@ -12,5 +12,14 @@ namespace DeltaEngine.Editor.AppBuilder.Android
 		{
 			return new AndroidDeviceFinder().GetAvailableDevices();
 		}
+
+		public override bool IsDeviceAvailable
+		{
+			get
+			{
+				UpdateAvailableDevices();
+				return base.IsDeviceAvailable;
+			}
+		}
 	}
 }

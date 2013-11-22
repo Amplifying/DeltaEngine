@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using DeltaEngine.Content;
-using DeltaEngine.Editor.Core;
+using DeltaEngine.Datatypes;
+using DeltaEngine.Rendering2D.Fonts;
 
 namespace DeltaEngine.Editor.ContentManager.Previewers
 {
@@ -26,9 +27,16 @@ namespace DeltaEngine.Editor.ContentManager.Previewers
 
 		public void View(string contentName, ContentType type)
 		{
-			if (type == ContentType.Shader)
-				return;
-			viewers[type].PreviewContent(contentName);
+			if (viewers.ContainsKey(type))
+				viewers[type].PreviewContent(contentName);
+			else
+				ShowNoPreviewText(contentName);
+		}
+
+		private static void ShowNoPreviewText(string contentName)
+		{
+			var verdana = ContentLoader.Load<Font>("Verdana12");
+			new FontText(verdana, "No preview available of " + contentName, Rectangle.One);
 		}
 	}
 }

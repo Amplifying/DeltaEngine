@@ -9,7 +9,6 @@ using System.Windows.Controls;
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
 using DeltaEngine.Commands;
-using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
@@ -18,10 +17,10 @@ using DeltaEngine.Editor.Helpers;
 using DeltaEngine.Extensions;
 using DeltaEngine.Input;
 using DeltaEngine.Platforms;
-using DeltaEngine.Platforms.Windows;
 using Xceed.Wpf.AvalonDock.Layout;
 using MouseButton = DeltaEngine.Input.MouseButton;
 using OpenTKApp = DeltaEngine.Platforms.App;
+using Size = DeltaEngine.Datatypes.Size;
 using Window = DeltaEngine.Core.Window;
 
 namespace DeltaEngine.Editor
@@ -39,10 +38,9 @@ namespace DeltaEngine.Editor
 			InitializeComponent();
 			viewModel.TextLogger.NewLogMessage +=
 				() => Dispatcher.BeginInvoke(new Action(LogOutput.ScrollToEnd));
-			Loaded += SetWindowedOrFullscreen;
-			Closing += SaveWindowedOrFullscreen;
+			Loaded += LoadSettings;
+			Closing += SaveSettings;
 			DataContext = this.viewModel = viewModel;
-			queuedContent = new List<string>();
 			maximizer = new MaximizerForEmptyWindows(this);
 			SetupEditorPlugins();
 			SetProjectAndTestFromCommandLineArguments();
@@ -61,19 +59,22 @@ namespace DeltaEngine.Editor
 			}
 		}
 
-		private void SetWindowedOrFullscreen(object sender, RoutedEventArgs e)
+		private void LoadSettings(object sender, RoutedEventArgs e)
 		{
+			Width = Settings.Current.Resolution.Width;
+			Height = Settings.Current.Resolution.Height;
 			if (viewModel.StartEditorMaximized)
 				maximizer.MaximizeWindow();
 		}
 
-		private void SaveWindowedOrFullscreen(object sender, CancelEventArgs e)
+		private void SaveSettings(object sender, CancelEventArgs e)
 		{
 			viewModel.StartEditorMaximized = maximizer.isMaximized;
+			Settings.Current.Resolution = new Size((float)Width, (float)Height);
+			Settings.Current.Dispose();
 		}
 
 		private readonly EditorViewModel viewModel;
-		private readonly List<string> queuedContent;
 		private readonly MaximizerForEmptyWindows maximizer;
 
 		private void SetupEditorPlugins()
@@ -190,7 +191,7 @@ namespace DeltaEngine.Editor
 		}
 
 		private const int SmallPaneMinWidth = 300;
-		private const int LargePaneMinWidth = 540;
+		private const int LargePaneMinWidth = 506;
 
 		private static void FocusDocumentToSeePlugin(LayoutDocument document)
 		{
@@ -238,7 +239,7 @@ namespace DeltaEngine.Editor
 				return;
 			window = TryGetViewportWindow(viewModel.EditorPlugins);
 			ElementHost.EnableModelessKeyboardInterop(this);
-			StartViewportAndWaitUntilWindowIsClosed(window);
+			StartViewportAndWaitUntilWindowIsClosed();
 		}
 
 		private WpfHostedFormsWindow window;
@@ -252,7 +253,7 @@ namespace DeltaEngine.Editor
 
 		private class EngineViewportCouldNotBeCreated : Exception {}
 
-		private void StartViewportAndWaitUntilWindowIsClosed(FormsWindow window)
+		private void StartViewportAndWaitUntilWindowIsClosed()
 		{
 			Closing += (sender, args) => window.Dispose();
 			window.ViewportSizeChanged += size => InvalidateVisual();
@@ -266,14 +267,11 @@ namespace DeltaEngine.Editor
 			app.RunAndBlock();
 		}
 
-		private void RegisterViewportControlCommands()
+		private static void RegisterViewportControlCommands()
 		{
-			var dragTrigger = new MousePositionTrigger(MouseButton.Middle, State.Pressed);
+			var dragTrigger = new MouseDragTrigger(MouseButton.Middle);
 			dragTrigger.AddTag("ViewControl");
 			Command.Register("ViewportPanning", dragTrigger);
-			var dragStartTrigger = new MousePositionTrigger(MouseButton.Middle);
-			dragStartTrigger.AddTag("ViewControl");
-			Command.Register("ViewportPanningStart", dragStartTrigger);
 			var zoomTrigger = new MouseZoomTrigger();
 			zoomTrigger.AddTag("ViewControl");
 			Command.Register("ViewportZooming", zoomTrigger);
@@ -391,47 +389,10 @@ namespace DeltaEngine.Editor
 			IDataObject dataObject = e.Data;
 			if (!IsFile(dataObject))
 				return;
-			var newFiles = (string[])dataObject.GetData(DataFormats.FileDrop);
-			if (isUploadingContent)
-			{
-				foreach (var file in newFiles)
-					queuedContent.Add(file);
-				return;
-			}
-			files = newFiles;
-			viewModel.UploadToOnlineService(files[0]);
-			isUploadingContent = true;
-			contentUploadIndex++;
-			viewModel.Service.ContentUpdated += UploadNextFile;
+			var files = (string[])dataObject.GetData(DataFormats.FileDrop);
+			viewModel.Service.StartPlugin(typeof(ContentManagerView));
+			viewModel.Service.UploadMutlipleContentToServer(files);
 		}
-
-		private string[] files;
-		private int contentUploadIndex;
-
-		private void UploadNextFile(ContentType arg1, string arg2)
-		{
-			if (files.Length < contentUploadIndex + 1)
-			{
-				contentUploadIndex = 0;
-				if (queuedContent.Count == 0)
-				{
-					viewModel.Service.ContentUpdated -= UploadNextFile;
-					isUploadingContent = false;
-				}
-				else
-				{
-					files = queuedContent.ToArray();
-					queuedContent.Clear();
-				}
-			}
-			else
-			{
-				viewModel.UploadToOnlineService(files[contentUploadIndex]);
-				contentUploadIndex++;
-			}
-		}
-
-		private bool isUploadingContent;
 
 		private static bool IsFile(IDataObject dropObject)
 		{

@@ -23,22 +23,37 @@ namespace DeltaEngine.Editor.UIEditor
 		{
 			this.service = service;
 			DataContext = uiEditorViewModel = new UIEditorViewModel(service);
-			var viewModel = (UIEditorViewModel)DataContext;
-			service.ProjectChanged += () => Dispatcher.Invoke(new Action(viewModel.ResetOnProjectChange));
+			service.ProjectChanged += ChangeProject;
+			service.ProjectChanged +=
+				() => Dispatcher.Invoke(new Action(uiEditorViewModel.RefreshOnContentChange));
 			service.ContentUpdated +=
-				(type, s) => Dispatcher.Invoke(new Action(viewModel.RefreshOnContentChange));
-			service.ContentDeleted += s => Dispatcher.Invoke(new Action(viewModel.RefreshOnContentChange));
-			Messenger.Default.Register<string>(this, "SetMaterialToNull", SetMaterialToNull);
-			Messenger.Default.Register<string>(this, "SetHoveredMaterialToNull",
-				SetHoveredMaterialToNull);
-			Messenger.Default.Register<string>(this, "SetPressedMaterialToNull",
-				SetPressedMaterialToNull);
-			Messenger.Default.Register<string>(this, "SetDisabledMaterialToNull",
-				SetDisabledMaterialToNull);
-			Messenger.Default.Register<string>(this, "SetHorizontalAllignmentToNull",
-				SetHorizontalAllignmentToNull);
-			Messenger.Default.Register<string>(this, "SetVerticalAllignmentToNull",
+				(type, s) => Dispatcher.Invoke(new Action(uiEditorViewModel.RefreshOnContentChange));
+			service.ContentDeleted +=
+				s => Dispatcher.Invoke(new Action(uiEditorViewModel.RefreshOnContentChange));
+			Messenger.Default.Send("UIEditor", "SetSelectedEditorPlugin");
+			Messenger.Default.Register<string>(this, "SetMaterial", SetMaterial);
+			Messenger.Default.Register<string>(this, "SetHoveredMaterial", SetHoveredMaterial);
+			Messenger.Default.Register<string>(this, "SetPressedMaterial", SetPressedMaterial);
+			Messenger.Default.Register<string>(this, "SetDisabledMaterial", SetDisabledMaterial);
+			Messenger.Default.Register<string>(this, "SetHorizontalAllignment", SetHorizontalAllignment);
+			Messenger.Default.Register<string>(this, "SetVerticalAllignment",
 				SetVerticalAllignmentToNull);
+			Messenger.Default.Register<string>(this, "EnabledHoveredButton", EnabledHoveredButton);
+			Messenger.Default.Register<string>(this, "EnabledPressedButton", EnabledPressedButton);
+			Messenger.Default.Register<string>(this, "EnabledDisableButton", EnabledDisableButton);
+			Messenger.Default.Register<string>(this, "EnableButtonChanger", EnableButtonChanger);
+			Messenger.Default.Register<string>(this, "RemoveProjectUpdate", RemoveProjectUpdate);
+		}
+
+		private void ChangeProject()
+		{
+			Dispatcher.Invoke(new Action(uiEditorViewModel.ResetOnProjectChange));
+		}
+
+		private void RemoveProjectUpdate(string pluginName)
+		{
+			if (pluginName != "UIEditor")
+				service.ProjectChanged -= ChangeProject;
 		}
 
 		private UIEditorViewModel uiEditorViewModel;
@@ -48,39 +63,79 @@ namespace DeltaEngine.Editor.UIEditor
 			uiEditorViewModel.ActivateHidenScene();
 		}
 
-		private void SetMaterialToNull(string obj)
+		private void SetMaterial(string obj)
 		{
-			MaterialComboBox.Text = "";
+			MaterialComboBox.Text = obj;
 		}
 
-		private void SetHoveredMaterialToNull(string obj)
+		private void SetHoveredMaterial(string obj)
 		{
-			MaterialHoveredComboBox.Text = "";
+			MaterialHoveredComboBox.Text = obj;
+		}
+
+		private void EnabledHoveredButton(string obj)
+		{
+			if (string.IsNullOrEmpty(obj))
+			{
+				MaterialHoveredComboBox.IsEnabled = false;
+				return;
+			}
 			if (obj.Contains("Picture") || obj.Contains("Label"))
 				MaterialHoveredComboBox.IsEnabled = false;
 			else
 				MaterialHoveredComboBox.IsEnabled = true;
 		}
 
-		private void SetPressedMaterialToNull(string obj)
+		private void SetPressedMaterial(string obj)
 		{
-			MaterialPressedComboBox.Text = "";
+			MaterialPressedComboBox.Text = obj;
+		}
+
+		private void EnabledPressedButton(string obj)
+		{
+			if (string.IsNullOrEmpty(obj))
+			{
+				MaterialPressedComboBox.IsEnabled = false;
+				return;
+			}
 			if (obj.Contains("Picture") || obj.Contains("Label"))
 				MaterialPressedComboBox.IsEnabled = false;
 			else
 				MaterialPressedComboBox.IsEnabled = true;
 		}
 
-		private void SetDisabledMaterialToNull(string obj)
+		private void SetDisabledMaterial(string obj)
 		{
-			MaterialDisabledComboBox.Text = "";
+			MaterialDisabledComboBox.Text = obj;
+		}
+
+		private void EnabledDisableButton(string obj)
+		{
+			if (string.IsNullOrEmpty(obj))
+			{
+				MaterialDisabledComboBox.IsEnabled = false;
+				return;
+			}
 			if (obj.Contains("Picture") || obj.Contains("Label"))
 				MaterialDisabledComboBox.IsEnabled = false;
 			else
 				MaterialDisabledComboBox.IsEnabled = true;
 		}
 
-		private void SetHorizontalAllignmentToNull(string obj)
+		private void EnableButtonChanger(string obj)
+		{
+			if (string.IsNullOrEmpty(obj))
+			{
+				InteractiveButtonCheckBox.IsEnabled = false;
+				return;
+			}
+			if (obj.Contains("Picture") || obj.Contains("Label") || obj.Contains("Slider"))
+				InteractiveButtonCheckBox.IsEnabled = false;
+			else
+				InteractiveButtonCheckBox.IsEnabled = true;
+		}
+
+		private void SetHorizontalAllignment(string obj)
 		{
 			HorizontalAllignment.Text = "";
 		}
@@ -197,6 +252,23 @@ namespace DeltaEngine.Editor.UIEditor
 		private void ClearScene(object sender, RoutedEventArgs e)
 		{
 			Messenger.Default.Send("ClearScene", "ClearScene");
+		}
+
+		private void WidthChanged(object sender, RoutedEventArgs routedEventArgs)
+		{
+			if (UIWidth.Text == "")
+				UIWidth.Text = "0";
+		}
+
+		private void HeightChanged(object sender, RoutedEventArgs routedEventArgs)
+		{
+			if (UIHeight.Text == "")
+				UIHeight.Text = "0";
+		}
+
+		private void LoadScene(object sender, RoutedEventArgs e)
+		{
+			uiEditorViewModel.LoadScene();
 		}
 	}
 }

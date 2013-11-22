@@ -31,8 +31,10 @@ namespace DeltaEngine.Editor.SampleBrowser.Tests
 		{
 			return new List<Sample>
 			{
-				Sample.CreateTest("TestName", "TestName.csproj", "TestName.dll", "ClassName", "MethodName"),
-				Sample.CreateGame("GameName", "GameName.csproj", "GameName.exe")
+				new Sample("TestName", SampleCategory.Test, "TestName.sln", "TestName.csproj",
+					"TestName.dll") { EntryClass = "ClassName", EntryMethod = "MethodName" },
+				new Sample("GameName", SampleCategory.Game, "GameName.sln", "GameName.csproj",
+					"GameName.exe")
 			};
 		}
 

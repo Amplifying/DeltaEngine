@@ -5,7 +5,8 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:helpers="clr-namespace:DeltaEngine.Editor.Emulator.Helpers"
-	mc:Ignorable="d" Height="25" Width="120"
+	mc:Ignorable="d" Height="30
+	" Width="140"
 	d:DataContext="{d:DesignInstance Type=helpers:DesignToolboxEntry, IsDesignTimeCreatable=True}">
 	<Grid>
 		<Grid.ColumnDefinitions>
@@ -14,8 +15,8 @@
 		</Grid.ColumnDefinitions>
 		<Image Height="20" Width="20" Source="{Binding Path=Icon}" />
 		<TextBlock
-			Grid.Column="1" Height="25" Width="95" FontWeight="Bold" FontSize="10"
-			FontFamily="Arial" Foreground="DarkGray" HorizontalAlignment="Left" Padding="0,7,0,0"
-			Text="{Binding Path=ShortName}" />
+			Grid.Column="1" Width="107" FontSize="14"
+			FontFamily="Arial" Foreground="#FF5F5F5F" HorizontalAlignment="Left" Padding="0,7,0,0"
+			Text="{Binding Path=ShortName}" Margin="5,1,0,3" />
 	</Grid>
 </UserControl>

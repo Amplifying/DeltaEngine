@@ -2,6 +2,7 @@
 using System.Threading;
 using DeltaEngine.Editor.Messages;
 using DeltaEngine.Editor.Mocks;
+using DeltaEngine.Networking.Messages;
 
 namespace DeltaEngine.Editor.AppBuilder.Tests
 {
@@ -18,7 +19,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		public PlatformName[] Platforms { get; private set; }
 		private readonly MockAppResultBuilder resultBuilder;
 		public int NumberOfBuildRequests { get; private set; }
-
+		
 		private class MockAppResultBuilder
 		{
 			public MockAppResultBuilder(MockBuildService service)
@@ -31,28 +32,15 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			public void BuildApp(AppBuildRequest userBuildRequest)
 			{
 				buildRequest = userBuildRequest;
-				waitingTimeInMs = 0;
-				if (IsWaitTimeRequired(userBuildRequest.ProjectName))
-					waitingTimeInMs = 1000;
 				worker = new Thread(Run);
 				worker.Start();
 			}
 
 			private AppBuildRequest buildRequest;
-			private int waitingTimeInMs;
-
-			private static bool IsWaitTimeRequired(string projectName)
-			{
-				return projectName != "LogoApp" || projectName == "DeltaEngine";
-			}
-
 			private Thread worker;
 
 			private void Run()
 			{
-				int startTime = Environment.TickCount;
-				while ((Environment.TickCount - startTime) < waitingTimeInMs)
-					Thread.Sleep(0);
 				service.ReceiveData(GetBuiltResult());
 			}
 
@@ -73,6 +61,8 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 				OnHandleBuildRequest((AppBuildRequest)message);
 			if (message is SupportedPlatformsRequest)
 				ReceiveData(new SupportedPlatformsResult(SupportedPlatforms));
+			else
+				ReceiveData(message);
 		}
 
 		private static readonly PlatformName[] SupportedPlatforms = new[]

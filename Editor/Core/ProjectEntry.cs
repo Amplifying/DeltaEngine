@@ -4,14 +4,14 @@ using System.Diagnostics;
 
 namespace DeltaEngine.Editor.Core
 {
-	[DebuggerDisplay("ProjectEntry={Title}")]
-	public class ProjectEntry
+	[DebuggerDisplay("ProjectEntry={Name}")]
+	public class ProjectEntry : IEquatable<ProjectEntry>
 	{
 		public ProjectEntry(string projectEntryString)
 		{
 			string[] dataParts = GetProjectDataElements(projectEntryString);
 			TypeGuid = dataParts[0];
-			Title = dataParts[1];
+			Name = dataParts[1];
 			FilePath = dataParts[2];
 			Guid = dataParts[3];
 		}
@@ -29,12 +29,11 @@ namespace DeltaEngine.Editor.Core
 				if (trimmedElement.Length > 0)
 					nonEmptyElements.Add(trimmedElement);
 			}
-
 			return nonEmptyElements.ToArray();
 		}
 
 		public string TypeGuid { get; private set; }
-		public string Title { get; private set; }
+		public string Name { get; private set; }
 		public string FilePath { get; private set; }
 		public string Guid { get; private set; }
 
@@ -51,5 +50,20 @@ namespace DeltaEngine.Editor.Core
 		}
 
 		public const string ProjectFolderGuid = "{2150E333-8FDC-42A3-9474-1A3956D46DE8}";
+
+		public bool Equals(ProjectEntry other)
+		{
+			return other != null && other.Name == Name && other.FilePath == FilePath;
+		}
+
+		public override bool Equals(object other)
+		{
+			return other is ProjectEntry && Equals((ProjectEntry)other);
+		}
+
+		public override int GetHashCode()
+		{
+			return Guid.GetHashCode();
+		}
 	}
 }

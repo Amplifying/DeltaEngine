@@ -1,8 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading;
+using DeltaEngine.Core;
+using DeltaEngine.Editor.Core;
+using DeltaEngine.Editor.Mocks;
+using DeltaEngine.Extensions;
 using DeltaEngine.Mocks;
 using DeltaEngine.Networking.Messages;
 using DeltaEngine.Networking.Tcp;
+using DeltaEngine.Platforms;
 using Microsoft.Win32;
 using NUnit.Framework;
 
@@ -15,14 +22,14 @@ namespace DeltaEngine.Editor.Tests
 		public void CheckOnlineService()
 		{
 			var settings = new MockSettings();
-			var service = new OnlineService(settings);
+			var service = new OnlineService();
 			object result = null;
 			var connection = new OnlineServiceConnection(settings,
 				() => { throw new ConnectionTimedOut(); });
 			connection.Connected +=
 				() => connection.Send(new LoginRequest(LoadApiKeyFromRegistry(), "LogoApp"));
 			connection.DataReceived += message => result = message;
-			service.Connect("John Doe", connection);
+			service.Connect("CurrentUser", connection);
 			Thread.Sleep(500);
 			Console.WriteLine("User Name: " + service.UserName);
 			CheckService(service, "LogoApp", result);
@@ -49,6 +56,83 @@ namespace DeltaEngine.Editor.Tests
 			Assert.AreEqual(projectName, service.ProjectName);
 			Assert.AreNotEqual(ProjectPermissions.None, service.Permissions);
 			Assert.IsInstanceOf<SetProject>(message);
+		}
+
+		[Test]
+		public void GetAvailableProjectNames()
+		{
+			var service = new MockService("John Doe", "LogoApp");
+			service.SetAvailableProjects(new[] { "LogoApp", "GhostWars" });
+			Assert.AreEqual(2, service.AvailableProjects.Length);
+			Assert.AreEqual("LogoApp", service.AvailableProjects[0]);
+			Assert.AreEqual("GhostWars", service.AvailableProjects[1]);
+		}
+
+		[Test]
+		public void AbsoluteSolutionFilePathDependsOnTheSelectedContentProject()
+		{
+			var settings = new MockSettings();
+			var service = new OnlineService();
+			var connection = new OnlineServiceConnection(settings,
+				() => { throw new ConnectionTimedOut(); });
+			service.Connect("CurrentUser", connection);
+			Assert.AreEqual("", service.CurrentContentProjectSolutionFilePath);
+			service.RequestChangeProject("LogoApp");
+			Thread.Sleep(1000);
+			AssertSolutionFilePath(GetSamplesSlnPath(), service);
+			service.RequestChangeProject("DeltaEngine.Tutorials");
+			Thread.Sleep(1000);
+			AssertSolutionFilePath(GetTutorialsSlnPath(), service);
+		}
+
+		private static string GetSamplesSlnPath()
+		{
+			return Path.Combine(PathExtensions.GetFallbackEngineSourceCodeDirectory(),
+				"DeltaEngine.Samples.sln");
+		}
+
+		private static void AssertSolutionFilePath(string expectedFilePath, Service service)
+		{
+			Assert.IsTrue(expectedFilePath.Compare(service.CurrentContentProjectSolutionFilePath));
+			Assert.IsTrue(File.Exists(service.CurrentContentProjectSolutionFilePath));
+		}
+
+		private static string GetTutorialsSlnPath()
+		{
+			return Path.Combine(PathExtensions.GetFallbackEngineSourceCodeDirectory(), "Tutorials",
+				"DeltaEngine.Tutorials.Basics.sln");
+		}
+
+		[Test]
+		public void SolutionFilePathIsStoredInSettingsFileWithProjectName()
+		{
+			var settings = new FileSettings();
+			var service = new OnlineService();
+			var connection = new OnlineServiceConnection(settings,
+				() => { throw new ConnectionTimedOut(); });
+			service.Connect("CurrentUser", connection);
+			service.RequestChangeProject("DeltaEngine.Tutorials");
+			Thread.Sleep(1000);
+			service.CurrentContentProjectSolutionFilePath = TutorialsSolutionFilePath;
+			var projects = Settings.Current.GetValue("ContentProjects", new Dictionary<string, string>());
+			Assert.GreaterOrEqual(projects.Count, 1);
+			settings.Save();
+		}
+
+		private const string TutorialsSolutionFilePath =
+			@"C:\code\DeltaEngine\Tutorials\DeltaEngine.Tutorials.Entities.sln";
+
+		[Test]
+		public void SolutionFilePathCanBeLoadedFromSettings()
+		{
+			var settings = new FileSettings();
+			var service = new OnlineService();
+			var connection = new OnlineServiceConnection(settings,
+				() => { throw new ConnectionTimedOut(); });
+			service.Connect("CurrentUser", connection);
+			service.RequestChangeProject("DeltaEngine.Tutorials");
+			Thread.Sleep(1000);
+			Assert.AreEqual(TutorialsSolutionFilePath, service.CurrentContentProjectSolutionFilePath);
 		}
 	}
 }

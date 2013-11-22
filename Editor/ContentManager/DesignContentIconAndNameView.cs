@@ -2,6 +2,7 @@
 {
 	public class DesignContentIconAndNameView
 	{
+		//ncrunch: no coverage start 
 		public string Icon
 		{
 			get { return "../Images/ContentTypes/Json.png"; }

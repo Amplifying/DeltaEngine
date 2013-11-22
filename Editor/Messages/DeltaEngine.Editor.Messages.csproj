@@ -37,13 +37,16 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AppBuildFailed.cs" />
+    <Compile Include="AppBuildProgress.cs" />
     <Compile Include="BuildServiceMessage.cs" />
     <Compile Include="AppBuildMessage.cs" />
     <Compile Include="AppBuildMessageType.cs" />
     <Compile Include="AppBuildRequest.cs" />
     <Compile Include="AppBuildResult.cs" />
+    <Compile Include="ChangeMetaData.cs" />
     <Compile Include="ChangeProjectRequest.cs" />
     <Compile Include="CreateProject.cs" />
+    <Compile Include="DeleteProject.cs" />
     <Compile Include="PlatformName.cs" />
     <Compile Include="PlatformNameExtensions.cs" />
     <Compile Include="ProjectNamesResult.cs" />

@@ -1,4 +1,5 @@
-﻿using DeltaEngine.Editor.Mocks;
+﻿using DeltaEngine.Datatypes;
+using DeltaEngine.Editor.Mocks;
 using DeltaEngine.Platforms;
 using NUnit.Framework;
 
@@ -36,29 +37,47 @@ namespace DeltaEngine.Editor.ImageAnimationEditor.Tests
 		[Test]
 		public void AddingAndRemovingImagesToList()
 		{
-			editor.SelectedImageToAdd = "Test1";
+			editor.SelectedImageToAdd = "TestImage";
 			editor.AddImage("");
 			Assert.AreEqual(1,editor.ImageList.Count);
-			editor.DeleteImage("Test1");
+			editor.RemoveImage(editor.SelectedIndex);
 			Assert.AreEqual(0, editor.ImageList.Count);
+			Assert.IsFalse(editor.IsRemoveEnabled);
+			Assert.IsFalse(editor.IsMovingEnabled);
+			Assert.IsTrue(editor.IsAddEnabled);
 		}
 
 		[Test]
 		public void SaveAnimation()
 		{
 			editor.SelectedImageToAdd = "Test1";
+			editor.AddImage("");
 			editor.SelectedImageToAdd = "Test2";
+			editor.SubImageSize = new Size(-1, 1000);
+			editor.AddImage("");
+			Assert.IsTrue(editor.IsDisplayingAnimation);
 			editor.AnimationName = "TestAnimation";
 			editor.SaveAnimation("");
+			Assert.IsTrue(editor.CanSaveAnimation);	
 		}
 
 		[Test]
 		public void SaveSpriteSheet()
 		{
 			editor.SelectedImageToAdd = "Test1";
+			editor.AddImage("");
+			editor.AnimationName = "TestAnimation";
+			editor.SubImageSize = new Size(1000, 1000);
 			editor.SaveAnimation("");
+			Assert.IsTrue(editor.CanSaveAnimation);	
+		}
+
+		[Test]
+		public void HavingNoImageWillDisableSaveButton()
+		{
 			editor.AnimationName = "TestAnimation";
 			editor.SaveAnimation("");
+			Assert.IsFalse(editor.CanSaveAnimation);	
 		}
 
 		[Test]
@@ -73,6 +92,54 @@ namespace DeltaEngine.Editor.ImageAnimationEditor.Tests
 		{
 			editor.AnimationName = "SpriteSheet";
 			Assert.AreEqual(1, editor.ImageList.Count);
+		}
+
+		[Test]
+		public void CannotAddImageWhenNoImageSelected()
+		{
+			Assert.AreEqual(0, editor.ImageList.Count);
+			editor.AddImage("");
+			Assert.AreEqual(0, editor.ImageList.Count);
+		}
+
+		[Test]
+		public void DisplayImage()
+		{
+			editor.IsDisplayingImage = true;
+			editor.SelectedImageToAdd = editor.LoadedImageList[0];
+			editor.AddImage("");
+			Assert.AreEqual(1, editor.ImageList.Count);
+			Assert.IsTrue(editor.IsFrameSizeEnabled);
+		}
+
+		[Test]
+		public void ProjectChangeWillResetPlugin()
+		{
+			editor.SelectedImageToAdd = editor.LoadedImageList[0];
+			editor.AddImage("");
+			Assert.AreEqual(1, editor.ImageList.Count);
+			editor.ResetOnProjectChange();
+			Assert.AreEqual(0, editor.ImageList.Count);
+			editor.ActivateAnimation();
+		}
+
+		[Test]
+		public void ButtonStatesShouldInitialyBeFalse()
+		{
+			Assert.IsFalse(editor.IsRemoveEnabled);
+			Assert.IsFalse(editor.IsMovingEnabled);
+			Assert.IsFalse(editor.IsAddEnabled);
+		}
+
+		[Test]
+		public void AfterAddingImagesButtonStatesShouldBeTrue()
+		{
+			editor.SelectedImageToAdd = "Test1";
+			editor.AddImage("");
+			editor.AddImage("");
+			Assert.IsTrue(editor.IsRemoveEnabled);
+			Assert.IsTrue(editor.IsMovingEnabled);
+			Assert.IsTrue(editor.IsAddEnabled);
 		}
 	}
 }

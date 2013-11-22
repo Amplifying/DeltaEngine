@@ -7,13 +7,6 @@ namespace DeltaEngine.Editor.Core.Tests
 	public class CodePackerTests
 	{
 		[Test]
-		public void NoSolutionPathSpecifiedException()
-		{
-			Assert.Throws<SolutionFileLoader.NoSolutionPathSpecified>(() => new CodePacker(null, "App"));
-			Assert.Throws<SolutionFileLoader.NoSolutionPathSpecified>(() => new CodePacker("", "App"));
-		}
-
-		[Test]
 		public void ProjectNotFoundInSolutionException()
 		{
 			Assert.Throws<SolutionFileLoader.ProjectNotFoundInSolution>(

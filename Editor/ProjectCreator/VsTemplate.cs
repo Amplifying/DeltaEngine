@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
+using DeltaEngine.Core;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Extensions;
 using SharpCompress.Archive.Zip;
@@ -13,8 +14,7 @@ namespace DeltaEngine.Editor.ProjectCreator
 	/// </summary>
 	public class VsTemplate
 	{
-		private VsTemplate(string templateName, IEnumerable<string> sourceCodeFileNames,
-			IFileSystem fileSystem)
+		private VsTemplate(string templateName, IFileSystem fileSystem)
 		{
 			this.fileSystem = fileSystem;
 			templatePath = Path.Combine("VisualStudioTemplates", "Delta Engine", templateName + ".zip");
@@ -22,7 +22,7 @@ namespace DeltaEngine.Editor.ProjectCreator
 			var basePath = GetBasePath(PathToZip);
 			AssemblyInfo = Path.Combine(basePath, "Properties", "AssemblyInfo.cs");
 			Csproj = Path.Combine(basePath, templateName + ".csproj");
-			Ico = Path.Combine(basePath, templateName + "Icon.ico");
+			Ico = Path.Combine(basePath, templateName + ".ico");
 			SourceCodeFiles = new List<string>();
 			var csFileNames = new List<string>();
 			foreach (var csFileName in ZipArchive.Open(PathToZip).Entries)
@@ -87,7 +87,7 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		public static VsTemplate CreateByName(IFileSystem fileSystem, string templateName)
 		{
-			return new VsTemplate(templateName, new List<string> { "Program.cs", "Game.cs" }, fileSystem);
+			return new VsTemplate(templateName, fileSystem);
 		}
 
 		public List<string> GetAllFilePathsAsList()
@@ -100,12 +100,16 @@ namespace DeltaEngine.Editor.ProjectCreator
 		public static string[] GetAllTemplateNames(DeltaEngineFramework framework)
 		{
 			if (!PathExtensions.IsDeltaEnginePathEnvironmentVariableAvailable())
+			{
+				Logger.Warning("No Visual Studio Templates found, please use the Installer to set them up");
 				return new string[0];
+			}
 			var templatePath = Path.Combine(PathExtensions.GetDeltaEngineInstalledDirectory(),
 				framework.ToString(), "VisualStudioTemplates", "Delta Engine");
 			var templateNames = new List<string>();
 			foreach (var file in Directory.GetFiles(templatePath))
 				templateNames.Add(Path.GetFileNameWithoutExtension(file));
+			templateNames.Remove("EmptyLibrary");
 			return templateNames.ToArray();
 		}
 	}

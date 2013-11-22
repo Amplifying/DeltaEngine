@@ -12,17 +12,14 @@ namespace DeltaEngine.Editor.AppBuilder.Web
 			IsEmulator = false;
 		}
 
-		public string Name { get; private set; }
-		public bool IsEmulator { get; private set; }
-
-		public bool IsAppInstalled(AppInfo app)
+		public override bool IsAppInstalled(AppInfo app)
 		{
 			return File.Exists(app.FilePath);
 		}
 
-		public void Install(AppInfo app) {}
+		public override void Install(AppInfo app) { }
 
-		public void Uninstall(AppInfo app)
+		public override void Uninstall(AppInfo app)
 		{
 			if (app == null)
 				throw new UninstallationFailedOnDevice(this, "null");
@@ -34,7 +31,7 @@ namespace DeltaEngine.Editor.AppBuilder.Web
 				: base(appName + " on " + device) { }
 		}
 
-		public void Launch(AppInfo app)
+		protected override void LaunchApp(AppInfo app)
 		{
 			Process.Start(app.FilePath);
 		}

@@ -24,10 +24,12 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 			LoadImagesFromProject();
 			LoadAnimationsFromProject();
 			SetMessengers();
-			CreateDefaultMaterial2D();
+			var material = CreateDefaultMaterial2D();
+			renderExample = new Sprite(material, new Rectangle(0.25f, 0.25f, 0.5f, 0.5f));
 			AnimationName = "MyAnimation";
 			CheckIfCanSave();
 			CanSaveAnimation = false;
+			SetButtonEnableStates();
 		}
 
 		private readonly Service service;
@@ -38,10 +40,10 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 
 		private void LoadImagesFromProject()
 		{
-			LoadedImageList = new ObservableCollection<string>();
 			var foundContent = service.GetAllContentNamesByType(ContentType.Image);
 			foreach (string content in foundContent)
-				LoadedImageList.Add(content);
+				if (!content.StartsWith("Default") && !content.EndsWith("Font"))
+					LoadedImageList.Add(content);
 			RaisePropertyChanged("LoadedImageList");
 		}
 
@@ -60,16 +62,17 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 
 		private void SetMessengers()
 		{
-			Messenger.Default.Register<string>(this, "DeletingImage", DeleteImage);
+			Messenger.Default.Register<int>(this, "RemoveImage", RemoveImage);
 			Messenger.Default.Register<int>(this, "MoveImageUp", MoveImageUp);
 			Messenger.Default.Register<int>(this, "MoveImageDown", MoveImageDown);
 			Messenger.Default.Register<string>(this, "SaveAnimation", SaveAnimation);
 			Messenger.Default.Register<string>(this, "AddImage", AddImage);
 		}
 
-		private void CreateDefaultMaterial2D()
+		private Material CreateDefaultMaterial2D()
 		{
 			var imageData = new ImageCreationData(new Size(8.0f, 8.0f));
+			imageData.DisableLinearFiltering = true;
 			var image = ContentLoader.Create<Image>(imageData);
 			var colors = new Color[8 * 8];
 			for (int i = 0; i < 8; i++)
@@ -81,15 +84,18 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 			image.Fill(colors);
 			spriteSheetAnimation =
 				new SpriteSheetAnimation(new SpriteSheetAnimationCreationData(image, 1, new Size(2, 2)));
-			var material = new Material(Shader.Position2DUV, "") { SpriteSheet = spriteSheetAnimation };
-			renderExample = new Sprite(material, new Rectangle(0.25f, 0.25f, 0.5f, 0.5f));
+			return new Material(Shader.Position2DUV, "") { SpriteSheet = spriteSheetAnimation };
 		}
 
-		public void DeleteImage(string image)
+		public void RemoveImage(int imageIndex)
 		{
-			ImageList.Remove(image);
+			ImageList.RemoveAt(imageIndex);
+			SelectedIndex = imageIndex;
+			if (imageIndex == ImageList.Count)
+				SelectedIndex = imageIndex - 1;
 			CreateNewAnimation();
 			CheckIfCanSave();
+			SetButtonEnableStates();
 			RaisePropertyChanged("ImageList");
 		}
 
@@ -112,6 +118,7 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 			ContentMetaData contentMetaData = SaveImageAnimationOrSpriteSheetAnimation();
 			service.UploadContent(contentMetaData);
 			service.ContentUpdated += SendSuccessMessageToLogger;
+			LoadAnimationsFromProject();
 		}
 
 		private ContentMetaData SaveImageAnimationOrSpriteSheetAnimation()
@@ -133,6 +140,7 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 			ImageList.Add(selectedImage);
 			CreateNewAnimation();
 			CheckIfCanSave();
+			SetButtonEnableStates();
 			RaisePropertyChanged("ImageList");
 		}
 
@@ -151,6 +159,7 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 			set
 			{
 				selectedIndex = value;
+				SetButtonEnableStates();
 				RaisePropertyChanged("SelectedIndex");
 			}
 		}
@@ -174,6 +183,7 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 			set
 			{
 				selectedImage = value;
+				SetButtonEnableStates();
 				if (IsDisplayingImage)
 					CreateDisplayedImage();
 			}
@@ -250,7 +260,7 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 		}
 
 		private ImageAnimation animation;
-		private Entity2D renderExample;
+		public Entity2D renderExample;
 
 		public string AnimationName
 		{
@@ -272,14 +282,36 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 			if (renderExample != null)
 				renderExample.IsActive = false;
 			ImageList.Clear();
-			var material = new Material(Shader.Position2DUV, animationName);
-			renderExample = new Sprite(material,
-				Rectangle.FromCenter(0.5f, 0.5f, 0.5f * material.MaterialRenderSize.AspectRatio, 0.5f));
-			if (material.Animation != null)
-				foreach (var image in material.Animation.Frames)
-					ImageList.Add(image.Name);
-			else
-				ImageList.Add(material.SpriteSheet.Image.Name);
+			Material material;
+			try
+			{
+				material = new Material(Shader.Position2DUV, animationName);
+				renderExample = new Sprite(material,
+					Rectangle.FromCenter(0.5f, 0.5f, 0.5f * material.MaterialRenderSize.AspectRatio, 0.5f));
+				if (material.Animation != null)
+				{
+					foreach (var image in material.Animation.Frames)
+						ImageList.Add(image.Name);
+					Duration = material.Animation.DefaultDuration;
+				}
+				else
+				{
+					ImageList.Add(material.SpriteSheet.Image.Name);
+					Duration = material.SpriteSheet.DefaultDuration;
+					SubImageSize = material.SpriteSheet.SubImageSize;
+				}
+				SetButtonEnableStates();
+			}
+			//ncrunch: no coverage start
+			catch
+			{
+				Logger.Warning(
+					"Some of this animation's images were missing. Make sure all the content of your project is present.");
+				material = CreateDefaultMaterial2D();
+				renderExample = new Sprite(material,
+					Rectangle.FromCenter(0.5f, 0.5f, 0.5f * material.MaterialRenderSize.AspectRatio, 0.5f));
+				return;
+			}//ncrunch: no coverage end
 		}
 
 		public bool IsDisplayingImage
@@ -322,25 +354,30 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 			}
 		}
 
-		internal void ResetOnProjectChange()
+		public void ResetOnProjectChange()
 		{
 			RefreshOnContentChange();
 		}
 
-		internal void RefreshOnContentChange()
+		public void RefreshOnContentChange()
 		{
 			LoadedImageList.Clear();
-			var foundContent = service.GetAllContentNamesByType(ContentType.Image);
-			foreach (string content in foundContent)
-				LoadedImageList.Add(content);
-			RaisePropertyChanged("LoadedImageList");
+			ImageList.Clear();
+			LoadImagesFromProject();
+			LoadAnimationsFromProject();
+			CreateDefaultMaterial2D();
+			RaisePropertyChanged("ImageList");
 		}
 
 		public void ActivateAnimation()
 		{
 			renderExample.IsActive = true;
+			if (service.Viewport == null)
+				return;
+			//ncrunch: no coverage start 
 			service.Viewport.CenterViewOn(renderExample.Center);
 			service.Viewport.ZoomViewTo(1.0f);
+			//ncrunch: no coverage end
 		}
 
 		public bool CanSaveAnimation
@@ -362,5 +399,61 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 			else
 				CanSaveAnimation = true;
 		}
+		
+		private void SetButtonEnableStates()
+		{
+			IsFrameSizeEnabled = ImageList.Count <= 1;
+			IsRemoveEnabled = SelectedIndex > -1 && ImageList.Count > 0;
+			IsMovingEnabled = SelectedIndex > -1 && ImageList.Count > 1;
+			IsAddEnabled = selectedImage != null;
+		}
+
+		public bool IsFrameSizeEnabled
+		{
+			get { return isFrameSizeEnabled; }
+			set
+			{
+				isFrameSizeEnabled = value;
+				RaisePropertyChanged("IsFrameSizeEnabled");
+			}
+		}
+
+		private bool isFrameSizeEnabled;
+
+		public bool IsRemoveEnabled
+		{
+			get { return isRemoveEnabled; }
+			set
+			{
+				isRemoveEnabled = value;
+				RaisePropertyChanged("IsRemoveEnabled");
+			}
+		}
+
+		private bool isRemoveEnabled;
+
+		public bool IsMovingEnabled
+		{
+			get { return isMovingEnabled; }
+			set
+			{
+				isMovingEnabled = value;
+				RaisePropertyChanged("IsMovingEnabled");
+			}
+		}
+
+		private bool isMovingEnabled;
+
+		public bool IsAddEnabled
+		{
+			get { return isAddEnabled; }
+			set
+			{
+				isAddEnabled = value;
+				RaisePropertyChanged("IsAddEnabled");
+			}
+		}
+
+		private bool isAddEnabled;
 	}
 }

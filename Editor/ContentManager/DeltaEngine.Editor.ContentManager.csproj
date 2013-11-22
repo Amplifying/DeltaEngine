@@ -79,6 +79,10 @@
       <Project>{BECE691C-BAC6-434B-B1F9-4D8653922585}</Project>
       <Name>DeltaEngine.Rendering2D.Particles</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Rendering2D\Shapes\DeltaEngine.Rendering2D.Shapes.csproj">
+      <Project>{BB73D940-CBD2-4F00-B246-2A25CA5ACD7E}</Project>
+      <Name>DeltaEngine.Rendering2D.Shapes</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Scenes\DeltaEngine.Scenes.csproj">
       <Project>{75BB4C75-DE36-47B3-9910-10EA8E8973B7}</Project>
       <Name>DeltaEngine.Scenes</Name>
@@ -126,6 +130,7 @@
     <Compile Include="Previewers\SpriteSheetPreviewer.cs" />
     <Compile Include="Previewers\UIPreviewer.cs" />
     <Compile Include="Previewers\ContentViewer.cs" />
+    <Compile Include="Previewers\UnableToLoadContentMessage.cs" />
     <Compile Include="Previewers\XmlPreviewer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

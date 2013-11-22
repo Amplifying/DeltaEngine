@@ -13,12 +13,12 @@ using DeltaEngine.Editor.ContentManager.Previewers;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Input;
 using DeltaEngine.Rendering2D;
+using DeltaEngine.Rendering2D.Shapes;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 using Microsoft.Win32;
 using Color = System.Windows.Media.Color;
 using Size = DeltaEngine.Datatypes.Size;
-using Trigger = DeltaEngine.Commands.Trigger;
 
 namespace DeltaEngine.Editor.ContentManager
 {
@@ -33,17 +33,11 @@ namespace DeltaEngine.Editor.ContentManager
 			SetMessenger();
 			ContentList = new ObservableCollection<ContentIconAndName>();
 			StartPreviewList = new List<Entity2D>();
-			selectedContentList = new List<string>();
-			queuedContent = new List<string>();
-			if (!IsLoggedInAlready())
-				return;
-			RefreshContentList();
-			IsShowingStartContent = true;
-			Trigger trigger = new MouseButtonTrigger();
-			trigger.AddTag("ViewControl");
-			var mouseCommand = new Command(position => CheckMousePosition(position)).Add(trigger);
-			mouseCommand.AddTag("ViewControl");
+			SelectedContentList = new List<string>();
+			new Command(CheckMousePosition).Add(new MouseButtonTrigger());
 			ShowingContentManager = true;
+			if (IsLoggedInAlready())
+				RefreshContentList();
 		}
 
 		private bool IsLoggedInAlready()
@@ -51,9 +45,9 @@ namespace DeltaEngine.Editor.ContentManager
 			return !string.IsNullOrEmpty(service.UserName);
 		}
 
-		private void CheckMousePosition(Vector2D position)
+		public void CheckMousePosition(Vector2D position)
 		{
-			if (!IsShowingStartContent || !ShowingContentManager)
+			if (!isShowingStartContent || !ShowingContentManager)
 				return;
 			foreach (var entity2D in StartPreviewList)
 				if (entity2D.DrawArea.Contains(position))
@@ -64,19 +58,20 @@ namespace DeltaEngine.Editor.ContentManager
 						else if (content.Name == entity2D.Get<Material>().DiffuseMap.Name)
 							SelectedContent = content;
 			if (selectedContent != null)
-				IsShowingStartContent = false;
+				isShowingStartContent = false;
 		}
 
 		private readonly Service service;
-		private readonly List<Entity2D> StartPreviewList;
-		public readonly List<string> selectedContentList;
-		private bool IsShowingStartContent;
+		public readonly List<Entity2D> StartPreviewList;
+		public readonly List<string> SelectedContentList;
+		private bool isShowingStartContent;
 
 		private void SetMessenger()
 		{
 			Messenger.Default.Register<string>(this, "DeleteContent", DeleteContentFromList);
 			Messenger.Default.Register<bool>(this, "DeleteContent", DeleteContentFromList);
 			Messenger.Default.Register<string>(this, "AddToSelection", AddContentToSelection);
+			Messenger.Default.Register<string>(this, "SelectToDelete", SelectToDelete);
 			Messenger.Default.Register<string>(this, "AddMultipleContentToSelection",
 				AddMultipleContentToSelection);
 			Messenger.Default.Register<string>(this, "ClearList", ClearSelectionList);
@@ -88,8 +83,9 @@ namespace DeltaEngine.Editor.ContentManager
 
 		public void DeleteContentFromList(string contentList)
 		{
-			foreach (var contentName in selectedContentList)
+			foreach (var contentName in SelectedContentList)
 				service.DeleteContent(contentName);
+			ClearEntities();
 		}
 
 		public void DeleteContentFromList(bool deleteSubContent)
@@ -121,31 +117,51 @@ namespace DeltaEngine.Editor.ContentManager
 
 		public void AddContentToSelection(string contentName)
 		{
-			if (selectedContentList.Contains(contentName))
+			if (SelectedContentList.Contains(contentName))
 				foreach (var contentIconAndName in ContentList)
 					if (contentIconAndName.Name == contentName)
 					{
 						contentIconAndName.Brush = new SolidColorBrush(Color.FromArgb(0, 175, 175, 175));
-						selectedContentList.Remove(contentName);
+						SelectedContentList.Remove(contentName);
 						return;
 					}
 			foreach (var contentIconAndName in ContentList)
 				if (contentIconAndName.Name == contentName)
 					contentIconAndName.Brush = new SolidColorBrush(Color.FromArgb(255, 195, 195, 195));
-			selectedContentList.Add(contentName);
+			SelectedContentList.Add(contentName);
 			lastSelectedContent = contentName;
 			RaisePropertyChanged("ContentList");
 		}
 
-		private void AddMultipleContentToSelection(string contentName)
+		public void SelectToDelete(string contentName)
+		{
+			if (SelectedContentList.Contains(contentName))
+				return;
+			SelectedContentList.Clear();
+			foreach (var contentIconAndName in ContentList)
+				if (contentIconAndName.Name == contentName)
+				{
+					contentIconAndName.Brush = new SolidColorBrush(Color.FromArgb(255, 195, 195, 195));
+					SelectedContentList.Add(contentName);
+					lastSelectedContent = contentName;
+				}
+				else
+				{
+					contentIconAndName.Brush = new SolidColorBrush(Color.FromArgb(0, 175, 175, 175));
+					SelectedContentList.Remove(contentName);
+				}
+			RaisePropertyChanged("ContentList");
+		}
+
+		public void AddMultipleContentToSelection(string contentName)
 		{
 			foreach (var contentIconAndName in ContentList)
 				if (contentIconAndName.Name == contentName)
 				{
-					if (selectedContentList.Count != 0)
+					if (SelectedContentList.Count != 0)
 						GetContentBetweenLastAndNewContent(contentName);
 					contentIconAndName.Brush = new SolidColorBrush(Color.FromArgb(255, 195, 195, 195));
-					selectedContentList.Add(contentName);
+					SelectedContentList.Add(contentName);
 					lastSelectedContent = contentName;
 				}
 		}
@@ -169,90 +185,26 @@ namespace DeltaEngine.Editor.ContentManager
 		{
 			ContentList[indexOfLastContent + i].Brush =
 				new SolidColorBrush(Color.FromArgb(255, 195, 195, 195));
-			selectedContentList.Add(ContentList[indexOfLastContent + i].Name);
+			SelectedContentList.Add(ContentList[indexOfLastContent + i].Name);
 		}
 
 		private string lastSelectedContent;
 
 		public void ClearSelectionList(string obj)
 		{
-			selectedContentList.Clear();
+			SelectedContentList.Clear();
 			foreach (var contentIconAndName in ContentList)
 				contentIconAndName.Brush = new SolidColorBrush(Color.FromArgb(0, 175, 175, 175));
 			RaisePropertyChanged("ContentList");
 		}
 
+		//ncrunch: no coverage start
 		public void OpenFileExplorerToAddNewContent(string obj)
 		{
 			var dialog = new OpenFileDialog { Multiselect = true };
-			dialog.ShowDialog(Application.Current.MainWindow);
-			files = dialog.FileNames;
-			if (isUploadingContent)
-			{
-				foreach (var file in files)
-					queuedContent.Add(file);
-				return;
-			}
-			UploadToOnlineService(files[0]);
-			isUploadingContent = true;
-			contentUploadIndex++;
-			service.ContentUpdated += UploadNextFile;
-		}
-
-		private string[] files;
-		private int contentUploadIndex;
-		private bool isUploadingContent;
-		private readonly List<string> queuedContent;
-
-		private void UploadNextFile(ContentType arg1, string arg2)
-		{
-			if (files.Length < contentUploadIndex + 1)
-			{
-				contentUploadIndex = 0;
-				if (queuedContent.Count == 0)
-				{
-					service.ContentUpdated -= UploadNextFile;
-					isUploadingContent = false;
-				}
-				else
-				{
-					files = queuedContent.ToArray();
-					queuedContent.Clear();
-				}
-			}
-			else
-			{
-				UploadToOnlineService(files[contentUploadIndex]);
-				contentUploadIndex++;
-			}
-		}
-
-		public void UploadToOnlineService(string contentFilePath)
-		{
-			byte[] bytes;
-			try
-			{
-				bytes = File.ReadAllBytes(contentFilePath);
-			}
-			catch (Exception)
-			{
-				Logger.Warning("Unable to read bytes for uploading to the server : " +
-					Path.GetFileName(contentFilePath));
-				return;
-			}
-			if (bytes.Length > MaximumFileSize)
-			{
-				Logger.Warning("The file you added is too large, the maximum file size is 16MB");
-				return;
-			}
-			var fileNameAndBytes = new Dictionary<string, byte[]>();
-			fileNameAndBytes.Add(Path.GetFileName(contentFilePath), bytes);
-			var metaDataCreator = new ContentMetaDataCreator();
-			var contentMetaData = metaDataCreator.CreateMetaDataFromFile(contentFilePath);
-			service.UploadContent(contentMetaData, fileNameAndBytes);
-		}
-
-		private const int MaximumFileSize = 16777216;
+			if ((bool)dialog.ShowDialog(Application.Current.MainWindow))
+				service.UploadMutlipleContentToServer(dialog.FileNames);
+		} //ncrunch: no coverage end
 
 		public bool IsAnimation
 		{
@@ -276,7 +228,7 @@ namespace DeltaEngine.Editor.ContentManager
 				else if (content.ToLower().Contains(SearchText.ToLower()))
 					AddNewContent(content);
 			RaisePropertyChanged("ContentList");
-			IsShowingStartContent = true;
+			isShowingStartContent = true;
 		}
 
 		public void AddNewContent(string contentName)
@@ -297,7 +249,7 @@ namespace DeltaEngine.Editor.ContentManager
 				subContent));
 		}
 
-		private static string GetContentTypeIcon(ContentType? type)
+		public string GetContentTypeIcon(ContentType? type)
 		{
 			string iconFileName;
 			if (type == ContentType.Font)
@@ -319,6 +271,8 @@ namespace DeltaEngine.Editor.ContentManager
 			ClearEntities();
 			int row = 0;
 			int column = 0;
+			if (service.Viewport != null)
+				service.Viewport.CenterViewOn(Vector2D.Half); //ncrunch: no coverage
 			foreach (var content in ContentList)
 			{
 				if (service.GetTypeOfContent(content.Name) == ContentType.Image ||
@@ -327,15 +281,19 @@ namespace DeltaEngine.Editor.ContentManager
 				{
 					if (content.Name.Contains("Font"))
 						continue;
+					Entity2D entity = null;
 					try
 					{
-						var sprite = new Sprite(content.Name, new Rectangle(0, 0, 1, 1));
-						SetDrawAreaPosition(sprite, row, column);
+						entity = new Sprite(content.Name, new Rectangle(0, 0, 1, 1));
+						SetDrawAreaPosition(entity, row, column);
 					}
+						//ncrunch: no coverage start 
 					catch (Exception)
 					{
+						if (entity != null)
+							entity.IsActive = false;
 						continue;
-					}
+					} //ncrunch: no coverage end
 				}
 				else if (service.GetTypeOfContent(content.Name) == ContentType.Material)
 					try
@@ -344,10 +302,11 @@ namespace DeltaEngine.Editor.ContentManager
 						var sprite = new Sprite(material, new Rectangle(0, 0, 1, 1));
 						SetDrawAreaPosition(sprite, row, column);
 					}
+						//ncrunch: no coverage start 
 					catch (Exception)
 					{
 						continue;
-					}
+					} //ncrunch: no coverage end
 				else
 					continue;
 				if (UpdateRowAndColumn(ref column, ref row))
@@ -355,7 +314,7 @@ namespace DeltaEngine.Editor.ContentManager
 			}
 		}
 
-		private bool ShowingContentManager;
+		public bool ShowingContentManager;
 
 		private static bool UpdateRowAndColumn(ref int column, ref int row)
 		{
@@ -365,9 +324,7 @@ namespace DeltaEngine.Editor.ContentManager
 				column = 0;
 				row++;
 			}
-			if (row == MaxColumns)
-				return true;
-			return false;
+			return row == MaxColumns;
 		}
 
 		private const int MaxRows = 3;
@@ -379,19 +336,33 @@ namespace DeltaEngine.Editor.ContentManager
 			if (entity.Get<Material>().DiffuseMap != null)
 				size = entity.Get<Material>().DiffuseMap.PixelSize;
 			else
-				size = entity.Get<Material>().Animation.Frames[0].PixelSize;
+				size = entity.Get<Material>().Animation.Frames[0].PixelSize; //ncrunch: no coverage
 			if (size.Width > size.Height)
 			{
 				var aspect = size.Height / size.Width;
-				entity.DrawArea = new Rectangle(0.1f + 0.2f * column, 0.25f + 0.2f * row, 0.15f,
-					0.15f * aspect);
+				entity.DrawArea =
+					Rectangle.FromCenter(new Vector2D(0.175f + 0.2f * column, 0.325f + 0.2f * row),
+						new Size(0.15f, 0.15f * aspect));
 			}
 			else
 			{
 				var aspect = size.Width / size.Height;
-				entity.DrawArea = new Rectangle(0.1f + 0.2f * column, 0.25f + 0.2f * row, 0.15f * aspect,
-					0.15f);
+				entity.DrawArea =
+					Rectangle.FromCenter(new Vector2D(0.175f + 0.2f * column, 0.325f + 0.2f * row),
+						new Size(0.15f * aspect, 0.15f));
 			}
+			new Line2D(new Vector2D(0.09f + 0.2f * column, 0.24f + 0.2f * row),
+				new Vector2D(0.15f + 0.11f + 0.2f * column, 0.24f + 0.2f * row),
+				new Datatypes.Color(67, 78, 200));
+			new Line2D(new Vector2D(0.09f + 0.2f * column, 0.24f + 0.2f * row),
+				new Vector2D(0.09f + 0.2f * column, 0.15f + 0.26f + 0.2f * row),
+				new Datatypes.Color(67, 78, 200));
+			new Line2D(new Vector2D(0.15f + 0.11f + 0.2f * column, 0.15f + 0.26f + 0.2f * row),
+				new Vector2D(0.15f + 0.11f + 0.2f * column, 0.24f + 0.2f * row),
+				new Datatypes.Color(67, 78, 200));
+			new Line2D(new Vector2D(0.15f + 0.11f + 0.2f * column, 0.15f + 0.26f + 0.2f * row),
+				new Vector2D(0.09f + 0.2f * column, 0.15f + 0.26f + 0.2f * row),
+				new Datatypes.Color(67, 78, 200));
 			StartPreviewList.Add(entity);
 		}
 
@@ -400,6 +371,7 @@ namespace DeltaEngine.Editor.ContentManager
 			get { return selectedContent; }
 			set
 			{
+				isShowingStartContent = false;
 				selectedContent = (ContentIconAndName)value;
 				ClearEntities();
 				CreatePreviewerForSelectedContent();
@@ -434,8 +406,10 @@ namespace DeltaEngine.Editor.ContentManager
 			//ncrunch: no coverage end
 			if (service.Viewport == null)
 				return;
+			//ncrunch: no coverage start
 			service.Viewport.CenterViewOn(Vector2D.Half);
 			service.Viewport.ZoomViewTo(1.0f);
+			//ncrunch: no coverage end
 		}
 
 		private readonly ContentViewer contentViewer = new ContentViewer();
@@ -457,7 +431,7 @@ namespace DeltaEngine.Editor.ContentManager
 		private void ClearEntities()
 		{
 			if (service.Viewport != null)
-				service.Viewport.DestroyRenderedEntities();
+				service.Viewport.DestroyRenderedEntities(); //ncrunch: no coverage
 		}
 
 		private void DrawBackground()
@@ -479,13 +453,13 @@ namespace DeltaEngine.Editor.ContentManager
 			}
 		}
 
-		private string searchText { get; set; }
+		private string searchText;
 		public bool CanDeleteSubContent { get; set; }
 
 		public void Activate()
 		{
 			ShowingContentManager = true;
-			IsShowingStartContent = true;
+			isShowingStartContent = true;
 			ShowStartContent();
 		}
 

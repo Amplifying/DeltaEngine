@@ -7,6 +7,7 @@ namespace DeltaEngine.Editor.ParticleEditor
 	/// </summary>
 	public class GenericGraphGui : Grid
 	{
+		//ncrunch: no coverage start
 		protected void SetRows(int numberOfRows)
 		{
 			RowDefinitions.Clear();

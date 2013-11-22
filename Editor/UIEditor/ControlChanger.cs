@@ -1,5 +1,5 @@
 ﻿using DeltaEngine.Datatypes;
-using DeltaEngine.Scenes.UserInterfaces.Controls;
+using DeltaEngine.Scenes.Controls;
 using GalaSoft.MvvmLight.Messaging;
 
 namespace DeltaEngine.Editor.UIEditor
@@ -61,7 +61,7 @@ namespace DeltaEngine.Editor.UIEditor
 		public void SetControlLayer(int value, UIControl uiControl, UIEditorScene uiEditorScene)
 		{
 			var selectedEntity2D = uiEditorScene.SelectedEntity2D;
-			uiControl.controlLayer = value;
+			uiControl.controlLayer = value < 0 ? 0 : value;
 			if (selectedEntity2D == null)
 				return;
 			selectedEntity2D.RenderLayer = uiControl.controlLayer;
@@ -70,8 +70,7 @@ namespace DeltaEngine.Editor.UIEditor
 		public void SetSelectedControlNameInList(string value, UIControl uiControl,
 			UIEditorScene uiEditorScene)
 		{
-			if (string.IsNullOrEmpty(value) || uiControl.Index < 0 ||
-				uiEditorScene.Scene.Controls.Count <= 0)
+			if (value == null || uiControl.Index < 0 || uiEditorScene.Scene.Controls.Count <= 0)
 				return;
 			uiEditorScene.SelectedControlNameInList = value;
 			uiEditorScene.SelectedEntity2D = uiEditorScene.Scene.Controls[uiControl.Index];
@@ -99,7 +98,8 @@ namespace DeltaEngine.Editor.UIEditor
 				return; //ncrunch: no coverage 
 			uiEditorScene.UIImagesInList[spriteListIndex] = controlName;
 			uiEditorScene.SelectedControlNameInList = controlName;
-			selectedEntity2D.Set(controlName);
+			selectedEntity2D.ClearTags();
+			selectedEntity2D.AddTag(controlName);
 		}
 	}
 }

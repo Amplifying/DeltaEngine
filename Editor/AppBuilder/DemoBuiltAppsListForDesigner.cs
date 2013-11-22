@@ -18,7 +18,7 @@ namespace DeltaEngine.Editor.AppBuilder
 			var settings = new MockSettings();
 			var storageData = new XmlData("BuiltApps");
 			storageData.AddAttribute("StoragePath", storageData.Name);
-			settings.SetValue(storageData.Name, storageData.ToXmlString());
+			settings.SetValue(storageData.Name, storageData);
 			var appsStorage = new AppsStorage(settings);
 			appsStorage.AddApp(new WindowsAppInfo("Rebuildable app", Guid.NewGuid(), DateTime.Now)
 			{

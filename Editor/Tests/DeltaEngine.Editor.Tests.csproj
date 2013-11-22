@@ -69,6 +69,10 @@
       <Project>{74863E62-A568-4C0A-A37F-F04BFA8EB9DB}</Project>
       <Name>DeltaEngine.Networking.Messages</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Platforms\DeltaEngine.Platforms.csproj">
+      <Project>{BAE8830E-5F62-48D6-B772-C4B1E8665FB3}</Project>
+      <Name>DeltaEngine.Platforms</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Platforms\TestWithOpenTK20\DeltaEngine.TestWithOpenTK20.csproj">
       <Project>{3A3D2E3E-FCD6-40A4-8F4E-36F3D173AB41}</Project>
       <Name>DeltaEngine.TestWithOpenTK20</Name>
@@ -106,6 +110,7 @@
     <Compile Include="MockEditorPluginView.cs" />
     <Compile Include="OnlineServiceTests.cs" />
     <Compile Include="PopupMessageViewModelTests.cs" />
+    <Compile Include="ProjectNameAndFontWeightTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

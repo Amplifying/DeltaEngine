@@ -8,15 +8,11 @@ namespace DeltaEngine.Editor.Core
 	{
 		public SolutionFileLoader(string solutionFilePath)
 		{
-			solutionFile = solutionFilePath;
 			solutionContentLines = File.Exists(solutionFilePath)
-				? File.ReadAllLines(solutionFile) : new string[0];
+				? File.ReadAllLines(solutionFilePath) : new string[0];
 			LoadProjectEntries();
 		}
 
-		public class NoSolutionPathSpecified : Exception { }
-
-		private readonly string solutionFile;
 		private readonly string[] solutionContentLines;
 
 		private void LoadProjectEntries()
@@ -36,7 +32,6 @@ namespace DeltaEngine.Editor.Core
 			foreach (var entry in ProjectEntries)
 				if (entry.IsCSharpProject)
 					foundProjects.Add(entry);
-
 			return foundProjects;
 		}
 
@@ -46,16 +41,14 @@ namespace DeltaEngine.Editor.Core
 			foreach (var entry in ProjectEntries)
 				if (entry.IsSolutionFolder)
 					foundFolders.Add(entry);
-
 			return foundFolders;
 		}
 
 		public ProjectEntry GetCSharpProject(string projectNameOfSolution)
 		{
 			foreach (var project in GetCSharpProjects())
-				if (project.Title == projectNameOfSolution)
+				if (project.Name == projectNameOfSolution)
 					return project;
-
 			throw new ProjectNotFoundInSolution(projectNameOfSolution);
 		}
 

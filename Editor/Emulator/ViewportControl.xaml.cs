@@ -46,13 +46,14 @@ namespace DeltaEngine.Editor.Emulator
 
 		private void SetSelectedEditorPlugin(string plugin)
 		{
+			Messenger.Default.Send(selectedEditorPlugin, "RemoveProjectUpdate");
 			selectedEditorPlugin = plugin;
 			if (plugin == "UIEditor")
 				ShowToolboxPane("");
 			else
 				HideToolboxPane("");
 			if (plugin != "ContentManager")
-				Messenger.Default.Send("NoLongerSelectContentManager", "NoLongerSelectContentManager");
+				Messenger.Default.Send("NoLongerSelectContentManager", "NoLongerSelectContentManager");				
 		}
 
 		private string selectedEditorPlugin;

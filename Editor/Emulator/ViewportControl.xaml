@@ -8,23 +8,23 @@
 	xmlns:helpers="clr-namespace:DeltaEngine.Editor.Emulator.Helpers"
 	mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="500"
 	d:DataContext="{d:DesignInstance Type=helpers:DesignViewportControl, IsDesignTimeCreatable=True}"
-	MinHeight="300" MinWidth="300" Background="Black" Visibility="Hidden">
+	MinHeight="300" MinWidth="300" Background="Black" Visibility="Visible">
 	<Grid GotFocus="GridOnGotFocus" LostFocus="GridOnLostFocus">
 		<Grid
 			Name="ToolPane" Width="140" HorizontalAlignment="Left"
-			Visibility="Hidden">
+			Visibility="Visible">
 			<Grid.RowDefinitions>
-				<RowDefinition Height="20" />
+				<RowDefinition Height="30" />
 				<RowDefinition Height="Auto" MinHeight="100" MaxHeight="500" />
 				<RowDefinition Height="5" />
-				<RowDefinition Height="20" />
+				<RowDefinition Height="30" />
 				<RowDefinition Height="*" />
 			</Grid.RowDefinitions>
-			<TextBlock Grid.Row="0" Text="Toolbox" Background="White" />
+			<TextBlock Grid.Row="0" Text="Toolbox" Background="#FFACACAC" Foreground="White" FontFamily="Arial" FontSize="18" FontWeight="Bold" Padding="5,5,0,0" />
 			<ListBox
 				Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Hidden"
 				Name="UIToolbox" PreviewMouseLeftButtonDown="ClickingOnButton" PreviewMouseLeftButtonUp="CreateNewSceneControl"
-				ItemsSource="{Binding Path=Tools}">
+				ItemsSource="{Binding Path=Tools}" Background="#FFF3F3F3">
 				<ListBox.ItemTemplate>
 					<DataTemplate>
 						<local:ToolboxEntry
@@ -37,10 +37,10 @@
 				Grid.Row="2" Cursor="SizeNS" Height="5" ResizeBehavior="PreviousAndCurrent"
 				Background="DarkGray" ShowsPreview="False" VerticalAlignment="Bottom"
 				HorizontalAlignment="Stretch" />
-			<TextBlock Grid.Row="3" Text="Hierarchy" Background="White" />
+			<TextBlock Grid.Row="3" Text="Hierarchy" Background="#FFACACAC" Foreground="White" Padding="5,5,0,0" FontFamily="Arial" FontSize="18" FontWeight="Bold" />
 			<ListBox Grid.Row="4" ItemsSource="{Binding Path=UIImagesInList}"
 			         SelectedItem="{Binding Path=SelectedNameInList}"
-			         SelectedIndex="{Binding Path=IndexOfSelectedNameInList}">
+			         SelectedIndex="{Binding Path=IndexOfSelectedNameInList}" Background="#FFF3F3F3">
 				<ListBox.ContextMenu>
 					<ContextMenu>
 						<MenuItem Header="Delete" Click="DeleteSelectedItem" />
@@ -50,7 +50,7 @@
 		</Grid>
 		<Grid Margin="140,0,0,0">
 			<WindowsFormsHost
-				Name="ViewportHost" x:FieldModifier="public" Margin="-140,0,0,0" />
+				Name="ViewportHost" x:FieldModifier="public" Margin="0,0,0,0" />
 		</Grid>
 	</Grid>
 </UserControl>

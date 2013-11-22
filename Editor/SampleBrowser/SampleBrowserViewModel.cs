@@ -44,9 +44,9 @@ namespace DeltaEngine.Editor.SampleBrowser
 				"All",
 				"Sample Games",
 				"Tutorials",
-				"Visual Tests"
+				//"Visual Tests"
 			};
-			SelectedAssembly = AssembliesAvailable[0];
+			SelectedAssembly = AssembliesAvailable[1];
 			FrameworksAvailable = frameworks.All;
 			SelectedFramework = frameworks.Default;
 		}
@@ -136,14 +136,14 @@ namespace DeltaEngine.Editor.SampleBrowser
 
 		private void ViewSourceCode(Sample sample)
 		{
-			sampleLauncher.OpenProject(sample);
+			sampleLauncher.OpenSolutionForProject(sample);
 		}
 
 		private SampleLauncher sampleLauncher;
 
-		private bool CanViewSourceCode(Sample sample)
+		private static bool CanViewSourceCode(Sample sample)
 		{
-			return sampleLauncher.DoesProjectExist(sample);
+			return SampleLauncher.DoesProjectExist(sample);
 		}
 
 		public ICommand OnStartButtonClicked { get; private set; }
@@ -163,7 +163,7 @@ namespace DeltaEngine.Editor.SampleBrowser
 			ClearEverything();
 			var sampleCreator = new SampleCreator();
 			sampleCreator.CreateSamples(SelectedFramework);
-			if (sampleCreator.IsSourceCodeRelease())
+			if (!sampleCreator.UsingPrecompiledSamplesFromInstaller)
 				SetFrameworkToDefault();
 			foreach (var sample in sampleCreator.Samples)
 				if (sample.Category == SampleCategory.Game)

@@ -2,6 +2,9 @@
 
 namespace DeltaEngine.Editor.Messages
 {
+	/// <summary>
+	/// A message sent from the BuildService which informs about the specific compilation issues
+	/// </summary>
 	public class AppBuildMessage
 	{
 		/// <summary>

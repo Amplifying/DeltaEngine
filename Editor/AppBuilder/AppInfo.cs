@@ -26,16 +26,35 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		public Device[] AvailableDevices
 		{
-			get { return availableDevices ?? (availableDevices = GetAvailableDevices()); }
+			get
+			{
+				if (availableDevices == null)
+					UpdateAvailableDevices();
+				return availableDevices;
+			}
 		}
 
 		private Device[] availableDevices;
 
+		protected void UpdateAvailableDevices()
+		{
+			try
+			{
+				availableDevices = GetAvailableDevices();
+			}
+			catch (Exception)
+			{
+				availableDevices = null;
+			}
+		}
+
+		public class NoDevicesAvailable : Exception { }
+
 		protected abstract Device[] GetAvailableDevices();
 
-		public bool IsDeviceAvailable
+		public virtual bool IsDeviceAvailable
 		{
-			get { return AvailableDevices.Length > 0; }
+			get { return AvailableDevices != null && AvailableDevices.Length > 0; }
 		}
 
 		public string SolutionFilePath { get; set; }

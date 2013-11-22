@@ -132,8 +132,8 @@
   <data name="Login" xml:space="preserve">
     <value>Login</value>
   </data>
-  <data name="ConnectionToDeltaEngineTimedOut" xml:space="preserve">
-    <value>Connection to DeltaEngine.net timed out, please check your internet connection!</value>
+  <data name="ConnectionTimedOut" xml:space="preserve">
+    <value>Connection timed out, please check your internet connection!</value>
   </data>
   <data name="Welcome" xml:space="preserve">
     <value>Welcome</value>

@@ -7,7 +7,7 @@ using System.Windows.Input;
 using DeltaEngine.Core;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Messages;
-using DeltaEngine.Extensions;
+using DeltaEngine.Networking.Messages;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 
@@ -24,15 +24,18 @@ namespace DeltaEngine.Editor.AppBuilder
 		{
 			Service = service;
 			MessagesListViewModel = new AppBuildMessagesListViewModel();
-			AppListViewModel = new BuiltAppsListViewModel(service.EditorSettings);
+			AppListViewModel = new BuiltAppsListViewModel(Settings.Current);
 			AppListViewModel.RebuildRequest += OnAppRebuildRequest;
 			BuildCommand = new RelayCommand(OnBuildExecuted, () => IsBuildActionExecutable);
-			HelpCommand = new RelayCommand(OpenHelpButtonClicked);
+			HelpCommand = new RelayCommand(OpenAppBuilderFeaturesPage);
+			GotoUserProfilePageCommand = new RelayCommand(OpenUserProfilePage);
+			GotoBuiltAppsDirectoryCommand = new RelayCommand(OpenLocalBuiltAppsDirectory);
 			service.ProjectChanged += OnContentProjectChanged;
 			OnContentProjectChanged();
 			service.DataReceived += OnServiceMessageReceived;
 			Service.Send(new SupportedPlatformsRequest());
 			SelectedPlatform = PlatformName.Windows;
+			IsRebuildForced = false;
 		}
 
 		public PlatformName[] SupportedPlatforms { get; private set; }
@@ -41,20 +44,23 @@ namespace DeltaEngine.Editor.AppBuilder
 		public BuiltAppsListViewModel AppListViewModel { get; set; }
 		public ICommand BuildCommand { get; private set; }
 		public ICommand HelpCommand { get; private set; }
+		public ICommand GotoUserProfilePageCommand { get; private set; }
+		public ICommand GotoBuiltAppsDirectoryCommand { get; private set; }
 
 		private void OnAppRebuildRequest(AppInfo app)
 		{
-			TrySendBuildRequestToServer(app.SolutionFilePath, app.Name, app.Platform);
+			TrySendBuildRequestToServer(app.SolutionFilePath, app.Name, app.Platform, true);
 		}
 
 		private void TrySendBuildRequestToServer(string solutionFilePath,
-			string projectNameInSolution, PlatformName platform)
+			string projectNameInSolution, PlatformName platform, bool isRebuildOfCodeForced)
 		{
 			try
 			{
 				codeSolutionPathOfBuildingApp = UserSolutionPath;
 				RaisePropertyChangedForIsBuildActionExecutable();
-				SendBuildRequestToServer(solutionFilePath, projectNameInSolution, platform);
+				SendBuildRequestToServer(solutionFilePath, projectNameInSolution, platform,
+					isRebuildOfCodeForced);
 			}
 			// ncrunch: no coverage start
 			catch (Exception ex)
@@ -70,11 +76,13 @@ namespace DeltaEngine.Editor.AppBuilder
 		}
 
 		private void SendBuildRequestToServer(string solutionFilePath, string projectNameInSolution,
-			PlatformName platform)
+			PlatformName platform, bool isRebuildOfCodeForced)
 		{
 			var projectData = new CodePacker(solutionFilePath, projectNameInSolution);
 			var request = new AppBuildRequest(Path.GetFileName(solutionFilePath), projectNameInSolution,
 				platform, projectData.GetPackedData());
+			request.IsRebuildOfCodeForced = isRebuildOfCodeForced;
+			request.ContentProjectName = Service.ProjectName;
 			Service.Send(request);
 		}
 
@@ -87,24 +95,36 @@ namespace DeltaEngine.Editor.AppBuilder
 				RaisePropertyChanged("UserSolutionPath");
 				DetermineAvailableProjectsInSpecifiedSolution();
 				SelectedSolutionProject = FindUserProjectInSolution();
+				RaisePropertyChanged("SelectedSolutionProject");
 			}
 		}
 
 		private string userSolutionPath;
+
 		private string codeSolutionPathOfBuildingApp;
 
 		private void DetermineAvailableProjectsInSpecifiedSolution()
 		{
 			var solutionLoader = new SolutionFileLoader(UserSolutionPath);
-			availableProjectsInSelectedSolution = solutionLoader.GetCSharpProjects();
+			var availableProjectsInSolution = solutionLoader.GetCSharpProjects();
+			AvailableProjectsInSelectedSolution = new List<ProjectEntry>();
+			foreach (ProjectEntry projectEntry in availableProjectsInSolution)
+				if (IsCodeProjectRelatedToContentProject(projectEntry))
+					AvailableProjectsInSelectedSolution.Add(projectEntry);
+			RaisePropertyChanged("AvailableProjectsInSelectedSolution");
 		}
 
-		private List<ProjectEntry> availableProjectsInSelectedSolution;
+		public List<ProjectEntry> AvailableProjectsInSelectedSolution { get; private set; }
+
+		private bool IsCodeProjectRelatedToContentProject(ProjectEntry project)
+		{
+			return !project.Name.EndsWith(".Tests") && project.Name.StartsWith(Service.ProjectName);
+		}
 
 		private ProjectEntry FindUserProjectInSolution()
 		{
-			return availableProjectsInSelectedSolution.FirstOrDefault(
-				csProject => csProject.Title == Service.ProjectName);
+			return AvailableProjectsInSelectedSolution.FirstOrDefault(
+				csProject => csProject.Name.StartsWith(Service.ProjectName));
 		}
 
 		public ProjectEntry SelectedSolutionProject
@@ -112,8 +132,11 @@ namespace DeltaEngine.Editor.AppBuilder
 			get { return selectedSolutionProject; }
 			set
 			{
+				// Temporarly HACK for the Presentation: For some reason the this triggered a second time
+				// with just "null"
+				if (value == null && AvailableProjectsInSelectedSolution.Contains(selectedSolutionProject))
+					return;
 				selectedSolutionProject = value;
-				RaisePropertyChanged("SelectedSolutionProject");
 				RaisePropertyChangedForIsBuildActionExecutable();
 				DetermineEntryPointsOfProject();
 			}
@@ -124,6 +147,8 @@ namespace DeltaEngine.Editor.AppBuilder
 		private void DetermineEntryPointsOfProject()
 		{
 			AvailableEntryPointsInSelectedProject = new List<string>();
+			if (SelectedSolutionProject == null)
+				return;
 			AvailableEntryPointsInSelectedProject.Add(DefaultEntryPoint);
 			RaisePropertyChanged("AvailableEntryPointsInSelectedProject");
 			SelectedEntryPoint = DefaultEntryPoint;
@@ -172,22 +197,33 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		protected void OnBuildExecuted()
 		{
+			Service.CurrentContentProjectSolutionFilePath = UserSolutionPath;
 			Logger.Info("Build Request sent");
 			MessagesListViewModel.ClearMessages();
-			TrySendBuildRequestToServer(UserSolutionPath, SelectedSolutionProject.Title,
-				SelectedPlatform);
+			TrySendBuildRequestToServer(UserSolutionPath, SelectedSolutionProject.Name, SelectedPlatform,
+				IsRebuildForced);
 		}
 
 		// ncrunch: no coverage start
-		private static void OpenHelpButtonClicked()
+		private static void OpenAppBuilderFeaturesPage()
 		{
-			Process.Start("http://DeltaEngine.net/features/appbuilder");
+			Process.Start("http://http://deltaengine.net/features/appbuilder");
+		}
+
+		private static void OpenUserProfilePage()
+		{
+			Process.Start("http://deltaengine.net/account/Projects/");
+		}
+
+		private void OpenLocalBuiltAppsDirectory()
+		{
+			Process.Start(AppListViewModel.AppStorageDirectory);
 		}
 		// ncrunch: no coverage end
 
 		private void OnContentProjectChanged()
 		{
-			TrySelectEngineSamplesSolution();
+			UserSolutionPath = Service.CurrentContentProjectSolutionFilePath;
 		}
 
 		private void OnServiceMessageReceived(object serviceMessage)
@@ -200,6 +236,8 @@ namespace DeltaEngine.Editor.AppBuilder
 				OnAppBuildResultRecieved((AppBuildResult)serviceMessage);
 			if (serviceMessage is AppBuildFailed)
 				OnAppBuildFailedRecieved((AppBuildFailed)serviceMessage);
+			if (serviceMessage is ServerError)
+				OnServerError((ServerError)serviceMessage);
 		}
 
 		private void OnSupportedPlatformsResultRecieved(SupportedPlatformsResult platformsMessage)
@@ -260,64 +298,10 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		public event Action<AppBuildFailed> AppBuildFailedRecieved;
 
-		private void TrySelectEngineSamplesSolution()
+		private void OnServerError(ServerError serverError)
 		{
-			UserSolutionPath = GetSamplesSolutionFilePath();
-			if (UserSolutionPath == null)
-				LogSamplesSolutionNotFoundWarning(); // ncrunch: no coverage
+			OnAppBuildFailedRecieved(new AppBuildFailed(serverError.Error));
 		}
-
-		public static string GetSamplesSolutionFilePath()
-		{
-			const string SamplesSolutionFile = "DeltaEngine.Samples.sln";
-			return GetFilePathFromSourceCode(SamplesSolutionFile) ??
-				GetFilePathFromInstallerRelease(SamplesSolutionFile);
-		}
-
-		private static string GetFilePathFromSourceCode(string filename)
-		{
-			string originalDirectory = Environment.CurrentDirectory;
-			try
-			{
-				if (StackTraceExtensions.StartedFromNCrunch)
-					Environment.CurrentDirectory = PathExtensions.GetFallbackEngineSourceCodeDirectory();
-				var currentDirectory = new DirectoryInfo(Environment.CurrentDirectory);
-				return GetFilePathFromSourceCodeRecursively(currentDirectory, filename);
-			}
-			finally
-			{
-				Environment.CurrentDirectory = originalDirectory;
-			}
-		}
-
-		private static string GetFilePathFromSourceCodeRecursively(DirectoryInfo directory,
-			string filename)
-		{
-			if (directory.Parent == null)
-				return null; //ncrunch: no coverage
-			foreach (var file in directory.GetFiles())
-				if (file.Name == filename)
-					return file.FullName;
-			return GetFilePathFromSourceCodeRecursively(directory.Parent, filename);
-		}
-
-		private static string GetFilePathFromInstallerRelease(string filePath)
-		{
-			return PathExtensions.IsDeltaEnginePathEnvironmentVariableAvailable()
-				? Path.Combine(PathExtensions.GetDeltaEngineInstalledDirectory(),
-				Path.Combine("OpenTK", filePath)) : null;
-		}
-
-		// ncrunch: no coverage start
-		private static void LogSamplesSolutionNotFoundWarning()
-		{
-			string newLine = Environment.NewLine;
-			Logger.Warning("AppBuilder plugin: The DeltaEngine.Samples.sln can't be find." + newLine +
-				"Please make sure that the '" + PathExtensions.EnginePathEnvironmentVariableName +
-				"' environment variable isn't set or alternatively you downloaded the Engine source code" +
-				" to '" + PathExtensions.DefaultCodePath + ".");
-		}
-		// ncrunch: no coverage end
 
 		public bool IsBuildActionExecutable
 		{
@@ -346,5 +330,7 @@ namespace DeltaEngine.Editor.AppBuilder
 					SupportedPlatforms.Any(supportedPlatform => SelectedPlatform == supportedPlatform);
 			}
 		}
+
+		public bool IsRebuildForced { get; set; }
 	}
 }

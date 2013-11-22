@@ -4,6 +4,8 @@ using System.IO;
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
+using DeltaEngine.Editor.Core;
+using DeltaEngine.Editor.Mocks;
 using NUnit.Framework;
 using SharpCompress.Archive;
 using SharpCompress.Archive.Zip;
@@ -28,39 +30,39 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 		private static ProjectCreator CreateWithValidFileSystemMock()
 		{
 			var project = new CsProject("John Doe");
-			var template = VsTemplate.CreateByName(CreateSolutionTemplateMock(), "EmptyGame");
-			return new ProjectCreator(project, template,
-				CreateEmptyGameFileSystemMock(project, template));
+			var template = VsTemplate.CreateByName(CreateSolutionTemplateMock(), "EmptyApp");
+			return new ProjectCreator(project, template, CreateMockService(),
+				CreateEmptyAppFileSystemMock(project, template));
 		}
 
 		private static MockFileSystem CreateSolutionTemplateMock()
 		{
 			string emptyGameZipTemplateFilePath =
-				Path.Combine(CreatorTestExtensions.GetEngineTemplatesDirectory(), "EmptyGame.zip");
+				Path.Combine(CreatorTestExtensions.GetEngineTemplatesDirectory(), "EmptyApp.zip");
 			var files = new Dictionary<string, MockFileData>();
 			files.Add(emptyGameZipTemplateFilePath,
-				new MockFileData(File.ReadAllText(Path.Combine("NewDeltaEngineProject", "EmptyGame.zip"))));
+				new MockFileData(File.ReadAllText(Path.Combine("GeneratedEmptyApp", "EmptyApp.zip"))));
 			var fileSystem = new MockFileSystem(files);
 			fileSystem.Directory.SetCurrentDirectory(emptyGameZipTemplateFilePath);
 			return fileSystem;
 		}
 
-		private static IFileSystem CreateEmptyGameFileSystemMock(CsProject project,
+		private static IFileSystem CreateEmptyAppFileSystemMock(CsProject project,
 			VsTemplate template)
 		{
 			List<string> files =
-				GetMockFileDataFromZip(Path.Combine("NewDeltaEngineProject", "EmptyGame.zip"));
+				GetMockFileDataFromZip(Path.Combine("GeneratedEmptyApp", "EmptyApp.zip"));
 			Assert.AreEqual(5, files.Count);
 			var fileSystem = new Dictionary<string, MockFileData>();
 			string basePath = CreatorTestExtensions.GetEngineTemplatesDirectory();
-			fileSystem.Add(Path.Combine(basePath, "EmptyGame.zip"),
-				new MockFileData(File.ReadAllText(Path.Combine("NewDeltaEngineProject", "EmptyGame.zip"))));
+			fileSystem.Add(Path.Combine(basePath, "EmptyApp.zip"),
+				new MockFileData(File.ReadAllText(Path.Combine("GeneratedEmptyApp", "EmptyApp.zip"))));
 			fileSystem.Add(Path.Combine(basePath, template.AssemblyInfo), files[3]);
 			fileSystem.Add(Path.Combine(basePath, template.Csproj), files[4]);
 			fileSystem.Add(Path.Combine(basePath, template.Ico), files[0]);
 			fileSystem.Add(Path.Combine(basePath, template.SourceCodeFiles[0]), files[2]);
 			fileSystem.Add(Path.Combine(basePath, template.SourceCodeFiles[1]), files[1]);
-			fileSystem.Add(project.Path, new MockDirectoryData());
+			fileSystem.Add(project.BaseDirectory, new MockDirectoryData());
 			return new MockFileSystem(fileSystem);
 		}
 
@@ -87,10 +89,16 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 			}
 		}
 
+		private static Service CreateMockService()
+		{
+			return new MockService("John Doe", "LogoApp");
+		}
+
 		private static ProjectCreator CreateWithCorruptFileSystemMock()
 		{
-			var template = VsTemplate.CreateByName(CreateCorruptVisualStudioTemplateMock(), "EmptyGame");
-			return new ProjectCreator(new CsProject(""), template, CreateCorruptFileSystemMock(template));
+			var template = VsTemplate.CreateByName(CreateCorruptVisualStudioTemplateMock(), "EmptyApp");
+			return new ProjectCreator(new CsProject(""), template, CreateMockService(),
+				CreateCorruptFileSystemMock(template));
 		}
 
 		private static MockFileSystem CreateCorruptVisualStudioTemplateMock()
@@ -146,24 +154,24 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 		{
 			var mockFileSystem = CreateApprovedSystemMock(valid.Project);
 			valid.CreateProject();
-			Assert.IsTrue(CompareFileSystems(mockFileSystem, valid.FileSystem, valid.Project.Path));
+			Assert.IsTrue(CompareFileSystems(mockFileSystem, valid.FileSystem, valid.Project.BaseDirectory));
 		}
 
 		private static IFileSystem CreateApprovedSystemMock(CsProject project)
 		{
-			const string GeneratedProjectToCompare = "NewDeltaEngineProject";
-			string mockPathAssemblyInfo = Path.Combine(project.Path, "Properties", "AssemblyInfo.cs");
-			string realPathAssemblyInfo = Path.Combine(GeneratedProjectToCompare, "Properties", 
+			const string GeneratedProjectToCompare = "GeneratedEmptyApp";
+			string mockPathAssemblyInfo = Path.Combine(project.BaseDirectory, "Properties", "AssemblyInfo.cs");
+			string realPathAssemblyInfo = Path.Combine(GeneratedProjectToCompare, "Properties",
 				"AssemblyInfo.cs");
-			string mockPathCsproj = Path.Combine(project.Path, "NewDeltaEngineProject.csproj");
+			string mockPathCsproj = Path.Combine(project.BaseDirectory, "GeneratedEmptyApp.csproj");
 			string realPathCsproj = Path.Combine(GeneratedProjectToCompare,
-				"NewDeltaEngineProject.csproj");
-			string mockPathIcon = Path.Combine(project.Path, "NewDeltaEngineProjectIcon.ico");
+				"GeneratedEmptyApp.csproj");
+			string mockPathIcon = Path.Combine(project.BaseDirectory, "GeneratedEmptyAppIcon.ico");
 			string realPathIcon = Path.Combine(GeneratedProjectToCompare,
-				"NewDeltaEngineProjectIcon.ico");
-			string mockPathProgram = Path.Combine(project.Path, "Program.cs");
+				"GeneratedEmptyAppIcon.ico");
+			string mockPathProgram = Path.Combine(project.BaseDirectory, "Program.cs");
 			string realPathProgram = Path.Combine(GeneratedProjectToCompare, "Program.cs");
-			string mockPathGame = Path.Combine(project.Path, "Game.cs");
+			string mockPathGame = Path.Combine(project.BaseDirectory, "Game.cs");
 			string realPathGame = Path.Combine(GeneratedProjectToCompare, "Game.cs");
 			return
 				new MockFileSystem(new Dictionary<string, MockFileData>
@@ -186,17 +194,17 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 			var filesToCheck = new List<string>
 			{
 				Path.Combine("Properties", "AssemblyInfo.cs"),
-				"NewDeltaEngineProject.csproj",
+				"GeneratedEmptyApp.csproj",
 				"Program.cs",
 				"Game.cs"
 			};
-
 			return filesToCheck.All(file => CompareFileInFileSystem(fs1, fs2, Path.Combine(path, file)));
 		}
 
 		private static bool CompareFileInFileSystem(IFileSystem fs1, IFileSystem fs2, string filePath)
 		{
-			return IsFileEqual(fs1.File.ReadAllLines(filePath), fs2.File.ReadAllLines(filePath), filePath);
+			return IsFileEqual(fs1.File.ReadAllLines(filePath), fs2.File.ReadAllLines(filePath),
+				filePath);
 		}
 
 		private static bool IsFileEqual(IList<string> file1, IList<string> file2, string filePath)
@@ -213,13 +221,13 @@ namespace DeltaEngine.Editor.ProjectCreator.Tests
 		private class NumberOfTextLinesAreNotEqual : Exception
 		{
 			public NumberOfTextLinesAreNotEqual(string filePath)
-				: base(Path.GetFileName(filePath)) { }
+				: base(Path.GetFileName(filePath)) {}
 		}
 
 		private class TextLineIsDifferent : Exception
 		{
 			public TextLineIsDifferent(string filePath, string expected, string actual)
-				: base(Path.GetFileName(filePath) + " - expected: " + expected + ", actual: " + actual) { }
+				: base(Path.GetFileName(filePath) + " - expected: " + expected + ", actual: " + actual) {}
 		}
 	}
 }

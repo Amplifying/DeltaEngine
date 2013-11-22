@@ -2,6 +2,7 @@
 using System.Windows.Input;
 using ApprovalTests.Reporters;
 using ApprovalTests.Wpf;
+using DeltaEngine.Editor.AppBuilder.Android;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Messages;
 using NUnit.Framework;
@@ -94,6 +95,33 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			else if (e.RightButton != MouseButtonState.Released)
 				service.ChangeProject("GhostWars");
 			viewModel.BuildCommand.Execute(null);
+		}
+
+		[Test, STAThread]
+		public void ShowInfoDialogWhenNoSolutionProjectIsAvailableForContentProject()
+		{
+			AppBuilderView builderView = CreateViewAndViewModelViaMockService();
+			WpfWindow window = CreateTestWindow(builderView);
+			window.MouseDoubleClick += (sender, e) => service.ChangeProject("NonExistingProject");
+			window.ShowDialog();
+		}
+
+		[Test, STAThread]
+		public void DownloadAndroidDriversAndOpenInstructions()
+		{
+			AppBuilderView builderView = CreateViewAndViewModelViaMockService();
+			builderView.InstallAndLaunchNewBuiltApp(new AndroidAppInfoWithoutDevices());
+		}
+
+		private class AndroidAppInfoWithoutDevices : AndroidAppInfo
+		{
+			public AndroidAppInfoWithoutDevices()
+				: base("AnyAndroidApp.apk", Guid.Empty, DateTime.Now) { }
+
+			protected override Device[] GetAvailableDevices()
+			{
+				return new Device[0];
+			}
 		}
 	}
 }

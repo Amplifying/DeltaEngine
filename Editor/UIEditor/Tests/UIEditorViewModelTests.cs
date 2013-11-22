@@ -5,6 +5,7 @@ using DeltaEngine.Input;
 using DeltaEngine.Input.Mocks;
 using DeltaEngine.Platforms;
 using DeltaEngine.Rendering2D;
+using DeltaEngine.Scenes.Controls;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.UIEditor.Tests
@@ -84,7 +85,9 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 		private static bool CheckNameAndTypeOfUpdate(ContentType type, string name)
 		{
 			return type == ContentType.Scene && name.Equals("NewUI");
-		}//ncrunch: no coverage end
+		}
+
+		//ncrunch: no coverage end
 
 		[Test, CloseAfterFirstFrame]
 		public void GridShouldBeDrawn()
@@ -251,9 +254,9 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 		}
 
 		[Test, CloseAfterFirstFrame]
-		public void IsShowingGridPropertyShouldBeFalse()
+		public void IsShowingGridPropertyShouldBeTrueInitially()
 		{
-			Assert.IsFalse(viewModel.IsShowingGrid);
+			Assert.IsTrue(viewModel.IsShowingGrid);
 		}
 
 		[Test, CloseAfterFirstFrame]
@@ -266,6 +269,36 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 				Rectangle.One);
 			viewModel.ChangeMaterial("newMaterial2D");
 			Assert.AreEqual("newMaterial2D", viewModel.SelectedEntity2D.Get<Material>().Name);
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void ChangeHoveredMaterial()
+		{
+			viewModel.ChangeHoveredMaterial("newMaterial2D");
+			AddNewButton();
+			viewModel.ChangeHoveredMaterial("newMaterial2D");
+			Assert.AreEqual("newMaterial2D",
+				viewModel.SelectedEntity2D.Get<Theme>().ButtonMouseover.Name);
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void ChangePressedMaterial()
+		{
+			viewModel.ChangePressedMaterial("newMaterial2D");
+			AddNewButton();
+			viewModel.ChangePressedMaterial("newMaterial2D");
+			Assert.AreEqual("newMaterial2D",
+				viewModel.SelectedEntity2D.Get<Theme>().ButtonPressed.Name);
+		}
+
+		[Test, CloseAfterFirstFrame]
+		public void ChangeDisabledMaterial()
+		{
+			viewModel.ChangeDisabledMaterial("newMaterial2D");
+			AddNewButton();
+			viewModel.ChangeDisabledMaterial("newMaterial2D");
+			Assert.AreEqual("newMaterial2D",
+				viewModel.SelectedEntity2D.Get<Theme>().ButtonDisabled.Name);
 		}
 
 		private void AddNewButton()
@@ -398,6 +431,139 @@ namespace DeltaEngine.Editor.UIEditor.Tests
 				viewModel.uiEditorScene);
 			viewModel.SelectedControlNameInList = NewSliderId;
 			Assert.AreEqual(NewSliderId, viewModel.SelectedControlNameInList);
+		}
+
+		[Test]
+		public void DeleteSelectedContentFromWpf()
+		{
+			AddNewSlider();
+			Assert.AreEqual(NewSliderId, viewModel.ControlName);
+			viewModel.DeleteSelectedContentFromWpf("");
+			viewModel.DeleteSelectedContentFromWpf(NewSliderId);
+			Assert.IsFalse(viewModel.uiEditorScene.UIImagesInList.Contains(NewSliderId));
+		}
+
+		[Test]
+		public void AddNewResolutionToResolutionList()
+		{
+			AddResolutionToList();
+			Assert.AreEqual(6, viewModel.ResolutionList.Count);
+			viewModel.NewGridHeight = 0;
+			viewModel.AddNewResolution("");
+			Assert.AreEqual(6, viewModel.ResolutionList.Count);
+		}
+
+		private void AddResolutionToList()
+		{
+			viewModel.NewGridWidth = 10;
+			viewModel.NewGridHeight = 20;
+			viewModel.AddNewResolution("");
+			viewModel.AddNewResolution("");
+		}
+
+		[Test]
+		public void CannotHaveMoreThan10SizesInResolutionList()
+		{
+			AddResolutionToList();
+			Add6Resolutions();
+			Assert.AreEqual(10, viewModel.ResolutionList.Count);
+		}
+
+		private void Add6Resolutions()
+		{
+			for (int i = 0; i < 6; i++)
+			{
+				viewModel.NewGridWidth = i;
+				viewModel.NewGridHeight = i*2;
+				viewModel.AddNewResolution("");
+			}
+		}
+
+		[Test]
+		public void ChangeSelectedNameFromTheHierachyList()
+		{
+			AddNewSlider();
+			Assert.AreEqual(NewSliderId, viewModel.SelectedControlNameInList);
+			viewModel.SetSelectedNameFromHierachy("NewButton0");
+			Assert.AreEqual("NewButton0", viewModel.SelectedControlNameInList);
+		}
+
+		[Test]
+		public void ChangeSelectedIndexFromTheHierachyList()
+		{
+			AddNewSlider();
+			viewModel.SetSelectedIndexFromHierachy(1);
+			Assert.AreEqual(1, viewModel.uiControl.Index);
+		}
+
+		[Test]
+		public void ChangingTopMarginWillChangeBottomMargin()
+		{
+			AddNewSlider();
+			viewModel.TopMargin = 0.2f;
+			Assert.AreEqual(0.23f, viewModel.BottomMargin);
+		}
+
+		[Test]
+		public void ChangingBottomMarginWillChangeTopMargin()
+		{
+			AddNewSlider();
+			viewModel.BottomMargin = 0.2f;
+			Assert.AreEqual(0.17f, viewModel.TopMargin);
+		}
+
+		[Test]
+		public void ChangingLeftMarginWillChangeRightMargin()
+		{
+			AddNewSlider();
+			viewModel.LeftMargin = 0.2f;
+			Assert.AreEqual(0.35f, viewModel.RightMargin, 0.01f);
+		}
+
+		[Test]
+		public void ChangingRightMarginWillChangeLeftMargin()
+		{
+			AddNewSlider();
+			viewModel.RightMargin = 0.2f;
+			Assert.AreEqual(0.05f, viewModel.LeftMargin, 0.01f);
+		}
+
+		[Test]
+		public void ChangingHorizontalAllignment()
+		{
+			AddNewSlider();
+			viewModel.HorizontalAllignment = null;
+			viewModel.HorizontalAllignment = "Left";
+			Assert.AreEqual(0f, viewModel.LeftMargin, 0.01f);
+			viewModel.HorizontalAllignment = "Right";
+			Assert.AreEqual(0.85f, viewModel.LeftMargin, 0.01f);
+			viewModel.HorizontalAllignment = "Center";
+			Assert.AreEqual(0.425f, viewModel.LeftMargin, 0.01f);
+			Assert.AreEqual("Center", viewModel.HorizontalAllignment);
+		}
+
+		[Test]
+		public void ChangingVerticalAllignment()
+		{
+			AddNewSlider();
+			viewModel.VerticalAllignment = "";
+			viewModel.VerticalAllignment = "Top";
+			Assert.AreEqual(0.125f, viewModel.TopMargin, 0.01f);
+			viewModel.VerticalAllignment = "Bottom";
+			Assert.AreEqual(0.85f, viewModel.TopMargin, 0.01f);
+			viewModel.VerticalAllignment = "Center";
+			Assert.AreEqual(0.485f, viewModel.TopMargin, 0.01f);
+			Assert.AreEqual("Center", viewModel.VerticalAllignment);
+		}
+
+		[Test]
+		public void ChangeSelectedButtonToInterActiveButtonAndBack()
+		{
+			AddNewButton();
+			viewModel.IsInteractiveButton = true;
+			Assert.AreEqual(typeof(InteractiveButton), viewModel.SelectedEntity2D.GetType());
+			viewModel.IsInteractiveButton = false;
+			Assert.AreEqual(typeof(Button), viewModel.SelectedEntity2D.GetType());
 		}
 	}
 }

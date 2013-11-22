@@ -63,12 +63,23 @@ namespace DeltaEngine.Editor.AppBuilder
 		{
 			try
 			{
+				if (!selectedApp.IsDeviceAvailable)
+				{
+					AppInfoExtensions.HandleNoDeviceAvailableInView(selectedApp);
+					return;
+				}
+				Device primaryDevice = selectedApp.AvailableDevices[0];
+				if (!primaryDevice.IsAppInstalled(selectedApp))
+				{
+					Logger.Info(selectedApp + " wasn't installed on the device '" + primaryDevice +
+						"' will install it now.");
+					primaryDevice.Install(selectedApp);
+				}
 				selectedApp.LaunchAppOnPrimaryDevice();
 			}
-			catch (AppInfo.NoDeviceAvailable)
+			catch (Device.StartApplicationFailedOnDevice ex)
 			{
-				Logger.Warning("No " + selectedApp.Platform + " device found. Please make sure your" +
-					" device is connected and you have the correct driver installed.");
+				AppInfoExtensions.LogStartingAppFailed(selectedApp, ex.DeviceName);
 			}
 			catch (Exception ex)
 			{

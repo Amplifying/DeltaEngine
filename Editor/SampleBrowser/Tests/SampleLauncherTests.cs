@@ -18,14 +18,14 @@ namespace DeltaEngine.Editor.SampleBrowser.Tests
 		[Test]
 		public void LaunchingInvalidSampleShouldThrow()
 		{
-			Assert.Throws<Win32Exception>(() => sampleLauncher.OpenProject(GetTestSample(false)));
+			Assert.Throws<Win32Exception>(() => sampleLauncher.OpenSolutionForProject(GetTestSample(false)));
 			Assert.Throws<Win32Exception>(() => sampleLauncher.StartExecutable(GetGameSample(false)));
 		}
 
 		private static Sample GetTestSample(bool isValid)
 		{
-			return Sample.CreateTest("TestSample", @"Test\Test.csproj", GetPathToTestAssembly(isValid),
-				"TestClass", "TestMethod");
+			return new Sample("TestSample", SampleCategory.Test, "Test.sln", @"Test\Test.csproj",
+				GetPathToTestAssembly(isValid)) { EntryClass = "TestClass", EntryMethod = "TestMethod" };
 		}
 
 		private static string GetPathToTestAssembly(bool isValid)
@@ -35,14 +35,15 @@ namespace DeltaEngine.Editor.SampleBrowser.Tests
 
 		private static Sample GetGameSample(bool isValid)
 		{
-			return Sample.CreateGame("TestSample", @"Test\Test.csproj", GetPathToTestAssembly(isValid));
+			return new Sample("TestSample", SampleCategory.Game, "Test.sln", @"Test\Test.csproj",
+				GetPathToTestAssembly(isValid));
 		}
 
 		[Test]
 		public void FakeProjectShouldNotBeAvailable()
 		{
-			Assert.IsFalse(sampleLauncher.DoesProjectExist(GetTestSample(true)));
-			Assert.IsFalse(sampleLauncher.DoesProjectExist(GetGameSample(true)));
+			Assert.IsFalse(SampleLauncher.DoesProjectExist(GetTestSample(true)));
+			Assert.IsFalse(SampleLauncher.DoesProjectExist(GetGameSample(true)));
 		}
 
 		[Test]
@@ -50,6 +51,20 @@ namespace DeltaEngine.Editor.SampleBrowser.Tests
 		{
 			Assert.IsTrue(sampleLauncher.DoesAssemblyExist(GetTestSample(true)));
 			Assert.IsTrue(sampleLauncher.DoesAssemblyExist(GetGameSample(true)));
+		}
+
+		[Test]
+		public void StartTutorialInVisualStudio()
+		{
+			const string TutorialDirectory = @"C:\code\DeltaEngine\Tutorials\";
+			const string SolutionFilePath = TutorialDirectory + "DeltaEngine.Tutorials.Basics.sln";
+			const string ProjectName = "DeltaEngine.Tutorials.Basic01CreateWindow";
+			const string ProjectFilePath =
+				TutorialDirectory + @"Basic01CreateWindow\" + ProjectName + ".csproj";
+			const string ExePath = TutorialDirectory + @"Basic01CreateWindow\" + ProjectName + ".exe";
+			var tutorial = new Sample(ProjectName, SampleCategory.Tutorial, SolutionFilePath,
+				ProjectFilePath, ExePath);
+			sampleLauncher.OpenSolutionForProject(tutorial);
 		}
 	}
 }

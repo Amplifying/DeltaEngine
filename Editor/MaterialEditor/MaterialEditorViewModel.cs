@@ -7,7 +7,6 @@ using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
-using DeltaEngine.Entities;
 using DeltaEngine.Graphics;
 using DeltaEngine.Rendering2D;
 using DeltaEngine.ScreenSpaces;
@@ -27,13 +26,17 @@ namespace DeltaEngine.Editor.MaterialEditor
 			RenderStyleList = new ObservableCollection<string>();
 			MaterialName = "MyMaterial";
 			CanSaveMaterial = false;
+			if (NewMaterial == null)
+				CreateDefaultMaterial();
 			FillLists();
-			CreateDefaultMaterial();
 		}
 
 		private void CreateDefaultMaterial()
 		{
+			if (service.Viewport != null)
+				service.Viewport.DestroyRenderedEntities(); //ncrunch: no coverage
 			var imageData = new ImageCreationData(new Size(8.0f, 8.0f));
+			imageData.DisableLinearFiltering = true;
 			var image = ContentLoader.Create<Image>(imageData);
 			var colors = new Color[8 * 8];
 			for (int i = 0; i < 8; i++)
@@ -190,19 +193,30 @@ namespace DeltaEngine.Editor.MaterialEditor
 
 		private void CreateNewMaterial()
 		{
-			if (string.IsNullOrEmpty(SelectedShader) || string.IsNullOrEmpty(SelectedColor) ||
-				(string.IsNullOrEmpty(SelectedImage) && string.IsNullOrEmpty(SelectedAnimation)))
-				return;
-			NewMaterial = string.IsNullOrEmpty(SelectedAnimation)
-				? new Material(SelectedShader, SelectedImage)
-				: new Material(SelectedShader, SelectedAnimation);
-			NewMaterial.DefaultColor = colorList[selectedColor];
-			NewMaterial.RenderSizeMode =
-				(RenderSizeMode)Enum.Parse(typeof(RenderSizeMode), selectedRenderSize, true);
-			NewMaterial.DiffuseMap.BlendMode =
-				(BlendMode)Enum.Parse(typeof(BlendMode), SelectedBlendMode);
-			var shaderWithFormat = NewMaterial.Shader as ShaderWithFormat;
-			Draw2DExample(shaderWithFormat);
+			if (service.Viewport != null)
+				service.Viewport.DestroyRenderedEntities(); //ncrunch: no coverage
+			try
+			{
+				if (string.IsNullOrEmpty(SelectedShader) || string.IsNullOrEmpty(SelectedColor) ||
+					(string.IsNullOrEmpty(SelectedImage) && string.IsNullOrEmpty(SelectedAnimation)))
+					return;
+				NewMaterial = string.IsNullOrEmpty(SelectedAnimation)
+					? new Material(SelectedShader, SelectedImage)
+					: new Material(SelectedShader, SelectedAnimation);
+				NewMaterial.DefaultColor = colorList[selectedColor];
+				NewMaterial.RenderSizeMode =
+					(RenderSizeMode)Enum.Parse(typeof(RenderSizeMode), selectedRenderSize, true);
+				NewMaterial.DiffuseMap.BlendMode =
+					(BlendMode)Enum.Parse(typeof(BlendMode), SelectedBlendMode);
+				var shaderWithFormat = NewMaterial.Shader as ShaderWithFormat;
+				Draw2DExample(shaderWithFormat);
+			}
+				//ncrunch: no coverage start
+			catch
+			{
+				Logger.Warning("Could not display material due to corrupted content");
+				CreateDefaultMaterial();
+			} //ncrunch: no coverage end
 		}
 
 		private void Draw2DExample(ShaderWithFormat shader)
@@ -215,13 +229,15 @@ namespace DeltaEngine.Editor.MaterialEditor
 						ScreenSpace.Current.FromPixelSpace(NewMaterial.DiffuseMap.PixelSize)));
 		}
 
-		private Entity2D renderExample;
+		public Entity2D renderExample;
 
 		public string SelectedImage
 		{
 			get { return selectedImage; }
 			set
 			{
+				if (renderExample != null)
+					renderExample.IsActive = false;
 				selectedImage = value;
 				selectedAnimation = "";
 				CreateNewMaterial();
@@ -264,23 +280,6 @@ namespace DeltaEngine.Editor.MaterialEditor
 			set
 			{
 				materialName = value;
-				if (ContentLoader.Exists(materialName, ContentType.Material))
-				{
-					NewMaterial = ContentLoader.Load<Material>(materialName);
-					if (NewMaterial.Animation != null)
-						SelectedImage = NewMaterial.Animation.Name;
-					else if (NewMaterial.SpriteSheet != null)
-						SelectedImage = NewMaterial.SpriteSheet.Name;
-					else
-						SelectedImage = NewMaterial.DiffuseMap.Name;
-					SelectedShader = NewMaterial.Shader.Name;
-					foreach (var colorWithString in colorList)
-						if (NewMaterial.DefaultColor == colorWithString.Value)
-							SelectedColor = colorWithString.Key;
-					RaisePropertyChanged("SelectedImage");
-					RaisePropertyChanged("SelectedShader");
-					RaisePropertyChanged("SelectedColor ");
-				}
 				CheckIfCanSave();
 			}
 		}
@@ -289,10 +288,10 @@ namespace DeltaEngine.Editor.MaterialEditor
 
 		public void Save()
 		{
-			if (NewMaterial == null || String.IsNullOrEmpty(MaterialName))
+			if (NewMaterial == null || String.IsNullOrEmpty(materialName))
 				return;
 			var metaDataCreator = new ContentMetaDataCreator();
-			ContentMetaData contentMetaData = metaDataCreator.CreateMetaDataFromMaterial(MaterialName,
+			ContentMetaData contentMetaData = metaDataCreator.CreateMetaDataFromMaterial(materialName,
 				NewMaterial);
 			service.UploadContent(contentMetaData);
 			service.ContentUpdated += SendSuccessMessageToLogger;
@@ -301,7 +300,7 @@ namespace DeltaEngine.Editor.MaterialEditor
 		//ncrunch: no coverage start 
 		private void SendSuccessMessageToLogger(ContentType type, string content)
 		{
-			Logger.Info("The saving of the material called " + MaterialName + " was a success.");
+			Logger.Info("The saving of the material called " + materialName + " was a success.");
 			service.ContentUpdated -= SendSuccessMessageToLogger;
 		}
 
@@ -328,6 +327,18 @@ namespace DeltaEngine.Editor.MaterialEditor
 			LoadMaterials();
 			RaisePropertyChanged("ImageList");
 			RaisePropertyChanged("ShaderList");
+			RaisePropertyChanged("MaterialList");
+		}
+
+		public void RefreshOnAddedContent(ContentType type, string name)
+		{
+			if (type == ContentType.Material && !MaterialList.Contains(name))
+				MaterialList.Add(name);
+			if ((type == ContentType.Image || type == ContentType.ImageAnimation ||
+				type == ContentType.SpriteSheetAnimation) && !ImageList.Contains(name))
+				ImageList.Add(name);
+			if (type == ContentType.Shader && !ShaderList.Contains(name))
+				ShaderList.Add(name);
 		}
 
 		public void ResetOnProjectChange()
@@ -343,9 +354,15 @@ namespace DeltaEngine.Editor.MaterialEditor
 
 		public void Activate()
 		{
+			if (renderExample == null)
+				return;
 			renderExample.IsActive = true;
+			if (service.Viewport == null)
+				return;
+			//ncrunch: no coverage start 
 			service.Viewport.CenterViewOn(renderExample.Center);
 			service.Viewport.ZoomViewTo(1.0f);
+			//ncrunch: no coverage end 
 		}
 
 		public bool CanSaveMaterial
@@ -362,10 +379,48 @@ namespace DeltaEngine.Editor.MaterialEditor
 
 		private void CheckIfCanSave()
 		{
-			if (string.IsNullOrEmpty(MaterialName) || string.IsNullOrEmpty(selectedImage))
+			if (string.IsNullOrEmpty(MaterialName) || string.IsNullOrEmpty(selectedImage) ||
+				(NewMaterial.DiffuseMap == null && NewMaterial.Animation == null &&
+					NewMaterial.SpriteSheet == null))
 				CanSaveMaterial = false;
 			else
 				CanSaveMaterial = true;
+		}
+
+		public void LoadMaterial()
+		{
+			if (service.Viewport != null)
+				service.Viewport.DestroyRenderedEntities(); //ncrunch: no coverage
+			if (renderExample != null)
+				renderExample.IsActive = false;
+			if (ContentLoader.Exists(materialName, ContentType.Material))
+			{
+				try
+				{
+					NewMaterial = ContentLoader.Load<Material>(materialName);
+					if (NewMaterial.Animation != null)
+						SelectedImage = NewMaterial.Animation.Name;
+					else if (NewMaterial.SpriteSheet != null)
+						SelectedImage = NewMaterial.SpriteSheet.Name;
+					else
+						SelectedImage = NewMaterial.DiffuseMap.Name; //ncrunch: no coverage 
+					SelectedShader = NewMaterial.Shader.Name;
+					foreach (var colorWithString in colorList)
+						if (NewMaterial.DefaultColor == colorWithString.Value)
+							SelectedColor = colorWithString.Key;
+					renderExample = new Sprite(NewMaterial,
+						ScreenSpace.Current.FromPixelSpace(NewMaterial.DiffuseMap.PixelSize));
+				}
+					//ncrunch: no coverage start
+				catch
+				{
+					CreateDefaultMaterial();
+				} //ncrunch: no coverage end
+				RaisePropertyChanged("SelectedImage");
+				RaisePropertyChanged("SelectedShader");
+				RaisePropertyChanged("SelectedColor ");
+			}
+			CheckIfCanSave();
 		}
 	}
 }

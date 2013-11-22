@@ -14,19 +14,13 @@ namespace DeltaEngine.Editor.AppBuilder.Android
 			AdbId = deviceInfo.AdbDeviceId;
 			state = deviceInfo.DeviceState;
 			Name = adbRunner.GetDeviceName(AdbId);
+			IsEmulator = Name.StartsWith("emulator");
 			Logger.Info("\t" + this);
 		}
 
 		private readonly AndroidDebugBridgeRunner adbRunner;
 		internal string AdbId { get; private set; }
 		private readonly string state;
-
-		public string Name { get; private set; }
-
-		public bool IsEmulator
-		{
-			get { return Name.StartsWith("emulator"); }
-		}
 
 		public bool IsConnected
 		{
@@ -36,22 +30,22 @@ namespace DeltaEngine.Editor.AppBuilder.Android
 		private const string ConnectedState = "device";
 		private const string DisconnectedState = "offline";
 
-		public bool IsAppInstalled(AppInfo app)
+		public override bool IsAppInstalled(AppInfo app)
 		{
 			return adbRunner.IsAppInstalled(this, app.GetFullAppNameForEngineApp());
 		}
-		
-		public void Install(AppInfo app)
+
+		public override void Install(AppInfo app)
 		{
 			adbRunner.InstallPackage(this, app.FilePath);
 		}
 
-		public void Uninstall(AppInfo app)
+		public override void Uninstall(AppInfo app)
 		{
 			adbRunner.UninstallPackage(this, app.GetFullAppNameForEngineApp());
 		}
 
-		public void Launch(AppInfo app)
+		protected override void LaunchApp(AppInfo app)
 		{
 			adbRunner.StartEngineBuiltApplication(this, app.GetFullAppNameForEngineApp());
 		}

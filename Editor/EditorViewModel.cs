@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using DeltaEngine.Core;
-using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Core.Properties;
 using DeltaEngine.Editor.Helpers;
@@ -30,8 +29,8 @@ namespace DeltaEngine.Editor
 		public EditorViewModel(EditorPluginLoader plugins, Settings settings)
 		{
 			this.plugins = plugins;
-			this.settings = settings;
-			service = new OnlineService(settings);
+			Settings.Current = settings;
+			service = new OnlineService();
 			AvailableProjects = new List<ProjectNameAndFontWeight>();
 			Error = Resources.EnterYourApiKey;
 			SetupLogger();
@@ -47,7 +46,6 @@ namespace DeltaEngine.Editor
 		}
 
 		private readonly EditorPluginLoader plugins;
-		private readonly Settings settings;
 		private readonly OnlineService service;
 		public List<ProjectNameAndFontWeight> AvailableProjects { get; private set; }
 
@@ -122,7 +120,8 @@ namespace DeltaEngine.Editor
 			connection = new OnlineServiceConnection();
 			connection.Connected += ValidateLogin;
 			connection.DataReceived += OnDataReceived;
-			connection.Connect(settings.OnlineServiceIp, settings.OnlineServicePort, OnTimeout);
+			connection.Connect(Settings.Current.OnlineServiceIp, Settings.Current.OnlineServicePort,
+				OnTimeout);
 		}
 
 		private bool tryingToConnect;
@@ -131,7 +130,7 @@ namespace DeltaEngine.Editor
 		private void OnTimeout()
 		{
 			Disconnect();
-			Error = Resources.ConnectionToDeltaEngineTimedOut;
+			Error = Settings.Current.OnlineServiceIp + ": " + Resources.ConnectionTimedOut;
 		}
 
 		public OnlineService Service
@@ -144,19 +143,15 @@ namespace DeltaEngine.Editor
 			if (!connection.IsConnected)
 				ConnectToOnlineServiceAndTryToLogin();
 			else if (!string.IsNullOrEmpty(ApiKey))
-				connection.Send(new LoginRequest(ApiKey, SelectedProject.Name));
+				connection.Send(new LoginRequest(ApiKey,
+					SelectedProject.Name ?? ProjectNameAndFontWeight.DefaultName));
 			else
 				Error = Resources.GetApiKeyHere;
 		}
 
 		public ProjectNameAndFontWeight SelectedProject
 		{
-			get
-			{
-				if (string.IsNullOrEmpty(selectedProject.Name))
-					selectedProject = new ProjectNameAndFontWeight(DefaultProject, FontWeights.Normal);
-				return selectedProject;
-			}
+			get { return selectedProject; }
 			set
 			{
 				if (isLoggedIn)
@@ -167,7 +162,6 @@ namespace DeltaEngine.Editor
 		}
 
 		private ProjectNameAndFontWeight selectedProject;
-		private const string DefaultProject = "GhostWars";
 
 		private void OnDataReceived(object message)
 		{
@@ -177,22 +171,32 @@ namespace DeltaEngine.Editor
 			var newProject = message as SetProject;
 			var contentReady = message as ContentReady;
 			if (serverError != null)
-			{
-				Error = "Server Error: " + serverError.Error;
-				Logger.Warning(serverError.Error);
-			}
+				ProcessAndLogServerError(serverError);
 			else if (projectNames != null)
 				RefreshAvailableProjects(projectNames);
 			else if (loginMessage != null)
 				Login(loginMessage);
 			else if (newProject != null)
-				IsContentReady = false;
+				VerifyProject(newProject);
 			else if (contentReady != null)
 				IsContentReady = true;
 		}
 
+		private void ProcessAndLogServerError(ServerError serverError)
+		{
+			Error = serverError.ToString();
+			Logger.Warning(Error);
+			if (serverError.Error != "Project name not found on server " + SelectedProject.Name ||
+				selectedProject.IsDefault())
+				return;
+			selectedProject.ResetToDefault();
+			Logger.Info("Trying to login with default Content Project: " + selectedProject.Name);
+			ValidateLogin();
+		}
+
 		private void RefreshAvailableProjects(ProjectNamesResult projectNames)
 		{
+			service.SetAvailableProjects(projectNames.ProjectNames);
 			AvailableProjects.Clear();
 			var projectNamesAndWeight = new List<ProjectNameAndFontWeight>();
 			var fontWeight = FontWeights.Bold;
@@ -212,18 +216,13 @@ namespace DeltaEngine.Editor
 			if (!string.IsNullOrEmpty(tutorials))
 				AvailableProjects.Add(new ProjectNameAndFontWeight(tutorials, fontWeight));
 			RaisePropertyChanged("AvailableProjects");
+			RefreshSelectedProject();
 		}
 
-		public class ProjectNameAndFontWeight
+		private void RefreshSelectedProject()
 		{
-			public ProjectNameAndFontWeight(string name, FontWeight weight)
-			{
-				Name = name;
-				Weight = weight;
-			}
-
-			public string Name { get; private set; }
-			public FontWeight Weight { get; private set; }
+			SelectedProject = AvailableProjects.FirstOrDefault(p => p.Name == service.ProjectName);
+			RaisePropertyChanged("SelectedProject");
 		}
 
 		private void Login(LoginSuccessful loginMessage)
@@ -275,6 +274,15 @@ namespace DeltaEngine.Editor
 			RaisePropertyChanged("EditorPanelVisibility");
 		}
 
+		private void VerifyProject(SetProject newProject)
+		{
+			IsContentReady = false;
+			if (newProject.Permissions != ProjectPermissions.None)
+				return;
+			selectedProject.ResetToDefault();
+			Logout();
+		}
+
 		public bool IsContentReady
 		{
 			get { return isContentReady; }
@@ -312,7 +320,7 @@ namespace DeltaEngine.Editor
 
 		private Tuple<Brush, Brush> GetErrorBrushColor()
 		{
-			if (Error == Resources.ConnectionToDeltaEngineTimedOut)
+			if (Error.Contains(Resources.ConnectionTimedOut))
 				return new Tuple<Brush, Brush>(Brushes.White, Brushes.DarkRed);
 			if (Error == Resources.GetApiKeyHere)
 				return new Tuple<Brush, Brush>(Brushes.Blue, Brushes.Transparent);
@@ -413,42 +421,9 @@ namespace DeltaEngine.Editor
 
 		public bool StartEditorMaximized
 		{
-			get
-			{
-				var data = LoadDataFromRegistry(StartMaximized);
-				return data == null || Convert.ToBoolean(data);
-			}
-			set { SaveDataInRegistry(StartMaximized, Convert.ToString(value)); }
+			get { return Settings.Current.StartInFullscreen; }
+			set { Settings.Current.StartInFullscreen = value; }
 		}
-
-		private const string StartMaximized = "StartMaximized";
-
-		public void UploadToOnlineService(string contentFilePath)
-		{
-			byte[] bytes;
-			try
-			{
-				bytes = File.ReadAllBytes(contentFilePath);
-			}
-			catch (Exception)
-			{
-				Logger.Warning("Unable to read bytes for uploading to the server : " +
-					Path.GetFileName(contentFilePath));
-				return;
-			}
-			if (bytes.Length > MaximumFileSize)
-			{
-				Logger.Warning("The file you added is too large, the maximum file size is 16MB");
-				return;
-			}
-			var fileNameAndBytes = new Dictionary<string, byte[]>();
-			fileNameAndBytes.Add(Path.GetFileName(contentFilePath), bytes);
-			var metaDataCreator = new ContentMetaDataCreator();
-			var contentMetaData = metaDataCreator.CreateMetaDataFromFile(contentFilePath);
-			service.UploadContent(contentMetaData, fileNameAndBytes);
-		}
-
-		private const int MaximumFileSize = 16777216;
 
 		public void SetProjectAndTest(string initialPath, string projectName, string testName)
 		{

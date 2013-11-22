@@ -34,7 +34,7 @@ namespace DeltaEngine.Editor.Core.Tests
 			var solutionLoader = GetLoaderWithLoadedEngineSolution();
 			List<ProjectEntry> csharpProjects = solutionLoader.GetCSharpProjects();
 			Assert.IsNotEmpty(csharpProjects);
-			Assert.IsTrue(csharpProjects.Exists(project => project.Title == "DeltaEngine.Platforms"));
+			Assert.IsTrue(csharpProjects.Exists(project => project.Name == "DeltaEngine.Platforms"));
 		}
 
 		[Test]
@@ -43,7 +43,7 @@ namespace DeltaEngine.Editor.Core.Tests
 			var solutionLoader = GetLoaderWithLoadedEngineSolution();
 			List<ProjectEntry> csharpProjects = solutionLoader.GetSolutionFolders();
 			Assert.IsNotEmpty(csharpProjects);
-			Assert.IsTrue(csharpProjects.Exists(project => project.Title == "Platforms"));
+			Assert.IsTrue(csharpProjects.Exists(project => project.Name == "Platforms"));
 		}
 
 		[Test]
@@ -57,12 +57,12 @@ namespace DeltaEngine.Editor.Core.Tests
 		[Test]
 		public void GetSpecificCSharpProjectFromDeltaEngineSamplesSolution()
 		{
-			string engineSamplesSolution = AppBuilderViewModel.GetSamplesSolutionFilePath();
+			string engineSamplesSolution = SolutionExtensions.GetSamplesSolutionFilePath();
 			Assert.IsTrue(File.Exists(engineSamplesSolution));
 			var solutionLoader = new SolutionFileLoader(engineSamplesSolution);
 			ProjectEntry logoAppProject = solutionLoader.GetCSharpProject("LogoApp");
 			Assert.IsNotNull(logoAppProject);
-			Assert.AreEqual("LogoApp", logoAppProject.Title);
+			Assert.AreEqual("LogoApp", logoAppProject.Name);
 		}
 	}
 }
