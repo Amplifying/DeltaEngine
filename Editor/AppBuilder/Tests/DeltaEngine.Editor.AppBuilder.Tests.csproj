@@ -43,7 +43,7 @@
       <HintPath>..\..\packages\NCrunch.Framework.1.46.0.9\lib\net35\NCrunch.Framework.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
-      <HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+      <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -123,7 +123,7 @@
     <Compile Include="BuiltAppsListViewModelTests.cs" />
     <Compile Include="BuiltAppsListViewTests.cs" />
     <Compile Include="MockBuildService.cs" />
-    <Compile Include="NullDeviceTests.cs" />
+    <Compile Include="DeviceTests.cs" />
     <Compile Include="AppBuilderTestExtensions.cs" />
     <Compile Include="TextExtensionsTests.cs" />
     <Compile Include="WindowsPhone7\WP7AppInfoTests.cs" />

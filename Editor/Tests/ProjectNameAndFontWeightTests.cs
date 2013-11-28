@@ -18,5 +18,14 @@ namespace DeltaEngine.Editor.Tests
 			Assert.AreEqual(expected, different);
 			Assert.IsTrue(different.IsDefault());
 		}
+
+		[Test]
+		public void ToStringReturnsJustTheName()
+		{
+			var project1 = new ProjectNameAndFontWeight("GhostWars", FontWeights.Normal);
+			var project2 = new ProjectNameAndFontWeight("EmptyApp", FontWeights.Bold);
+			Assert.AreEqual("GhostWars", project1.ToString());
+			Assert.AreEqual("EmptyApp", project2.ToString());
+		}
 	}
 }

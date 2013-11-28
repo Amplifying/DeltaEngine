@@ -35,12 +35,12 @@ namespace DeltaEngine.Editor.AppBuilder.Android
 			return adbRunner.IsAppInstalled(this, app.GetFullAppNameForEngineApp());
 		}
 
-		public override void Install(AppInfo app)
+		protected override void InstallApp(AppInfo app)
 		{
 			adbRunner.InstallPackage(this, app.FilePath);
 		}
 
-		public override void Uninstall(AppInfo app)
+		protected override void UninstallApp(AppInfo app)
 		{
 			adbRunner.UninstallPackage(this, app.GetFullAppNameForEngineApp());
 		}

@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using GalaSoft.MvvmLight;
 using WpfWindow = System.Windows.Window;
 
 namespace DeltaEngine.Editor.Helpers
@@ -12,21 +13,24 @@ namespace DeltaEngine.Editor.Helpers
 
 		private readonly WpfWindow window;
 
-		public void ToggleMaximize()
+		public void ToggleMaximize(bool moveWindowToTop, EditorViewModel viewModel)
 		{
 			if (isMaximized)
-				RestoreWindowLocation();
+				RestoreWindowLocation(moveWindowToTop);
 			else
 				MaximizeWindow();
+			viewModel.UpdateBorderThicknessOfChromeStyle();
 		}
 
 		public bool isMaximized;
 
-		private void RestoreWindowLocation()
+		private void RestoreWindowLocation(bool moveWindowToTop)
 		{
 			isMaximized = false;
 			window.ResizeMode = ResizeMode.CanResize;
 			window.Top = currentWindowBounds.Top;
+			if (moveWindowToTop)
+				window.Top = 0;
 			window.Left = currentWindowBounds.Left;
 			window.Width = currentWindowBounds.Width;
 			window.Height = currentWindowBounds.Height;
@@ -46,6 +50,15 @@ namespace DeltaEngine.Editor.Helpers
 		private void SaveWindowLocation()
 		{
 			currentWindowBounds = new Rect(window.Left, window.Top, window.Width, window.Height);
+			var screenWorkAreas = screens.GetDisplayWorkAreas();
+			foreach (var screen in screenWorkAreas)
+				if (window.Left >= screen.left && window.Left < screen.right && window.Top >= screen.top &&
+					window.Top < screen.bottom && currentWindowBounds.Width == screen.right - screen.left)
+				{
+					currentWindowBounds.Width = (screen.right - screen.left) * 0.75f;
+					currentWindowBounds.Height = (screen.bottom - screen.top) * 0.75f;
+					break;
+				}
 		}
 
 		private void SetWindowMaximized()

@@ -1,9 +1,12 @@
 ﻿using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
+using DeltaEngine.Commands;
 using DeltaEngine.Editor.Core;
+using DeltaEngine.Input;
 using GalaSoft.MvvmLight.Messaging;
 using Cursors = System.Windows.Input.Cursors;
+using Mouse = System.Windows.Input.Mouse;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 
 namespace DeltaEngine.Editor.Emulator
@@ -19,44 +22,37 @@ namespace DeltaEngine.Editor.Emulator
 			InitializeComponent();
 		}
 
-		public void Init(Service service)
+		public void Init(Service setService)
 		{
 			DataContext = new ViewportControlViewModel();
-			SetMessengers();
+			CreateViewportCommands(service = setService);
 		}
 
-		public void Activate() {}
+		private Service service;
 
-		private void SetMessengers()
+		private static void CreateViewportCommands(Service service)
 		{
-			Messenger.Default.Register<string>(this, "SetSelectedEditorPlugin", SetSelectedEditorPlugin);
+			var dragTrigger = new MouseDragTrigger(Input.MouseButton.Middle);
+			dragTrigger.AddTag("ViewControl");
+			var zoomTrigger = new MouseZoomTrigger();
+			zoomTrigger.AddTag("ViewControl");
+			var panningCommand = new Command(service.Viewport.OnViewportPanning).Add(dragTrigger);
+			var zoomCommand = new Command(service.Viewport.OnViewPortZooming).Add(zoomTrigger);
+			panningCommand.AddTag("ViewControl");
+			zoomCommand.AddTag("ViewControl");
 		}
 
-		private void ShowToolboxPane(string obj)
+		public void Activate()
 		{
-			ToolPane.Visibility = Visibility.Visible;
-			ViewportHost.Margin = new Thickness(0, 0, 0, 0);
+			service.Viewport.ResetViewportArea();
 		}
 
-		private void HideToolboxPane(string obj)
+		public void Deactivate() {}
+
+		public void ShowToolboxPane(bool isVisible)
 		{
-			ToolPane.Visibility = Visibility.Hidden;
-			ViewportHost.Margin = new Thickness(-140, 0, 0, 0);
+			ToolPane.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
 		}
-
-		private void SetSelectedEditorPlugin(string plugin)
-		{
-			Messenger.Default.Send(selectedEditorPlugin, "RemoveProjectUpdate");
-			selectedEditorPlugin = plugin;
-			if (plugin == "UIEditor")
-				ShowToolboxPane("");
-			else
-				HideToolboxPane("");
-			if (plugin != "ContentManager")
-				Messenger.Default.Send("NoLongerSelectContentManager", "NoLongerSelectContentManager");				
-		}
-
-		private string selectedEditorPlugin;
 
 		public void ApplyEmulator()
 		{
@@ -67,7 +63,7 @@ namespace DeltaEngine.Editor.Emulator
 		private void SetupScreen()
 		{
 			Screen = new Panel();
-			Screen.Dock = DockStyle.None;
+			Screen.Dock = DockStyle.Fill;
 		}
 
 		public Panel Screen { get; private set; }
@@ -177,15 +173,10 @@ namespace DeltaEngine.Editor.Emulator
 			isClicking = false;
 		}
 
-		private void PlaceCenteredControl(string newControl)
+		private static void PlaceCenteredControl(string newControl)
 		{
 			Messenger.Default.Send(newControl, "SetCenteredControl");
 			Mouse.OverrideCursor = Cursors.Hand;
-		}
-
-		private void GridOnGotFocus(object sender, RoutedEventArgs e)
-		{
-			Messenger.Default.Send("ShowToolboxPane", "ShowToolboxPane");
 		}
 
 		private void GridOnLostFocus(object sender, RoutedEventArgs e)

@@ -8,6 +8,8 @@ namespace DeltaEngine.Editor.Helpers
 
 		public void Activate() {}
 
+		public void Deactivate() {}
+
 		public string ShortName
 		{
 			get { return "Test Plugin"; }

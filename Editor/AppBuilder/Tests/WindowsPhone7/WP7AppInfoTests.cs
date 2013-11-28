@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace DeltaEngine.Editor.AppBuilder.Tests.WindowsPhone7
 {
+	[Ignore]
 	public class WP7AppInfoTests
 	{
 		[Test]

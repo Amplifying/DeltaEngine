@@ -99,5 +99,16 @@ namespace DeltaEngine.Editor.AppBuilder
 		{
 			return this is AndroidAppInfo ? "net.DeltaEngine." + Name : Name;
 		}
+
+		// ncrunch: no coverage start
+		public string PlatformIcon
+		{
+			get
+			{
+				return "pack://application:,,,/DeltaEngine.Editor;component/Images/AppBuilder/" +
+					Platform + ".png";
+			}
+		}
+		// ncrunch: no coverage end
 	}
 }

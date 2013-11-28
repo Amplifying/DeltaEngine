@@ -19,7 +19,7 @@ namespace DeltaEngine.Editor.Core
 			string originalDirectory = Environment.CurrentDirectory;
 			try
 			{
-				if (StackTraceExtensions.StartedFromNCrunch)
+				if (StackTraceExtensions.StartedFromNCrunchOrNunitConsole)
 					Environment.CurrentDirectory = PathExtensions.GetFallbackEngineSourceCodeDirectory();
 				var currentDirectory = new DirectoryInfo(Environment.CurrentDirectory);
 				return GetFilePathFromSourceCodeRecursively(currentDirectory, filename);

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Abstractions;
 using DeltaEngine.Core;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Extensions;
-using SharpCompress.Archive.Zip;
+using Ionic.Zip;
 
 namespace DeltaEngine.Editor.ProjectCreator
 {
@@ -14,29 +13,24 @@ namespace DeltaEngine.Editor.ProjectCreator
 	/// </summary>
 	public class VsTemplate
 	{
-		private VsTemplate(string templateName, IFileSystem fileSystem)
+		public VsTemplate(string templateName)
 		{
-			this.fileSystem = fileSystem;
+			Name = templateName;
 			templatePath = Path.Combine("VisualStudioTemplates", "Delta Engine", templateName + ".zip");
 			PathToZip = GetPathToVisualStudioTemplateZip(templateName);
 			var basePath = GetBasePath(PathToZip);
 			AssemblyInfo = Path.Combine(basePath, "Properties", "AssemblyInfo.cs");
 			Csproj = Path.Combine(basePath, templateName + ".csproj");
-			Ico = Path.Combine(basePath, templateName + ".ico");
-			SourceCodeFiles = new List<string>();
-			var csFileNames = new List<string>();
-			foreach (var csFileName in ZipArchive.Open(PathToZip).Entries)
+			foreach (var entry in ZipFile.Read(PathToZip).Entries)
 			{
-				var filename = csFileName.FilePath;
-				if (!filename.Contains("AssemblyInfo.cs") && !filename.Contains(".csproj") &&
-					!filename.Contains(".ico") && !filename.Contains(".vstemplate"))
-					csFileNames.Add(filename);
+				if (entry.FileName.EndsWith(".ico") || entry.FileName.EndsWith(".png"))
+					Icons.Add(Path.Combine(basePath, entry.FileName));
+				if (!entry.FileName.Contains("AssemblyInfo.cs") && entry.FileName.EndsWith(".cs"))
+					SourceCodeFiles.Add(Path.Combine(basePath, entry.FileName));
 			}
-			foreach (var fileName in csFileNames)
-				SourceCodeFiles.Add(Path.Combine(basePath, fileName));
 		}
 
-		private readonly IFileSystem fileSystem;
+		public string Name { get; private set; }
 		private readonly string templatePath;
 
 		public string PathToZip { get; private set; }
@@ -44,13 +38,13 @@ namespace DeltaEngine.Editor.ProjectCreator
 		private string GetPathToVisualStudioTemplateZip(string templateName)
 		{
 			var currentPath = GetVstFromCurrentWorkingDirectory();
-			if (fileSystem.File.Exists(currentPath))
+			if (File.Exists(currentPath))
 				return currentPath; //ncrunch: no coverage
 			var solutionPath = GetVstFromSolution();
-			if (fileSystem.File.Exists(solutionPath))
+			if (File.Exists(solutionPath))
 				return solutionPath;
 			var environmentPath = GetVstFromEnvironmentVariable();
-			return fileSystem.File.Exists(environmentPath)
+			return File.Exists(environmentPath)
 				? environmentPath
 				: Path.Combine(CsProject.GetVisualStudioProjectsFolder(), "..", "Templates",
 					"ProjectTemplates", "Visual C#", "Delta Engine", templateName + ".zip");
@@ -59,13 +53,13 @@ namespace DeltaEngine.Editor.ProjectCreator
 		private string GetVstFromCurrentWorkingDirectory()
 		{
 			return
-				Path.GetFullPath(Path.Combine(fileSystem.Directory.GetCurrentDirectory(), templatePath));
+				Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), templatePath));
 		}
 
 		private string GetVstFromSolution()
 		{
 			return
-				Path.GetFullPath(Path.Combine(fileSystem.Directory.GetCurrentDirectory(), "..", "..", "..",
+				Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..",
 					templatePath));
 		}
 
@@ -77,22 +71,18 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		private string GetBasePath(string fileName)
 		{
-			return fileName == string.Empty ? "" : fileSystem.Path.GetDirectoryName(fileName);
+			return fileName == string.Empty ? "" : Path.GetDirectoryName(fileName);
 		}
 
 		public string AssemblyInfo { get; private set; }
 		public string Csproj { get; private set; }
-		public string Ico { get; private set; }
-		public List<string> SourceCodeFiles { get; private set; }
-
-		public static VsTemplate CreateByName(IFileSystem fileSystem, string templateName)
-		{
-			return new VsTemplate(templateName, fileSystem);
-		}
+		public readonly List<string> Icons = new List<string>();
+		public readonly List<string> SourceCodeFiles = new List<string>();
 
 		public List<string> GetAllFilePathsAsList()
 		{
-			var list = new List<string> { AssemblyInfo, Csproj, Ico };
+			var list = new List<string> { Csproj, AssemblyInfo };
+			list.AddRange(Icons);
 			list.AddRange(SourceCodeFiles);
 			return list;
 		}

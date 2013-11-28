@@ -37,7 +37,7 @@
       <HintPath>..\packages\MvvmLightLibs.4.2.30.0\lib\net40\GalaSoft.MvvmLight.WPF4.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
-      <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+      <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />

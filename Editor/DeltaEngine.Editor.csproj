@@ -264,6 +264,9 @@
     <Resource Include="Images\TroubleshootingChecklist.png" />
     <Resource Include="Images\LoginImage.jpg" />
     <Resource Include="Images\ProjectCreator\CreateProjectIcon.png" />
+    <Resource Include="Images\AppBuilder\Android.png" />
+    <Resource Include="Images\AppBuilder\Windows.png" />
+    <Resource Include="Images\AppBuilder\Web.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Images\Emulators\AndroidGoogleNexus4_768x1280.png" />

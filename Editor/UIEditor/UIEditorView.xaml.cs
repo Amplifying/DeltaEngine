@@ -19,18 +19,17 @@ namespace DeltaEngine.Editor.UIEditor
 			InitializeComponent();
 		}
 
-		public void Init(Service service)
+		public void Init(Service setService)
 		{
-			this.service = service;
-			DataContext = uiEditorViewModel = new UIEditorViewModel(service);
-			service.ProjectChanged += ChangeProject;
-			service.ProjectChanged +=
+			service = setService;
+			DataContext = uiEditorViewModel = new UIEditorViewModel(setService);
+			setService.ProjectChanged += ChangeProject;
+			setService.ProjectChanged +=
 				() => Dispatcher.Invoke(new Action(uiEditorViewModel.RefreshOnContentChange));
-			service.ContentUpdated +=
+			setService.ContentUpdated +=
 				(type, s) => Dispatcher.Invoke(new Action(uiEditorViewModel.RefreshOnContentChange));
-			service.ContentDeleted +=
+			setService.ContentDeleted +=
 				s => Dispatcher.Invoke(new Action(uiEditorViewModel.RefreshOnContentChange));
-			Messenger.Default.Send("UIEditor", "SetSelectedEditorPlugin");
 			Messenger.Default.Register<string>(this, "SetMaterial", SetMaterial);
 			Messenger.Default.Register<string>(this, "SetHoveredMaterial", SetHoveredMaterial);
 			Messenger.Default.Register<string>(this, "SetPressedMaterial", SetPressedMaterial);
@@ -42,7 +41,6 @@ namespace DeltaEngine.Editor.UIEditor
 			Messenger.Default.Register<string>(this, "EnabledPressedButton", EnabledPressedButton);
 			Messenger.Default.Register<string>(this, "EnabledDisableButton", EnabledDisableButton);
 			Messenger.Default.Register<string>(this, "EnableButtonChanger", EnableButtonChanger);
-			Messenger.Default.Register<string>(this, "RemoveProjectUpdate", RemoveProjectUpdate);
 		}
 
 		private void ChangeProject()
@@ -50,17 +48,18 @@ namespace DeltaEngine.Editor.UIEditor
 			Dispatcher.Invoke(new Action(uiEditorViewModel.ResetOnProjectChange));
 		}
 
-		private void RemoveProjectUpdate(string pluginName)
-		{
-			if (pluginName != "UIEditor")
-				service.ProjectChanged -= ChangeProject;
-		}
-
 		private UIEditorViewModel uiEditorViewModel;
 
 		public void Activate()
 		{
-			uiEditorViewModel.ActivateHidenScene();
+			service.ShowToolbox(true);
+			uiEditorViewModel.ActivateHiddenScene();
+		}
+
+		public void Deactivate()
+		{
+			service.ProjectChanged -= ChangeProject;
+			service.ShowToolbox(false);
 		}
 
 		private void SetMaterial(string obj)

@@ -8,13 +8,17 @@ namespace DeltaEngine.Editor.Core
 	{
 		string UserName { get; }
 		string ProjectName { get; }
+		bool IsDeveloper { get; }
 		string[] AvailableProjects { get; }
+		event Action AvailableProjectsChanged;
+		void ChangeProject(string newProjectName);
 		event Action ProjectChanged;
 		event Action<object> DataReceived;
 		event Action<ContentType, string> ContentUpdated;
 		event Action<string> ContentDeleted;
 		event Action ContentReady;
 		string CurrentContentProjectSolutionFilePath { get; set; }
+		string GetAbsoluteSolutionFilePath(string contentProjectName);
 		void SetContentProjectSolutionFilePath(string name, string slnFilePath);
 		void Send(object message, bool allowToCompressMessage = true);
 		IEnumerable<string> GetAllContentNames();
@@ -25,5 +29,19 @@ namespace DeltaEngine.Editor.Core
 		void DeleteContent(string selectedContent, bool deleteSubContent = false);
 		void StartPlugin(Type plugin);
 		EditorOpenTkViewport Viewport { get; set; }
+		void ShowToolbox(bool showToolbox);
+	}
+
+	//This exceptions are thrown by all implementations of the Service interface
+	public class NoAccessForProject : Exception
+	{
+		public NoAccessForProject(string projectName)
+			: base(projectName) {}
+	}
+
+	public class ProjectNotAvailable : Exception
+	{
+		public ProjectNotAvailable(string projectName)
+			: base(projectName) {}
 	}
 }

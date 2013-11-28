@@ -17,9 +17,48 @@
 	WindowStyle="None" ResizeMode="CanResize" BorderThickness="0" Icon="DeltaEngine.Editor.ico"
 	MouseDown="OnMouseDown">
 	<shell:WindowChrome.WindowChrome>
-		<shell:WindowChrome CaptionHeight="0" ResizeBorderThickness="5" />
+		<shell:WindowChrome CaptionHeight="0" ResizeBorderThickness="{Binding ResizeBorderThickness}" />
 	</shell:WindowChrome.WindowChrome>
 	<Window.Resources>
+		<Style TargetType="Button" x:Key="DeltaButton">
+			<Setter Property="FontSize" Value="14" />
+			<Setter Property="FontFamily" Value="Arial" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="Background">
+				<Setter.Value>
+					<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+						<GradientStop Color="#FFBBBBBB" Offset="0" />
+						<GradientStop Color="#FF9E9E9E" Offset="1" />
+					</LinearGradientBrush>
+				</Setter.Value>
+			</Setter>
+			<Setter Property="BorderBrush" Value="Black" />
+			<Setter Property="Foreground" Value="#FFFFFFFF" />
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Border Background="{TemplateBinding Background}">
+							<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+			<Style.Triggers>
+				<Trigger Property="IsEnabled" Value="False">
+					<Setter Property="Background" Value="#FFCFCFCF" />
+				</Trigger>
+				<MultiDataTrigger>
+					<MultiDataTrigger.Conditions>
+						<Condition
+							Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver}" Value="True" />
+						<Condition
+							Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled}" Value="True" />
+					</MultiDataTrigger.Conditions>
+					<Setter Property="Background" Value="#7894d3" />
+				</MultiDataTrigger>
+			</Style.Triggers>
+		</Style>
+
 		<Style x:Key="ActionLabelStyle" TargetType="{x:Type Label}">
 			<Setter Property="Margin" Value="10,3" />
 			<Setter Property="Padding" Value="0" />
@@ -59,9 +98,9 @@
 				<Setter.Value>
 					<ControlTemplate TargetType="Button">
 						<Border Background="{TemplateBinding Background}"
-									BorderBrush="{TemplateBinding BorderBrush}"
-									BorderThickness="{TemplateBinding BorderThickness}">
-							<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+						        BorderBrush="{TemplateBinding BorderBrush}"
+						        BorderThickness="{TemplateBinding BorderThickness}">
+							<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
 						</Border>
 					</ControlTemplate>
 				</Setter.Value>
@@ -113,61 +152,65 @@
 				<Grid Visibility="{Binding Path=LoginPanelVisibility}">
 					<Grid HorizontalAlignment="Left" Width="1022" Height="718" VerticalAlignment="Top">
 						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="12"/>
-							<ColumnDefinition Width="30"/>
-							<ColumnDefinition Width="325"/>
-							<ColumnDefinition Width="20"/>
-							<ColumnDefinition Width="15"/>
-							<ColumnDefinition Width="20"/>
-							<ColumnDefinition Width="100"/>
-							<ColumnDefinition Width="130"/>
-							<ColumnDefinition Width="10"/>
-							<ColumnDefinition Width="120"/>
-							<ColumnDefinition Width="10"/>
-							<ColumnDefinition Width="100"/>
-							<ColumnDefinition Width="20"/>
-							<ColumnDefinition/>
+							<ColumnDefinition Width="12" />
+							<ColumnDefinition Width="30" />
+							<ColumnDefinition Width="325" />
+							<ColumnDefinition Width="20" />
+							<ColumnDefinition Width="15" />
+							<ColumnDefinition Width="20" />
+							<ColumnDefinition Width="100" />
+							<ColumnDefinition Width="130" />
+							<ColumnDefinition Width="10" />
+							<ColumnDefinition Width="120" />
+							<ColumnDefinition Width="10" />
+							<ColumnDefinition Width="100" />
+							<ColumnDefinition Width="20" />
+							<ColumnDefinition />
 						</Grid.ColumnDefinitions>
 						<Grid.RowDefinitions>
-							<RowDefinition Height="12"/>
-							<RowDefinition Height="40"/>
-							<RowDefinition Height="12"/>
-							<RowDefinition Height="30"/>
-							<RowDefinition Height="12"/>
-							<RowDefinition Height="40"/>
-							<RowDefinition Height="12"/>
-							<RowDefinition Height="9"/>
-							<RowDefinition Height="21"/>
-							<RowDefinition Height="20"/>
-							<RowDefinition Height="13*"/>
-							<RowDefinition Height="23*"/>
-							<RowDefinition Height="39*"/>
-							<RowDefinition Height="120"/>
-							<RowDefinition Height="10"/>
-							<RowDefinition Height="120"/>
-							<RowDefinition Height="10"/>
-							<RowDefinition Height="120"/>
-							<RowDefinition Height="55"/>
+							<RowDefinition Height="12" />
+							<RowDefinition Height="40" />
+							<RowDefinition Height="12" />
+							<RowDefinition Height="30" />
+							<RowDefinition Height="12" />
+							<RowDefinition Height="40" />
+							<RowDefinition Height="12" />
+							<RowDefinition Height="9" />
+							<RowDefinition Height="21" />
+							<RowDefinition Height="20" />
+							<RowDefinition Height="13*" />
+							<RowDefinition Height="23*" />
+							<RowDefinition Height="39*" />
+							<RowDefinition Height="120" />
+							<RowDefinition Height="10" />
+							<RowDefinition Height="120" />
+							<RowDefinition Height="10" />
+							<RowDefinition Height="120" />
+							<RowDefinition Height="55" />
 						</Grid.RowDefinitions>
-						<Canvas VerticalAlignment="Stretch" Grid.RowSpan="11" Grid.ColumnSpan="8" Grid.Column="5" Grid.Row="1" Margin="0,1,0,22">
+						<Canvas VerticalAlignment="Stretch" Grid.RowSpan="11" Grid.ColumnSpan="8" Grid.Column="5" Grid.Row="1"
+						        Margin="0,1,0,22">
 							<Canvas.Background>
 								<RadialGradientBrush>
-									<GradientStop Color="#FFEEEEEE" Offset="0"/>
-									<GradientStop Color="#FFF9F9F9" Offset="1"/>
+									<GradientStop Color="#FFEEEEEE" Offset="0" />
+									<GradientStop Color="#FFF9F9F9" Offset="1" />
 								</RadialGradientBrush>
 							</Canvas.Background>
-							<Image Height="41" Canvas.Left="22" Canvas.Top="13" Width="41" Source="Images/LoginKey.png"/>
+							<Image Height="41" Canvas.Left="22" Canvas.Top="13" Width="41" Source="Images/LoginKey.png" />
 						</Canvas>
-						<Label Content="Welcome to Delta Engine" Grid.Column="6" FontSize="22" Foreground="#FF7A7A7A" Margin="50,12,19,23" FontWeight="Bold" Grid.ColumnSpan="7" Grid.Row="1" Grid.RowSpan="3"/>
+						<Label Content="Welcome to Delta Engine" Grid.Column="6" FontSize="22" Foreground="#FF7A7A7A"
+						       Margin="50,12,19,23" FontWeight="Bold" Grid.ColumnSpan="7" Grid.Row="1" Grid.RowSpan="3" />
 						<Label Content="API Key" VerticalAlignment="Top"
-						       Height="27" Background="{x:Null}" Foreground="#FF5D5D5D" FontFamily="Arial" FontSize="14" Grid.Row="3" Grid.Column="6" Margin="0,13,35,0" Grid.RowSpan="2" />
+						       Height="27" Background="{x:Null}" Foreground="#FF5D5D5D" FontFamily="Arial" FontSize="14" Grid.Row="3"
+						       Grid.Column="6" Margin="0,13,35,0" Grid.RowSpan="2" />
 						<TextBox VerticalAlignment="Top" Height="30" FontSize="16" Padding="2,5,0,0"
-							Text="{Binding Path=ApiKey, UpdateSourceTrigger=PropertyChanged}" Foreground="#FF5D5D5D" FontFamily="Arial" Grid.Row="3" Grid.Column="6" Grid.ColumnSpan="6" Margin="69,11,0,0" Grid.RowSpan="2" />
+						         Text="{Binding Path=ApiKey, UpdateSourceTrigger=PropertyChanged}" Foreground="#FF5D5D5D"
+						         FontFamily="Arial" Grid.Row="3" Grid.Column="6" Grid.ColumnSpan="6" Margin="69,11,0,0" Grid.RowSpan="2" />
 						<Label
 							Style="{StaticResource ActionLabelStyle}"
 							Foreground="{Binding Path=ErrorForegroundColor}"
 							Background="{Binding Path=ErrorBackgroundColor}"
-							Margin="0,16,0,0" FontSize="16" Padding="5"
+							Margin="0,16,0,0" FontSize="14" Padding="7"
 							Visibility="{Binding Path=ErrorVisibility}"
 							MouseLeftButtonDown="ErrorClick" Grid.Row="5" Grid.Column="6" Grid.RowSpan="2"
 							Height="30" VerticalAlignment="Top" Grid.ColumnSpan="6">
@@ -176,125 +219,145 @@
 						<Button
 							Content="{l:Loc Key=Login}" Foreground="White" Style="{StaticResource ResourceKey=TileButton}"
 							BorderBrush="{x:Null}" FontSize="22"
-							Command="{Binding Path=OnLoginButtonClicked}" FontWeight="Bold" Grid.Row="8" Grid.Column="6" Grid.ColumnSpan="6" Grid.RowSpan="2" />
-						<Button Grid.ColumnSpan="3" Margin="1,0,0,0" Grid.Column="5" Grid.Row="17" Style="{StaticResource ResourceKey=TileButton}" BorderBrush="{x:Null}"
-										Click="DocumentationClick">
+							Command="{Binding Path=OnLoginButtonClicked}" FontWeight="Bold" Grid.Row="8" Grid.Column="6" Grid.ColumnSpan="6"
+							Grid.RowSpan="2" />
+						<Button Grid.ColumnSpan="3" Margin="1,0,0,0" Grid.Column="5" Grid.Row="17"
+						        Style="{StaticResource ResourceKey=TileButton}" BorderBrush="{x:Null}"
+						        Click="DocumentationClick">
 							<Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="230" Height="94">
 								<TextBlock Text="Documentation" Height="22" Margin="0,1,80,71" Foreground="White" FontSize="16" />
-								<Image Source="Images/Documentation.png" Height="81" HorizontalAlignment="Left" Width="56" Margin="5,23,0,-10"/>
+								<Image Source="Images/Documentation.png" Height="81" HorizontalAlignment="Left" Width="56" Margin="5,23,0,-10" />
 							</Grid>
 						</Button>
-						<Button Grid.ColumnSpan="3" Margin="1,0,0,0" Grid.Column="5" Grid.Row="15" Style="{StaticResource ResourceKey=TileButton}" BorderBrush="{x:Null}"
-										Click="TroubleshootingClick">
+						<Button Grid.ColumnSpan="3" Margin="1,0,0,0" Grid.Column="5" Grid.Row="15"
+						        Style="{StaticResource ResourceKey=TileButton}" BorderBrush="{x:Null}"
+						        Click="TroubleshootingClick">
 							<Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="230" Height="100">
 								<TextBlock Text="Troubleshooting Checklist/ FAQ" Height="22" Foreground="White" FontSize="16" Margin="0,1,0,77" />
-								<Image Source="Images/TroubleshootingChecklist.png" Height="64" HorizontalAlignment="Left" Width="55" Margin="0,26,0,4"/>
+								<Image Source="Images/TroubleshootingChecklist.png" Height="64" HorizontalAlignment="Left" Width="55"
+								       Margin="0,26,0,4" />
 							</Grid>
 						</Button>
 						<Button Grid.Column="9" Grid.Row="15" Style="{StaticResource ResourceKey=TileButton}" BorderBrush="{x:Null}"
-										Click="StartingWithCSClick" Grid.ColumnSpan="4">
+						        Click="StartingWithCsharpClick" Grid.ColumnSpan="4">
 							<Grid HorizontalAlignment="Center" VerticalAlignment="Center" Height="100" Width="230">
-								<Image Source="Images/CSharp.png" HorizontalAlignment="Left" Width="72" Margin="3,34,0,0"/>
-								<TextBlock Text="Starting with C#" Height="24" Foreground="White" FontSize="16" Margin="-50,0,69,76" HorizontalAlignment="Center" />
+								<Image Source="Images/CSharp.png" HorizontalAlignment="Left" Width="72" Margin="3,34,0,0" />
+								<TextBlock Text="Starting with C#" Height="24" Foreground="White" FontSize="16" Margin="-50,0,69,76"
+								           HorizontalAlignment="Center" />
 							</Grid>
 						</Button>
 						<Button Grid.ColumnSpan="3" Margin="1,0,0,0" Grid.Column="5" Grid.Row="13" BorderBrush="{x:Null}"
-							Click="FirstStepsClick" Style="{StaticResource ResourceKey=TileButton}">
+						        Click="FirstStepsClick" Style="{StaticResource ResourceKey=TileButton}">
 							<Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="230" Height="100">
 								<TextBlock Text="First Steps" Height="22" Margin="0,-2,80,74" Foreground="White" FontSize="16" />
-								<Image Source="Images/FirstSteps.png" Height="87" HorizontalAlignment="Left" Width="60" Margin="0,21,0,-14"/>
+								<Image Source="Images/FirstSteps.png" Height="87" HorizontalAlignment="Left" Width="60" Margin="0,21,0,-14" />
 							</Grid>
 						</Button>
-						<Button Grid.ColumnSpan="4" Grid.Column="9" Grid.Row="13" Style="{StaticResource ResourceKey=TileButton}" BorderBrush="{x:Null}"
-							Click="TutorialsClick">
+						<Button Grid.ColumnSpan="4" Grid.Column="9" Grid.Row="13" Style="{StaticResource ResourceKey=TileButton}"
+						        BorderBrush="{x:Null}"
+						        Click="TutorialsClick">
 							<Grid HorizontalAlignment="Center" VerticalAlignment="Center" Width="230" Height="94">
 								<TextBlock Text="Tutorials" Height="22" Margin="0,-1,80,73" Foreground="White" FontSize="16" />
-								<Image Source="Images/Tutorials.png" Height="83" HorizontalAlignment="Left" Width="75" Margin="0,26,0,-15"/>
+								<Image Source="Images/Tutorials.png" Height="83" HorizontalAlignment="Left" Width="75" Margin="0,26,0,-15" />
 							</Grid>
 						</Button>
-						<Image Grid.Column="1" HorizontalAlignment="Left" Height="651" Grid.Row="1" Grid.RowSpan="17" VerticalAlignment="Top" Width="386" Source="Images/LoginImage.jpg" Grid.ColumnSpan="4"/>
-						<Label Content="Getting Started" Grid.Column="4" FontSize="22" Foreground="#FF7A7A7A" Margin="11,14,78,6" FontWeight="Bold" Grid.ColumnSpan="8" Grid.Row="11" Grid.RowSpan="2"/>
-						<Label Content="The Delta Engine allows to write games or &#xA;apps in C#. It is free to use on the  PC. &#xD;&#xA;Convert your apps to other platforms &#xA;(Html5, Android, etc) via our cloud services." Grid.Column="2" FontSize="16" Foreground="White" Margin="0,14,0,39" Grid.Row="11" Grid.RowSpan="3"/>
+						<Image Grid.Column="1" HorizontalAlignment="Left" Height="651" Grid.Row="1" Grid.RowSpan="17"
+						       VerticalAlignment="Top" Width="386" Source="Images/LoginImage.jpg" Grid.ColumnSpan="4" />
+						<Label Content="Getting Started" Grid.Column="4" FontSize="22" Foreground="#FF7A7A7A" Margin="11,14,78,6"
+						       FontWeight="Bold" Grid.ColumnSpan="8" Grid.Row="11" Grid.RowSpan="2" />
+						<Label
+							Content="The Delta Engine allows to write games or &#xA;apps in C#. It is free to use on the  PC. &#xD;&#xA;Convert your apps to other platforms &#xA;(Html5, Android, etc) via our cloud services."
+							Grid.Column="2" FontSize="16" Foreground="White" Margin="0,14,0,39" Grid.Row="11" Grid.RowSpan="3" />
 						<Button Grid.Column="9" Grid.Row="17" Style="{StaticResource ResourceKey=TileButton}" BorderBrush="{x:Null}"
-							Click="AboutTheEditorClick">
+						        Click="AboutTheEditorClick">
 							<Grid HorizontalAlignment="Center" VerticalAlignment="Center" Height="100" Width="100">
-								<Image Source="Images/Editor.png" HorizontalAlignment="Left" Width="54" Margin="22,9,0,30"/>
-								<TextBlock Text="Editor" Height="24" Foreground="White" FontSize="16"  HorizontalAlignment="Center" VerticalAlignment="Center" Width="54" Margin="28,77,18,-1" />
+								<Image Source="Images/Editor.png" HorizontalAlignment="Left" Width="54" Margin="22,9,0,30" />
+								<TextBlock Text="Editor" Height="24" Foreground="White" FontSize="16" HorizontalAlignment="Center"
+								           VerticalAlignment="Center" Width="54" Margin="28,77,18,-1" />
 							</Grid>
 						</Button>
 						<Button Grid.Column="11" Grid.Row="17" Style="{StaticResource ResourceKey=TileButton}" BorderBrush="{x:Null}"
-							Click="AppBuilderClick" Grid.ColumnSpan="2">
+						        Click="AppBuilderClick" Grid.ColumnSpan="2">
 							<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Height="104" Width="112">
-								<Image Source="Images/AppBuilder.png" Height="79" HorizontalAlignment="Left" Width="49" Margin="29,0,0,0"/>
-								<TextBlock Text="App Builder" Height="20" Foreground="White" FontSize="14" Margin="20,0" HorizontalAlignment="Center" />
+								<Image Source="Images/AppBuilder.png" Height="79" HorizontalAlignment="Left" Width="49" Margin="29,0,0,0" />
+								<TextBlock Text="App Builder" Height="20" Foreground="White" FontSize="14" Margin="20,0"
+								           HorizontalAlignment="Center" />
 							</StackPanel>
 						</Button>
 					</Grid>
 				</Grid>
 				<Grid Visibility="{Binding Path=EditorPanelVisibility}" Background="#FFE4E4E4">
-					<TextBlock
-						Margin="0,11,772,0" TextAlignment="Right" VerticalAlignment="Top" Foreground="#FF7B7B7B"
-						Text="{Binding Path=PopupText}" FontSize="14" FontFamily="Arial"
-						HorizontalAlignment="Right" Visibility="{Binding Path=PopupVisibility}" />
-					<TextBlock
-						Margin="0,11,607,0" TextAlignment="Right" VerticalAlignment="Top" Foreground="#FF7B7B7B"
-						Text="{Binding Path=VersionNumber}" FontSize="14" FontFamily="Arial"
-						HorizontalAlignment="Right" Width="125" />
-					<Label
-						Margin="0,6,470,0" VerticalAlignment="Top"
-						FontSize="14" Content="Content Project:" Foreground="#FF7B7B7B" FontFamily="Arial" HorizontalAlignment="Right" Width="113" />
-					<ComboBox
-						Margin="0,8,274,0" VerticalAlignment="Top" HorizontalAlignment="Right" FontSize="14"
-						Foreground="#FF7B7B7B" BorderBrush="{x:Null}" FontFamily="Arial" Width="197"
-						ItemsSource="{Binding Path=AvailableProjects}"
-						SelectedItem="{Binding Path=SelectedProject}"
-						IsEnabled="{Binding Path=IsContentReady}">
-						<ComboBox.Background>
-							<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-								<GradientStop Color="#FFB0B0B0" Offset="0" />
-								<GradientStop Color="#FFE8E8E8" Offset="1" />
-							</LinearGradientBrush>
-						</ComboBox.Background>
-						<ComboBox.ItemTemplate>
-							<DataTemplate>
-								<DockPanel>
-									<TextBlock Text="{Binding Path=Name}" FontWeight="{Binding Path=Weight}" />
-								</DockPanel>
-							</DataTemplate>
-						</ComboBox.ItemTemplate>
-					</ComboBox>
-					<!--<Image
-						Name="UserImage" Width="30" Height="30" Margin="0,0,130,0"
-						VerticalAlignment="Top" HorizontalAlignment="Right"
-						MouseLeftButtonDown="WebsiteClick">
-						<Image.ContextMenu>
-							<ContextMenu>
-								<MenuItem Header="Profile" Click="ProfileClick"></MenuItem>
-								<MenuItem Header="Logout" Command="{Binding Path=OnLogoutButtonClicked}"></MenuItem>
-							</ContextMenu>
-						</Image.ContextMenu>
-					</Image>-->
-					<Label
-						Margin="0,5,133,0" VerticalAlignment="Top"
-						FontSize="14" Content="{Binding Path=Service.UserName}"
-						MouseLeftButtonDown="WebsiteClick" FontFamily="Arial" FontWeight="Bold" HorizontalAlignment="Right" Width="124">
-						<Label.ContextMenu>
-							<ContextMenu>
-								<MenuItem Header="Profile" Click="ProfileClick"></MenuItem>
-								<MenuItem Header="Logout" Command="{Binding Path=OnLogoutButtonClicked}"></MenuItem>
-							</ContextMenu>
-						</Label.ContextMenu>
-						<Label.Style>
-							<Style TargetType="Label">
-								<Setter Property="Foreground" Value="#7B7B7B" />
-								<Style.Triggers>
-									<Trigger Property="IsMouseOver" Value="True">
-										<Setter Property="Foreground" Value="Black" />
-									</Trigger>
-								</Style.Triggers>
-							</Style>
-						</Label.Style>
-					</Label>
+					<StackPanel
+						Margin="0,5,0,0" Orientation="Horizontal"
+						VerticalAlignment="Top" HorizontalAlignment="Right">
+						<TextBlock
+							Margin="0,7,0,0" Foreground="#FF636363" FontSize="14" FontFamily="Arial"
+							Text="{Binding Path=PopupText}" Visibility="{Binding Path=PopupVisibility}" />
+						<TextBlock
+							Margin="10,7,0,0" Foreground="#FF636363" FontSize="14" FontFamily="Arial"
+							Text="{Binding Path=VersionNumber}" />
+						<Label
+							Margin="10,2,0,0" Foreground="#FFA6A6A6" FontSize="14" FontFamily="Arial"
+							Content="❘" FontWeight="Bold" />
+						<Label
+							Margin="5,2,0,0" FontSize="14" FontFamily="Arial"
+							Content="Content Project:" Foreground="#FF636363" />
+						<ComboBox
+							Margin="0,0,0,0" FontSize="14" FontFamily="Arial" MaxDropDownHeight="500"
+							Width="200" Padding="5" BorderBrush="{x:Null}" Foreground="#FF636363"
+							ItemsSource="{Binding Path=AvailableProjects}"
+							SelectedItem="{Binding Path=SelectedProject}"
+							IsEnabled="{Binding Path=IsContentReady}">
+							<ComboBox.Background>
+								<LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+									<GradientStop Color="#FFB0B0B0" Offset="0" />
+									<GradientStop Color="#FFE8E8E8" Offset="1" />
+								</LinearGradientBrush>
+							</ComboBox.Background>
+							<ComboBox.ItemTemplate>
+								<DataTemplate>
+									<DockPanel>
+										<TextBlock
+											Text="{Binding Path=Name}" FontWeight="{Binding Path=Weight}" Padding="2,2,2,0" />
+									</DockPanel>
+								</DataTemplate>
+							</ComboBox.ItemTemplate>
+						</ComboBox>
+						<Button
+							Margin="5,0,0,0" Style="{StaticResource DeltaButton}" Width="100"
+							Content="Delete Project" Visibility="{Binding Path=DeleteProjectVisibility}"
+							Click="DeleteButtonClicked" />
+						<Image
+							Margin="5,0,0,0" Width="30" Height="30"
+							Source="{Binding Path=AccountImage}" MouseLeftButtonDown="WebsiteClick">
+							<Image.ContextMenu>
+								<ContextMenu>
+									<MenuItem Header="Profile" Click="ProfileClick" />
+									<MenuItem Header="Logout" Command="{Binding Path=OnLogoutButtonClicked}" />
+								</ContextMenu>
+							</Image.ContextMenu>
+						</Image>
+						<Label
+							Margin="0,2,200,0" FontSize="14" FontFamily="Arial" FontWeight="Bold"
+							Content="{Binding Path=Service.UserName}" MouseLeftButtonDown="WebsiteClick">
+							<Label.ContextMenu>
+								<ContextMenu>
+									<MenuItem Header="Profile" Click="ProfileClick" />
+									<MenuItem Header="Logout" Command="{Binding Path=OnLogoutButtonClicked}" />
+								</ContextMenu>
+							</Label.ContextMenu>
+							<Label.Style>
+								<Style TargetType="Label">
+									<Setter Property="Foreground" Value="#7B7B7B" />
+									<Style.Triggers>
+										<Trigger Property="IsMouseOver" Value="True">
+											<Setter Property="Foreground" Value="Black" />
+										</Trigger>
+									</Style.Triggers>
+								</Style>
+							</Label.Style>
+						</Label>
+					</StackPanel>
 					<avalonDock:DockingManager Margin="0,36,0,0" GridSplitterWidth="10" Drop="OnContentDrop" AllowDrop="True">
 						<avalonDock:DockingManager.Background>
 							<RadialGradientBrush>
@@ -307,24 +370,15 @@
 						</avalonDock:DockingManager.Theme>
 						<avalonDock:LayoutRoot>
 							<avalonDock:LayoutPanel>
-								<avalonDock:LayoutDocumentPaneGroup x:Name="PluginGroup">
-								</avalonDock:LayoutDocumentPaneGroup>
+								<avalonDock:LayoutDocumentPaneGroup x:Name="PluginGroup" />
 							</avalonDock:LayoutPanel>
 						</avalonDock:LayoutRoot>
 					</avalonDock:DockingManager>
-					<Label
-						Margin="0,5,255,0" VerticalAlignment="Top"
-						FontSize="14" Content="❘" Foreground="#FFC1C1C1" FontFamily="Arial" FontWeight="Bold" HorizontalAlignment="Right"
-						Width="17" Height="26" />
-					<Label
-						Margin="0,5,583,0" VerticalAlignment="Top"
-						FontSize="14" Content="❘" Foreground="#FFC1C1C1" FontFamily="Arial" FontWeight="Bold" HorizontalAlignment="Right"
-						Width="17" Height="26" />
 				</Grid>
 			</Grid>
 			<Image
-				Width="24" Height="24" Margin="0,5,96,0" VerticalAlignment="Top"
-				HorizontalAlignment="Right" MouseDown="OnHelp">
+				Margin="0,5,96,0" VerticalAlignment="Top" HorizontalAlignment="Right"
+				Width="24" Height="24" MouseDown="OnHelp">
 				<Image.Style>
 					<Style TargetType="{x:Type Image}">
 						<Setter Property="Source" Value="Images/HelpButton.png" />
@@ -337,22 +391,22 @@
 				</Image.Style>
 			</Image>
 			<Image
-				Width="24" Height="24" Margin="0,5,5,0" VerticalAlignment="Top"
-				HorizontalAlignment="Right" MouseDown="OnExit">
+				Margin="0,5,65,0" VerticalAlignment="Top" HorizontalAlignment="Right"
+				Width="24" Height="24" MouseDown="OnMinimize">
 				<Image.Style>
 					<Style TargetType="{x:Type Image}">
-						<Setter Property="Source" Value="Images/ExitButton.png" />
+						<Setter Property="Source" Value="Images/MinimizeWindowButton.png" />
 						<Style.Triggers>
 							<Trigger Property="IsMouseOver" Value="True">
-								<Setter Property="Source" Value="Images/ExitButtonHover.png" />
+								<Setter Property="Source" Value="Images/MinimizeWindowButtonHover.png" />
 							</Trigger>
 						</Style.Triggers>
 					</Style>
 				</Image.Style>
 			</Image>
 			<Image
-				Width="24" Height="24" Margin="0,5,35,0" VerticalAlignment="Top"
-				HorizontalAlignment="Right" MouseDown="OnMaximize">
+				Margin="0,5,35,0" VerticalAlignment="Top" HorizontalAlignment="Right"
+				Width="24" Height="24" MouseDown="OnMaximize">
 				<Image.Style>
 					<Style TargetType="{x:Type Image}">
 						<Setter Property="Source" Value="Images/MaximizeWindowButton.png" />
@@ -365,21 +419,21 @@
 				</Image.Style>
 			</Image>
 			<Image
-				Width="24" Height="24" Margin="0,5,65,0" VerticalAlignment="Top"
-				HorizontalAlignment="Right" MouseDown="OnMinimize">
+				Margin="0,5,5,0" VerticalAlignment="Top" HorizontalAlignment="Right"
+				Width="24" Height="24" MouseDown="OnExit">
 				<Image.Style>
 					<Style TargetType="{x:Type Image}">
-						<Setter Property="Source" Value="Images/MinimizeWindowButton.png" />
+						<Setter Property="Source" Value="Images/ExitButton.png" />
 						<Style.Triggers>
 							<Trigger Property="IsMouseOver" Value="True">
-								<Setter Property="Source" Value="Images/MinimizeWindowButtonHover.png" />
+								<Setter Property="Source" Value="Images/ExitButtonHover.png" />
 							</Trigger>
 						</Style.Triggers>
 					</Style>
 				</Image.Style>
 			</Image>
 			<Canvas
-				Width="210" HorizontalAlignment="Left"
+				Width="200" HorizontalAlignment="Left"
 				Margin="0,74,0,0" Background="White" Opacity="0.75"
 				Visibility="{Binding Path=LoginPanelVisibility}" />
 		</Grid>

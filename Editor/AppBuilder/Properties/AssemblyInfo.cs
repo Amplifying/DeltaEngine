@@ -12,6 +12,6 @@ using System.Windows;
 [assembly: CLSCompliant(true)]
 [assembly: ThemeInfo(ResourceDictionaryLocation.None, ResourceDictionaryLocation.SourceAssembly)]
 [assembly: Guid("b0272ae8-6284-42c7-8dd7-b41e2bbac7c0")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.0.1")]
+[assembly: AssemblyFileVersion("1.0.0.1")]
 [assembly: InternalsVisibleTo("DeltaEngine.Editor.AppBuilder.Tests")]

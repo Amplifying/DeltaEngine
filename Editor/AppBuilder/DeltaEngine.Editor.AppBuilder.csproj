@@ -143,7 +143,6 @@
       <DependentUpon>AppBuilderInfoListView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Device.cs" />
-    <Compile Include="NullDevice.cs" />
     <Compile Include="TextExtensions.cs" />
     <Compile Include="WindowsPhone7\WP7AppInfo.cs" />
     <Compile Include="WindowsPhone7\WP7Device.cs" />

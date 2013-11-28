@@ -4,34 +4,31 @@ using DeltaEngine.Core;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Messages;
 using DeltaEngine.Extensions;
-using DeltaEngine.Mocks;
 using DeltaEngine.Networking.Messages;
 using NUnit.Framework;
 
 namespace DeltaEngine.Editor.AppBuilder.Tests
 {
-	[Category("Slow")]
 	public class AppBuilderViewModelTests
 	{
 		[SetUp]
 		public void LoadAppBuilderViewModel()
 		{
-			logger = new MockLogger();
 			CreateNewAppBuilderViewModel();
 		}
-
-		private MockLogger logger;
 
 		private void CreateNewAppBuilderViewModel()
 		{
 			service = new MockBuildService();
 			viewModel = new AppBuilderViewModel(service);
+			service.SetAvailableProjects(StartupProject, "Blocks", "GhostWars", TutorialsProject);
 			service.ChangeProject(StartupProject);
 		}
 
 		private MockBuildService service;
 		private AppBuilderViewModel viewModel;
 		private const string StartupProject = "LogoApp";
+		private const string TutorialsProject = "DeltaEngine.Tutorials";
 
 		[Test]
 		public void CheckSupportedAndSelectedPlatform()
@@ -66,7 +63,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 
 		private void AssertSelectedSolutionProject()
 		{
-			Assert.AreEqual(viewModel.SelectedSolutionProject.Name, service.ProjectName);
+			Assert.AreEqual(viewModel.SelectedCodeProject.Name, service.ProjectName);
 		}
 
 		[Test]
@@ -96,7 +93,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		}
 
 		[Test]
-		public void SelectedSolutionProjectMustUpdateWhenProjectNameHasChanged()
+		public void SelectedProjectMustBeUpdatedWhenContentProjectHasChanged()
 		{
 			AssertSelectedProjectIsBuildable();
 			service.ChangeProject("LogoApp");
@@ -109,15 +106,6 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		{
 			AssertSelectedSolutionProject();
 			Assert.IsTrue(viewModel.IsBuildActionExecutable);
-		}
-
-		[Test]
-		public void NonExistingProjectCanNotBeBuild()
-		{
-			AssertSelectedProjectIsBuildable();
-			service.ChangeProject("NonExistingProject");
-			Assert.IsNull(viewModel.SelectedSolutionProject);
-			Assert.IsFalse(viewModel.IsBuildActionExecutable);
 		}
 
 		[Test]
@@ -172,11 +160,30 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 		public void NotifyTheServiceAboutChangedCodeSolutionPathWhenBuildIsExecuted()
 		{
 			const string CustomCodeSolutionFilePath = @"C:\Sample\MySampleGame.sln";
-			viewModel.UserSolutionPath = CustomCodeSolutionFilePath;
-			Assert.AreNotEqual(service.CurrentContentProjectSolutionFilePath, viewModel.UserSolutionPath);
+			viewModel.OverrideUserSolutionPathWithCustomPath(CustomCodeSolutionFilePath);
 			Assert.IsTrue(viewModel.BuildCommand.CanExecute(null));
 			viewModel.BuildCommand.Execute(null);
 			Assert.AreEqual(viewModel.UserSolutionPath, service.CurrentContentProjectSolutionFilePath);
+		}
+
+		[Test]
+		public void ChangingTheSelectedCodeProjectWillUpdateSolutionFilePath()
+		{
+			string originalSolutionFilePath = viewModel.UserSolutionPath;
+			ProjectEntry tutorialsProject = GetFirstTutorialProjectEntry();
+			Assert.IsNotNull(tutorialsProject);
+			viewModel.SelectedCodeProject = tutorialsProject;
+			Assert.AreNotEqual(originalSolutionFilePath, viewModel.UserSolutionPath);
+			Assert.IsTrue(viewModel.BuildCommand.CanExecute(null));
+			viewModel.BuildCommand.Execute(null);
+		}
+
+		private ProjectEntry GetFirstTutorialProjectEntry()
+		{
+			foreach (ProjectEntry projectEntry in viewModel.AllAvailableProjects)
+				if (projectEntry.Name.StartsWith("DeltaEngine.Tutorials."))
+					return projectEntry;
+			return null;
 		}
 
 		[Test]
@@ -186,14 +193,6 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			viewModel.AppBuildFailedRecieved += failed =>  isAppBuildFailedTriggeredByServerError = true;
 			service.ReceiveData(new ServerError("I have seen an error"));
 			Assert.IsTrue(isAppBuildFailedTriggeredByServerError);
-		}
-
-		[Test]
-		public void UpdatedBuildProgressShouldBeLoggedForTheUser()
-		{
-			int currentNumberOfLogMessages = logger.NumberOfMessages;
-			service.ReceiveData(new AppBuildProgress("Testing progress done", 100));
-			Assert.AreEqual(currentNumberOfLogMessages + 1, logger.NumberOfMessages);
 		}
 
 		// ncrunch: no coverage start

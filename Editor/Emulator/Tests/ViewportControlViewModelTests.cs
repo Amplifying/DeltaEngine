@@ -2,6 +2,7 @@
 
 namespace DeltaEngine.Editor.Emulator.Tests
 {
+	[Ignore]
 	public class ViewportControlViewModelTests
 	{
 		[Test, RequiresSTA]

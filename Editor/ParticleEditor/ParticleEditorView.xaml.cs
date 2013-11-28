@@ -23,20 +23,16 @@ namespace DeltaEngine.Editor.ParticleEditor
 			viewModel = new ParticleEditorViewModel(service);
 			DataContext = viewModel;
 			AttachToUpdateEvents();
-			Messenger.Default.Send("ParticleEditor", "SetSelectedEditorPlugin");
-			Messenger.Default.Register<string>(this, "RemoveProjectUpdate", RemoveProjectUpdate);
-		}
-
-		private void RemoveProjectUpdate(string pluginName)
-		{
-			if (pluginName != "ParticleEditor")
-				service.ProjectChanged -= ChangeProject;
 		}
 
 		public void Activate()
 		{
 			viewModel.Activate();
-			Messenger.Default.Send("ParticleEditor", "SetSelectedEditorPlugin");
+		}
+
+		public void Deactivate()
+		{
+			service.ProjectChanged -= ChangeProject;
 		}
 
 		private void AttachToUpdateEvents()

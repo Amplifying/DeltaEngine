@@ -3,14 +3,14 @@
 namespace DeltaEngine.Editor.Messages
 {
 	/// <summary>
-	/// A message sent from the BuildService which informs about the specific compilation issues
+	/// A message sent from the BuildService which informs about the specific compilation state.
 	/// </summary>
 	public class AppBuildMessage
 	{
 		/// <summary>
 		/// Need empty constructor for BinaryDataExtensions class reconstruction
 		/// </summary>
-		protected AppBuildMessage() {} // ncrunch: no coverage
+		protected AppBuildMessage() {}
 
 		public AppBuildMessage(string text)
 		{
@@ -30,11 +30,9 @@ namespace DeltaEngine.Editor.Messages
 		public string TextLine { get; set; }
 		public string TextColumn { get; set; }
 
-		// ncrunch: no coverage start
 		public override string ToString()
 		{
 			return Type + ": " + Text;
 		}
-		// ncrunch: no coverage end
 	}
 }

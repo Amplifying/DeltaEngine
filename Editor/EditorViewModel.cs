@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using DeltaEngine.Core;
@@ -18,6 +18,8 @@ using DeltaEngine.Platforms;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using Microsoft.Win32;
+using Application = System.Windows.Application;
+using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace DeltaEngine.Editor
 {
@@ -39,6 +41,7 @@ namespace DeltaEngine.Editor
 			RegisterCommands();
 			SetApiKey(LoadDataFromRegistry("ApiKey"));
 			SetCurrentProject(LoadDataFromRegistry("SelectedProject"));
+			service.ProjectChanged += RefreshSelectedProject;
 			ConnectToOnlineServiceAndTryToLogin();
 			EditorPlugins = new List<EditorPluginView>();
 			messageViewModel = new PopupMessageViewModel(service);
@@ -47,6 +50,7 @@ namespace DeltaEngine.Editor
 
 		private readonly EditorPluginLoader plugins;
 		private readonly OnlineService service;
+		internal MaximizerForEmptyWindows maximizer;
 		public List<ProjectNameAndFontWeight> AvailableProjects { get; private set; }
 
 		public string Error
@@ -74,10 +78,25 @@ namespace DeltaEngine.Editor
 
 		private void SetVersionNumber()
 		{
-			VersionNumber = "Version: " + Assembly.GetExecutingAssembly().GetName().Version;
+			Version version = Assembly.GetExecutingAssembly().GetName().Version;
+			if (version.Build == 0)
+				SetVersionNumberForMilestoneRelease(version);
+			else
+				SetVersionNumberForNightlyBetaRelease(version);
+		}
+
+		private void SetVersionNumberForMilestoneRelease(Version version)
+		{
+			VersionNumber = "Version: " + version.Major + "." + version.Minor;
 		}
 
 		public string VersionNumber { get; set; }
+
+		private void SetVersionNumberForNightlyBetaRelease(Version version)
+		{
+			SetVersionNumberForMilestoneRelease(version);
+			VersionNumber += "." + version.Build;
+		}
 
 		private void RegisterCommands()
 		{
@@ -109,7 +128,17 @@ namespace DeltaEngine.Editor
 		private void SetCurrentProject(string project)
 		{
 			SelectedProject = new ProjectNameAndFontWeight(project, FontWeights.Normal);
-			RaisePropertyChanged("SelectedProject");
+		}
+
+		private void RefreshSelectedProject()
+		{
+			foreach (ProjectNameAndFontWeight project in AvailableProjects)
+				if (project.Name == service.ProjectName)
+				{
+					SelectedProject = project;
+					return;
+				}
+			SelectedProject = new ProjectNameAndFontWeight(service.ProjectName, FontWeights.Normal);
 		}
 
 		private void ConnectToOnlineServiceAndTryToLogin()
@@ -119,6 +148,7 @@ namespace DeltaEngine.Editor
 			tryingToConnect = true;
 			connection = new OnlineServiceConnection();
 			connection.Connected += ValidateLogin;
+			connection.Disconnected += ConnectionLost;
 			connection.DataReceived += OnDataReceived;
 			connection.Connect(Settings.Current.OnlineServiceIp, Settings.Current.OnlineServicePort,
 				OnTimeout);
@@ -154,14 +184,28 @@ namespace DeltaEngine.Editor
 			get { return selectedProject; }
 			set
 			{
-				if (isLoggedIn)
-					service.RequestChangeProject(value.Name);
+				if (value == null)
+					return;
+				if (isLoggedIn && (selectedProject == null || selectedProject.Name != value.Name))
+					service.ChangeProject(value.Name);
 				selectedProject = value;
 				SaveCurrentProject();
+				RaisePropertyChanged("SelectedProject");
 			}
 		}
 
 		private ProjectNameAndFontWeight selectedProject;
+
+		private void ConnectionLost()
+		{
+			if (!isLoggedIn || service.Viewport.Window.IsClosing)
+				return;
+			service.Viewport.Window.ShowMessageBox("Server connection lost",
+				"Your connection to " + Settings.Current.OnlineServiceIp + ":" +
+					Settings.Current.OnlineServicePort + " has been lost. The Editor window will close now.",
+				new[] { "OK" });
+			Application.Current.Dispatcher.Invoke(new Action(Application.Current.Shutdown));
+		}
 
 		private void OnDataReceived(object message)
 		{
@@ -197,7 +241,7 @@ namespace DeltaEngine.Editor
 		private void RefreshAvailableProjects(ProjectNamesResult projectNames)
 		{
 			service.SetAvailableProjects(projectNames.ProjectNames);
-			AvailableProjects.Clear();
+			AvailableProjects = new List<ProjectNameAndFontWeight>();
 			var projectNamesAndWeight = new List<ProjectNameAndFontWeight>();
 			var fontWeight = FontWeights.Bold;
 			string tutorials = "";
@@ -216,26 +260,36 @@ namespace DeltaEngine.Editor
 			if (!string.IsNullOrEmpty(tutorials))
 				AvailableProjects.Add(new ProjectNameAndFontWeight(tutorials, fontWeight));
 			RaisePropertyChanged("AvailableProjects");
-			RefreshSelectedProject();
-		}
-
-		private void RefreshSelectedProject()
-		{
-			SelectedProject = AvailableProjects.FirstOrDefault(p => p.Name == service.ProjectName);
-			RaisePropertyChanged("SelectedProject");
+			foreach (ProjectNameAndFontWeight project in AvailableProjects)
+				if (project.Name == service.ProjectName)
+				{
+					SelectedProject = project;
+					return;
+				}
+			foreach (ProjectNameAndFontWeight project in AvailableProjects)
+				if (project.Name == "EmptyApp")
+				{
+					SelectedProject = project;
+					return;
+				}
+			SelectedProject = AvailableProjects[0];
 		}
 
 		private void Login(LoginSuccessful loginMessage)
 		{
 			connection.Send(new ProjectNamesRequest());
 			Service.Connect(loginMessage.UserName, connection);
+			AccountImage = loginMessage.AccountImagePath;
 			SaveApiKey();
 			SaveCurrentProject();
 			IsLoggedIn = true;
 			ChangeVisiblePanel();
 			Error = "";
+			RaisePropertyChanged("AccountImage");
 			RaisePropertyChanged("Service");
 		}
+
+		public string AccountImage { get; private set; }
 
 		public void SaveApiKey()
 		{
@@ -277,6 +331,9 @@ namespace DeltaEngine.Editor
 		private void VerifyProject(SetProject newProject)
 		{
 			IsContentReady = false;
+			DeleteProjectVisibility = newProject.Permissions == ProjectPermissions.Full
+				? Visibility.Visible : Visibility.Collapsed;
+			RaisePropertyChanged("DeleteProjectVisibility");
 			if (newProject.Permissions != ProjectPermissions.None)
 				return;
 			selectedProject.ResetToDefault();
@@ -294,6 +351,8 @@ namespace DeltaEngine.Editor
 		}
 
 		private bool isContentReady;
+
+		public Visibility DeleteProjectVisibility { get; private set; }
 
 		private void Disconnect()
 		{
@@ -428,6 +487,26 @@ namespace DeltaEngine.Editor
 		public void SetProjectAndTest(string initialPath, string projectName, string testName)
 		{
 			//Logger.Info("Path: " + initialPath + ", Project: " + projectName + ", Test: " + testName);
+		}
+
+		public void ShowMessageBoxToDeleteCurrentProject()
+		{
+			DialogResult dialogResult =
+				MessageBox.Show(
+					"Do you really want to delete " + service.ProjectName + " and all of its content?",
+					"Delete Content Project", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+			if (dialogResult == DialogResult.Yes)
+				service.Send(new DeleteProject(service.ProjectName));
+		}
+
+		public Thickness ResizeBorderThickness
+		{
+			get { return new Thickness(maximizer != null && maximizer.isMaximized ? 0 : 5); }
+		}
+
+		public void UpdateBorderThicknessOfChromeStyle()
+		{
+			RaisePropertyChanged("ResizeBorderThickness");
 		}
 	}
 }

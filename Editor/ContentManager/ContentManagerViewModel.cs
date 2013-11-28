@@ -77,8 +77,6 @@ namespace DeltaEngine.Editor.ContentManager
 			Messenger.Default.Register<string>(this, "ClearList", ClearSelectionList);
 			Messenger.Default.Register<string>(this, "OpenFileExplorerToAddNewContent",
 				OpenFileExplorerToAddNewContent);
-			Messenger.Default.Register<string>(this, "NoLongerSelectContentManager",
-				NoLongerSelectContentManager);
 		}
 
 		public void DeleteContentFromList(string contentList)
@@ -341,27 +339,27 @@ namespace DeltaEngine.Editor.ContentManager
 			{
 				var aspect = size.Height / size.Width;
 				entity.DrawArea =
-					Rectangle.FromCenter(new Vector2D(0.175f + 0.2f * column, 0.325f + 0.2f * row),
+					Rectangle.FromCenter(new Vector2D(0.175f + 0.2f * column, 0.3f + 0.2f * row),
 						new Size(0.15f, 0.15f * aspect));
 			}
 			else
 			{
 				var aspect = size.Width / size.Height;
 				entity.DrawArea =
-					Rectangle.FromCenter(new Vector2D(0.175f + 0.2f * column, 0.325f + 0.2f * row),
+					Rectangle.FromCenter(new Vector2D(0.175f + 0.2f * column, 0.3f + 0.2f * row),
 						new Size(0.15f * aspect, 0.15f));
 			}
-			new Line2D(new Vector2D(0.09f + 0.2f * column, 0.24f + 0.2f * row),
-				new Vector2D(0.15f + 0.11f + 0.2f * column, 0.24f + 0.2f * row),
+			new Line2D(new Vector2D(0.09f + 0.2f * column, 0.215f + 0.2f * row),
+				new Vector2D(0.15f + 0.11f + 0.2f * column, 0.215f + 0.2f * row),
 				new Datatypes.Color(67, 78, 200));
-			new Line2D(new Vector2D(0.09f + 0.2f * column, 0.24f + 0.2f * row),
-				new Vector2D(0.09f + 0.2f * column, 0.15f + 0.26f + 0.2f * row),
+			new Line2D(new Vector2D(0.09f + 0.2f * column, 0.215f + 0.2f * row),
+				new Vector2D(0.09f + 0.2f * column, 0.125f + 0.26f + 0.2f * row),
 				new Datatypes.Color(67, 78, 200));
-			new Line2D(new Vector2D(0.15f + 0.11f + 0.2f * column, 0.15f + 0.26f + 0.2f * row),
-				new Vector2D(0.15f + 0.11f + 0.2f * column, 0.24f + 0.2f * row),
+			new Line2D(new Vector2D(0.15f + 0.11f + 0.2f * column, 0.125f + 0.26f + 0.2f * row),
+				new Vector2D(0.15f + 0.11f + 0.2f * column, 0.215f + 0.2f * row),
 				new Datatypes.Color(67, 78, 200));
-			new Line2D(new Vector2D(0.15f + 0.11f + 0.2f * column, 0.15f + 0.26f + 0.2f * row),
-				new Vector2D(0.09f + 0.2f * column, 0.15f + 0.26f + 0.2f * row),
+			new Line2D(new Vector2D(0.15f + 0.11f + 0.2f * column, 0.125f + 0.26f + 0.2f * row),
+				new Vector2D(0.09f + 0.2f * column, 0.125f + 0.26f + 0.2f * row),
 				new Datatypes.Color(67, 78, 200));
 			StartPreviewList.Add(entity);
 		}
@@ -463,7 +461,7 @@ namespace DeltaEngine.Editor.ContentManager
 			ShowStartContent();
 		}
 
-		public void NoLongerSelectContentManager(string obj)
+		public void Deactivate()
 		{
 			ShowingContentManager = false;
 		}

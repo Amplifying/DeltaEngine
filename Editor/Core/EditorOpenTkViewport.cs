@@ -2,45 +2,40 @@
 using DeltaEngine.Core;
 using DeltaEngine.Datatypes;
 using DeltaEngine.Entities;
+using DeltaEngine.Input;
 using DeltaEngine.Multimedia;
 using DeltaEngine.ScreenSpaces;
 
 namespace DeltaEngine.Editor.Core
 {
 	/// <summary>
-	/// This represents the viewport part of the Editor, holding a Screenspace, ensuring that needed 
-	/// Commands are present and allowing plugins to control the viewport up to a degree.
-	/// Plugins that want to destroy all entities except for the viewport controls should call
-	/// "DestroyRenderedEntities".
+	/// Viewport of the Editor, holds Screenspace, ensures that needed Commands are present and
+	/// allows plugins to control the viewport up to a degree. Plugins that want to destroy all
+	/// entities except for the viewport controls should call <see cref="DestroyRenderedEntities"/>
 	/// </summary>
 	public class EditorOpenTkViewport
 	{
-		public EditorOpenTkViewport(Window window)
+		public EditorOpenTkViewport(Window window, Mouse mouse)
 		{
+			Window = window;
+			this.mouse = mouse;
 			screenSpace = new Camera2DScreenSpace(window);
 			Settings.Current.LimitFramerate = 60;
-			CreateViewportCommands();
 		}
 
-		private void CreateViewportCommands()
-		{
-			panningCommand = new Command("ViewportPanning", ViewportPanning);
-			zoomCommand = new Command("ViewportZooming", ViewPortZooming);
-			panningCommand.AddTag("ViewControl");
-			zoomCommand.AddTag("ViewControl");
-		}
-
+		public Window Window { get; private set; }
+		private readonly Mouse mouse;
 		private readonly Camera2DScreenSpace screenSpace;
-		private Command panningCommand;
-		private Command zoomCommand;
 
-		private void ViewportPanning(Vector2D start, Vector2D end, bool done)
+		public void OnViewportPanning(Vector2D start, Vector2D end, bool done)
 		{
 			screenSpace.LookAt += start - end;
 		}
 
-		private void ViewPortZooming(float zoomDifference)
+		public void OnViewPortZooming(float zoomDifference)
 		{
+			if (mouse.Position.X > 0.85f)
+				return;
 			var changeByAmount = zoomDifference * 0.1f;
 			if (screenSpace.Zoom + changeByAmount > 0.0f)
 				screenSpace.Zoom += changeByAmount;

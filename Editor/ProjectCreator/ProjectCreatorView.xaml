@@ -161,23 +161,23 @@
 		<TextBox
 			Text="{Binding Path=Name, UpdateSourceTrigger=PropertyChanged}"
 			Grid.Column="3" Style="{StaticResource DeltaTextBox}" Grid.Row="1" Grid.ColumnSpan="3" />
-		<Label Content="Path" Style="{StaticResource DeltaLabel}" Grid.Column="1" Grid.Row="3" Margin="1,0,0,0" HorizontalAlignment="Right" Background="{x:Null}" />
+		<Label Content="Path" Style="{StaticResource DeltaLabel}" Grid.Column="1" Grid.Row="7" HorizontalAlignment="Right" Background="{x:Null}" />
 		<TextBox
 			Text="{Binding Path=Location, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"
-			Grid.Column="3" Style="{StaticResource DeltaTextBox}" Grid.Row="3" />
-		<Button Content="..." Grid.Column="5" Grid.Row="3" Style="{StaticResource DeltaButton}" FontSize="24"
+			Grid.Column="3" Style="{StaticResource DeltaTextBox}" Grid.Row="7" />
+		<Button Content="..." Grid.Column="5" Grid.Row="7" Style="{StaticResource DeltaButton}" FontSize="24"
 		        Click="OnBrowseUserProjectsClicked" />
-		<Label Content="Starter Kit" Style="{StaticResource DeltaLabel}" Grid.Column="1" Grid.Row="5" Margin="1,0,0,0" HorizontalAlignment="Right" Background="{x:Null}" />
+		<Label Content="Starter Kit" Style="{StaticResource DeltaLabel}" Grid.Column="1" Grid.Row="3" Margin="0,2,0,10" HorizontalAlignment="Right" Background="{x:Null}" Grid.RowSpan="2" />
 		<ComboBox
 			ItemsSource="{Binding Path=AvailableStarterKits}"
 			SelectedValue="{Binding Path=SelectedStarterKit}"
-			Grid.Column="3" Grid.Row="5" Grid.ColumnSpan="3"
+			Grid.Column="3" Grid.Row="3" Grid.ColumnSpan="3"
 			Style="{StaticResource DeltaComboBox}" />
-		<Label Content="Framework" Style="{StaticResource DeltaLabel}" Grid.Column="1" Grid.Row="7" Margin="1,0,0,0" HorizontalAlignment="Right" Background="{x:Null}" />
+		<Label Content="Framework" Style="{StaticResource DeltaLabel}" Grid.Column="1" Grid.Row="5" HorizontalAlignment="Right" Background="{x:Null}" />
 		<ComboBox
 			ItemsSource="{Binding Path=AvailableFrameworks}"
 			SelectedValue="{Binding Path=SelectedFramework}"
-			Grid.Column="3" Grid.Row="7" Grid.ColumnSpan="3"
+			Grid.Column="3" Grid.Row="5" Grid.ColumnSpan="3"
 			Style="{StaticResource DeltaComboBox}" />
 		<Button
 			Command="{Binding Path=OnCreateClicked}" Style="{StaticResource DeltaButton}"

@@ -54,7 +54,7 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			Assert.IsTrue(fullAppName.Contains("DeltaEngine"), fullAppName);
 		}
 
-		[Test]
+		[Test, Ignore]
 		public void GetFullAppNameForNonAndroidApp()
 		{
 			var otherPlatfromApp = new WP7AppInfo(@"C:\Fake\MockApp.xap", Guid.Empty, DateTime.Now);

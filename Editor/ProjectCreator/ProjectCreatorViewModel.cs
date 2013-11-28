@@ -1,5 +1,5 @@
-﻿using System.Diagnostics;
-using System.IO.Abstractions;
+﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using DeltaEngine.Core;
@@ -27,14 +27,21 @@ namespace DeltaEngine.Editor.ProjectCreator
 		private void OnDataReceived(object message)
 		{
 			var createProject = message as CreateProject;
-			if (createProject != null)
-				OpenProject(createProject);
+			var alreadyExists = message as ProjectAlreadyExists;
+			if (createProject != null ||
+				alreadyExists != null && alreadyExists.ProjectName == project.Name)
+				OpenProject(createProject, alreadyExists);
 		}
 
-		private void OpenProject(CreateProject createProject)
+		private void OpenProject(CreateProject createProject, ProjectAlreadyExists alreadyExists)
 		{
-			Logger.Info("Content Project " + createProject.ProjectName + " has been created");
-			Process.Start(service.CurrentContentProjectSolutionFilePath);
+			if (createProject != null)
+				Logger.Info("Content Project " + createProject.ProjectName + " has been created");
+			else
+				MessageBox.Show(
+					"Content Project " + alreadyExists.ProjectName +
+						" already exists, will use existing project", "Server reported", MessageBoxButton.OK);
+			Process.Start(service.GetAbsoluteSolutionFilePath(createProject.ProjectName));
 		}
 
 		private readonly CsProject project;
@@ -115,16 +122,24 @@ namespace DeltaEngine.Editor.ProjectCreator
 
 		private void CreateProject()
 		{
-			var projectCreator = new ProjectCreator(project,
-				VsTemplate.CreateByName(new FileSystem(), project.StarterKit), service, new FileSystem());
-			projectCreator.CreateProject();
-			if (projectCreator.HaveTemplateFilesBeenCopiedToLocation())
-				service.Send(new CreateProject(projectCreator.Project.Name, project.StarterKit));
-			else
+			try
+			{
+				TryCreateProjectAndSendToService();
+			}
+			catch (Exception ex)
+			{
 				MessageBox.Show(
-					"Project has not been created. " +
-						"Please make sure the specified location and the VisualStudioTemplates are available.",
-					"Error");
+					ex + "\n\nPlease reinstall and make sure the specified location and the " +
+						"VisualStudioTemplates are available.", "Project could not be created");
+			}
+		}
+
+		private void TryCreateProjectAndSendToService()
+		{
+			var projectCreator = new ProjectCreator(project, new VsTemplate(project.StarterKit), service);
+			projectCreator.CreateProject();
+			projectCreator.CheckIfTemplateFilesHaveBeenCopiedToLocation();
+			service.Send(new CreateProject(projectCreator.Project.Name, project.StarterKit));
 		}
 
 		private bool CanCreateProject()

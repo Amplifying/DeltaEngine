@@ -1,4 +1,4 @@
-﻿using System;
+﻿using DeltaEngine.Core;
 using DeltaEngine.Editor.Core;
 
 namespace DeltaEngine.Editor.Tests
@@ -7,12 +7,17 @@ namespace DeltaEngine.Editor.Tests
 	{
 		public void Init(Service service)
 		{
-			Console.WriteLine("MockEditorPlugin initialized");
+			Logger.Info("MockEditorPlugin initialized");
 		}
 
 		public void Activate()
 		{
-			Console.WriteLine("MockEditorPlugin activated");
+			Logger.Info("MockEditorPlugin activated");
+		}
+
+		public void Deactivate()
+		{
+			Logger.Info("MockEditorPlugin deactivated");
 		}
 
 		public string ShortName

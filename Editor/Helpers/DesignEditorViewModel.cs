@@ -27,7 +27,7 @@ namespace DeltaEngine.Editor.Helpers
 			EditorPlugins = new List<EditorPluginView> { new DesignEditorPlugin() };
 			IsContentReady = false;
 			OnLoginButtonClicked = OnLogoutButtonClicked = null;
-			VersionNumber = "Version: X.X.X.X";
+			VersionNumber = "Version: X.X.X";
 			SetUpPopupMessage();
 		}
 
@@ -88,5 +88,20 @@ namespace DeltaEngine.Editor.Helpers
 
 		public string PopupText { get; private set; }
 		public Visibility PopupVisibility { get; private set; }
+
+		public Visibility DeleteProjectVisibility
+		{
+			get { return Visibility.Visible; }
+		}
+
+		public string AccountImage
+		{
+			get { return "Images/AppBuilder/BuildInfoIcon.png"; }
+		}
+
+		public Thickness ResizeBorderThickness
+		{
+			get { return new Thickness(5); }
+		}
 	}
 }

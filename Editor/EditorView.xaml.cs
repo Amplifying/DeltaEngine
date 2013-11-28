@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -8,18 +7,14 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
-using DeltaEngine.Commands;
 using DeltaEngine.Core;
 using DeltaEngine.Editor.ContentManager;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Emulator;
 using DeltaEngine.Editor.Helpers;
 using DeltaEngine.Extensions;
-using DeltaEngine.Input;
 using DeltaEngine.Platforms;
 using Xceed.Wpf.AvalonDock.Layout;
-using MouseButton = DeltaEngine.Input.MouseButton;
-using OpenTKApp = DeltaEngine.Platforms.App;
 using Size = DeltaEngine.Datatypes.Size;
 using Window = DeltaEngine.Core.Window;
 
@@ -41,52 +36,34 @@ namespace DeltaEngine.Editor
 			Loaded += LoadSettings;
 			Closing += SaveSettings;
 			DataContext = this.viewModel = viewModel;
-			maximizer = new MaximizerForEmptyWindows(this);
-			SetupEditorPlugins();
+			viewModel.maximizer = new MaximizerForEmptyWindows(this);
 			SetProjectAndTestFromCommandLineArguments();
-			try
-			{
-				StartOpenTKViewportAndBlock();
-			}
-			catch (Exception ex)
-			{
-				Logger.Error(ex);
-				if (StackTraceExtensions.IsStartedFromNunitConsole())
-					throw;
-				window.CopyTextToClipboard(ex.ToString());
-				MessageBox.Show("Failed to initialize: " + ex + Resolver.ErrorWasCopiedToClipboardMessage,
-					"Delta Engine Editor - Fatal Error");
-			}
+			StartEngineAndBlock();
 		}
 
 		private void LoadSettings(object sender, RoutedEventArgs e)
 		{
+			if (!Settings.Current.CustomSettingsExists)
+				return;
 			Width = Settings.Current.Resolution.Width;
 			Height = Settings.Current.Resolution.Height;
 			if (viewModel.StartEditorMaximized)
-				maximizer.MaximizeWindow();
+				viewModel.maximizer.MaximizeWindow();
 		}
 
 		private void SaveSettings(object sender, CancelEventArgs e)
 		{
-			viewModel.StartEditorMaximized = maximizer.isMaximized;
+			viewModel.StartEditorMaximized = viewModel.maximizer.isMaximized;
 			Settings.Current.Resolution = new Size((float)Width, (float)Height);
 			Settings.Current.Dispose();
 		}
 
 		private readonly EditorViewModel viewModel;
-		private readonly MaximizerForEmptyWindows maximizer;
 
-		private void SetupEditorPlugins()
+		private void LoadEditorPlugins()
 		{
 			viewModel.AddAllPlugins();
-			viewModel.Service.StartEditorPlugin += StartInitialPlugin;
-			StartInitialPlugin(typeof(ViewportControl));
-		}
-
-		private void StartInitialPlugin(Type type)
-		{
-			StartEditorPlugin(GetPluginByType(type));
+			viewModel.Service.StartEditorPlugin += type => StartEditorPlugin(GetPluginByType(type));
 		}
 
 		private UserControl GetPluginByType(Type type)
@@ -155,19 +132,26 @@ namespace DeltaEngine.Editor
 
 		private void ChangeActivePlugin(object sender, EventArgs e)
 		{
-			var userControl = ((UserControl)((LayoutDocument)sender).Content);
-			if (userControl.GetType() == typeof(ViewportControl))
+			if (app == null)
 				return;
+			var userControl = ((UserControl)((LayoutDocument)sender).Content) as EditorPluginView;
+			if (userControl.GetType() == typeof(ViewportControl))
+			{
+				userControl.Activate();
+				return;
+			}
 			// ReSharper disable once PossibleUnintendedReferenceComparison
 			if (userControl == activePlugin)
 				return;
+			if (activePlugin != null)
+				activePlugin.Deactivate();
 			activePlugin = userControl;
 			if (viewModel.Service.Viewport != null)
 				viewModel.Service.Viewport.DestroyRenderedEntities();
-			((EditorPluginView)userControl).Activate();
+			activePlugin.Activate();
 		}
 
-		private UserControl activePlugin;
+		private EditorPluginView activePlugin;
 
 		private LayoutDocumentPane CreatePaneForPlugins(UserControl plugin)
 		{
@@ -230,65 +214,97 @@ namespace DeltaEngine.Editor
 			Logger.Info(Directory.GetCurrentDirectory());
 			var editorPlugin = viewModel.EditorPlugins.FirstOrDefault(p => p.ShortName == arg2);
 			StartEditorPlugin(editorPlugin as UserControl);
-			maximizer.BringWindowToForeground();
+			viewModel.maximizer.BringWindowToForeground();
 		}
 
-		private void StartOpenTKViewportAndBlock()
+		private void StartEngineAndBlock()
+		{
+			try
+			{
+				TryStartOpenTKViewportAndBlock();
+			}
+			catch (Exception ex)
+			{
+				Logger.Error(ex);
+				if (StackTraceExtensions.StartedFromNCrunchOrNunitConsole)
+					throw;
+				if (window != null)
+					window.CopyTextToClipboard(ex.ToString());
+				MessageBox.Show("Failed to initialize: " + ex + Resolver.ErrorWasCopiedToClipboardMessage,
+					"Delta Engine Editor - Fatal Error");
+			}
+		}
+
+		private void TryStartOpenTKViewportAndBlock()
 		{
 			if (DesignerProperties.GetIsInDesignMode(this))
 				return;
-			window = TryGetViewportWindow(viewModel.EditorPlugins);
+			LoadEditorPlugins();
+			AddToDocumentPane(CreateViewportControl());
+			AddToDocumentPane(GetPluginByType(typeof(ContentManagerView)));
+			window = new WpfHostedFormsWindow(viewportControl, this);
 			ElementHost.EnableModelessKeyboardInterop(this);
 			StartViewportAndWaitUntilWindowIsClosed();
 		}
 
-		private WpfHostedFormsWindow window;
-
-		private WpfHostedFormsWindow TryGetViewportWindow(IEnumerable<EditorPluginView> plugins)
+		private UserControl CreateViewportControl()
 		{
-			foreach (var plugin in plugins.Where(plugin => plugin.GetType() == typeof(ViewportControl)))
-				return new WpfHostedFormsWindow(plugin as ViewportControl, this);
-			throw new EngineViewportCouldNotBeCreated();
+			viewportControl = GetPluginByType(typeof(ViewportControl)) as ViewportControl;
+			viewModel.Service.UpdateToolboxVisibility += viewportControl.ShowToolboxPane;
+			return viewportControl;
 		}
 
-		private class EngineViewportCouldNotBeCreated : Exception {}
+		private void AddToDocumentPane(UserControl control)
+		{
+			var document = CreateDocumentForPlugin(control);
+			var pane = CreatePaneForPlugins(control);
+			pane.Children.Add(document);
+		}
+
+		private ViewportControl viewportControl;
+		private WpfHostedFormsWindow window;
 
 		private void StartViewportAndWaitUntilWindowIsClosed()
 		{
 			Closing += (sender, args) => window.Dispose();
-			window.ViewportSizeChanged += size => InvalidateVisual();
 			app = new BlockingViewportApp(window);
-			RegisterViewportControlCommands();
-			viewport = new EditorOpenTkViewport(window);
+			viewport = new EditorOpenTkViewport(window, app.Resolve<Input.Mouse>());
 			viewModel.Service.Viewport = viewport;
+			InitializeViewportAndContentManager();
 			Show();
-			GetPluginByType(typeof(ViewportControl)).Visibility = Visibility.Visible;
-			StartInitialPlugin(typeof(ContentManagerView));
 			app.RunAndBlock();
 		}
 
-		private static void RegisterViewportControlCommands()
+		private void InitializeViewportAndContentManager()
 		{
-			var dragTrigger = new MouseDragTrigger(MouseButton.Middle);
-			dragTrigger.AddTag("ViewControl");
-			Command.Register("ViewportPanning", dragTrigger);
-			var zoomTrigger = new MouseZoomTrigger();
-			zoomTrigger.AddTag("ViewControl");
-			Command.Register("ViewportZooming", zoomTrigger);
+			viewportControl.Init(viewModel.Service);
+			var contentManagerControl = GetPluginByType(typeof(ContentManagerView)) as EditorPluginView;
+			contentManagerControl.Init(viewModel.Service);
+			contentManagerControl.Activate();
 		}
 
 		private EditorOpenTkViewport viewport;
 
 		private BlockingViewportApp app;
 
-		private class BlockingViewportApp : OpenTKApp
+		private sealed class BlockingViewportApp
 		{
-			public BlockingViewportApp(Window windowToRegister)
-				: base(windowToRegister) {}
+			public BlockingViewportApp(Window window)
+			{
+				resolver.RegisterInstance(window);
+			}
+
+			private readonly OpenTK20Resolver resolver = new OpenTK20Resolver();
 
 			public void RunAndBlock()
 			{
-				Run();
+				resolver.Run();
+				resolver.Dispose();
+			}
+
+			public T Resolve<T>() where T : class
+			{
+				return resolver.Resolve<T>();
 			}
 		}
 
@@ -299,7 +315,7 @@ namespace DeltaEngine.Editor
 
 		private void OnMaximize(object sender, MouseButtonEventArgs e)
 		{
-			maximizer.ToggleMaximize();
+			viewModel.maximizer.ToggleMaximize(false, viewModel);
 		}
 
 		private void OnExit(object sender, MouseButtonEventArgs e)
@@ -310,7 +326,7 @@ namespace DeltaEngine.Editor
 		protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
 		{
 			if (WindowState == WindowState.Maximized)
-				maximizer.MaximizeWindow();
+				viewModel.maximizer.MaximizeWindow();
 			base.OnRenderSizeChanged(sizeInfo);
 		}
 
@@ -318,9 +334,14 @@ namespace DeltaEngine.Editor
 		{
 			var mousePos = e.MouseDevice.GetPosition(this);
 			if (e.ClickCount == 2 && mousePos.Y < 50)
-				maximizer.ToggleMaximize();
-			else if (e.ChangedButton == System.Windows.Input.MouseButton.Left && !maximizer.isMaximized)
-				DragMove();
+				viewModel.maximizer.ToggleMaximize(false, viewModel);
+			else if (e.ChangedButton == MouseButton.Left && e.LeftButton == MouseButtonState.Pressed)
+			{
+				if (mousePos.Y < 5 && viewModel.maximizer.isMaximized)
+					viewModel.maximizer.ToggleMaximize(true, viewModel);
+				if (!viewModel.maximizer.isMaximized)
+					DragMove();
+			}
 		}
 
 		private void OnEditorPluginSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -359,14 +380,9 @@ namespace DeltaEngine.Editor
 			Process.Start("http://deltaengine.net/features/editor");
 		}
 
-		private void StartingWithCSClick(object sender, RoutedEventArgs e)
+		private void StartingWithCsharpClick(object sender, RoutedEventArgs e)
 		{
 			Process.Start("http://deltaengine.net/learn/startingwithcsharp");
-		}
-
-		private void StartingWithCPPClick(object sender, RoutedEventArgs e)
-		{
-			Process.Start("http://deltaengine.net/learn/startingwithcpp");
 		}
 
 		private void TroubleshootingClick(object sender, RoutedEventArgs e)
@@ -402,6 +418,11 @@ namespace DeltaEngine.Editor
 		private void OnHelp(object sender, MouseButtonEventArgs e)
 		{
 			Process.Start("http://deltaengine.net/features/editor");
+		}
+
+		private void DeleteButtonClicked(object sender, RoutedEventArgs e)
+		{
+			viewModel.ShowMessageBoxToDeleteCurrentProject();
 		}
 	}
 }

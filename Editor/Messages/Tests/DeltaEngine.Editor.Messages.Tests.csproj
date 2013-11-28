@@ -34,7 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="nunit.framework">
-      <HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+      <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
@@ -57,7 +57,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="AppBuildFailedTests.cs" />
     <Compile Include="AppBuildRequestTests.cs" />
+    <Compile Include="AppBuildProgressTests.cs" />
+    <Compile Include="AppBuildResultTests.cs" />
+    <Compile Include="AppBuildMessageTests.cs" />
+    <Compile Include="MessageTestExtensions.cs" />
     <Compile Include="SupportedPlatformsResultTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

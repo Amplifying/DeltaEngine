@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using DeltaEngine.Content;
 using DeltaEngine.Core;
 using DeltaEngine.Editor.Core;
@@ -14,20 +15,22 @@ namespace DeltaEngine.Editor.Mocks
 		{
 			UserName = userName;
 			ProjectName = projectName;
+			IsDeveloper = true;
 			EditorSettings = new MockSettings();
-			availableContentProjects = new List<string>();
+			availableContentWithCodeProjects = new Dictionary<string, string>();
 		}
 
 		public string UserName { get; private set; }
 		public string ProjectName { get; private set; }
+		public bool IsDeveloper { get; private set; }
 		public Settings EditorSettings { get; private set; }
-		protected readonly List<string> availableContentProjects;
+		private readonly Dictionary<string, string> availableContentWithCodeProjects;
 
 		public string[] AvailableProjects
 		{
-			get { return availableContentProjects.ToArray(); }
+			get { return availableContentWithCodeProjects.Keys.ToArray(); }
 		}
-
+		
 		public void ReceiveData(object data)
 		{
 			if (DataReceived != null)
@@ -48,20 +51,38 @@ namespace DeltaEngine.Editor.Mocks
 		{
 			ProjectName = projectName;
 			if (!String.IsNullOrEmpty(projectName))
-				availableContentProjects.Add(projectName);
+				AddContentProject(projectName);
 			if (ProjectChanged != null)
 				ProjectChanged();
 		}
+
+		private void AddContentProject(string newContentProject)
+		{
+			if (availableContentWithCodeProjects.ContainsKey(newContentProject))
+				return;
+			availableContentWithCodeProjects.Add(newContentProject, "");
+			RaiseAvailableProjectsChangedEvent();
+		}
+
+		private void RaiseAvailableProjectsChangedEvent()
+		{
+			if (AvailableProjectsChanged != null)
+				AvailableProjectsChanged();
+		}
+
+		public event Action AvailableProjectsChanged;
 
 		public event Action ProjectChanged;
 		public event Action<object> DataReceived;
 		public event Action<ContentType, string> ContentUpdated;
 		public event Action<string> ContentDeleted;
 
-		public void SetAvailableProjects(string[] projectNames)
+		public void SetAvailableProjects(params string[] projectNames)
 		{
-			availableContentProjects.Clear();
-			availableContentProjects.AddRange(projectNames);
+			availableContentWithCodeProjects.Clear();
+			foreach (string projectName in projectNames)
+				AddContentProject(projectName);
+			RaiseAvailableProjectsChangedEvent();
 		}
 
 		public void SetContentReady()
@@ -76,16 +97,27 @@ namespace DeltaEngine.Editor.Mocks
 		{
 			get
 			{
-				if (!String.IsNullOrEmpty(solutionFilePath))
-					return solutionFilePath;
-				if (ProjectName.Contains("Tutorials"))
-					return SolutionExtensions.GetTutorialsSolutionFilePath();
-				return SolutionExtensions.GetSamplesSolutionFilePath();
+				return GetAbsoluteSolutionFilePath(ProjectName);
 			}
-			set { solutionFilePath = value; }
+			set
+			{
+				availableContentWithCodeProjects[ProjectName] = value;
+			}
 		}
 		
 		private string solutionFilePath;
+
+		public string GetAbsoluteSolutionFilePath(string contentProjectName)
+		{
+			string customFilePath;
+			if (!availableContentWithCodeProjects.TryGetValue(contentProjectName, out customFilePath))
+				return "";
+			if (!String.IsNullOrEmpty(customFilePath))
+				return customFilePath;
+			if (contentProjectName.Contains("Tutorials"))
+				return SolutionExtensions.GetTutorialsSolutionFilePath();
+			return SolutionExtensions.GetSamplesSolutionFilePath();
+		}
 
 		public void SetContentProjectSolutionFilePath(string name, string slnFilePath)
 		{
@@ -152,5 +184,7 @@ namespace DeltaEngine.Editor.Mocks
 		public void StartPlugin(Type plugin) {}
 
 		public EditorOpenTkViewport Viewport { get; set; }
+
+		void Service.ShowToolbox(bool showToolbox) {}
 	}
 }

@@ -46,6 +46,7 @@
     <Compile Include="ChangeMetaData.cs" />
     <Compile Include="ChangeProjectRequest.cs" />
     <Compile Include="CreateProject.cs" />
+    <Compile Include="ProjectAlreadyExists.cs" />
     <Compile Include="DeleteProject.cs" />
     <Compile Include="PlatformName.cs" />
     <Compile Include="PlatformNameExtensions.cs" />

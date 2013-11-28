@@ -169,28 +169,28 @@ namespace DeltaEngine.Editor.UIEditor
 		private void SetMouseCommands(string obj)
 		{
 			var leftClickTrigger = new MouseButtonTrigger();
-			leftClickTrigger.Add("temporary");
+			leftClickTrigger.AddTag("temporary");
 			var findEntityCommand = new Command(FindEntity2DOnPosition).Add(leftClickTrigger);
-			findEntityCommand.Add("temporary");
+			findEntityCommand.AddTag("temporary");
 			var moveMouse = new MousePositionTrigger(MouseButton.Left, State.Pressed);
-			moveMouse.Add("temporary");
+			moveMouse.AddTag("temporary");
 			var moveImageCommand =
 				new Command(
 					position =>
 						uiEditorScene.ControlProcessor.MoveImage(position, SelectedEntity2D, Adder.IsDragging,
 							uiEditorScene.IsSnappingToGrid, uiEditorScene)).Add(moveMouse);
-			moveImageCommand.Add("temporary");
+			moveImageCommand.AddTag("temporary");
 			var middleMouseClick = new MouseButtonTrigger(MouseButton.Middle);
-			middleMouseClick.Add("temporary");
+			middleMouseClick.AddTag("temporary");
 			var setLastPositionCommand =
 				new Command(position => uiEditorScene.ControlProcessor.lastMousePosition = position).Add(
 					middleMouseClick);
-			setLastPositionCommand.Add("temporary");
+			setLastPositionCommand.AddTag("temporary");
 			var releaseMiddleMouse = new MouseButtonTrigger(MouseButton.Left, State.Releasing);
-			releaseMiddleMouse.Add("temporary");
+			releaseMiddleMouse.AddTag("temporary");
 			var setReleasingCommand =
 				new Command(position => SetCommandsForReleasing(position)).Add(releaseMiddleMouse);
-			setReleasingCommand.Add("temporary");
+			setReleasingCommand.AddTag("temporary");
 		}
 
 		public void DeleteSelectedContentFromWpf(string control)
@@ -911,7 +911,7 @@ namespace DeltaEngine.Editor.UIEditor
 			FillSceneNames();
 		}
 
-		public void ActivateHidenScene()
+		public void ActivateHiddenScene()
 		{
 			foreach (var control in uiEditorScene.Scene.Controls)
 				control.IsActive = true;
@@ -923,7 +923,6 @@ namespace DeltaEngine.Editor.UIEditor
 				line.IsActive = true;
 			service.Viewport.CenterViewOn(Vector2D.Half);
 			service.Viewport.ZoomViewTo(1.0f);
-			Messenger.Default.Send("UIEditor", "SetSelectedEditorPlugin");
 			SetMouseCommands("");
 		}
 

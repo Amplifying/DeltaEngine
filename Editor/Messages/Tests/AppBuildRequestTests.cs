@@ -30,10 +30,21 @@ namespace DeltaEngine.Editor.Messages.Tests
 		}
 
 		[Test]
-		public void ValidBuildRequest()
+		public void ValidBuildRequestDoesNotThrowException()
 		{
-			Assert.DoesNotThrow(
-				() => new AppBuildRequest("MyApp.sln", "MyApp", PlatformName.Windows, new byte[1]));
+			Assert.DoesNotThrow(() => CreateValidBuildRequestWithDummyByte());
+		}
+
+		private static AppBuildRequest CreateValidBuildRequestWithDummyByte()
+		{
+			return new AppBuildRequest("MyApp.sln", "MyApp", PlatformName.Windows, new byte[1]);
+		}
+
+		[Test]
+		public void AppBuildRequestMessageMustBeRestorable()
+		{
+			AppBuildRequest requestMessage = CreateValidBuildRequestWithDummyByte();
+			MessageTestExtensions.AssertObjectWhenSavedAndRestoredByToString(requestMessage);
 		}
 	}
 }

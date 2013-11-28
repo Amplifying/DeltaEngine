@@ -35,5 +35,10 @@ namespace DeltaEngine.Editor
 		{
 			return Name == other.Name && Weight == other.Weight;
 		}
+
+		public override string ToString()
+		{
+			return Name;
+		}
 	}
 }

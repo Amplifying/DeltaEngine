@@ -68,7 +68,20 @@ namespace DeltaEngine.Editor.AppBuilder.WindowsPhone7
 		}
 		// ncrunch: no coverage end
 
-		public override void Uninstall(AppInfo app)
+		protected override void InstallApp(AppInfo app)
+		{
+			try
+			{
+				MakeSureDeviceConnectionIsEstablished();
+				nativeDevice.InstallApplication(app.AppGuid, app.AppGuid, "Apps.Normal", "", app.FilePath);
+			}
+			catch (ArgumentException)
+			{
+				throw new InstallationFailedOnDevice(this, app);
+			}
+		}
+
+		protected override void UninstallApp(AppInfo app)
 		{
 			try
 			{
@@ -82,43 +95,10 @@ namespace DeltaEngine.Editor.AppBuilder.WindowsPhone7
 			}
 		}
 
-		public class UninstallationFailedOnDevice : Exception
-		{
-			public UninstallationFailedOnDevice(WP7Device device, AppInfo app)
-				: base(app.Name + " on " + device) { }
-		}
-
-		public override void Install(AppInfo app)
-		{
-			try
-			{
-				MakeSureDeviceConnectionIsEstablished();
-				nativeDevice.InstallApplication(app.AppGuid, app.AppGuid, "Apps.Normal", "", app.FilePath);
-			}
-			catch (ArgumentException)
-			{
-				throw new InstallationFailedOnDevice(this, app);
-			}
-		}
-
-		public class InstallationFailedOnDevice : Exception
-		{
-			public InstallationFailedOnDevice(WP7Device device, AppInfo app)
-				: base(app.Name + " on " + device) { }
-		}
-
 		protected override void LaunchApp(AppInfo app)
 		{
-			if (!IsAppInstalled(app))
-				throw new AppNotInstalled(this, app);
 			RemoteApplication appOnDevice = nativeDevice.GetApplication(app.AppGuid);
 			appOnDevice.Launch();
-		}
-
-		public class AppNotInstalled : Exception
-		{
-			public AppNotInstalled(WP7Device device, AppInfo app)
-				: base(app.Name + " on " + device) { }
 		}
 
 		public override string ToString()

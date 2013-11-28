@@ -125,9 +125,7 @@ namespace DeltaEngine.Editor.ContentManager.Tests
 		[Test]
 		public void ClickingWhenNoStartContentIsAvailableWillDoNothing()
 		{
-			contentManagerViewModel.NoLongerSelectContentManager("");
 			var numberOfEntities = EntitiesRunner.Current.GetAllEntities().Count;
-			contentManagerViewModel.NoLongerSelectContentManager("");
 			contentManagerViewModel.CheckMousePosition(new Vector2D(0.1f, 0.1f));
 			Assert.AreEqual(numberOfEntities, EntitiesRunner.Current.GetAllEntities().Count);
 		}

@@ -36,7 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="nunit.framework">
-      <HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+      <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -87,7 +87,7 @@
       <Project>{BF968F20-246B-4F86-BB7B-377FD4B47A9F}</Project>
       <Name>DeltaEngine.Platforms.Mocks</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TestWithOpenTK20\DeltaEngine.TestWithOpenTK20.csproj">
+    <ProjectReference Include="..\..\Platforms\TestWithOpenTK20\DeltaEngine.TestWithOpenTK20.csproj">
       <Project>{3A3D2E3E-FCD6-40A4-8F4E-36F3D173AB41}</Project>
       <Name>DeltaEngine.TestWithOpenTK20</Name>
     </ProjectReference>

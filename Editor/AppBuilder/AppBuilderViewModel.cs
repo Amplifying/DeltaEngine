@@ -23,6 +23,7 @@ namespace DeltaEngine.Editor.AppBuilder
 		public AppBuilderViewModel(Service service)
 		{
 			Service = service;
+			availableCodeProjectsWithContentProjects = new Dictionary<ProjectEntry, string>();
 			MessagesListViewModel = new AppBuildMessagesListViewModel();
 			AppListViewModel = new BuiltAppsListViewModel(Settings.Current);
 			AppListViewModel.RebuildRequest += OnAppRebuildRequest;
@@ -30,6 +31,8 @@ namespace DeltaEngine.Editor.AppBuilder
 			HelpCommand = new RelayCommand(OpenAppBuilderFeaturesPage);
 			GotoUserProfilePageCommand = new RelayCommand(OpenUserProfilePage);
 			GotoBuiltAppsDirectoryCommand = new RelayCommand(OpenLocalBuiltAppsDirectory);
+			service.AvailableProjectsChanged += OnAvailableProjectsChanged;
+			OnAvailableProjectsChanged();
 			service.ProjectChanged += OnContentProjectChanged;
 			OnContentProjectChanged();
 			service.DataReceived += OnServiceMessageReceived;
@@ -38,6 +41,7 @@ namespace DeltaEngine.Editor.AppBuilder
 			IsRebuildForced = false;
 		}
 
+		private readonly Dictionary<ProjectEntry, string> availableCodeProjectsWithContentProjects;
 		public PlatformName[] SupportedPlatforms { get; private set; }
 		public Service Service { get; private set; }
 		public AppBuildMessagesListViewModel MessagesListViewModel { get; set; }
@@ -82,8 +86,22 @@ namespace DeltaEngine.Editor.AppBuilder
 			var request = new AppBuildRequest(Path.GetFileName(solutionFilePath), projectNameInSolution,
 				platform, projectData.GetPackedData());
 			request.IsRebuildOfCodeForced = isRebuildOfCodeForced;
-			request.ContentProjectName = Service.ProjectName;
-			Service.Send(request);
+			request.ContentProjectName = GetContentProject(projectNameInSolution);
+			Service.Send(request, false);
+		}
+
+		private string GetContentProject(string codeProjectName)
+		{
+			foreach (var codeProjectAndContentProject in availableCodeProjectsWithContentProjects)
+				if (codeProjectAndContentProject.Key.Name == codeProjectName)
+					return codeProjectAndContentProject.Value;
+			throw new NoContentProjectAvailableForCodeProject(codeProjectName);
+		}
+
+		public class NoContentProjectAvailableForCodeProject : Exception
+		{
+			public NoContentProjectAvailableForCodeProject(string codeProjectName)
+				: base(codeProjectName) {}
 		}
 
 		public string UserSolutionPath
@@ -93,9 +111,7 @@ namespace DeltaEngine.Editor.AppBuilder
 			{
 				userSolutionPath = value;
 				RaisePropertyChanged("UserSolutionPath");
-				DetermineAvailableProjectsInSpecifiedSolution();
-				SelectedSolutionProject = FindUserProjectInSolution();
-				RaisePropertyChanged("SelectedSolutionProject");
+				RaisePropertyChangedForIsBuildActionExecutable();
 			}
 		}
 
@@ -103,51 +119,115 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		private string codeSolutionPathOfBuildingApp;
 
-		private void DetermineAvailableProjectsInSpecifiedSolution()
+		private void OnAvailableProjectsChanged()
 		{
-			var solutionLoader = new SolutionFileLoader(UserSolutionPath);
-			var availableProjectsInSolution = solutionLoader.GetCSharpProjects();
-			AvailableProjectsInSelectedSolution = new List<ProjectEntry>();
-			foreach (ProjectEntry projectEntry in availableProjectsInSolution)
-				if (IsCodeProjectRelatedToContentProject(projectEntry))
-					AvailableProjectsInSelectedSolution.Add(projectEntry);
-			RaisePropertyChanged("AvailableProjectsInSelectedSolution");
+			List<string> solutionList = GetFilePathListOfAvailableCodeSolutions();
+			availableCodeProjectsWithContentProjects.Clear();
+			foreach (string solutionFilePath in solutionList)
+				AddCodeProjectsOfSolutionToAvailableProjects(solutionFilePath);
+			RaisePropertyChanged("AllAvailableProjects");
+			AutoSelectNewCodeProject();
 		}
 
-		public List<ProjectEntry> AvailableProjectsInSelectedSolution { get; private set; }
-
-		private bool IsCodeProjectRelatedToContentProject(ProjectEntry project)
+		private void AutoSelectNewCodeProject()
 		{
-			return !project.Name.EndsWith(".Tests") && project.Name.StartsWith(Service.ProjectName);
+			SelectedCodeProject = FindUserProjectInSolution();
+			if (SelectedCodeProject == null)
+				return;
+		}
+
+		private List<string> GetFilePathListOfAvailableCodeSolutions()
+		{
+			var solutionList = new List<string>();
+			foreach (string contentProject in Service.AvailableProjects)
+			{
+				string solutionFilePath = Service.GetAbsoluteSolutionFilePath(contentProject);
+				if (String.IsNullOrEmpty(solutionFilePath) || solutionList.Contains(solutionFilePath))
+					continue;
+				solutionList.Add(solutionFilePath);
+				if (contentProject == "DeltaEngine.Tutorials")
+					solutionList.Add(solutionFilePath.Replace("Basics", "Entities"));
+			}
+			return solutionList;
+		}
+
+		private void AddCodeProjectsOfSolutionToAvailableProjects(string solutionFilePath)
+		{
+			var solutionLoader = new SolutionFileLoader(solutionFilePath);
+			var availableProjectsInSolution = solutionLoader.GetCSharpProjects();
+			foreach (ProjectEntry projectEntry in availableProjectsInSolution)
+			{
+				string contentProject = GetContentProject(projectEntry);
+				if (!String.IsNullOrEmpty(contentProject))
+					if (!IsProjectAlreadyAddedToDictionary(projectEntry))
+						availableCodeProjectsWithContentProjects.Add(projectEntry, contentProject);
+			}
+		}
+
+		private string GetContentProject(ProjectEntry project)
+		{
+			foreach (string contentProject in Service.AvailableProjects)
+				if (!project.Name.EndsWith(".Tests") && project.Name.StartsWith(contentProject))
+					return contentProject;
+			return "";
+		}
+
+		private bool IsProjectAlreadyAddedToDictionary(ProjectEntry projectEntry)
+		{
+			foreach (ProjectEntry codeProject in availableCodeProjectsWithContentProjects.Keys)
+				if (codeProject.Name == projectEntry.Name)
+					return true;
+			return false;
+		}
+
+		public ICollection<ProjectEntry> AllAvailableProjects
+		{
+			get { return availableCodeProjectsWithContentProjects.Keys; }
 		}
 
 		private ProjectEntry FindUserProjectInSolution()
 		{
-			return AvailableProjectsInSelectedSolution.FirstOrDefault(
+			return AllAvailableProjects.FirstOrDefault(
 				csProject => csProject.Name.StartsWith(Service.ProjectName));
 		}
 
-		public ProjectEntry SelectedSolutionProject
+		public ProjectEntry SelectedCodeProject
 		{
-			get { return selectedSolutionProject; }
+			get { return selectedCodeProject; }
 			set
 			{
 				// Temporarly HACK for the Presentation: For some reason the this triggered a second time
 				// with just "null"
-				if (value == null && AvailableProjectsInSelectedSolution.Contains(selectedSolutionProject))
+				if (value == null && IsSelectedProjectStillSelectable())
 					return;
-				selectedSolutionProject = value;
-				RaisePropertyChangedForIsBuildActionExecutable();
+				selectedCodeProject = value;
+				RaisePropertyChanged("SelectedCodeProject");
+				string contentProjectName;
+				if (value != null)
+					if (availableCodeProjectsWithContentProjects.TryGetValue(value, out contentProjectName))
+						UpdateUserSolutionPath(contentProjectName);
 				DetermineEntryPointsOfProject();
+				RaisePropertyChangedForIsBuildActionExecutable();
 			}
 		}
 
-		private ProjectEntry selectedSolutionProject;
+		private bool IsSelectedProjectStillSelectable()
+		{
+			return selectedCodeProject != null &&
+				AllAvailableProjects.Contains(selectedCodeProject);
+		}
+
+		private ProjectEntry selectedCodeProject;
+
+		private void UpdateUserSolutionPath(string contentProjectName)
+		{
+			UserSolutionPath = Service.GetAbsoluteSolutionFilePath(contentProjectName);
+		}
 
 		private void DetermineEntryPointsOfProject()
 		{
 			AvailableEntryPointsInSelectedProject = new List<string>();
-			if (SelectedSolutionProject == null)
+			if (SelectedCodeProject == null)
 				return;
 			AvailableEntryPointsInSelectedProject.Add(DefaultEntryPoint);
 			RaisePropertyChanged("AvailableEntryPointsInSelectedProject");
@@ -197,10 +277,9 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		protected void OnBuildExecuted()
 		{
-			Service.CurrentContentProjectSolutionFilePath = UserSolutionPath;
 			Logger.Info("Build Request sent");
 			MessagesListViewModel.ClearMessages();
-			TrySendBuildRequestToServer(UserSolutionPath, SelectedSolutionProject.Name, SelectedPlatform,
+			TrySendBuildRequestToServer(UserSolutionPath, SelectedCodeProject.Name, SelectedPlatform,
 				IsRebuildForced);
 		}
 
@@ -223,7 +302,8 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		private void OnContentProjectChanged()
 		{
-			UserSolutionPath = Service.CurrentContentProjectSolutionFilePath;
+			UpdateUserSolutionPath(Service.ProjectName);
+			AutoSelectNewCodeProject();
 		}
 
 		private void OnServiceMessageReceived(object serviceMessage)
@@ -314,7 +394,7 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		private bool IsCodeOfSelectedProjectAvailable
 		{
-			get { return SelectedSolutionProject != null; }
+			get { return SelectedCodeProject != null; }
 		}
 
 		private bool IsUserSelectedEntryPointValid
@@ -332,5 +412,12 @@ namespace DeltaEngine.Editor.AppBuilder
 		}
 
 		public bool IsRebuildForced { get; set; }
+
+		public void OverrideUserSolutionPathWithCustomPath(string newUserSolutionPath)
+		{
+			UserSolutionPath = newUserSolutionPath;
+			Service.CurrentContentProjectSolutionFilePath = newUserSolutionPath;
+			OnAvailableProjectsChanged();
+		}
 	}
 }

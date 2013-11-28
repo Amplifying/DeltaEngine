@@ -75,6 +75,10 @@
       <Project>{20FA8D33-A964-4000-AD82-67BD6900793B}</Project>
       <Name>DeltaEngine</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Input\DeltaEngine.Input.csproj">
+      <Project>{CC65E69E-FAFD-4C2B-85EB-5E57FD3AF847}</Project>
+      <Name>DeltaEngine.Input</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Platforms\Windows\DeltaEngine.Platforms.Windows.csproj">
       <Project>{BD8A80E2-A313-437E-B0EF-FC0B066280A7}</Project>
       <Name>DeltaEngine.Platforms.Windows</Name>

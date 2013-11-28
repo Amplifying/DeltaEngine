@@ -30,7 +30,6 @@ namespace DeltaEngine.Editor.MaterialEditor
 			};
 			service.ContentDeleted += s => Dispatcher.Invoke(new Action(current.RefreshOnContentChange));
 			DataContext = current;
-			Messenger.Default.Send("MaterialEditor", "SetSelectedEditorPlugin");
 		}
 
 		private void ChangeProject()
@@ -41,8 +40,9 @@ namespace DeltaEngine.Editor.MaterialEditor
 		public void Activate()
 		{
 			current.Activate();
-			Messenger.Default.Send("MaterialEditor", "SetSelectedEditorPlugin");
 		}
+
+		public void Deactivate() {}
 
 		private MaterialEditorViewModel current;
 		private Service service;

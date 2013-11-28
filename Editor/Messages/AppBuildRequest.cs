@@ -3,6 +3,9 @@ using System.IO;
 
 namespace DeltaEngine.Editor.Messages
 {
+	/// <summary>
+	/// A message sent to the BuildService which tell it what kind of app it has to build.
+	/// </summary>
 	public class AppBuildRequest : BuildServiceMessage
 	{
 		/// <summary>
@@ -32,10 +35,8 @@ namespace DeltaEngine.Editor.Messages
 		{
 			if (SolutionFileName == null || !Path.HasExtension(SolutionFileName))
 				throw new NoSolutionFileNameSpecified();
-
 			if (String.IsNullOrEmpty(ProjectName))
 				throw new NoProjectNameSpecified();
-
 			if (PackedCodeData == null || PackedCodeData.Length == 0)
 				throw new NoPackedCodeDataSpecified();
 		}

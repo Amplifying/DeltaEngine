@@ -53,7 +53,16 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			view.Init(service);
 			return view;
 		}
-		
+
+		[Test, STAThread]
+		public void ShowViewWithMockServiceWithEngineContentProjects()
+		{
+			service.SetAvailableProjects("LogoApp", "GhostWars", "Insight", "DeltaEngine.Tutorials");
+			AppBuilderView builderView = CreateViewAndViewModelViaMockService();
+			WpfWindow window = CreateTestWindow(builderView);
+			window.ShowDialog();
+		}
+
 		[Test, STAThread]
 		public void ShowViewWithMockServiceAndDummyApps()
 		{
@@ -75,6 +84,24 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			AppBuilderView builderView = CreateViewAndViewModelViaMockService();
 			WpfWindow window = CreateTestWindow(builderView);
 			window.ShowDialog();
+		}
+
+		[Test, STAThread]
+		public void ShowViewWithIncreasingProgressOnMouseDoubleClick()
+		{
+			AppBuilderView builderView = CreateViewAndViewModelViaMockService();
+			WpfWindow window = CreateTestWindow(builderView);
+			window.MouseDoubleClick += (sender, e) => UpdateBuildProgress(builderView, 10);
+			window.ShowDialog();
+		}
+
+		private void UpdateBuildProgress(AppBuilderView builderView, int percentageIncrease)
+		{
+			int finalValue = (int)builderView.BuildProgressBar.Value + percentageIncrease;
+			if (finalValue > 100)
+				finalValue -= 100;
+			service.ReceiveData(new AppBuildProgress("Build progress " + finalValue, finalValue));
+
 		}
 
 		[Test, STAThread]

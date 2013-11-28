@@ -8,7 +8,6 @@ using DeltaEngine.Core;
 using DeltaEngine.Editor.Core;
 using DeltaEngine.Editor.Messages;
 using DeltaEngine.Extensions;
-using GalaSoft.MvvmLight.Messaging;
 using Microsoft.Win32;
 
 namespace DeltaEngine.Editor.AppBuilder
@@ -36,7 +35,6 @@ namespace DeltaEngine.Editor.AppBuilder
 			OnNumberOfBuiltAppsChanged();
 			SwitchToBuiltApps();
 			DataContext = ViewModel;
-			Messenger.Default.Send("AppBuilder", "SetSelectedEditorPlugin");
 		}
 
 		private void OnNumberOfBuiltAppsChanged()
@@ -47,10 +45,9 @@ namespace DeltaEngine.Editor.AppBuilder
 				BuildAppInfoText.Visibility = Visibility.Visible;
 		}
 
-		public void Activate()
-		{
-			Messenger.Default.Send("AppBuilder", "SetSelectedEditorPlugin");
-		}
+		public void Activate() {}
+
+		public void Deactivate() {}
 
 		public AppBuilderViewModel ViewModel { get; private set; }
 
@@ -159,8 +156,8 @@ namespace DeltaEngine.Editor.AppBuilder
 		{
 			if (!IsVisible)
 				return;
-			if (e.PropertyName == "SelectedSolutionProject")
-				if (ViewModel.SelectedSolutionProject == null)
+			if (e.PropertyName == "selectedCodeProject")
+				if (ViewModel.SelectedCodeProject == null)
 					ShowProjectNotFoundMessageBox();
 		}
 

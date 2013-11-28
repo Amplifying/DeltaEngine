@@ -41,7 +41,5 @@ namespace DeltaEngine.Editor.Emulator.Tests
 			TestButton.Background = new SolidColorBrush(Colors.Yellow);
 			new Line2D(new Vector2D(0, 1), new Vector2D(Time.Total / 5f, 0), Color.Yellow);
 		}
-
-		public void Connect(int connectionId, object target) {}
 	}
 }

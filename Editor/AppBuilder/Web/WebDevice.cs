@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 
 namespace DeltaEngine.Editor.AppBuilder.Web
@@ -17,19 +16,9 @@ namespace DeltaEngine.Editor.AppBuilder.Web
 			return File.Exists(app.FilePath);
 		}
 
-		public override void Install(AppInfo app) { }
+		protected override void InstallApp(AppInfo app) { }
 
-		public override void Uninstall(AppInfo app)
-		{
-			if (app == null)
-				throw new UninstallationFailedOnDevice(this, "null");
-		}
-
-		public class UninstallationFailedOnDevice : Exception
-		{
-			public UninstallationFailedOnDevice(WebDevice device, string appName)
-				: base(appName + " on " + device) { }
-		}
+		protected override void UninstallApp(AppInfo app) {}
 
 		protected override void LaunchApp(AppInfo app)
 		{

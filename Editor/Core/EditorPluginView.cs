@@ -9,6 +9,7 @@
 	{
 		void Init(Service service);
 		void Activate();
+		void Deactivate();
 		string ShortName { get; }
 		string Icon { get; }
 		bool RequiresLargePane { get; }

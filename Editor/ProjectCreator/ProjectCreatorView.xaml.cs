@@ -23,13 +23,11 @@ namespace DeltaEngine.Editor.ProjectCreator
 		public void Init(Service service)
 		{
 			DataContext = viewModel = new ProjectCreatorViewModel(service);
-			Messenger.Default.Send("ProjectCreator", "SetSelectedEditorPlugin");
 		}
 
-		public void Activate()
-		{
-			Messenger.Default.Send("ProjectCreator", "SetSelectedEditorPlugin");
-		}
+		public void Activate() {}
+
+		public void Deactivate() {}
 
 		private ProjectCreatorViewModel viewModel;
 

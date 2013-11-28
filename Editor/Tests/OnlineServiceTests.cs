@@ -33,12 +33,14 @@ namespace DeltaEngine.Editor.Tests
 			Thread.Sleep(500);
 			Console.WriteLine("User Name: " + service.UserName);
 			CheckService(service, "LogoApp", result);
+			Assert.IsFalse(service.IsDeveloper);
 			bool hasProjectChanged = false;
 			service.ProjectChanged += () => hasProjectChanged = true;
-			service.RequestChangeProject("Asteroids");
+			service.ChangeProject("Asteroids");
 			Thread.Sleep(500);
 			Assert.IsTrue(hasProjectChanged);
 			CheckService(service, "Asteroids", result);
+			Assert.IsFalse(service.IsDeveloper);
 		}
 
 		private static string LoadApiKeyFromRegistry()
@@ -62,7 +64,11 @@ namespace DeltaEngine.Editor.Tests
 		public void GetAvailableProjectNames()
 		{
 			var service = new MockService("John Doe", "LogoApp");
-			service.SetAvailableProjects(new[] { "LogoApp", "GhostWars" });
+			bool hasAvailableProjectsChanged = false;
+			service.AvailableProjectsChanged += () => hasAvailableProjectsChanged = true;
+			Assert.IsFalse(hasAvailableProjectsChanged);
+			service.SetAvailableProjects("LogoApp", "GhostWars");
+			Assert.IsTrue(hasAvailableProjectsChanged);
 			Assert.AreEqual(2, service.AvailableProjects.Length);
 			Assert.AreEqual("LogoApp", service.AvailableProjects[0]);
 			Assert.AreEqual("GhostWars", service.AvailableProjects[1]);
@@ -77,10 +83,10 @@ namespace DeltaEngine.Editor.Tests
 				() => { throw new ConnectionTimedOut(); });
 			service.Connect("CurrentUser", connection);
 			Assert.AreEqual("", service.CurrentContentProjectSolutionFilePath);
-			service.RequestChangeProject("LogoApp");
+			service.ChangeProject("LogoApp");
 			Thread.Sleep(1000);
 			AssertSolutionFilePath(GetSamplesSlnPath(), service);
-			service.RequestChangeProject("DeltaEngine.Tutorials");
+			service.ChangeProject("DeltaEngine.Tutorials");
 			Thread.Sleep(1000);
 			AssertSolutionFilePath(GetTutorialsSlnPath(), service);
 		}
@@ -111,7 +117,7 @@ namespace DeltaEngine.Editor.Tests
 			var connection = new OnlineServiceConnection(settings,
 				() => { throw new ConnectionTimedOut(); });
 			service.Connect("CurrentUser", connection);
-			service.RequestChangeProject("DeltaEngine.Tutorials");
+			service.ChangeProject("DeltaEngine.Tutorials");
 			Thread.Sleep(1000);
 			service.CurrentContentProjectSolutionFilePath = TutorialsSolutionFilePath;
 			var projects = Settings.Current.GetValue("ContentProjects", new Dictionary<string, string>());
@@ -130,7 +136,7 @@ namespace DeltaEngine.Editor.Tests
 			var connection = new OnlineServiceConnection(settings,
 				() => { throw new ConnectionTimedOut(); });
 			service.Connect("CurrentUser", connection);
-			service.RequestChangeProject("DeltaEngine.Tutorials");
+			service.ChangeProject("DeltaEngine.Tutorials");
 			Thread.Sleep(1000);
 			Assert.AreEqual(TutorialsSolutionFilePath, service.CurrentContentProjectSolutionFilePath);
 		}

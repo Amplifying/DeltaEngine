@@ -54,10 +54,23 @@ namespace DeltaEngine.Editor.AppBuilder
 
 		private void SaveBuiltApp(AppInfo appInfo, byte[] appData)
 		{
-			if (!Directory.Exists(AppStorageDirectory))
-				Directory.CreateDirectory(AppStorageDirectory); // ncrunch: no coverage
-			string appSavePath = Path.Combine(AppStorageDirectory, Path.GetFileName(appInfo.FilePath));
-			File.WriteAllBytes(appSavePath, appData);
+			try
+			{
+				if (!Directory.Exists(AppStorageDirectory))
+					Directory.CreateDirectory(AppStorageDirectory); // ncrunch: no coverage
+				string appSavePath = Path.Combine(AppStorageDirectory, Path.GetFileName(appInfo.FilePath));
+				File.WriteAllBytes(appSavePath, appData);
+			}
+			catch (Exception ex)
+			{
+				throw new SavingBuiltAppFailed(ex);
+			}
+		}
+
+		public class SavingBuiltAppFailed: Exception
+		{
+			public SavingBuiltAppFailed(Exception reason)
+				: base(reason.Message, reason) { }
 		}
 
 		public string TextOfBuiltApps

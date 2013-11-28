@@ -25,7 +25,6 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 				(t, s) => Dispatcher.Invoke(new Action(() => viewModel.RefreshOnContentChange()));
 			service.ContentDeleted +=
 				s => Dispatcher.Invoke(new Action(viewModel.RefreshOnContentChange));
-			Messenger.Default.Send("AnimationEditor", "SetSelectedEditorPlugin");
 		}
 
 		private AnimationEditorViewModel viewModel;
@@ -38,8 +37,9 @@ namespace DeltaEngine.Editor.ImageAnimationEditor
 		public void Activate()
 		{
 			viewModel.ActivateAnimation();
-			Messenger.Default.Send("AnimationEditor", "SetSelectedEditorPlugin");
 		}
+
+		public void Deactivate() {}
 
 		public string ShortName
 		{

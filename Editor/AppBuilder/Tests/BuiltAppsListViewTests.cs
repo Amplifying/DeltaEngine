@@ -39,6 +39,10 @@ namespace DeltaEngine.Editor.AppBuilder.Tests
 			var listViewModel = GetBuiltAppsListWithDummyEntry();
 			listViewModel.AddApp(AppBuilderTestExtensions.GetMockAppInfo("Windows app",
 				PlatformName.Windows));
+			listViewModel.AddApp(AppBuilderTestExtensions.GetMockAppInfo("Android app",
+				PlatformName.Android));
+			listViewModel.AddApp(AppBuilderTestExtensions.GetMockAppInfo("Web app",
+				PlatformName.Web));
 			listViewModel.AddApp(AppBuilderTestExtensions.GetMockAppInfo("WP7 app",
 				PlatformName.WindowsPhone7));
 			var window = CreateVerifiableWindowFromViewModel(listViewModel);

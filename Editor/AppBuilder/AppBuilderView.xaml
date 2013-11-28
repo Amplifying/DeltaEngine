@@ -168,11 +168,11 @@
 			<ColumnDefinition Width="12"/>
 		</Grid.ColumnDefinitions>
 
-		<Label Style="{StaticResource DeltaLabel}" Content="C# Solution"  Grid.Column="1" Grid.Row="1" />
+		<Label Style="{StaticResource DeltaLabel}" Content="C# Solution"  Grid.Column="1" Grid.Row="5" Margin="0,1,0,11" Grid.RowSpan="2" />
 		<TextBox
 			x:Name="SolutionPathTextBox"
 			Grid.Column="3" IsReadOnly="True" x:FieldModifier="public" Background="#F7F7F7"
-			Text="{Binding Path=UserSolutionPath}" Grid.Row="1" Style="{StaticResource DeltaTextBox}">
+			Text="{Binding Path=UserSolutionPath}" Grid.Row="5" Style="{StaticResource DeltaTextBox}">
 			<TextBox.ToolTip>
 				<TextBlock FontWeight="Bold">Your currently selected Code-Solution file that contains your Project you want to build</TextBlock>
 			</TextBox.ToolTip>
@@ -180,23 +180,23 @@
 		<Button
 			x:Name="SolutionPathBrowseButton"
 			FontSize="20" Content="..." Grid.Column="5" IsEnabled="True" Style="{StaticResource DeltaButton}"
-			Click="OnBrowseUserProjectClicked" Grid.Row="1">
+			Click="OnBrowseUserProjectClicked" Grid.Row="5">
 			<Button.ToolTip>
 				<TextBlock FontWeight="Bold">Browse to the Code-Solution of your Project you want to build</TextBlock>
 			</Button.ToolTip>
 		</Button>
 
 		<Label
-			x:Name="ProjectSelectionLabel" Content="C# Project" Style="{StaticResource DeltaLabel}"
+			x:Name="ProjectSelectionLabel" Content="Projects" Style="{StaticResource DeltaLabel}"
 			Grid.Column="1" Grid.Row="3" />
 		<ComboBox
 			x:Name="ProjectComboBox" Grid.Column="3" Grid.ColumnSpan="3" Grid.Row="3"
 			HorizontalContentAlignment="Left" Style="{StaticResource DeltaComboBox}"
-			ItemsSource="{Binding Path=AvailableProjectsInSelectedSolution}"
-			SelectedValue="{Binding Path=SelectedSolutionProject}"
+			ItemsSource="{Binding Path=AllAvailableProjects}"
+			SelectedValue="{Binding Path=SelectedCodeProject}"
 			DisplayMemberPath="Name">
 			<ComboBox.ToolTip>
-				<TextBlock FontWeight="Bold">The available Entry-Points that the current selected Project has (Feature currently disabled)</TextBlock>
+				<TextBlock FontWeight="Bold">The list of all available projects that you are allowed to build</TextBlock>
 			</ComboBox.ToolTip>
 		</ComboBox>
 		<Button
@@ -212,11 +212,11 @@
 		</Button>
 
 		<Label
-			Name="PlatformLabel" Content="Platform" Grid.Column="1" Style="{StaticResource DeltaLabel}" Grid.Row="5"  />
+			Name="PlatformLabel" Content="Platform" Grid.Column="1" Style="{StaticResource DeltaLabel}" Grid.Row="1"  />
 		<ComboBox
 			Name="PlatformComboBox" Grid.Column="3" HorizontalContentAlignment="Left"
 			ItemsSource="{Binding Path=SupportedPlatforms}"
-			SelectedValue="{Binding Path=SelectedPlatform}" Grid.Row="5" Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="3">
+			SelectedValue="{Binding Path=SelectedPlatform}" Grid.Row="1" Style="{StaticResource DeltaComboBox}" Grid.ColumnSpan="3">
 			<ComboBox.ToolTip>
 				<TextBlock FontWeight="Bold">The available Platforms you can pick to build your Project</TextBlock>
 			</ComboBox.ToolTip>

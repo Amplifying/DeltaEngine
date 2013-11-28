@@ -16,11 +16,7 @@ namespace DeltaEngine.Editor.Emulator.Tests
 		[Test, Category("Slow"), RequiresSTA]
 		public void AddLineInDeltaEngineWillShowLineInWpf()
 		{
-			var window = new Window
-			{
-				Title = "My User Control Dialog",
-				Content = new MainWindow()
-			};
+			var window = new Window { Title = "My User Control Dialog", Content = new MainWindow() };
 			window.ShowDialog();
 		}
 

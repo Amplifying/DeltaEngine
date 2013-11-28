@@ -57,15 +57,16 @@ namespace DeltaEngine.Editor
 
 		private void ChangeProject(SetProject project)
 		{
+			IsDeveloper = project.Permissions == ProjectPermissions.Full;
 			if (project.Permissions == ProjectPermissions.None)
 			{
-				if (StackTraceExtensions.IsStartedFromNunitConsole())
-					throw new Exception("No access to project " + project.ProjectName);
-				MessageBox.Show("No access to project " + project.ProjectName, "Fatal Error");
+				if (StackTraceExtensions.StartedFromNCrunchOrNunitConsole)
+					throw new NoAccessForProject(project.Name);
+				MessageBox.Show("No access to project " + project.Name, "Fatal Error");
 			}
 			else
 			{
-				ProjectName = project.ProjectName;
+				ProjectName = project.Name;
 				Permissions = project.Permissions;
 				editorContent.SetProject(project);
 				if (ProjectChanged != null)
@@ -73,6 +74,7 @@ namespace DeltaEngine.Editor
 			}
 		}
 
+		public bool IsDeveloper { get; private set; }
 		public string ProjectName { get; private set; }
 		public ProjectPermissions Permissions { get; private set; }
 		private EditorContentLoader editorContent;
@@ -106,24 +108,47 @@ namespace DeltaEngine.Editor
 
 		public event Action ContentReady;
 
-		public void RequestChangeProject(string newProjectName)
+		public void ChangeProject(string newProjectName)
 		{
 			if (newProjectName.Compare(ProjectName))
 				return;
+			if (!AvailableProjects.Contains(newProjectName))
+				throw new ProjectNotAvailable(newProjectName);
 			send(new ChangeProjectRequest(newProjectName), true);
 		}
 
 		public string CurrentContentProjectSolutionFilePath
 		{
-			get
-			{
-				if (ProjectName == null)
-					return "";
-				if (contentProjects.ContainsKey(ProjectName))
-					return contentProjects[ProjectName];
-				return GetAbsoluteSolutionFilePathForCurrentProject();
-			}
+			get { return GetAbsoluteSolutionFilePath(ProjectName); }
 			set { SetContentProjectSolutionFilePath(ProjectName, value); }
+		}
+
+		public string GetAbsoluteSolutionFilePath(string contentProjectName)
+		{
+			if (String.IsNullOrWhiteSpace(contentProjectName))
+				return "";
+			if (contentProjects.ContainsKey(contentProjectName))
+				return contentProjects[contentProjectName];
+			if (IsStarterKit(contentProjectName))
+				return SolutionExtensions.GetSamplesSolutionFilePath();
+			if (IsTutorial(contentProjectName))
+				return SolutionExtensions.GetTutorialsSolutionFilePath();
+			return "";
+		}
+
+		private static bool IsStarterKit(string projectName)
+		{
+			var starterKits = new[]
+			{
+				"Asteroids", "Blocks", "Breakout", "Drench", "EmptyApp", "GameOfDeath", "GhostWars",
+				"Insight", "LogoApp", "SideScroller", "Snake"
+			};
+			return starterKits.Contains(projectName);
+		}
+
+		private static bool IsTutorial(string projectName)
+		{
+			return projectName == "DeltaEngine.Tutorials";
 		}
 
 		public void SetContentProjectSolutionFilePath(string name, string slnFilePath)
@@ -135,30 +160,6 @@ namespace DeltaEngine.Editor
 			else
 				contentProjects.Add(name, slnFilePath);
 			Settings.Current.SetValue("ContentProjects", contentProjects);
-		}
-
-		private string GetAbsoluteSolutionFilePathForCurrentProject()
-		{
-			if (IsStarterKit())
-				return SolutionExtensions.GetSamplesSolutionFilePath();
-			if (IsTutorial())
-				return SolutionExtensions.GetTutorialsSolutionFilePath();
-			return "";
-		}
-
-		private bool IsStarterKit()
-		{
-			var starterKits = new[]
-			{
-				"Asteroids", "Blocks", "Breakout", "Drench", "EmptyApp", "GameOfDeath", "GhostWars",
-				"Insight", "LogoApp", "SideScroller", "Snake"
-			};
-			return starterKits.Contains(ProjectName);
-		}
-
-		private bool IsTutorial()
-		{
-			return ProjectName == "DeltaEngine.Tutorials";
 		}
 
 		public void Send(object message, bool allowToCompressMessage = true)
@@ -201,10 +202,21 @@ namespace DeltaEngine.Editor
 		public event Action<Type> StartEditorPlugin;
 		public EditorOpenTkViewport Viewport { get; set; }
 
+		void Service.ShowToolbox(bool showToolbox)
+		{
+			UpdateToolboxVisibility(showToolbox);
+		}
+
+		public event Action<bool> UpdateToolboxVisibility;
+
 		public void SetAvailableProjects(string[] projectNames)
 		{
 			AvailableProjects = projectNames;
+			if (AvailableProjectsChanged != null)
+				AvailableProjectsChanged();
 		}
+
+		public event Action AvailableProjectsChanged;
 
 		public void UploadMutlipleContentToServer(string[] newFiles)
 		{

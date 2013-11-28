@@ -19,12 +19,6 @@ namespace DeltaEngine.Editor.AppBuilder.Tests.Windows
 		private WindowsDevice device;
 
 		[Test]
-		public void UninstallOfAnInvalidAppShouldFail()
-		{
-			Assert.Throws<WindowsDevice.UninstallationFailedOnDevice>(() => device.Uninstall(null));
-		}
-
-		[Test]
 		public void UninstallApp()
 		{
 			if (!device.IsAppInstalled(sampleApp))
@@ -47,12 +41,6 @@ namespace DeltaEngine.Editor.AppBuilder.Tests.Windows
 				device.Uninstall(sampleApp);
 			InstallApp(sampleApp);
 			Assert.IsTrue(device.IsAppInstalled(sampleApp));
-		}
-
-		[Test]
-		public void LaunchIvalidApp()
-		{
-			Assert.Throws<WindowsDevice.AppNotInstalled>(() => device.Launch(null));
 		}
 
 		[Test]

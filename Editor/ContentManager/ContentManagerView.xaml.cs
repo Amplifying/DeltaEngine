@@ -48,15 +48,18 @@ namespace DeltaEngine.Editor.ContentManager
 				Dispatcher.Invoke(new Action(contentManagerViewModel.ShowStartContent));
 				isContentReadyForUse = true;
 			};
-			Messenger.Default.Send("ContentManager", "SetSelectedEditorPlugin");
 		}
 
 		private bool isContentReadyForUse;
 
 		public void Activate()
 		{
-			Messenger.Default.Send("ContentManager", "SetSelectedEditorPlugin");
 			contentManagerViewModel.Activate();
+		}
+
+		public void Deactivate()
+		{
+			contentManagerViewModel.Deactivate();
 		}
 
 		private ContentManagerViewModel contentManagerViewModel;

@@ -14,9 +14,9 @@ namespace DeltaEngine.Editor
 		
 		public void SetProject(SetProject newProject)
 		{
-			contentPath = Path.Combine("Content", newProject.ProjectName);
+			contentPath = Path.Combine("Content", newProject.Name);
 			projectMetaDataFile = null;
-			ProjectName = newProject.ProjectName;
+			ProjectName = newProject.Name;
 			ClearBufferedResources();
 			RefreshMetaData();
 			SendCheckProjectContent();

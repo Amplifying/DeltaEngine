@@ -104,6 +104,6 @@ namespace DeltaEngine.Editor.Emulator
 					Tools.Add(new ToolboxEntry(tool, namesAndPaths.GetImagePath(tool)));
 		}
 
-		private readonly string[] controls = new[] { "Button", "Image", "Label", "Slider" };
+		private readonly string[] controls = { "Button", "Image", "Label", "Slider" };
 	}
 }

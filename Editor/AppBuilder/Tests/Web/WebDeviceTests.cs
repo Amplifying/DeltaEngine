@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace DeltaEngine.Editor.AppBuilder.Tests.Web
 {
+	[Ignore]
 	public class WebDeviceTests
 	{
 		[TestFixtureSetUp]

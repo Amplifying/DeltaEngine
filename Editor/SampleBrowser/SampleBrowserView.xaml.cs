@@ -1,6 +1,5 @@
 ﻿using System.Windows.Input;
 using DeltaEngine.Editor.Core;
-using GalaSoft.MvvmLight.Messaging;
 
 namespace DeltaEngine.Editor.SampleBrowser
 {
@@ -21,13 +20,11 @@ namespace DeltaEngine.Editor.SampleBrowser
 			var model = new SampleBrowserViewModel();
 			DataContext = model;
 			model.UpdateItems();
-			Messenger.Default.Send("SampleBrowser", "SetSelectedEditorPlugin");
 		}
 
-		public void Activate()
-		{
-			Messenger.Default.Send("SampleBrowser", "SetSelectedEditorPlugin");
-		}
+		public void Activate() {}
+
+		public void Deactivate() {}
 
 		private void SearchTextBoxGotMouseCapture(object sender, MouseEventArgs e)
 		{

@@ -2,11 +2,13 @@
 {
 	public class DeleteProject
 	{
+		private DeleteProject() {}
+
 		public DeleteProject(string projectName)
 		{
 			ProjectName = projectName;
 		}
 
-		protected string ProjectName { get; set; }
+		public string ProjectName { get; private set; }
 	}
 }

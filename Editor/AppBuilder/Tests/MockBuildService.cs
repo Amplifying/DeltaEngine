@@ -1,8 +1,6 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using DeltaEngine.Editor.Messages;
 using DeltaEngine.Editor.Mocks;
-using DeltaEngine.Networking.Messages;
 
 namespace DeltaEngine.Editor.AppBuilder.Tests
 {
